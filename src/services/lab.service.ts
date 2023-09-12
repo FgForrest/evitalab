@@ -3,7 +3,15 @@ import { inject, InjectionKey } from 'vue'
 import { Store } from 'vuex'
 import { State } from '@/store'
 import { EvitaDBClient } from '@/services/evitadb-client'
-import { Catalog, CatalogSchema, EntitySchema } from '@/model/evitadb'
+import {
+    AssociatedDataSchema,
+    AttributeSchemaUnion,
+    Catalog,
+    CatalogSchema,
+    EntitySchema,
+    GlobalAttributeSchema,
+    ReferenceSchema, ReferenceSchemas
+} from '@/model/evitadb'
 
 export const key: InjectionKey<LabService> = Symbol()
 
@@ -69,13 +77,70 @@ export class LabService {
         return catalogSchema
     }
 
-    getEntitySchema = async (connection: EvitaDBConnection, catalogName: string, entityType: string): Promise<any> => {
+    getEntitySchema = async (connection: EvitaDBConnection, catalogName: string, entityType: string): Promise<EntitySchema> => {
         let entitySchema: EntitySchema | undefined = this.store.getters['lab/getEntitySchema'](connection.id, catalogName, entityType)
         if (entitySchema === undefined) {
             await this.getCatalogSchema(connection, catalogName)
             entitySchema = this.store.getters['lab/getEntitySchema'](connection.id, catalogName, entityType)
+            if (entitySchema === undefined) {
+                throw new UnexpectedError(connection, `Entity ${entityType} not found.`)
+            }
         }
         return entitySchema
+    }
+
+    getCatalogAttributeSchema = async (connection: EvitaDBConnection, catalogName: string, attributeName: string): Promise<GlobalAttributeSchema> => {
+        const catalogSchema: CatalogSchema = await this.getCatalogSchema(connection, catalogName)
+        const attributeSchema: GlobalAttributeSchema | undefined = Object.values(catalogSchema.attributes)
+            .find(attribute => attribute.name === attributeName)
+        if (attributeSchema === undefined) {
+            throw new UnexpectedError(connection, `Attribute '${attributeName}' not found in catalog '${catalogName}'.`)
+        }
+        return attributeSchema
+    }
+
+    getEntityAttributeSchema = async (connection: EvitaDBConnection, catalogName: string, entityType: string, attributeName: string): Promise<AttributeSchemaUnion> => {
+        const entitySchema: EntitySchema = await this.getEntitySchema(connection, catalogName, entityType)
+        const attributeSchema: AttributeSchemaUnion | undefined = Object.values(entitySchema.attributes)
+            .find(attribute => attribute.name === attributeName)
+        if (attributeSchema === undefined) {
+            throw new UnexpectedError(connection, `Attribute '${attributeName}' not found in entity '${entityType}' in catalog '${catalogName}'.`)
+        }
+        return attributeSchema
+    }
+
+    getReferenceAttributeSchema = async (connection: EvitaDBConnection,
+                                         catalogName: string,
+                                         entityType: string,
+                                         referenceName: string,
+                                         attributeName: string): Promise<AttributeSchemaUnion> => {
+        const referenceSchema: ReferenceSchema = await this.getReferenceSchema(connection, catalogName, entityType, referenceName)
+        const attributeSchema: AttributeSchemaUnion | undefined = Object.values(referenceSchema.attributes)
+            .find(attribute => attribute.name === attributeName)
+        if (attributeSchema === undefined) {
+            throw new UnexpectedError(connection, `Attribute '${attributeName}' not found in reference '${referenceName}' in entity '${entityType}' in catalog '${catalogName}'.`)
+        }
+        return attributeSchema
+    }
+
+    getAssociatedDataSchema = async (connection: EvitaDBConnection, catalogName: string, entityType: string, associatedDataName: string): Promise<AssociatedDataSchema> => {
+        const entitySchema: EntitySchema = await this.getEntitySchema(connection, catalogName, entityType)
+        const associatedData: AssociatedDataSchema | undefined = Object.values(entitySchema.associatedData)
+            .find(associatedData => associatedData.name === associatedDataName)
+        if (associatedData === undefined) {
+            throw new UnexpectedError(connection, `Associated data '${associatedDataName}' not found in entity '${entityType}' in catalog '${catalogName}'.`)
+        }
+        return associatedData
+    }
+
+    getReferenceSchema = async (connection: EvitaDBConnection, catalogName: string, entityType: string, referenceName: string): Promise<ReferenceSchema> => {
+        const entitySchema: EntitySchema = await this.getEntitySchema(connection, catalogName, entityType)
+        const referenceSchema: ReferenceSchema | undefined = Object.values(entitySchema.references)
+            .find(reference => reference.name === referenceName)
+        if (referenceSchema === undefined) {
+            throw new UnexpectedError(connection, `Reference '${referenceName}' not found in entity '${entityType}' in catalog '${catalogName}'.`)
+        }
+        return referenceSchema
     }
 
     private async fetchCatalogs(connection: EvitaDBConnection): Promise<Catalog[]> {

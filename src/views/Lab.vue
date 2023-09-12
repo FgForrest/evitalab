@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import LabPanel from '@/components/LabPanel.vue'
-import LabExplorer from '@/components/LabExplorer.vue'
-import LabEditor from '@/components/LabEditor.vue'
+import LabPanel from '@/components/lab/LabPanel.vue'
+import LabExplorer from '@/components/lab/explorer/LabExplorer.vue'
+import LabEditor from '@/components/lab/editor/LabEditor.vue'
 
 import { ref } from 'vue'
 import { PanelType } from '@/model/lab'

@@ -1,7 +1,7 @@
 import { TabRequest } from '@/model/editor/editor'
 import { ErrorViewerProps } from '@/model/editor/error-viewer'
 import { DefineComponent, markRaw } from 'vue'
-import LabEditorErrorViewer from '@/components/LabEditorErrorViewer.vue'
+import LabEditorErrorViewer from '@/components/lab/editor/LabEditorErrorViewer.vue'
 import { EvitaDBConnection, LabError } from '@/model/lab'
 
 /**

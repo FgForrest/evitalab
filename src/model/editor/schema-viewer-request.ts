@@ -2,7 +2,7 @@ import { TabRequest } from '@/model/editor/editor'
 import { SchemaPointer, SchemaViewerDataPointer, SchemaViewerProps } from '@/model/editor/schema-viewer'
 import { EvitaDBConnection } from '@/model/lab'
 import { DefineComponent, markRaw } from 'vue'
-import LabEditorViewerCatalogSchema from '@/components/LabEditorSchemaViewer.vue'
+import LabEditorSchemaViewer from '@/components/lab/editor/schema/LabEditorSchemaViewer.vue'
 
 /**
  * Creates new schema viewer tab.
@@ -10,9 +10,9 @@ import LabEditorViewerCatalogSchema from '@/components/LabEditorSchemaViewer.vue
 export class SchemaViewerRequest extends TabRequest<SchemaViewerProps> {
     constructor(connection: EvitaDBConnection, schemaPointer: SchemaPointer) {
         super(
-            `${schemaPointer.path().join(' > ')} [${connection.name}]`,
+            `${schemaPointer.path().slice(-1)[0]} [${connection.name}]`,
             'mdi-file-code',
-            markRaw(LabEditorViewerCatalogSchema as DefineComponent<any, any, any>),
+            markRaw(LabEditorSchemaViewer as DefineComponent<any, any, any>),
             {
                 dataPointer: new SchemaViewerDataPointer(connection, schemaPointer)
             }

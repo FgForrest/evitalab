@@ -1,9 +1,10 @@
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql'
-import { GraphQLInstancePointer } from '@/model/editor/graphql-console'
+import { GraphQLInstancePointer, GraphQLInstanceType } from '@/model/editor/graphql-console'
 import { inject, InjectionKey } from 'vue'
 import { GraphQLResponse } from '@/model/graphql'
 import { LabService } from '@/services/lab.service'
 import { GraphQLClient } from '@/services/graphql-client'
+import { UnexpectedError } from '@/model/lab'
 
 export const key: InjectionKey<GraphQLConsoleService> = Symbol()
 
@@ -47,10 +48,24 @@ export class GraphQLConsoleService {
      * Executes query against evitaDB GraphQL API.
      */
     private async callGraphQLApi(instancePointer: GraphQLInstancePointer, query: string, variables: object = {}): Promise<GraphQLResponse> {
-        const urlCatalogName: string = (await this.labService.getCatalogSchema(instancePointer.connection, instancePointer.catalogName))
-            .nameVariants
-            .kebabCase
-        const path = `${urlCatalogName}${instancePointer.instanceTypeSuffix()}`
+        let path
+        if (instancePointer.instanceType === GraphQLInstanceType.SYSTEM) {
+            path = 'system'
+        } else {
+            const urlCatalogName: string = (await this.labService.getCatalogSchema(instancePointer.connection, instancePointer.catalogName))
+                .nameVariants
+                .kebabCase
+
+            switch (instancePointer.instanceType) {
+                case GraphQLInstanceType.DATA:
+                    path = urlCatalogName
+                    break
+                case GraphQLInstanceType.SCHEMA:
+                    path = `${urlCatalogName}/schema`
+                    break
+                default: throw new UnexpectedError(instancePointer.connection, `Unsupported GraphQL instance type '${instancePointer.instanceType}'.`)
+            }
+        }
 
         return await this.graphQLClient.fetch(instancePointer.connection, path, query, variables)
     }

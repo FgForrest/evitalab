@@ -65,7 +65,7 @@ export abstract class LabError extends Error {
     }
 
     protected constructor(name: string, connection: EvitaDBConnection | undefined, message: string, detail?: string) {
-        super(message)
+        super(`${message}: ${detail}`)
         this.name = name
         this.connection = connection
         this._detail = detail

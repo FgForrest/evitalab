@@ -1,7 +1,7 @@
 import { TabRequest } from '@/model/editor/editor'
 import { EvitaDBConnection } from '@/model/lab'
 import { DefineComponent, markRaw } from 'vue'
-import LabEditorConsoleDataGrid from '@/components/LabEditorConsoleDataGrid.vue'
+import LabEditorConsoleDataGrid from '@/components/lab/editor/console/LabEditorConsoleDataGrid.vue'
 import { DataGridConsoleProps, DataGridDataPointer } from '@/model/editor/data-grid-console'
 
 export class DataGridConsoleRequest extends TabRequest<DataGridConsoleProps> {

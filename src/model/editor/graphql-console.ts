@@ -14,18 +14,10 @@ export class GraphQLInstancePointer  {
         this.catalogName = catalogName
         this.instanceType = instanceType
     }
-
-    instanceTypeSuffix(): string {
-        switch (this.instanceType) {
-            case GraphQLInstanceType.DATA:
-                return ''
-            case GraphQLInstanceType.SCHEMA:
-                return '/schema'
-        }
-    }
 }
 
 export enum GraphQLInstanceType {
+    SYSTEM = 'system',
     DATA = 'data',
     SCHEMA = 'schema'
 }
