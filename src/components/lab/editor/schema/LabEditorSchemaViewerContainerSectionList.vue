@@ -28,7 +28,7 @@ const filteredItems = computed(() => {
             label="Filter"
             variant="solo-filled"
             density="compact"
-            :append-inner-icon="filter ? 'mdi-backspace' : null"
+            :append-inner-icon="filter ? 'mdi-backspace' : null as any"
             @update:model-value="filter = $event.toLowerCase()"
             @click:append-inner="filter = ''"
         />
