@@ -33,6 +33,20 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v3
 
+      - name: Create .zip of source
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          filename: 'source.zip'
+          path: './'
+
+      - name: Create .tar.gz of source
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'tar'
+          filename: 'source.tar.gz'
+          path: './'
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -60,20 +74,6 @@ jobs:
           type: 'tar'
           filename: 'dist.tar.gz'
           path: './dist'
-
-      - name: Create .zip of source
-        uses: thedoctor0/zip-release@0.7.1
-        with:
-          type: 'zip'
-          filename: 'source.zip'
-          path: './'
-
-      - name: Create .tar.gz of source
-        uses: thedoctor0/zip-release@0.7.1
-        with:
-          type: 'tar'
-          filename: 'source.tar.gz'
-          path: './'
 
       - name: Create release
         id: create_release
