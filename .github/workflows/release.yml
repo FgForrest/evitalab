@@ -66,6 +66,8 @@ jobs:
       - name: Create release
         id: create_release
         uses: release-drafter/release-drafter@v5
+        with:
+          publish: true
 
       - name: Upload dist.zip to release
         uses: actions/upload-release-asset@v1
@@ -110,16 +112,17 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-release.outputs.released_version }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-  publish-release:
-    name: Publish release
-    needs: build-and-release-docker
-    permissions:
-      # write permission is required to create a github release
-      contents: write
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: StuYarrow/publish-release@v1.1.2
-        with:
-          id: ${{ needs.build-and-release.outputs.release_id }}
+  # todo lho cannot find release id
+#  publish-release:
+#    name: Publish release
+#    needs: build-and-release-docker
+#    permissions:
+#      # write permission is required to create a github release
+#      contents: write
+#
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - uses: StuYarrow/publish-release@v1.1.2
+#        with:
+#          id: ${{ needs.build-and-release.outputs.release_id }}
