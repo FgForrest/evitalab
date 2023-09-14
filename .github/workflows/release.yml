@@ -83,6 +83,8 @@ jobs:
 
   build-and-release-docker:
     name: Build and release Docker image
+    permissions:
+      contents: write
     needs: build-and-release
     runs-on: ubuntu-latest
 
