@@ -120,6 +120,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: eregon/publish-release@v1
+      - uses: StuYarrow/publish-release@v1.1.2
         with:
-          release_id: ${{ needs.build-and-release.outputs.release_id }}
+          id: ${{ needs.build-and-release.outputs.release_id }}
