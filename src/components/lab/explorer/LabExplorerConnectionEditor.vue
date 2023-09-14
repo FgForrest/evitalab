@@ -199,6 +199,7 @@ async function storeConnection(): Promise<void> {
 
     try {
         labService.addConnection(new EvitaDBConnection(
+            undefined,
             modifiedConnection.value.name!,
             false,
             modifiedConnection.value.labApiUrl!,
