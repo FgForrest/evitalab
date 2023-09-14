@@ -65,7 +65,6 @@ jobs:
         id: create_release
         uses: release-drafter/release-drafter@v5
         with:
-          latest: true
           publish: true
 
       - name: Upload dist.zip to release
