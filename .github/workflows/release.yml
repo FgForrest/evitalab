@@ -33,20 +33,6 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v3
 
-      - name: Create .zip of source
-        uses: thedoctor0/zip-release@0.7.1
-        with:
-          type: 'zip'
-          filename: 'source.zip'
-          path: './'
-
-      - name: Create .tar.gz of source
-        uses: thedoctor0/zip-release@0.7.1
-        with:
-          type: 'tar'
-          filename: 'source.tar.gz'
-          path: './'
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -93,22 +79,6 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./dist.tar.gz
           asset_name: Dist (tar.gz)
-          asset_content_type: application/gzip
-
-      - name: Upload source.zip to release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./source.zip
-          asset_name: Source code (zip)
-          asset_content_type: application/zip
-
-      - name: Upload source.tar.gz to release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./source.tar.gz
-          asset_name: Source code (tar.gz)
           asset_content_type: application/gzip
 
   build-and-release-docker:
