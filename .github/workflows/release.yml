@@ -21,10 +21,12 @@ jobs:
     permissions:
       # write permission is required to create a github release
       contents: write
+
       # write permission is required for autolabeler
       # otherwise, read permission is required at least
       pull-requests: write
     outputs:
+      release_id: ${{ steps.create_release.outputs.id }}
       released_version: ${{ steps.create_release.outputs.tag_name }}
 
     runs-on: ubuntu-latest
@@ -64,8 +66,6 @@ jobs:
       - name: Create release
         id: create_release
         uses: release-drafter/release-drafter@v5
-        with:
-          publish: true
 
       - name: Upload dist.zip to release
         uses: actions/upload-release-asset@v1
@@ -88,6 +88,7 @@ jobs:
     permissions:
       packages: write
     needs: build-and-release
+
     runs-on: ubuntu-latest
 
     steps:
@@ -108,3 +109,17 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-release.outputs.released_version }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+  publish-release:
+    name: Publish release
+    needs: build-and-release-docker
+    permissions:
+      # write permission is required to create a github release
+      contents: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: eregon/publish-release@v1
+        with:
+          release_id: ${{ needs.build-and-release.outputs.release_id }}
