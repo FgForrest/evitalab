@@ -16,45 +16,16 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  build-and-release-docker:
-    name: Build and release Docker image
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v3
-
-      - name: Log in to Docker hub
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
   build-and-release:
     name: Build and release
-    needs: build-and-release-docker # we need to wait for docker image to be built just in case it fails, we don't release it
     permissions:
       # write permission is required to create a github release
       contents: write
       # write permission is required for autolabeler
       # otherwise, read permission is required at least
       pull-requests: write
+    outputs:
+      released_version: ${{ steps.create-release.outputs.tag_name }}
 
     runs-on: ubuntu-latest
 
@@ -109,3 +80,27 @@ jobs:
           asset_path: ./dist.tar.gz
           asset_name: dist.tar.gz
           asset_content_type: application/gzip
+
+  build-and-release-docker:
+    name: Build and release Docker image
+    needs: build-and-release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker hub
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/evitalab:${{ needs.build-and-release.outputs.released_version }},${{ env.REGISTRY }}/evitalab:latest
