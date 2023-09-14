@@ -61,6 +61,20 @@ jobs:
           filename: 'dist.tar.gz'
           path: './dist'
 
+      - name: Create .zip of source
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          filename: 'source.zip'
+          path: './'
+
+      - name: Create .tar.gz of source
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'tar'
+          filename: 'source.tar.gz'
+          path: './'
+
       - name: Create release
         id: create_release
         uses: release-drafter/release-drafter@v5
@@ -70,7 +84,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./dist.zip
-          asset_name: dist.zip
+          asset_name: Dist (zip)
           asset_content_type: application/zip
 
       - name: Upload dist.tar.gz to release
@@ -78,7 +92,23 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./dist.tar.gz
-          asset_name: dist.tar.gz
+          asset_name: Dist (tar.gz)
+          asset_content_type: application/gzip
+
+      - name: Upload source.zip to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./source.zip
+          asset_name: Source code (zip)
+          asset_content_type: application/zip
+
+      - name: Upload source.tar.gz to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./source.tar.gz
+          asset_name: Source code (tar.gz)
           asset_content_type: application/gzip
 
   build-and-release-docker:
@@ -103,4 +133,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/evitalab:${{ needs.build-and-release.outputs.released_version }},${{ env.REGISTRY }}/evitalab:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-release.outputs.released_version }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
