@@ -23,7 +23,8 @@ function openGitHubIssues() {
         <div class="editor-welcome-screen-hero">
             <header class="editor-welcome-screen-hero__header">
                 <h1 class="text-h2">evitaLab</h1>
-                <span class="text-caption">alpha {{ project.version }}</span>
+                <!-- todo lho we now don't have version locally, only in git, what to do about it?-->
+<!--                <span class="text-caption">alpha {{ project.version }}</span>-->
                 <p class="text-subtitle-1 mt-2">evitaDB web client</p>
             </header>
 
