@@ -4,59 +4,18 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*' # Push events to matching v*, v*.*, v*.*.* tags
+    branches:
+      - 'master'
+
+permissions:
+  contents: read
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  build-and-release:
-    name: Build and release
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.16.1'
-
-      - name: Install dependencies
-        run: npm install -g yarn && yarn install --frozen-lockfile
-
-      - name: Build
-        run: yarn build
-
-      - name: Zip Dist
-        uses: thedoctor0/zip-release@0.7.1
-        with:
-          type: 'zip'
-          filename: 'dist.zip'
-          path: './dist'
-
-      - name: Tar Dist
-        uses: thedoctor0/zip-release@0.7.1
-        with:
-          type: 'tar'
-          filename: 'dist.tar.gz'
-          path: './dist'
-
-      - name: Release
-        uses: marvinpinto/action-automatic-releases@v1.2.1
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: false
-          draft: true
-          automatic_release_tag: "latest"
-          title: "Release ${{ github.ref_name }}"
-          files: |
-            dist.zip
-            dist.tar.gz
-
   build-and-release-docker:
     name: Build and release Docker image
     runs-on: ubuntu-latest
@@ -86,3 +45,67 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  build-and-release:
+    name: Build and release
+    needs: build-and-release-docker # we need to wait for docker image to be built just in case it fails, we don't release it
+    permissions:
+      # write permission is required to create a github release
+      contents: write
+      # write permission is required for autolabeler
+      # otherwise, read permission is required at least
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.16.1'
+
+      - name: Install dependencies
+        run: npm install -g yarn && yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Include license in dist
+        run: cp LICENSE ./dist
+
+      - name: Create .zip of dist
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          filename: 'dist.zip'
+          path: './dist'
+
+      - name: Create .tar.gz of dist
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'tar'
+          filename: 'dist.tar.gz'
+          path: './dist'
+
+      - name: Create release
+        id: create-release
+        uses: release-drafter/release-drafter@v5
+
+      - name: Upload dist.zip to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: ./dist.zip
+          asset_name: dist.zip
+          asset_content_type: application/zip
+
+      - name: Upload dist.tar.gz to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_path: ./dist.tar.gz
+          asset_name: dist.tar.gz
+          asset_content_type: application/gzip

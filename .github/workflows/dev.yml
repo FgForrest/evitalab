@@ -1,0 +1,28 @@
+# Verifies dev branch integrity by building the project
+
+name: Dev
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.16.1'
+
+      - name: Install dependencies
+        run: npm install -g yarn && yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
