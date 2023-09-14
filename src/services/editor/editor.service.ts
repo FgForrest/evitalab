@@ -15,11 +15,11 @@ export class EditorService {
         this.store = store
     }
 
-    getTabRequests(): TabRequest<any>[] {
+    getTabRequests(): TabRequest<any, any>[] {
         return this.store.state.editor.tabsRequests
     }
 
-    getTabRequest(id: string): TabRequest<any> | undefined {
+    getTabRequest(id: string): TabRequest<any, any> | undefined {
         return this.getTabRequests().find(it => it.id === id)
     }
 
@@ -27,11 +27,11 @@ export class EditorService {
         return this.getTabRequests().findIndex(it => it.id === id)
     }
 
-    getNewTabRequest(): TabRequest<any> | undefined {
+    getNewTabRequest(): TabRequest<any, any> | undefined {
         return this.getTabRequests().find(it => it.new)
     }
 
-    createTabRequest(tabRequest: TabRequest<any>): void {
+    createTabRequest(tabRequest: TabRequest<any, any>): void {
         this.store.commit('editor/addTabRequest', tabRequest)
     }
 

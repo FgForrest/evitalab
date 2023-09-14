@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * EvitaQL console. Allows to execute EvitaQL queries against a evitaDB instance.
+ */
+
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 
@@ -8,35 +12,39 @@ import { json } from '@codemirror/lang-json'
 import { ref } from 'vue'
 import CodemirrorFull from '@/components/base/CodemirrorFull.vue'
 import { EvitaQLConsoleService, useEvitaQLConsoleService } from '@/services/editor/evitaql-console.service'
-import { EvitaQLConsoleProps } from '@/model/editor/evitaql-console'
+import { EvitaQLConsoleData, EvitaQLConsoleParams } from '@/model/editor/evitaql-console'
 import { Toaster, useToaster } from '@/services/editor/toaster'
+import { TabComponentProps } from '@/model/editor/editor'
 
 const evitaQLConsoleService: EvitaQLConsoleService = useEvitaQLConsoleService()
 const toaster: Toaster = useToaster()
 
-const props = defineProps<EvitaQLConsoleProps>()
+const props = defineProps<TabComponentProps<EvitaQLConsoleParams, EvitaQLConsoleData>>()
 
 const path = ref<string[]>([
-    props.dataPointer.catalogName
+    props.params.dataPointer.catalogName
 ])
 const editorTab = ref<string>('query')
 
-const queryCode = ref<string>(`// Write your EvitaQL query for catalog ${props.dataPointer.catalogName} here.\n`)
+const queryCode = ref<string>(props.data?.query ? props.data.query : `// Write your EvitaQL query for catalog ${props.params.dataPointer.catalogName} here.\n`)
 const queryExtensions = ref<any[]>([])
 
-const variablesCode = ref<string>('{\n  \n}')
+const variablesCode = ref<string>(props.data?.variables ? props.data.variables : '{\n  \n}')
 const variablesExtensions: Extension[] = [json()]
 
 const resultCode = ref<string>('')
 const resultExtensions: Extension[] = [json()]
 
-
 async function executeQuery(): Promise<void> {
     try {
-        resultCode.value = await evitaQLConsoleService.executeEvitaQLQuery(props.dataPointer, queryCode.value, JSON.parse(variablesCode.value))
+        resultCode.value = await evitaQLConsoleService.executeEvitaQLQuery(props.params.dataPointer, queryCode.value, JSON.parse(variablesCode.value))
     } catch (error: any) {
         toaster.error(error)
     }
+}
+
+if (props.params.executeOnOpen) {
+    executeQuery()
 }
 </script>
 

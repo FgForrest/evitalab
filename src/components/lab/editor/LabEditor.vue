@@ -1,20 +1,27 @@
 <script setup lang="ts">
 
 import { computed, ref, watch } from 'vue'
-import { TabRequest, TabRequestComponentProps } from '@/model/editor/editor'
+import { TabRequest } from '@/model/editor/editor'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
 import LabEditorTabWindow from './LabEditorTabWindow.vue'
 import { ellipsis } from '@/utils/text-utils'
 import LabEditorWelcomeScreen from './LabEditorWelcomeScreen.vue'
+import { RouteLocationNormalizedLoaded, useRoute } from 'vue-router'
+import { useToaster } from '@/services/editor/toaster'
+import { DemoSnippetResolver, useDemoSnippetResolver } from '@/services/editor/demo-snippet-resolver.service'
+import { DemoSnippetRequest } from '@/model/editor/demo-snippet-request'
 
+const currentRoute: RouteLocationNormalizedLoaded = useRoute()
+const toaster = useToaster()
 const editorService: EditorService = useEditorService()
+const demoCodeSnippetResolver: DemoSnippetResolver = useDemoSnippetResolver()
 
-const tabs = computed<TabRequest<any>[]>(() => {
+const tabs = computed<TabRequest<any, any>[]>(() => {
     return editorService.getTabRequests()
 })
 watch(tabs, () => {
     // switch to newly opened tab
-    const newTab: TabRequest<any> | undefined = editorService.getNewTabRequest()
+    const newTab: TabRequest<any, any> | undefined = editorService.getNewTabRequest()
     if (newTab) {
         currentTabId.value = newTab.id
         editorService.markTabRequestAsVisited(newTab.id)
@@ -38,6 +45,28 @@ function closeTab(tabId: string) {
     }
 }
 
+/**
+ * open demo code snippet if requested
+ */
+async function resolveDemoCodeSnippet(): Promise<TabRequest<any, any> | undefined> {
+    const demoSnippetRequestSerialized: string | undefined = currentRoute.query.demoSnippetRequest as string | undefined
+    if (demoSnippetRequestSerialized === undefined) {
+        return undefined
+    }
+
+    try {
+        const demoSnippetRequest: DemoSnippetRequest = JSON.parse(atob(demoSnippetRequestSerialized)) as DemoSnippetRequest
+        return await demoCodeSnippetResolver.resolve(demoSnippetRequest)
+    } catch (e: any) {
+        toaster.error(e)
+    }
+}
+resolveDemoCodeSnippet()
+    .then(tabRequest => {
+        if (tabRequest) {
+            editorService.createTabRequest(tabRequest)
+        }
+    })
 </script>
 
 <template>
@@ -101,7 +130,7 @@ function closeTab(tabId: string) {
             >
                 <LabEditorTabWindow
                     :component="tab.component"
-                    :component-props="tab.componentProps"
+                    :component-props="tab.componentProps()"
                 />
             </VWindowItem>
         </VWindow>

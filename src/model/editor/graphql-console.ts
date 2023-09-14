@@ -1,5 +1,5 @@
 import { EvitaDBConnection } from '@/model/lab'
-import { TabRequestComponentProps } from '@/model/editor/editor'
+import { ExecutableTabRequest, TabRequestComponentData, TabRequestComponentParams } from '@/model/editor/editor'
 
 /**
  * Points to concrete evitaDB GraphQL instance
@@ -25,6 +25,14 @@ export enum GraphQLInstanceType {
 /**
  * Represents props of the LabEditorConsoleGraphQL component.
  */
-export interface GraphQLConsoleProps extends TabRequestComponentProps {
+export interface GraphQLConsoleParams extends TabRequestComponentParams, ExecutableTabRequest {
     readonly instancePointer: GraphQLInstancePointer
+}
+
+/**
+ * Represents injectable/storable user data of the LabEditorConsoleGraphQL component.
+ */
+export interface GraphQLConsoleData extends TabRequestComponentData {
+    readonly query?: string
+    readonly variables?: string
 }

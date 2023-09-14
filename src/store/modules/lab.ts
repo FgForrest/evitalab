@@ -31,6 +31,7 @@ export type LabState = {
 
 type LabGetters = {
     isConnectionExists(state: LabState): (connectionName: string) => boolean
+    getConnection(state: LabState): (id: EvitaDBConnectionId) => EvitaDBConnection | undefined
     getConnections(state: LabState): () => EvitaDBConnection[]
     getCatalog(state: LabState): (connectionId: EvitaDBConnectionId, catalogName: string) =>  Catalog | undefined
     getCatalogs(state: LabState): (connectionId: EvitaDBConnectionId) => Catalog[] | undefined
@@ -69,6 +70,16 @@ const state = (): LabState => {
         (item: string) => JSON.parse(item) as EvitaDBConnection[]
     ) as EvitaDBConnection[]
 
+    // demo connection for easier debugging
+    // userConnections.push(new EvitaDBConnection(
+    //     'demo',
+    //     'Demo',
+    //     false,
+    //     'https://demo.evitadb.io/lab/api',
+    //     'https://demo.evitadb.io:5555/rest',
+    //     'https://demo.evitadb.io:5555/gql'
+    // ))
+
     return {
         storage,
         readOnly,
@@ -84,6 +95,11 @@ const getters: LabGetters = {
         return (connectionName: string) => {
             // todo lho change to getter
             return [...state.preconfiguredConnections, ...state.userConnections].find((c: any) => c.name === connectionName) !== undefined
+        }
+    },
+    getConnection(state: LabState): (id: EvitaDBConnectionId) => EvitaDBConnection | undefined {
+        return (id: EvitaDBConnectionId) => {
+            return [...state.preconfiguredConnections, ...state.userConnections].find((c: any) => c.id === id)
         }
     },
     getConnections(state: LabState): () => EvitaDBConnection[] {

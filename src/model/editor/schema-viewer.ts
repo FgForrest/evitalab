@@ -1,5 +1,5 @@
 import { EvitaDBConnection } from '@/model/lab'
-import { TabRequestComponentProps } from '@/model/editor/editor'
+import { TabRequestComponentParams } from '@/model/editor/editor'
 import LabEditorSchemaViewerCatalog from '@/components/lab/editor/schema/LabEditorSchemaViewerCatalog.vue'
 import LabEditorSchemaViewerEntity from '@/components/lab/editor/schema/LabEditorSchemaViewerEntity.vue'
 import { DefineComponent, markRaw, Raw } from 'vue'
@@ -24,7 +24,7 @@ export class SchemaViewerDataPointer {
 /**
  * Represents props of the LabEditorSchemaViewer component.
  */
-export interface SchemaViewerProps extends TabRequestComponentProps {
+export interface SchemaViewerProps extends TabRequestComponentParams {
     readonly dataPointer: SchemaViewerDataPointer
 }
 

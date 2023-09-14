@@ -1,11 +1,11 @@
 import { TabRequest } from '@/model/editor/editor'
 
 export type EditorState = {
-    readonly tabsRequests: TabRequest<any>[]
+    readonly tabsRequests: TabRequest<any, any>[]
 }
 
 type EditorMutations = {
-    addTabRequest: (state: EditorState, tabRequest: TabRequest<any>) => void,
+    addTabRequest: (state: EditorState, tabRequest: TabRequest<any, any>) => void,
     markTabRequestAsVisited: (state: EditorState, id: string) => void,
     destroyTabRequest: (state: EditorState, id: string) => void
 }
@@ -20,7 +20,7 @@ const mutations: EditorMutations = {
     },
 
     markTabRequestAsVisited (state, id): void {
-        const tabRequest: TabRequest<any> | undefined = state.tabsRequests.find(tabRequest => tabRequest.id === id)
+        const tabRequest: TabRequest<any, any> | undefined = state.tabsRequests.find(tabRequest => tabRequest.id === id)
         if (tabRequest) {
             tabRequest.new = false
         }

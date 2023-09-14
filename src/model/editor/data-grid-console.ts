@@ -1,10 +1,10 @@
-import { EvitaDBConnection } from '@/model/lab'
-import { TabRequestComponentProps } from '@/model/editor/editor'
+import { EvitaDBConnection, QueryLanguage } from '@/model/lab'
+import { ExecutableTabRequest, TabRequestComponentData, TabRequestComponentParams } from '@/model/editor/editor'
 
 /**
  * Points to concrete evitaDB collection to fetch data from.
  */
-export class DataGridDataPointer implements TabRequestComponentProps {
+export class DataGridDataPointer implements TabRequestComponentParams {
     readonly connection: EvitaDBConnection
     readonly catalogName: string
     readonly entityType: string
@@ -19,8 +19,21 @@ export class DataGridDataPointer implements TabRequestComponentProps {
 /**
  * Represents props of the LabEditorConsoleDataGrid component.
  */
-export interface DataGridConsoleProps extends TabRequestComponentProps {
-    dataPointer: DataGridDataPointer
+export interface DataGridConsoleParams extends TabRequestComponentParams, ExecutableTabRequest {
+    readonly dataPointer: DataGridDataPointer
+}
+
+/**
+ * Represents injectable/storable user data of the LabEditorConsoleDataGrid component.
+ */
+export interface DataGridConsoleData extends TabRequestComponentData {
+    readonly queryLanguage?: QueryLanguage
+    readonly filterBy?: string
+    readonly orderBy?: string
+    readonly dataLanguage?: string
+    readonly displayedData?: string[]
+    readonly pageSize?: number
+    readonly pageNumber?: number
 }
 
 /**

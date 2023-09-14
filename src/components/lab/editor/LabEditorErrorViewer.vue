@@ -2,21 +2,19 @@
 import CodemirrorFull from '@/components/base/CodemirrorFull.vue'
 import { ErrorViewerProps } from '@/model/editor/error-viewer'
 import { computed } from 'vue'
+import { TabComponentProps, VoidTabRequestComponentData } from '@/model/editor/editor'
 
-const props = defineProps<ErrorViewerProps>()
+const props = defineProps<TabComponentProps<ErrorViewerProps, VoidTabRequestComponentData>>()
 
 const title = computed(() => {
-    if (props.error.message.endsWith('.')) {
-        return props.error.message.substring(0, props.error.message.length - 1)
-    }
-    return props.error.message
+    return props.params.error.name
 })
 
 const detail = computed(() => {
-    if (props.error.detail === undefined) {
+    if (props.params.error.detail === undefined) {
         return 'No details available.'
     }
-    return props.error.detail
+    return props.params.error.detail
 })
 </script>
 

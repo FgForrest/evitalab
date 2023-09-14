@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * GraphQL console. Allows to execute GraphQL queries against a evitaDB instance.
+ */
+
 import { Pane, Splitpanes } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 
@@ -9,28 +13,29 @@ import { json } from '@codemirror/lang-json'
 import { onBeforeMount, ref } from 'vue'
 import { GraphQLConsoleService, useGraphQLConsoleService } from '@/services/editor/graphql-console.service'
 import { GraphQLSchema, printSchema } from 'graphql'
-import { GraphQLConsoleProps, GraphQLInstanceType } from '@/model/editor/graphql-console'
+import { GraphQLConsoleData, GraphQLConsoleParams, GraphQLInstanceType } from '@/model/editor/graphql-console'
 import CodemirrorFull from '@/components/base/CodemirrorFull.vue'
 import { Toaster, useToaster } from '@/services/editor/toaster'
+import { TabComponentProps } from '@/model/editor/editor'
 
 const graphQLConsoleService: GraphQLConsoleService = useGraphQLConsoleService()
 const toaster: Toaster = useToaster()
 
-const props = defineProps<GraphQLConsoleProps>()
+const props = defineProps<TabComponentProps<GraphQLConsoleParams, GraphQLConsoleData>>()
 
 const path = ref<string[]>([])
-if (props.instancePointer.instanceType !== GraphQLInstanceType.SYSTEM) {
-    path.value.push(props.instancePointer.catalogName)
+if (props.params.instancePointer.instanceType !== GraphQLInstanceType.SYSTEM) {
+    path.value.push(props.params.instancePointer.catalogName)
 }
-path.value.push(props.instancePointer.instanceType) // todo lho i18n
+path.value.push(props.params.instancePointer.instanceType) // todo lho i18n
 const editorTab = ref<string>('query')
 
 const graphQLSchema = ref<GraphQLSchema>()
 
-const queryCode = ref<string>(`# Write your GraphQL query for catalog ${props.instancePointer.catalogName} here.\n`)
+const queryCode = ref<string>(props.data?.query ? props.data.query : `# Write your GraphQL query for catalog ${props.params.instancePointer.catalogName} here.\n`)
 const queryExtensions: Extension[] = []
 
-const variablesCode = ref<string>('{\n  \n}')
+const variablesCode = ref<string>(props.data?.variables ? props.data.variables : '{\n  \n}')
 const variablesExtensions: Extension[] = [json()]
 
 const schemaEditorInitialized = ref<boolean>(false)
@@ -43,11 +48,14 @@ const resultExtensions: Extension[] = [json()]
 const initialized = ref<boolean>(false)
 
 onBeforeMount(() => {
-    graphQLConsoleService.getGraphQLSchema(props.instancePointer)
+    graphQLConsoleService.getGraphQLSchema(props.params.instancePointer)
         .then(schema => {
             graphQLSchema.value = schema
             queryExtensions.push(graphql(schema))
             initialized.value = true
+            if (props.params.executeOnOpen) {
+                executeQuery()
+            }
         })
         .catch(error => {
             toaster.error(error)
@@ -56,7 +64,7 @@ onBeforeMount(() => {
 
 async function executeQuery(): Promise<void> {
     try {
-        resultCode.value = await graphQLConsoleService.executeGraphQLQuery(props.instancePointer, queryCode.value, JSON.parse(variablesCode.value))
+        resultCode.value = await graphQLConsoleService.executeGraphQLQuery(props.params.instancePointer, queryCode.value, JSON.parse(variablesCode.value))
     } catch (error: any) {
         toaster.error(error)
     }

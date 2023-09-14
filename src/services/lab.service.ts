@@ -1,4 +1,4 @@
-import { EvitaDBConnection, UnexpectedError } from '@/model/lab'
+import { EvitaDBConnection, EvitaDBConnectionId, UnexpectedError } from '@/model/lab'
 import { inject, InjectionKey } from 'vue'
 import { Store } from 'vuex'
 import { State } from '@/store'
@@ -30,6 +30,10 @@ export class LabService {
 
     isReadOnly = (): boolean => {
         return this.store.state.lab.readOnly
+    }
+
+    getConnection = (id: EvitaDBConnectionId): EvitaDBConnection | undefined => {
+        return this.store.getters['lab/getConnection'](id)
     }
 
     getConnections = (): EvitaDBConnection[] => {

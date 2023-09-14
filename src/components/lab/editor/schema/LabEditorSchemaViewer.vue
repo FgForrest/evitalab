@@ -3,15 +3,16 @@ import { SchemaViewerProps } from '@/model/editor/schema-viewer'
 import { ref } from 'vue'
 import { SchemaViewerService, useSchemaViewerService } from '@/services/editor/schema-viewer.service'
 import { Toaster, useToaster } from '@/services/editor/toaster'
+import { TabComponentProps, VoidTabRequestComponentData } from '@/model/editor/editor'
 
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
 const toaster: Toaster = useToaster()
 
-const props = defineProps<SchemaViewerProps>()
+const props = defineProps<TabComponentProps<SchemaViewerProps, VoidTabRequestComponentData>>()
 
 const schemaLoaded = ref<boolean>(false)
 const schema = ref<any>()
-schemaViewerService.getSchema(props.dataPointer)
+schemaViewerService.getSchema(props.params.dataPointer)
     .catch(error => {
         toaster.error(error)
     })
@@ -36,7 +37,7 @@ schemaViewerService.getSchema(props.dataPointer)
 
             <VToolbarTitle>
                 <VBreadcrumbs
-                    :items="dataPointer.schemaPointer.path()"
+                    :items="params.dataPointer.schemaPointer.path()"
                     class="pl-0 pr-0"
                 />
             </VToolbarTitle>
@@ -45,8 +46,8 @@ schemaViewerService.getSchema(props.dataPointer)
         <VSheet class="schema-viewer__body">
             <component
                 v-if="schemaLoaded"
-                :is="dataPointer.schemaPointer.component()"
-                :data-pointer="dataPointer"
+                :is="params.dataPointer.schemaPointer.component()"
+                :data-pointer="params.dataPointer"
                 :schema="schema"
             />
             <span v-else>

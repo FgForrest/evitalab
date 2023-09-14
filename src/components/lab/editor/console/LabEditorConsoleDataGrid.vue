@@ -1,11 +1,16 @@
 <script setup lang="ts">
+/**
+ * Entities console. Allows to view entities of specified collection.
+ */
+
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
 
 import { onBeforeMount, ref, watch } from 'vue'
 import {
-    DataGridConsoleProps,
+    DataGridConsoleData,
+    DataGridConsoleParams,
     EntityPropertyKey,
     QueryResult,
     StaticEntityProperties
@@ -16,16 +21,17 @@ import CodemirrorOneLine from '@/components/base/CodemirrorOneLine.vue'
 import { QueryLanguage } from '@/model/lab'
 import CodemirrorFull from '@/components/base/CodemirrorFull.vue'
 import { Toaster, useToaster } from '@/services/editor/toaster'
+import { TabComponentProps } from '@/model/editor/editor'
 
 const dataGridConsoleService: DataGridConsoleService = useDataGridConsoleService()
 const toaster: Toaster = useToaster()
 
-const props = defineProps<DataGridConsoleProps>()
+const props = defineProps<TabComponentProps<DataGridConsoleParams, DataGridConsoleData>>()
 
 // static data
 const path = ref<string[]>([
-    props.dataPointer.catalogName,
-    props.dataPointer.entityType
+    props.params.dataPointer.catalogName,
+    props.params.dataPointer.entityType
 ])
 
 const queryLanguages = [
@@ -45,7 +51,7 @@ let dataLocales: string[] = []
 let gridHeaders: Map<String, any> = new Map<String, any>()
 
 // dynamic user data
-const selectedQueryLanguage = ref<QueryLanguage[]>([QueryLanguage.EvitaQL])
+const selectedQueryLanguage = ref<QueryLanguage[]>(props.data?.queryLanguage ? [props.data.queryLanguage] : [QueryLanguage.EvitaQL])
 watch(selectedQueryLanguage, (newValue, oldValue) => {
     if (newValue[0] === oldValue[0]) {
         return
@@ -58,20 +64,20 @@ watch(selectedQueryLanguage, (newValue, oldValue) => {
 })
 
 const loading = ref<boolean>(false)
-const pageNumber = ref<number>(1)
-const pageSize = ref<number>(25)
+const pageNumber = ref<number>(props.data?.pageNumber ? props.data.pageNumber : 1)
+const pageSize = ref<number>(props.data?.pageSize ? props.data.pageSize : 25)
 const itemsPerPage: any[] = [10, 25, 50, 100, 250, 500, 1000].map(it => ({ title: it.toString(10), value: it }))
 
-const filterByCode = ref<string>('')
+const filterByCode = ref<string>(props.data?.filterBy ? props.data.filterBy : '')
 const filterByExtensions: Extension[] = []
 
-const orderByCode = ref<string>('')
+const orderByCode = ref<string>(props.data?.orderBy ? props.data.orderBy : '')
 const orderByExtensions: Extension[] = []
 
-const selectedDataLocales = ref<string[]>(['none'])
+const selectedDataLocales = ref<string[]>(props.data?.dataLanguage ? [props.data.dataLanguage] : ['none'])
 watch(selectedDataLocales, () => executeQuery())
 
-const displayedData = ref<string[]>([])
+const displayedData = ref<string[]>(props.data?.displayedData ? props.data.displayedData : [])
 watch(displayedData, (newValue, oldValue) => {
     updateDisplayedGridHeaders()
 
@@ -98,10 +104,10 @@ onBeforeMount(() => {
     // note: we can't use async/await here, because that would make this component async which currently doesn't seem to work
     // properly in combination with dynamic <component> rendering and tabs
 
-    dataGridConsoleService.getDataLocales(props.dataPointer)
+    dataGridConsoleService.getDataLocales(props.params.dataPointer)
         .then(dl => {
             dataLocales = dl
-            return dataGridConsoleService.getEntityPropertyKeys(props.dataPointer)
+            return dataGridConsoleService.getEntityPropertyKeys(props.params.dataPointer)
         })
         .then(ep => {
             entityPropertyKeys = ep.map(it => it.toString())
@@ -111,6 +117,9 @@ onBeforeMount(() => {
             gridHeaders = gh
             preselectEntityProperties()
             initialized.value = true
+            if (props.params.executeOnOpen) {
+                executeQuery()
+            }
         })
         .catch(error => {
             toaster.error(error)
@@ -122,7 +131,7 @@ async function initializeGridHeaders(entityProperties: string[]): Promise<Map<st
     for (const property of entityProperties) {
         let sortable: boolean
         try {
-            sortable = await dataGridConsoleService.isEntityPropertySortable(props.dataPointer, property)
+            sortable = await dataGridConsoleService.isEntityPropertySortable(props.params.dataPointer, property)
         } catch (error: any) {
             toaster.error(error)
             sortable = false
@@ -150,6 +159,11 @@ async function updateDisplayedGridHeaders(): Promise<void> {
 }
 
 function preselectEntityProperties(): void {
+    if (displayedData.value.length > 0) {
+        // already preselected by initiator
+        return
+    }
+
     const primaryKeyProperty = EntityPropertyKey.entity(StaticEntityProperties.PrimaryKey).toString()
     const parentProperty = EntityPropertyKey.entity(StaticEntityProperties.Parent).toString()
     const localesProperty = EntityPropertyKey.entity(StaticEntityProperties.Locales).toString()
@@ -187,7 +201,7 @@ async function gridUpdated({ page, itemsPerPage, sortBy }: { page: number, items
     pageNumber.value = page
     pageSize.value = itemsPerPage
     try {
-        orderByCode.value = await dataGridConsoleService.buildOrderByFromGridColumns(props.dataPointer, selectedQueryLanguage.value[0], sortBy)
+        orderByCode.value = await dataGridConsoleService.buildOrderByFromGridColumns(props.params.dataPointer, selectedQueryLanguage.value[0], sortBy)
     } catch (error: any) {
         toaster.error(error)
     }
@@ -200,7 +214,7 @@ async function executeQuery(): Promise<void> {
 
     try {
         const result: QueryResult = await dataGridConsoleService.executeQuery(
-            props.dataPointer,
+            props.params.dataPointer,
             selectedQueryLanguage.value[0],
             filterByCode.value,
             orderByCode.value,

@@ -16,8 +16,8 @@ export class EvitaDBConnection {
     readonly restUrl: string
     readonly gqlUrl: string
 
-    constructor(name: string, preconfigured: boolean, labApiUrl: string, restUrl: string, gqlUrl: string) {
-        this.id = uuidv4()
+    constructor(id: EvitaDBConnectionId | undefined, name: string, preconfigured: boolean, labApiUrl: string, restUrl: string, gqlUrl: string) {
+        this.id = id ? id : uuidv4()
         this.name = name
         this.preconfigured = preconfigured
         this.labApiUrl = this.normalizeApiUrl(labApiUrl)
@@ -26,7 +26,7 @@ export class EvitaDBConnection {
     }
 
     static fromJson(json: any, preconfigured: boolean): EvitaDBConnection {
-        return new EvitaDBConnection(json.name, preconfigured, json.labApiUrl, json.restUrl, json.gqlUrl)
+        return new EvitaDBConnection(json.id, json.name, preconfigured, json.labApiUrl, json.restUrl, json.gqlUrl)
     }
 
     private normalizeApiUrl(url: string): string {
@@ -65,7 +65,7 @@ export abstract class LabError extends Error {
     }
 
     protected constructor(name: string, connection: EvitaDBConnection | undefined, message: string, detail?: string) {
-        super(`${message}: ${detail}`)
+        super(detail ? `${message}: ${detail}` : message)
         this.name = name
         this.connection = connection
         this._detail = detail

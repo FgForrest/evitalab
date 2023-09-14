@@ -1,4 +1,4 @@
-import { TabRequest } from '@/model/editor/editor'
+import { TabRequest, VoidTabRequestComponentData } from '@/model/editor/editor'
 import { SchemaPointer, SchemaViewerDataPointer, SchemaViewerProps } from '@/model/editor/schema-viewer'
 import { EvitaDBConnection } from '@/model/lab'
 import { DefineComponent, markRaw } from 'vue'
@@ -7,7 +7,7 @@ import LabEditorSchemaViewer from '@/components/lab/editor/schema/LabEditorSchem
 /**
  * Creates new schema viewer tab.
  */
-export class SchemaViewerRequest extends TabRequest<SchemaViewerProps> {
+export class SchemaViewerRequest extends TabRequest<SchemaViewerProps, VoidTabRequestComponentData> {
     constructor(connection: EvitaDBConnection, schemaPointer: SchemaPointer) {
         super(
             `${schemaPointer.path().slice(-1)[0]} [${connection.name}]`,

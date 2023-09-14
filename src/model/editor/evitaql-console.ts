@@ -1,5 +1,5 @@
 import { EvitaDBConnection } from '@/model/lab'
-import { TabRequestComponentProps } from '@/model/editor/editor'
+import { ExecutableTabRequest, TabRequestComponentData, TabRequestComponentParams } from '@/model/editor/editor'
 
 /**
  * Points to concrete evitaDB EvitaQL instance
@@ -18,6 +18,14 @@ export class EvitaQLDataPointer {
 /**
  * Represents props of the LabEditorConsoleEvitaQL component.
  */
-export interface EvitaQLConsoleProps extends TabRequestComponentProps {
+export interface EvitaQLConsoleParams extends TabRequestComponentParams, ExecutableTabRequest {
     readonly dataPointer: EvitaQLDataPointer
+}
+
+/**
+ * Represents injectable/storable user data of the LabEditorConsoleEvitaQL component.
+ */
+export interface EvitaQLConsoleData extends TabRequestComponentData {
+    readonly query?: string
+    readonly variables?: string
 }

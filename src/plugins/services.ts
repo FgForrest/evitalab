@@ -3,6 +3,7 @@ import { Store } from 'vuex'
 import { State } from '@/store'
 import { LabService, key as labServiceKey } from '@/services/lab.service'
 import { EditorService, key as editorServiceKey } from '@/services/editor/editor.service'
+import { DemoSnippetResolver, key as demoSnippetResolverKey } from '@/services/editor/demo-snippet-resolver.service'
 import { GraphQLConsoleService, key as graphQLConsoleServiceKey } from '@/services/editor/graphql-console.service'
 import { DataGridConsoleService, key as dataGridServiceKey } from '@/services/editor/data-grid-console.service'
 import { EvitaQLConsoleService, key as evitaQLConsoleServiceKey } from '@/services/editor/evitaql-console.service'
@@ -19,6 +20,7 @@ export function registerServices(app: App, store: Store<State>): void {
 
     const labService: LabService = new LabService(store, evitaDBClient)
     const editorService: EditorService = new EditorService(store)
+    const demoSnippetResolver: DemoSnippetResolver = new DemoSnippetResolver(labService)
     const dataGridConsoleService: DataGridConsoleService = new DataGridConsoleService(labService, evitaDBClient, graphQLClient)
     const graphQLConsoleService: GraphQLConsoleService = new GraphQLConsoleService(labService, graphQLClient)
     const evitaQLConsoleService: EvitaQLConsoleService = new EvitaQLConsoleService(labService, evitaDBClient)
@@ -27,6 +29,7 @@ export function registerServices(app: App, store: Store<State>): void {
     app
         .provide(labServiceKey, labService)
         .provide(editorServiceKey, editorService)
+        .provide(demoSnippetResolverKey, demoSnippetResolver)
         .provide(dataGridServiceKey, dataGridConsoleService)
         .provide(graphQLConsoleServiceKey, graphQLConsoleService)
         .provide(evitaQLConsoleServiceKey, evitaQLConsoleService)
