@@ -25,7 +25,7 @@ jobs:
       # otherwise, read permission is required at least
       pull-requests: write
     outputs:
-      released_version: ${{ steps.create-release.outputs.tag_name }}
+      released_version: ${{ steps.create_release.outputs.tag_name }}
 
     runs-on: ubuntu-latest
 
