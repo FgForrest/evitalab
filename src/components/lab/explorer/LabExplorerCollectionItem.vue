@@ -4,7 +4,7 @@ import VTreeViewItem from '@/components/base/VTreeViewItem.vue'
 import { EvitaDBConnection } from '@/model/lab'
 import { inject, Ref, ref } from 'vue'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
-import { DataGridConsoleRequest } from '@/model/editor/data-grid-console-request'
+import { DataGridRequest } from '@/model/editor/data-grid-request'
 import { GraphQLConsoleRequest } from '@/model/editor/graphql-console-request'
 import { GraphQLInstanceType } from '@/model/editor/graphql-console'
 import { EvitaQLConsoleRequest } from '@/model/editor/evitaql-console-request'
@@ -44,7 +44,7 @@ const connection = inject<EvitaDBConnection>('connection') as EvitaDBConnection
 const catalogSchema = inject<Ref<CatalogSchema | undefined>>('catalogSchema') as Ref<CatalogSchema>
 
 function openDataGrid() {
-    editorService.createTabRequest(new DataGridConsoleRequest(
+    editorService.createTabRequest(new DataGridRequest(
         connection as EvitaDBConnection,
         catalogSchema.value.name,
         props.entitySchema.name

@@ -5,7 +5,7 @@ import {
     EntityPropertyType,
     QueryResult,
     StaticEntityProperties
-} from '@/model/editor/data-grid-console'
+} from '@/model/editor/data-grid'
 import { QueryLanguage, UnexpectedError } from '@/model/lab'
 import { QueryExecutor } from '@/services/editor/data-grid-console/query-executor'
 import { QueryBuilder } from '@/services/editor/data-grid-console/query-builder'

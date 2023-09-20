@@ -4,7 +4,7 @@ import {
     EntityPropertyKey,
     EntityPropertyType,
     StaticEntityProperties
-} from '@/model/editor/data-grid-console'
+} from '@/model/editor/data-grid'
 import { LabService } from '@/services/lab.service'
 import { AssociatedDataSchema, AttributeSchemaUnion, EntitySchema, ReferenceSchema } from '@/model/evitadb'
 import { UnexpectedError } from '@/model/lab'

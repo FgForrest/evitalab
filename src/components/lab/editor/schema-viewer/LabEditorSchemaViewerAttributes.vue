@@ -1,25 +1,25 @@
 <script setup lang="ts">
 import { SchemaViewerDataPointer } from '@/model/editor/schema-viewer'
-import LabEditorViewerReferencesItem from './LabEditorSchemaViewerReferencesItem.vue'
+import LabEditorViewerAttributesItem from './LabEditorSchemaViewerAttributesItem.vue'
 import LabEditorSchemaViewerContainerSection from './LabEditorSchemaViewerContainerSection.vue'
-import { ReferenceSchema } from '@/model/evitadb'
+import { AttributeSchemaUnion } from '@/model/evitadb'
 import LabEditorSchemaViewerContainerSectionList
-    from '@/components/lab/editor/schema/LabEditorSchemaViewerContainerSectionList.vue'
+    from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerContainerSectionList.vue'
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
-    references: ReferenceSchema[]
+    attributes: AttributeSchemaUnion[]
 }>()
 </script>
 
 <template>
-    <LabEditorSchemaViewerContainerSection name="References">
+    <LabEditorSchemaViewerContainerSection name="Attributes">
         <LabEditorSchemaViewerContainerSectionList
-            :items="references"
+            :items="attributes"
             :nameSupplier="item => item.name"
             v-slot="{ item }"
         >
-            <LabEditorViewerReferencesItem
+            <LabEditorViewerAttributesItem
                 :data-pointer="dataPointer"
                 :schema="item"
             />

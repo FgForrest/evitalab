@@ -1,13 +1,13 @@
 import { TabRequest } from '@/model/editor/editor'
 import { EvitaDBConnection } from '@/model/lab'
 import { DefineComponent, markRaw } from 'vue'
-import LabEditorConsoleDataGrid from '@/components/lab/editor/console/LabEditorConsoleDataGrid.vue'
-import { DataGridConsoleData, DataGridConsoleParams, DataGridDataPointer } from '@/model/editor/data-grid-console'
+import LabEditorDataGrid from '@/components/lab/editor/data-grid/LabEditorDataGrid.vue'
+import { DataGridConsoleData, DataGridConsoleParams, DataGridDataPointer } from '@/model/editor/data-grid'
 
 /**
  * Creates new data grid tab.
  */
-export class DataGridConsoleRequest extends TabRequest<DataGridConsoleParams, DataGridConsoleData> {
+export class DataGridRequest extends TabRequest<DataGridConsoleParams, DataGridConsoleData> {
 
     constructor(connection: EvitaDBConnection,
                 catalogName: string,
@@ -17,7 +17,7 @@ export class DataGridConsoleRequest extends TabRequest<DataGridConsoleParams, Da
         super(
             `${catalogName} - ${entityType} [${connection.name}]`,
             'mdi-table',
-            markRaw(LabEditorConsoleDataGrid as DefineComponent<any, any, any>),
+            markRaw(LabEditorDataGrid as DefineComponent<any, any, any>),
             {
                 dataPointer: new DataGridDataPointer(connection, catalogName, entityType),
                 executeOnOpen

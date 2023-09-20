@@ -5,7 +5,7 @@ import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
 import { EntitySchema } from '@/model/evitadb'
 import { UnexpectedError } from '@/model/lab'
 import LabEditorSchemaViewerContainerSectionListItem
-    from '@/components/lab/editor/schema/LabEditorSchemaViewerContainerSectionListItem.vue'
+    from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerContainerSectionListItem.vue'
 
 const editorService: EditorService = useEditorService()
 

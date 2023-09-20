@@ -3,12 +3,13 @@ import { SchemaViewerProps } from '@/model/editor/schema-viewer'
 import { ref } from 'vue'
 import { SchemaViewerService, useSchemaViewerService } from '@/services/editor/schema-viewer.service'
 import { Toaster, useToaster } from '@/services/editor/toaster'
-import { TabComponentProps, VoidTabRequestComponentData } from '@/model/editor/editor'
+import { TabComponentEvents, TabComponentProps, VoidTabRequestComponentData } from '@/model/editor/editor'
 
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
 const toaster: Toaster = useToaster()
 
 const props = defineProps<TabComponentProps<SchemaViewerProps, VoidTabRequestComponentData>>()
+const emit = defineEmits<TabComponentEvents>()
 
 const schemaLoaded = ref<boolean>(false)
 const schema = ref<any>()
@@ -19,11 +20,15 @@ schemaViewerService.getSchema(props.params.dataPointer)
     .then(s => {
         schema.value = s
         schemaLoaded.value = true
+        emit('ready')
     })
 </script>
 
 <template>
-    <div class="schema-viewer">
+    <div
+        v-if="schemaLoaded"
+        class="schema-viewer"
+    >
         <VToolbar
             density="compact"
             elevation="2"
@@ -45,14 +50,10 @@ schemaViewerService.getSchema(props.params.dataPointer)
 
         <VSheet class="schema-viewer__body">
             <component
-                v-if="schemaLoaded"
                 :is="params.dataPointer.schemaPointer.component()"
                 :data-pointer="params.dataPointer"
                 :schema="schema"
             />
-            <span v-else>
-                Loading...
-            </span>
         </VSheet>
     </div>
 </template>

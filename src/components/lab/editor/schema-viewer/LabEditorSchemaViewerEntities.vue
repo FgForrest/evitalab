@@ -4,7 +4,7 @@ import LabEditorSchemaViewerEntitiesItem from './LabEditorSchemaViewerEntitiesIt
 import LabEditorSchemaViewerContainerSection from './LabEditorSchemaViewerContainerSection.vue'
 import { EntitySchema } from '@/model/evitadb'
 import LabEditorSchemaViewerContainerSectionList
-    from '@/components/lab/editor/schema/LabEditorSchemaViewerContainerSectionList.vue'
+    from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerContainerSectionList.vue'
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,

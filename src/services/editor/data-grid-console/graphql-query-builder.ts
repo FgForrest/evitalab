@@ -3,7 +3,7 @@ import {
     DataGridDataPointer,
     EntityPropertyKey,
     EntityPropertyType
-} from '@/model/editor/data-grid-console'
+} from '@/model/editor/data-grid'
 import { LabService } from '@/services/lab.service'
 import { AssociatedDataSchema, AttributeSchemaUnion, EntitySchema } from '@/model/evitadb'
 import { UnexpectedError } from '@/model/lab'

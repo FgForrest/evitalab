@@ -1,6 +1,6 @@
 import { TabRequest } from '@/model/editor/editor'
 import { EvitaDBConnection } from '@/model/lab'
-import LabEditorConsoleGraphQL from '@/components/lab/editor/console/LabEditorConsoleGraphQL.vue'
+import LabEditorGraphQLConsole from '@/components/lab/editor/graphql-console/LabEditorGraphQLConsole.vue'
 import {
     GraphQLConsoleData,
     GraphQLConsoleParams,
@@ -22,7 +22,7 @@ export class GraphQLConsoleRequest extends TabRequest<GraphQLConsoleParams, Grap
         super(
             (instanceType === GraphQLInstanceType.SYSTEM ? instanceType : `${catalogName} - ${instanceType}`) +  ` [${connection.name}]`,
             'mdi-graphql',
-            markRaw(LabEditorConsoleGraphQL as DefineComponent<any, any, any>),
+            markRaw(LabEditorGraphQLConsole as DefineComponent<any, any, any>),
             {
                 instancePointer: new GraphQLInstancePointer(connection, catalogName, instanceType),
                 executeOnOpen

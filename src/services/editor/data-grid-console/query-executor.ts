@@ -1,4 +1,4 @@
-import { DataGridDataPointer, QueryResult } from '@/model/editor/data-grid-console'
+import { DataGridDataPointer, QueryResult } from '@/model/editor/data-grid'
 import { LabService } from '@/services/lab.service'
 
 /**

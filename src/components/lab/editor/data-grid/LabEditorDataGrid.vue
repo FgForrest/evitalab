@@ -14,7 +14,7 @@ import {
     EntityPropertyKey,
     QueryResult,
     StaticEntityProperties
-} from '@/model/editor/data-grid-console'
+} from '@/model/editor/data-grid'
 import { Extension } from '@codemirror/state'
 import { DataGridConsoleService, useDataGridConsoleService } from '@/services/editor/data-grid-console.service'
 import CodemirrorOneLine from '@/components/base/CodemirrorOneLine.vue'

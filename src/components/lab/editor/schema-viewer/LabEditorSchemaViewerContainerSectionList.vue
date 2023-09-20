@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import LabEditorSchemaViewerContainerSectionListItem
-    from '@/components/lab/editor/schema/LabEditorSchemaViewerContainerSectionListItem.vue'
+    from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerContainerSectionListItem.vue'
 
 const props = defineProps<{
     items: any[],

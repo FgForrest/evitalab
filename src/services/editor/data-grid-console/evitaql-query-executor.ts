@@ -5,7 +5,7 @@ import {
     EntityPropertyType, FlatEntity,
     QueryResult,
     StaticEntityProperties
-} from '@/model/editor/data-grid-console'
+} from '@/model/editor/data-grid'
 import { EvitaDBClient } from '@/services/evitadb-client'
 import { Response } from '@/model/evitadb'
 

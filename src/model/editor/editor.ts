@@ -79,3 +79,13 @@ export interface ExecutableTabRequest extends TabRequestComponentParams {
  * Represents injectable/storable data of a component that doesn't support any user data.
  */
 export interface VoidTabRequestComponentData extends TabRequestComponentData {}
+
+/**
+ * Represents basic events every tab component should emit.
+ */
+export interface TabComponentEvents {
+    /**
+     * Emitted when the tab component is ready to be used.
+     */
+    (e: 'ready'): void
+}

@@ -5,7 +5,7 @@ import { UnexpectedError } from '@/model/lab'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
 import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
 import LabEditorSchemaViewerContainerSectionListItem
-    from '@/components/lab/editor/schema/LabEditorSchemaViewerContainerSectionListItem.vue'
+    from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerContainerSectionListItem.vue'
 
 const editorService: EditorService = useEditorService()
 

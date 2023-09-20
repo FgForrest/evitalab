@@ -1,100 +1,65 @@
 <script setup lang="ts">
 /**
- * GraphQL console. Allows to execute GraphQL queries against a evitaDB instance.
+ * EvitaQL console. Allows to execute EvitaQL queries against a evitaDB instance.
  */
 
-import { Pane, Splitpanes } from 'splitpanes'
+import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 
-import { Extension } from '@codemirror/state'
-import { graphql } from 'cm6-graphql'
+import { Extension } from '@codemirror/state';
 import { json } from '@codemirror/lang-json'
 
-import { onBeforeMount, ref } from 'vue'
-import { GraphQLConsoleService, useGraphQLConsoleService } from '@/services/editor/graphql-console.service'
-import { GraphQLSchema, printSchema } from 'graphql'
-import { GraphQLConsoleData, GraphQLConsoleParams, GraphQLInstanceType } from '@/model/editor/graphql-console'
+import { ref } from 'vue'
 import CodemirrorFull from '@/components/base/CodemirrorFull.vue'
+import { EvitaQLConsoleService, useEvitaQLConsoleService } from '@/services/editor/evitaql-console.service'
+import { EvitaQLConsoleData, EvitaQLConsoleParams } from '@/model/editor/evitaql-console'
 import { Toaster, useToaster } from '@/services/editor/toaster'
-import { TabComponentProps } from '@/model/editor/editor'
+import { TabComponentEvents, TabComponentProps } from '@/model/editor/editor'
 
-const graphQLConsoleService: GraphQLConsoleService = useGraphQLConsoleService()
+const evitaQLConsoleService: EvitaQLConsoleService = useEvitaQLConsoleService()
 const toaster: Toaster = useToaster()
 
-const props = defineProps<TabComponentProps<GraphQLConsoleParams, GraphQLConsoleData>>()
+const props = defineProps<TabComponentProps<EvitaQLConsoleParams, EvitaQLConsoleData>>()
+const emit = defineEmits<TabComponentEvents>()
 
-const path = ref<string[]>([])
-if (props.params.instancePointer.instanceType !== GraphQLInstanceType.SYSTEM) {
-    path.value.push(props.params.instancePointer.catalogName)
-}
-path.value.push(props.params.instancePointer.instanceType) // todo lho i18n
+const path = ref<string[]>([
+    props.params.dataPointer.catalogName
+])
 const editorTab = ref<string>('query')
 
-const graphQLSchema = ref<GraphQLSchema>()
-
-const queryCode = ref<string>(props.data?.query ? props.data.query : `# Write your GraphQL query for catalog ${props.params.instancePointer.catalogName} here.\n`)
-const queryExtensions: Extension[] = []
+const queryCode = ref<string>(props.data?.query ? props.data.query : `// Write your EvitaQL query for catalog ${props.params.dataPointer.catalogName} here.\n`)
+const queryExtensions = ref<any[]>([])
 
 const variablesCode = ref<string>(props.data?.variables ? props.data.variables : '{\n  \n}')
 const variablesExtensions: Extension[] = [json()]
 
-const schemaEditorInitialized = ref<boolean>(false)
-const schemaCode = ref<string>('')
-const schemaExtensions: Extension[] = [graphql()]
-
 const resultCode = ref<string>('')
 const resultExtensions: Extension[] = [json()]
 
-const initialized = ref<boolean>(false)
-
-onBeforeMount(() => {
-    graphQLConsoleService.getGraphQLSchema(props.params.instancePointer)
-        .then(schema => {
-            graphQLSchema.value = schema
-            queryExtensions.push(graphql(schema))
-            initialized.value = true
-            if (props.params.executeOnOpen) {
-                executeQuery()
-            }
-        })
-        .catch(error => {
-            toaster.error(error)
-        })
-})
-
 async function executeQuery(): Promise<void> {
     try {
-        resultCode.value = await graphQLConsoleService.executeGraphQLQuery(props.params.instancePointer, queryCode.value, JSON.parse(variablesCode.value))
+        resultCode.value = await evitaQLConsoleService.executeEvitaQLQuery(props.params.dataPointer, queryCode.value, JSON.parse(variablesCode.value))
     } catch (error: any) {
         toaster.error(error)
     }
 }
 
-function initializeSchemaEditor(): void {
-    if (!schemaEditorInitialized.value) {
-        if (graphQLSchema.value) {
-            schemaCode.value = printSchema(graphQLSchema.value as GraphQLSchema)
-            schemaEditorInitialized.value = true
-        } else {
-            schemaCode.value = ''
-        }
-    }
-}
+emit('ready')
 
+if (props.params.executeOnOpen) {
+    executeQuery()
+}
 </script>
 
 <template>
-    <div
-        v-if="initialized"
-        class="graphql-editor"
-    >
+    <div class="evitaql-editor">
         <VToolbar
             density="compact"
             elevation="2"
-            class="graphql-editor__header"
+            class="evitaql-editor__header"
         >
             <VAppBarNavIcon
-                icon="mdi-graphql"
+                icon="mdi-console"
                 :disabled="true"
                 style="opacity: 1"
             />
@@ -107,17 +72,6 @@ function initializeSchemaEditor(): void {
             </VToolbarTitle>
 
             <template #append>
-                <VBtn
-                    icon
-                    density="compact"
-                    class="mr-3"
-                >
-                    <VIcon>mdi-information</VIcon>
-                    <VTooltip activator="parent">
-                        GraphQL API instance details
-                    </VTooltip>
-                </VBtn>
-
                 <!-- todo lho primary color? -->
                 <VBtn
                     icon
@@ -134,12 +88,12 @@ function initializeSchemaEditor(): void {
             </template>
         </VToolbar>
 
-        <div class="graphql-editor__body">
-            <VSheet class="graphql-editor-query-sections">
+        <div class="evitaql-editor__body">
+            <VSheet class="evitaql-editor-query-sections">
                 <VTabs
                     v-model="editorTab"
                     direction="vertical"
-                    class="graphql-editor-query-sections__tab"
+                    class="evitaql-editor-query-sections__tab"
                 >
                     <VTab value="query">
                         <VIcon>mdi-database-search</VIcon>
@@ -153,19 +107,13 @@ function initializeSchemaEditor(): void {
                             Variables
                         </VTooltip>
                     </VTab>
-                    <VTab value="schema">
-                        <VIcon>mdi-file-code</VIcon>
-                        <VTooltip activator="parent">
-                            Schema
-                        </VTooltip>
-                    </VTab>
                 </VTabs>
 
                 <VDivider />
             </VSheet>
 
             <Splitpanes vertical>
-                <Pane class="graphql-editor-query">
+                <Pane class="evitaql-editor-query">
                     <VWindow
                         v-model="editorTab"
                         direction="vertical"
@@ -185,18 +133,6 @@ function initializeSchemaEditor(): void {
                                 @execute="executeQuery"
                             />
                         </VWindowItem>
-
-                        <VWindowItem
-                            value="schema"
-                            @group:selected="initializeSchemaEditor"
-                        >
-                            <CodemirrorFull
-                                v-model="schemaCode"
-                                read-only
-                                :additional-extensions="schemaExtensions"
-                                style="height: 100%"
-                            />
-                        </VWindowItem>
                     </VWindow>
                 </Pane>
 
@@ -211,13 +147,10 @@ function initializeSchemaEditor(): void {
             </Splitpanes>
         </div>
     </div>
-    <div v-else>
-        Loading...
-    </div>
 </template>
 
 <style lang="scss" scoped>
-.graphql-editor {
+.evitaql-editor {
     display: grid;
     grid-template-rows: 3rem 1fr;
 
@@ -231,7 +164,7 @@ function initializeSchemaEditor(): void {
     }
 }
 
-.graphql-editor-query {
+.evitaql-editor-query {
     & :deep(.v-window) {
         // we need to override the default tab window styles used in LabEditor
         position: absolute;
@@ -242,7 +175,7 @@ function initializeSchemaEditor(): void {
     }
 }
 
-.graphql-editor-query-sections {
+.evitaql-editor-query-sections {
     display: flex;
     width: 3rem;
 

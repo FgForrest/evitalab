@@ -5,7 +5,7 @@ import {
     EntityPropertyType, FlatEntity,
     QueryResult,
     StaticEntityProperties
-} from '@/model/editor/data-grid-console'
+} from '@/model/editor/data-grid'
 import { GraphQLClient } from '@/services/graphql-client'
 
 /**

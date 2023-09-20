@@ -2,9 +2,10 @@
 import CodemirrorFull from '@/components/base/CodemirrorFull.vue'
 import { ErrorViewerProps } from '@/model/editor/error-viewer'
 import { computed } from 'vue'
-import { TabComponentProps, VoidTabRequestComponentData } from '@/model/editor/editor'
+import { TabComponentEvents, TabComponentProps, VoidTabRequestComponentData } from '@/model/editor/editor'
 
 const props = defineProps<TabComponentProps<ErrorViewerProps, VoidTabRequestComponentData>>()
+const emit = defineEmits<TabComponentEvents>()
 
 const title = computed(() => {
     return props.params.error.name
@@ -16,6 +17,8 @@ const detail = computed(() => {
     }
     return props.params.error.detail
 })
+
+emit('ready')
 </script>
 
 <template>

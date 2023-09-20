@@ -1,12 +1,12 @@
 import { EvitaDBConnection } from '@/model/lab'
 import { TabRequestComponentParams } from '@/model/editor/editor'
-import LabEditorSchemaViewerCatalog from '@/components/lab/editor/schema/LabEditorSchemaViewerCatalog.vue'
-import LabEditorSchemaViewerEntity from '@/components/lab/editor/schema/LabEditorSchemaViewerEntity.vue'
+import LabEditorSchemaViewerCatalog from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerCatalog.vue'
+import LabEditorSchemaViewerEntity from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerEntity.vue'
 import { DefineComponent, markRaw, Raw } from 'vue'
-import LabEditorSchemaViewerAttribute from '@/components/lab/editor/schema/LabEditorSchemaViewerAttribute.vue'
+import LabEditorSchemaViewerAttribute from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerAttribute.vue'
 import LabEditorSchemaViewerAssociatedDatum
-    from '@/components/lab/editor/schema/LabEditorSchemaViewerAssociatedDatum.vue'
-import LabEditorSchemaViewerReference from '@/components/lab/editor/schema/LabEditorSchemaViewerReference.vue'
+    from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerAssociatedDatum.vue'
+import LabEditorSchemaViewerReference from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerReference.vue'
 
 /**
  * Points to concrete evitaDB schema (catalog, entity, attributes, ...)

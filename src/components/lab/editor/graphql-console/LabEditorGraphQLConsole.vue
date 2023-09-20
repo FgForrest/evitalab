@@ -1,62 +1,103 @@
 <script setup lang="ts">
 /**
- * EvitaQL console. Allows to execute EvitaQL queries against a evitaDB instance.
+ * GraphQL console. Allows to execute GraphQL queries against a evitaDB instance.
  */
 
-import { Splitpanes, Pane } from 'splitpanes'
+import { Pane, Splitpanes } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 
-import { Extension } from '@codemirror/state';
+import { Extension } from '@codemirror/state'
+import { graphql } from 'cm6-graphql'
 import { json } from '@codemirror/lang-json'
 
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
+import { GraphQLConsoleService, useGraphQLConsoleService } from '@/services/editor/graphql-console.service'
+import { GraphQLSchema, printSchema } from 'graphql'
+import { GraphQLConsoleData, GraphQLConsoleParams, GraphQLInstanceType } from '@/model/editor/graphql-console'
 import CodemirrorFull from '@/components/base/CodemirrorFull.vue'
-import { EvitaQLConsoleService, useEvitaQLConsoleService } from '@/services/editor/evitaql-console.service'
-import { EvitaQLConsoleData, EvitaQLConsoleParams } from '@/model/editor/evitaql-console'
 import { Toaster, useToaster } from '@/services/editor/toaster'
-import { TabComponentProps } from '@/model/editor/editor'
+import { TabComponentEvents, TabComponentProps } from '@/model/editor/editor'
 
-const evitaQLConsoleService: EvitaQLConsoleService = useEvitaQLConsoleService()
+const graphQLConsoleService: GraphQLConsoleService = useGraphQLConsoleService()
 const toaster: Toaster = useToaster()
 
-const props = defineProps<TabComponentProps<EvitaQLConsoleParams, EvitaQLConsoleData>>()
+const props = defineProps<TabComponentProps<GraphQLConsoleParams, GraphQLConsoleData>>()
+const emit = defineEmits<TabComponentEvents>()
 
-const path = ref<string[]>([
-    props.params.dataPointer.catalogName
-])
+const path = ref<string[]>([])
+if (props.params.instancePointer.instanceType !== GraphQLInstanceType.SYSTEM) {
+    path.value.push(props.params.instancePointer.catalogName)
+}
+path.value.push(props.params.instancePointer.instanceType) // todo lho i18n
 const editorTab = ref<string>('query')
 
-const queryCode = ref<string>(props.data?.query ? props.data.query : `// Write your EvitaQL query for catalog ${props.params.dataPointer.catalogName} here.\n`)
-const queryExtensions = ref<any[]>([])
+const graphQLSchema = ref<GraphQLSchema>()
+
+const queryCode = ref<string>(props.data?.query ? props.data.query : `# Write your GraphQL query for catalog ${props.params.instancePointer.catalogName} here.\n`)
+const queryExtensions: Extension[] = []
 
 const variablesCode = ref<string>(props.data?.variables ? props.data.variables : '{\n  \n}')
 const variablesExtensions: Extension[] = [json()]
 
+const schemaEditorInitialized = ref<boolean>(false)
+const schemaCode = ref<string>('')
+const schemaExtensions: Extension[] = [graphql()]
+
 const resultCode = ref<string>('')
 const resultExtensions: Extension[] = [json()]
 
+const initialized = ref<boolean>(false)
+
+onBeforeMount(() => {
+    graphQLConsoleService.getGraphQLSchema(props.params.instancePointer)
+        .then(schema => {
+            graphQLSchema.value = schema
+            queryExtensions.push(graphql(schema))
+            initialized.value = true
+            emit('ready')
+
+            if (props.params.executeOnOpen) {
+                executeQuery()
+            }
+        })
+        .catch(error => {
+            toaster.error(error)
+        })
+})
+
 async function executeQuery(): Promise<void> {
     try {
-        resultCode.value = await evitaQLConsoleService.executeEvitaQLQuery(props.params.dataPointer, queryCode.value, JSON.parse(variablesCode.value))
+        resultCode.value = await graphQLConsoleService.executeGraphQLQuery(props.params.instancePointer, queryCode.value, JSON.parse(variablesCode.value))
     } catch (error: any) {
         toaster.error(error)
     }
 }
 
-if (props.params.executeOnOpen) {
-    executeQuery()
+function initializeSchemaEditor(): void {
+    if (!schemaEditorInitialized.value) {
+        if (graphQLSchema.value) {
+            schemaCode.value = printSchema(graphQLSchema.value as GraphQLSchema)
+            schemaEditorInitialized.value = true
+        } else {
+            schemaCode.value = ''
+        }
+    }
 }
+
 </script>
 
 <template>
-    <div class="evitaql-editor">
+    <div
+        v-if="initialized"
+        class="graphql-editor"
+    >
         <VToolbar
             density="compact"
             elevation="2"
-            class="evitaql-editor__header"
+            class="graphql-editor__header"
         >
             <VAppBarNavIcon
-                icon="mdi-console"
+                icon="mdi-graphql"
                 :disabled="true"
                 style="opacity: 1"
             />
@@ -69,6 +110,17 @@ if (props.params.executeOnOpen) {
             </VToolbarTitle>
 
             <template #append>
+                <VBtn
+                    icon
+                    density="compact"
+                    class="mr-3"
+                >
+                    <VIcon>mdi-information</VIcon>
+                    <VTooltip activator="parent">
+                        GraphQL API instance details
+                    </VTooltip>
+                </VBtn>
+
                 <!-- todo lho primary color? -->
                 <VBtn
                     icon
@@ -85,12 +137,12 @@ if (props.params.executeOnOpen) {
             </template>
         </VToolbar>
 
-        <div class="evitaql-editor__body">
-            <VSheet class="evitaql-editor-query-sections">
+        <div class="graphql-editor__body">
+            <VSheet class="graphql-editor-query-sections">
                 <VTabs
                     v-model="editorTab"
                     direction="vertical"
-                    class="evitaql-editor-query-sections__tab"
+                    class="graphql-editor-query-sections__tab"
                 >
                     <VTab value="query">
                         <VIcon>mdi-database-search</VIcon>
@@ -104,13 +156,19 @@ if (props.params.executeOnOpen) {
                             Variables
                         </VTooltip>
                     </VTab>
+                    <VTab value="schema">
+                        <VIcon>mdi-file-code</VIcon>
+                        <VTooltip activator="parent">
+                            Schema
+                        </VTooltip>
+                    </VTab>
                 </VTabs>
 
                 <VDivider />
             </VSheet>
 
             <Splitpanes vertical>
-                <Pane class="evitaql-editor-query">
+                <Pane class="graphql-editor-query">
                     <VWindow
                         v-model="editorTab"
                         direction="vertical"
@@ -130,6 +188,18 @@ if (props.params.executeOnOpen) {
                                 @execute="executeQuery"
                             />
                         </VWindowItem>
+
+                        <VWindowItem
+                            value="schema"
+                            @group:selected="initializeSchemaEditor"
+                        >
+                            <CodemirrorFull
+                                v-model="schemaCode"
+                                read-only
+                                :additional-extensions="schemaExtensions"
+                                style="height: 100%"
+                            />
+                        </VWindowItem>
                     </VWindow>
                 </Pane>
 
@@ -147,7 +217,7 @@ if (props.params.executeOnOpen) {
 </template>
 
 <style lang="scss" scoped>
-.evitaql-editor {
+.graphql-editor {
     display: grid;
     grid-template-rows: 3rem 1fr;
 
@@ -161,7 +231,7 @@ if (props.params.executeOnOpen) {
     }
 }
 
-.evitaql-editor-query {
+.graphql-editor-query {
     & :deep(.v-window) {
         // we need to override the default tab window styles used in LabEditor
         position: absolute;
@@ -172,7 +242,7 @@ if (props.params.executeOnOpen) {
     }
 }
 
-.evitaql-editor-query-sections {
+.graphql-editor-query-sections {
     display: flex;
     width: 3rem;
 
