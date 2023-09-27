@@ -164,7 +164,7 @@ export class LabService {
     private async fetchCatalogSchema(connection: EvitaDBConnection, catalogName: string): Promise<CatalogSchema> {
         const catalog: Catalog = await this.getCatalog(connection, catalogName)
 
-        const fetchedCatalogSchema: CatalogSchema = await this.evitaDBClient.getCatalogSchema(connection, catalog.name)
+        const fetchedCatalogSchema: CatalogSchema = await this.evitaDBClient.getCatalogSchema(connection, catalog.nameVariants.kebabCase)
 
         this.store.commit(
             'lab/putCatalogSchema',

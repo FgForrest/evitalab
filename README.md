@@ -16,7 +16,7 @@
   &nbsp;
   <a href="https://discord.gg/VsNBWxgmSw" title="Discord"><img src="https://img.shields.io/discord/999338870996992223?color=5865f2"/></a>
   &nbsp;
-  <a href="https://github.com/lukashornych/evitalab/blob/master/LICENSE" title="License"><img src="https://img.shields.io/badge/license-MIT-blue.svg"/></a>
+  <a href="https://github.com/lukashornych/evitalab/blob/master/LICENSE" title="License"><img src="https://img.shields.io/github/license/lukashornych/evitalab"/></a>
 </p>
 
 evitaLab aims to provide a user-friendly client for evitaDB database to easily browse data stored in the database.
