@@ -11,6 +11,7 @@ import LabExplorerConnectionRemoveDialog from './LabExplorerConnectionRemoveDial
 import { GraphQLConsoleRequest } from '@/model/editor/graphql-console-request'
 import { GraphQLInstanceType } from '@/model/editor/graphql-console'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
+import VTreeViewItemEmpty from '@/components/base/VTreeViewItemEmpty.vue'
 
 enum ActionType {
     OpenGraphQLSystemAPIConsole = 'open-graphql-system-api-console',
@@ -55,16 +56,20 @@ if (!labService.isReadOnly() && !props.connection.preconfigured) {
 }
 const removeConnectionDialogOpen = ref<boolean>(false)
 const catalogs = ref<Catalog[]>()
+const loading = ref<boolean>(false)
 
 async function loadCatalogs(): Promise<void> {
     if (catalogs.value !== undefined) {
         return
     }
+
+    loading.value = true
     try {
         catalogs.value = await labService.getCatalogs(props.connection)
     } catch (e: any) {
         toaster.error(e)
     }
+    loading.value = false
 }
 
 function handleAction(action: string, payload?: any) {
@@ -97,6 +102,7 @@ function handleAction(action: string, payload?: any) {
                 openable
                 :is-open="isOpen"
                 prepend-icon="mdi-server"
+                :loading="loading"
                 :actions="actions"
                 @click="loadCatalogs"
                 @click:action="handleAction"
@@ -108,11 +114,16 @@ function handleAction(action: string, payload?: any) {
         <div
             v-if="catalogs !== undefined"
         >
-            <LabExplorerCatalogItem
-                v-for="catalog in catalogs"
-                :key="catalog.name"
-                :catalog="catalog"
-            />
+            <template v-if="catalogs.length > 0">
+                <LabExplorerCatalogItem
+                    v-for="catalog in catalogs"
+                    :key="catalog.name"
+                    :catalog="catalog"
+                />
+            </template>
+            <template v-else>
+                <VTreeViewItemEmpty />
+            </template>
         </div>
 
         <LabExplorerConnectionRemoveDialog

@@ -12,6 +12,7 @@ import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
 import { CatalogSchemaPointer } from '@/model/editor/schema-viewer'
 import { Catalog, CatalogSchema } from '@/model/evitadb'
 import { Toaster, useToaster } from '@/services/editor/toaster'
+import VTreeViewItemEmpty from '@/components/base/VTreeViewItemEmpty.vue'
 
 enum ActionType {
     OpenEvitaQLConsole = 'open-evitaql-console',
@@ -63,16 +64,20 @@ const connection = inject('connection') as EvitaDBConnection
 
 const catalogSchema = ref<CatalogSchema>()
 provide<Ref<CatalogSchema | undefined>>('catalogSchema', catalogSchema)
+const loading = ref<boolean>(false)
 
 async function loadCatalogSchema(): Promise<void> {
     if (catalogSchema.value !== undefined || props.catalog.corrupted) {
         return
     }
+
+    loading.value = true
     try {
         catalogSchema.value = await labService.getCatalogSchema(connection, props.catalog.name)
     } catch (e: any) {
         toaster.error(e)
     }
+    loading.value = false
 }
 
 function handleAction(action: string) {
@@ -126,6 +131,7 @@ function handleAction(action: string) {
                 openable
                 :is-open="isOpen"
                 prepend-icon="mdi-book-open"
+                :loading="loading"
                 :actions="actions"
                 @click="loadCatalogSchema"
                 @click:action="handleAction"
@@ -149,11 +155,16 @@ function handleAction(action: string) {
         </template>
 
         <div v-if="!catalog.corrupted && catalogSchema !== undefined">
-            <LabExplorerCollectionItem
-                v-for="entitySchema in Object.values(catalogSchema.entitySchemas)"
-                :key="entitySchema.name"
-                :entity-schema="entitySchema"
-            />
+            <template v-if="Object.values(catalogSchema.entitySchemas).length > 0">
+                <LabExplorerCollectionItem
+                    v-for="entitySchema in Object.values(catalogSchema.entitySchemas)"
+                    :key="entitySchema.name"
+                    :entity-schema="entitySchema"
+                />
+            </template>
+            <template v-else>
+                <VTreeViewItemEmpty />
+            </template>
         </div>
     </VListGroup>
 </template>

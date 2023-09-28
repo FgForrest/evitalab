@@ -64,21 +64,23 @@ const state = (): LabState => {
         preconfiguredConnections = (JSON.parse(preconfiguredConnectionsCookie) as Array<any>)
                 .map(connection => EvitaDBConnection.fromJson(connection, true))
     }
+    // automatic demo connection configuration for easier development
+    if (import.meta.env.DEV) {
+        preconfiguredConnections.push(new EvitaDBConnection(
+            'demo',
+            'Demo',
+            false,
+            'https://demo.evitadb.io/lab/api',
+            'https://demo.evitadb.io:5555/rest',
+            'https://demo.evitadb.io:5555/gql'
+        ))
+    }
+
     // load user-defined connections from local storage
     const userConnections: EvitaDBConnection[] = storage.getItem(
         LabStorageVersionedItemType.Connections,
         (item: string) => JSON.parse(item) as EvitaDBConnection[]
     ) as EvitaDBConnection[]
-
-    // demo connection for easier debugging
-    // userConnections.push(new EvitaDBConnection(
-    //     'demo',
-    //     'Demo',
-    //     false,
-    //     'https://demo.evitadb.io/lab/api',
-    //     'https://demo.evitadb.io:5555/rest',
-    //     'https://demo.evitadb.io:5555/gql'
-    // ))
 
     return {
         storage,

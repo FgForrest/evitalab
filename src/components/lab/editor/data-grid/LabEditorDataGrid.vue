@@ -21,12 +21,13 @@ import CodemirrorOneLine from '@/components/base/CodemirrorOneLine.vue'
 import { QueryLanguage } from '@/model/lab'
 import CodemirrorFull from '@/components/base/CodemirrorFull.vue'
 import { Toaster, useToaster } from '@/services/editor/toaster'
-import { TabComponentProps } from '@/model/editor/editor'
+import { TabComponentEvents, TabComponentProps } from '@/model/editor/editor'
 
 const dataGridConsoleService: DataGridConsoleService = useDataGridConsoleService()
 const toaster: Toaster = useToaster()
 
 const props = defineProps<TabComponentProps<DataGridConsoleParams, DataGridConsoleData>>()
+const emit = defineEmits<TabComponentEvents>()
 
 // static data
 const path = ref<string[]>([
@@ -99,7 +100,7 @@ const propertyDetailValue = ref<string>('')
 
 const initialized = ref<boolean>(false)
 
-
+emit('ready')
 onBeforeMount(() => {
     // note: we can't use async/await here, because that would make this component async which currently doesn't seem to work
     // properly in combination with dynamic <component> rendering and tabs

@@ -3,13 +3,13 @@
  * Generic loading screen to display while a tab component is being initialized.
  */
 
-import VLoadingIcon from '@/components/base/VLoadingIcon.vue'
+import VLoadingCircular from '@/components/base/VLoadingCircular.vue'
 </script>
 
 <template>
     <div class="loading-screen">
         <div class="loading-screen-info">
-            <VLoadingIcon width="3rem" height="3rem"/>
+            <VLoadingCircular :size="48" />
             <span>Loading, please wait ...</span>
         </div>
     </div>

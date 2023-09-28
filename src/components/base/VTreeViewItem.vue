@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import VLoadingCircular from '@/components/base/VLoadingCircular.vue'
 
 export interface Props {
     openable?: boolean,
     isOpen?: boolean,
     prependIcon: string,
+    loading?: boolean,
     actions?: object[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
     openable: false,
     isOpen: false,
+    loading: false,
     actions: () => []
 })
 
@@ -47,11 +50,16 @@ function openActions(): void {
 
             </VIcon>
 
-            <VIcon>
+            <VLoadingCircular v-if="loading" />
+            <VIcon v-else>
                 {{ prependIcon }}
             </VIcon>
             <span class="text-truncate">
-                <slot />
+                <slot>
+                    <span class="text-disabled">
+                        No items found
+                    </span>
+                </slot>
             </span>
             <VMenu
                 v-if="actions && actions.length > 0"
