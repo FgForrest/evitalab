@@ -27,13 +27,23 @@ jobs:
       pull-requests: write
     outputs:
       release_id: ${{ steps.create_release.outputs.id }}
-      released_version: ${{ steps.create_release.outputs.tag_name }}
+      released_version: ${{ steps.release_version.outputs.version }}
 
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout sources
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Resolve new release version
+        id: release_version
+        uses: codacy/git-version@2.7.1
+        with:
+          minor-identifier: 'feat:'
+          major-identifier: '(breaking)' # this should be placed somewhere in the commit message like "feat: (breaking) some message"
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -44,6 +54,8 @@ jobs:
         run: npm install -g yarn && yarn install --frozen-lockfile
 
       - name: Build
+        env:
+          EVITALAB_BUILD_VERSION: ${{ steps.release_version.outputs.version }}
         run: yarn build
 
       - name: Include license in dist
@@ -67,6 +79,7 @@ jobs:
         id: create_release
         uses: release-drafter/release-drafter@v5
         with:
+          version: ${{ steps.release_version.outputs.version }}
           publish: true
 
       - name: Upload dist.zip to release
@@ -107,6 +120,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
+          build-args:
+            - EVITALAB_BUILD_VERSION=${{ needs.build-and-release.outputs.released_version }}
           context: .
           file: ./Dockerfile
           push: true

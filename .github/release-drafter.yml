@@ -24,18 +24,6 @@ autolabeler:
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 
-version-resolver:
-  major:
-    labels:
-      - 'release-major'
-  minor:
-    labels:
-      - 'release-minor'
-  patch:
-    labels:
-      - 'release-patch'
-  default: patch
-
 template: |
   ## Changes
 

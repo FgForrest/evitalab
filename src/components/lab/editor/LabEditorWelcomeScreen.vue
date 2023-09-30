@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import project from '../../../../package.json'
+
+const version: string = import.meta.env.VITE_BUILD_VERSION || '?'
 
 function openEvitaDBDocumentation() {
     window.open('https://evitadb.io/documentation', '_blank')
@@ -23,8 +24,7 @@ function openGitHubIssues() {
         <div class="editor-welcome-screen-hero">
             <header class="editor-welcome-screen-hero__header">
                 <h1 class="text-h2">evitaLab</h1>
-                <!-- todo lho we now don't have version locally, only in git, what to do about it?-->
-<!--                <span class="text-caption">alpha {{ project.version }}</span>-->
+                <span class="text-caption">alpha {{ version }}</span>
                 <p class="text-subtitle-1 mt-2">evitaDB web client</p>
             </header>
 
