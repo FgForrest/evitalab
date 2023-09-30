@@ -120,8 +120,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          build-args:
-            - EVITALAB_BUILD_VERSION=${{ needs.build-and-release.outputs.released_version }}
+          build-args: EVITALAB_BUILD_VERSION=${{ needs.build-and-release.outputs.released_version }}
           context: .
           file: ./Dockerfile
           push: true
