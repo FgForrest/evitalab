@@ -42,6 +42,7 @@ jobs:
         id: release_version
         uses: codacy/git-version@2.7.1
         with:
+          prefix: 'v'
           minor-identifier: 'feat:'
           major-identifier: '(breaking)' # this should be placed somewhere in the commit message like "feat: (breaking) some message"
 
