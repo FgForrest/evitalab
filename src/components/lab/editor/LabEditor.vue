@@ -50,7 +50,7 @@ function closeTab(tabId: string) {
  */
 async function resolveDemoCodeSnippet(): Promise<TabRequest<any, any> | undefined> {
     const demoSnippetRequestSerialized: string | undefined = currentRoute.query.demoSnippetRequest as string | undefined
-    if (demoSnippetRequestSerialized === undefined) {
+    if (demoSnippetRequestSerialized == undefined) {
         return undefined
     }
 

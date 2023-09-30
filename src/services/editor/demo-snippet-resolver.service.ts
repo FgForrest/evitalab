@@ -28,7 +28,7 @@ export class DemoSnippetResolver {
      * Resolves input request into tab request.
      */
     async resolve(request: DemoSnippetRequest | undefined): Promise<TabRequest<any, any> | undefined> {
-        if (request === undefined) {
+        if (request == undefined) {
             return undefined
         }
 
@@ -41,7 +41,7 @@ export class DemoSnippetResolver {
         }
 
         const demoConnection: EvitaDBConnection | undefined = this.labService.getConnection(demoConnectionId)
-        if (demoConnection === undefined) {
+        if (demoConnection == undefined) {
             throw new UnexpectedError(undefined, `Demo connection '${demoConnectionId}' not found.`)
         }
 

@@ -39,7 +39,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
         for (const propertyKey of requiredData) {
 
             let group: string[] | undefined = groupedPropertyKeys.get(propertyKey.type)
-            if (group === undefined) {
+            if (group == undefined) {
                 group = []
                 groupedPropertyKeys.set(propertyKey.type, group)
             }
@@ -62,7 +62,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                     for (const property of properties) {
                         const attributeSchema: AttributeSchemaUnion | undefined = Object.values(entitySchema.attributes)
                             .find(attribute => attribute.nameVariants.camelCase === property)
-                        if (attributeSchema === undefined) {
+                        if (attributeSchema == undefined) {
                             throw new UnexpectedError(undefined, `Attribute ${property} not found in entity ${entitySchema.name}`)
                         }
                         if (!attributeSchema.localized || dataLocale !== undefined) {
@@ -82,7 +82,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                     for (const property of properties) {
                         const associatedDataSchema: AssociatedDataSchema | undefined = Object.values(entitySchema.associatedData)
                             .find(associatedData => associatedData.nameVariants.camelCase === property)
-                        if (associatedDataSchema === undefined) {
+                        if (associatedDataSchema == undefined) {
                             throw new UnexpectedError(undefined, `Associated data ${property} not found in entity ${entitySchema.name}`)
                         }
                         if (!associatedDataSchema.localized || dataLocale !== undefined) {

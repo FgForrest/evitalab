@@ -39,7 +39,7 @@ export class Toaster {
         }
 
         if (error instanceof LabError) {
-            if (error.detail === undefined) {
+            if (error.detail == undefined) {
                 this.toast.error(error.message)
             } else {
                 this.toast.error(

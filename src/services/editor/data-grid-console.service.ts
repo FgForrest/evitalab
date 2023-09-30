@@ -65,7 +65,7 @@ export class DataGridConsoleService {
             dataPointer,
             filterBy,
             orderBy,
-            dataLocale === undefined || dataLocale === 'none' ? undefined : dataLocale,
+            (dataLocale == undefined || dataLocale === 'none') ? undefined : dataLocale,
             requiredData.map(property => EntityPropertyKey.fromString(property)),
             pageNumber,
             pageSize
@@ -90,7 +90,7 @@ export class DataGridConsoleService {
             if (propertyKey.type === EntityPropertyType.Attributes) {
                 const attributeSchema: AttributeSchemaUnion | undefined = Object.values(entitySchema.attributes)
                     .find(attributeSchema => attributeSchema.nameVariants.camelCase === propertyKey.name)
-                if (attributeSchema === undefined) {
+                if (attributeSchema == undefined) {
                     throw new UnexpectedError(undefined, `Entity ${entitySchema.name} does not have attribute ${propertyKey.name}.`)
                 }
 
@@ -156,7 +156,7 @@ export class DataGridConsoleService {
 
         const attributeSchema: AttributeSchemaUnion | undefined = Object.values(entitySchema.attributes)
             .find(attributeSchema => attributeSchema.nameVariants.camelCase === propertyKey.name)
-        if (attributeSchema === undefined) {
+        if (attributeSchema == undefined) {
             throw new UnexpectedError(undefined, `Attribute ${propertyKey.name} not found in entity schema ${entitySchema.name}.`)
         }
         return attributeSchema.sortable
@@ -164,7 +164,7 @@ export class DataGridConsoleService {
 
     private getQueryBuilder(language: QueryLanguage): QueryBuilder {
         const queryBuilder: QueryBuilder | undefined = this.queryBuilders.get(language)
-        if (queryBuilder === undefined) {
+        if (queryBuilder == undefined) {
             throw new UnexpectedError(undefined, `Query builder for language ${language} is not registered.`)
         }
         return queryBuilder
@@ -172,7 +172,7 @@ export class DataGridConsoleService {
 
     private getQueryExecutor(language: QueryLanguage): QueryExecutor {
         const queryExecutor: QueryExecutor | undefined = this.queryExecutors.get(language)
-        if (queryExecutor === undefined) {
+        if (queryExecutor == undefined) {
             throw new UnexpectedError(undefined, `Query executor for language ${language} is not registered.`)
         }
         return queryExecutor

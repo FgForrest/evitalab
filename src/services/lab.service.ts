@@ -54,11 +54,11 @@ export class LabService {
 
     getCatalog = async (connection: EvitaDBConnection, catalogName: string): Promise<Catalog> => {
         let catalog: Catalog | undefined = this.store.getters['lab/getCatalog'](connection.id, catalogName)
-        if (catalog === undefined) {
+        if (catalog == undefined) {
             await this.fetchCatalogs(connection)
 
             catalog = this.store.getters['lab/getCatalog'](connection.id, catalogName)
-            if (catalog === undefined) {
+            if (catalog == undefined) {
                 throw new UnexpectedError(undefined, `Catalog ${catalogName} not found.`)
             }
         }
@@ -67,7 +67,7 @@ export class LabService {
 
     getCatalogs = async (connection: EvitaDBConnection): Promise<Catalog[]> => {
         let catalogs: Catalog[] | undefined = this.store.getters['lab/getCatalogs'](connection.id)
-        if (catalogs === undefined) {
+        if (catalogs == undefined) {
             catalogs = await this.fetchCatalogs(connection)
         }
         return catalogs
@@ -75,7 +75,7 @@ export class LabService {
 
     getCatalogSchema = async (connection: EvitaDBConnection, catalogName: string): Promise<CatalogSchema> => {
         let catalogSchema: CatalogSchema | undefined = this.store.getters['lab/getCatalogSchema'](connection.id, catalogName)
-        if (catalogSchema === undefined) {
+        if (catalogSchema == undefined) {
             catalogSchema = await this.fetchCatalogSchema(connection, catalogName)
         }
         return catalogSchema
@@ -83,10 +83,10 @@ export class LabService {
 
     getEntitySchema = async (connection: EvitaDBConnection, catalogName: string, entityType: string): Promise<EntitySchema> => {
         let entitySchema: EntitySchema | undefined = this.store.getters['lab/getEntitySchema'](connection.id, catalogName, entityType)
-        if (entitySchema === undefined) {
+        if (entitySchema == undefined) {
             await this.getCatalogSchema(connection, catalogName)
             entitySchema = this.store.getters['lab/getEntitySchema'](connection.id, catalogName, entityType)
-            if (entitySchema === undefined) {
+            if (entitySchema == undefined) {
                 throw new UnexpectedError(connection, `Entity ${entityType} not found.`)
             }
         }
@@ -97,7 +97,7 @@ export class LabService {
         const catalogSchema: CatalogSchema = await this.getCatalogSchema(connection, catalogName)
         const attributeSchema: GlobalAttributeSchema | undefined = Object.values(catalogSchema.attributes)
             .find(attribute => attribute.name === attributeName)
-        if (attributeSchema === undefined) {
+        if (attributeSchema == undefined) {
             throw new UnexpectedError(connection, `Attribute '${attributeName}' not found in catalog '${catalogName}'.`)
         }
         return attributeSchema
@@ -107,7 +107,7 @@ export class LabService {
         const entitySchema: EntitySchema = await this.getEntitySchema(connection, catalogName, entityType)
         const attributeSchema: AttributeSchemaUnion | undefined = Object.values(entitySchema.attributes)
             .find(attribute => attribute.name === attributeName)
-        if (attributeSchema === undefined) {
+        if (attributeSchema == undefined) {
             throw new UnexpectedError(connection, `Attribute '${attributeName}' not found in entity '${entityType}' in catalog '${catalogName}'.`)
         }
         return attributeSchema
@@ -121,7 +121,7 @@ export class LabService {
         const referenceSchema: ReferenceSchema = await this.getReferenceSchema(connection, catalogName, entityType, referenceName)
         const attributeSchema: AttributeSchemaUnion | undefined = Object.values(referenceSchema.attributes)
             .find(attribute => attribute.name === attributeName)
-        if (attributeSchema === undefined) {
+        if (attributeSchema == undefined) {
             throw new UnexpectedError(connection, `Attribute '${attributeName}' not found in reference '${referenceName}' in entity '${entityType}' in catalog '${catalogName}'.`)
         }
         return attributeSchema
@@ -131,7 +131,7 @@ export class LabService {
         const entitySchema: EntitySchema = await this.getEntitySchema(connection, catalogName, entityType)
         const associatedData: AssociatedDataSchema | undefined = Object.values(entitySchema.associatedData)
             .find(associatedData => associatedData.name === associatedDataName)
-        if (associatedData === undefined) {
+        if (associatedData == undefined) {
             throw new UnexpectedError(connection, `Associated data '${associatedDataName}' not found in entity '${entityType}' in catalog '${catalogName}'.`)
         }
         return associatedData
@@ -141,7 +141,7 @@ export class LabService {
         const entitySchema: EntitySchema = await this.getEntitySchema(connection, catalogName, entityType)
         const referenceSchema: ReferenceSchema | undefined = Object.values(entitySchema.references)
             .find(reference => reference.name === referenceName)
-        if (referenceSchema === undefined) {
+        if (referenceSchema == undefined) {
             throw new UnexpectedError(connection, `Reference '${referenceName}' not found in entity '${entityType}' in catalog '${catalogName}'.`)
         }
         return referenceSchema

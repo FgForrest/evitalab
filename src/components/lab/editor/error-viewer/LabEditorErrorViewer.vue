@@ -12,7 +12,7 @@ const title = computed(() => {
 })
 
 const detail = computed(() => {
-    if (props.params.error.detail === undefined) {
+    if (props.params.error.detail == undefined) {
         return 'No details available.'
     }
     return props.params.error.detail

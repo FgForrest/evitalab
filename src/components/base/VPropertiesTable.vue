@@ -16,7 +16,7 @@ const props = defineProps<{
             <td class="text-medium-emphasis">{{ property[0] }}</td>
             <td>
                 <span
-                    v-if="property[1] === undefined || property[1] === null"
+                    v-if="property[1] == undefined"
                     class="text-disabled font-weight-light font-italic"
                 >
                     &lt;empty&gt;

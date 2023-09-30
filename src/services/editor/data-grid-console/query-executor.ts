@@ -25,7 +25,7 @@ export abstract class QueryExecutor {
      */
     protected deserializePropertyValue(value?: any): string {
         // return value
-        if (value === undefined || value === null) {
+        if (value == undefined) {
             return ''
         }
         if (value instanceof Array) {

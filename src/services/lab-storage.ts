@@ -1,5 +1,5 @@
-import { IncompatibleStorageVersionError } from '@/model/lab-storage'
 import store from 'store2'
+import { EvitaDBConnection } from '@/model/lab'
 
 /**
  * Actual storage version of the current build.
@@ -8,20 +8,13 @@ import store from 'store2'
  * Because every new version requires empty storage, this version should be increased only with breaking changes
  * to storage format.
  */
-const buildVersion = 1
-
-/**
- * Global (version-agnostic) lab metadata. Used mainly to manage specific lab versions.
- */
-export enum LabStorageGlobalItemType {
-    InitializedVersions = 'initialized-versions',
-}
+const buildVersion = 2
 
 /**
  * Actual supported lab storage items. These are supported only by the current version of the lab.
  */
-export enum LabStorageVersionedItemType {
-    Connections = 'connections',
+enum LabStorageVersionedItemType {
+    UserConnections = 'userConnections',
     // todo lho implement, just a mockup
     // Tabs = 'tabs',
     // Settings = 'settings'
@@ -33,66 +26,32 @@ export enum LabStorageVersionedItemType {
 export class LabStorage {
     readonly storage: any
 
-    constructor() {
-        // obtain storage for the current build version
-        this.storage = store.namespace('labv' + buildVersion)
+    constructor(serverName: string) {
+        // obtain storage for the current build version a namespace
+        this.storage = store.namespace('evitaLab:' + btoa(serverName) + ":" + buildVersion)
     }
 
     /**
-     * Initializes the storage for the current build version.
+     * Retrieves stored user connections from the storage.
      */
-    initialize(): void {
-        const initializedVersions: number[] = JSON.parse(store.get(LabStorageGlobalItemType.InitializedVersions, '[]'))
-        const currentVersionInitialized: boolean = initializedVersions.includes(buildVersion)
-        const incompatibleVersionDetected: boolean = initializedVersions.length > 0 && !currentVersionInitialized
-        if (!currentVersionInitialized) {
-            initializedVersions.push(buildVersion)
-            this.storeGlobalItem(LabStorageGlobalItemType.InitializedVersions, initializedVersions)
-
-            this.initializeEmptyStorage()
-        }
-        if (incompatibleVersionDetected) {
-            throw new IncompatibleStorageVersionError()
+    getUserConnections(): EvitaDBConnection[] {
+        try {
+            const storedUserConnections = this.storage.get(LabStorageVersionedItemType.UserConnections)
+            if (storedUserConnections == undefined) {
+                return []
+            }
+            return JSON.parse(storedUserConnections) as EvitaDBConnection[]
+        } catch (e) {
+            console.error('Failed to load user connections from local storage. Creating new collection...', e)
+            return []
         }
     }
 
     /**
-     * Retrieves a single item from the storage.
-     *
-     * @param type which item to retrieve
-     * @param mapper maps the stringified item to the desired type as we don't know the type of the item
+     * Store new user connections to the storage.
      */
-    getItem(type: LabStorageVersionedItemType, mapper: (item: string) => any): any {
-        return mapper(this.storage.get(type))
-    }
-
-    /**
-     * Stores a single item to the storage.
-     *
-     * @param type what the item represents
-     * @param item actual item
-     */
-    storeItem(type: LabStorageVersionedItemType, item: any): void {
-        this.storage.set(type, this.stringifyItem(item), true)
-    }
-
-    /**
-     * Fills new storage with default data.
-     * @private
-     */
-    private initializeEmptyStorage(): void {
-        this.storage.set(LabStorageVersionedItemType.Connections, JSON.stringify([]))
-    }
-
-    /**
-     * Stores a single item to the global (version-agnostic) storage.
-     *
-     * @param type what the item represents
-     * @param item actual item
-     * @private
-     */
-    private storeGlobalItem(type: LabStorageGlobalItemType, item: any): void {
-        store.set(type, this.stringifyItem(item), true)
+    storeUserConnections(userConnections: EvitaDBConnection[]): void {
+        this.storage.set(LabStorageVersionedItemType.UserConnections, this.stringifyItem(userConnections), true)
     }
 
     private stringifyItem(item: any) {
