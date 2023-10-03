@@ -117,8 +117,16 @@ export class GraphQLQueryBuilder implements QueryBuilder {
         `
     }
 
-    buildAttributeNaturalConstraint(attributeSchema: AttributeSchemaUnion, orderDirection: string): string {
+    buildAttributeOrderBy(attributeSchema: AttributeSchemaUnion, orderDirection: string): string {
         return `attribute${attributeSchema.nameVariants.pascalCase}Natural: ${orderDirection.toUpperCase()}`
+    }
+
+    buildParentEntityFilterBy(parentPrimaryKey: number): string {
+        return `entityPrimaryKeyInSet: ${parentPrimaryKey}`
+    }
+
+    buildReferencedEntityFilterBy(referencedPrimaryKeys: number | number[]): string {
+        return `entityPrimaryKeyInSet: [${typeof referencedPrimaryKeys === 'number' ? referencedPrimaryKeys : referencedPrimaryKeys.join(', ')}]`
     }
 
 }

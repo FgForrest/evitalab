@@ -18,22 +18,4 @@ export abstract class QueryExecutor {
      * @param query pre-built query to execute in language defined by implementation
      */
     abstract executeQuery(dataPointer: DataGridDataPointer, query: string): Promise<QueryResult>
-
-    /**
-     * Deserializes property value to string displayable in the data grid to user.
-     * @protected
-     */
-    protected deserializePropertyValue(value?: any): string {
-        // return value
-        if (value == undefined) {
-            return ''
-        }
-        if (value instanceof Array) {
-            return `[${value.map(it => this.deserializePropertyValue(it)).join(', ')}]`
-        } else if (value instanceof Object) {
-            return JSON.stringify(value)
-        } else {
-            return value.toString()
-        }
-    }
 }

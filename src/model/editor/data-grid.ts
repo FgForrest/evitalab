@@ -30,8 +30,8 @@ export interface DataGridConsoleData extends TabRequestComponentData {
     readonly queryLanguage?: QueryLanguage
     readonly filterBy?: string
     readonly orderBy?: string
-    readonly dataLanguage?: string
-    readonly displayedData?: string[]
+    readonly dataLocale?: string
+    readonly displayedProperties?: EntityPropertyKey[]
     readonly pageSize?: number
     readonly pageNumber?: number
 }
@@ -51,7 +51,7 @@ export enum EntityPropertyType {
  */
 export enum StaticEntityProperties {
     PrimaryKey = 'primaryKey',
-    Parent = 'parent',
+    ParentPrimaryKey = 'parentPrimaryKey',
     Locales = 'locales',
     AllLocales = 'allLocales',
     PriceInnerRecordHandling = 'priceInnerRecordHandling'
@@ -106,9 +106,28 @@ export class EntityPropertyKey {
 }
 
 /**
+ * Full description of a single entity property
+ */
+export type EntityPropertyDescriptor = {
+    type: EntityPropertyType,
+    key: EntityPropertyKey,
+    title: string,
+    schema: any | undefined
+}
+
+/**
+ * Summarizes the selection state of all properties in a single section.
+ */
+export enum EntityPropertySectionSelection {
+    None = 'none',
+    Some = 'some',
+    All = 'all'
+}
+
+/**
  * Represents a single entity property with its key and value.
  */
-export type EntityProperty = [EntityPropertyKey, string]
+export type EntityProperty = [EntityPropertyKey, any]
 
 /**
  * Represents a single flattened entity for data table rendering.

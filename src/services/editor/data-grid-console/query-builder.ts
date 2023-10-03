@@ -26,10 +26,25 @@ export interface QueryBuilder {
                pageSize: number): Promise<string>
 
     /**
-     * Builds single attributeNatural constraint in language of implementation for order by clause.
+     * Builds single attributeNatural order constraint in language of implementation for order by clause.
      *
      * @param attributeSchema attribute schema to build constraint for
      * @param orderDirection direction of order by clause
      */
-    buildAttributeNaturalConstraint(attributeSchema: AttributeSchemaUnion, orderDirection: string): string
+    buildAttributeOrderBy(attributeSchema: AttributeSchemaUnion, orderDirection: string): string
+
+    /**
+     * Builds single entityPrimaryKeyInSet filter constraint in language of implementation for filter by clause of a parent entity.
+     *
+     * @param parentPrimaryKey primary key of parent entity
+     */
+    buildParentEntityFilterBy(parentPrimaryKey: number): string
+
+    /**
+     * Builds single entityPrimaryKeyInSet filter constraint in language of implementation for filter by clause of a referenced
+     * collection.
+     *
+     * @param referencedPrimaryKeys primary keys of referenced entities
+     */
+    buildReferencedEntityFilterBy(referencedPrimaryKeys: number | number[]): string
 }

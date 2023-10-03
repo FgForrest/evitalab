@@ -39,35 +39,35 @@ export class EvitaQLQueryExecutor extends QueryExecutor {
     private flattenEntity(entity: any): FlatEntity {
         const flattenedEntity: FlatEntity = []
 
-        flattenedEntity.push([EntityPropertyKey.entity(StaticEntityProperties.PrimaryKey), this.deserializePropertyValue(entity[StaticEntityProperties.PrimaryKey])])
-        flattenedEntity.push([EntityPropertyKey.entity(StaticEntityProperties.Parent), this.deserializePropertyValue(entity[StaticEntityProperties.Parent])])
-        flattenedEntity.push([EntityPropertyKey.entity(StaticEntityProperties.Locales), this.deserializePropertyValue(entity[StaticEntityProperties.Locales])])
-        flattenedEntity.push([EntityPropertyKey.entity(StaticEntityProperties.AllLocales), this.deserializePropertyValue(entity[StaticEntityProperties.AllLocales])])
-        flattenedEntity.push([EntityPropertyKey.entity(StaticEntityProperties.PriceInnerRecordHandling), this.deserializePropertyValue(entity[StaticEntityProperties.PriceInnerRecordHandling])])
+        flattenedEntity.push([EntityPropertyKey.entity(StaticEntityProperties.PrimaryKey), entity[StaticEntityProperties.PrimaryKey]])
+        flattenedEntity.push([EntityPropertyKey.entity(StaticEntityProperties.ParentPrimaryKey), entity['parentEntity']?.[StaticEntityProperties.PrimaryKey]])
+        flattenedEntity.push([EntityPropertyKey.entity(StaticEntityProperties.Locales), entity[StaticEntityProperties.Locales] || []])
+        flattenedEntity.push([EntityPropertyKey.entity(StaticEntityProperties.AllLocales), entity[StaticEntityProperties.AllLocales] || []])
+        flattenedEntity.push([EntityPropertyKey.entity(StaticEntityProperties.PriceInnerRecordHandling), entity[StaticEntityProperties.PriceInnerRecordHandling] || 'UNKNOWN'])
 
         const globalAttributes = entity[EntityPropertyType.Attributes]?.['global'] || {}
         for (const attributeName in globalAttributes) {
-            flattenedEntity.push([EntityPropertyKey.attributes(attributeName), this.deserializePropertyValue(globalAttributes[attributeName])])
+            flattenedEntity.push([EntityPropertyKey.attributes(attributeName), globalAttributes[attributeName]])
         }
         const localizedAttributes = entity[EntityPropertyType.Attributes]?.['localized'] || {}
         for (const locale in localizedAttributes) {
             // this expects that we support only one locale
             const attributesInLocale = localizedAttributes[locale]
             for (const attributeName in attributesInLocale) {
-                flattenedEntity.push([EntityPropertyKey.attributes(attributeName), this.deserializePropertyValue(attributesInLocale[attributeName])])
+                flattenedEntity.push([EntityPropertyKey.attributes(attributeName), attributesInLocale[attributeName]])
             }
         }
 
         const globalAssociatedData = entity[EntityPropertyType.AssociatedData]?.['global'] || {}
         for (const associatedDataName in globalAssociatedData) {
-            flattenedEntity.push([EntityPropertyKey.associatedData(associatedDataName), this.deserializePropertyValue(globalAssociatedData[associatedDataName])])
+            flattenedEntity.push([EntityPropertyKey.associatedData(associatedDataName), globalAssociatedData[associatedDataName]])
         }
         const localizedAssociatedData = entity[EntityPropertyType.AssociatedData]?.['localized'] || {}
         for (const locale in localizedAssociatedData) {
             // this expects that we support only one locale
             const associatedDataInLocale = localizedAssociatedData[locale]
             for (const associatedDataName in associatedDataInLocale) {
-                flattenedEntity.push([EntityPropertyKey.associatedData(associatedDataName), this.deserializePropertyValue(associatedDataInLocale[associatedDataName])])
+                flattenedEntity.push([EntityPropertyKey.associatedData(associatedDataName), associatedDataInLocale[associatedDataName]])
             }
         }
 
@@ -75,9 +75,9 @@ export class EvitaQLQueryExecutor extends QueryExecutor {
         for (const referenceName in references) {
             const referencesOfName = references[referenceName]
             if (referencesOfName instanceof Array) {
-                flattenedEntity.push([EntityPropertyKey.references(referenceName), this.deserializePropertyValue(referencesOfName.map(it => it['referencedPrimaryKey']))])
+                flattenedEntity.push([EntityPropertyKey.references(referenceName), referencesOfName.map(it => it['referencedPrimaryKey'])])
             } else {
-                flattenedEntity.push([EntityPropertyKey.references(referenceName), this.deserializePropertyValue(referencesOfName['referencedPrimaryKey'])])
+                flattenedEntity.push([EntityPropertyKey.references(referenceName), referencesOfName['referencedPrimaryKey']])
             }
         }
 

@@ -24,6 +24,7 @@
     "uuid": "^9.0.0",
     "vue": "^3.2.0",
     "vue-codemirror": "^6.1.1",
+    "vue-hotkeys-rt": "^0.2.3",
     "vue-markdown-render": "^2.0.1",
     "vue-router": "^4.0.0",
     "vue-toastification": "^2.0.0-rc.5",

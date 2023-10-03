@@ -43,7 +43,7 @@ const filteredItems = computed(() => {
 
         <LabEditorSchemaViewerContainerSectionListItem
             v-if="filteredItems.length === 0"
-            name="Nothing found"
+            name="No items found for searched term."
             :openable="false"
         />
     </VList>

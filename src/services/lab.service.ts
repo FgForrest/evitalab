@@ -127,6 +127,21 @@ export class LabService {
         return attributeSchema
     }
 
+    getAttributeSchemaFlags = (schema: AttributeSchemaUnion): string[] => {
+        const flags: string[] = []
+        const globalAttribute = 'uniqueGlobally' in schema
+        if (globalAttribute && (schema as GlobalAttributeSchema).uniqueGlobally) {
+            flags.push('unique globally')
+        } else if (schema.unique) {
+            flags.push('unique')
+        }
+        if (schema.unique || schema.filterable) flags.push('filterable')
+        if (schema.sortable) flags.push('sortable')
+        if (schema.localized) flags.push('localized')
+        if (schema.nullable) flags.push('nullable')
+        return flags
+    }
+
     getAssociatedDataSchema = async (connection: EvitaDBConnection, catalogName: string, entityType: string, associatedDataName: string): Promise<AssociatedDataSchema> => {
         const entitySchema: EntitySchema = await this.getEntitySchema(connection, catalogName, entityType)
         const associatedData: AssociatedDataSchema | undefined = Object.values(entitySchema.associatedData)
@@ -137,6 +152,13 @@ export class LabService {
         return associatedData
     }
 
+    getAssociatedDataSchemaFlags = (schema: AssociatedDataSchema): string[] => {
+        const flags: string[] = []
+        if (schema.localized) flags.push('localized')
+        if (schema.nullable) flags.push('nullable')
+        return flags
+    }
+
     getReferenceSchema = async (connection: EvitaDBConnection, catalogName: string, entityType: string, referenceName: string): Promise<ReferenceSchema> => {
         const entitySchema: EntitySchema = await this.getEntitySchema(connection, catalogName, entityType)
         const referenceSchema: ReferenceSchema | undefined = Object.values(entitySchema.references)
@@ -145,6 +167,14 @@ export class LabService {
             throw new UnexpectedError(connection, `Reference '${referenceName}' not found in entity '${entityType}' in catalog '${catalogName}'.`)
         }
         return referenceSchema
+    }
+
+    getReferenceSchemaFlags = (schema: ReferenceSchema): string[] => {
+        const flags: string[] = []
+        if (!schema.referencedEntityTypeManaged) flags.push('external')
+        if (schema.indexed) flags.push('indexed')
+        if (schema.faceted) flags.push('faceted')
+        return flags
     }
 
     private async fetchCatalogs(connection: EvitaDBConnection): Promise<Catalog[]> {

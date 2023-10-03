@@ -1881,6 +1881,11 @@ vue-eslint-parser@^9.1.1, vue-eslint-parser@^9.3.0:
     lodash "^4.17.21"
     semver "^7.3.6"
 
+vue-hotkeys-rt@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/vue-hotkeys-rt/-/vue-hotkeys-rt-0.2.3.tgz#499bff8a9141192e0bde64911412613ffee7d4af"
+  integrity sha512-jMnW6IXrlhEULcvwk+twyPqwpHRZD9sf9AIP1L2p3gBE5mN/RcfFLZFUcq60MYMp1q6j8vIqkDgh1H9nZjz7kg==
+
 vue-markdown-render@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/vue-markdown-render/-/vue-markdown-render-2.0.1.tgz#d2b067fa239018b3b46dcf3ab61ebb8895e85dc1"

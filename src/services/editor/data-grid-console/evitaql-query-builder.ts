@@ -20,7 +20,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
     constructor(labService: LabService) {
         this.labService = labService
 
-        this.entityBodyProperties.add(StaticEntityProperties.Parent)
+        this.entityBodyProperties.add(StaticEntityProperties.ParentPrimaryKey)
         this.entityBodyProperties.add(StaticEntityProperties.Locales)
         this.entityBodyProperties.add(StaticEntityProperties.AllLocales)
         this.entityBodyProperties.add(StaticEntityProperties.PriceInnerRecordHandling)
@@ -30,7 +30,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
                      filterBy: string,
                      orderBy: string,
                      dataLocale: string | undefined,
-                     requiredData: EntityPropertyKey[],
+                     requiredProperties: EntityPropertyKey[],
                      pageNumber: number,
                      pageSize: number): Promise<string> {
         const entitySchema: EntitySchema = await this.labService.getEntitySchema(dataPointer.connection, dataPointer.catalogName, dataPointer.entityType)
@@ -52,7 +52,18 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
 
         const entityFetchRequires: string[] = []
 
-        const requiredAttributes: string[] = requiredData
+        requiredProperties
+            .filter(({ type }) => type === EntityPropertyType.Entity)
+            .map(({ name }) => name)
+            .forEach(it => {
+                if (it === StaticEntityProperties.ParentPrimaryKey) {
+                    entityFetchRequires.push(`hierarchyContent(stopAt(distance(1)))`)
+                } else if (it === StaticEntityProperties.PriceInnerRecordHandling) {
+                    entityFetchRequires.push(`priceContent(NONE)`)
+                }
+            })
+
+        const requiredAttributes: string[] = requiredProperties
             .filter(({ type }) => type === EntityPropertyType.Attributes)
             .map(({ name }) => name)
             .map(it => {
@@ -67,7 +78,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
             entityFetchRequires.push(`attributeContent(${requiredAttributes.join(',')})`)
         }
 
-        const requiredAssociatedData: string[] = requiredData
+        const requiredAssociatedData: string[] = requiredProperties
             .filter(({ type }) => type === EntityPropertyType.AssociatedData)
             .map(({ name }) => name)
             .map(it => {
@@ -82,7 +93,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
             entityFetchRequires.push(`associatedDataContent(${requiredAssociatedData.join(',')})`)
         }
 
-        const requiredReferences: string[] = requiredData
+        const requiredReferences: string[] = requiredProperties
             .filter(({ type }) => type === EntityPropertyType.References)
             .map(({ name }) => name)
             .map(it => {
@@ -98,7 +109,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
         }
 
         if (entityFetchRequires.length > 0 ||
-            requiredData.findIndex(propertyKey => this.entityBodyProperties.has(propertyKey.toString())) > -1) {
+            requiredProperties.findIndex(propertyKey => this.entityBodyProperties.has(propertyKey.toString())) > -1) {
             // we need to specify locale only if we want data
             if (dataLocale !== undefined) {
                 entityFetchRequires.push(`dataInLocales('${dataLocale}')`)
@@ -114,8 +125,16 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
         return `query(${constraints.join(',')})`
     }
 
-    buildAttributeNaturalConstraint(attributeSchema: AttributeSchemaUnion, orderDirection: string): string {
+    buildAttributeOrderBy(attributeSchema: AttributeSchemaUnion, orderDirection: string): string {
         return `attributeNatural('${attributeSchema.name}', ${orderDirection.toUpperCase()})`
+    }
+
+    buildParentEntityFilterBy(parentPrimaryKey: number): string {
+        return `entityPrimaryKeyInSet(${parentPrimaryKey})`
+    }
+
+    buildReferencedEntityFilterBy(referencedPrimaryKeys: number | number[]): string {
+        return `entityPrimaryKeyInSet(${typeof referencedPrimaryKeys === 'number' ? referencedPrimaryKeys : referencedPrimaryKeys.join(', ')})`
     }
 
 }
