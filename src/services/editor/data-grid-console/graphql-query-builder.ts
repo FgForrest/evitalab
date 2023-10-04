@@ -28,9 +28,18 @@ export class GraphQLQueryBuilder implements QueryBuilder {
         const entitySchema: EntitySchema = await this.labService.getEntitySchema(dataPointer.connection, dataPointer.catalogName, dataPointer.entityType)
 
         const headerArguments: string[] = []
+
+        const filterByContainer: string[] = []
         if (filterBy) {
-            headerArguments.push(`filterBy: { ${filterBy} }`)
+            filterByContainer.push(filterBy)
         }
+        if (dataLocale) {
+            filterByContainer.push(`entityLocaleEquals: ${dataLocale}`)
+        }
+        if (filterByContainer.length > 0) {
+            headerArguments.push(`filterBy: { ${filterByContainer.join(',')} }`)
+        }
+
         if (orderBy) {
             headerArguments.push(`orderBy: { ${orderBy} }`)
         }

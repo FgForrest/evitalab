@@ -39,8 +39,15 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
 
         constraints.push(`collection('${dataPointer.entityType}')`)
 
+        const filterByContainer: string[] = []
         if (filterBy) {
-            constraints.push(`filterBy(${filterBy})`)
+            filterByContainer.push(filterBy)
+        }
+        if (dataLocale) {
+            filterByContainer.push(`entityLocaleEquals('${dataLocale}')`)
+        }
+        if (filterByContainer.length > 0) {
+            constraints.push(`filterBy(${filterByContainer.join(',')})`)
         }
 
         if (orderBy) {
