@@ -11,9 +11,9 @@ export class EvitaDBClient extends ApiClient {
     /**
      * Fetches schema from evitaDB server for specific catalog.
      */
-    async getCatalogSchema(connection: EvitaDBConnection, urlCatalogName: string): Promise<CatalogSchema> {
+    async getCatalogSchema(connection: EvitaDBConnection, catalogName: string): Promise<CatalogSchema> {
         try {
-            return await this.httpClient.get(`${connection.labApiUrl}/schema/catalogs/${urlCatalogName}`)
+            return await this.httpClient.get(`${connection.labApiUrl}/schema/catalogs/${catalogName}`)
                 .json() as CatalogSchema
         } catch (e: any) {
             throw this.handleCallError(e, connection)
@@ -35,10 +35,10 @@ export class EvitaDBClient extends ApiClient {
     /**
      * Fetches entities with extra results from evitaDB server from specific catalog.
      */
-    async queryEntities(connection: EvitaDBConnection, urlCatalogName: string, query: string): Promise<Response> {
+    async queryEntities(connection: EvitaDBConnection, catalogName: string, query: string): Promise<Response> {
         try {
             return await this.httpClient.post(
-                `${connection.labApiUrl}/data/catalogs/${urlCatalogName}/collections/query`,
+                `${connection.labApiUrl}/data/catalogs/${catalogName}/collections/query`,
                 {
                     headers: {
                         'Content-Type': 'application/json'

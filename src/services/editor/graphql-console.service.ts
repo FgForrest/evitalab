@@ -52,16 +52,12 @@ export class GraphQLConsoleService {
         if (instancePointer.instanceType === GraphQLInstanceType.SYSTEM) {
             path = 'system'
         } else {
-            const urlCatalogName: string = (await this.labService.getCatalogSchema(instancePointer.connection, instancePointer.catalogName))
-                .nameVariants
-                .kebabCase
-
             switch (instancePointer.instanceType) {
                 case GraphQLInstanceType.DATA:
-                    path = urlCatalogName
+                    path = instancePointer.catalogName
                     break
                 case GraphQLInstanceType.SCHEMA:
-                    path = `${urlCatalogName}/schema`
+                    path = `${instancePointer.catalogName}/schema`
                     break
                 default: throw new UnexpectedError(instancePointer.connection, `Unsupported GraphQL instance type '${instancePointer.instanceType}'.`)
             }

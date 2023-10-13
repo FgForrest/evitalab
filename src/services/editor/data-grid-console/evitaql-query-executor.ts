@@ -21,11 +21,7 @@ export class EvitaQLQueryExecutor extends QueryExecutor {
     }
 
     async executeQuery(dataPointer: DataGridDataPointer, query: string): Promise<QueryResult> {
-        const urlCatalogName: string = (await this.labService.getCatalogSchema(dataPointer.connection, dataPointer.catalogName))
-            .nameVariants
-            .kebabCase
-
-        const result: Response = await this.evitaDBClient.queryEntities(dataPointer.connection, urlCatalogName, query)
+        const result: Response = await this.evitaDBClient.queryEntities(dataPointer.connection, dataPointer.catalogName, query)
 
         return {
             entities: result?.recordPage?.data.map((entity: any) => this.flattenEntity(entity)) || [],

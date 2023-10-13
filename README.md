@@ -24,7 +24,7 @@ In the future, evitaLab will hopefully also allow data modifications.
 
 You can try out evitaLab with evitaDB demo dataset at [demo.evitadb.io](https://demo.evitadb.io).
 
-<img src="https://raw.githubusercontent.com/lukashornych/evitalab/dev/documentation/assets/img/preview.png"/>
+![evitaLab preview](documentation/assets/img/preview.png)
 
 ## Features
 

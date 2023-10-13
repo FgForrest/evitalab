@@ -22,13 +22,9 @@ export class EvitaQLConsoleService {
      */
     // todo lho variables
     async executeEvitaQLQuery(dataPointer: EvitaQLDataPointer, query: string, variables?: object): Promise<string> {
-        const urlCatalogName: string = (await this.labService.getCatalogSchema(dataPointer.connection, dataPointer.catalogName))
-            .nameVariants
-            .kebabCase
-
         let result: any
         try {
-           result = await this.evitaDBClient.queryEntities(dataPointer.connection, urlCatalogName, query)
+           result = await this.evitaDBClient.queryEntities(dataPointer.connection, dataPointer.catalogName, query)
         } catch (e: any) {
             if (e.name === 'QueryError') {
                 result = e.error

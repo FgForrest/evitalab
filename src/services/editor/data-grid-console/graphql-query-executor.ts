@@ -21,15 +21,7 @@ export class GraphQLQueryExecutor extends QueryExecutor {
     }
 
     async executeQuery(dataPointer: DataGridDataPointer, query: string): Promise<QueryResult> {
-        const urlCatalogName: string = (await this.labService.getCatalogSchema(dataPointer.connection, dataPointer.catalogName))
-            .nameVariants
-            .kebabCase
-
-        const result = await this.graphQLClient.fetch(
-            dataPointer.connection,
-            `${urlCatalogName}`,
-            query
-        )
+        const result = await this.graphQLClient.fetch(dataPointer.connection, dataPointer.catalogName, query)
         if (result.errors) {
             throw new QueryError(dataPointer.connection, result.errors)
         }
