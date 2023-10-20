@@ -87,7 +87,7 @@ const state = (): LabState => {
     const preconfiguredConnectionsCookie: string | undefined = Cookies.get(preconfiguredConnectionsCookieName)
     if (preconfiguredConnectionsCookie != undefined) {
         try {
-            preconfiguredConnections = (JSON.parse(preconfiguredConnectionsCookie) as Array<any>)
+            preconfiguredConnections = (JSON.parse(atob(preconfiguredConnectionsCookie)) as Array<any>)
                 .map(connection => EvitaDBConnection.fromJson(connection, true))
         } catch (e) {
             console.error('Failed to load preconfigured connections cookie', e)
