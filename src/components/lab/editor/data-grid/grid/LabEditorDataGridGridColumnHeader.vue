@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { EntityPropertyType } from '@/model/editor/data-grid'
 
 const props = defineProps<{
     column: any,
@@ -8,18 +9,35 @@ const props = defineProps<{
     toggleSort: (column: any) => void
 }>()
 
+const prependIcon = computed<string | undefined>(() => {
+    const propertyType: EntityPropertyType | undefined = props.column.descriptor?.type
+    if (propertyType === EntityPropertyType.AssociatedData) {
+        return 'mdi-package-variant-closed'
+    }
+    if (propertyType === EntityPropertyType.References) {
+        return 'mdi-link-variant'
+    }
+    return undefined
+})
 const sortable = computed<boolean>(() => props.column.descriptor?.schema?.sortable)
 const sorted = computed<boolean>(() => props.isSorted(props.column))
 const localized = computed<boolean>(() => props.column.descriptor?.schema?.localized)
+
+function handleClick() {
+    if (sortable.value) {
+        props.toggleSort(props.column)
+    }
+}
 </script>
 
 <template>
     <th
-        @click="toggleSort(column)"
+        @click="handleClick"
         :class="['data-grid-column-header', { 'data-grid-column-header--sortable': sortable }]"
     >
         <div class="data-grid-column-header-content">
             <div class="data-grid-column-header-content__title">
+                <VIcon v-if="prependIcon">{{ prependIcon }}</VIcon>
                 <span>{{ column.title }}</span>
                 <VIcon v-if="localized">mdi-translate</VIcon>
             </div>

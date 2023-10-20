@@ -4,7 +4,7 @@ import { Codemirror } from 'vue-codemirror'
 import { EditorState, Extension } from '@codemirror/state'
 import { keymap } from '@codemirror/view'
 import { basicSetup } from 'codemirror'
-import { materialDark } from 'cm6-theme-material-dark'
+import { dracula } from '@ddietr/codemirror-themes/dracula.js'
 
 const props = withDefaults(
     defineProps<{
@@ -37,7 +37,7 @@ const extensions: Extension[] = [
         }
     ]),
     basicSetup,
-    materialDark,
+    dracula,
     ...props.additionalExtensions
 ]
 if (props.readOnly) {

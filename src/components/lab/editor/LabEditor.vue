@@ -82,6 +82,7 @@ resolveDemoCodeSnippet()
                 :value="tab.id"
                 :prepend-icon="tab.icon"
                 @mousedown.middle="closeTab(tab.id)"
+                class="lab-tab"
             >
                 <span>
                     {{ ellipsis(tab.title, 30) }}
@@ -141,6 +142,7 @@ resolveDemoCodeSnippet()
 </template>
 
 <style scoped>
+
 .lab-editor {
     display: grid;
     grid-template-columns: 1fr;

@@ -6,7 +6,9 @@ import { EntitySchema } from '@/model/evitadb'
 import { UnexpectedError } from '@/model/lab'
 import LabEditorSchemaViewerContainerSectionListItem
     from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerContainerSectionListItem.vue'
+import { LabService, useLabService } from '@/services/lab.service'
 
+const labService: LabService = useLabService()
 const editorService: EditorService = useEditorService()
 
 const props = defineProps<{
@@ -14,8 +16,7 @@ const props = defineProps<{
     schema: EntitySchema
 }>()
 
-const flags: string[] = []
-if (props.schema.withHierarchy) flags.push('hierarchical')
+const flags: string[] = labService.getEntitySchemaFlags(props.schema)
 
 function openEntitySchema(): void {
     if (!(props.dataPointer.schemaPointer instanceof CatalogSchemaPointer)) {

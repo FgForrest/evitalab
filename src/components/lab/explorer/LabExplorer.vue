@@ -24,12 +24,13 @@ const connections = computed<EvitaDBConnection[]>(() => labService.getConnection
         permanent
         :model-value="modelValue"
         @update:model-value="$emit('update:modelValue', $event)"
+        class="bg-primary"
     >
         <VList
             density="compact"
             nav
         >
-            <VListSubheader>Connections Explorer</VListSubheader>
+            <VListSubheader class="text-gray-light text-sm-body-2 font-weight-medium">Connections Explorer</VListSubheader>
 
             <LabExplorerConnectionItem
                 v-for="connection in connections"
@@ -50,7 +51,7 @@ const connections = computed<EvitaDBConnection[]>(() => labService.getConnection
                         <VBtn
                             prepend-icon="mdi-plus"
                             block
-                            variant="tonal"
+                            variant="outlined"
                             v-bind="props"
                             @click="addConnectionDialogOpen = true"
                         >
@@ -63,6 +64,5 @@ const connections = computed<EvitaDBConnection[]>(() => labService.getConnection
     </VNavigationDrawer>
 </template>
 
-<style scoped>
-
+<style lang="scss" scoped>
 </style>

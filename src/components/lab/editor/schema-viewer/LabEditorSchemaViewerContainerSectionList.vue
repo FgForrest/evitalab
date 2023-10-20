@@ -28,7 +28,7 @@ const filteredItems = computed(() => {
             label="Filter"
             variant="solo-filled"
             density="compact"
-            :append-inner-icon="filter ? 'mdi-backspace' : null as any"
+            :append-inner-icon="filter ? 'mdi-close-circle-outline' : null as any"
             @update:model-value="filter = $event.toLowerCase()"
             @click:append-inner="filter = ''"
         />
@@ -38,7 +38,7 @@ const filteredItems = computed(() => {
             :key="nameSupplier(item)"
         >
             <slot :item="item" />
-            <VDivider v-if="index < filteredItems.length - 1" />
+            <VDivider v-if="index < filteredItems.length - 1" class="mt-2 mb-2"/>
         </template>
 
         <LabEditorSchemaViewerContainerSectionListItem

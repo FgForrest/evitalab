@@ -85,6 +85,9 @@ onBeforeMount(() => {
     dataGridConsoleService.getDataLocales(props.params.dataPointer)
         .then(dl => {
             dataLocales = dl
+            if (!selectedDataLocale.value) {
+                selectedDataLocale.value = getBrowserPreferredDataLocale()
+            }
             return dataGridConsoleService.getEntityPropertyDescriptors(props.params.dataPointer)
         })
         .then(ep => {
@@ -106,6 +109,15 @@ onBeforeMount(() => {
             toaster.error(error)
         })
 })
+
+function getBrowserPreferredDataLocale(): string | undefined {
+    for (const browserLanguage of navigator.languages) {
+        if (dataLocales.includes(browserLanguage)) {
+            return browserLanguage
+        }
+    }
+    return undefined
+}
 
 async function initializeGridHeaders(entityPropertyDescriptors: EntityPropertyDescriptor[]): Promise<Map<string, any>> {
     const gridHeaders: Map<string, any> = new Map<string, any>()
@@ -139,7 +151,7 @@ function preselectEntityProperties(): void {
     }
 
     displayedProperties.value = entityPropertyDescriptors
-        .filter(it => it.key.type === EntityPropertyType.Entity)
+        .filter(it => it.key.type === EntityPropertyType.Entity || it.schema?.representative)
         .map(it => it.key)
 }
 

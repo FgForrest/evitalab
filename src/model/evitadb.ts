@@ -4,6 +4,56 @@
  */
 
 /**
+ * List of support scalars supported by evitaDB.
+ */
+export enum Scalar {
+    String = 'String',
+    StringArray = 'StringArray',
+    Byte = 'Byte',
+    ByteArray = 'ByteArray',
+    Short = 'Short',
+    ShortArray = 'ShortArray',
+    Integer = 'Integer',
+    IntegerArray = 'IntegerArray',
+    Long = 'Long',
+    LongArray = 'LongArray',
+    Boolean = 'Boolean',
+    BooleanArray = 'BooleanArray',
+    Character = 'Character',
+    CharacterArray = 'CharacterArray',
+    BigDecimal = 'BigDecimal',
+    BigDecimalArray = 'BigDecimalArray',
+    OffsetDateTime = 'OffsetDateTime',
+    OffsetDateTimeArray = 'OffsetDateTimeArray',
+    LocalDateTime = 'LocalDateTime',
+    LocalDateTimeArray = 'LocalDateTimeArray',
+    LocalDate = 'LocalDate',
+    LocalDateArray = 'LocalDateArray',
+    LocalTime = 'LocalTime',
+    LocalTimeArray = 'LocalTimeArray',
+    DateTimeRange = 'DateTimeRange',
+    DateTimeRangeArray = 'DateTimeRangeArray',
+    BigDecimalNumberRange = 'BigDecimalNumberRange',
+    BigDecimalNumberRangeArray = 'BigDecimalNumberRangeArray',
+    ByteNumberRange = 'ByteNumberRange',
+    ByteNumberRangeArray = 'ByteNumberRangeArray',
+    ShortNumberRange = 'ShortNumberRange',
+    ShortNumberRangeArray = 'ShortNumberRangeArray',
+    IntegerNumberRange = 'IntegerNumberRange',
+    IntegerNumberRangeArray = 'IntegerNumberRangeArray',
+    LongNumberRange = 'LongNumberRange',
+    LongNumberRangeArray = 'LongNumberRangeArray',
+    Locale = 'Locale',
+    LocaleArray = 'LocaleArray',
+    Currency = 'Currency',
+    CurrencyArray = 'CurrencyArray',
+    UUID = 'UUID',
+    UUIDArray = 'UUIDArray',
+    Predecessor = 'Predecessor',
+    ComplexDataObject = 'ComplexDataObject'
+}
+
+/**
  * This is the definition object for associated data that is stored along with entity. Definition objects allow to describe the structure of the entity type so that in any time everyone can consult complete structure of the entity type.  Associated data carry additional data entries that are never used for filtering / sorting but may be needed to be fetched along with entity in order to present data to the target consumer (i.e. user / API / bot). Associated data may be stored in slower storage and may contain wide range of data types - from small ones (i.e. numbers, strings, dates) up to large binary arrays representing entire files (i.e. pictures, documents).
  */
 export interface AssociatedDataSchema {
@@ -124,7 +174,7 @@ export interface AttributeSchema {
 /**
  * Returns either `attributeSchema` or `globalAttributeSchema`.
  */
-export type AttributeSchemaUnion = AttributeSchema | GlobalAttributeSchema;
+export type AttributeSchemaUnion = AttributeSchema | EntityAttributeSchema | GlobalAttributeSchema;
 
 export enum Cardinality {
     ZeroOrOne = 'ZERO_OR_ONE',
@@ -482,6 +532,61 @@ export interface FacetSummary extends Record<string, FacetGroupStatistics> {
     [key: string]: FacetGroupStatistics;
 
 }
+
+export interface EntityAttributeSchema {
+    /**
+     * When attribute is filterable, it is possible to filter entities by this attribute. Do not mark attribute as filterable unless you know that you'll search entities by this attribute. Each filterable attribute occupies (memory/disk) space in the form of index.  When attribute is filterable, extra result `attributeHistogram` can be requested for this attribute.
+     */
+    filterable: boolean;
+    /**
+     * When attribute is nullable, its values may be missing in the entities. Otherwise, the system will enforce non-null checks upon upserting of the entity.
+     */
+    nullable: boolean;
+    /**
+     * Whether this attribute can be used to represent an entire entity.
+     */
+    representative: boolean;
+    /**
+     * Deprecation notice contains information about planned removal of this entity from the model / client API. This allows to plan and evolve the schema allowing clients to adapt early to planned breaking changes.  If notice is `null`, this schema is considered not deprecated.
+     */
+    deprecationNotice?: string;
+    /**
+     * Default value is used when the entity is created without this attribute specified. Default values allow to pass non-null checks even if no attributes of such name are specified.
+     */
+    defaultValue?: string | number | boolean | Array<any> | any;
+    /**
+     * When attribute is localized, it has to be ALWAYS used in connection with specific `Locale`.
+     */
+    localized: boolean;
+    /**
+     * Contains description of the model is optional but helps authors of the schema / client API to better explain the original purpose of the model to the consumers.
+     */
+    description?: string;
+    /**
+     * When attribute is sortable, it is possible to sort entities by this attribute. Do not mark attribute as sortable unless you know that you'll sort entities along this attribute. Each sortable attribute occupies (memory/disk) space in the form of index..
+     */
+    sortable: boolean;
+    /**
+     * Data type of the attribute. Must be one of Evita-supported values. Internally the scalar is converted into Java-corresponding data type.
+     */
+    type: string;
+    /**
+     * Determines how many fractional places are important when entities are compared during filtering or sorting. It is significant to know that all values of this attribute will be converted to `Int`, so the attribute number must not ever exceed maximum limits of `Int` type when scaling the number by the power of ten using `indexedDecimalPlaces` as exponent.
+     */
+    indexedDecimalPlaces: number;
+    /**
+     * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity having certain value of this attribute among other entities in the same collection.  As an example of unique attribute can be EAN - there is no sense in having two entities with same EAN, and it's better to have this ensured by the database engine.
+     */
+    unique: boolean;
+    /**
+     * Contains unique name of the model. Case-sensitive. Distinguishes one model item from another within single entity instance.
+     */
+    name: string;
+    /**
+     *
+     */
+    nameVariants: NameVariants;
+}
 /**
  * This is the definition object for attributes that are stored along with catalog. Definition objects allow to describe the structure of the catalog so that in any time everyone can consult complete structure of the catalog. Definition object is similar to Java reflection process where you can also at any moment see which fields and methods are available for the class.  Catalog attributes allows defining set of data that are fetched in bulk along with the catalog body. Attributes may be indexed for fast filtering or can be used to sort along. Attributes are not automatically indexed in order not to waste precious memory space for data that will never be used in search queries.  Filtering in attributes is executed by using constraints like `and`, `or`, `not`, `attribute_{name}_equals`, `attribute_{name}_contains` and many others. Sorting can be achieved with `attribute_{name}_natural` or others.  Attributes are not recommended for bigger data as they are all loaded at once when requested.
  */
@@ -494,6 +599,10 @@ export interface GlobalAttributeSchema {
      * When attribute is nullable, its values may be missing in the entities. Otherwise, the system will enforce non-null checks upon upserting of the entity.
      */
     nullable: boolean;
+    /**
+     * Whether this attribute can be used to represent an entire entity.
+     */
+    representative: boolean;
     /**
      * Deprecation notice contains information about planned removal of this entity from the model / client API. This allows to plan and evolve the schema allowing clients to adapt early to planned breaking changes.  If notice is `null`, this schema is considered not deprecated.
      */

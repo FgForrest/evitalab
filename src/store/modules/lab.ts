@@ -1,4 +1,4 @@
-import { DuplicateEvitaDBConnectionError, EvitaDBConnection, EvitaDBConnectionId } from '@/model/lab'
+import { DuplicateEvitaDBConnectionError, EvitaDBBlogPost, EvitaDBConnection, EvitaDBConnectionId } from '@/model/lab'
 import { Catalog, CatalogSchema, EntitySchema, EntitySchemas } from '@/model/evitadb'
 import Cookies from 'js-cookie'
 import { LabStorage } from '@/services/lab-storage'
@@ -28,6 +28,7 @@ export type LabState = {
      * Flag indicating whether the lab is in read-only mode.
      */
     readonly readOnly: boolean,
+
     /**
      * List of preconfigured evitaDB servers by hosted server.
      */
@@ -36,11 +37,19 @@ export type LabState = {
      * List of configured evitaDB servers by user.
      */
     readonly userConnections: EvitaDBConnection[],
+
     readonly catalogs: Map<EvitaDBConnectionId, Map<string, Catalog>>,
+
     /**
      * Cache of catalog schemas for all servers.
      */
     readonly catalogSchemas: Map<EvitaDBConnectionId, Map<string, CatalogSchema>>,
+
+    /**
+     * Cached list of the latest blog posts from evitaDB blog for welcome screen.
+     */
+    readonly blogPosts: EvitaDBBlogPost[],
+
     // todo lho logs history, mainly errors for debugging
 }
 
@@ -48,8 +57,10 @@ type LabGetters = {
     isConnectionExists(state: LabState): (connectionName: string) => boolean
     getConnection(state: LabState): (id: EvitaDBConnectionId) => EvitaDBConnection | undefined
     getConnections(state: LabState): () => EvitaDBConnection[]
+
     getCatalog(state: LabState): (connectionId: EvitaDBConnectionId, catalogName: string) =>  Catalog | undefined
     getCatalogs(state: LabState): (connectionId: EvitaDBConnectionId) => Catalog[] | undefined
+
     getCatalogSchema(state: LabState): (connectionId: EvitaDBConnectionId, catalogName: string) => CatalogSchema | undefined
     getEntitySchema(state: LabState): (connectionId: EvitaDBConnectionId, catalogName: string, entityType: string) => EntitySchema | undefined
 }
@@ -60,6 +71,8 @@ type LabMutations = {
 
     putCatalogs(state: LabState, payload: { connectionId: EvitaDBConnectionId, catalogs: Catalog[] }): void
     putCatalogSchema(state: LabState, payload: { connectionId: EvitaDBConnectionId, catalogSchema: CatalogSchema }): void
+
+    setBlogPosts(state: LabState, blogPosts: EvitaDBBlogPost[]): void
 }
 
 const state = (): LabState => {
@@ -74,7 +87,7 @@ const state = (): LabState => {
     const preconfiguredConnectionsCookie: string | undefined = Cookies.get(preconfiguredConnectionsCookieName)
     if (preconfiguredConnectionsCookie != undefined) {
         try {
-            preconfiguredConnections = (JSON.parse(atob(preconfiguredConnectionsCookie)) as Array<any>)
+            preconfiguredConnections = (JSON.parse(preconfiguredConnectionsCookie) as Array<any>)
                 .map(connection => EvitaDBConnection.fromJson(connection, true))
         } catch (e) {
             console.error('Failed to load preconfigured connections cookie', e)
@@ -118,7 +131,8 @@ const state = (): LabState => {
         preconfiguredConnections,
         userConnections,
         catalogs: new Map<EvitaDBConnectionId, Map<string, Catalog>>(),
-        catalogSchemas: new Map<EvitaDBConnectionId, Map<string, CatalogSchema>>()
+        catalogSchemas: new Map<EvitaDBConnectionId, Map<string, CatalogSchema>>(),
+        blogPosts: []
     }
 }
 
@@ -199,6 +213,11 @@ const mutations: LabMutations = {
             payload.connectionId,
             new Map<string, CatalogSchema>([[payload.catalogSchema.name, payload.catalogSchema]])
         )
+    },
+
+    setBlogPosts(state, blogPosts): void {
+        state.blogPosts.splice(0, state.blogPosts.length)
+        state.blogPosts.push(...blogPosts)
     }
 }
 

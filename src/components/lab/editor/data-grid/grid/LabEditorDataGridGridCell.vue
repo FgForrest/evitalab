@@ -1,6 +1,16 @@
 <script setup lang="ts">
-import { EntityPropertyDescriptor, EntityPropertyType, StaticEntityProperties } from '@/model/editor/data-grid'
+import {
+    EntityPropertyDescriptor,
+    EntityPropertyType,
+    EntityReferenceValue,
+    StaticEntityProperties
+} from '@/model/editor/data-grid'
 import { computed } from 'vue'
+import { Scalar } from '@/model/evitadb'
+import { Toaster, useToaster } from '@/services/editor/toaster'
+import { UnexpectedError } from '@/model/lab'
+
+const toaster: Toaster = useToaster()
 
 const props = defineProps<{
     propertyDescriptor: EntityPropertyDescriptor | undefined,
@@ -15,6 +25,10 @@ const printablePropertyValue = computed<string>(() => toPrintablePropertyValue(p
 const openableInNewTab = computed<boolean>(() => {
     if (props.propertyDescriptor?.type === EntityPropertyType.Entity && props.propertyDescriptor?.key.name === StaticEntityProperties.ParentPrimaryKey) {
         return true
+    } else if (props.propertyDescriptor?.type === EntityPropertyType.Attributes && props.propertyDescriptor.schema.type === Scalar.Predecessor) {
+        return true
+    } else if (props.propertyDescriptor?.type === EntityPropertyType.AssociatedData && props.propertyDescriptor.schema.type === Scalar.Predecessor) {
+        return true
     } else if (props.propertyDescriptor?.schema?.referencedEntityType) {
         return true
     } else {
@@ -22,6 +36,7 @@ const openableInNewTab = computed<boolean>(() => {
     }
 })
 
+// todo lho we could format certain data types more human readable like we do in markdown pretty printer
 function toPrintablePropertyValue(value: any): string {
     if (value == undefined) {
         return ''
@@ -31,10 +46,34 @@ function toPrintablePropertyValue(value: any): string {
             return ''
         }
         return `[${value.map(it => toPrintablePropertyValue(it)).join(', ')}]`
+    } else if (value instanceof EntityReferenceValue) {
+        const flattenedRepresentativeAttributes: string[] = []
+        for (const representativeAttribute of value.representativeAttributes) {
+            if (representativeAttribute instanceof Array) {
+                flattenedRepresentativeAttributes.push(...(representativeAttribute.map(it => toPrintablePropertyValue(it))))
+            } else {
+                flattenedRepresentativeAttributes.push(toPrintablePropertyValue(representativeAttribute))
+            }
+        }
+        if (flattenedRepresentativeAttributes.length === 0) {
+            return `${value.primaryKey}`
+        } else {
+            return `${value.primaryKey}: ${flattenedRepresentativeAttributes.join(', ')}`
+        }
     } else if (value instanceof Object) {
         return JSON.stringify(value)
     } else {
         return value.toString()
+    }
+}
+
+function copyValue(): void {
+    if (printablePropertyValue.value) {
+        navigator.clipboard.writeText(printablePropertyValue.value).then(() => {
+            toaster.info('Copied to clipboard.')
+        }).catch(() => {
+            toaster.error(new UnexpectedError(undefined, 'Failed to copy to clipboard.'))
+        })
     }
 }
 </script>
@@ -43,6 +82,7 @@ function toPrintablePropertyValue(value: any): string {
     <td
         :class="{'data-grid-cell--clickable': printablePropertyValue}"
         @click="emit('click')"
+        @click.middle="copyValue"
     >
         <span class="data-grid-cell__body">
             <template v-if="propertyDescriptor?.schema?.localized && !dataLocale">
@@ -55,8 +95,13 @@ function toPrintablePropertyValue(value: any): string {
                 <span class="text-disabled">&lt;null&gt;</span>
             </template>
             <template v-else>
-                <VIcon v-if="openableInNewTab">mdi-open-in-new</VIcon>
-                {{ printablePropertyValue }}
+                <VIcon v-if="openableInNewTab" class="mr-1">mdi-open-in-new</VIcon>
+                <span>
+                    {{ printablePropertyValue }}
+                    <VTooltip activator="parent">
+                        {{ printablePropertyValue }}
+                    </VTooltip>
+                </span>
             </template>
         </span>
     </td>

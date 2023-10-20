@@ -38,6 +38,7 @@ function open() {
                 <VChip
                     v-for="flag in flags"
                     :key="flag"
+                    variant="plain"
                 >
                     {{ flag }}
                 </VChip>

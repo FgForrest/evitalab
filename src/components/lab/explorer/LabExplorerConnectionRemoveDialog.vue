@@ -41,17 +41,19 @@ function removeConnection(): void {
             <slot name="activator" v-bind="props"/>
         </template>
 
-        <VCard>
+        <VCard class="py-8 px-4">
             <VCardTitle>Remove connection</VCardTitle>
-            <VCardText>
+            <VCardText class="mb-4">
                 Are you sure you want to remove the connection <strong>{{ connection.name }}</strong>?
             </VCardText>
             <VCardActions>
                 <VSpacer/>
-                <VBtn @click="cancel">
+                <VBtn @click="cancel"
+                variant="tonal">
                     Cancel
                 </VBtn>
                 <VBtn
+                    variant="outlined"
                     prepend-icon="mdi-delete"
                     @click="removeConnection"
                 >

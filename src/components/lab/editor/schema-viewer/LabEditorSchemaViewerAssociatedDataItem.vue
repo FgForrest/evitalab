@@ -10,7 +10,9 @@ import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
 import { UnexpectedError } from '@/model/lab'
 import LabEditorSchemaViewerContainerSectionListItem
     from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerContainerSectionListItem.vue'
+import { LabService, useLabService } from '@/services/lab.service'
 
+const labService: LabService = useLabService()
 const editorService: EditorService = useEditorService()
 
 const props = defineProps<{
@@ -18,8 +20,7 @@ const props = defineProps<{
     schema: AssociatedDataSchema
 }>()
 
-const flags: string[] = []
-if (props.schema.localized) flags.push('localized')
+const flags: string[] = labService.getAssociatedDataSchemaFlags(props.schema)
 
 function openAssociatedDataSchema(): void {
     if (!(props.dataPointer.schemaPointer instanceof EntitySchemaPointer)) {

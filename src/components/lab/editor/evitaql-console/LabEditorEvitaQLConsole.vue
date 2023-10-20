@@ -15,6 +15,9 @@ import { EvitaQLConsoleService, useEvitaQLConsoleService } from '@/services/edit
 import { EvitaQLConsoleData, EvitaQLConsoleParams } from '@/model/editor/evitaql-console'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import { TabComponentEvents, TabComponentProps } from '@/model/editor/editor'
+import VExecuteQueryButton from '@/components/base/VExecuteQueryButton.vue'
+import VTabToolbar from '@/components/base/VTabToolbar.vue'
+import VSideTabs from '@/components/base/VSideTabs.vue'
 
 const evitaQLConsoleService: EvitaQLConsoleService = useEvitaQLConsoleService()
 const toaster: Toaster = useToaster()
@@ -53,47 +56,20 @@ if (props.params.executeOnOpen) {
 
 <template>
     <div class="evitaql-editor">
-        <VToolbar
-            density="compact"
-            elevation="2"
-            class="evitaql-editor__header"
+        <VTabToolbar
+            prepend-icon="mdi-application-braces-outline"
+            :path="path"
         >
-            <VAppBarNavIcon
-                icon="mdi-console"
-                :disabled="true"
-                style="opacity: 1"
-            />
-
-            <VToolbarTitle>
-                <VBreadcrumbs
-                    :items="path"
-                    class="pl-0 pr-0"
-                />
-            </VToolbarTitle>
-
             <template #append>
-                <!-- todo lho primary color? -->
-                <VBtn
-                    icon
-                    variant="elevated"
-                    density="compact"
-                    @click="executeQuery"
-                >
-                    <VIcon>mdi-play</VIcon>
-
-                    <VTooltip activator="parent">
-                        Execute query
-                    </VTooltip>
-                </VBtn>
+                <VExecuteQueryButton @click="executeQuery" />
             </template>
-        </VToolbar>
+        </VTabToolbar>
 
         <div class="evitaql-editor__body">
             <VSheet class="evitaql-editor-query-sections">
-                <VTabs
+                <VSideTabs
                     v-model="editorTab"
-                    direction="vertical"
-                    class="evitaql-editor-query-sections__tab"
+                    side="left"
                 >
                     <VTab value="query">
                         <VIcon>mdi-database-search</VIcon>
@@ -107,9 +83,9 @@ if (props.params.executeOnOpen) {
                             Variables
                         </VTooltip>
                     </VTab>
-                </VTabs>
+                </VSideTabs>
 
-                <VDivider />
+                <VDivider class="mt-2 mb-2" />
             </VSheet>
 
             <Splitpanes vertical>
@@ -154,10 +130,6 @@ if (props.params.executeOnOpen) {
     display: grid;
     grid-template-rows: 3rem 1fr;
 
-    &__header {
-        z-index: 100;
-    }
-
     &__body {
         display: grid;
         grid-template-columns: 3rem 1fr;
@@ -178,9 +150,19 @@ if (props.params.executeOnOpen) {
 .evitaql-editor-query-sections {
     display: flex;
     width: 3rem;
+}
 
-    &__tab {
-        width: 3rem;
+.v-slide-group {
+    & :deep(.v-tab) {
+
+        &:hover {
+            color: var(--el-color-primary-lightest);
+        }
+
+        &.v-tab--selected {
+            color: var(--el-color-primary-lightest);
+        }
+
     }
 }
 </style>

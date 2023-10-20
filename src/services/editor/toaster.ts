@@ -21,26 +21,28 @@ export class Toaster {
     }
 
     success(title: string): void {
-        this.toast.success(title)
+        this.toast.success(title, { icon: 'mdi mdi-check-circle-outline'})
     }
 
     info(title: string): void {
-        this.toast.info(title)
+        this.toast.info(title, { icon: 'mdi mdi-information-outline' })
     }
 
     warning(title: string): void {
-        this.toast.warning(title)
+        this.toast.warning(title, { icon: 'mdi mdi-alert-outline' })
     }
 
     error(error: Error | String): void {
+        console.error(error)
+
         if (typeof error === 'string') {
-            this.toast.error(error)
+            this.toast.error(error, { icon: 'mdi mdi-alert-circle-outline' })
             return
         }
 
         if (error instanceof LabError) {
             if (error.detail == undefined) {
-                this.toast.error(error.message)
+                this.toast.error(error.message, { icon: 'mdi mdi-alert-circle-outline' })
             } else {
                 this.toast.error(
                     error.message,
@@ -56,6 +58,7 @@ export class Toaster {
         const id: string = uuidv4()
         return {
             id,
+            icon: 'mdi mdi-alert-circle-outline',
             onClick: () => {
                 this.editorService.createTabRequest(new ErrorViewerRequest(error.connection, error))
                 this.toast.dismiss(id)

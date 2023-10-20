@@ -79,7 +79,7 @@ function resolveNewSelection() {
                 <slot :property="property" />
                 <VDivider
                     v-if="index < filteredPropertyDescriptors.length - 1"
-                    inset
+                    class="mt-2 mb-2"
                 />
             </template>
         </template>

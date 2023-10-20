@@ -1,0 +1,42 @@
+.v-btn {
+  text-transform: none !important;
+  padding: 0 20px!important;
+  transition: all .2s linear!important;
+  border-radius: 20px;
+
+  .v-btn__overlay,
+  .v-btn__underlay {
+    display: none!important;
+  }
+
+  &.v-btn--variant-tonal {
+    border: 1px solid transparent;
+    background: rgba($primary-dark, .5) !important;
+
+    &:hover {
+      border-color: $white;
+      background: $primary-dark;
+    }
+  }
+
+  &.v-btn--variant-outlined {
+    border-color: rgba($white, .5);
+
+    &:hover {
+      border-color: $white;
+    }
+  }
+
+  &.v-btn--variant-primary {
+    border: 1px solid $primary-lightest!important;
+    padding: 3px 10px!important;
+    min-height: 30px;
+    color: $primary-lightest!important;
+    font-weight: bold;
+
+    &:hover {
+      background: $primary-lightest!important;
+      color: white!important;
+    }
+  }
+}

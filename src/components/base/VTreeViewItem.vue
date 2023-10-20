@@ -69,6 +69,7 @@ function openActions(): void {
                 <template #activator="{ props }">
                     <VIcon
                         v-bind="props"
+                        class="text-gray-light"
                     >
                         mdi-dots-vertical
                     </VIcon>

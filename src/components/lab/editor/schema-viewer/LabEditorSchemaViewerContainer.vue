@@ -12,6 +12,7 @@ const props = defineProps<{
         <VExpansionPanels
             v-if="$slots['nested-details']"
             multiple
+            variant="accordion"
             class="mt-5"
         >
             <slot name="nested-details"/>

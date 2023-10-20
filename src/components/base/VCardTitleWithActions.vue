@@ -1,11 +1,7 @@
 <script setup lang="ts">
 /**
- * VCardTitle component with close button
+ * VCardTitle component with action buttons
  */
-
-const emit = defineEmits<{
-    (e: 'close'): void
-}>()
 </script>
 
 <template>
@@ -14,14 +10,9 @@ const emit = defineEmits<{
             <span>
                 <slot />
             </span>
-            <VBtn
-                icon
-                variant="flat"
-                density="compact"
-                @click="emit('close')"
-            >
-                <VIcon>mdi-close</VIcon>
-            </VBtn>
+            <div class="title-container__actions">
+                <slot name="actions" />
+            </div>
         </div>
     </VCardTitle>
 </template>
@@ -32,5 +23,10 @@ const emit = defineEmits<{
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    &__actions {
+        display: flex;
+        gap: 0.5rem;
+    }
 }
 </style>

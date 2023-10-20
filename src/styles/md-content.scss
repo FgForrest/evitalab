@@ -1,0 +1,74 @@
+/**
+ * VMarkdown content specific styles
+ */
+.md-content {
+
+  a {
+    color: $primary-lightest;
+    transition: color 0.2s 0s linear;
+
+    &:hover {
+      color: $white;
+    }
+  }
+
+  code:not(.hljs) {
+    display: inline-flex;
+    font-weight: normal;
+    padding: 4px 6px;
+    margin: 1px 1px 1px 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 2.5px;
+    text-decoration: none!important;
+    color: $secondary;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+    line-height: 1;
+  }
+
+  // hl overrides
+  @import "hl";
+
+  ul {
+    margin: .5rem 0 1.5rem 0;
+  }
+
+  ul li {
+    position: relative;
+    list-style-type: none;
+    padding-left: 1.5rem;
+  }
+
+  ul li::before {
+    position: absolute;
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    left: 0;
+    top: 11px;
+    background: $white;
+  }
+
+  ol {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    counter-reset: counter;
+    padding-left: 1.5rem;
+  }
+
+  .wysiwyg-content ol > li {
+    position: relative;
+    list-style-type: none;
+    padding-left: 3rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .wysiwyg-content ol > li::before {
+    position: absolute;
+    counter-increment: counter;
+    content: counter(counter) ') ';
+    left: 0;
+  }
+}

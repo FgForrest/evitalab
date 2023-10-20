@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { PanelType } from '@/model/lab'
+import {ref} from 'vue'
+import {PanelType} from '@/model/lab'
 
 const props = defineProps<{
     panel?: string
@@ -15,30 +15,7 @@ const mainItems = ref([
         title: 'Explorer',
         value: PanelType.Explorer,
         props: {
-            prependIcon: 'mdi-compass'
-        }
-    }
-])
-const secondaryItems = ref([
-    {
-        title: 'evitaDB Documentation',
-        value: PanelType.EvitaDBDocumentation,
-        props: {
-            prependIcon: 'mdi-book',
-        }
-    },
-    {
-        title: 'Feedback',
-        value: PanelType.Feedback,
-        props: {
-            prependIcon: 'mdi-comment-quote',
-        }
-    },
-    {
-        title: 'Issues',
-        value: PanelType.GitHub,
-        props: {
-            prependIcon: 'mdi-github',
+            prependIcon: 'mdi-connection'
         }
     }
 ])
@@ -51,25 +28,13 @@ function selectPanel(item: any): void {
     }
 }
 
-function openItem(item: any): void {
-    switch (item.id) {
-        case PanelType.EvitaDBDocumentation:
-            window.open('https://evitadb.io/documentation', '_blank')
-            break
-        case PanelType.Feedback:
-            window.open('https://discord.gg/VsNBWxgmSw', '_blank')
-            break
-        case PanelType.GitHub:
-            window.open('https://github.com/lukashornych/evitalab', '_blank')
-            break
-    }
-}
 </script>
 
 <template>
     <VNavigationDrawer
         permanent
         rail
+        class="bg-primary-dark"
     >
         <template #prepend>
             <div class="lab-logo">
@@ -78,11 +43,13 @@ function openItem(item: any): void {
                     href="https://github.com/lukashornych/evitalab"
                     target="_blank"
                 >
-                    <VAvatar size="24px">
+                    <VAvatar size="30px">
                         <!-- todo lho use local link, don't how to do it when we use the /lab prefix -->
                         <VImg
                             alt="evitaLab Logo"
-                            src="https://github.com/lukashornych/evitalab/blob/dev/public/logo.png?raw=true"
+                            width="30px"
+                            height="30px"
+                            src="/logo.png?raw=true"
                         />
                     </VAvatar>
                 </a>
@@ -95,24 +62,82 @@ function openItem(item: any): void {
             :items="mainItems"
             :selected="[panel]"
             @click:select="selectPanel"
+            class="connection-explorer"
         />
 
         <template #append>
-            <VList
-                density="compact"
-                nav
-                :items="secondaryItems"
-                @click:select="openItem"
-            />
+            <ul class="lab-nav-links">
+                <li>
+                    <a href="https://evitadb.io/documentation" target="_blank">
+                        <img src="/documentation.svg" alt="evitaDB Documentation">
+                        <VTooltip activator="parent">
+                            evitaDB documentation
+                        </VTooltip>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://discord.gg/VsNBWxgmSw" target="_blank">
+                        <img src="/discord.svg" alt="Discord icon">
+                        <VTooltip activator="parent">
+                            Discord
+                        </VTooltip>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://github.com/lukashornych/evitalab" target="_blank">
+                    <img src="/github.svg" alt="GitHub icon">
+                        <VTooltip activator="parent">
+                            Give us a ⭐️ on GitHub
+                        </VTooltip>
+                    </a>
+                </li>
+            </ul>
         </template>
     </VNavigationDrawer>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '@/styles/colors.scss';
+
 .lab-logo {
     height: 3.5rem;
     display: grid;
     justify-items: center;
     align-items: center;
+}
+.lab-nav-links {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0 1.25rem 0;
+    gap: 1.25rem 0;
+}
+.lab-nav-links li img {
+    opacity: .5;
+    transition: opacity .2s ease-in-out;
+}
+
+.lab-nav-links li:hover img {
+    opacity: 1;
+}
+
+.connection-explorer {
+
+    & :deep(.v-list-item__underlay) {
+        display: none;
+    }
+    & :deep(.v-list-item__overlay) {
+        background: transparent;
+        opacity: 1;
+        border-radius: 50%;
+        transition: background-color .1s ease-in-out;
+    }
+    & :deep(.v-list-item--active > .v-list-item__overlay) {
+        background: $primary-lightest;
+        opacity: 1;
+        border-radius: 50%;
+    }
 }
 </style>

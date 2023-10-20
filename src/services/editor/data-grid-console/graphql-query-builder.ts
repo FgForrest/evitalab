@@ -2,10 +2,10 @@ import { QueryBuilder } from '@/services/editor/data-grid-console/query-builder'
 import {
     DataGridDataPointer,
     EntityPropertyKey,
-    EntityPropertyType
+    EntityPropertyType, StaticEntityProperties
 } from '@/model/editor/data-grid'
 import { LabService } from '@/services/lab.service'
-import { AssociatedDataSchema, AttributeSchemaUnion, EntitySchema } from '@/model/evitadb'
+import { AssociatedDataSchema, AttributeSchemaUnion, EntitySchema, ReferenceSchema } from '@/model/evitadb'
 import { UnexpectedError } from '@/model/lab'
 
 /**
@@ -59,7 +59,33 @@ export class GraphQLQueryBuilder implements QueryBuilder {
         for (const [propertyType, properties] of groupedPropertyKeys) {
             switch (propertyType) {
                 case EntityPropertyType.Entity:
-                    entityOutputFields.push(...properties)
+                    for (const property of properties) {
+                        if (property === StaticEntityProperties.ParentPrimaryKey) {
+                            const representativeAttributes: AttributeSchemaUnion[] = Object.values(entitySchema.attributes)
+                                .filter(attributeSchema => 'representative' in attributeSchema && attributeSchema.representative)
+                                .filter(attributeSchema => {
+                                    if (!dataLocale) {
+                                        return !attributeSchema.localized
+                                    }
+                                    return true
+                                })
+
+                            if (representativeAttributes.length === 0) {
+                                entityOutputFields.push(`parents(stopAt: { distance: 1 }) {`)
+                                entityOutputFields.push('  primaryKey')
+                                entityOutputFields.push('}')
+                            } else {
+                                entityOutputFields.push(`parents(stopAt: { distance: 1 }) {`)
+                                entityOutputFields.push('   primaryKey')
+                                entityOutputFields.push('   attributes {')
+                                entityOutputFields.push(`       ${representativeAttributes.map(attributeSchema => `${attributeSchema.nameVariants.camelCase}`).join(',') }`)
+                                entityOutputFields.push('   }')
+                                entityOutputFields.push('}')
+                            }
+                        } else {
+                            entityOutputFields.push(property)
+                        }
+                    }
                     break
                 case EntityPropertyType.Attributes:
                     if (dataLocale !== undefined) {
@@ -102,9 +128,34 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                     entityOutputFields.push('}')
                     break
                 case EntityPropertyType.References:
-                    for (const property of properties) {
-                        entityOutputFields.push(`reference_${property}: ${property} {`)
-                        entityOutputFields.push('  referencedPrimaryKey')
+                    for (const referenceProperty of properties) {
+                        const referenceSchema: ReferenceSchema | undefined = Object.values(entitySchema.references)
+                            .find(referenceSchema => referenceSchema.nameVariants.camelCase === referenceProperty)
+                        if (referenceSchema == undefined) {
+                            throw new UnexpectedError(undefined, `Could not find reference '${referenceProperty}' in '${dataPointer.entityType}'.`)
+                        }
+
+                        entityOutputFields.push(`reference_${referenceProperty}: ${referenceProperty} {`)
+                        entityOutputFields.push('   referencedPrimaryKey')
+                        if (referenceSchema.referencedEntityTypeManaged) {
+                            const referencedEntitySchema: EntitySchema = await this.labService.getEntitySchema(dataPointer.connection, dataPointer.catalogName, referenceSchema.referencedEntityType)
+                            const representativeAttributes: AttributeSchemaUnion[] = Object.values(referencedEntitySchema.attributes)
+                                .filter(attributeSchema => 'representative' in attributeSchema && attributeSchema.representative)
+                                .filter(attributeSchema => {
+                                    if (!dataLocale) {
+                                        return !attributeSchema.localized
+                                    }
+                                    return true
+                                })
+
+                            if (representativeAttributes.length > 0) {
+                                entityOutputFields.push('   referencedEntity {')
+                                entityOutputFields.push('       attributes {')
+                                entityOutputFields.push(`           ${representativeAttributes.map(attributeSchema => `${attributeSchema.nameVariants.camelCase}`).join(',') }`)
+                                entityOutputFields.push('       }')
+                                entityOutputFields.push('   }')
+                            }
+                        }
                         entityOutputFields.push('}')
                     }
                     break
@@ -132,6 +183,10 @@ export class GraphQLQueryBuilder implements QueryBuilder {
 
     buildParentEntityFilterBy(parentPrimaryKey: number): string {
         return `entityPrimaryKeyInSet: ${parentPrimaryKey}`
+    }
+
+    buildPredecessorEntityFilterBy(predecessorPrimaryKey: number): string {
+        return `entityPrimaryKeyInSet: ${predecessorPrimaryKey}`
     }
 
     buildReferencedEntityFilterBy(referencedPrimaryKeys: number | number[]): string {

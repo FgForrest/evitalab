@@ -22,7 +22,7 @@ export abstract class ApiClient {
     /**
      * Translates HTTP errors into specific lab errors.
      */
-    protected handleCallError(e: any, connection: EvitaDBConnection): LabError {
+    protected handleCallError(e: any, connection?: EvitaDBConnection): LabError {
         if (e.name === 'HTTPError') {
             const statusCode: number = e.response.status
             if (statusCode >= 500) {

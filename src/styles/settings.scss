@@ -9,12 +9,77 @@
 //   $color-pack: false
 // );
 
+@use 'vuetify/settings' with (
+  $overlay-opacity: 0.8,
+  $overlay-scrim-background: rgba(35, 53, 92, 0.80),
+  // tooltip
+  $tooltip-text-color: #fff,
+  // table
+  $table-row-font-size: 1.4rem,
+  $table-border-color: rgba(var(--v-border-color), var(--v-border-opacity)),
+);
+
+@import 'colors';
+@import "md-content";
+@import "btn";
+@import "chip";
+
+.v-application.v-theme--dark {
+  --el-color-primary-dark: #131323;
+  --el-color-primary-light: #23355C;
+  --el-color-primary-lightest: #21BFE3;
+  --el-color-primary-lightest-500: #1a98b5;
+  --v-activated-opacity: 0.08!important;
+}
+
+
+// Refactor font family globally
+$font-family: 'Poppins';
+.v-application {
+  [class*='text-'] {
+    font-family: $font-family, sans-serif !important;
+  }
+
+  font-family: $font-family, sans-serif !important;
+}
+
+.v-field--variant-solo-filled .v-field__overlay {
+  background-color: $primary-dark !important;
+  opacity: 1 !important;
+}
+
+// Global/Generic styles
+html {
+  font-family: Poppins, sans-serif;
+  overflow-y: hidden;
+}
+
+body::after {
+  position: fixed;
+  display: block;
+  content: '';
+  top: 100%;
+  right: 0;
+  transform: translateX(0);
+  width: calc(100vw - 300px);
+  height: 600px;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow:
+          0 0 20px 20px rgba($primary-lightest, 0.2),
+          0 0 40px 40px rgba($primary-lightest, 0.2),
+          0 0 80px 80px rgba($primary-lightest, 0.2),
+          0 0 120px 120px rgba($primary-lightest, 0.2);
+  opacity: .25;
+  z-index: 1;
+}
+
 .v-tab {
   text-transform: none !important;
 }
 
-.v-btn {
-  text-transform: none !important;
+.v-data-table-footer {
+  z-index: 2;
 }
 
 .splitpanes {
@@ -46,6 +111,145 @@
   width: calc(100vw - var(--v-layout-left) - var(--v-layout-right));
 }
 
-html {
-  overflow-y: hidden;
+.v-breadcrumbs-divider + .v-breadcrumbs-item--disabled {
+  color: #21BFE3 !important;
+  opacity: 1;
+}
+
+.cm-focused {
+  outline: none !important;
+}
+
+.v-breadcrumbs-item--disabled:only-child {
+  color: #21BFE3 !important;
+  opacity: 1;
+}
+
+.v-field__input {
+  background: $primary-dark!important;
+  box-shadow: none!important;
+  border-radius: 0.25rem;
+}
+
+.v-label.v-field-label {
+  color: $gray-light !important;
+  z-index: 1;
+}
+
+.v-expansion-panel__shadow {
+  display: none;
+}
+
+.v-expansion-panel--active > .v-expansion-panel-title {
+  background: var(--el-color-primary-light);
+  opacity: 1;
+  min-height: 3rem;
+
+  .v-expansion-panel-title__overlay {
+    display: none;
+  }
+}
+
+// adjusting select styles
+.v-select__content {
+  background: var(--el-color-primary-dark);
+}
+
+.v-field--variant-outlined {
+  border: 0;
+  background: var(--el-color-primary-dark);
+}
+
+// pop up/overlay colors
+.v-overlay__content {
+  background: var(--el-color-primary-dark);
+  border-radius: 4px;
+
+  .v-list-item--active {
+    background: var(--el-color-primary-light);
+  }
+}
+
+.v-card-title {
+  padding: 0.5rem 0.625rem 0.5rem 1rem;
+}
+
+// toast notifications
+
+.Vue-Toastification__icon {
+  height: 1.625rem;
+  font-size: 1.5rem;
+  line-height: 1.5rem;
+}
+
+.Vue-Toastification__toast--success {
+  background-color: #1f3a38;
+
+  .Vue-Toastification__icon {
+    color: #22a44e;
+  }
+
+  .Vue-Toastification__progress-bar {
+    background-color: #22a44e;
+  }
+}
+
+.Vue-Toastification__toast--info {
+  background-color: #23355c;
+
+  .Vue-Toastification__icon {
+    color: #487ad3;
+  }
+
+  .Vue-Toastification__progress-bar {
+    background-color: #487ad3;
+  }
+}
+
+.Vue-Toastification__toast--warning {
+  background-color: #4c4029;
+
+  .Vue-Toastification__icon {
+    color: #f7a729;
+  }
+
+  .Vue-Toastification__progress-bar {
+    background-color: #f7a729;
+  }
+}
+
+.Vue-Toastification__toast--error {
+  background-color: #4c232f;
+
+  .Vue-Toastification__icon {
+    color: #E13321;
+  }
+
+  .Vue-Toastification__progress-bar {
+    background-color: #E13321;
+  }
+}
+// Overlay
+.v-main {
+  &::after {
+    position: absolute;
+    width: 100%;
+  }
+}
+
+.v-overlay__scrim {
+  backdrop-filter: blur(2px);
+}
+
+.v-tab,
+.lab-tab {
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    color: var(--el-color-primary-lightest);
+  }
+
+  &.v-slide-group-item--active {
+    color: var(--el-color-primary-lightest);
+  }
 }

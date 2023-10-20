@@ -41,6 +41,13 @@ export interface QueryBuilder {
     buildParentEntityFilterBy(parentPrimaryKey: number): string
 
     /**
+     * Builds filter by clause to find referenced entities by their primary keys in the same collection as successor entity.
+     *
+     * @param predecessorPrimaryKey primary key of predecessor entity
+     */
+    buildPredecessorEntityFilterBy(predecessorPrimaryKey: number): string
+
+    /**
      * Builds single entityPrimaryKeyInSet filter constraint in language of implementation for filter by clause of a referenced
      * collection.
      *

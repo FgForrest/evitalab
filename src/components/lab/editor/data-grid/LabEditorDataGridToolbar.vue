@@ -2,6 +2,8 @@
 /**
  * Toolbar for the LabEditorDataGrid component.
  */
+import VExecuteQueryButton from '@/components/base/VExecuteQueryButton.vue'
+import VTabToolbar from '@/components/base/VTabToolbar.vue'
 
 const props = defineProps<{
     path: string[]
@@ -14,48 +16,20 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <VToolbar
-        density="compact"
-        elevation="2"
-        class="data-grid__header"
+    <VTabToolbar
+        prepend-icon="mdi-text-box-edit-outline"
+        :path="path"
     >
-        <VAppBarNavIcon
-            icon="mdi-table"
-            :disabled="true"
-            style="opacity: 1"
-        />
-
-        <VToolbarTitle>
-            <VBreadcrumbs
-                :items="path"
-                class="pl-0 pr-0"
-            />
-        </VToolbarTitle>
-
         <template #append>
-            <VBtn
-                icon
-                variant="elevated"
-                :loading="loading"
-                density="compact"
-                @click="emit('executeQuery')"
-            >
-                <VIcon>mdi-play</VIcon>
-
-                <VTooltip activator="parent">
-                    Execute query
-                </VTooltip>
-            </VBtn>
+            <VExecuteQueryButton @click="emit('executeQuery')" />
         </template>
 
         <template #extension>
             <slot name="query" />
         </template>
-    </VToolbar>
+    </VTabToolbar>
 </template>
 
 <style lang="scss" scoped>
-.data-grid__header {
-    z-index: 100;
-}
+
 </style>

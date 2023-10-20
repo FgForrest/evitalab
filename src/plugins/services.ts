@@ -10,6 +10,7 @@ import { EvitaQLConsoleService, key as evitaQLConsoleServiceKey } from '@/servic
 import { SchemaViewerService, key as schemaViewerServiceKey } from '@/services/editor/schema-viewer.service'
 import { EvitaDBClient } from '@/services/evitadb-client'
 import { GraphQLClient } from '@/services/graphql-client'
+import { EvitaDBDocsClient } from '@/services/evitadb-docs-client'
 
 /**
  * Creates and registers all lab services to the application.
@@ -17,8 +18,9 @@ import { GraphQLClient } from '@/services/graphql-client'
 export function registerServices(app: App, store: Store<State>): void {
     const evitaDBClient: EvitaDBClient = new EvitaDBClient()
     const graphQLClient: GraphQLClient = new GraphQLClient()
+    const evitaDBDocsClient: EvitaDBDocsClient = new EvitaDBDocsClient()
 
-    const labService: LabService = new LabService(store, evitaDBClient)
+    const labService: LabService = new LabService(store, evitaDBClient, evitaDBDocsClient)
     const editorService: EditorService = new EditorService(store)
     const demoSnippetResolver: DemoSnippetResolver = new DemoSnippetResolver(labService)
     const dataGridConsoleService: DataGridConsoleService = new DataGridConsoleService(labService, evitaDBClient, graphQLClient)

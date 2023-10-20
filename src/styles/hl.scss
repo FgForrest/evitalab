@@ -1,0 +1,104 @@
+pre code.hljs {
+    font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;
+    display: block;
+    overflow-x: auto;
+    background-color: #1e1e1e;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+/*!
+  Theme: Default
+  Description: Original highlight.js style
+  Author: (c) Ivan Sagalaev <maniac@softwaremaniacs.org>
+  Maintainer: @highlightjs/core-team
+  Website: https://highlightjs.org/
+  License: see project LICENSE
+  Touched: 2021
+*/
+/*
+This is left on purpose making default.css the single file that can be lifted
+as-is from the repository directly without the need for a build step
+
+Typically this "required" baseline CSS is added by `makestuff.js` during build.
+*/
+pre code.hljs {
+    display: block;
+    overflow-x: auto;
+}
+code.hljs {
+    padding: 3px 5px
+}
+/* end baseline CSS */
+.hljs {
+    color: #ffffff
+}
+
+.hljs-comment {
+    color: #697070
+}
+.hljs-tag,
+.hljs-punctuation {
+    color: #d4d4d4
+}
+.hljs-name,
+.hljs-attr {
+    color: #9cdcfe
+}
+.hljs-keyword,
+.hljs-attribute,
+.hljs-selector-tag,
+.hljs-meta .hljs-keyword,
+.hljs-doctag,
+.hljs-name {
+    font-weight: bold
+}
+/* User color: hue: 0 */
+.hljs-type,
+.hljs-string,
+.hljs-number,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-quote,
+.hljs-template-tag,
+.hljs-deletion {
+    color: #ce9178
+}
+.hljs-title,
+.hljs-section {
+    color: #ce9178;
+    font-weight: bold
+}
+.hljs-regexp,
+.hljs-symbol,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-link,
+.hljs-selector-attr,
+.hljs-operator,
+.hljs-selector-pseudo {
+    color: #ab5656
+}
+/* Language color: hue: 90; */
+.hljs-literal {
+    color: #695
+}
+.hljs-built_in,
+.hljs-bullet,
+.hljs-code,
+.hljs-addition {
+    color: #397300
+}
+/* Meta color: hue: 200 */
+.hljs-meta {
+    color: #1f7199
+}
+.hljs-meta .hljs-string {
+    color: #1f7199
+}
+/* Misc effects */
+.hljs-emphasis {
+    font-style: italic
+}
+.hljs-strong {
+    font-weight: bold
+}

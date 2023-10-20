@@ -73,10 +73,11 @@ function handleAction(action: string) {
 
 <template>
     <VTreeViewItem
-        prepend-icon="mdi-list-box"
+        prepend-icon="mdi-list-box-outline"
         :actions="actions"
         @click="openDataGrid"
         @click:action="handleAction"
+        class="text-gray-light text-sm-body-2"
     >
         {{ entitySchema.name }}
     </VTreeViewItem>

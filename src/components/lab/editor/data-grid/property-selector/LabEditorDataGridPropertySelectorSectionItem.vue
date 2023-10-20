@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import VueMarkdown from 'vue-markdown-render'
 import { EntityPropertyKey } from '@/model/editor/data-grid'
+import VMarkdown from '@/components/base/VMarkdown.vue'
 
 const props = withDefaults(defineProps<{
     value: EntityPropertyKey,
@@ -35,6 +35,8 @@ const emit = defineEmits<{
                     <VChip
                         v-for="flag in flags"
                         :key="flag"
+                        variant="plain"
+                        class="text-sm-body-2"
                     >
                         {{ flag }}
                     </VChip>
@@ -52,7 +54,7 @@ const emit = defineEmits<{
                      activator="parent"
                      max-width="500"
                  >
-                     <VueMarkdown :source="description" />
+                     <VMarkdown :source="description" />
                  </VTooltip>
              </div>
         </template>

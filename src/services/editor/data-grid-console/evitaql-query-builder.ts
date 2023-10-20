@@ -64,7 +64,20 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
             .map(({ name }) => name)
             .forEach(it => {
                 if (it === StaticEntityProperties.ParentPrimaryKey) {
-                    entityFetchRequires.push(`hierarchyContent(stopAt(distance(1)))`)
+                    const representativeAttributes: AttributeSchemaUnion[] = Object.values(entitySchema.attributes)
+                        .filter(attributeSchema => 'representative' in attributeSchema && attributeSchema.representative)
+                        .filter(attributeSchema => {
+                            if (!dataLocale) {
+                                return !attributeSchema.localized
+                            }
+                            return true
+                        })
+
+                    if (representativeAttributes.length === 0) {
+                        entityFetchRequires.push(`hierarchyContent(stopAt(distance(1)))`)
+                    } else {
+                        entityFetchRequires.push(`hierarchyContent(stopAt(distance(1)), entityFetch(attributeContent(${representativeAttributes.map(attributeSchema => `'${attributeSchema.name}'`).join(',')})))`)
+                    }
                 } else if (it === StaticEntityProperties.PriceInnerRecordHandling) {
                     entityFetchRequires.push(`priceContent(NONE)`)
                 }
@@ -100,19 +113,35 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
             entityFetchRequires.push(`associatedDataContent(${requiredAssociatedData.join(',')})`)
         }
 
-        const requiredReferences: string[] = requiredProperties
+        const requiredReferences = requiredProperties
             .filter(({ type }) => type === EntityPropertyType.References)
             .map(({ name }) => name)
-            .map(it => {
-                const referenceSchema: ReferenceSchema | undefined = Object.values(entitySchema.references)
-                    .find(referenceSchema => referenceSchema.nameVariants.camelCase === it)
-                if (referenceSchema == undefined) {
-                    throw new UnexpectedError(undefined, `Could not find reference '${it}' in '${dataPointer.entityType}'.`)
+        for (const requiredReference of requiredReferences) {
+            const referenceSchema: ReferenceSchema | undefined = Object.values(entitySchema.references)
+                .find(referenceSchema => referenceSchema.nameVariants.camelCase === requiredReference)
+            if (referenceSchema == undefined) {
+                throw new UnexpectedError(undefined, `Could not find reference '${requiredReference}' in '${dataPointer.entityType}'.`)
+            }
+
+            if (referenceSchema.referencedEntityTypeManaged) {
+                const referencedEntitySchema: EntitySchema = await this.labService.getEntitySchema(dataPointer.connection, dataPointer.catalogName, referenceSchema.referencedEntityType)
+                const representativeAttributes: AttributeSchemaUnion[] = Object.values(referencedEntitySchema.attributes)
+                    .filter(attributeSchema => 'representative' in attributeSchema && attributeSchema.representative)
+                    .filter(attributeSchema => {
+                        if (!dataLocale) {
+                            return !attributeSchema.localized
+                        }
+                        return true
+                    })
+
+                if (representativeAttributes.length === 0) {
+                    entityFetchRequires.push(`referenceContent('${referenceSchema.name}')`)
+                } else {
+                    entityFetchRequires.push(`referenceContent('${referenceSchema.name}', entityFetch(attributeContent(${representativeAttributes.map(attributeSchema => `'${attributeSchema.name}'`).join(',')})))`)
                 }
-                return `'${referenceSchema.name}'`
-            })
-        if (requiredReferences.length > 0) {
-            entityFetchRequires.push(`referenceContent(${requiredReferences.join(',')})`)
+            } else {
+                entityFetchRequires.push(`referenceContent('${referenceSchema.name}')`)
+            }
         }
 
         if (entityFetchRequires.length > 0 ||
@@ -138,6 +167,10 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
 
     buildParentEntityFilterBy(parentPrimaryKey: number): string {
         return `entityPrimaryKeyInSet(${parentPrimaryKey})`
+    }
+
+    buildPredecessorEntityFilterBy(predecessorPrimaryKey: number): string {
+        return `entityPrimaryKeyInSet(${predecessorPrimaryKey})`
     }
 
     buildReferencedEntityFilterBy(referencedPrimaryKeys: number | number[]): string {

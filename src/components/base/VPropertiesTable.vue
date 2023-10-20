@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import VueMarkdown from 'vue-markdown-render'
+import VMarkdown from '@/components/base/VMarkdown.vue'
 
 const props = defineProps<{
     properties: [string, any, ((item?: string) => void)?][]
@@ -36,14 +36,15 @@ const props = defineProps<{
                     <VChip
                         v-for="item in property[1]"
                         :key="item"
+                        :variant="property[2] ? 'outlined' : 'plain'"
                         @click="property[2]?.(item)"
                     >
                         {{ item }}
                     </VChip>
                 </VChipGroup>
-                <span v-else>
-                    <VueMarkdown :source="property[1].toString()" />
-                </span>
+                <div v-else>
+                    <VMarkdown :source="property[1].toString()"/>
+                </div>
             </td>
 
         </tr>

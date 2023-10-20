@@ -1,0 +1,24 @@
+.v-chip--variant-outlined {
+  border: 0.0625rem solid $gray-light !important;
+  color: $gray-light !important;
+  transition: all .2s linear;
+
+  .v-chip__overlay,
+  .v-chip__underlay {
+    display: none;
+  }
+
+  &:hover {
+    border: 0.0625rem solid rgba($primary-lightest, .5) !important;
+    color: rgba($primary-lightest, .5) !important;
+  }
+
+  &.v-chip--selected {
+    border: 0.0625rem solid $primary-lightest !important;
+    color: $primary-lightest !important;
+  }
+}
+
+.v-chip--variant-plain {
+  pointer-events: none;
+}

@@ -6,7 +6,9 @@ import { EditorService, useEditorService } from '@/services/editor/editor.servic
 import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
 import LabEditorSchemaViewerContainerSectionListItem
     from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerContainerSectionListItem.vue'
+import { LabService, useLabService } from '@/services/lab.service'
 
+const labService: LabService = useLabService()
 const editorService: EditorService = useEditorService()
 
 const props = defineProps<{
@@ -14,10 +16,7 @@ const props = defineProps<{
     schema: ReferenceSchema
 }>()
 
-const flags: string[] = []
-if (!props.schema.referencedEntityTypeManaged) flags.push('external')
-if (props.schema.indexed) flags.push('indexed')
-if (props.schema.faceted) flags.push('faceted')
+const flags: string[] = labService.getReferenceSchemaFlags(props.schema)
 
 function openReferenceSchema(): void {
     if (!(props.dataPointer.schemaPointer instanceof EntitySchemaPointer)) {

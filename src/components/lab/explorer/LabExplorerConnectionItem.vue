@@ -101,11 +101,12 @@ function handleAction(action: string, payload?: any) {
                 v-bind="props"
                 openable
                 :is-open="isOpen"
-                prepend-icon="mdi-server"
+                prepend-icon="mdi-power-plug-outline"
                 :loading="loading"
                 :actions="actions"
                 @click="loadCatalogs"
                 @click:action="handleAction"
+                class="font-weight-bold"
             >
                 {{ connection.name }}
             </VTreeViewItem>

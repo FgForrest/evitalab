@@ -38,10 +38,7 @@ export class EvitaDBConnection {
  * Type of lab panel.
  */
 export enum PanelType {
-    Explorer = 'explorer',
-    EvitaDBDocumentation = 'evitadb-documentation',
-    Feedback = 'feedback',
-    GitHub = 'github'
+    Explorer = 'explorer'
 }
 
 /**
@@ -50,6 +47,16 @@ export enum PanelType {
 export enum QueryLanguage {
     EvitaQL = 'evitaql',
     GraphQL = 'graphql'
+}
+
+/**
+ * Represents a single evitaDB blog post.
+ */
+export type EvitaDBBlogPost = {
+    title: string,
+    perex: string,
+    url: string,
+    thumbnailUrl: string
 }
 
 
@@ -147,11 +154,11 @@ export class EvitaDBInstanceServerError extends LabInvalidUsageError {
  * Could not connect to the server (evitaDB instance). We can't do anything about it.
  */
 export class EvitaDBInstanceNetworkError extends LabInvalidUsageError {
-    constructor(connection: EvitaDBConnection) {
+    constructor(connection: EvitaDBConnection | undefined) {
         super(
             'EvitaDBInstanceNetworkError',
             connection,
-            `Could not connect to the '${connection.name}' instance. Please check your connection settings.`
+            `Could not connect to the '${connection?.name || 'unknown'}' instance. Please check your connection settings.`
         )
     }
 }

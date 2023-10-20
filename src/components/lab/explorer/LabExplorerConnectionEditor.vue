@@ -110,9 +110,9 @@ function getApiTestedIndicator(result: ApiTestResult): any  {
         case ApiTestResult.NotTested:
             return null
         case ApiTestResult.Success:
-            return 'mdi-check-circle'
+            return 'mdi-check-circle-outline'
         case ApiTestResult.Failure:
-            return 'mdi-close-circle'
+            return 'mdi-close-circle-outline'
     }
 }
 
@@ -222,13 +222,13 @@ async function storeConnection(): Promise<void> {
         :model-value="modelValue"
         @update:model-value="$emit('update:modelValue', $event)"
         persistent
-        max-width="30rem"
+        max-width="36rem"
     >
         <template #activator="{ props }">
             <slot name="activator" v-bind="props"/>
         </template>
 
-        <VCard>
+        <VCard class="py-8 px-4">
             <VCardTitle v-if="mode === Mode.Create">Add connection</VCardTitle>
             <VCardTitle v-if="mode === Mode.Modify">Edit connection</VCardTitle>
 
@@ -266,20 +266,25 @@ async function storeConnection(): Promise<void> {
                 </VForm>
             </VCardText>
 
-            <VCardActions>
+            <VCardActions class="px-6">
                 <VBtn
+                    variant="plain"
                     prepend-icon="mdi-connection"
                     @click="testConnection"
                 >
                     Test connection
                 </VBtn>
                 <VSpacer/>
-                <VBtn @click="cancel">
+                <VBtn
+                    variant="tonal"
+                    @click="cancel">
                     Cancel
                 </VBtn>
                 <VBtn
+                    variant="outlined"
                     prepend-icon="mdi-content-save"
                     @click="storeConnection"
+                    class="ml-4"
                 >
                     Save
                 </VBtn>

@@ -1,4 +1,4 @@
-import { EvitaDBConnection, EvitaDBConnectionId, UnexpectedError } from '@/model/lab'
+import { EvitaDBBlogPost, EvitaDBConnection, EvitaDBConnectionId, UnexpectedError } from '@/model/lab'
 import { inject, InjectionKey } from 'vue'
 import { Store } from 'vuex'
 import { State } from '@/store'
@@ -7,11 +7,12 @@ import {
     AssociatedDataSchema,
     AttributeSchemaUnion,
     Catalog,
-    CatalogSchema,
+    CatalogSchema, EntityAttributeSchema,
     EntitySchema,
     GlobalAttributeSchema,
-    ReferenceSchema, ReferenceSchemas
+    ReferenceSchema
 } from '@/model/evitadb'
+import { EvitaDBDocsClient } from '@/services/evitadb-docs-client'
 
 export const key: InjectionKey<LabService> = Symbol()
 
@@ -22,10 +23,12 @@ export const key: InjectionKey<LabService> = Symbol()
 export class LabService {
     readonly store: Store<State>
     readonly evitaDBClient: EvitaDBClient
+    readonly evitaDBDocsClient: EvitaDBDocsClient
 
-    constructor(store: Store<State>, evitaDBClient: EvitaDBClient) {
+    constructor(store: Store<State>, evitaDBClient: EvitaDBClient, evitaDBDocsClient: EvitaDBDocsClient) {
         this.store = store
         this.evitaDBClient = evitaDBClient
+        this.evitaDBDocsClient = evitaDBDocsClient
     }
 
     isReadOnly = (): boolean => {
@@ -93,6 +96,12 @@ export class LabService {
         return entitySchema
     }
 
+    getEntitySchemaFlags = (schema: EntitySchema): string[] => {
+        const flags: string[] = []
+        if (schema.withHierarchy) flags.push('hierarchical')
+        return flags
+    }
+
     getCatalogAttributeSchema = async (connection: EvitaDBConnection, catalogName: string, attributeName: string): Promise<GlobalAttributeSchema> => {
         const catalogSchema: CatalogSchema = await this.getCatalogSchema(connection, catalogName)
         const attributeSchema: GlobalAttributeSchema | undefined = Object.values(catalogSchema.attributes)
@@ -129,7 +138,12 @@ export class LabService {
 
     getAttributeSchemaFlags = (schema: AttributeSchemaUnion): string[] => {
         const flags: string[] = []
+        flags.push(this.formatDataTypeForFlag(schema.type))
         const globalAttribute = 'uniqueGlobally' in schema
+        const entityAttribute = 'representative' in schema
+        if (entityAttribute && (schema as EntityAttributeSchema).representative) {
+            flags.push('representative')
+        }
         if (globalAttribute && (schema as GlobalAttributeSchema).uniqueGlobally) {
             flags.push('unique globally')
         } else if (schema.unique) {
@@ -154,6 +168,7 @@ export class LabService {
 
     getAssociatedDataSchemaFlags = (schema: AssociatedDataSchema): string[] => {
         const flags: string[] = []
+        flags.push(this.formatDataTypeForFlag(schema.type))
         if (schema.localized) flags.push('localized')
         if (schema.nullable) flags.push('nullable')
         return flags
@@ -175,6 +190,18 @@ export class LabService {
         if (schema.indexed) flags.push('indexed')
         if (schema.faceted) flags.push('faceted')
         return flags
+    }
+
+    /**
+     * Returns the latest evitaDB blog posts to display on news page.
+     */
+    getBlogPosts = async (): Promise<EvitaDBBlogPost[]> => {
+        let cachedBlogPosts: EvitaDBBlogPost[] | undefined = this.store.state.lab.blogPosts
+        if (cachedBlogPosts == undefined || cachedBlogPosts.length === 0) {
+            cachedBlogPosts = await this.evitaDBDocsClient.getBlogPosts()
+            this.store.commit('lab/setBlogPosts', cachedBlogPosts)
+        }
+        return cachedBlogPosts
     }
 
     private async fetchCatalogs(connection: EvitaDBConnection): Promise<Catalog[]> {
@@ -205,6 +232,12 @@ export class LabService {
         )
 
         return fetchedCatalogSchema
+    }
+
+    private formatDataTypeForFlag(dataType: string): string {
+        return dataType
+            .replace('ComplexDataObject', 'Object')
+            .replace('Array', '[]')
     }
 }
 

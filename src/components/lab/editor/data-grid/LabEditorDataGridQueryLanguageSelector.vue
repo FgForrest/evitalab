@@ -6,7 +6,7 @@ import { computed } from 'vue'
 const queryLanguages = [
     {
         title: 'EvitaQL',
-        icon: 'mdi-console',
+        icon: 'mdi-application-braces-outline',
         value: QueryLanguage.EvitaQL
     },
     {
@@ -25,7 +25,7 @@ const emit = defineEmits<{
 
 const selectedIcon = computed<string>(() => {
     const language = queryLanguages.find(language => language.value === props.selected)
-    return language ? language.icon : 'mdi-code-braces'
+    return language ? language.icon : 'mdi-application-braces-outline'
 })
 </script>
 
@@ -59,5 +59,6 @@ const selectedIcon = computed<string>(() => {
 </template>
 
 <style lang="scss" scoped>
+
 
 </style>

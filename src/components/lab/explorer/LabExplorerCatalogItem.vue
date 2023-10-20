@@ -130,11 +130,12 @@ function handleAction(action: string) {
                 v-bind="props"
                 openable
                 :is-open="isOpen"
-                prepend-icon="mdi-book-open"
+                prepend-icon="mdi-menu"
                 :loading="loading"
                 :actions="actions"
                 @click="loadCatalogSchema"
                 @click:action="handleAction"
+                class="font-weight-bold"
             >
                 {{ catalog.name }}
             </VTreeViewItem>

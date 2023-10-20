@@ -91,17 +91,18 @@ const extensions: Extension[] = [
 </template>
 
 <style lang="scss" scoped>
+@import "@/styles/colors.scss";
+
 .cm-oneline {
-    height: 2.75rem;
     display: inline-grid;
     grid-template-columns: 1fr;
-    padding: 0 1rem;
     column-gap: 0.25rem;
     align-items: center;
 
     &--with-prepend-icon {
         grid-template-columns: 1.5rem 1fr;
-        padding: 0 1rem 0 0.625rem;
+        gap: 0 0.5rem;
+        padding-left: 0.25rem;
     }
 
     &__prepend-inner-icon {
@@ -109,7 +110,25 @@ const extensions: Extension[] = [
     }
 
     & :deep(.cm-scroller) {
-      overflow-x: hidden;
+        overflow-x: hidden;
+        background: $primary-dark;
+        border-radius: 0.25rem;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    & :deep(.cm-editor) {
+        background: transparent;
+    }
+    & :deep(.cm-line) {
+        color: white;
+        font-weight: bold;
+    }
+
+    & :deep(.cm-cursor) {
+        border-left: 1px solid #fff;
     }
 }
 </style>

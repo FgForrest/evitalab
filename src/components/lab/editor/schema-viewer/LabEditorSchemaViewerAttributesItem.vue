@@ -8,13 +8,15 @@ import {
     ReferenceSchemaPointer,
     SchemaViewerDataPointer
 } from '@/model/editor/schema-viewer'
-import { AttributeSchemaUnion, GlobalAttributeSchema } from '@/model/evitadb'
+import { AttributeSchemaUnion } from '@/model/evitadb'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
 import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
 import { UnexpectedError } from '@/model/lab'
 import LabEditorSchemaViewerContainerSectionListItem
     from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerContainerSectionListItem.vue'
+import { LabService, useLabService } from '@/services/lab.service'
 
+const labService: LabService = useLabService()
 const editorService: EditorService = useEditorService()
 
 const props = defineProps<{
@@ -22,17 +24,7 @@ const props = defineProps<{
     schema: AttributeSchemaUnion
 }>()
 
-const globalAttribute = 'uniqueGlobally' in props.schema
-
-const flags: string[] = []
-if (globalAttribute && (props.schema as GlobalAttributeSchema).uniqueGlobally) {
-    flags.push('unique globally')
-} else if (props.schema.unique) {
-    flags.push('unique')
-}
-if (props.schema.unique || props.schema.filterable) flags.push('filterable')
-if (props.schema.sortable) flags.push('sortable')
-if (props.schema.localized) flags.push('localized')
+const flags: string[] = labService.getAttributeSchemaFlags(props.schema)
 
 function openAttributeSchema(): void {
     const parentSchemaPointer = props.dataPointer.schemaPointer

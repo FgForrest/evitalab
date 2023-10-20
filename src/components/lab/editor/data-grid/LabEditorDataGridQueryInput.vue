@@ -48,21 +48,27 @@ const showPropertiesSelect = ref<boolean>(false)
             @update:selected="emit('update:selectedQueryLanguage', $event)"
         />
 
-        <CodemirrorOneLine
-            :model-value="filterBy"
-            prepend-inner-icon="mdi-filter"
-            placeholder="Filter by"
-            @update:model-value="emit('update:filterBy', $event)"
-            @execute="emit('executeQuery')"
-        />
+        <div class="query-input__input">
+            <CodemirrorOneLine
+                :model-value="filterBy"
+                prepend-inner-icon="mdi-filter-outline"
+                placeholder="Filter by"
+                @update:model-value="emit('update:filterBy', $event)"
+                @execute="emit('executeQuery')"
+                class="text-gray-light"
+            />
+        </div>
 
-        <CodemirrorOneLine
-            :model-value="orderBy"
-            prepend-inner-icon="mdi-sort"
-            placeholder="Order by"
-            @update:model-value="emit('update:orderBy', $event)"
-            @execute="emit('executeQuery')"
-        />
+        <div class="query-input__input">
+            <CodemirrorOneLine
+                :model-value="orderBy"
+                prepend-inner-icon="mdi-sort"
+                placeholder="Order by"
+                @update:model-value="emit('update:orderBy', $event)"
+                @execute="emit('executeQuery')"
+                class="text-gray-light"
+            />
+        </div>
 
         <LabEditorDataGridDataLocaleSelector
             :selected="selectedDataLocale"
@@ -84,12 +90,17 @@ const showPropertiesSelect = ref<boolean>(false)
 <style lang="scss" scoped>
 .query-input {
     width: 100%;
-    height: 100%;
+    height: 2.5rem;
     display: grid;
     grid-template-columns: 2.25rem 0.65fr 0.35fr 2.25rem 2.25rem;
-    column-gap: 0.5rem;
-    margin: 0 0.5rem;
+    column-gap: 0.375rem;
+    margin: 0 0.375rem;
     align-items: center;
     justify-items: stretch;
+
+    &__input {
+        display: inline-grid;
+        margin: 0 0.25rem;
+    }
 }
 </style>

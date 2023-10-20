@@ -5,14 +5,15 @@
 
 import { Pane, Splitpanes } from 'splitpanes'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
-import LabEditorDataGridGridPropertyDetail from './LabEditorDataGridGridPropertyDetail.vue'
+import LabEditorDataGridGridCellDetail from './LabEditorDataGridGridCellDetail.vue'
 import { ref } from 'vue'
 import LabEditorDataGridGridCell from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCell.vue'
 import {
     DataGridConsoleData,
     DataGridConsoleParams,
     EntityPropertyDescriptor,
-    EntityPropertyType, StaticEntityProperties
+    EntityPropertyType, EntityReferenceValue,
+    StaticEntityProperties
 } from '@/model/editor/data-grid'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import { QueryLanguage, UnexpectedError } from '@/model/lab'
@@ -22,6 +23,7 @@ import { TabComponentProps } from '@/model/editor/editor'
 import { DataGridConsoleService, useDataGridConsoleService } from '@/services/editor/data-grid-console.service'
 import LabEditorDataGridGridColumnHeader
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridColumnHeader.vue'
+import { Scalar } from '@/model/evitadb'
 
 const editorService: EditorService = useEditorService()
 const dataGridConsoleService: DataGridConsoleService = useDataGridConsoleService()
@@ -50,7 +52,7 @@ props.entityPropertyDescriptors.forEach(it => entityPropertyDescriptorIndex.set(
 
 const showPropertyDetail = ref<boolean>(false)
 const propertyDetailDescriptor = ref<EntityPropertyDescriptor | undefined>()
-const propertyDetailValue = ref<string>('')
+const propertyDetailValue = ref<any>()
 
 function getPropertyDescriptor(key: string): EntityPropertyDescriptor | undefined {
     const descriptor = entityPropertyDescriptorIndex.get(key)
@@ -81,7 +83,24 @@ function handlePropertyClicked(propertyKey: string, value: any): void {
                 queryLanguage: props.queryLanguage,
                 pageNumber: props.pageNumber,
                 pageSize: props.pageSize,
-                filterBy: dataGridConsoleService.buildParentEntityFilterBy(props.queryLanguage, value)
+                filterBy: dataGridConsoleService.buildParentEntityFilterBy(props.queryLanguage, (value as EntityReferenceValue).primaryKey)
+            },
+            true
+        ))
+    } else if (propertyDescriptor &&
+        ((propertyDescriptor.type === EntityPropertyType.Attributes && propertyDescriptor.schema.type === Scalar.Predecessor) ||
+        (propertyDescriptor.type === EntityPropertyType.AssociatedData && propertyDescriptor.schema.type === Scalar.Predecessor))) {
+        // we want references to open referenced entities in appropriate new grid for referenced collection
+        editorService.createTabRequest(new DataGridRequest(
+            props.gridProps.params.dataPointer.connection,
+            props.gridProps.params.dataPointer.catalogName,
+            props.gridProps.params.dataPointer.entityType,
+            {
+                dataLocale: props.dataLocale,
+                queryLanguage: props.queryLanguage,
+                pageNumber: props.pageNumber,
+                pageSize: props.pageSize,
+                filterBy: dataGridConsoleService.buildPredecessorEntityFilterBy(props.queryLanguage, value)
             },
             true
         ))
@@ -96,7 +115,12 @@ function handlePropertyClicked(propertyKey: string, value: any): void {
                 queryLanguage: props.queryLanguage,
                 pageNumber: props.pageNumber,
                 pageSize: props.pageSize,
-                filterBy: dataGridConsoleService.buildReferencedEntityFilterBy(props.queryLanguage, value)
+                filterBy: dataGridConsoleService.buildReferencedEntityFilterBy(
+                    props.queryLanguage,
+                    value instanceof Array
+                        ? (value as EntityReferenceValue[]).map(it => it.primaryKey)
+                        : [(value as EntityReferenceValue).primaryKey]
+                )
             },
             true
         ))
@@ -111,7 +135,7 @@ function handlePropertyClicked(propertyKey: string, value: any): void {
 function closePropertyDetail(): void {
     showPropertyDetail.value = false
     propertyDetailDescriptor.value = undefined
-    propertyDetailValue.value = ''
+    propertyDetailValue.value = undefined
 }
 </script>
 
@@ -168,7 +192,7 @@ function closePropertyDetail(): void {
             size="30"
             min-size="30"
         >
-            <LabEditorDataGridGridPropertyDetail
+            <LabEditorDataGridGridCellDetail
                 :model-value="showPropertyDetail"
                 :property-descriptor="propertyDetailDescriptor"
                 :property-value="propertyDetailValue"

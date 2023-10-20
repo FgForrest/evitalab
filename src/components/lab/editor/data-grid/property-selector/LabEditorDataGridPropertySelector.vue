@@ -6,7 +6,7 @@ import {
     EntityPropertyType,
     EntityPropertySectionSelection, DataGridConsoleParams, DataGridConsoleData
 } from '@/model/editor/data-grid'
-import VClosableCardTitle from '@/components/base/VClosableCardTitle.vue'
+import VCardTitleWithActions from '@/components/base/VCardTitleWithActions.vue'
 import LabEditorDataGridPropertySelectorSection from './LabEditorDataGridPropertySelectorSection.vue'
 import LabEditorDataGridPropertySelectorSectionAttributeItem from './LabEditorDataGridPropertySelectorSectionAttributeItem.vue'
 import LabEditorDataGridPropertySelectorSectionAssociatedDataItem from './LabEditorDataGridPropertySelectorSectionAssociatedDataItem.vue'
@@ -163,19 +163,33 @@ function togglePropertySectionSelection(sectionType: EntityPropertyType, newSele
                 density="comfortable"
                 v-bind="props"
             >
-                <VIcon>mdi-view-column</VIcon>
+                <VIcon>mdi-view-column-outline</VIcon>
                 <VTooltip activator="parent">
                     Select displayed properties
                 </VTooltip>
             </VBtn>
         </template>
 
-        <VCard>
-            <VClosableCardTitle @close="emit('update:modelValue', false)">
-                Displayed properties
-            </VClosableCardTitle>
-            <VDivider />
-            <VCardText class="selector-body">
+        <VCard class="py-8 px-4">
+            <VCardTitleWithActions>
+                <template #default>
+                    Displayed properties
+                </template>
+                <template #actions>
+                    <VBtn
+                        icon
+                        variant="flat"
+                        density="compact"
+                        @click="emit('update:modelValue', false)"
+                    >
+                        <VIcon>mdi-close</VIcon>
+                        <VTooltip activator="parent">
+                            Close selector
+                        </VTooltip>
+                    </VBtn>
+                </template>
+            </VCardTitleWithActions>
+            <VCardText class="selector-body pt-0 pl-4 mt-4">
                 <Hotkeys
                     :shortcuts="['F']"
                     @triggered="filterInput?.focus()"
@@ -187,7 +201,7 @@ function togglePropertySectionSelection(sectionType: EntityPropertyType, newSele
                     variant="solo-filled"
                     density="compact"
                     autofocus
-                    :append-inner-icon="filter ? 'mdi-backspace' : null as any"
+                    :append-inner-icon="filter ? 'mdi-close-circle-outline' : null as any"
                     @update:model-value="handleFilterUpdate($event)"
                     @click:append-inner="handleFilterUpdate('')"
                     class="filter-input"
@@ -286,13 +300,16 @@ function togglePropertySectionSelection(sectionType: EntityPropertyType, newSele
 }
 
 .filter-input {
-    position: fixed;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    background: var(--el-color-primary-dark);
+    padding: 0 0 12px 0;
+    margin-top: -4px;
     z-index: 100;
-    left: 1.5rem;
-    right: 1.5rem;
 }
-
 .property-list {
-    margin-top: 3.5rem;
+    translate: 0 4px;
+    padding: 0 4px;
 }
 </style>
