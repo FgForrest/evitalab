@@ -35,6 +35,7 @@ const openableInNewTab = computed<boolean>(() => {
         return false
     }
 })
+const showDetailOnHover = computed<boolean>(() => printablePropertyValue.value.length <= 100)
 
 // todo lho we could format certain data types more human readable like we do in markdown pretty printer
 function toPrintablePropertyValue(value: any): string {
@@ -98,7 +99,7 @@ function copyValue(): void {
                 <VIcon v-if="openableInNewTab" class="mr-1">mdi-open-in-new</VIcon>
                 <span>
                     {{ printablePropertyValue }}
-                    <VTooltip activator="parent">
+                    <VTooltip v-if="showDetailOnHover" activator="parent">
                         {{ printablePropertyValue }}
                     </VTooltip>
                 </span>

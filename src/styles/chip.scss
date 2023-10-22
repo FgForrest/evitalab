@@ -21,4 +21,6 @@
 
 .v-chip--variant-plain {
   pointer-events: none;
+  opacity: 1;
+  color: $gray-light !important;
 }

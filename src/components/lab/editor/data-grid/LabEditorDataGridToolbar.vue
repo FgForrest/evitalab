@@ -4,14 +4,27 @@
  */
 import VExecuteQueryButton from '@/components/base/VExecuteQueryButton.vue'
 import VTabToolbar from '@/components/base/VTabToolbar.vue'
+import { computed } from 'vue'
 
 const props = defineProps<{
-    path: string[]
+    path: string[],
+    locale: string | undefined,
     loading: boolean
 }>()
 const emit = defineEmits<{
     (e: 'executeQuery'): void
 }>()
+
+const flags = computed<any>(() => {
+    const flags: any[] = []
+    if (props.locale) {
+        flags.push({
+            title: props.locale,
+            prependIcon: 'mdi-translate',
+        })
+    }
+    return flags
+})
 
 </script>
 
@@ -19,6 +32,7 @@ const emit = defineEmits<{
     <VTabToolbar
         prepend-icon="mdi-text-box-edit-outline"
         :path="path"
+        :flags="flags"
     >
         <template #append>
             <VExecuteQueryButton @click="emit('executeQuery')" />

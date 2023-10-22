@@ -32,7 +32,7 @@ const emit = defineEmits<{
 }>()
 
 const filter = ref<string>('')
-const filterInput = ref<HTMLElement | null>(null)
+const filterInput = ref<HTMLInputElement | null>(null)
 
 /**
  * Index of all properties by property type
@@ -192,7 +192,7 @@ function togglePropertySectionSelection(sectionType: EntityPropertyType, newSele
             <VCardText class="selector-body pt-0 pl-4 mt-4">
                 <Hotkeys
                     :shortcuts="['F']"
-                    @triggered="filterInput?.focus()"
+                    @triggered="filterInput?.select()"
                 />
                 <VTextField
                     ref="filterInput"

@@ -1,5 +1,5 @@
 <h1 align="center" style="border-bottom: none">
-    <a href="https://evitadb.io" target="_blank"><img src="https://raw.githubusercontent.com/lukashornych/evitalab/dev/documentation/assets/img/evitalab.png"/></a><br>evitaLab
+    <a href="https://evitadb.io" target="_blank"><img src="https://raw.githubusercontent.com/lukashornych/evitalab/dev/documentation/assets/img/evitalab.svg"/></a><br>evitaLab
 </h1>
 
 <p align="center">
