@@ -13,6 +13,9 @@ import LabEditorResultVisualiserFacetStatistics
     from '@/components/lab/editor/result-visualiser/facet-summary/LabEditorResultVisualiserFacetStatistics.vue'
 import { Result } from '@/model/editor/result-visualiser'
 import { ResultVisualiserService } from '@/services/editor/result-visualiser/result-visualiser.service'
+import VListItemLazyIterator from '@/components/base/VListItemLazyIterator.vue'
+
+const statisticsPageSize: number = 10
 
 const labService: LabService = useLabService()
 const toaster: Toaster = useToaster()
@@ -26,6 +29,7 @@ const props = defineProps<{
 }>()
 
 const initialized = ref<boolean>(false)
+const groupStatisticsResultsPage = ref<number>(1)
 const groupRepresentativeAttributes: string[] = []
 const facetRepresentativeAttributes: string[] = []
 
@@ -33,9 +37,9 @@ const isGroupedFacets = computed<boolean>(() => {
     return props.referenceSchema.referencedGroupType != undefined
 })
 
-const facetStatisticsResults = computed<Result[] | undefined>(() => {
+const facetStatisticsResults = computed<Result[]>(() => {
     if (isGroupedFacets.value) {
-        return undefined
+        return []
     }
     if (props.groupStatisticsResults.length === 0) {
         return []
@@ -46,9 +50,10 @@ const facetStatisticsResults = computed<Result[] | undefined>(() => {
             .findFacetStatisticsResults(props.groupStatisticsResults[0])
     } catch (e: any) {
         toaster.error(e)
-        return undefined
+        return []
     }
 })
+const facetStatisticsResultsPage = ref<number>(1)
 
 function initialize() {
     let pipeline: Promise<string[]>
@@ -95,25 +100,39 @@ initialize()
 <template>
     <VList v-if="initialized" density="compact">
         <template v-if="isGroupedFacets">
-            <LabEditorResultVisualiserFacetGroupStatistics
-                v-for="(groupStatisticsResult, index) in groupStatisticsResults"
-                :key="index"
-                :visualiser-service="visualiserService"
-                :query-result="queryResult"
-                :group-statistics-result="groupStatisticsResult"
-                :group-representative-attributes="groupRepresentativeAttributes"
-                :facet-representative-attributes="facetRepresentativeAttributes"
-            />
+            <VListItemLazyIterator
+                :items="groupStatisticsResults"
+                v-model:page="groupStatisticsResultsPage"
+                :page-size="statisticsPageSize"
+            >
+                <template #item="{ item: groupStatisticsResult }">
+                    <LabEditorResultVisualiserFacetGroupStatistics
+                        :visualiser-service="visualiserService"
+                        :reference-schema="referenceSchema"
+                        :query-result="queryResult"
+                        :group-statistics-result="groupStatisticsResult"
+                        :group-representative-attributes="groupRepresentativeAttributes"
+                        :facet-representative-attributes="facetRepresentativeAttributes"
+                    />
+                </template>
+            </VListItemLazyIterator>
         </template>
         <template v-else>
-            <LabEditorResultVisualiserFacetStatistics
-                v-for="(facetStatisticsResult, index) in facetStatisticsResults"
-                :key="index"
-                :visualiser-service="visualiserService"
-                :query-result="queryResult"
-                :facet-statistics-result="facetStatisticsResult"
-                :facet-representative-attributes="facetRepresentativeAttributes"
-            />
+            <VListItemLazyIterator
+                :items="facetStatisticsResults"
+                v-model:page="facetStatisticsResultsPage"
+                :page-size="statisticsPageSize"
+            >
+                <template #item="{ item: facetStatisticsResult }">
+                    <LabEditorResultVisualiserFacetStatistics
+                        :visualiser-service="visualiserService"
+                        :reference-schema="referenceSchema"
+                        :query-result="queryResult"
+                        :facet-statistics-result="facetStatisticsResult"
+                        :facet-representative-attributes="facetRepresentativeAttributes"
+                    />
+                </template>
+            </VListItemLazyIterator>
         </template>
     </VList>
 </template>

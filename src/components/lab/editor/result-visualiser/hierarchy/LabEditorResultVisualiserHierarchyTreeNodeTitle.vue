@@ -65,44 +65,46 @@ function copyParentPrimaryKey(): void {
             </VTooltip>
         </span>
 
-        <VChipGroup>
-            <VChip v-if="node.requested" prepend-icon="mdi-target">
-                Requested
-                <VTooltip activator="parent">
-                    <!-- todo jno review explanation -->
-                    <VMarkdown source="The entity representing this hierarchy node was filtered by `hierarchyWithin`." />
-                </VTooltip>
-            </VChip>
+        <VLazy>
+            <VChipGroup>
+                <VChip v-if="node.requested" prepend-icon="mdi-target">
+                    Requested
+                    <VTooltip activator="parent">
+                        <!-- todo jno review explanation -->
+                        <VMarkdown source="The entity representing this hierarchy node was filtered by `hierarchyWithin`." />
+                    </VTooltip>
+                </VChip>
 
-            <VChip prepend-icon="mdi-file-tree">
-                {{ node.childrenCount ?? '-' }}
-                <VTooltip activator="parent">
-                    <VMarkdown v-if="node.childrenCount == undefined" source="The `childrenCount` property was not found." />
-                    <!-- todo jno review explanation, copied from docs, should be ok -->
-                    <span v-else>
-                        The count of child hierarchy nodes that exist in the hierarchy tree below the given node;
-                        the count is correct regardless of whether the children themselves are requested/traversed
-                        by the constraint definition, and respects hierarchyOfReference settings for automatic
-                        removal of hierarchy nodes that would contain empty result set of queried entities
-                        (REMOVE_EMPTY).
-                    </span>
-                </VTooltip>
-            </VChip>
+                <VChip prepend-icon="mdi-file-tree">
+                    {{ node.childrenCount ?? '-' }}
+                    <VTooltip activator="parent">
+                        <VMarkdown v-if="node.childrenCount == undefined" source="The `childrenCount` property was not found." />
+                        <!-- todo jno review explanation, copied from docs, should be ok -->
+                        <span v-else>
+                            The count of child hierarchy nodes that exist in the hierarchy tree below the given node;
+                            the count is correct regardless of whether the children themselves are requested/traversed
+                            by the constraint definition, and respects hierarchyOfReference settings for automatic
+                            removal of hierarchy nodes that would contain empty result set of queried entities
+                            (REMOVE_EMPTY).
+                        </span>
+                    </VTooltip>
+                </VChip>
 
-            <VChip prepend-icon="mdi-format-list-bulleted">
-                {{ node.queriedEntityCount ?? '-' }}
-                <VTooltip activator="parent">
-                    <VMarkdown v-if="node.queriedEntityCount == undefined" source="The `queriedEntityCount` property was not found." />
-                    <!-- todo jno review explanation, copied from docs, should be ok -->
-                    <span v-else>
-                        The total number of queried entities that will be returned if the current query is focused
-                        on this particular hierarchy node using the hierarchyWithin filter constraint
-                        (the possible refining constraint in the form of directRelation and excludingRoot is not
-                        taken into account).
-                    </span>
-                </VTooltip>
-            </VChip>
-        </VChipGroup>
+                <VChip prepend-icon="mdi-format-list-bulleted">
+                    {{ node.queriedEntityCount ?? '-' }}
+                    <VTooltip activator="parent">
+                        <VMarkdown v-if="node.queriedEntityCount == undefined" source="The `queriedEntityCount` property was not found." />
+                        <!-- todo jno review explanation, copied from docs, should be ok -->
+                        <span v-else>
+                            The total number of queried entities that will be returned if the current query is focused
+                            on this particular hierarchy node using the hierarchyWithin filter constraint
+                            (the possible refining constraint in the form of directRelation and excludingRoot is not
+                            taken into account).
+                        </span>
+                    </VTooltip>
+                </VChip>
+            </VChipGroup>
+        </VLazy>
     </VListItemTitle>
 </template>
 

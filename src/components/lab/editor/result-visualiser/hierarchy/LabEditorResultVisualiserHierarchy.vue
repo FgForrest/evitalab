@@ -45,7 +45,8 @@ function getPanelKey(referenceSchema: ReferenceSchema | undefined): string {
 <template>
     <VExpansionPanels v-if="referencesWithNamedHierarchiesResults && referencesWithNamedHierarchiesResults.length > 0" variant="accordion">
         <VExpansionPanel v-for="referenceWithNamedHierarchResult in referencesWithNamedHierarchiesResults" :key="getPanelKey(referenceWithNamedHierarchResult[0])">
-            <VExpansionPanelTitle>
+            <VExpansionPanelTitle class="d-flex">
+                <VIcon class="mr-8">mdi-link-variant</VIcon>
                 {{ referenceWithNamedHierarchResult[0]?.name ?? `${entitySchema.name} (self)` }} ({{ Object.values(referenceWithNamedHierarchResult[1]).length }})
             </VExpansionPanelTitle>
             <VExpansionPanelText>

@@ -11,6 +11,7 @@ import LabEditorResultVisualiserNamedHierarchy
     from '@/components/lab/editor/result-visualiser/hierarchy/LabEditorResultVisualiserNamedHierarchy.vue'
 import { Result } from '@/model/editor/result-visualiser'
 import { ResultVisualiserService } from '@/services/editor/result-visualiser/result-visualiser.service'
+import VListItemLazyIterator from '@/components/base/VListItemLazyIterator.vue'
 
 const labService: LabService = useLabService()
 const toaster: Toaster = useToaster()

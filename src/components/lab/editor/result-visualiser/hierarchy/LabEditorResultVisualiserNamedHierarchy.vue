@@ -10,6 +10,9 @@ import LabEditorResultVisualiserHierarchyTreeNode
 import { Result, VisualisedNamedHierarchy } from '@/model/editor/result-visualiser'
 import { ResultVisualiserService } from '@/services/editor/result-visualiser/result-visualiser.service'
 import VMarkdown from '@/components/base/VMarkdown.vue'
+import VListItemLazyIterator from '@/components/base/VListItemLazyIterator.vue'
+
+const namedHierarchyTreesPageSize: number = 10
 
 const toaster: Toaster = useToaster()
 
@@ -30,6 +33,7 @@ const namedHierarchy = computed<VisualisedNamedHierarchy | undefined>(() => {
         return undefined
     }
 })
+const namedHierarchyTreesPage = ref<number>(1)
 
 const initialized = ref<boolean>(false)
 function initialize(): void {
@@ -43,47 +47,60 @@ function initialize(): void {
     <VListGroup>
         <template #activator="{ props }">
             <VListItem v-bind="props" @click="initialize">
-                <VListItemTitle class="group-title">
-                    <span>{{ name }}</span>
+                <template #prepend>
+                    <VIcon>mdi-file-tree</VIcon>
+                </template>
+                <template #title>
+                    <VListItemTitle class="named-hierarchy-title">
+                        <span>{{ name }}</span>
 
-                    <VChipGroup>
-                        <VChip prepend-icon="mdi-file-tree">
-                            <span>
-                                {{ namedHierarchy?.count }}
-                                <VTooltip activator="parent">
-                                    <!-- todo jno is this what we want to display? At this point we don't have total number of children. -->
-                                    <span>The number of actually fetched nodes.</span>
-                                </VTooltip>
-                            </span>
-                        </VChip>
+                        <VLazy>
+                            <VChipGroup>
+                                <VChip prepend-icon="mdi-file-tree">
+                                    <span>
+                                        {{ namedHierarchy?.count }}
+                                        <VTooltip activator="parent">
+                                            <!-- todo jno is this what we want to display? At this point we don't have total number of children. -->
+                                            <span>The number of actually fetched nodes.</span>
+                                        </VTooltip>
+                                    </span>
+                                </VChip>
 
-                        <VChip v-if="namedHierarchy?.requestedNode" prepend-icon="mdi-target">
-                            {{ namedHierarchy?.requestedNode?.primaryKey != undefined ? `${namedHierarchy?.requestedNode?.primaryKey}: ` : '' }}
-                            {{ namedHierarchy?.requestedNode?.title }}
-                            <VTooltip activator="parent">
-                                <!-- todo jno review explanation -->
-                                <VMarkdown source="An entity representing a hierarchy node in this tree that was filtered by `hierarchyWithin`." />
-                            </VTooltip>
-                        </VChip>
-                    </VChipGroup>
-                </VListItemTitle>
+                                <VChip v-if="namedHierarchy?.requestedNode" prepend-icon="mdi-target">
+                                    {{ namedHierarchy?.requestedNode?.primaryKey != undefined ? `${namedHierarchy?.requestedNode?.primaryKey}: ` : '' }}
+                                    {{ namedHierarchy?.requestedNode?.title }}
+                                    <VTooltip activator="parent">
+                                        <!-- todo jno review explanation -->
+                                        <VMarkdown source="An entity representing a hierarchy node in this tree that was filtered by `hierarchyWithin`." />
+                                    </VTooltip>
+                                </VChip>
+                            </VChipGroup>
+                        </VLazy>
+                    </VListItemTitle>
+                </template>
             </VListItem>
         </template>
 
-        <template v-if="initialized">
-            <LabEditorResultVisualiserHierarchyTreeNode
-                v-for="(tree, index) in namedHierarchy?.trees"
-                :key="index"
-                :node="tree"
-                :entity-representative-attributes="entityRepresentativeAttributes"
-            />
+        <template v-if="initialized && namedHierarchy">
+            <VListItemLazyIterator
+                :items="namedHierarchy.trees"
+                v-model:page="namedHierarchyTreesPage"
+                :page-size="namedHierarchyTreesPageSize"
+            >
+                <template #item="{ item: tree }">
+                    <LabEditorResultVisualiserHierarchyTreeNode
+                        :node="tree"
+                        :entity-representative-attributes="entityRepresentativeAttributes"
+                    />
+                </template>
+            </VListItemLazyIterator>
         </template>
     </VListGroup>
 </template>
 
 <style lang="scss" scoped>
 // todo lho better handling for small widths
-.group-title {
+.named-hierarchy-title {
     display: flex;
     gap: 0.5rem;
     align-items: center;

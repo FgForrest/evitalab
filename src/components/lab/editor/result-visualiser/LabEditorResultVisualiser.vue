@@ -45,6 +45,12 @@ const queries = computed<string[]>(() => {
     }
 })
 watch(queries, (newValue) => {
+    // pre-select first a query on first load
+    if (selectedQuery.value == undefined && newValue.length > 0) {
+        selectedQuery.value = newValue[0]
+        return
+    }
+
     if (!supportsMultipleQueries.value) {
         if (newValue.length > 0) {
             selectedQuery.value = newValue[0]
@@ -54,7 +60,12 @@ watch(queries, (newValue) => {
     } else {
         if (selectedQuery.value != undefined && !newValue.includes(selectedQuery.value as string)) {
             // selected query was removed
-            selectedQuery.value = undefined
+            if (newValue.length > 0) {
+                // pre-select next available query
+                selectedQuery.value = newValue[0]
+            } else {
+                selectedQuery.value = undefined
+            }
         }
     }
 })
@@ -103,9 +114,20 @@ const visualiserTypes = computed<VisualiserType[]>(() => {
     }
 })
 watch(visualiserTypes, (newValue) => {
+    // pre-select first a visualiser type on first load
+    if (selectedVisualiserType.value == undefined && newValue.length > 0) {
+        selectedVisualiserType.value = newValue[0].value
+        return
+    }
+
     if (selectedVisualiserType.value != undefined && !newValue.map(it => it.value).includes(selectedVisualiserType.value as VisualiserTypeType)) {
-        // selected result-result-visualiser type was removed
-        selectedVisualiserType.value = undefined
+        // selected visualiser type was removed
+        if (newValue.length > 0) {
+            // pre-select next available visualiser type
+            selectedVisualiserType.value = newValue[0].value
+        } else {
+            selectedVisualiserType.value = undefined
+        }
     }
 })
 const selectedVisualiserType = ref<VisualiserTypeType | undefined>()

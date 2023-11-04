@@ -18,39 +18,47 @@ const properties: [string, any, ((item?: string) => void)?][] = []
 properties.push(['Description', props.schema.description])
 properties.push(['Deprecation notice', props.schema.deprecationNotice])
 properties.push(['Cardinality', [props.schema.cardinality]])
-properties.push([
-    'Referenced entity',
-    [props.schema.referencedEntityType],
-    item => {
-        if (!props.schema.referencedEntityTypeManaged) {
-            return
+if (props.schema.referencedEntityTypeManaged) {
+    properties.push([
+        'Referenced entity',
+        [props.schema.referencedEntityType],
+        item => {
+            editorService.createTabRequest(new SchemaViewerRequest(
+                props.dataPointer.connection,
+                new EntitySchemaPointer(
+                    props.dataPointer.schemaPointer.catalogName,
+                    props.schema.referencedEntityType
+                )
+            ))
         }
-        editorService.createTabRequest(new SchemaViewerRequest(
-            props.dataPointer.connection,
-            new EntitySchemaPointer(
-                props.dataPointer.schemaPointer.catalogName,
-                props.schema.referencedEntityType
-            )
-        ))
-    }
-])
+    ])
+} else {
+    properties.push([
+        'Referenced entity',
+        [props.schema.referencedEntityType]
+    ])
+}
 properties.push(['Referenced entity managed', props.schema.referencedEntityTypeManaged])
-properties.push([
-    'Referenced group',
-    props.schema.referencedGroupType ? [props.schema.referencedGroupType] : undefined,
-    item => {
-        if (!props.schema.referencedGroupTypeManaged) {
-            return
+if (props.schema.referencedGroupTypeManaged) {
+    properties.push([
+        'Referenced group',
+        props.schema.referencedGroupType ? [props.schema.referencedGroupType] : undefined,
+        item => {
+            editorService.createTabRequest(new SchemaViewerRequest(
+                props.dataPointer.connection,
+                new EntitySchemaPointer(
+                    props.dataPointer.schemaPointer.catalogName,
+                    props.schema.referencedEntityType
+                )
+            ))
         }
-        editorService.createTabRequest(new SchemaViewerRequest(
-            props.dataPointer.connection,
-            new EntitySchemaPointer(
-                props.dataPointer.schemaPointer.catalogName,
-                props.schema.referencedEntityType
-            )
-        ))
-    }
-])
+    ])
+} else {
+    properties.push([
+        'Referenced group',
+        props.schema.referencedGroupType ? [props.schema.referencedGroupType] : undefined
+    ])
+}
 properties.push(['Referenced group managed', props.schema.referencedGroupTypeManaged])
 properties.push(['Indexed', props.schema.indexed])
 properties.push(['Faceted', props.schema.faceted])

@@ -39,6 +39,7 @@ export default createVuetify({
         },
         VTooltip: {
             contentClass: 'bg-primary-dark',
+            maxWidth: 450
         },
         VListItem: {
             activeColor: 'bg-primary-dark',

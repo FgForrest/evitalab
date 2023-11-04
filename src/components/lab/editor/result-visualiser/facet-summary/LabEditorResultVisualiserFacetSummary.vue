@@ -34,13 +34,25 @@ const referencesWithGroupStatisticsResults = computed<[ReferenceSchema, Result[]
         return []
     }
 })
+
+function getCountForReference(referenceSchema: ReferenceSchema, groupStatisticsResults: Result[]): number {
+    if (referenceSchema.referencedGroupType != undefined) {
+        return groupStatisticsResults.length
+    } else {
+        return props.visualiserService
+            .getFacetSummaryService()
+            .findFacetStatisticsResults(groupStatisticsResults[0])
+            .length
+    }
+}
 </script>
 
 <template>
     <VExpansionPanels v-if="referencesWithGroupStatisticsResults && referencesWithGroupStatisticsResults.length > 0" variant="accordion">
         <VExpansionPanel v-for="referenceWithGroup in referencesWithGroupStatisticsResults" :key="referenceWithGroup[0].name">
             <VExpansionPanelTitle>
-                {{ referenceWithGroup[0].name }} ({{ referenceWithGroup[1].length }})
+                <VIcon class="mr-8">mdi-link-variant</VIcon>
+                {{ referenceWithGroup[0].name }} ({{ getCountForReference(referenceWithGroup[0], referenceWithGroup[1]) }})
             </VExpansionPanelTitle>
             <VExpansionPanelText>
                 <LabEditorResultVisualiserReferenceFacetGroupStatistics
