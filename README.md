@@ -30,12 +30,12 @@ You can try out evitaLab with evitaDB demo dataset at [demo.evitadb.io](https://
 
 evitaLab is currently in early development stage, and features are being added as we go.
 
-The current feature set is:
+evitaLab allows you to:
 
-- [x] preview all internal schemas
-- [x] read stored entities in interactive table
-- [x] run queries against GraphQL API
-- [x] run queries against evitaQL
+- [x] inspect schemas
+- [x] browse entities in interactive table
+- [x] execute GraphQL queries
+- [x] execute evitaQL queries
 - [x] manage connections to multiple evitaDB instances
 
 ## Running locally

@@ -21,9 +21,9 @@ export const key: InjectionKey<LabService> = Symbol()
  * and so on.
  */
 export class LabService {
-    readonly store: Store<State>
-    readonly evitaDBClient: EvitaDBClient
-    readonly evitaDBDocsClient: EvitaDBDocsClient
+    private readonly store: Store<State>
+    private readonly evitaDBClient: EvitaDBClient
+    private readonly evitaDBDocsClient: EvitaDBDocsClient
 
     constructor(store: Store<State>, evitaDBClient: EvitaDBClient, evitaDBDocsClient: EvitaDBDocsClient) {
         this.store = store
@@ -85,6 +85,7 @@ export class LabService {
     }
 
     getEntitySchema = async (connection: EvitaDBConnection, catalogName: string, entityType: string): Promise<EntitySchema> => {
+        // todo lho why this logic is in the store if other getters are here?
         let entitySchema: EntitySchema | undefined = this.store.getters['lab/getEntitySchema'](connection.id, catalogName, entityType)
         if (entitySchema == undefined) {
             await this.getCatalogSchema(connection, catalogName)

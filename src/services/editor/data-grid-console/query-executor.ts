@@ -5,7 +5,7 @@ import { LabService } from '@/services/lab.service'
  * Executes query against evitaDB server in language defined by implementation.
  */
 export abstract class QueryExecutor {
-    readonly labService: LabService
+    protected readonly labService: LabService
 
     protected constructor(labService: LabService) {
         this.labService = labService

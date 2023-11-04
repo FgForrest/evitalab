@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { DefineComponent } from 'vue/dist/vue'
 import { Raw } from 'vue'
+import { EvitaDBConnection } from '@/model/lab'
 
 /**
  * Request to instantiate a new editor tab.
@@ -88,4 +89,14 @@ export interface TabComponentEvents {
      * Emitted when the tab component is ready to be used.
      */
     (e: 'ready'): void
+}
+
+export abstract class CatalogPointer {
+    readonly connection: EvitaDBConnection
+    readonly catalogName: string
+
+    protected constructor(connection: EvitaDBConnection, catalogName: string) {
+        this.connection = connection
+        this.catalogName = catalogName
+    }
 }

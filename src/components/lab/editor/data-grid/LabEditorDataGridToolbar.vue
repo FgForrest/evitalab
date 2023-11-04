@@ -35,7 +35,7 @@ const flags = computed<any>(() => {
         :flags="flags"
     >
         <template #append>
-            <VExecuteQueryButton @click="emit('executeQuery')" />
+            <VExecuteQueryButton :loading="loading" @click="emit('executeQuery')" />
         </template>
 
         <template #extension>

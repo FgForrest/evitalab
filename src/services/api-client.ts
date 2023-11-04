@@ -11,7 +11,7 @@ import ky from 'ky'
  * Common base for all API clients.
  */
 export abstract class ApiClient {
-    readonly httpClient: KyInstance
+    protected readonly httpClient: KyInstance
 
     constructor() {
         this.httpClient = ky.create({

@@ -2,7 +2,11 @@
 /**
  * Pre-defined button to execute queries.
  */
-
+const props = withDefaults(defineProps<{
+    loading?: boolean
+}>(), {
+    loading: false
+})
 const emit = defineEmits<{
     (e: 'click'): void
 }>()
@@ -10,6 +14,7 @@ const emit = defineEmits<{
 
 <template>
     <VBtn
+        :loading="loading"
         density="compact"
         @click="emit('click')"
         class="v-btn--variant-primary"

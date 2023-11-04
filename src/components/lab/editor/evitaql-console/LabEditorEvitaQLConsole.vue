@@ -18,9 +18,25 @@ import { TabComponentEvents, TabComponentProps } from '@/model/editor/editor'
 import VExecuteQueryButton from '@/components/base/VExecuteQueryButton.vue'
 import VTabToolbar from '@/components/base/VTabToolbar.vue'
 import VSideTabs from '@/components/base/VSideTabs.vue'
+import { ResultVisualiserService } from '@/services/editor/result-visualiser/result-visualiser.service'
+import {
+    useEvitaQLResultVisualiserService
+} from '@/services/editor/result-visualiser/evitaql-result-visualiser.service'
+import LabEditorResultVisualiser from '@/components/lab/editor/result-visualiser/LabEditorResultVisualiser.vue'
+
+enum EditorTabType {
+    Query = 'query',
+    Variables = 'variables'
+}
+
+enum ResultTabType {
+    Raw = 'raw',
+    Visualiser = 'visualiser'
+}
 
 const evitaQLConsoleService: EvitaQLConsoleService = useEvitaQLConsoleService()
 const toaster: Toaster = useToaster()
+const visualiserService: ResultVisualiserService = useEvitaQLResultVisualiserService()
 
 const props = defineProps<TabComponentProps<EvitaQLConsoleParams, EvitaQLConsoleData>>()
 const emit = defineEmits<TabComponentEvents>()
@@ -28,7 +44,8 @@ const emit = defineEmits<TabComponentEvents>()
 const path = ref<string[]>([
     props.params.dataPointer.catalogName
 ])
-const editorTab = ref<string>('query')
+const editorTab = ref<EditorTabType>(EditorTabType.Query)
+const resultTab = ref<ResultTabType>(ResultTabType.Raw)
 
 const queryCode = ref<string>(props.data?.query ? props.data.query : `// Write your EvitaQL query for catalog ${props.params.dataPointer.catalogName} here.\n`)
 const queryExtensions = ref<any[]>([])
@@ -36,15 +53,21 @@ const queryExtensions = ref<any[]>([])
 const variablesCode = ref<string>(props.data?.variables ? props.data.variables : '{\n  \n}')
 const variablesExtensions: Extension[] = [json()]
 
+const enteredQueryCode = ref<string>('')
 const resultCode = ref<string>('')
 const resultExtensions: Extension[] = [json()]
 
+const loading = ref<boolean>(false)
+
 async function executeQuery(): Promise<void> {
+    loading.value = true
     try {
         resultCode.value = await evitaQLConsoleService.executeEvitaQLQuery(props.params.dataPointer, queryCode.value, JSON.parse(variablesCode.value))
+        enteredQueryCode.value = queryCode.value
     } catch (error: any) {
         toaster.error(error)
     }
+    loading.value = false
 }
 
 emit('ready')
@@ -61,7 +84,7 @@ if (props.params.executeOnOpen) {
             :path="path"
         >
             <template #append>
-                <VExecuteQueryButton @click="executeQuery" />
+                <VExecuteQueryButton :loading="loading" @click="executeQuery" />
             </template>
         </VTabToolbar>
 
@@ -71,30 +94,28 @@ if (props.params.executeOnOpen) {
                     v-model="editorTab"
                     side="left"
                 >
-                    <VTab value="query">
+                    <VTab :value="EditorTabType.Query">
                         <VIcon>mdi-database-search</VIcon>
                         <VTooltip activator="parent">
                             Query
                         </VTooltip>
                     </VTab>
-                    <VTab value="variables">
+                    <VTab :value="EditorTabType.Variables">
                         <VIcon>mdi-variable</VIcon>
                         <VTooltip activator="parent">
                             Variables
                         </VTooltip>
                     </VTab>
                 </VSideTabs>
-
-                <VDivider class="mt-2 mb-2" />
             </VSheet>
 
             <Splitpanes vertical>
-                <Pane class="evitaql-editor-query">
+                <Pane class="evitaql-editor-pane">
                     <VWindow
                         v-model="editorTab"
                         direction="vertical"
                     >
-                        <VWindowItem value="query">
+                        <VWindowItem :value="EditorTabType.Query">
                             <CodemirrorFull
                                 v-model="queryCode"
                                 :additional-extensions="queryExtensions"
@@ -102,7 +123,7 @@ if (props.params.executeOnOpen) {
                             />
                         </VWindowItem>
 
-                        <VWindowItem value="variables">
+                        <VWindowItem :value="EditorTabType.Variables">
                             <CodemirrorFull
                                 v-model="variablesCode"
                                 :additional-extensions="variablesExtensions"
@@ -112,15 +133,51 @@ if (props.params.executeOnOpen) {
                     </VWindow>
                 </Pane>
 
-                <Pane>
-                    <CodemirrorFull
-                        v-model="resultCode"
-                        placeholder="Results will be displayed here..."
-                        read-only
-                        :additional-extensions="resultExtensions"
-                    />
+                <Pane min-size="20" class="evitaql-editor-pane">
+                    <VWindow
+                        v-model="resultTab"
+                        direction="vertical"
+                    >
+                        <VWindowItem :value="ResultTabType.Raw">
+                            <CodemirrorFull
+                                v-model="resultCode"
+                                placeholder="Results will be displayed here..."
+                                read-only
+                                :additional-extensions="resultExtensions"
+                            />
+                        </VWindowItem>
+
+                        <VWindowItem :value="ResultTabType.Visualiser">
+                            <LabEditorResultVisualiser
+                                :catalog-pointer="params.dataPointer"
+                                :visualiser-service="visualiserService"
+                                :input-query="enteredQueryCode || ''"
+                                :result="resultCode == undefined || !resultCode ? undefined : JSON.parse(resultCode)"
+                            />
+                        </VWindowItem>
+                    </VWindow>
                 </Pane>
             </Splitpanes>
+
+            <VSheet class="evitaql-editor-result-sections">
+                <VSideTabs
+                    v-model="resultTab"
+                    side="right"
+                >
+                    <VTab :value="ResultTabType.Raw">
+                        <VIcon>mdi-code-braces</VIcon>
+                        <VTooltip activator="parent">
+                            Raw JSON result
+                        </VTooltip>
+                    </VTab>
+                    <VTab :value="ResultTabType.Visualiser">
+                        <VIcon>mdi-file-tree-outline</VIcon>
+                        <VTooltip activator="parent">
+                            Result visualiser
+                        </VTooltip>
+                    </VTab>
+                </VSideTabs>
+            </VSheet>
         </div>
     </div>
 </template>
@@ -132,11 +189,11 @@ if (props.params.executeOnOpen) {
 
     &__body {
         display: grid;
-        grid-template-columns: 3rem 1fr;
+        grid-template-columns: 3rem 1fr 3rem;
     }
 }
 
-.evitaql-editor-query {
+.evitaql-editor-pane {
     & :deep(.v-window) {
         // we need to override the default tab window styles used in LabEditor
         position: absolute;
@@ -147,22 +204,8 @@ if (props.params.executeOnOpen) {
     }
 }
 
-.evitaql-editor-query-sections {
+.evitaql-editor-query-sections, .evitaql-editor-result-sections {
     display: flex;
     width: 3rem;
-}
-
-.v-slide-group {
-    & :deep(.v-tab) {
-
-        &:hover {
-            color: var(--el-color-primary-lightest);
-        }
-
-        &.v-tab--selected {
-            color: var(--el-color-primary-lightest);
-        }
-
-    }
 }
 </style>

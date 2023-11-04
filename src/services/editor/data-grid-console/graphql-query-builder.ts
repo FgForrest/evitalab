@@ -12,7 +12,7 @@ import { UnexpectedError } from '@/model/lab'
  * Query builder for GraphQL language.
  */
 export class GraphQLQueryBuilder implements QueryBuilder {
-    readonly labService: LabService
+    private readonly labService: LabService
 
     constructor(labService: LabService) {
         this.labService = labService

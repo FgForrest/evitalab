@@ -24,7 +24,7 @@ enum LabStorageVersionedItemType {
  * System-wide manager of storage. Used for all data that need to be persisted between lab starts (connections, settings, ...).
  */
 export class LabStorage {
-    readonly storage: any
+    private readonly storage: any
 
     constructor(serverName: string) {
         // obtain storage for the current build version a namespace

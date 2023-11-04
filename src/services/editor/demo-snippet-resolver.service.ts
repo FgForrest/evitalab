@@ -18,7 +18,7 @@ export const key: InjectionKey<DemoSnippetResolver> = Symbol()
  * Resolves demo code snippet requests from URL into {@link TabRequest}s.
  */
 export class DemoSnippetResolver {
-    readonly labService: LabService
+    private readonly labService: LabService
 
     constructor(labService: LabService) {
         this.labService = labService

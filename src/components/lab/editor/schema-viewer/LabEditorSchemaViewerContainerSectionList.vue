@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import LabEditorSchemaViewerContainerSectionListItem
     from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerContainerSectionListItem.vue'
+import VListItemDivider from '@/components/base/VListItemDivider.vue'
 
 const props = defineProps<{
     items: any[],
@@ -38,7 +39,7 @@ const filteredItems = computed(() => {
             :key="nameSupplier(item)"
         >
             <slot :item="item" />
-            <VDivider v-if="index < filteredItems.length - 1" class="mt-2 mb-2"/>
+            <VListItemDivider v-if="index < filteredItems.length - 1"/>
         </template>
 
         <LabEditorSchemaViewerContainerSectionListItem

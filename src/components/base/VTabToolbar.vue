@@ -51,7 +51,7 @@ const normalizedFlags = computed<Flag[]>(() => {
                     class="pl-0 pr-0 pt-0 pb-0 mr-4"
                 />
 
-                <VChipGroup v-if="normalizedFlags" variant="plain">
+                <VChipGroup v-if="normalizedFlags">
                     <VChip
                         v-for="flag in normalizedFlags"
                         :key="flag.title"

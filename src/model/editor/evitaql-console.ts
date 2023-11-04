@@ -1,18 +1,18 @@
 import { EvitaDBConnection } from '@/model/lab'
-import { ExecutableTabRequest, TabRequestComponentData, TabRequestComponentParams } from '@/model/editor/editor'
+import {
+    CatalogPointer,
+    ExecutableTabRequest,
+    TabRequestComponentData,
+    TabRequestComponentParams
+} from '@/model/editor/editor'
 
 /**
  * Points to concrete evitaDB EvitaQL instance
  */
-export class EvitaQLDataPointer {
-    readonly connection: EvitaDBConnection
-    readonly catalogName: string
-
+export class EvitaQLDataPointer extends CatalogPointer {
     constructor(connection: EvitaDBConnection, catalogName: string) {
-        this.connection = connection
-        this.catalogName = catalogName
+        super(connection, catalogName)
     }
-
 }
 
 /**

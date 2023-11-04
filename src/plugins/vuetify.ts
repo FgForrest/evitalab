@@ -35,7 +35,7 @@ export default createVuetify({
             ripple: false,
         },
         VSheet: {
-            elevation: 12,
+            elevation: 0,
         },
         VTooltip: {
             contentClass: 'bg-primary-dark',
@@ -43,8 +43,18 @@ export default createVuetify({
         VListItem: {
             activeColor: 'bg-primary-dark',
         },
+        VChipGroup: {
+            variant: 'plain'
+        },
         VChip: {
-            color: 'gray-light',
+            color: 'gray-light'
+        },
+        VSelect: {
+            variant: 'solo-filled',
+            density: 'compact'
+        },
+        VList: {
+            density: 'compact'
         }
     },
 })

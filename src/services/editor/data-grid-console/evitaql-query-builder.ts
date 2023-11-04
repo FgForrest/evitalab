@@ -13,9 +13,9 @@ import { UnexpectedError } from '@/model/lab'
  * Query builder for EvitaQL language.
  */
 export class EvitaQLQueryBuilder implements QueryBuilder {
-    readonly labService: LabService
+    private readonly labService: LabService
 
-    readonly entityBodyProperties: Set<string> = new Set<string>()
+    private readonly entityBodyProperties: Set<string> = new Set<string>()
 
     constructor(labService: LabService) {
         this.labService = labService

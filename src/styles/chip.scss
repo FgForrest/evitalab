@@ -20,7 +20,8 @@
 }
 
 .v-chip--variant-plain {
-  pointer-events: none;
+  cursor: default;
   opacity: 1;
   color: $gray-light !important;
+  background-color: $gray-dark;
 }

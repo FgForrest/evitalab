@@ -3,6 +3,7 @@
  * Pre-configured VTabs component for vertical tabs.
  */
 
+// todo lho the slider is currently disabled because i don't know how to move it between sides
 enum Side {
     Left = 'left',
     Right = 'right'
@@ -19,6 +20,7 @@ const emit = defineEmits<{
 
 <template>
     <VTabs
+        hide-slider
         :model-value="modelValue"
         @update:model-value="emit('update:modelValue', $event)"
         direction="vertical"

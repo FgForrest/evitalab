@@ -14,7 +14,7 @@ import { UnexpectedError } from '@/model/lab'
  * Query executor for GraphQL language.
  */
 export class GraphQLQueryExecutor extends QueryExecutor {
-    readonly graphQLClient: GraphQLClient
+    private readonly graphQLClient: GraphQLClient
 
     constructor(labService: LabService, graphQLClient: GraphQLClient) {
         super(labService)

@@ -24,7 +24,7 @@ export const key: InjectionKey<SchemaViewerService> = Symbol()
  * Service for handling schema viewer tab component.
  */
 export class SchemaViewerService {
-    readonly labService: LabService
+    private readonly labService: LabService
 
     constructor(labService: LabService) {
         this.labService = labService

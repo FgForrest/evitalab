@@ -1,5 +1,7 @@
 // import { Connection } from '@/model/connection'
 
+import { CatalogPointer } from '@/model/editor/editor'
+
 export const dataContentTypeHeader = 'application/json'
 export const dataAcceptHeader = 'application/json'
 
@@ -9,7 +11,7 @@ export const schemaAcceptHeader = 'application/yaml'
 /**
  * Points to concrete evitaDB GraphQL instance
  */
-export class RestInstancePointer {
+export class RestInstancePointer/* extends CatalogPointer*/ {
 //     readonly connection: Connection
 //     readonly catalogName: string
 //     readonly collectionName: string

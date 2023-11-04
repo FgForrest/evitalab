@@ -1,17 +1,19 @@
 import { EvitaDBConnection } from '@/model/lab'
-import { ExecutableTabRequest, TabRequestComponentData, TabRequestComponentParams } from '@/model/editor/editor'
+import {
+    CatalogPointer,
+    ExecutableTabRequest,
+    TabRequestComponentData,
+    TabRequestComponentParams
+} from '@/model/editor/editor'
 
 /**
  * Points to concrete evitaDB GraphQL instance
  */
-export class GraphQLInstancePointer  {
-    readonly connection: EvitaDBConnection
-    readonly catalogName: string
+export class GraphQLInstancePointer extends CatalogPointer {
     readonly instanceType: GraphQLInstanceType
 
     constructor(connection: EvitaDBConnection, catalogName: string, instanceType: GraphQLInstanceType) {
-        this.connection = connection
-        this.catalogName = catalogName
+        super(connection, catalogName)
         this.instanceType = instanceType
     }
 }

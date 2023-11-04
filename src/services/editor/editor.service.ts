@@ -9,7 +9,7 @@ export const key: InjectionKey<EditorService> = Symbol()
  * Handles lifecycle of editor. Mainly, it handles creation and destruction of tabs.
  */
 export class EditorService {
-    readonly store: Store<State>
+    private readonly store: Store<State>
 
     constructor(store: Store<State>) {
         this.store = store

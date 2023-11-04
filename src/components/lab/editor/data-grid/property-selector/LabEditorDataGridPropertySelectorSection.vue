@@ -10,6 +10,7 @@ import {
 } from '@/model/editor/data-grid'
 import LabEditorDataGridPropertySelectorSectionEmptyItem from './LabEditorDataGridPropertySelectorSectionEmptyItem.vue'
 import { TabComponentProps } from '@/model/editor/editor'
+import VListItemDivider from '@/components/base/VListItemDivider.vue'
 
 const props = defineProps<{
     gridProps: TabComponentProps<DataGridConsoleParams, DataGridConsoleData>,
@@ -77,9 +78,9 @@ function resolveNewSelection() {
                 :key="property.key.toString()"
             >
                 <slot :property="property" />
-                <VDivider
+                <VListItemDivider
                     v-if="index < filteredPropertyDescriptors.length - 1"
-                    class="mt-2 mb-2"
+                    inset
                 />
             </template>
         </template>

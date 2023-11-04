@@ -1,5 +1,4 @@
 import { inject, InjectionKey } from 'vue'
-import { LabService } from '@/services/lab.service'
 import { EvitaQLDataPointer } from '@/model/editor/evitaql-console'
 import { EvitaDBClient } from '@/services/evitadb-client'
 
@@ -9,11 +8,9 @@ export const key: InjectionKey<EvitaQLConsoleService> = Symbol()
  * Service for running EvitaQL console component.
  */
 export class EvitaQLConsoleService {
-    readonly labService: LabService
-    readonly evitaDBClient: EvitaDBClient
+    private readonly evitaDBClient: EvitaDBClient
 
-    constructor(labService: LabService, evitaDBClient: EvitaDBClient) {
-        this.labService = labService
+    constructor(evitaDBClient: EvitaDBClient) {
         this.evitaDBClient = evitaDBClient
     }
 

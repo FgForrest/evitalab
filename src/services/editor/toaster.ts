@@ -12,8 +12,8 @@ import { ErrorViewerRequest } from '@/model/editor/error-viewer-request'
  * with built-in features specific to evitaLab needs.
  */
 export class Toaster {
-    readonly toast: ToastInterface
-    readonly editorService: EditorService
+    private readonly toast: ToastInterface
+    private readonly editorService: EditorService
 
     constructor(toast: ToastInterface, editorService: EditorService) {
         this.toast = toast

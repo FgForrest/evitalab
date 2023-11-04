@@ -1,17 +1,19 @@
 import { EvitaDBConnection, QueryLanguage } from '@/model/lab'
-import { ExecutableTabRequest, TabRequestComponentData, TabRequestComponentParams } from '@/model/editor/editor'
+import {
+    CatalogPointer,
+    ExecutableTabRequest,
+    TabRequestComponentData,
+    TabRequestComponentParams
+} from '@/model/editor/editor'
 
 /**
  * Points to concrete evitaDB collection to fetch data from.
  */
-export class DataGridDataPointer implements TabRequestComponentParams {
-    readonly connection: EvitaDBConnection
-    readonly catalogName: string
+export class DataGridDataPointer extends CatalogPointer implements TabRequestComponentParams {
     readonly entityType: string
 
     constructor(connection: EvitaDBConnection, catalogName: string, entityType: string) {
-        this.connection = connection
-        this.catalogName = catalogName
+        super(connection, catalogName)
         this.entityType = entityType
     }
 }

@@ -16,6 +16,7 @@ import { Toaster, useToaster } from '@/services/editor/toaster'
 import { UnexpectedError } from '@/model/lab'
 import { TabComponentProps } from '@/model/editor/editor'
 import Hotkeys from 'vue-hotkeys-rt/Hotkeys.vue'
+import VListItemDivider from '@/components/base/VListItemDivider.vue'
 
 const toaster: Toaster = useToaster()
 
@@ -234,6 +235,7 @@ function togglePropertySectionSelection(sectionType: EntityPropertyType, newSele
                             />
                         </template>
                     </LabEditorDataGridPropertySelectorSection>
+                    <VListItemDivider />
                     <LabEditorDataGridPropertySelectorSection
                         :grid-props="gridProps"
                         title="Attributes"
@@ -252,6 +254,7 @@ function togglePropertySectionSelection(sectionType: EntityPropertyType, newSele
                             />
                         </template>
                     </LabEditorDataGridPropertySelectorSection>
+                    <VListItemDivider />
                     <LabEditorDataGridPropertySelectorSection
                         :grid-props="gridProps"
                         title="Associated data"
@@ -270,6 +273,7 @@ function togglePropertySectionSelection(sectionType: EntityPropertyType, newSele
                             />
                         </template>
                     </LabEditorDataGridPropertySelectorSection>
+                    <VListItemDivider />
                     <LabEditorDataGridPropertySelectorSection
                         :grid-props="gridProps"
                         title="References"

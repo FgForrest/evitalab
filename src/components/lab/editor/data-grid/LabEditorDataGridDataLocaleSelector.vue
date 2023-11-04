@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import VListItemDivider from '@/components/base/VListItemDivider.vue'
+
 const props = defineProps<{
     selected: string | undefined,
     dataLocales: string[]
@@ -46,7 +48,7 @@ function handleDataLocaleSelect(selected: unknown[]) {
                     <VListItemTitle>None</VListItemTitle>
                 </VListItem>
 
-                <VDivider class="mt-2 mb-2" />
+                <VListItemDivider />
 
                 <VListItem
                     v-for="locale in dataLocales"

@@ -11,6 +11,8 @@ import { SchemaViewerService, key as schemaViewerServiceKey } from '@/services/e
 import { EvitaDBClient } from '@/services/evitadb-client'
 import { GraphQLClient } from '@/services/graphql-client'
 import { EvitaDBDocsClient } from '@/services/evitadb-docs-client'
+import { GraphQLResultVisualiserService, key as graphqlResultVisualiserServiceKey } from '@/services/editor/result-visualiser/graphql-result-visualiser.service'
+import { EvitaQLResultVisualiserService, key as evitaQLResultVisualiserServiceKey } from '@/services/editor/result-visualiser/evitaql-result-visualiser.service'
 
 /**
  * Creates and registers all lab services to the application.
@@ -24,9 +26,12 @@ export function registerServices(app: App, store: Store<State>): void {
     const editorService: EditorService = new EditorService(store)
     const demoSnippetResolver: DemoSnippetResolver = new DemoSnippetResolver(labService)
     const dataGridConsoleService: DataGridConsoleService = new DataGridConsoleService(labService, evitaDBClient, graphQLClient)
-    const graphQLConsoleService: GraphQLConsoleService = new GraphQLConsoleService(labService, graphQLClient)
-    const evitaQLConsoleService: EvitaQLConsoleService = new EvitaQLConsoleService(labService, evitaDBClient)
+    const graphQLConsoleService: GraphQLConsoleService = new GraphQLConsoleService(graphQLClient)
+    const evitaQLConsoleService: EvitaQLConsoleService = new EvitaQLConsoleService(evitaDBClient)
     const schemaViewerService: SchemaViewerService = new SchemaViewerService(labService)
+
+    const graphQLResultVisualizerService: GraphQLResultVisualiserService = new GraphQLResultVisualiserService(labService)
+    const evitaQLResultVisualizerService: EvitaQLResultVisualiserService = new EvitaQLResultVisualiserService(labService)
 
     app
         .provide(labServiceKey, labService)
@@ -36,4 +41,6 @@ export function registerServices(app: App, store: Store<State>): void {
         .provide(graphQLConsoleServiceKey, graphQLConsoleService)
         .provide(evitaQLConsoleServiceKey, evitaQLConsoleService)
         .provide(schemaViewerServiceKey, schemaViewerService)
+        .provide(graphqlResultVisualiserServiceKey, graphQLResultVisualizerService)
+        .provide(evitaQLResultVisualiserServiceKey, evitaQLResultVisualizerService)
 }

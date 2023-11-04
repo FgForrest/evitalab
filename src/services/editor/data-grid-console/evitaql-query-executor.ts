@@ -13,7 +13,7 @@ import { Response } from '@/model/evitadb'
  * Query executor for EvitaQL language.
  */
 export class EvitaQLQueryExecutor extends QueryExecutor {
-    readonly evitaDBClient: EvitaDBClient
+    private readonly evitaDBClient: EvitaDBClient
 
     constructor(labService: LabService, evitaDBClient: EvitaDBClient) {
         super(labService)

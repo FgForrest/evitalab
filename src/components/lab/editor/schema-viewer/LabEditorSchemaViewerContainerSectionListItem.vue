@@ -35,11 +35,7 @@ function open() {
                 </span>
             </VListItemTitle>
             <VChipGroup>
-                <VChip
-                    v-for="flag in flags"
-                    :key="flag"
-                    variant="plain"
-                >
+                <VChip v-for="flag in flags" :key="flag">
                     {{ flag }}
                 </VChip>
             </VChipGroup>
