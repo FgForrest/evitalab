@@ -63,11 +63,12 @@ async function executeQuery(): Promise<void> {
     loading.value = true
     try {
         resultCode.value = await evitaQLConsoleService.executeEvitaQLQuery(props.params.dataPointer, queryCode.value, JSON.parse(variablesCode.value))
+        loading.value = false
         enteredQueryCode.value = queryCode.value
     } catch (error: any) {
         toaster.error(error)
+        loading.value = false
     }
-    loading.value = false
 }
 
 emit('ready')
@@ -140,6 +141,7 @@ if (props.params.executeOnOpen) {
                     >
                         <VWindowItem :value="ResultTabType.Raw">
                             <CodemirrorFull
+                                v-if="resultTab === ResultTabType.Raw"
                                 v-model="resultCode"
                                 placeholder="Results will be displayed here..."
                                 read-only
@@ -149,6 +151,7 @@ if (props.params.executeOnOpen) {
 
                         <VWindowItem :value="ResultTabType.Visualiser">
                             <LabEditorResultVisualiser
+                                v-if="resultTab === ResultTabType.Visualiser"
                                 :catalog-pointer="params.dataPointer"
                                 :visualiser-service="visualiserService"
                                 :input-query="enteredQueryCode || ''"

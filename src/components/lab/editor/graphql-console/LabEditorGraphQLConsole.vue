@@ -97,11 +97,12 @@ async function executeQuery(): Promise<void> {
     loading.value = true
     try {
         resultCode.value = await graphQLConsoleService.executeGraphQLQuery(props.params.instancePointer, queryCode.value, JSON.parse(variablesCode.value))
+        loading.value = false
         enteredQueryCode.value = queryCode.value
     } catch (error: any) {
+        loading.value = false
         toaster.error(error)
     }
-    loading.value = false
 }
 
 function initializeSchemaEditor(): void {
@@ -212,6 +213,7 @@ function initializeSchemaEditor(): void {
                     >
                         <VWindowItem :value="ResultTabType.Raw">
                             <CodemirrorFull
+                                v-if="resultTab === ResultTabType.Raw"
                                 v-model="resultCode"
                                 placeholder="Results will be displayed here..."
                                 read-only
@@ -221,6 +223,7 @@ function initializeSchemaEditor(): void {
 
                         <VWindowItem v-if="supportsVisualisation" :value="ResultTabType.Visualiser">
                             <LabEditorResultVisualiser
+                                v-if="resultTab === ResultTabType.Visualiser"
                                 :catalog-pointer="params.instancePointer"
                                 :visualiser-service="visualiserService"
                                 :input-query="enteredQueryCode || ''"

@@ -61,14 +61,11 @@ export class EvitaQLResultVisualiserService extends JsonResultVisualiserService 
             return undefined
         }
 
-        const actualRepresentativeAttributes: (string | undefined)[] = []
+        const possibleAttributes: [any, boolean][] = []
 
         const globalAttributes: Result = entityResult['attributes']?.['global'] || {}
         for (const attributeName in globalAttributes) {
-            if (!representativeAttributes.includes(attributeName)) {
-                continue;
-            }
-            actualRepresentativeAttributes.push(this.toPrintableAttributeValue(globalAttributes[attributeName]))
+            possibleAttributes.push([globalAttributes[attributeName], representativeAttributes.includes(attributeName)])
         }
 
         const localizedAttributes: Result = entityResult['attributes']?.['localized'] || {}
@@ -78,17 +75,21 @@ export class EvitaQLResultVisualiserService extends JsonResultVisualiserService 
             const locale: string = localizedAttributesLocales[0]
             const attributesInLocale: Result = localizedAttributes[locale]
             for (const attributeName in attributesInLocale) {
-                if (!representativeAttributes.includes(attributeName)) {
-                    continue;
-                }
-                actualRepresentativeAttributes.push(this.toPrintableAttributeValue(attributesInLocale[attributeName]))
+                possibleAttributes.push([attributesInLocale[attributeName], representativeAttributes.includes(attributeName)])
             }
         }
 
-        if (actualRepresentativeAttributes.length === 0) {
+        if (possibleAttributes.length === 0) {
             return undefined
+        } else if (possibleAttributes.length <= 3) {
+            return possibleAttributes.map(it => this.toPrintableAttributeValue(it[0])).join(', ')
+        } else {
+            // if there are too many attributes, we only print the representative ones
+            return possibleAttributes
+                .filter(it => it[1])
+                .map(it => this.toPrintableAttributeValue(it[0]))
+                .join(', ')
         }
-        return actualRepresentativeAttributes.filter(it => it != undefined).join(', ')
     }
 
     getFacetSummaryService(): FacetSummaryVisualiserService {

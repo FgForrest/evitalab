@@ -67,19 +67,23 @@ export class GraphQLResultVisualiserService extends JsonResultVisualiserService 
             return undefined
         }
 
-        const actualRepresentativeAttributes: (string | undefined)[] = []
+        const possibleAttributes: [any, boolean][] = []
         const attributes = entityResult['attributes'] || {}
         for (const attributeName in attributes) {
-            if (!representativeAttributes.includes(attributeName) && attributeName !== 'title') {
-                continue;
-            }
-            actualRepresentativeAttributes.push(this.toPrintableAttributeValue(attributes[attributeName]))
+            possibleAttributes.push([attributes[attributeName], representativeAttributes.includes(attributeName)])
         }
 
-        if (actualRepresentativeAttributes.length === 0) {
+        if (possibleAttributes.length === 0) {
             return undefined
+        } else if (possibleAttributes.length <= 3) {
+            return possibleAttributes.map(it => this.toPrintableAttributeValue(it[0])).join(', ')
+        } else {
+            // if there are too many attributes, we only print the representative ones
+            return possibleAttributes
+                .filter(it => it[1])
+                .map(it => this.toPrintableAttributeValue(it[0]))
+                .join(', ')
         }
-        return actualRepresentativeAttributes.filter(it => it != undefined).join(', ')
     }
 
     getFacetSummaryService(): FacetSummaryVisualiserService {
