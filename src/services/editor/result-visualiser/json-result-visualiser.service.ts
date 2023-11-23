@@ -73,7 +73,12 @@ export abstract class JsonFacetSummaryVisualiserService<VS extends JsonResultVis
             if (referenceSchema == undefined) {
                 throw new UnexpectedError(undefined, `Reference '${referenceName}' not found in entity '${entitySchema.name}'.`)
             }
-            referencesWithGroups.push([referenceSchema, facetSummaryResult[referenceName]])
+            const groups = facetSummaryResult[referenceName]
+            if (groups instanceof Array) {
+                referencesWithGroups.push([referenceSchema, groups])
+            } else {
+                referencesWithGroups.push([referenceSchema, [groups]])
+            }
         }
         return referencesWithGroups
     }
