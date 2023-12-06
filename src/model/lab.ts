@@ -12,11 +12,11 @@ export class EvitaDBConnection {
     readonly id: EvitaDBConnectionId
     readonly name: string
     readonly preconfigured: boolean
-    readonly labApiUrl: string
-    readonly restUrl: string
-    readonly gqlUrl: string
+    readonly labApiUrl?: string
+    readonly restUrl?: string
+    readonly gqlUrl?: string
 
-    constructor(id: EvitaDBConnectionId | undefined, name: string, preconfigured: boolean, labApiUrl: string, restUrl: string, gqlUrl: string) {
+    constructor(id: EvitaDBConnectionId | undefined, name: string, preconfigured: boolean, labApiUrl?: string, restUrl?: string, gqlUrl?: string) {
         this.id = id ? id : uuidv4()
         this.name = name
         this.preconfigured = preconfigured
@@ -29,7 +29,10 @@ export class EvitaDBConnection {
         return new EvitaDBConnection(json.id, json.name, preconfigured, json.labApiUrl, json.restUrl, json.gqlUrl)
     }
 
-    private normalizeApiUrl(url: string): string {
+    private normalizeApiUrl(url: string | undefined): string | undefined {
+        if (url == undefined) {
+            return undefined
+        }
         return url.endsWith('/') ? url.substring(0, url.length - 1) : url
     }
 }
