@@ -161,7 +161,7 @@ export interface AttributeSchema {
     /**
      * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity having certain value of this attribute among other entities in the same collection.  As an example of unique attribute can be EAN - there is no sense in having two entities with same EAN, and it's better to have this ensured by the database engine.
      */
-    unique: boolean;
+    uniquenessType: AttributeUniquenessType;
     /**
      * Contains unique name of the model. Case-sensitive. Distinguishes one model item from another within single entity instance.
      */
@@ -175,6 +175,42 @@ export interface AttributeSchema {
  * Returns either `attributeSchema` or `globalAttributeSchema`.
  */
 export type AttributeSchemaUnion = AttributeSchema | EntityAttributeSchema | GlobalAttributeSchema;
+
+export enum AttributeUniquenessType {
+
+    /**
+     * The attribute is not unique (default).
+     */
+    NotUnique = 'NOT_UNIQUE',
+    /**
+     * The attribute value must be unique among all the entities of the same collection.
+     */
+    UniqueWithinCollection = 'UNIQUE_WITHIN_COLLECTION',
+    /**
+     * The localized attribute value must be unique among all values of the same locale among all the entities
+     * using of the same collection.
+     */
+    UniqueWithinCollectionLocale = 'UNIQUE_WITHIN_COLLECTION_LOCALE'
+}
+
+export enum GlobalAttributeUniquenessType {
+
+    /**
+     * The attribute is not unique (default).
+     */
+    NotUnique = 'NOT_UNIQUE',
+    /**
+     * The attribute value (either localized or non-localized) must be unique among all values among all the entities
+     * using this {@link GlobalAttributeSchema} in the entire catalog.
+     */
+    UniqueWithinCatalog = 'UNIQUE_WITHIN_CATALOG',
+    /**
+     * The localized attribute value must be unique among all values of the same locale among all the entities
+     * using this {@link GlobalAttributeSchema} in the entire catalog.
+     */
+    UniqueWithinCatalogLocale = 'UNIQUE_WITHIN_CATALOG_LOCALE'
+
+}
 
 export enum Cardinality {
     ZeroOrOne = 'ZERO_OR_ONE',
@@ -577,7 +613,7 @@ export interface EntityAttributeSchema {
     /**
      * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity having certain value of this attribute among other entities in the same collection.  As an example of unique attribute can be EAN - there is no sense in having two entities with same EAN, and it's better to have this ensured by the database engine.
      */
-    unique: boolean;
+    uniquenessType: AttributeUniquenessType;
     /**
      * Contains unique name of the model. Case-sensitive. Distinguishes one model item from another within single entity instance.
      */
@@ -634,7 +670,7 @@ export interface GlobalAttributeSchema {
     /**
      * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity having certain value of this attribute among other entities in the same collection.  As an example of unique attribute can be EAN - there is no sense in having two entities with same EAN, and it's better to have this ensured by the database engine.
      */
-    unique: boolean;
+    uniquenessType: AttributeUniquenessType;
     /**
      * Contains unique name of the model. Case-sensitive. Distinguishes one model item from another within single entity instance.
      */
@@ -646,7 +682,7 @@ export interface GlobalAttributeSchema {
     /**
      * When attribute is unique globally it is automatically filterable, and it is ensured there is exactly one single          entity having certain value of this attribute in entire catalog.           As an example of unique attribute can be URL - there is no sense in having two entities with same URL, and it's          better to have this ensured by the database engine.
      */
-    uniqueGlobally: boolean;
+    globalUniquenessType: GlobalAttributeUniquenessType;
 }
 /**
  * Contains all global attributes schemas relevant for parent schema.

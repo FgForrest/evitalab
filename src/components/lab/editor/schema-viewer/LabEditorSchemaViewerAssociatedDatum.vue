@@ -3,18 +3,20 @@ import LabEditorViewerNameVariants from './LabEditorSchemaViewerNameVariants.vue
 import LabEditorViewerContainer from './LabEditorSchemaViewerContainer.vue'
 import { SchemaViewerDataPointer } from '@/model/editor/schema-viewer'
 import { AssociatedDataSchema } from '@/model/evitadb'
+import { KeywordValue, Property, PropertyValue } from '@/model/properties-table'
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
     schema: AssociatedDataSchema
 }>()
 
-const properties: [string, any, ((item?: string) => void)?][] = []
-properties.push(['Type', props.schema.type.replace('ComplexDataObject', 'Object')])
-properties.push(['Description', props.schema.description])
-properties.push(['Deprecation notice', props.schema.deprecationNotice])
-properties.push(['Localized', props.schema.localized as boolean])
-properties.push(['Nullable', props.schema.nullable as boolean])
+const properties: Property[] = [
+    { name: 'Type', value: new PropertyValue(new KeywordValue(props.schema.type.replace('ComplexDataObject', 'Object'))) },
+    { name: 'Description', value: new PropertyValue(props.schema.description) },
+    { name: 'Deprecation notice', value: new PropertyValue(props.schema.deprecationNotice) },
+    { name: 'Localized', value: new PropertyValue(props.schema.localized as boolean) },
+    { name: 'Nullable', value: new PropertyValue(props.schema.nullable as boolean) }
+]
 
 </script>
 

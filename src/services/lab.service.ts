@@ -6,10 +6,13 @@ import { EvitaDBClient } from '@/services/evitadb-client'
 import {
     AssociatedDataSchema,
     AttributeSchemaUnion,
+    AttributeUniquenessType,
     Catalog,
-    CatalogSchema, EntityAttributeSchema,
+    CatalogSchema,
+    EntityAttributeSchema,
     EntitySchema,
     GlobalAttributeSchema,
+    GlobalAttributeUniquenessType,
     ReferenceSchema
 } from '@/model/evitadb'
 import { EvitaDBDocsClient } from '@/services/evitadb-docs-client'
@@ -140,17 +143,20 @@ export class LabService {
     getAttributeSchemaFlags = (schema: AttributeSchemaUnion): string[] => {
         const flags: string[] = []
         flags.push(this.formatDataTypeForFlag(schema.type))
-        const globalAttribute = 'uniqueGlobally' in schema
+        const globalAttribute = 'globalUniquenessType' in schema
         const entityAttribute = 'representative' in schema
         if (entityAttribute && (schema as EntityAttributeSchema).representative) {
             flags.push('representative')
         }
-        if (globalAttribute && (schema as GlobalAttributeSchema).uniqueGlobally) {
-            flags.push('unique globally')
-        } else if (schema.unique) {
+        if (globalAttribute && (schema as GlobalAttributeSchema).globalUniquenessType != GlobalAttributeUniquenessType.NotUnique) {
+            flags.push('globally unique')
+        } else if (schema.uniquenessType != AttributeUniquenessType.NotUnique) {
             flags.push('unique')
         }
-        if (schema.unique || schema.filterable) flags.push('filterable')
+        if ((globalAttribute && (schema as GlobalAttributeSchema).globalUniquenessType != GlobalAttributeUniquenessType.NotUnique) ||
+            schema.uniquenessType != AttributeUniquenessType.NotUnique ||
+            schema.filterable)
+            flags.push('filterable')
         if (schema.sortable) flags.push('sortable')
         if (schema.localized) flags.push('localized')
         if (schema.nullable) flags.push('nullable')

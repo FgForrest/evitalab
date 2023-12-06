@@ -138,18 +138,19 @@ function handleAction(action: string) {
                 class="font-weight-bold"
             >
                 {{ catalog.name }}
+                <VTooltip activator="parent">
+                    {{ catalog.name }}
+                </VTooltip>
             </VTreeViewItem>
 
             <VTreeViewItem
                 v-else
                 v-bind="props"
-                prepend-icon="mdi-book-open"
+                prepend-icon="mdi-menu"
                 class="text-red"
             >
                 {{ catalog.name }}
-                <VTooltip
-                    activator="parent"
-                >
+                <VTooltip activator="parent">
                     This catalog couldn't be loaded because it's corrupted.
                 </VTooltip>
             </VTreeViewItem>

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import VPropertiesTable from '@/components/base/VPropertiesTable.vue'
+import { Property } from '@/model/properties-table'
 
 const props = defineProps<{
-    properties: [string, any, ((item?: string) => void)?][]
+    properties: Property[]
 }>()
 </script>
 

@@ -7,24 +7,25 @@ import LabEditorViewerContainer from './LabEditorSchemaViewerContainer.vue'
 import LabEditorSchemaViewerAssociatedData from './LabEditorSchemaViewerAssociatedData.vue'
 import LabEditorSchemaViewerReferences from './LabEditorSchemaViewerReferences.vue'
 import { EntitySchema } from '@/model/evitadb'
+import { KeywordValue, Property, PropertyValue } from '@/model/properties-table'
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
     schema: EntitySchema
 }>()
 
-const baseProperties = ref<[string, any, ((item?: string) => void)?][]>([
+const baseProperties = ref<Property[]>([
     // todo lho i18n
-    ['Version', props.schema.version],
-    ['Description', props.schema.description],
-    ['Deprecation notice', props.schema.deprecationNotice],
-    ['Locales', props.schema.locales],
-    ['Currencies', props.schema.currencies],
-    ['Generated primary key', props.schema.withGeneratedPrimaryKey],
-    ['Hierarchical', props.schema.withHierarchy],
-    ['Prices', props.schema.withPrice],
-    ['Indexed decimal places', props.schema.indexedPricePlaces],
-    ['Evolution modes', props.schema.evolutionMode]
+    { name: 'Version', value: new PropertyValue(props.schema.version) },
+    { name: 'Description', value: new PropertyValue(props.schema.description) },
+    { name: 'Deprecation notice', value: new PropertyValue(props.schema.deprecationNotice) },
+    { name: 'Locales', value: props.schema.locales.map(locale => new PropertyValue(new KeywordValue(locale))) },
+    { name: 'Currencies', value: props.schema.currencies.map(currency => new PropertyValue(new KeywordValue(currency))) },
+    { name: 'Generated primary key', value: new PropertyValue(props.schema.withGeneratedPrimaryKey) },
+    { name: 'Hierarchical', value: new PropertyValue(props.schema.withHierarchy) },
+    { name: 'Prices', value: new PropertyValue(props.schema.withPrice) },
+    { name: 'Indexed decimal places', value: new PropertyValue(props.schema.indexedPricePlaces) },
+    { name: 'Evolution modes', value: props.schema.evolutionMode.map(mode => new PropertyValue(new KeywordValue(mode))) }
 ])
 </script>
 

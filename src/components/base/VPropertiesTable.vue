@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import VMarkdown from '@/components/base/VMarkdown.vue'
+import VPropertiesTableValue from '@/components/base/VPropertiesTableValue.vue'
+
+import { Property } from '@/model/properties-table'
 
 const props = defineProps<{
-    properties: [string, any, ((item?: string) => void)?][]
+    properties: Property[]
 }>()
 </script>
 
@@ -10,43 +12,13 @@ const props = defineProps<{
     <table class="properties-table">
         <tr
             v-for="property in properties"
-            :key="property[0]"
+            :key="property.name"
             class="properties-table__row"
         >
-            <td class="text-medium-emphasis">{{ property[0] }}</td>
-            <td>
-                <span
-                    v-if="property[1] == undefined"
-                    class="text-disabled font-weight-light font-italic"
-                >
-                    &lt;empty&gt;
-                </span>
-                <VCheckbox
-                    v-else-if="typeof property[1] === 'boolean'"
-                    v-model="property[1]"
-                    disabled
-                    density="compact"
-                    hide-details
-                    @click="property[2]?.(undefined)"
-                />
-                <VChipGroup
-                    v-else-if="Array.isArray(property[1])"
-                    dense
-                >
-                    <VChip
-                        v-for="item in property[1]"
-                        :key="item"
-                        :variant="property[2] ? 'outlined' : 'plain'"
-                        @click="property[2]?.(item)"
-                    >
-                        {{ item }}
-                    </VChip>
-                </VChipGroup>
-                <div v-else>
-                    <VMarkdown :source="property[1].toString()"/>
-                </div>
+            <td class="text-medium-emphasis">{{ property.name }}</td>
+            <td class="d-flex align-center">
+                <VPropertiesTableValue :property="property" :property-value="property.value" />
             </td>
-
         </tr>
     </table>
 </template>

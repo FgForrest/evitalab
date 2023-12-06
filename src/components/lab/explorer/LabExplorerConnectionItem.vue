@@ -109,6 +109,9 @@ function handleAction(action: string, payload?: any) {
                 class="font-weight-bold"
             >
                 {{ connection.name }}
+                <VTooltip activator="parent">
+                    {{ connection.name }}
+                </VTooltip>
             </VTreeViewItem>
         </template>
 

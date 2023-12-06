@@ -6,16 +6,17 @@ import LabEditorViewerAttributes from './LabEditorSchemaViewerAttributes.vue'
 import LabEditorViewerContainer from './LabEditorSchemaViewerContainer.vue'
 import LabEditorSchemaViewerEntities from './LabEditorSchemaViewerEntities.vue'
 import { CatalogSchema } from '@/model/evitadb'
+import { Property, PropertyValue } from '@/model/properties-table'
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
     schema: CatalogSchema
 }>()
 
-const baseProperties = ref<[string, any, ((item?: string) => void)?][]>([
+const baseProperties = ref<Property[]>([
     // todo lho i18n
-    ['Version', props.schema.version],
-    ['Description', props.schema.description]
+    { name: 'Version', value: new PropertyValue(props.schema.version) },
+    { name: 'Description', value: new PropertyValue(props.schema.description) }
 ])
 </script>
 

@@ -80,6 +80,9 @@ function handleAction(action: string) {
         class="text-gray-light text-sm-body-2"
     >
         {{ entitySchema.name }}
+        <VTooltip activator="parent">
+            {{ entitySchema.name }}
+        </VTooltip>
     </VTreeViewItem>
 </template>
 

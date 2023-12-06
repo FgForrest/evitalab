@@ -2,6 +2,7 @@
 import LabEditorSchemaViewerContainerSection from './LabEditorSchemaViewerContainerSection.vue'
 import { NameVariants } from '@/model/evitadb'
 import VPropertiesTable from '@/components/base/VPropertiesTable.vue'
+import { Property, PropertyValue } from '@/model/properties-table'
 
 const props = withDefaults(defineProps<{
     prefix?: string,
@@ -12,12 +13,12 @@ const props = withDefaults(defineProps<{
 
 const name = props.prefix ? `${props.prefix} name variants` : 'Name variants'
 
-const properties: [string, any, ((item?: string) => void)?][] = [
-    ['camelCase', props.nameVariants.camelCase as String],
-    ['kebab-case', props.nameVariants.kebabCase as String],
-    ['PascalCase', props.nameVariants.pascalCase as String],
-    ['snake_case', props.nameVariants.snakeCase as String],
-    ['UPPER_CASE', props.nameVariants.upperSnakeCase as String]
+const properties: Property[] = [
+    { name: 'camelCase', value: new PropertyValue(props.nameVariants.camelCase) },
+    { name: 'kebab-case', value: new PropertyValue(props.nameVariants.kebabCase) },
+    { name: 'PascalCase', value: new PropertyValue(props.nameVariants.pascalCase) },
+    { name: 'snake_case', value: new PropertyValue(props.nameVariants.snakeCase) },
+    { name: 'UPPER_CASE', value: new PropertyValue(props.nameVariants.upperSnakeCase) }
 ]
 </script>
 

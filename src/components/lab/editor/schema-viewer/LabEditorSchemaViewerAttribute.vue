@@ -1,30 +1,96 @@
 <script setup lang="ts">
 import LabEditorViewerNameVariants from './LabEditorSchemaViewerNameVariants.vue'
 import LabEditorViewerContainer from './LabEditorSchemaViewerContainer.vue'
-import { AttributeSchemaUnion, EntityAttributeSchema, GlobalAttributeSchema } from '@/model/evitadb'
+import {
+    AttributeSchemaUnion,
+    AttributeUniquenessType,
+    EntityAttributeSchema,
+    GlobalAttributeSchema,
+    GlobalAttributeUniquenessType
+} from '@/model/evitadb'
 import { SchemaViewerDataPointer } from '@/model/editor/schema-viewer'
+import { ComplexFlagValue, KeywordValue, Property, PropertyValue } from '@/model/properties-table'
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
     schema: AttributeSchemaUnion
 }>()
 
-const globalAttribute = 'uniqueGlobally' in props.schema
+const globalAttribute = 'globalUniquenessType' in props.schema
 const entityAttribute = 'representative' in props.schema
 
-const properties: [string, any, ((item?: string) => void)?][] = []
-properties.push(['Type', props.schema.type])
-properties.push(['Description', props.schema.description])
-properties.push(['Deprecation notice', props.schema.deprecationNotice])
-if (entityAttribute) properties.push(['Representative', (props.schema as EntityAttributeSchema).representative as boolean])
-properties.push(['Unique', props.schema.unique as boolean])
-if (globalAttribute) properties.push(['Unique globally', (props.schema as GlobalAttributeSchema).uniqueGlobally as boolean])
-properties.push(['Filterable', props.schema.filterable as boolean])
-properties.push(['Sortable', props.schema.sortable as boolean])
-properties.push(['Localized', props.schema.localized as boolean])
-properties.push(['Nullable', props.schema.nullable as boolean])
-properties.push(['Default value', props.schema.defaultValue])
-properties.push(['Indexed decimal places', props.schema.indexedDecimalPlaces])
+const properties: Property[] = []
+properties.push({ name: 'Type', value: new PropertyValue(new KeywordValue(props.schema.type)) })
+properties.push({ name: 'Description', value: new PropertyValue(props.schema.description) })
+properties.push({ name: 'Deprecation notice', value: new PropertyValue(props.schema.deprecationNotice) })
+if (entityAttribute) properties.push({ name: 'Representative', value: new PropertyValue((props.schema as EntityAttributeSchema).representative as boolean ) })
+switch (props.schema.uniquenessType) {
+    case AttributeUniquenessType.NotUnique:
+        properties.push({ name: 'Unique', value: new PropertyValue(false) });
+        break
+    case AttributeUniquenessType.UniqueWithinCollection:
+        properties.push({
+            name: 'Unique',
+            value: new PropertyValue(new ComplexFlagValue(
+                'Within collection',
+                'The attribute value must be unique among all the entities of the same collection.'
+            ))
+        });
+        break
+    case AttributeUniquenessType.UniqueWithinCollectionLocale:
+        properties.push({
+            name: 'Unique',
+            value: new PropertyValue(new ComplexFlagValue(
+                'Within locale of collection',
+                'The localized attribute value must be unique among all values of the same locale among all the entities.'
+            ))
+        });
+        break
+}
+if (globalAttribute) {
+    switch ((props.schema as GlobalAttributeSchema).globalUniquenessType) {
+        case GlobalAttributeUniquenessType.NotUnique:
+            properties.push({ name: 'Globally unique', value: new PropertyValue(false) });
+            break
+        case GlobalAttributeUniquenessType.UniqueWithinCatalog:
+            properties.push({
+                name: 'Globally unique',
+                value: new PropertyValue(new ComplexFlagValue(
+                    'Within catalog',
+                    'The attribute value (either localized or non-localized) must be unique among all values among all the entities using this global attribute schema in the entire catalog.'
+                ))
+            });
+            break
+        case GlobalAttributeUniquenessType.UniqueWithinCatalogLocale:
+            properties.push({
+                name: 'Globally unique',
+                value: new PropertyValue(new ComplexFlagValue(
+                    'Within locale of catalog',
+                    'The localized attribute value must be unique among all values of the same locale among all the entities using this global attribute schema in the entire catalog.'
+                ))
+            });
+            break
+    }
+}
+properties.push({
+    name: 'Filterable',
+    value: new PropertyValue(
+        (globalAttribute && (props.schema as GlobalAttributeSchema).globalUniquenessType != GlobalAttributeUniquenessType.NotUnique) ||
+        props.schema.uniquenessType != AttributeUniquenessType.NotUnique ||
+        props.schema.filterable,
+        (
+            (globalAttribute && (props.schema as GlobalAttributeSchema).globalUniquenessType != GlobalAttributeUniquenessType.NotUnique) ||
+            props.schema.uniquenessType != AttributeUniquenessType.NotUnique
+        )
+            ? 'The attribute is automatically filterable because it is unique.'
+            : undefined
+    )
+})
+properties.push({ name: 'Sortable', value: new PropertyValue(props.schema.sortable as boolean) })
+properties.push({ name: 'Localized', value: new PropertyValue(props.schema.localized as boolean) })
+properties.push({ name: 'Nullable', value: new PropertyValue(props.schema.nullable as boolean) })
+properties.push({ name: 'Default value', value: new PropertyValue(props.schema.defaultValue) })
+properties.push({ name: 'Indexed decimal places', value: new PropertyValue(props.schema.indexedDecimalPlaces) })
 
 </script>
 

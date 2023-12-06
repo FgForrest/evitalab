@@ -24,7 +24,8 @@ export default createVuetify({
                     'primary-dark': '#131323',
                     'primary-light': '#23355C',
                     'primary-lightest': '#21BFE3',
-                    'gray-light' : '#A5ACBC'
+                    'gray-light' : '#A5ACBC',
+                    warning: '#f7a729'
                 },
             }
         }
