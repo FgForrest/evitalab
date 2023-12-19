@@ -10,9 +10,9 @@ import {
     DataGridConsoleData,
     DataGridConsoleParams, EntityPropertyDescriptor,
     EntityPropertyKey, EntityPropertyType,
-    QueryResult,
+    QueryResult
 } from '@/model/editor/data-grid'
-import { DataGridConsoleService, useDataGridConsoleService } from '@/services/editor/data-grid-console.service'
+import { DataGridService, useDataGridService } from '@/services/editor/data-grid.service'
 import { QueryLanguage } from '@/model/lab'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import { TabComponentEvents, TabComponentProps } from '@/model/editor/editor'
@@ -20,7 +20,7 @@ import LabEditorDataGridQueryInput from '@/components/lab/editor/data-grid/LabEd
 import LabEditorDataGridToolbar from '@/components/lab/editor/data-grid/LabEditorDataGridToolbar.vue'
 import LabEditorDataGridGrid from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGrid.vue'
 
-const dataGridConsoleService: DataGridConsoleService = useDataGridConsoleService()
+const dataGridService: DataGridService = useDataGridService()
 const toaster: Toaster = useToaster()
 
 const props = defineProps<TabComponentProps<DataGridConsoleParams, DataGridConsoleData>>()
@@ -34,6 +34,8 @@ const path = ref<string[]>([
 
 let sortedEntityPropertyKeys: string[] = []
 let entityPropertyDescriptors: EntityPropertyDescriptor[] = []
+const entityPropertyDescriptorIndex: Map<string, EntityPropertyDescriptor> = new Map<string, EntityPropertyDescriptor>()
+
 let gridHeaders: Map<string, any> = new Map<string, any>()
 let dataLocales: string[] = []
 
@@ -82,14 +84,24 @@ onBeforeMount(() => {
     // note: we can't use async/await here, because that would make this component async which currently doesn't seem to work
     // properly in combination with dynamic <component> rendering and tabs
 
-    dataGridConsoleService.getDataLocales(props.params.dataPointer)
+    dataGridService.getDataLocales(props.params.dataPointer)
         .then(dl => {
             dataLocales = dl
-            return dataGridConsoleService.getEntityPropertyDescriptors(props.params.dataPointer)
+            return dataGridService.getEntityPropertyDescriptors(props.params.dataPointer)
         })
         .then(ep => {
             entityPropertyDescriptors = ep
-            sortedEntityPropertyKeys = entityPropertyDescriptors.map(it => it.key.toString())
+            for (const entityPropertyDescriptor of entityPropertyDescriptors) {
+                entityPropertyDescriptorIndex.set(entityPropertyDescriptor.key.toString(), entityPropertyDescriptor)
+                entityPropertyDescriptor.children.forEach(childPropertyDescriptor => {
+                    entityPropertyDescriptorIndex.set(childPropertyDescriptor.key.toString(), childPropertyDescriptor)
+                })
+
+                sortedEntityPropertyKeys.push(entityPropertyDescriptor.key.toString())
+                for (const childEntityPropertyDescriptor of entityPropertyDescriptor.children) {
+                    sortedEntityPropertyKeys.push(childEntityPropertyDescriptor.key.toString())
+                }
+            }
             return initializeGridHeaders(entityPropertyDescriptors)
         })
         .then(gh => {
@@ -114,11 +126,22 @@ async function initializeGridHeaders(entityPropertyDescriptors: EntityPropertyDe
             propertyDescriptor.key.toString(),
             {
                 key: propertyDescriptor.key.toString(),
-                title: propertyDescriptor.title,
-                sortable: propertyDescriptor.schema?.sortable || false,
+                title: propertyDescriptor.flattenedTitle,
+                sortable: propertyDescriptor.isSortable(),
                 descriptor: propertyDescriptor
             }
         )
+        for (const childPropertyDescriptor of propertyDescriptor.children) {
+            gridHeaders.set(
+                childPropertyDescriptor.key.toString(),
+                {
+                    key: childPropertyDescriptor.key.toString(),
+                    title: childPropertyDescriptor.flattenedTitle,
+                    sortable: childPropertyDescriptor.schema?.sortable || false,
+                    descriptor: childPropertyDescriptor
+                }
+            )
+        }
     }
     return gridHeaders
 }
@@ -147,7 +170,7 @@ async function gridUpdated({ page, itemsPerPage, sortBy }: { page: number, items
     pageNumber.value = page
     pageSize.value = itemsPerPage
     try {
-        orderByCode.value = await dataGridConsoleService.buildOrderByFromGridColumns(props.params.dataPointer, selectedQueryLanguage.value, sortBy)
+        orderByCode.value = await dataGridService.buildOrderByFromGridColumns(props.params.dataPointer, selectedQueryLanguage.value, sortBy)
     } catch (error: any) {
         toaster.error(error)
     }
@@ -159,7 +182,7 @@ async function executeQuery(): Promise<void> {
     loading.value = true
 
     try {
-        const result: QueryResult = await dataGridConsoleService.executeQuery(
+        const result: QueryResult = await dataGridService.executeQuery(
             props.params.dataPointer,
             selectedQueryLanguage.value,
             filterByCode.value,
@@ -203,7 +226,7 @@ async function executeQuery(): Promise<void> {
                     v-model:order-by="orderByCode"
                     :data-locales="dataLocales"
                     v-model:selected-data-locale="selectedDataLocale"
-                    :entity-property-descriptors="entityPropertyDescriptors"
+                    :entity-property-descriptor-index="entityPropertyDescriptorIndex"
                     v-model:selected-entity-property-keys="displayedProperties"
                     @execute-query="executeQuery"
                 />
@@ -212,7 +235,7 @@ async function executeQuery(): Promise<void> {
 
         <LabEditorDataGridGrid
             :grid-props="props"
-            :entity-property-descriptors="entityPropertyDescriptors"
+            :entity-property-descriptor-index="entityPropertyDescriptorIndex"
             :displayed-grid-headers="displayedGridHeaders"
             :data-locale="selectedDataLocale"
             :query-language="selectedQueryLanguage"

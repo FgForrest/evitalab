@@ -4,7 +4,8 @@ import {
     EntityPropertyDescriptor,
     EntityPropertyKey,
     EntityPropertyType,
-    EntityPropertySectionSelection, DataGridConsoleParams, DataGridConsoleData
+    EntityPropertySectionSelection, DataGridConsoleParams, DataGridConsoleData,
+    parentEntityPropertyType
 } from '@/model/editor/data-grid'
 import VCardTitleWithActions from '@/components/base/VCardTitleWithActions.vue'
 import LabEditorDataGridPropertySelectorSection from './LabEditorDataGridPropertySelectorSection.vue'
@@ -17,6 +18,17 @@ import { UnexpectedError } from '@/model/lab'
 import { TabComponentProps } from '@/model/editor/editor'
 import Hotkeys from 'vue-hotkeys-rt/Hotkeys.vue'
 import VListItemDivider from '@/components/base/VListItemDivider.vue'
+import LabEditorDataGridPropertySelectorSectionReferenceAttributeItem
+    from '@/components/lab/editor/data-grid/property-selector/LabEditorDataGridPropertySelectorSectionReferenceAttributeItem.vue'
+import LabEditorDataGridPropertySelectorSectionItemGroup
+    from '@/components/lab/editor/data-grid/property-selector/LabEditorDataGridPropertySelectorSectionItemGroup.vue'
+
+const topLevelSections: EntityPropertyType[] = [
+    EntityPropertyType.Entity,
+    EntityPropertyType.Attributes,
+    EntityPropertyType.AssociatedData,
+    EntityPropertyType.References,
+]
 
 const toaster: Toaster = useToaster()
 
@@ -24,7 +36,7 @@ const props = defineProps<{
     gridProps: TabComponentProps<DataGridConsoleParams, DataGridConsoleData>,
     modelValue: boolean,
     selected: EntityPropertyKey[],
-    propertyDescriptors: EntityPropertyDescriptor[],
+    propertyDescriptorIndex: Map<string, EntityPropertyDescriptor>,
 }>()
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void
@@ -41,12 +53,16 @@ const filterInput = ref<HTMLInputElement | null>(null)
 const sectionedPropertyDescriptors = computed<Map<EntityPropertyType, EntityPropertyDescriptor[]>>(() => {
     const propertyDescriptors: Map<EntityPropertyType, EntityPropertyDescriptor[]> = new Map<EntityPropertyType, EntityPropertyDescriptor[]>()
 
-    props.propertyDescriptors.forEach(property => {
-        if (!propertyDescriptors.has(property.type)) {
-            propertyDescriptors.set(property.type, [])
+    props.propertyDescriptorIndex.forEach(propertyDescriptor => {
+        if (!topLevelSections.includes(propertyDescriptor.type)) {
+            return
         }
 
-        propertyDescriptors.get(property.type)?.push(property)
+        if (!propertyDescriptors.has(propertyDescriptor.type)) {
+            propertyDescriptors.set(propertyDescriptor.type, [])
+        }
+
+        propertyDescriptors.get(propertyDescriptor.type)?.push(propertyDescriptor)
     })
 
     return propertyDescriptors
@@ -59,7 +75,8 @@ const filteredSectionedPropertyDescriptors = computed<Map<EntityPropertyType, En
 
     for (const [sectionType, sectionProperties] of sectionedPropertyDescriptors.value) {
         const filteredSectionProperties: EntityPropertyDescriptor[] = sectionProperties.filter(property => {
-            return property.title.toLowerCase().includes(filter.value)
+            return property.title.toLowerCase().includes(filter.value) ||
+                property.children.find(child => child.title.toLowerCase().includes(filter.value)) != undefined
         })
         properties.set(sectionType, filteredSectionProperties)
     }
@@ -134,18 +151,65 @@ function handleFilterUpdate(term: string): void {
 function togglePropertySectionSelection(sectionType: EntityPropertyType, newSelection: EntityPropertySectionSelection): void {
     if (newSelection === EntityPropertySectionSelection.None) {
         // remove all properties in passed section
-        const newSelected: EntityPropertyKey[] = props.selected.filter(key => key.type !== sectionType)
+        const newSelected: EntityPropertyKey[] = props.selected.filter(key => {
+            if (key.type === sectionType) {
+                return false
+            }
+            const parentType = parentEntityPropertyType.get(key.type)
+            if (parentType != undefined && parentType === sectionType) {
+                return false
+            }
+            return true
+        })
         emit('update:selected', newSelected)
     } else if (newSelection === EntityPropertySectionSelection.All) {
-        // remove all properties in passed section
-        const sectionPropertyKeys: EntityPropertyKey[] = sectionedPropertyDescriptors.value.get(sectionType)?.map(property => property.key) || []
         // select all properties in passed section
-        const newSelected: EntityPropertyKey[] = props.selected.filter(key => key.type !== sectionType)
+        const sectionPropertyKeys: EntityPropertyKey[] = sectionedPropertyDescriptors.value.get(sectionType)
+            ?.flatMap(property => [property.key, ...property.children.map(childProperty => childProperty.key)])
+            || []
+        const newSelected: EntityPropertyKey[] = [...props.selected]
         newSelected.push(...sectionPropertyKeys)
 
         emit('update:selected', newSelected)
     } else {
         toaster.error(new UnexpectedError(props.gridProps.params.dataPointer.connection, 'Cannot select `Some` properties in a section.'))
+    }
+}
+
+function togglePropertySelection(propertyKey: EntityPropertyKey): void {
+    if (props.selected.find(key => key.toString() === propertyKey.toString())) {
+        // remove property from selection
+        const newSelected: EntityPropertyKey[] = props.selected.filter(key => {
+            if (key.toString() === propertyKey.toString()) {
+                return false
+            }
+            const propertyDescriptor: EntityPropertyDescriptor = props.propertyDescriptorIndex.get(propertyKey.toString())!
+            if (propertyDescriptor.children.find(child => key.toString() === child.key.toString()) != undefined) {
+                return false
+            }
+            return true
+        })
+        emit('update:selected', newSelected)
+    } else {
+        // add property to selection
+        const newSelected: EntityPropertyKey[] = [...props.selected]
+        newSelected.push(propertyKey)
+        emit('update:selected', newSelected)
+    }
+}
+
+function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescriptor, selected: boolean): void {
+    // we are interested only in the parent reference property, because the actual reference attribute properties are
+    // toggled automatically by the list item components
+    if (!selected) {
+        if (props.selected.find(key => key.toString() === referenceProperty.key.toString())) {
+            // already selected
+            return
+        }
+        // add reference property to selection because we cannot fetch reference attributes alone without references
+        const newSelected: EntityPropertyKey[] = [...props.selected]
+        newSelected.push(referenceProperty.key)
+        emit('update:selected', newSelected)
     }
 }
 
@@ -286,10 +350,37 @@ function togglePropertySectionSelection(sectionType: EntityPropertyType, newSele
                     >
                         <template #default="{ property }">
                             <LabEditorDataGridPropertySelectorSectionReferenceItem
+                                v-if="property.children.length === 0"
                                 :grid-props="gridProps"
                                 :property-descriptor="property"
                                 @schema-open="emit('schemaOpen')"
                             />
+
+                            <LabEditorDataGridPropertySelectorSectionItemGroup
+                                v-else
+                                :filtered-property-descriptors="property.children"
+                                :property-descriptors="property.children"
+                            >
+                                <template #activator="{ props }">
+                                    <LabEditorDataGridPropertySelectorSectionReferenceItem
+                                        :grid-props="gridProps"
+                                        :property-descriptor="property"
+                                        v-bind="props"
+                                        group-parent
+                                        @toggle="togglePropertySelection(property.key)"
+                                        @schema-open="emit('schemaOpen')"
+                                    />
+                                </template>
+
+                                <template #child="{ childProperty }">
+                                    <LabEditorDataGridPropertySelectorSectionReferenceAttributeItem
+                                        :grid-props="gridProps"
+                                        :reference-property-descriptor="property"
+                                        :attribute-property-descriptor="childProperty"
+                                        @toggle="toggleReferenceAttributeProperty(property, $event.selected)"
+                                    />
+                                </template>
+                            </LabEditorDataGridPropertySelectorSectionItemGroup>
                         </template>
                     </LabEditorDataGridPropertySelectorSection>
                 </VList>

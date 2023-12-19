@@ -3,13 +3,13 @@
 import {
     DataGridConsoleData,
     DataGridConsoleParams,
-    EntityPropertyDescriptor
+    EntityPropertyDescriptor, EntityPropertyKey
 } from '@/model/editor/data-grid'
 import { LabService, useLabService } from '@/services/lab.service'
-import LabEditorDataGridPropertySelectorSectionItem from './LabEditorDataGridPropertySelectorSectionItem.vue'
+import LabEditorDataGridPropertyListItem from './LabEditorDataGridPropertySelectorSectionItem.vue'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
 import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
-import { EntityAttributeSchemaPointer } from '@/model/editor/schema-viewer'
+import { ReferenceAttributeSchemaPointer } from '@/model/editor/schema-viewer'
 import { TabComponentProps } from '@/model/editor/editor'
 
 const labService: LabService = useLabService()
@@ -17,22 +17,25 @@ const editorService: EditorService = useEditorService()
 
 const props = defineProps<{
     gridProps: TabComponentProps<DataGridConsoleParams, DataGridConsoleData>,
-    propertyDescriptor: EntityPropertyDescriptor
+    referencePropertyDescriptor: EntityPropertyDescriptor,
+    attributePropertyDescriptor: EntityPropertyDescriptor
 }>()
 const emit = defineEmits<{
+    (e: 'toggle', value: { key: EntityPropertyKey, selected: boolean }): void
     (e: 'schemaOpen'): void
 }>()
 
-const flags: string[] = labService.getAttributeSchemaFlags(props.propertyDescriptor.schema)
+const flags: string[] = labService.getAttributeSchemaFlags(props.attributePropertyDescriptor.schema)
 
 function openSchema(): void {
     editorService.createTabRequest(
         new SchemaViewerRequest(
             props.gridProps.params.dataPointer.connection,
-            new EntityAttributeSchemaPointer(
+            new ReferenceAttributeSchemaPointer(
                 props.gridProps.params.dataPointer.catalogName,
                 props.gridProps.params.dataPointer.entityType,
-                props.propertyDescriptor.schema.name
+                props.referencePropertyDescriptor.schema.name,
+                props.attributePropertyDescriptor.schema.name
             )
         )
     )
@@ -41,12 +44,13 @@ function openSchema(): void {
 </script>
 
 <template>
-    <LabEditorDataGridPropertySelectorSectionItem
-        :value="propertyDescriptor.key"
-        :title="propertyDescriptor.title"
-        :description="propertyDescriptor.schema?.description"
+    <LabEditorDataGridPropertyListItem
+        :value="attributePropertyDescriptor.key"
+        :title="attributePropertyDescriptor.title"
+        :description="attributePropertyDescriptor.schema?.description"
         :flags="flags"
         openable
+        @toggle="emit('toggle', $event)"
         @schema-open="openSchema"
     />
 </template>

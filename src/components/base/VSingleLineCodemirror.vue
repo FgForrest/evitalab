@@ -18,6 +18,8 @@ import {
 } from '@codemirror/language'
 import { autocompletion, closeBrackets, closeBracketsKeymap, completionKeymap } from '@codemirror/autocomplete'
 import { lintKeymap } from '@codemirror/lint'
+import { dracula } from '@ddietr/codemirror-themes/dracula.js'
+import { ViewUpdate } from '@codemirror/view'
 
 const props = withDefaults(
     defineProps<{
@@ -34,6 +36,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
+    (e: 'update', value: ViewUpdate): void,
     (e: 'update:modelValue', value: string): void,
     (e: 'execute'): void
 }>()
@@ -64,6 +67,7 @@ const extensions: Extension[] = [
         ...completionKeymap,
         ...lintKeymap
     ]),
+    dracula,
     EditorState.transactionFilter.of(tr => tr.newDoc.lines > 1 ? [] : tr),
     ...props.additionalExtensions
 ]
@@ -83,6 +87,7 @@ const extensions: Extension[] = [
             :extensions="extensions"
             :placeholder="placeholder"
             :disabled="disabled"
+            @update="emit('update', $event)"
             @update:model-value="$emit('update:modelValue', $event)"
             style="cursor: text; min-width: 0;"
         />

@@ -20,20 +20,20 @@ import { QueryLanguage, UnexpectedError } from '@/model/lab'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
 import { DataGridRequest } from '@/model/editor/data-grid-request'
 import { TabComponentProps } from '@/model/editor/editor'
-import { DataGridConsoleService, useDataGridConsoleService } from '@/services/editor/data-grid-console.service'
+import { DataGridService, useDataGridService } from '@/services/editor/data-grid.service'
 import LabEditorDataGridGridColumnHeader
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridColumnHeader.vue'
 import { Scalar } from '@/model/evitadb'
 
 const editorService: EditorService = useEditorService()
-const dataGridConsoleService: DataGridConsoleService = useDataGridConsoleService()
+const dataGridService: DataGridService = useDataGridService()
 const toaster: Toaster = useToaster()
 
 const pageSizeOptions: any[] = [10, 25, 50, 100, 250, 500, 1000].map(it => ({ title: it.toString(10), value: it }))
 
 const props = defineProps<{
     gridProps: TabComponentProps<DataGridConsoleParams, DataGridConsoleData>,
-    entityPropertyDescriptors: EntityPropertyDescriptor[],
+    entityPropertyDescriptorIndex: Map<String, EntityPropertyDescriptor>,
     dataLocale: string | undefined,
     queryLanguage: QueryLanguage,
     displayedGridHeaders: any[],
@@ -47,15 +47,13 @@ const emit = defineEmits<{
     (e: 'gridUpdated', value: { page: number, itemsPerPage: number, sortBy: any[] }): void
 }>()
 
-const entityPropertyDescriptorIndex: Map<string, EntityPropertyDescriptor> = new Map<string, EntityPropertyDescriptor>()
-props.entityPropertyDescriptors.forEach(it => entityPropertyDescriptorIndex.set(it.key.toString(), it))
 
 const showPropertyDetail = ref<boolean>(false)
 const propertyDetailDescriptor = ref<EntityPropertyDescriptor | undefined>()
 const propertyDetailValue = ref<any>()
 
 function getPropertyDescriptor(key: string): EntityPropertyDescriptor | undefined {
-    const descriptor = entityPropertyDescriptorIndex.get(key)
+    const descriptor = props.entityPropertyDescriptorIndex.get(key)
     if (descriptor == undefined) {
         toaster.error(new UnexpectedError(props.gridProps.params.dataPointer.connection, 'Failed to find property descriptor for key: ' + key))
     }
@@ -83,7 +81,7 @@ function handlePropertyClicked(propertyKey: string, value: any): void {
                 queryLanguage: props.queryLanguage,
                 pageNumber: props.pageNumber,
                 pageSize: props.pageSize,
-                filterBy: dataGridConsoleService.buildParentEntityFilterBy(props.queryLanguage, (value as EntityReferenceValue).primaryKey)
+                filterBy: dataGridService.buildParentEntityFilterBy(props.queryLanguage, (value as EntityReferenceValue).primaryKey)
             },
             true
         ))
@@ -100,7 +98,7 @@ function handlePropertyClicked(propertyKey: string, value: any): void {
                 queryLanguage: props.queryLanguage,
                 pageNumber: props.pageNumber,
                 pageSize: props.pageSize,
-                filterBy: dataGridConsoleService.buildPredecessorEntityFilterBy(props.queryLanguage, value)
+                filterBy: dataGridService.buildPredecessorEntityFilterBy(props.queryLanguage, value)
             },
             true
         ))
@@ -115,7 +113,7 @@ function handlePropertyClicked(propertyKey: string, value: any): void {
                 queryLanguage: props.queryLanguage,
                 pageNumber: props.pageNumber,
                 pageSize: props.pageSize,
-                filterBy: dataGridConsoleService.buildReferencedEntityFilterBy(
+                filterBy: dataGridService.buildReferencedEntityFilterBy(
                     props.queryLanguage,
                     value instanceof Array
                         ? (value as EntityReferenceValue[]).map(it => it.primaryKey)

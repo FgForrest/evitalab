@@ -1,7 +1,14 @@
 <script setup lang="ts">
 
-import { ComplexFlagValue, KeywordValue, Property, PropertyValue } from '@/model/properties-table'
+import {
+    MultiValueFlagValue,
+    KeywordValue,
+    Property,
+    PropertyValue,
+    NotApplicableValue
+} from '@/model/properties-table'
 import VMarkdown from '@/components/base/VMarkdown.vue'
+import VPropertyTableValue from './VPropertiesTableValue.vue'
 
 const props = defineProps<{
     property: Property,
@@ -61,20 +68,40 @@ const props = defineProps<{
             {{ propertyValue.value.value }}
         </VChip>
 
-        <!-- actual value is complex flag -->
+        <!-- actual value is multi-value flag -->
         <VChip
-            v-else-if="propertyValue.value instanceof ComplexFlagValue"
-            prepend-icon="mdi-check"
+            v-else-if="propertyValue.value instanceof MultiValueFlagValue"
+            :prepend-icon="propertyValue.value.value ? 'mdi-check' : 'mdi-checkbox-blank-outline'"
             :variant="propertyValue.action ? 'outlined' : 'plain'"
             dense
-            @click="propertyValue.action?.(propertyValue.value.value)"
+            @click="propertyValue.action?.(propertyValue.value.valueSpecification)"
         >
-            {{ propertyValue.value.value }}
+            {{ propertyValue.value.valueSpecification }}
 
             <VTooltip v-if="propertyValue.value.description" activator="parent">
                 {{ propertyValue.value.description }}
             </VTooltip>
         </VChip>
+
+        <!-- actual value is not-applicable value -->
+        <div v-else-if="propertyValue.value instanceof NotApplicableValue" class="d-flex align-center">
+            <VCheckbox
+                :model-value="false"
+                disabled
+                false-icon="mdi-checkbox-blank-off-outline"
+                density="compact"
+                hide-details
+                class="flex-grow-0"
+                @click="propertyValue.action?.(undefined)"
+            />
+
+            <span v-if="propertyValue.value.explanation" class="ml-2">
+                <VIcon icon="mdi-information-outline" />
+                <VTooltip activator="parent">
+                    <span>{{ propertyValue.value.explanation }}</span>
+                </VTooltip>
+            </span>
+        </div>
 
         <!-- actual value is something else (number) -->
         <span v-else>
@@ -83,7 +110,7 @@ const props = defineProps<{
 
         <!-- side note for the value -->
         <div v-if="propertyValue.note">
-            <span>
+            <span class="ml-2">
                 <VIcon icon="mdi-alert-outline" color="warning" />
                 <VTooltip activator="parent">
                     <span>{{ propertyValue.note }}</span>

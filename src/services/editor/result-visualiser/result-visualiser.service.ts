@@ -28,7 +28,7 @@ export abstract class ResultVisualiserService {
     /**
      * Returns entity schema for selected query.
      */
-    abstract getEntitySchemaForQuery(query: string, connection: EvitaDBConnection, catalogName: string): Promise<EntitySchema>
+    abstract getEntitySchemaForQuery(query: string, connection: EvitaDBConnection, catalogName: string): Promise<EntitySchema | undefined>
 
     /**
      * Tries to find result-result-visualiser types in the root result.

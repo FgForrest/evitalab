@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CodemirrorFull from '@/components/base/CodemirrorFull.vue'
+import VStandardCodeMirror from '@/components/base/VStandardCodemirror.vue'
 import { ErrorViewerProps } from '@/model/editor/error-viewer'
 import { computed } from 'vue'
 import { TabComponentEvents, TabComponentProps, VoidTabRequestComponentData } from '@/model/editor/editor'
@@ -43,7 +43,7 @@ emit('ready')
         </VTabToolbar>
 
         <VSheet class="error-viewer__body">
-            <CodemirrorFull
+            <VStandardCodeMirror
                 :model-value="detail"
                 read-only
             />

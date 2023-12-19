@@ -6,7 +6,7 @@ import { keymap } from '@codemirror/view'
 import { basicSetup } from 'codemirror'
 import { dracula } from '@ddietr/codemirror-themes/dracula.js'
 import { ref } from 'vue'
-import CodemirrorFullStatusBar from '@/components/base/CodemirrorFullStatusBar.vue'
+import VStandardCodemirrorStatusBar from '@/components/base/VStandardCodemirrorStatusBar.vue'
 
 const props = withDefaults(
     defineProps<{
@@ -48,7 +48,7 @@ if (props.readOnly) {
     extensions.push(EditorState.readOnly.of(true))
 }
 
-const state = ref<EditorState>()
+const editorState = ref<EditorState>()
 </script>
 
 <template>
@@ -58,12 +58,12 @@ const state = ref<EditorState>()
             :extensions="extensions"
             :placeholder="placeholder"
             :disabled="disabled"
-            @update="state = $event.state"
+            @update="editorState = $event.state"
             @update:model-value="$emit('update:modelValue', $event)"
             style="height: 100%; cursor: text;"
         />
         <VSheet v-if="statusBar" class="status-bar">
-            <CodemirrorFullStatusBar :state="state" />
+            <VStandardCodemirrorStatusBar :state="editorState" />
         </VSheet>
     </div>
 </template>
@@ -76,10 +76,5 @@ const state = ref<EditorState>()
     right: 0;
     top: 0;
     bottom: 2rem;
-}
-
-.status-bar {
-    display: flex;
-    justify-content: right;
 }
 </style>

@@ -16,6 +16,8 @@ import { UnexpectedError } from '@/model/lab'
  */
 export abstract class JsonResultVisualiserService extends ResultVisualiserService {
 
+    protected readonly genericEntityType: string = 'entity'
+
     /**
      * Resolves human-readable string representation of an entity.
      */

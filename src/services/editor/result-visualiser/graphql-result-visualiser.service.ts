@@ -51,8 +51,12 @@ export class GraphQLResultVisualiserService extends JsonResultVisualiserService 
         return dataResult[query]
     }
 
-    async getEntitySchemaForQuery(query: string, connection: EvitaDBConnection, catalogName: string): Promise<EntitySchema> {
+    async getEntitySchemaForQuery(query: string, connection: EvitaDBConnection, catalogName: string): Promise<EntitySchema | undefined> {
         const entityType: string = (query).replace(/^(get|list|query)/, '')
+        if (entityType.toLowerCase() === this.genericEntityType) {
+            // generic query, no specific collection for all returned entities (each entity may be from a different collection)
+            return undefined
+        }
         const catalogSchema: CatalogSchema = await this.labService.getCatalogSchema(connection, catalogName)
         const entitySchema: EntitySchema | undefined = Object.values(catalogSchema.entitySchemas)
             .find(it => it.nameVariants.pascalCase === entityType)

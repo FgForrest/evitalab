@@ -7,31 +7,31 @@ import {
     StaticEntityProperties
 } from '@/model/editor/data-grid'
 import { QueryLanguage, UnexpectedError } from '@/model/lab'
-import { QueryExecutor } from '@/services/editor/data-grid-console/query-executor'
-import { QueryBuilder } from '@/services/editor/data-grid-console/query-builder'
-import { EvitaQLQueryBuilder } from '@/services/editor/data-grid-console/evitaql-query-builder'
-import { EvitaQLQueryExecutor } from '@/services/editor/data-grid-console/evitaql-query-executor'
+import { QueryExecutor } from '@/services/editor/data-grid/query-executor'
+import { QueryBuilder } from '@/services/editor/data-grid/query-builder'
+import { EvitaQLQueryBuilder } from '@/services/editor/data-grid/evitaql-query-builder'
+import { EvitaQLQueryExecutor } from '@/services/editor/data-grid/evitaql-query-executor'
 import { LabService } from '@/services/lab.service'
-import { GraphQLQueryBuilder } from '@/services/editor/data-grid-console/graphql-query-builder'
-import { GraphQLQueryExecutor } from '@/services/editor/data-grid-console/graphql-query-executor'
+import { GraphQLQueryBuilder } from '@/services/editor/data-grid/graphql-query-builder'
+import { GraphQLQueryExecutor } from '@/services/editor/data-grid/graphql-query-executor'
 import { EvitaDBClient } from '@/services/evitadb-client'
 import { AttributeSchemaUnion, EntitySchema } from '@/model/evitadb'
 import { GraphQLClient } from '@/services/graphql-client'
-import { EntityPropertyValueFormatter } from '@/services/editor/data-grid-console/entity-property-value-formatter'
-import { EntityPropertyValueRawFormatter } from '@/services/editor/data-grid-console/entity-property-value-raw-formatter'
+import { EntityPropertyValueFormatter } from '@/services/editor/data-grid/entity-property-value-formatter'
+import { EntityPropertyValueRawFormatter } from '@/services/editor/data-grid/entity-property-value-raw-formatter'
 import {
     EntityPropertyValueJsonFormatter
-} from '@/services/editor/data-grid-console/entity-property-value-json-formatter'
+} from '@/services/editor/data-grid/entity-property-value-json-formatter'
 import {
     EntityPropertyValueXmlFormatter
-} from '@/services/editor/data-grid-console/entity-property-value-xml-formatter'
+} from '@/services/editor/data-grid/entity-property-value-xml-formatter'
 
-export const key: InjectionKey<DataGridConsoleService> = Symbol()
+export const key: InjectionKey<DataGridService> = Symbol()
 
 /**
  * Service for running the data grid console component.
  */
-export class DataGridConsoleService {
+export class DataGridService {
     private readonly labService: LabService
 
     private readonly queryBuilders: Map<QueryLanguage, QueryBuilder> = new Map<QueryLanguage, QueryBuilder>()
@@ -102,7 +102,9 @@ export class DataGridConsoleService {
         const orderBy: string[] = []
         for (const column of columns) {
             const propertyKey: EntityPropertyKey = EntityPropertyKey.fromString(column.key)
-            if (propertyKey.type === EntityPropertyType.Attributes) {
+            if (propertyKey.type === EntityPropertyType.Entity && propertyKey.name === StaticEntityProperties.PrimaryKey) {
+                orderBy.push(queryBuilder.buildPrimaryKeyOrderBy(column.order))
+            } else if (propertyKey.type === EntityPropertyType.Attributes) {
                 const attributeSchema: AttributeSchemaUnion | undefined = Object.values(entitySchema.attributes)
                     .find(attributeSchema => attributeSchema.nameVariants.camelCase === propertyKey.name)
                 if (attributeSchema == undefined) {
@@ -162,67 +164,92 @@ export class DataGridConsoleService {
     async getEntityPropertyDescriptors(dataPointer: DataGridDataPointer): Promise<EntityPropertyDescriptor[]> {
         const entitySchema: EntitySchema = await this.labService.getEntitySchema(dataPointer.connection, dataPointer.catalogName, dataPointer.entityType)
         const descriptors: EntityPropertyDescriptor[] = []
-        descriptors.push({
-            type: EntityPropertyType.Entity,
-            key: EntityPropertyKey.entity(StaticEntityProperties.PrimaryKey),
-            title: 'Primary key',
-            schema: undefined
-        })
+        descriptors.push(new EntityPropertyDescriptor(
+            EntityPropertyType.Entity,
+            EntityPropertyKey.entity(StaticEntityProperties.PrimaryKey),
+            'Primary key',
+            'Primary key',
+            undefined,
+            []
+        ))
         if (entitySchema.withHierarchy) {
-            descriptors.push({
-                type: EntityPropertyType.Entity,
-                key: EntityPropertyKey.entity(StaticEntityProperties.ParentPrimaryKey),
-                title: 'Parent',
-                schema: undefined
-            })
+            descriptors.push(new EntityPropertyDescriptor(
+                EntityPropertyType.Entity,
+                EntityPropertyKey.entity(StaticEntityProperties.ParentPrimaryKey),
+                'Parent',
+                'Parent',
+                undefined,
+                []
+            ))
         }
         if (entitySchema.locales.length > 0) {
-            descriptors.push({
-                type: EntityPropertyType.Entity,
-                key: EntityPropertyKey.entity(StaticEntityProperties.Locales),
-                title: 'Locales',
-                schema: undefined
-            })
-            descriptors.push({
-                type: EntityPropertyType.Entity,
-                key: EntityPropertyKey.entity(StaticEntityProperties.AllLocales),
-                title: 'All locales',
-                schema: undefined
-            })
+            descriptors.push(new EntityPropertyDescriptor(
+                EntityPropertyType.Entity,
+                EntityPropertyKey.entity(StaticEntityProperties.Locales),
+                'Locales',
+                'Locales',
+                undefined,
+                []
+            ))
+            descriptors.push(new EntityPropertyDescriptor(
+                EntityPropertyType.Entity,
+                EntityPropertyKey.entity(StaticEntityProperties.AllLocales),
+                'All locales',
+                'All locales',
+                undefined,
+                []
+            ))
         }
         if (entitySchema.withPrice) {
-            descriptors.push({
-                type: EntityPropertyType.Entity,
-                key: EntityPropertyKey.entity(StaticEntityProperties.PriceInnerRecordHandling),
-                title: 'Price inner record handling',
-                schema: undefined
-            })
+            descriptors.push(new EntityPropertyDescriptor(
+                EntityPropertyType.Entity,
+                EntityPropertyKey.entity(StaticEntityProperties.PriceInnerRecordHandling),
+                'Price inner record handling',
+                'Price inner record handling',
+                undefined,
+                []
+            ))
         }
 
         for (const attributeSchema of Object.values(entitySchema.attributes)) {
-            descriptors.push({
-                type: EntityPropertyType.Attributes,
-                key: EntityPropertyKey.attributes(attributeSchema.nameVariants.camelCase),
-                title: attributeSchema.name,
-                schema: attributeSchema
-            })
+            descriptors.push(new EntityPropertyDescriptor(
+                EntityPropertyType.Attributes,
+                EntityPropertyKey.attributes(attributeSchema.nameVariants.camelCase),
+                attributeSchema.name,
+                attributeSchema.name,
+                attributeSchema,
+                []
+            ))
         }
 
         for (const associatedDataSchema of Object.values(entitySchema.associatedData)) {
-            descriptors.push({
-                type: EntityPropertyType.AssociatedData,
-                key: EntityPropertyKey.associatedData(associatedDataSchema.nameVariants.camelCase),
-                title: `${associatedDataSchema.name}`,
-                schema: associatedDataSchema
-            })
+            descriptors.push(new EntityPropertyDescriptor(
+                EntityPropertyType.AssociatedData,
+                EntityPropertyKey.associatedData(associatedDataSchema.nameVariants.camelCase),
+                associatedDataSchema.name,
+                associatedDataSchema.name,
+                associatedDataSchema,
+                []
+            ))
         }
         for (const referenceSchema of Object.values(entitySchema.references)) {
-            descriptors.push({
-                type: EntityPropertyType.References,
-                key: EntityPropertyKey.references(referenceSchema.nameVariants.camelCase),
-                title: `${referenceSchema.name}`,
-                schema: referenceSchema
-            })
+            descriptors.push(new EntityPropertyDescriptor(
+                EntityPropertyType.References,
+                EntityPropertyKey.references(referenceSchema.nameVariants.camelCase),
+                referenceSchema.name,
+                referenceSchema.name,
+                referenceSchema,
+                Object.values(referenceSchema.attributes).map(attributeSchema => {
+                    return new EntityPropertyDescriptor(
+                        EntityPropertyType.ReferenceAttributes,
+                        EntityPropertyKey.referenceAttributes(referenceSchema.nameVariants.camelCase, attributeSchema.nameVariants.camelCase),
+                        attributeSchema.name,
+                        `${referenceSchema.name}: ${attributeSchema.name}`,
+                        attributeSchema,
+                        []
+                    )
+                })
+            ))
         }
 
         return descriptors
@@ -261,6 +288,6 @@ export class DataGridConsoleService {
     }
 }
 
-export const useDataGridConsoleService = (): DataGridConsoleService => {
-    return inject(key) as DataGridConsoleService
+export const useDataGridService = (): DataGridService => {
+    return inject(key) as DataGridService
 }

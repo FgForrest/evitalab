@@ -14,14 +14,14 @@ const prependIcon = computed<string | undefined>(() => {
     if (propertyType === EntityPropertyType.AssociatedData) {
         return 'mdi-package-variant-closed'
     }
-    if (propertyType === EntityPropertyType.References) {
+    if (propertyType === EntityPropertyType.References || propertyType === EntityPropertyType.ReferenceAttributes) {
         return 'mdi-link-variant'
     }
     return undefined
 })
-const sortable = computed<boolean>(() => props.column.descriptor?.schema?.sortable)
+const sortable = computed<boolean>(() => props.column.descriptor?.isSortable())
 const sorted = computed<boolean>(() => props.isSorted(props.column))
-const localized = computed<boolean>(() => props.column.descriptor?.schema?.localized)
+const localized = computed<boolean>(() => props.column.descriptor?.isLocalized())
 
 function handleClick() {
     if (sortable.value) {

@@ -107,7 +107,7 @@ const visualiserTypes = computed<VisualiserType[]>(() => {
         return []
     }
     try {
-        return props.visualiserService.findVisualiserTypes(selectedQueryResult.value)
+        return props.visualiserService.findVisualiserTypes(selectedQueryResult.value as Result)
     } catch (e: any) {
         toaster.error(e)
         return []
@@ -138,7 +138,7 @@ const resultForVisualiser = computed<Result | undefined>(() => {
     }
     try {
         return props.visualiserService
-            .findResultForVisualiser(selectedQueryResult.value, selectedVisualiserType.value as VisualiserTypeType)
+            .findResultForVisualiser(selectedQueryResult.value as Result, selectedVisualiserType.value as VisualiserTypeType)
     } catch (e: any) {
         toaster.error(e)
         return undefined

@@ -1,4 +1,4 @@
-import { EvitaDBConnection, QueryLanguage } from '@/model/lab'
+import { EvitaDBConnection, QueryLanguage, UnexpectedError } from '@/model/lab'
 import {
     CatalogPointer,
     ExecutableTabRequest,
@@ -45,8 +45,17 @@ export enum EntityPropertyType {
     Entity = '',
     Attributes = 'attributes',
     AssociatedData = 'associatedData',
-    References = 'references'
+    References = 'references',
+    ReferenceAttributes = 'referenceAttributes'
 }
+
+/**
+ * Defines a parent property type for a given entity property type that cannot be used by itself without its parent.
+ * Note: this is a workaround for the fact that we cannot define metadata for individual enum values.
+ */
+export const parentEntityPropertyType: Map<EntityPropertyType, EntityPropertyType> = new Map([
+    [EntityPropertyType.ReferenceAttributes, EntityPropertyType.References]
+])
 
 /**
  * Set of statically defined entity properties.
@@ -60,61 +69,106 @@ export enum StaticEntityProperties {
 }
 
 /**
+ * List of {@link StaticEntityProperties} that are sortable.
+ */
+export const sortableStaticEntityProperties: string[] = [StaticEntityProperties.PrimaryKey]
+
+/**
  * Represents key of a single typed entity property.
  */
 export class EntityPropertyKey {
-    readonly type: EntityPropertyType
-    readonly name: string
+    static readonly entityPropertyPartSeparator: string = ':'
 
-    constructor(type: EntityPropertyType, name: string) {
+    readonly type: EntityPropertyType
+    readonly names: string[]
+    get name(): string {
+        if (this.names.length != 1) {
+            throw new UnexpectedError(undefined, `Cannot get name of a property key with multiple names: ${this.names}`)
+        }
+        return this.names[0]
+    }
+
+    constructor(type: EntityPropertyType, names: string[]) {
         this.type = type
-        this.name = name
+        this.names = names
     }
 
     static entity(name: string): EntityPropertyKey {
-        return new EntityPropertyKey(EntityPropertyType.Entity, name)
+        return new EntityPropertyKey(EntityPropertyType.Entity, [name])
     }
 
     static attributes(name: string): EntityPropertyKey {
-        return new EntityPropertyKey(EntityPropertyType.Attributes, name)
+        return new EntityPropertyKey(EntityPropertyType.Attributes, [name])
     }
 
     static associatedData(name: string): EntityPropertyKey {
-        return new EntityPropertyKey(EntityPropertyType.AssociatedData, name)
+        return new EntityPropertyKey(EntityPropertyType.AssociatedData, [name])
     }
 
     static references(name: string): EntityPropertyKey {
-        return new EntityPropertyKey(EntityPropertyType.References, name)
+        return new EntityPropertyKey(EntityPropertyType.References, [name])
+    }
+
+    static referenceAttributes(referenceName: string, attributeName: string): EntityPropertyKey {
+        return new EntityPropertyKey(EntityPropertyType.ReferenceAttributes, [referenceName, attributeName])
     }
 
     static fromString(propertyKey: string): EntityPropertyKey {
-        if (propertyKey.startsWith(EntityPropertyType.Attributes)) {
-            return new EntityPropertyKey(EntityPropertyType.Attributes, propertyKey.substring(EntityPropertyType.Attributes.length + 1))
-        } else if (propertyKey.startsWith(EntityPropertyType.AssociatedData)) {
-            return new EntityPropertyKey(EntityPropertyType.AssociatedData, propertyKey.substring(EntityPropertyType.AssociatedData.length + 1))
-        } else if (propertyKey.startsWith(EntityPropertyType.References)) {
-            return new EntityPropertyKey(EntityPropertyType.References, propertyKey.substring(EntityPropertyType.References.length + 1))
+        const parts = propertyKey.split(EntityPropertyKey.entityPropertyPartSeparator)
+
+        if (parts[0] === EntityPropertyType.Attributes) {
+            return new EntityPropertyKey(EntityPropertyType.Attributes, parts.slice(1))
+        } else if (parts[0] === EntityPropertyType.AssociatedData) {
+            return new EntityPropertyKey(EntityPropertyType.AssociatedData, parts.slice(1))
+        } else if (parts[0] === EntityPropertyType.References) {
+            return new EntityPropertyKey(EntityPropertyType.References, parts.slice(1))
+        } else if (parts[0] === EntityPropertyType.ReferenceAttributes) {
+            return new EntityPropertyKey(EntityPropertyType.ReferenceAttributes, parts.slice(1))
         } else {
-            return new EntityPropertyKey(EntityPropertyType.Entity, propertyKey)
+            return new EntityPropertyKey(EntityPropertyType.Entity, parts)
         }
     }
 
     toString(): string {
         if (this.type === EntityPropertyType.Entity) {
-            return this.name
+            return this.names.join(EntityPropertyKey.entityPropertyPartSeparator)
         }
-        return `${this.type}.${this.name}`
+        return `${this.type}${EntityPropertyKey.entityPropertyPartSeparator}${this.names.join(EntityPropertyKey.entityPropertyPartSeparator)}`
     }
 }
 
 /**
  * Full description of a single entity property
  */
-export type EntityPropertyDescriptor = {
-    type: EntityPropertyType,
-    key: EntityPropertyKey,
-    title: string,
-    schema: any | undefined
+export class EntityPropertyDescriptor {
+    readonly type: EntityPropertyType
+    readonly key: EntityPropertyKey
+    readonly title: string
+    readonly flattenedTitle: string
+    readonly schema: any | undefined
+    readonly children: EntityPropertyDescriptor[]
+
+    constructor(type: EntityPropertyType,
+                key: EntityPropertyKey,
+                title: string,
+                flattenedTitle: string,
+                schema: any | undefined,
+                children: EntityPropertyDescriptor[]) {
+        this.type = type
+        this.key = key
+        this.title = title
+        this.flattenedTitle = flattenedTitle
+        this.schema = schema
+        this.children = children
+    }
+
+    isSortable(): boolean {
+        return sortableStaticEntityProperties.includes(this.key.toString()) || this.schema?.sortable || false
+    }
+
+    isLocalized(): boolean {
+        return this.schema?.localized || false
+    }
 }
 
 /**

@@ -14,7 +14,7 @@ import { computed, onBeforeMount, ref } from 'vue'
 import { GraphQLConsoleService, useGraphQLConsoleService } from '@/services/editor/graphql-console.service'
 import { GraphQLSchema, printSchema } from 'graphql'
 import { GraphQLConsoleData, GraphQLConsoleParams, GraphQLInstanceType } from '@/model/editor/graphql-console'
-import CodemirrorFull from '@/components/base/CodemirrorFull.vue'
+import VStandardCodeMirror from '@/components/base/VStandardCodemirror.vue'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import { TabComponentEvents, TabComponentProps } from '@/model/editor/editor'
 import VExecuteQueryButton from '@/components/base/VExecuteQueryButton.vue'
@@ -177,7 +177,7 @@ function initializeSchemaEditor(): void {
                         direction="vertical"
                     >
                         <VWindowItem :value="EditorTabType.Query">
-                            <CodemirrorFull
+                            <VStandardCodeMirror
                                 v-model="queryCode"
                                 :additional-extensions="queryExtensions"
                                 @execute="executeQuery"
@@ -185,7 +185,7 @@ function initializeSchemaEditor(): void {
                         </VWindowItem>
 
                         <VWindowItem :value="EditorTabType.Variables">
-                            <CodemirrorFull
+                            <VStandardCodeMirror
                                 v-model="variablesCode"
                                 :additional-extensions="variablesExtensions"
                                 @execute="executeQuery"
@@ -196,7 +196,7 @@ function initializeSchemaEditor(): void {
                             :value="EditorTabType.Schema"
                             @group:selected="initializeSchemaEditor"
                         >
-                            <CodemirrorFull
+                            <VStandardCodeMirror
                                 v-model="schemaCode"
                                 read-only
                                 :additional-extensions="schemaExtensions"
@@ -212,7 +212,7 @@ function initializeSchemaEditor(): void {
                         direction="vertical"
                     >
                         <VWindowItem :value="ResultTabType.Raw">
-                            <CodemirrorFull
+                            <VStandardCodeMirror
                                 v-if="resultTab === ResultTabType.Raw"
                                 v-model="resultCode"
                                 placeholder="Results will be displayed here..."

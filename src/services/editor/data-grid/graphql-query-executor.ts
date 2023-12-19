@@ -1,4 +1,4 @@
-import { QueryExecutor } from '@/services/editor/data-grid-console/query-executor'
+import { QueryExecutor } from '@/services/editor/data-grid/query-executor'
 import { LabService } from '@/services/lab.service'
 import {
     DataGridDataPointer, EntityProperty, EntityPropertyKey,

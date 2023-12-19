@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import CodemirrorFull from '@/components/base/CodemirrorFull.vue'
+import VStandardCodeMirror from '@/components/base/VStandardCodemirror.vue'
 import { EntityPropertyValueSupportedCodeLanguage } from '@/model/editor/data-grid'
 import { computed, ref } from 'vue'
 import { Toaster, useToaster } from '@/services/editor/toaster'
@@ -10,10 +10,10 @@ import { xml } from '@codemirror/lang-xml'
 import { UnexpectedError } from '@/model/lab'
 import LabEditorDataGridGridCellDetailValueRenderer
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCellDetailValueRenderer.vue'
-import { DataGridConsoleService, useDataGridConsoleService } from '@/services/editor/data-grid-console.service'
+import { DataGridService, useDataGridService } from '@/services/editor/data-grid.service'
 
 const toaster: Toaster = useToaster()
-const dataGridConsoleService: DataGridConsoleService = useDataGridConsoleService()
+const dataGridService: DataGridService = useDataGridService()
 
 enum ActionType {
     Copy = 'copy',
@@ -53,7 +53,7 @@ const actions = computed(() => {
 })
 const formattedValue = computed<string>(() => {
     try {
-        return dataGridConsoleService.formatEntityPropertyValue(props.value, props.codeLanguage, prettyPrint.value)
+        return dataGridService.formatEntityPropertyValue(props.value, props.codeLanguage, prettyPrint.value)
     } catch (e: any) {
         console.error(e)
         return `Error: Failed to format value as ${props.codeLanguage}. \r\n\r\n` + (e?.message ? `${e.message}.` : '')
@@ -102,7 +102,7 @@ function copyRenderedValue() {
         :actions="actions"
         @click:action="handleActionClick"
     >
-        <CodemirrorFull
+        <VStandardCodeMirror
             :model-value="formattedValue"
             read-only
             :additional-extensions="codeBlockExtensions"

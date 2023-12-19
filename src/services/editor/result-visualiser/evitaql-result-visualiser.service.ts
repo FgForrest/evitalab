@@ -14,12 +14,13 @@ import {
 
 export const key: InjectionKey<EvitaQLResultVisualiserService> = Symbol()
 
-const collectionConstraintPattern: RegExp = /collection\(\s*'([A-Za-z0-9_.\-~]*)'\s*\)/
-
 /**
  * {@link ResultVisualiserService} for evitaQL query language.
  */
 export class EvitaQLResultVisualiserService extends JsonResultVisualiserService {
+
+    private readonly collectionConstraintPattern: RegExp = /collection\(\s*['"]([A-Za-z0-9_.\-~]*)['"]\s*\)/
+
     private readonly labService: LabService
     private facetSummaryVisualiserService: EvitaQLFacetSummaryVisualiserService | undefined = undefined
     private hierarchyVisualiserService: EvitaQLHierarchyVisualiserService | undefined = undefined
@@ -34,19 +35,24 @@ export class EvitaQLResultVisualiserService extends JsonResultVisualiserService 
     }
 
     findQueries(inputQuery: string, result: Result): string[] {
-        const entityType: string | undefined = collectionConstraintPattern.exec(inputQuery)?.[1]
+        const entityType: string | undefined = this.collectionConstraintPattern.exec(inputQuery)?.[1]
         if (entityType == undefined) {
-            throw new UnexpectedError(undefined, `Entity type not found in query.`)
+            // generic query, no specific collection for all returned entities (each entity may be from a different collection)
+            return [this.genericEntityType]
+        } else {
+            return [entityType]
         }
-        return [entityType]
     }
 
     findQueryResult(result: Result, query: string): Result | undefined {
         return result
     }
 
-    async getEntitySchemaForQuery(query: string, connection: EvitaDBConnection, catalogName: string): Promise<EntitySchema> {
+    async getEntitySchemaForQuery(query: string, connection: EvitaDBConnection, catalogName: string): Promise<EntitySchema | undefined> {
         const entityType: string = query
+        if (entityType.toLowerCase() === this.genericEntityType) {
+            return undefined
+        }
         const catalogSchema: CatalogSchema = await this.labService.getCatalogSchema(connection, catalogName)
         const entitySchema: EntitySchema | undefined = Object.values(catalogSchema.entitySchemas)
             .find(it => it.nameVariants.pascalCase === entityType)

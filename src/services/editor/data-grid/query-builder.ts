@@ -26,6 +26,13 @@ export interface QueryBuilder {
                pageSize: number): Promise<string>
 
     /**
+     * Builds single entityPrimaryKeyNatural order constraint in language of implementation for order by clause.
+     *
+     * @param orderDirection direction of order by clause
+     */
+    buildPrimaryKeyOrderBy(orderDirection: string): string
+
+    /**
      * Builds single attributeNatural order constraint in language of implementation for order by clause.
      *
      * @param attributeSchema attribute schema to build constraint for

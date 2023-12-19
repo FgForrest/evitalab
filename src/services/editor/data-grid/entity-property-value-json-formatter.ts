@@ -1,4 +1,4 @@
-import { EntityPropertyValueFormatter } from '@/services/editor/data-grid-console/entity-property-value-formatter'
+import { EntityPropertyValueFormatter } from '@/services/editor/data-grid/entity-property-value-formatter'
 
 /**
  * Tries to format the value as JSON. If the value is not a valid JSON, it will throw an error.

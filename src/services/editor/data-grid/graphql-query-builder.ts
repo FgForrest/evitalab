@@ -1,4 +1,4 @@
-import { QueryBuilder } from '@/services/editor/data-grid-console/query-builder'
+import { QueryBuilder } from '@/services/editor/data-grid/query-builder'
 import {
     DataGridDataPointer,
     EntityPropertyKey,
@@ -52,6 +52,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                 group = []
                 groupedPropertyKeys.set(propertyKey.type, group)
             }
+            // todo lho this may not work anymore
             group.push(propertyKey.name)
         }
 
@@ -175,6 +176,10 @@ export class GraphQLQueryBuilder implements QueryBuilder {
             }
         }
         `
+    }
+
+    buildPrimaryKeyOrderBy(orderDirection: string): string {
+        return `entityPrimaryKeyNatural: ${orderDirection.toUpperCase()}`
     }
 
     buildAttributeOrderBy(attributeSchema: AttributeSchemaUnion, orderDirection: string): string {

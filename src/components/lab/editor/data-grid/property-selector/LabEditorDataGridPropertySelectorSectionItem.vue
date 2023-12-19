@@ -7,13 +7,22 @@ const props = withDefaults(defineProps<{
     title: string,
     description?: string,
     flags?: string[],
+    /**
+     * Whether this item has openable detail.
+     */
     openable: boolean,
+    /**
+     * Whether this item is a parent of a group of items, and thus, opens a group of children.
+     */
+    groupParent?: boolean
 }>(), {
     description: undefined,
     openable: false,
+    groupParent: false,
     flags: () => []
 })
 const emit = defineEmits<{
+    (e: 'toggle', value: { key: EntityPropertyKey, selected: boolean }): void
     (e: 'schemaOpen'): void
 }>()
 
@@ -21,9 +30,12 @@ const emit = defineEmits<{
 
 <template>
     <VListItem :value="value">
-        <template v-slot:prepend="{ isActive }">
+        <template v-slot:prepend="{ isSelected }">
             <VListItemAction start>
-                <VCheckboxBtn :model-value="isActive" />
+                <VCheckboxBtn
+                    :model-value="isSelected"
+                    @click.passive="emit('toggle', { key: value, selected: isSelected })"
+                />
             </VListItemAction>
         </template>
 
@@ -60,7 +72,7 @@ const emit = defineEmits<{
 
         <template
             v-if="openable"
-            #append
+            #append="{ isActive }"
         >
             <VBtn
                 icon
@@ -72,6 +84,12 @@ const emit = defineEmits<{
                     Open schema
                 </VTooltip>
             </VBtn>
+            <VIcon
+                v-if="groupParent"
+                class="item-group-parent-chevron--with-actions"
+            >
+                {{ isActive ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+            </VIcon>
         </template>
     </VListItem>
 </template>
@@ -86,5 +104,9 @@ const emit = defineEmits<{
 
 .item-description {
     margin-top: 0.25rem; // derived from chip group margin
+}
+
+.item-group-parent-chevron--with-actions {
+    margin-inline-start: 0.5rem
 }
 </style>

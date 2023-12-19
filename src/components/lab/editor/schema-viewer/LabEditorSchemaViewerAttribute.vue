@@ -9,7 +9,13 @@ import {
     GlobalAttributeUniquenessType
 } from '@/model/evitadb'
 import { SchemaViewerDataPointer } from '@/model/editor/schema-viewer'
-import { ComplexFlagValue, KeywordValue, Property, PropertyValue } from '@/model/properties-table'
+import {
+    MultiValueFlagValue,
+    KeywordValue,
+    Property,
+    PropertyValue,
+    NotApplicableValue
+} from '@/model/properties-table'
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
@@ -31,7 +37,8 @@ switch (props.schema.uniquenessType) {
     case AttributeUniquenessType.UniqueWithinCollection:
         properties.push({
             name: 'Unique',
-            value: new PropertyValue(new ComplexFlagValue(
+            value: new PropertyValue(new MultiValueFlagValue(
+                true,
                 'Within collection',
                 'The attribute value must be unique among all the entities of the same collection.'
             ))
@@ -40,7 +47,8 @@ switch (props.schema.uniquenessType) {
     case AttributeUniquenessType.UniqueWithinCollectionLocale:
         properties.push({
             name: 'Unique',
-            value: new PropertyValue(new ComplexFlagValue(
+            value: new PropertyValue(new MultiValueFlagValue(
+                true,
                 'Within locale of collection',
                 'The localized attribute value must be unique among all values of the same locale among all the entities.'
             ))
@@ -55,7 +63,8 @@ if (globalAttribute) {
         case GlobalAttributeUniquenessType.UniqueWithinCatalog:
             properties.push({
                 name: 'Globally unique',
-                value: new PropertyValue(new ComplexFlagValue(
+                value: new PropertyValue(new MultiValueFlagValue(
+                    true,
                     'Within catalog',
                     'The attribute value (either localized or non-localized) must be unique among all values among all the entities using this global attribute schema in the entire catalog.'
                 ))
@@ -64,7 +73,8 @@ if (globalAttribute) {
         case GlobalAttributeUniquenessType.UniqueWithinCatalogLocale:
             properties.push({
                 name: 'Globally unique',
-                value: new PropertyValue(new ComplexFlagValue(
+                value: new PropertyValue(new MultiValueFlagValue(
+                    true,
                     'Within locale of catalog',
                     'The localized attribute value must be unique among all values of the same locale among all the entities using this global attribute schema in the entire catalog.'
                 ))
@@ -72,20 +82,18 @@ if (globalAttribute) {
             break
     }
 }
-properties.push({
-    name: 'Filterable',
-    value: new PropertyValue(
-        (globalAttribute && (props.schema as GlobalAttributeSchema).globalUniquenessType != GlobalAttributeUniquenessType.NotUnique) ||
-        props.schema.uniquenessType != AttributeUniquenessType.NotUnique ||
-        props.schema.filterable,
-        (
-            (globalAttribute && (props.schema as GlobalAttributeSchema).globalUniquenessType != GlobalAttributeUniquenessType.NotUnique) ||
-            props.schema.uniquenessType != AttributeUniquenessType.NotUnique
-        )
-            ? 'The attribute is automatically filterable because it is unique.'
-            : undefined
-    )
-})
+if (props.schema.filterable) {
+    properties.push({ name: 'Filterable', value: new PropertyValue(true) })
+} else if ((globalAttribute && (props.schema as GlobalAttributeSchema).globalUniquenessType != GlobalAttributeUniquenessType.NotUnique) ||
+    props.schema.uniquenessType != AttributeUniquenessType.NotUnique) {
+    // implicitly filterable because of unique index
+    properties.push({
+        name: 'Filterable',
+        value: new PropertyValue(new NotApplicableValue('The attribute is implicitly filterable because it is unique.'))
+    })
+} else {
+    properties.push({ name: 'Filterable', value: new PropertyValue(false) })
+}
 properties.push({ name: 'Sortable', value: new PropertyValue(props.schema.sortable as boolean) })
 properties.push({ name: 'Localized', value: new PropertyValue(props.schema.localized as boolean) })
 properties.push({ name: 'Nullable', value: new PropertyValue(props.schema.nullable as boolean) })

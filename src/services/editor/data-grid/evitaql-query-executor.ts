@@ -1,4 +1,4 @@
-import { QueryExecutor } from '@/services/editor/data-grid-console/query-executor'
+import { QueryExecutor } from '@/services/editor/data-grid/query-executor'
 import { LabService } from '@/services/lab.service'
 import {
     DataGridDataPointer, EntityProperty, EntityPropertyKey,
@@ -119,9 +119,33 @@ export class EvitaQLQueryExecutor extends QueryExecutor {
                     .map(referenceOfName => this.resolveReferenceRepresentativeValue(referenceOfName))
 
                 flattenedReferences.push([EntityPropertyKey.references(referenceName), representativeValues])
+
+                const mergedReferenceAttributesByName: Map<string, EntityReferenceValue[]> = referencesOfName
+                    .map(referenceOfName => this.flattenAttributesForSingleReference(referenceOfName))
+                    .reduce(
+                        (accumulator, referenceAttributes) => {
+                            referenceAttributes.forEach(([attributeName, attributeValue]) => {
+                                let attributes = accumulator.get(attributeName)
+                                if (attributes == undefined) {
+                                    attributes = []
+                                    accumulator.set(attributeName, attributes)
+                                }
+                                attributes.push(attributeValue)
+                            })
+                            return accumulator
+                        },
+                        new Map<string, EntityReferenceValue[]>()
+                    )
+                mergedReferenceAttributesByName.forEach((attributeValues, attributeName) => {
+                    flattenedReferences.push([EntityPropertyKey.referenceAttributes(referenceName, attributeName), attributeValues])
+                })
             } else {
-                const representativeValue = this.resolveReferenceRepresentativeValue(referencesOfName)
+                const representativeValue: EntityReferenceValue = this.resolveReferenceRepresentativeValue(referencesOfName)
                 flattenedReferences.push([EntityPropertyKey.references(referenceName), representativeValue])
+
+                this.flattenAttributesForSingleReference(referencesOfName).forEach(([attributeName, attributeValue]) => {
+                    flattenedReferences.push([EntityPropertyKey.referenceAttributes(referenceName, attributeName), attributeValue])
+                })
             }
         }
 
@@ -143,5 +167,25 @@ export class EvitaQLQueryExecutor extends QueryExecutor {
         }
 
         return new EntityReferenceValue(referencedPrimaryKey, representativeAttributes)
+    }
+
+    private flattenAttributesForSingleReference(reference: any): [string, EntityReferenceValue][] {
+        const referencedPrimaryKey: number = reference['referencedPrimaryKey']
+        const flattenedAttributes: [string, EntityReferenceValue][] = []
+
+        const globalAttributes = reference[EntityPropertyType.Attributes]?.['global'] || {}
+        for (const attributeName in globalAttributes) {
+            flattenedAttributes.push([attributeName, new EntityReferenceValue(referencedPrimaryKey, [globalAttributes[attributeName]])])
+        }
+        const localizedAttributes = reference[EntityPropertyType.Attributes]?.['localized'] || {}
+        for (const locale in localizedAttributes) {
+            // this expects that we support only one locale
+            const attributesInLocale = localizedAttributes[locale]
+            for (const attributeName in attributesInLocale) {
+                flattenedAttributes.push([attributeName, new EntityReferenceValue(referencedPrimaryKey, [attributesInLocale[attributeName]])])
+            }
+        }
+
+        return flattenedAttributes
     }
 }

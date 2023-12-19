@@ -3,7 +3,7 @@
 import {
     DataGridConsoleData,
     DataGridConsoleParams,
-    EntityPropertyDescriptor
+    EntityPropertyDescriptor, EntityPropertyKey
 } from '@/model/editor/data-grid'
 import { LabService, useLabService } from '@/services/lab.service'
 import LabEditorDataGridPropertyListItem from './LabEditorDataGridPropertySelectorSectionItem.vue'
@@ -15,11 +15,15 @@ import { TabComponentProps } from '@/model/editor/editor'
 const labService: LabService = useLabService()
 const editorService: EditorService = useEditorService()
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     gridProps: TabComponentProps<DataGridConsoleParams, DataGridConsoleData>,
-    propertyDescriptor: EntityPropertyDescriptor
-}>()
+    propertyDescriptor: EntityPropertyDescriptor,
+    groupParent?: boolean
+}>(), {
+    groupParent: false
+})
 const emit = defineEmits<{
+    (e: 'toggle', value: { key: EntityPropertyKey, selected: boolean }): void
     (e: 'schemaOpen'): void
 }>()
 
@@ -47,6 +51,8 @@ function openSchema(): void {
         :description="propertyDescriptor.schema?.description"
         :flags="flags"
         openable
+        :group-parent="groupParent"
+        @toggle="emit('toggle', $event)"
         @schema-open="openSchema"
     />
 </template>

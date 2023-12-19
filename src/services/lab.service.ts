@@ -148,10 +148,14 @@ export class LabService {
         if (entityAttribute && (schema as EntityAttributeSchema).representative) {
             flags.push('representative')
         }
-        if (globalAttribute && (schema as GlobalAttributeSchema).globalUniquenessType != GlobalAttributeUniquenessType.NotUnique) {
+        if (globalAttribute && (schema as GlobalAttributeSchema).globalUniquenessType === GlobalAttributeUniquenessType.UniqueWithinCatalog) {
             flags.push('globally unique')
-        } else if (schema.uniquenessType != AttributeUniquenessType.NotUnique) {
+        } else if (globalAttribute && (schema as GlobalAttributeSchema).globalUniquenessType === GlobalAttributeUniquenessType.UniqueWithinCatalogLocale) {
+            flags.push('globally unique per locale')
+        } else if (schema.uniquenessType === AttributeUniquenessType.UniqueWithinCollection) {
             flags.push('unique')
+        } else if (schema.uniquenessType === AttributeUniquenessType.UniqueWithinCollectionLocale) {
+            flags.push('unique per locale')
         }
         if ((globalAttribute && (schema as GlobalAttributeSchema).globalUniquenessType != GlobalAttributeUniquenessType.NotUnique) ||
             schema.uniquenessType != AttributeUniquenessType.NotUnique ||

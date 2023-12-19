@@ -20,17 +20,21 @@ labService.getBlogPosts().then((posts) => {
         <div class="editor-welcome-screen-hero">
             <header class="editor-welcome-screen-hero__header">
                 <VImg
-                    width="160"
-                    height="160"
+                    width="240"
+                    height="240"
+                    max-width="240"
+                    max-height="240"
                     alt="evitaLab Logo"
-                    src="/evita-lab-logo.svg"
-                    class="mx-auto mb-1 evita-lab-logo"
+                    src="/logo/evitalab-logo-representative.svg"
+                    class="evitalab-logo"
                 />
-                <h1 class="font-weight-bold mb-2" style="font-size: 4.375rem;">evitaLab</h1>
-                <p class="text-white" style="font-size: 1rem;">{{ version }} <a
-                    class="text-primary-lightest text-body-2" href="https://github.com/lukashornych/evitalab/releases"
-                    target="_blank">(changelog)</a></p>
-                <p class="text-gray-light mb-10" style="font-size: 1rem;">evitaDB web client</p>
+                <div class="editor-welcome-screen-hero__title">
+                    <h1 class="font-weight-bold mb-2" style="font-size: 4.375rem;">evitaLab</h1>
+                    <p class="text-white" style="font-size: 1rem;">{{ version }} <a
+                        class="text-primary-lightest text-body-2" href="https://github.com/lukashornych/evitalab/releases"
+                        target="_blank">(changelog)</a></p>
+                    <p class="text-gray-light" style="font-size: 1rem;">evitaDB web client</p>
+                </div>
             </header>
 
             <div class="editor-welcome-screen-blog">
@@ -113,6 +117,24 @@ labService.getBlogPosts().then((posts) => {
 .editor-welcome-screen-hero__header {
     flex: 1;
     padding-top: 12vh;
+    margin-bottom: 3.5rem;
+
+    @media (min-width: 83.125rem) {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        column-gap: 2.5rem;
+    }
+}
+
+.editor-welcome-screen-hero__title {
+    @media (min-width: 83.125rem) {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
 }
 
 .editor-welcome-screen-blog {
@@ -168,7 +190,6 @@ labService.getBlogPosts().then((posts) => {
     color: white;
     margin-bottom: 1rem;
     display: block;
-    min-height: 5.8rem;
     width: 100%;
     font-size: 22px;
     line-height: 29px;
@@ -270,8 +291,14 @@ labService.getBlogPosts().then((posts) => {
     }
 }
 
-.evita-lab-logo {
+.evitalab-logo {
     -webkit-animation: fade-in-fwd 2s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
     animation: fade-in-fwd 2s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+
+    margin: auto;
+
+    @media (min-width: 83.125rem) {
+        margin: 0;
+    }
 }
 </style>

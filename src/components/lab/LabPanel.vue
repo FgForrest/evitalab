@@ -49,7 +49,7 @@ function selectPanel(item: any): void {
                             alt="evitaLab Logo"
                             width="30px"
                             height="30px"
-                            src="/logo.png?raw=true"
+                            src="/logo/evitalab-logo-mini.png?raw=true"
                         />
                     </VAvatar>
                 </a>

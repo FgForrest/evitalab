@@ -1,4 +1,4 @@
-import { EntityPropertyValueFormatter } from '@/services/editor/data-grid-console/entity-property-value-formatter'
+import { EntityPropertyValueFormatter } from '@/services/editor/data-grid/entity-property-value-formatter'
 
 /**
  * Doesn't do any formatting, just returns the value as string.
