@@ -119,7 +119,7 @@ function getApiTestedIndicator(result: ApiTestResult): any  {
 async function testLabApiConnection(): Promise<boolean> {
     try {
         const response: any = await ky.get(modifiedConnection.value.labApiUrl + '/system/liveness').json()
-        return response.alive || false
+        return response.liveness || false
     } catch (e) {
         return false
     }
