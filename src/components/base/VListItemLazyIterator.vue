@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Allows pagination in form of a "show more" button.
+ * Allows pagination in form of a "show more" button for lists.
  */
 
 import { computed } from 'vue'

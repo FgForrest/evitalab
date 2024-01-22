@@ -17,6 +17,7 @@
     "@types/js-cookie": "^3.0.3",
     "@types/markdown-it": "^13.0.2",
     "@types/markdown-it-emoji": "^2.0.2",
+    "apexcharts": "^3.45.1",
     "cm6-graphql": "^0.0.9",
     "codemirror": "^6.0.1",
     "core-js": "^3.29.0",
@@ -25,6 +26,7 @@
     "highlight.js": "^11.9.0",
     "js-cookie": "^3.0.5",
     "ky": "^0.33.3",
+    "lz-string": "^1.5.0",
     "markdown-it": "^13.0.2",
     "markdown-it-emoji": "^2.0.2",
     "markdown-it-highlightjs": "^4.0.1",
@@ -37,10 +39,12 @@
     "vue-hotkeys-rt": "^0.2.3",
     "vue-router": "^4.0.0",
     "vue-toastification": "^2.0.0-rc.5",
+    "vue3-apexcharts": "^1.4.4",
     "vuetify": "^3.1.0",
     "vuex": "^4.0.2",
     "webfontloader": "^1.0.0",
-    "xml-formatter": "^3.5.0"
+    "xml-formatter": "^3.5.0",
+    "xxhashjs": "^0.2.2"
   },
   "devDependencies": {
     "@babel/types": "^7.21.4",
@@ -48,6 +52,7 @@
     "@types/splitpanes": "^2.2.1",
     "@types/uuid": "^9.0.2",
     "@types/webfontloader": "^1.6.35",
+    "@types/xxhashjs": "^0.2.4",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/eslint-config-typescript": "^11.0.0",
     "eslint": "^8.22.0",

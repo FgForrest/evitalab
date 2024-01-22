@@ -1,0 +1,150 @@
+<script setup lang="ts">
+/**
+ * Special entity property value renderer for prices.
+ */
+
+import { computed, inject } from 'vue'
+import {
+    DataGridData, dataLocaleKey,
+    entityPropertyDescriptorKey, EntityPropertyValue, EntityReferenceValue, gridParamsKey, queryLanguageKey
+} from '@/model/editor/data-grid'
+import { Toaster, useToaster } from '@/services/editor/toaster'
+import { Scalar } from '@/model/evitadb'
+import LabEditorDataGridGridDetailValueListItem
+    from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridDetailValueListItem.vue'
+import { mandatoryInject } from '@/helpers/reactivity'
+import { EditorService, useEditorService } from '@/services/editor/editor.service'
+import { DataGridRequest } from '@/model/editor/data-grid-request'
+import { DataGridService, useDataGridService } from '@/services/editor/data-grid.service'
+import { QueryLanguage } from '@/model/lab'
+
+const editorService: EditorService = useEditorService()
+const dataGridService: DataGridService = useDataGridService()
+const toaster: Toaster = useToaster()
+
+const props = withDefaults(defineProps<{
+    value: EntityPropertyValue | EntityPropertyValue[],
+    fillSpace?: boolean
+}>(), {
+    fillSpace: true
+})
+const gridParams = mandatoryInject(gridParamsKey)
+const queryLanguage = mandatoryInject(queryLanguageKey)
+const dataLocale = inject(dataLocaleKey)
+const propertyDescriptor = mandatoryInject(entityPropertyDescriptorKey)
+
+const referencesWithAttributes = computed<EntityReferenceValue[]>(() => {
+    if (props.value instanceof Array) {
+        return props.value as EntityReferenceValue[]
+    }
+    return [props.value as EntityReferenceValue]
+})
+
+const rawAttributeDataType = computed<Scalar>(() => {
+    return propertyDescriptor?.schema?.type
+})
+const isArray = computed<boolean>(() => rawAttributeDataType?.value?.endsWith('Array') || false)
+const attributeDataType = computed<Scalar>(() => {
+    if (isArray.value) {
+        return (rawAttributeDataType.value as string).replace('Array', '') as Scalar
+    } else {
+        return rawAttributeDataType.value as Scalar
+    }
+})
+
+function openReference(primaryKey: number): void {
+    // we want references to open referenced entities in appropriate new grid for referenced collection
+    editorService.createTabRequest(DataGridRequest.createNew(
+        gridParams.dataPointer.connection,
+        gridParams.dataPointer.catalogName,
+        propertyDescriptor!.parentSchema!.referencedEntityType,
+        new DataGridData(
+            queryLanguage.value,
+            dataGridService.buildReferencedEntityFilterBy(queryLanguage.value as QueryLanguage, [primaryKey]),
+            undefined,
+            dataLocale?.value
+        ),
+        true
+    ))
+}
+</script>
+
+<template>
+    <div class="reference-attributes">
+        <VExpansionPanels
+            variant="accordion"
+            class="pa-4 reference-attributes-renderer-reference-array"
+        >
+            <VExpansionPanel v-for="reference of referencesWithAttributes" :key="reference.primaryKey">
+                <VExpansionPanelTitle>
+                    <VIcon class="mr-3">mdi-link-variant</VIcon>
+                    <span>{{ reference.primaryKey }}</span>
+                    <VSpacer/>
+                    <div class="mr-2">
+                        <VBtn icon variant="text" density="compact" @click="openReference(reference.primaryKey)">
+                            <VIcon>mdi-open-in-new</VIcon>
+                            <VTooltip activator="parent">
+                                Open reference in new tab
+                            </VTooltip>
+                        </VBtn>
+                    </div>
+                </VExpansionPanelTitle>
+
+                <VExpansionPanelText>
+                    <VExpansionPanels variant="accordion">
+                        <LabEditorDataGridGridDetailValueListItem
+                            v-for="(representativeAttribute, index) of reference.representativeAttributes"
+                            :key="index"
+                            :value="representativeAttribute as EntityPropertyValue"
+                            :component-data-type="attributeDataType"
+                        />
+                    </VExpansionPanels>
+                </VExpansionPanelText>
+            </VExpansionPanel>
+
+        </VExpansionPanels>
+    </div>
+</template>
+
+<style lang="scss" scoped>
+.reference-attributes-renderer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1rem;
+
+    h3 {
+        margin-bottom: 1rem;
+    }
+
+    &-all-prices {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        &__filter {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        &__select {
+            flex: 1;
+            min-width: 10rem;
+        }
+    }
+}
+
+.reference-attributes-renderer-reference-array {
+    :deep(.v-expansion-panel-text__wrapper) {
+        padding: 0;
+    }
+}
+
+.array-item__title {
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+    overflow: hidden;
+    padding-right: 1rem;
+}
+</style>

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import {
+    dataLocaleKey,
     EntityPropertyDescriptor,
-    EntityPropertyType,
-    EntityReferenceValue,
+    EntityPropertyType, EntityPropertyValue, priceTypeKey,
     StaticEntityProperties
 } from '@/model/editor/data-grid'
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import { Scalar } from '@/model/evitadb'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import { UnexpectedError } from '@/model/lab'
@@ -14,12 +14,13 @@ const toaster: Toaster = useToaster()
 
 const props = defineProps<{
     propertyDescriptor: EntityPropertyDescriptor | undefined,
-    dataLocale: string | undefined,
-    propertyValue: any
+    propertyValue: EntityPropertyValue | EntityPropertyValue[] | undefined
 }>()
 const emit = defineEmits<{
     (e: 'click'): void
 }>()
+const dataLocale = inject(dataLocaleKey)
+const priceType = inject(priceTypeKey)
 
 const printablePropertyValue = computed<string>(() => toPrintablePropertyValue(props.propertyValue))
 const openableInNewTab = computed<boolean>(() => {
@@ -38,7 +39,7 @@ const openableInNewTab = computed<boolean>(() => {
 const showDetailOnHover = computed<boolean>(() => printablePropertyValue.value.length <= 100)
 
 // todo lho we could format certain data types more human readable like we do in markdown pretty printer
-function toPrintablePropertyValue(value: any): string {
+function toPrintablePropertyValue(value: EntityPropertyValue | EntityPropertyValue[] | undefined): string {
     if (value == undefined) {
         return ''
     }
@@ -47,24 +48,14 @@ function toPrintablePropertyValue(value: any): string {
             return ''
         }
         return `[${value.map(it => toPrintablePropertyValue(it)).join(', ')}]`
-    } else if (value instanceof EntityReferenceValue) {
-        const flattenedRepresentativeAttributes: string[] = []
-        for (const representativeAttribute of value.representativeAttributes) {
-            if (representativeAttribute instanceof Array) {
-                flattenedRepresentativeAttributes.push(...(representativeAttribute.map(it => toPrintablePropertyValue(it))))
-            } else {
-                flattenedRepresentativeAttributes.push(toPrintablePropertyValue(representativeAttribute))
-            }
+    } else if (value instanceof EntityPropertyValue) {
+        const previewString = value.toPreviewString({ priceType: priceType?.value })
+        if (previewString == undefined) {
+            return ''
         }
-        if (flattenedRepresentativeAttributes.length === 0) {
-            return `${value.primaryKey}`
-        } else {
-            return `${value.primaryKey}: ${flattenedRepresentativeAttributes.join(', ')}`
-        }
-    } else if (value instanceof Object) {
-        return JSON.stringify(value)
+        return previewString
     } else {
-        return value.toString()
+        throw new UnexpectedError(undefined, 'Unexpected property value type: ' + typeof value)
     }
 }
 

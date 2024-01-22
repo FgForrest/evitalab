@@ -6,7 +6,7 @@ import { computed } from 'vue'
 const queryLanguages = [
     {
         title: 'EvitaQL',
-        icon: 'mdi-application-braces-outline',
+        icon: 'mdi-variable',
         value: QueryLanguage.EvitaQL
     },
     {

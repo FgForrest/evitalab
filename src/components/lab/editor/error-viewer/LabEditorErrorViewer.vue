@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import VStandardCodeMirror from '@/components/base/VStandardCodemirror.vue'
-import { ErrorViewerProps } from '@/model/editor/error-viewer'
+import { ErrorViewerParams } from '@/model/editor/error-viewer'
 import { computed } from 'vue'
 import { TabComponentEvents, TabComponentProps, VoidTabRequestComponentData } from '@/model/editor/editor'
 import VTabToolbar from '@/components/base/VTabToolbar.vue'
 
-const props = defineProps<TabComponentProps<ErrorViewerProps, VoidTabRequestComponentData>>()
+const props = defineProps<TabComponentProps<ErrorViewerParams, VoidTabRequestComponentData>>()
 const emit = defineEmits<TabComponentEvents>()
 
 const title = computed(() => {

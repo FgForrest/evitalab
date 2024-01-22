@@ -186,11 +186,11 @@ body::after {
   background-color: #1f3a38;
 
   .Vue-Toastification__icon {
-    color: #22a44e;
+    color: $success;
   }
 
   .Vue-Toastification__progress-bar {
-    background-color: #22a44e;
+    background-color: $success;
   }
 }
 
@@ -198,11 +198,11 @@ body::after {
   background-color: #23355c;
 
   .Vue-Toastification__icon {
-    color: #487ad3;
+    color: $info;
   }
 
   .Vue-Toastification__progress-bar {
-    background-color: #487ad3;
+    background-color: $info;
   }
 }
 
@@ -210,11 +210,11 @@ body::after {
   background-color: #4c4029;
 
   .Vue-Toastification__icon {
-    color: #f7a729;
+    color: $warning;
   }
 
   .Vue-Toastification__progress-bar {
-    background-color: #f7a729;
+    background-color: $warning;
   }
 }
 
@@ -222,11 +222,11 @@ body::after {
   background-color: #4c232f;
 
   .Vue-Toastification__icon {
-    color: #E13321;
+    color: $error;
   }
 
   .Vue-Toastification__progress-bar {
-    background-color: #E13321;
+    background-color: $error;
   }
 }
 // Overlay

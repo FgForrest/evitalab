@@ -4,9 +4,10 @@ import ky from 'ky'
 import { EvitaQLConsoleRequest } from '@/model/editor/evitaql-console-request'
 import { LabService } from '@/services/lab.service'
 import { GraphQLConsoleRequest } from '@/model/editor/graphql-console-request'
-import { GraphQLInstanceType } from '@/model/editor/graphql-console'
+import { GraphQLConsoleData, GraphQLInstanceType } from '@/model/editor/graphql-console'
 import { inject, InjectionKey } from 'vue'
 import { DemoSnippetRequest } from '@/model/editor/demo-snippet-request'
+import { EvitaQLConsoleData } from '@/model/editor/evitaql-console'
 
 const demoConnectionId: EvitaDBConnectionId = 'demo'
 const demoCatalog: string = 'evita'
@@ -27,10 +28,11 @@ export class DemoSnippetResolver {
     /**
      * Resolves input request into tab request.
      */
-    async resolve(request: DemoSnippetRequest | undefined): Promise<TabRequest<any, any> | undefined> {
-        if (request == undefined) {
+    async resolve(requestSerialized: string | undefined): Promise<TabRequest<any, any> | undefined> {
+        if (requestSerialized == undefined) {
             return undefined
         }
+        const request: DemoSnippetRequest = JSON.parse(atob(requestSerialized)) as DemoSnippetRequest
 
         const codeSnippetUrl: string = `${baseCodeSnippetUrl}/${request.branch}/${request.path}`
         let codeSnippetContent: string
@@ -40,30 +42,23 @@ export class DemoSnippetResolver {
             throw new UnexpectedError(undefined, `Cannot fetch demo code snippet '${request.path}' from GitHub from branch '${request.branch}'.`)
         }
 
-        const demoConnection: EvitaDBConnection | undefined = this.labService.getConnection(demoConnectionId)
-        if (demoConnection == undefined) {
-            throw new UnexpectedError(undefined, `Demo connection '${demoConnectionId}' not found.`)
-        }
+        const demoConnection: EvitaDBConnection = this.labService.getConnection(demoConnectionId)
 
         const extension: string = request.path.substring(request.path.lastIndexOf(".") + 1)
         switch (extension) {
             case CodeSnippetType.EvitaQL:
-                return new EvitaQLConsoleRequest(
+                return EvitaQLConsoleRequest.createNew(
                     demoConnection,
                     demoCatalog,
-                    {
-                        query: codeSnippetContent
-                    },
+                    new EvitaQLConsoleData(codeSnippetContent),
                     true
                 )
             case CodeSnippetType.GraphQL:
-                return new GraphQLConsoleRequest(
+                return GraphQLConsoleRequest.createNew(
                     demoConnection,
                     demoCatalog,
-                    GraphQLInstanceType.DATA,
-                    {
-                        query: codeSnippetContent
-                    },
+                    GraphQLInstanceType.Data,
+                    new GraphQLConsoleData(codeSnippetContent),
                     true
                 )
             default:

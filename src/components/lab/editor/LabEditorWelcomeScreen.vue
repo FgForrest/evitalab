@@ -2,12 +2,18 @@
 
 import {LabService, useLabService} from '@/services/lab.service'
 import {EvitaDBBlogPost} from '@/model/lab'
-import {ref} from 'vue'
+import { computed, ref } from 'vue'
 import VMarkdown from '@/components/base/VMarkdown.vue'
 
 const labService: LabService = useLabService()
 
-const version: string = import.meta.env.VITE_BUILD_VERSION || '?'
+const version = computed(() => {
+    const actualVersion: string = import.meta.env.VITE_BUILD_VERSION
+    if (actualVersion == undefined || actualVersion.length === 0) {
+        return '?'
+    }
+    return actualVersion.substring(1) // remove v prefix
+})
 const blogPosts = ref<EvitaDBBlogPost[]>([])
 
 labService.getBlogPosts().then((posts) => {

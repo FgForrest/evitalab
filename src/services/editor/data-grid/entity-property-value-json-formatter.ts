@@ -1,22 +1,18 @@
 import { EntityPropertyValueFormatter } from '@/services/editor/data-grid/entity-property-value-formatter'
+import { EntityPropertyValue } from '@/model/editor/data-grid'
 
 /**
  * Tries to format the value as JSON. If the value is not a valid JSON, it will throw an error.
  */
 export class EntityPropertyValueJsonFormatter implements EntityPropertyValueFormatter {
 
-    format(value: any, prettyPrint: boolean = false): string {
+    format(value: EntityPropertyValue | EntityPropertyValue[], prettyPrint: boolean = false): string {
         // validates that it's a valid JSON and parses it if needed
-        const parsedJson = this.parseValueIntoJson(value)
+        const parsedJson = value instanceof Array ? value.map(it => this.parseValueIntoJson(it.value())) : this.parseValueIntoJson(value.value())
         if (prettyPrint) {
             return JSON.stringify(parsedJson, null, 2)
         } else {
-            // we've validated that it's a valid JSON, now we need the original value
-            if (value instanceof Object) {
-                return JSON.stringify(value)
-            } else {
-                return value.toString()
-            }
+            return value instanceof Array ? `[${value.map(it => it.toPreviewString()).join(', ')}]` : (value as EntityPropertyValue).toPreviewString()
         }
     }
 
@@ -24,7 +20,7 @@ export class EntityPropertyValueJsonFormatter implements EntityPropertyValueForm
         if (value instanceof Object) {
             return value
         } else {
-            return JSON.parse(value.toString())
+            return JSON.parse(typeof value === 'string' ? `"${value}"` : value.toString())
         }
     }
 }

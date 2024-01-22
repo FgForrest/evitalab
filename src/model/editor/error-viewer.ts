@@ -4,7 +4,7 @@ import { LabError } from '@/model/lab'
 /**
  * Represents props of the LabEditorErrorViewer component.
  */
-export interface ErrorViewerProps extends TabRequestComponentParams {
+export interface ErrorViewerParams extends TabRequestComponentParams {
     /**
      * Short error message.
      */

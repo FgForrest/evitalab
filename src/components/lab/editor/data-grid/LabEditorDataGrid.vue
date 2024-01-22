@@ -5,11 +5,20 @@
 
 import 'splitpanes/dist/splitpanes.css'
 
-import { onBeforeMount, ref, watch } from 'vue'
+import { computed, onBeforeMount, provide, readonly, ref, watch } from 'vue'
 import {
-    DataGridConsoleData,
-    DataGridConsoleParams, EntityPropertyDescriptor,
-    EntityPropertyKey, EntityPropertyType,
+    DataGridData,
+    DataGridParams,
+    dataLocaleKey,
+    EntityPropertyDescriptor,
+    entityPropertyDescriptorIndexKey,
+    EntityPropertyKey,
+    EntityPropertyType,
+    FlatEntity,
+    gridParamsKey,
+    priceTypeKey,
+    queryFilterKey,
+    queryLanguageKey,
     QueryResult
 } from '@/model/editor/data-grid'
 import { DataGridService, useDataGridService } from '@/services/editor/data-grid.service'
@@ -19,12 +28,14 @@ import { TabComponentEvents, TabComponentProps } from '@/model/editor/editor'
 import LabEditorDataGridQueryInput from '@/components/lab/editor/data-grid/LabEditorDataGridQueryInput.vue'
 import LabEditorDataGridToolbar from '@/components/lab/editor/data-grid/LabEditorDataGridToolbar.vue'
 import LabEditorDataGridGrid from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGrid.vue'
+import { QueryPriceMode } from '@/model/evitadb'
 
 const dataGridService: DataGridService = useDataGridService()
 const toaster: Toaster = useToaster()
 
-const props = defineProps<TabComponentProps<DataGridConsoleParams, DataGridConsoleData>>()
+const props = defineProps<TabComponentProps<DataGridParams, DataGridData>>()
 const emit = defineEmits<TabComponentEvents>()
+provide(gridParamsKey, props.params)
 
 // static data
 const path = ref<string[]>([
@@ -34,13 +45,15 @@ const path = ref<string[]>([
 
 let sortedEntityPropertyKeys: string[] = []
 let entityPropertyDescriptors: EntityPropertyDescriptor[] = []
-const entityPropertyDescriptorIndex: Map<string, EntityPropertyDescriptor> = new Map<string, EntityPropertyDescriptor>()
+const entityPropertyDescriptorIndex = ref<Map<string, EntityPropertyDescriptor>>(new Map<string, EntityPropertyDescriptor>())
+provide(entityPropertyDescriptorIndexKey, entityPropertyDescriptorIndex)
 
 let gridHeaders: Map<string, any> = new Map<string, any>()
 let dataLocales: string[] = []
 
 // dynamic user data
 const selectedQueryLanguage = ref<QueryLanguage>(props.data?.queryLanguage ? props.data.queryLanguage : QueryLanguage.EvitaQL)
+provide(queryLanguageKey, readonly(selectedQueryLanguage))
 watch(selectedQueryLanguage, (newValue, oldValue) => {
     if (newValue[0] === oldValue[0]) {
         return
@@ -49,7 +62,7 @@ watch(selectedQueryLanguage, (newValue, oldValue) => {
     filterByCode.value = ''
     orderByCode.value = ''
 
-    executeQuery()
+    executeQueryAutomatically()
 })
 
 const loading = ref<boolean>(false)
@@ -57,10 +70,17 @@ const pageNumber = ref<number>(props.data?.pageNumber ? props.data.pageNumber : 
 const pageSize = ref<number>(props.data?.pageSize ? props.data.pageSize : 25)
 
 const filterByCode = ref<string>(props.data?.filterBy ? props.data.filterBy : '')
+const lastAppliedFilterByCode = ref<string>('')
+provide(queryFilterKey, readonly(lastAppliedFilterByCode))
 const orderByCode = ref<string>(props.data?.orderBy ? props.data.orderBy : '')
 
 const selectedDataLocale = ref<string | undefined>(props.data?.dataLocale ? props.data.dataLocale : undefined)
-watch(selectedDataLocale, () => executeQuery())
+provide(dataLocaleKey, readonly(selectedDataLocale))
+watch(selectedDataLocale, () => executeQueryAutomatically())
+
+const selectedPriceType = ref<QueryPriceMode | undefined>(props.data?.priceType ? props.data.priceType : undefined)
+watch(selectedPriceType, () => executeQueryAutomatically())
+provide(priceTypeKey, readonly(selectedPriceType))
 
 const displayedProperties = ref<EntityPropertyKey[]>(props.data?.displayedProperties ? props.data.displayedProperties : [])
 watch(displayedProperties, (newValue, oldValue) => {
@@ -69,17 +89,33 @@ watch(displayedProperties, (newValue, oldValue) => {
     // re-fetch entities only if new properties were added, only in such case there could be missing data when displaying
     // the new properties
     if (newValue.length > oldValue.length) {
-        executeQuery()
+        executeQueryAutomatically()
     }
 })
 
 const displayedGridHeaders = ref<any[]>([])
-const resultEntities = ref<any[]>([])
+const resultEntities = ref<FlatEntity[]>([])
 const totalResultCount = ref<number>(0)
 
 const initialized = ref<boolean>(false)
+const queryExecutedManually = ref<boolean>(false)
+const queryExecuted = computed<boolean>(() => queryExecutedManually.value || props.params.executeOnOpen)
 
-emit('ready')
+const currentData = computed<DataGridData>(() => {
+    return new DataGridData(
+        selectedQueryLanguage.value,
+        filterByCode.value,
+        orderByCode.value,
+        selectedDataLocale.value,
+        displayedProperties.value,
+        pageSize.value,
+        pageNumber.value
+    )
+})
+watch(currentData, (data) => {
+    emit('dataUpdate', data)
+})
+
 onBeforeMount(() => {
     // note: we can't use async/await here, because that would make this component async which currently doesn't seem to work
     // properly in combination with dynamic <component> rendering and tabs
@@ -87,14 +123,18 @@ onBeforeMount(() => {
     dataGridService.getDataLocales(props.params.dataPointer)
         .then(dl => {
             dataLocales = dl
+            return dataGridService.supportsPrices(props.params.dataPointer)
+        })
+        .then(supportsPrices => {
+            preselectPriceType(supportsPrices)
             return dataGridService.getEntityPropertyDescriptors(props.params.dataPointer)
         })
         .then(ep => {
             entityPropertyDescriptors = ep
             for (const entityPropertyDescriptor of entityPropertyDescriptors) {
-                entityPropertyDescriptorIndex.set(entityPropertyDescriptor.key.toString(), entityPropertyDescriptor)
+                entityPropertyDescriptorIndex.value.set(entityPropertyDescriptor.key.toString(), entityPropertyDescriptor)
                 entityPropertyDescriptor.children.forEach(childPropertyDescriptor => {
-                    entityPropertyDescriptorIndex.set(childPropertyDescriptor.key.toString(), childPropertyDescriptor)
+                    entityPropertyDescriptorIndex.value.set(childPropertyDescriptor.key.toString(), childPropertyDescriptor)
                 })
 
                 sortedEntityPropertyKeys.push(entityPropertyDescriptor.key.toString())
@@ -111,13 +151,22 @@ onBeforeMount(() => {
             emit('ready')
 
             if (props.params.executeOnOpen) {
-                executeQuery()
+                executeQueryAutomatically()
             }
+
+            emit('ready')
         })
         .catch(error => {
             toaster.error(error)
         })
 })
+
+function preselectPriceType(supportsPrices: boolean): void {
+    // we want to preselect price type only if it's not already preselected by initial data
+    if (selectedPriceType.value == undefined) {
+        selectedPriceType.value = supportsPrices ? QueryPriceMode.WithTax : undefined
+    }
+}
 
 async function initializeGridHeaders(entityPropertyDescriptors: EntityPropertyDescriptor[]): Promise<Map<string, any>> {
     const gridHeaders: Map<string, any> = new Map<string, any>()
@@ -137,7 +186,7 @@ async function initializeGridHeaders(entityPropertyDescriptors: EntityPropertyDe
                 {
                     key: childPropertyDescriptor.key.toString(),
                     title: childPropertyDescriptor.flattenedTitle,
-                    sortable: childPropertyDescriptor.schema?.sortable || false,
+                    sortable: childPropertyDescriptor.isSortable(),
                     descriptor: childPropertyDescriptor
                 }
             )
@@ -158,26 +207,57 @@ async function updateDisplayedGridHeaders(): Promise<void> {
 function preselectEntityProperties(): void {
     if (displayedProperties.value.length > 0) {
         // already preselected by initiator
+        // but because we don't trigger the watch to update the headers, we need to do it manually
+        updateDisplayedGridHeaders()
         return
     }
 
     displayedProperties.value = entityPropertyDescriptors
-        .filter(it => it.key.type === EntityPropertyType.Entity || it.schema?.representative)
+        .filter(it => it.key.type === EntityPropertyType.Entity || it.key.type === EntityPropertyType.Prices || it.schema?.representative)
         .map(it => it.key)
 }
 
 async function gridUpdated({ page, itemsPerPage, sortBy }: { page: number, itemsPerPage: number, sortBy: any[] }): Promise<void> {
     pageNumber.value = page
     pageSize.value = itemsPerPage
-    try {
-        orderByCode.value = await dataGridService.buildOrderByFromGridColumns(props.params.dataPointer, selectedQueryLanguage.value, sortBy)
-    } catch (error: any) {
-        toaster.error(error)
+    if (sortBy.length > 0) {
+        try {
+            orderByCode.value = await dataGridService.buildOrderByFromGridColumns(props.params.dataPointer, selectedQueryLanguage.value, sortBy)
+        } catch (error: any) {
+            toaster.error(error)
+        }
     }
 
+    await executeQueryAutomatically()
+}
+
+/**
+ * Executes query. Should be used only by functions which are triggered directly by user action (e.g. by clicking on button).
+ */
+async function executeQueryManually(): Promise<void> {
+    if (!queryExecutedManually.value) {
+        queryExecutedManually.value = true
+    }
     await executeQuery()
 }
 
+/**
+ * Executes query. Should be used only by functions which are triggered either automatically by components itself or indirectly
+ * by user action (e.g. by changing page number).
+ */
+async function executeQueryAutomatically(): Promise<void> {
+    // We can execute query automatically only if it was already executed manually by user or if it was requested by
+    // params.
+    // Otherwise, we need to wait for the user because the query may contain malicious code which we don't want to execute
+    // automatically before user gave consent with manual execution.
+    if (queryExecuted.value) {
+        await executeQuery()
+    }
+}
+
+/**
+ * Actual query execution, shouldn't be used directly. Only through {@link executeQueryManually()} or {@link executeQueryAutomatically()}.
+ */
 async function executeQuery(): Promise<void> {
     loading.value = true
 
@@ -188,16 +268,15 @@ async function executeQuery(): Promise<void> {
             filterByCode.value,
             orderByCode.value,
             selectedDataLocale.value,
+            selectedPriceType.value,
             displayedProperties.value,
             pageNumber.value,
             pageSize.value
         )
-        resultEntities.value = result.entities.map(entity => {
-            const row: any = {}
-            entity.forEach(([propertyKey, propertyValue]) => row[propertyKey.toString()] = propertyValue)
-            return row
-        })
+        resultEntities.value = result.entities
         totalResultCount.value = result.totalEntitiesCount
+
+        lastAppliedFilterByCode.value = filterByCode.value
     } catch (error: any) {
         toaster.error(error)
     }
@@ -213,39 +292,41 @@ async function executeQuery(): Promise<void> {
         class="data-grid"
     >
         <LabEditorDataGridToolbar
+            :current-data="currentData"
             :path="path"
-            :locale="selectedDataLocale"
             :loading="loading"
-            @execute-query="executeQuery"
+            @execute-query="executeQueryManually"
         >
             <template #query>
                 <LabEditorDataGridQueryInput
-                    :grid-props="props"
                     v-model:selected-query-language="selectedQueryLanguage"
                     v-model:filter-by="filterByCode"
                     v-model:order-by="orderByCode"
                     :data-locales="dataLocales"
                     v-model:selected-data-locale="selectedDataLocale"
-                    :entity-property-descriptor-index="entityPropertyDescriptorIndex"
+                    v-model:selected-price-type="selectedPriceType"
                     v-model:selected-entity-property-keys="displayedProperties"
-                    @execute-query="executeQuery"
+                    @execute-query="executeQueryManually"
                 />
             </template>
         </LabEditorDataGridToolbar>
 
         <LabEditorDataGridGrid
-            :grid-props="props"
-            :entity-property-descriptor-index="entityPropertyDescriptorIndex"
+            v-if="queryExecuted"
             :displayed-grid-headers="displayedGridHeaders"
-            :data-locale="selectedDataLocale"
-            :query-language="selectedQueryLanguage"
             :loading="loading"
-            :result-entities="resultEntities"
+            :result-entities="resultEntities as FlatEntity[]"
             :total-result-count="totalResultCount"
             :page-number="pageNumber"
             :page-size="pageSize"
             @grid-updated="gridUpdated"
         />
+        <div v-else class="data-grid__init-screen">
+            <p>Loaded query data must be manually executed.</p>
+            <VBtn @click="executeQueryManually">
+                Execute query
+            </VBtn>
+        </div>
     </div>
 </template>
 
@@ -254,5 +335,14 @@ async function executeQuery(): Promise<void> {
     display: grid;
     grid-template-rows: 5.5rem 1fr;
     overflow-y: auto;
+
+    &__init-screen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        gap: 1rem;
+    }
 }
 </style>

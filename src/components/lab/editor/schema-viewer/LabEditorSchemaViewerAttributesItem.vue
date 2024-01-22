@@ -29,7 +29,7 @@ const flags: string[] = labService.getAttributeSchemaFlags(props.schema)
 function openAttributeSchema(): void {
     const parentSchemaPointer = props.dataPointer.schemaPointer
     if (parentSchemaPointer instanceof CatalogSchemaPointer) {
-        editorService.createTabRequest(new SchemaViewerRequest(
+        editorService.createTabRequest(SchemaViewerRequest.createNew(
             props.dataPointer.connection,
             new CatalogAttributeSchemaPointer(
                 parentSchemaPointer.catalogName,
@@ -37,7 +37,7 @@ function openAttributeSchema(): void {
             )
         ))
     } else if (parentSchemaPointer instanceof EntitySchemaPointer) {
-        editorService.createTabRequest(new SchemaViewerRequest(
+        editorService.createTabRequest(SchemaViewerRequest.createNew(
             props.dataPointer.connection,
             new EntityAttributeSchemaPointer(
                 parentSchemaPointer.catalogName,
@@ -46,7 +46,7 @@ function openAttributeSchema(): void {
             )
         ))
     } else if (parentSchemaPointer instanceof ReferenceSchemaPointer) {
-        editorService.createTabRequest(new SchemaViewerRequest(
+        editorService.createTabRequest(SchemaViewerRequest.createNew(
             props.dataPointer.connection,
             new ReferenceAttributeSchemaPointer(
                 parentSchemaPointer.catalogName,

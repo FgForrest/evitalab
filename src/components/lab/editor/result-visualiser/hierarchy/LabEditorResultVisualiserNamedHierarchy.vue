@@ -60,7 +60,6 @@ function initialize(): void {
                                     <span>
                                         {{ namedHierarchy?.count }}
                                         <VTooltip activator="parent">
-                                            <!-- todo jno is this what we want to display? At this point we don't have total number of children. -->
                                             <span>The number of actually fetched nodes.</span>
                                         </VTooltip>
                                     </span>
@@ -70,7 +69,6 @@ function initialize(): void {
                                     {{ namedHierarchy?.requestedNode?.primaryKey != undefined ? `${namedHierarchy?.requestedNode?.primaryKey}: ` : '' }}
                                     {{ namedHierarchy?.requestedNode?.title }}
                                     <VTooltip activator="parent">
-                                        <!-- todo jno review explanation -->
                                         <VMarkdown source="An entity representing a hierarchy node in this tree that was filtered by `hierarchyWithin`." />
                                     </VTooltip>
                                 </VChip>

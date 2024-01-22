@@ -1,37 +1,38 @@
 <script setup lang="ts">
+/**
+ * A single selectable entity attribute property item that will be then fetched into grid.
+ */
 
 import {
-    DataGridConsoleData,
-    DataGridConsoleParams,
-    EntityPropertyDescriptor
+    EntityPropertyDescriptor, gridParamsKey
 } from '@/model/editor/data-grid'
 import { LabService, useLabService } from '@/services/lab.service'
 import LabEditorDataGridPropertySelectorSectionItem from './LabEditorDataGridPropertySelectorSectionItem.vue'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
 import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
 import { EntityAttributeSchemaPointer } from '@/model/editor/schema-viewer'
-import { TabComponentProps } from '@/model/editor/editor'
+import { mandatoryInject } from '@/helpers/reactivity'
 
 const labService: LabService = useLabService()
 const editorService: EditorService = useEditorService()
 
 const props = defineProps<{
-    gridProps: TabComponentProps<DataGridConsoleParams, DataGridConsoleData>,
     propertyDescriptor: EntityPropertyDescriptor
 }>()
 const emit = defineEmits<{
     (e: 'schemaOpen'): void
 }>()
+const gridParams = mandatoryInject(gridParamsKey)
 
 const flags: string[] = labService.getAttributeSchemaFlags(props.propertyDescriptor.schema)
 
 function openSchema(): void {
     editorService.createTabRequest(
-        new SchemaViewerRequest(
-            props.gridProps.params.dataPointer.connection,
+        SchemaViewerRequest.createNew(
+            gridParams.dataPointer.connection,
             new EntityAttributeSchemaPointer(
-                props.gridProps.params.dataPointer.catalogName,
-                props.gridProps.params.dataPointer.entityType,
+                gridParams.dataPointer.catalogName,
+                gridParams.dataPointer.entityType,
                 props.propertyDescriptor.schema.name
             )
         )

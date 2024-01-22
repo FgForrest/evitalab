@@ -1,24 +1,32 @@
 <script setup lang="ts">
 
-import { computed, ref, watch } from 'vue'
-import { TabRequest } from '@/model/editor/editor'
+import { ref, watch } from 'vue'
+import { TabRequest, TabRequestComponentData } from '@/model/editor/editor'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
-import LabEditorTabWindow from './LabEditorTabWindow.vue'
+import LabEditorTabWindow from './tab/LabEditorTabWindow.vue'
 import { ellipsis } from '@/utils/text-utils'
 import LabEditorWelcomeScreen from './LabEditorWelcomeScreen.vue'
 import { RouteLocationNormalizedLoaded, useRoute } from 'vue-router'
 import { useToaster } from '@/services/editor/toaster'
 import { DemoSnippetResolver, useDemoSnippetResolver } from '@/services/editor/demo-snippet-resolver.service'
-import { DemoSnippetRequest } from '@/model/editor/demo-snippet-request'
+import { SharedTabResolver, useSharedTabResolver } from '@/services/editor/shared-tab-resolver.service'
+import LabEditorTabSharedDialog from '@/components/lab/editor/tab/LabEditorTabSharedDialog.vue'
 
 const currentRoute: RouteLocationNormalizedLoaded = useRoute()
 const toaster = useToaster()
 const editorService: EditorService = useEditorService()
 const demoCodeSnippetResolver: DemoSnippetResolver = useDemoSnippetResolver()
+const sharedTabResolver: SharedTabResolver = useSharedTabResolver()
 
-const tabs = computed<TabRequest<any, any>[]>(() => {
-    return editorService.getTabRequests()
-})
+/**
+ * Represents editor mode where user data aren't stored at the end of the session. Useful for demo snippets or shared tabs.
+ */
+const playgroundMode = ref<boolean>(false)
+
+const sharedTabDialogOpen = ref<boolean>(false)
+const sharedTabRequest = ref<TabRequest<any, any> | undefined>()
+
+const tabs = ref<TabRequest<any, any>[]>(editorService.getTabRequests())
 watch(tabs, () => {
     // switch to newly opened tab
     const newTab: TabRequest<any, any> | undefined = editorService.getNewTabRequest()
@@ -26,9 +34,13 @@ watch(tabs, () => {
         currentTabId.value = newTab.id
         editorService.markTabRequestAsVisited(newTab.id)
     }
-}, { deep: true})
-
+}, { deep: true })
 const currentTabId = ref<string | null>()
+let currentTabData: Map<string, TabRequestComponentData> = new Map<string, TabRequestComponentData>()
+
+function storeTabData(tabId: string, updatedData: TabRequestComponentData) {
+    currentTabData.set(tabId, updatedData)
+}
 
 function closeTab(tabId: string) {
     const prevTabsLength: number = tabs.value.length
@@ -55,18 +67,82 @@ async function resolveDemoCodeSnippet(): Promise<TabRequest<any, any> | undefine
     }
 
     try {
-        const demoSnippetRequest: DemoSnippetRequest = JSON.parse(atob(demoSnippetRequestSerialized)) as DemoSnippetRequest
-        return await demoCodeSnippetResolver.resolve(demoSnippetRequest)
+        return await demoCodeSnippetResolver.resolve(demoSnippetRequestSerialized)
     } catch (e: any) {
         toaster.error(e)
     }
 }
+
+/**
+ * Open shared tab if requested
+ */
+async function resolveSharedTab(): Promise<TabRequest<any, any> | undefined> {
+    const sharedTabSerialized: string | undefined = currentRoute.query.sharedTab as string | undefined
+    if (sharedTabSerialized == undefined) {
+        return undefined
+    }
+
+    try {
+        return await sharedTabResolver.resolve(sharedTabSerialized)
+    } catch (e: any) {
+        toaster.error(e)
+    }
+}
+
+function restorePreviousSession(): void {
+    try {
+        let sessionRestored: boolean = false
+
+        const restoredTabData: Map<string, TabRequestComponentData> | undefined = editorService.createTabRequestsForTabsFromLastSession()
+        if (restoredTabData != undefined) {
+            currentTabData = restoredTabData
+            sessionRestored = true
+        }
+
+        const tabHistoryRestored: boolean = editorService.restoreTabHistory()
+        if (tabHistoryRestored) {
+            sessionRestored = true
+        }
+
+        if (sessionRestored) {
+            toaster.info('Your last session has been restored.')
+        }
+    } catch (e) {
+        console.error(e)
+        toaster.warning('Failed to fully restore your last session.')
+    }
+}
+
+function storeCurrentSession() {
+    editorService.storeOpenedTabs(currentTabData)
+    editorService.storeTabHistory()
+}
+
+// initialize the editor
 resolveDemoCodeSnippet()
     .then(tabRequest => {
-        if (tabRequest) {
+        if (tabRequest != undefined) {
+            playgroundMode.value = true
             editorService.createTabRequest(tabRequest)
         }
+        return resolveSharedTab()
+    }).then(tabRequest => {
+        if (tabRequest != undefined) {
+            playgroundMode.value = true
+            sharedTabRequest.value = tabRequest
+            sharedTabDialogOpen.value = true
+        }
+
+        if (!playgroundMode.value) {
+            restorePreviousSession()
+        }
     })
+
+window.addEventListener('beforeunload', () => {
+    if (!playgroundMode.value) {
+        storeCurrentSession()
+    }
+})
 </script>
 
 <template>
@@ -132,6 +208,7 @@ resolveDemoCodeSnippet()
                 <LabEditorTabWindow
                     :component="tab.component"
                     :component-props="tab.componentProps()"
+                    @data-update="storeTabData(tab.id, $event)"
                 />
             </VWindowItem>
         </VWindow>
@@ -139,6 +216,12 @@ resolveDemoCodeSnippet()
             <LabEditorWelcomeScreen/>
         </div>
     </VMain>
+
+    <LabEditorTabSharedDialog
+        v-if="sharedTabRequest"
+        :tab-request="sharedTabRequest"
+        @resolve="sharedTabRequest = undefined"
+    />
 </template>
 
 <style scoped>

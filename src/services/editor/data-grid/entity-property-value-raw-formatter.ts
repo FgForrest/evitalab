@@ -1,15 +1,12 @@
 import { EntityPropertyValueFormatter } from '@/services/editor/data-grid/entity-property-value-formatter'
+import { EntityPropertyValue } from '@/model/editor/data-grid'
 
 /**
  * Doesn't do any formatting, just returns the value as string.
  */
 export class EntityPropertyValueRawFormatter implements EntityPropertyValueFormatter {
 
-    format(value: any, prettyPrint: boolean = false): string {
-        if (value instanceof Object) {
-            return JSON.stringify(value)
-        } else {
-            return value.toString()
-        }
+    format(value: EntityPropertyValue | EntityPropertyValue[], prettyPrint: boolean = false): string {
+        return value instanceof Array ? `[${value.map(it => it.toPreviewString()).join(', ')}]` : (value as EntityPropertyValue).toPreviewString()
     }
 }

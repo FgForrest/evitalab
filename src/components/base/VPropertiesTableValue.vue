@@ -5,7 +5,7 @@ import {
     KeywordValue,
     Property,
     PropertyValue,
-    NotApplicableValue
+    NotApplicableValue, RangeValue
 } from '@/model/properties-table'
 import VMarkdown from '@/components/base/VMarkdown.vue'
 import VPropertyTableValue from './VPropertiesTableValue.vue'
@@ -101,6 +101,13 @@ const props = defineProps<{
                     <span>{{ propertyValue.value.explanation }}</span>
                 </VTooltip>
             </span>
+        </div>
+
+        <!-- actual value is range value -->
+        <div v-else-if="propertyValue.value instanceof RangeValue">
+            <VChip dense>{{ propertyValue.value.toSerializable()[0] }}</VChip>
+            &nbsp;-&nbsp;
+            <VChip dense>{{ propertyValue.value.toSerializable()[1] }}</VChip>
         </div>
 
         <!-- actual value is something else (number) -->

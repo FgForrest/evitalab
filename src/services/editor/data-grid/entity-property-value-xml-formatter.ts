@@ -1,6 +1,7 @@
 import { EntityPropertyValueFormatter } from '@/services/editor/data-grid/entity-property-value-formatter'
 import xmlFormat from 'xml-formatter'
 import { UnexpectedError } from '@/model/lab'
+import { EntityPropertyValue } from '@/model/editor/data-grid'
 
 /**
  * Fake root element for pretty printing XML with multiple roots which is not valid XML but we in data, there may be partial
@@ -13,16 +14,16 @@ const xmlFakeRoot = 'evitalabfakeroot'
  */
 export class EntityPropertyValueXmlFormatter implements EntityPropertyValueFormatter {
 
-    format(value: any, prettyPrint: boolean = false): string {
-        if (typeof value != 'string') {
+    format(value: EntityPropertyValue | EntityPropertyValue[], prettyPrint: boolean = false): string {
+        if (value instanceof Array || typeof value.value() != 'string') {
             throw new UnexpectedError(undefined, 'Cannot format JSON as XML')
         }
         // validates the value as XML, and also pretty prints it if needed
-        const formattedXml: string = this.formatXml(value)
+        const formattedXml: string = this.formatXml(value.value())
         if (prettyPrint) {
             return formattedXml
         } else {
-            return value
+            return value.toPreviewString()
         }
     }
 

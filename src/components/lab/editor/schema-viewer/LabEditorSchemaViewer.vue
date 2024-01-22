@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { SchemaViewerProps } from '@/model/editor/schema-viewer'
+import { SchemaViewerParams } from '@/model/editor/schema-viewer'
 import { ref } from 'vue'
 import { SchemaViewerService, useSchemaViewerService } from '@/services/editor/schema-viewer.service'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import { TabComponentEvents, TabComponentProps, VoidTabRequestComponentData } from '@/model/editor/editor'
 import VTabToolbar from '@/components/base/VTabToolbar.vue'
+import LabEditorTabShareButton from '@/components/lab/editor/tab/LabEditorTabShareButton.vue'
+
+import { TabType } from '@/model/editor/tab/tab-type'
 
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
 const toaster: Toaster = useToaster()
 
-const props = defineProps<TabComponentProps<SchemaViewerProps, VoidTabRequestComponentData>>()
+const props = defineProps<TabComponentProps<SchemaViewerParams, VoidTabRequestComponentData>>()
 const emit = defineEmits<TabComponentEvents>()
 
 const schemaLoaded = ref<boolean>(false)
@@ -33,7 +36,16 @@ schemaViewerService.getSchema(props.params.dataPointer)
         <VTabToolbar
             prepend-icon="mdi-file-code"
             :path="params.dataPointer.schemaPointer.path()"
-        />
+        >
+            <template #append>
+                <LabEditorTabShareButton
+                    :tab-type="TabType.SchemaViewer"
+                    :tab-params="params"
+                    :tab-data="undefined"
+                    :disabled="!params.dataPointer.connection.preconfigured"
+                />
+            </template>
+        </VTabToolbar>
 
         <VSheet class="schema-viewer__body">
             <component

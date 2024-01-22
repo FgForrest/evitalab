@@ -1,48 +1,59 @@
 <script setup lang="ts">
+/**
+ * Manages selected entity properties that will be fetched into grid.
+ */
+
 import { computed, ref } from 'vue'
 import {
-    EntityPropertyDescriptor,
+    EntityPropertyDescriptor, entityPropertyDescriptorIndexKey,
     EntityPropertyKey,
-    EntityPropertyType,
-    EntityPropertySectionSelection, DataGridConsoleParams, DataGridConsoleData,
+    EntityPropertySectionSelection,
+    EntityPropertyType, gridParamsKey,
     parentEntityPropertyType
 } from '@/model/editor/data-grid'
 import VCardTitleWithActions from '@/components/base/VCardTitleWithActions.vue'
 import LabEditorDataGridPropertySelectorSection from './LabEditorDataGridPropertySelectorSection.vue'
-import LabEditorDataGridPropertySelectorSectionAttributeItem from './LabEditorDataGridPropertySelectorSectionAttributeItem.vue'
-import LabEditorDataGridPropertySelectorSectionAssociatedDataItem from './LabEditorDataGridPropertySelectorSectionAssociatedDataItem.vue'
-import LabEditorDataGridPropertySelectorSectionEntityItem from './LabEditorDataGridPropertySelectorSectionEntityItem.vue'
-import LabEditorDataGridPropertySelectorSectionReferenceItem from './LabEditorDataGridPropertySelectorSectionReferenceItem.vue'
+import LabEditorDataGridPropertySelectorSectionAttributeItem
+    from './LabEditorDataGridPropertySelectorSectionAttributeItem.vue'
+import LabEditorDataGridPropertySelectorSectionAssociatedDataItem
+    from './LabEditorDataGridPropertySelectorSectionAssociatedDataItem.vue'
+import LabEditorDataGridPropertySelectorSectionEntityItem
+    from './LabEditorDataGridPropertySelectorSectionEntityItem.vue'
+import LabEditorDataGridPropertySelectorSectionReferenceItem
+    from './LabEditorDataGridPropertySelectorSectionReferenceItem.vue'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import { UnexpectedError } from '@/model/lab'
-import { TabComponentProps } from '@/model/editor/editor'
 import Hotkeys from 'vue-hotkeys-rt/Hotkeys.vue'
 import VListItemDivider from '@/components/base/VListItemDivider.vue'
 import LabEditorDataGridPropertySelectorSectionReferenceAttributeItem
     from '@/components/lab/editor/data-grid/property-selector/LabEditorDataGridPropertySelectorSectionReferenceAttributeItem.vue'
 import LabEditorDataGridPropertySelectorSectionItemGroup
     from '@/components/lab/editor/data-grid/property-selector/LabEditorDataGridPropertySelectorSectionItemGroup.vue'
+import LabEditorDataGridPropertySelectorSectionPricesItem
+    from '@/components/lab/editor/data-grid/property-selector/LabEditorDataGridPropertySelectorSectionPricesItem.vue'
+import { mandatoryInject } from '@/helpers/reactivity'
 
 const topLevelSections: EntityPropertyType[] = [
     EntityPropertyType.Entity,
     EntityPropertyType.Attributes,
     EntityPropertyType.AssociatedData,
+    EntityPropertyType.Prices,
     EntityPropertyType.References,
 ]
 
 const toaster: Toaster = useToaster()
 
 const props = defineProps<{
-    gridProps: TabComponentProps<DataGridConsoleParams, DataGridConsoleData>,
     modelValue: boolean,
     selected: EntityPropertyKey[],
-    propertyDescriptorIndex: Map<string, EntityPropertyDescriptor>,
 }>()
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void
     (e: 'update:selected', value: EntityPropertyKey[]): void
     (e: 'schemaOpen'): void
 }>()
+const gridParams = mandatoryInject(gridParamsKey)
+const entityPropertyDescriptorIndex = mandatoryInject(entityPropertyDescriptorIndexKey)
 
 const filter = ref<string>('')
 const filterInput = ref<HTMLInputElement | null>(null)
@@ -53,7 +64,7 @@ const filterInput = ref<HTMLInputElement | null>(null)
 const sectionedPropertyDescriptors = computed<Map<EntityPropertyType, EntityPropertyDescriptor[]>>(() => {
     const propertyDescriptors: Map<EntityPropertyType, EntityPropertyDescriptor[]> = new Map<EntityPropertyType, EntityPropertyDescriptor[]>()
 
-    props.propertyDescriptorIndex.forEach(propertyDescriptor => {
+    entityPropertyDescriptorIndex.value.forEach(propertyDescriptor => {
         if (!topLevelSections.includes(propertyDescriptor.type)) {
             return
         }
@@ -172,7 +183,7 @@ function togglePropertySectionSelection(sectionType: EntityPropertyType, newSele
 
         emit('update:selected', newSelected)
     } else {
-        toaster.error(new UnexpectedError(props.gridProps.params.dataPointer.connection, 'Cannot select `Some` properties in a section.'))
+        toaster.error(new UnexpectedError(gridParams.dataPointer.connection, 'Cannot select `Some` properties in a section.'))
     }
 }
 
@@ -183,7 +194,7 @@ function togglePropertySelection(propertyKey: EntityPropertyKey): void {
             if (key.toString() === propertyKey.toString()) {
                 return false
             }
-            const propertyDescriptor: EntityPropertyDescriptor = props.propertyDescriptorIndex.get(propertyKey.toString())!
+            const propertyDescriptor: EntityPropertyDescriptor = entityPropertyDescriptorIndex.value.get(propertyKey.toString())!
             if (propertyDescriptor.children.find(child => key.toString() === child.key.toString()) != undefined) {
                 return false
             }
@@ -282,7 +293,6 @@ function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescr
                     class="property-list"
                 >
                     <LabEditorDataGridPropertySelectorSection
-                        :grid-props="gridProps"
                         title="Entity"
                         :property-type="EntityPropertyType.Entity"
                         :selected="sectionedSelected.get(EntityPropertyType.Entity) || []"
@@ -293,7 +303,6 @@ function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescr
                     >
                         <template #default="{ property }">
                             <LabEditorDataGridPropertySelectorSectionEntityItem
-                                :grid-props="gridProps"
                                 :property-descriptor="property"
                                 @schema-open="emit('schemaOpen')"
                             />
@@ -301,7 +310,6 @@ function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescr
                     </LabEditorDataGridPropertySelectorSection>
                     <VListItemDivider />
                     <LabEditorDataGridPropertySelectorSection
-                        :grid-props="gridProps"
                         title="Attributes"
                         :property-type="EntityPropertyType.Attributes"
                         :selected="sectionedSelected.get(EntityPropertyType.Attributes) || []"
@@ -312,7 +320,6 @@ function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescr
                     >
                         <template #default="{ property }">
                             <LabEditorDataGridPropertySelectorSectionAttributeItem
-                                :grid-props="gridProps"
                                 :property-descriptor="property"
                                 @schema-open="emit('schemaOpen')"
                             />
@@ -320,7 +327,6 @@ function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescr
                     </LabEditorDataGridPropertySelectorSection>
                     <VListItemDivider />
                     <LabEditorDataGridPropertySelectorSection
-                        :grid-props="gridProps"
                         title="Associated data"
                         :property-type="EntityPropertyType.AssociatedData"
                         :selected="sectionedSelected.get(EntityPropertyType.AssociatedData) || []"
@@ -331,15 +337,19 @@ function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescr
                     >
                         <template #default="{ property }">
                             <LabEditorDataGridPropertySelectorSectionAssociatedDataItem
-                                :grid-props="gridProps"
                                 :property-descriptor="property"
                                 @schema-open="emit('schemaOpen')"
                             />
                         </template>
                     </LabEditorDataGridPropertySelectorSection>
+                    <template v-if="(sectionedPropertyDescriptors.get(EntityPropertyType.Prices)?.length || 0) > 0 && (filteredSectionedPropertyDescriptors.get(EntityPropertyType.Prices)?.length || 0) > 0">
+                        <VListItemDivider />
+                        <LabEditorDataGridPropertySelectorSectionPricesItem
+                            :property-descriptor="sectionedPropertyDescriptors.get(EntityPropertyType.Prices)![0]"
+                        />
+                    </template>
                     <VListItemDivider />
                     <LabEditorDataGridPropertySelectorSection
-                        :grid-props="gridProps"
                         title="References"
                         :property-type="EntityPropertyType.References"
                         :selected="sectionedSelected.get(EntityPropertyType.References) || []"
@@ -351,7 +361,6 @@ function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescr
                         <template #default="{ property }">
                             <LabEditorDataGridPropertySelectorSectionReferenceItem
                                 v-if="property.children.length === 0"
-                                :grid-props="gridProps"
                                 :property-descriptor="property"
                                 @schema-open="emit('schemaOpen')"
                             />
@@ -363,7 +372,6 @@ function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescr
                             >
                                 <template #activator="{ props }">
                                     <LabEditorDataGridPropertySelectorSectionReferenceItem
-                                        :grid-props="gridProps"
                                         :property-descriptor="property"
                                         v-bind="props"
                                         group-parent
@@ -374,7 +382,6 @@ function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescr
 
                                 <template #child="{ childProperty }">
                                     <LabEditorDataGridPropertySelectorSectionReferenceAttributeItem
-                                        :grid-props="gridProps"
                                         :reference-property-descriptor="property"
                                         :attribute-property-descriptor="childProperty"
                                         @toggle="toggleReferenceAttributeProperty(property, $event.selected)"

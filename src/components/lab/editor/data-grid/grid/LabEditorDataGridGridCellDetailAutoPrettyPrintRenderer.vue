@@ -1,7 +1,15 @@
 <script setup lang="ts">
+/**
+ * Entity property value renderer that automatically infers the best renderer for the given type of value.
+ */
 
 import { Scalar } from '@/model/evitadb'
-import { EntityPropertyValueSupportedCodeLanguage } from '@/model/editor/data-grid'
+import {
+    EntityPropertyValue,
+    EntityPropertyValueSupportedCodeLanguage,
+    ExtraEntityObjectType,
+    NativeValue
+} from '@/model/editor/data-grid'
 import LabEditorDataGridGridCellDetailMarkdownRenderer
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCellDetailMarkdownRenderer.vue'
 import LabEditorDataGridGridCellDetailCodeRenderer
@@ -9,6 +17,10 @@ import LabEditorDataGridGridCellDetailCodeRenderer
 import { computed } from 'vue'
 import LabEditorDataGridGridCellDetailHtmlRenderer
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCellDetailHtmlRenderer.vue'
+import LabEditorDataGridGridCellDetailPricesRenderer
+    from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCellDetailPricesRenderer.vue'
+import LabEditorDataGridGridCellDetailReferenceAttributesRenderer
+    from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCellDetailReferenceAttributesRenderer.vue'
 
 /**
  * Used to decide whether XML is actually HTML5.
@@ -24,7 +36,9 @@ const htmlTags = [
 enum RendererType {
     Markdown = 'markdown',
     Code = 'code',
-    Html = 'html'
+    Html = 'html',
+    Price = 'price',
+    ReferenceAttribute = 'referenceAttribute'
 }
 type ResolvedRenderer = {
     type: RendererType,
@@ -34,12 +48,12 @@ type CodeRenderer = ResolvedRenderer & {
 }
 type ValueToRender = {
     renderer: ResolvedRenderer,
-    value: any
+    value: EntityPropertyValue | EntityPropertyValue[]
 }
 
 const props = withDefaults(defineProps<{
-    dataType: Scalar | undefined,
-    value: any,
+    dataType: Scalar | ExtraEntityObjectType | undefined,
+    value: EntityPropertyValue | EntityPropertyValue[],
     fillSpace?: boolean
 }>(), {
     fillSpace: true
@@ -52,22 +66,18 @@ const valueToRender = computed<ValueToRender>(() => {
             type: RendererType.Code,
             codeLanguage: EntityPropertyValueSupportedCodeLanguage.Raw
         } as CodeRenderer
-        if (props.value instanceof Object) {
-            valueToRender.value = JSON.stringify(props.value)
-        } else {
-            valueToRender.value = props.value.toString()
-        }
+        valueToRender.value = new NativeValue(props.value instanceof Array ? `[${props.value.map(item => item.toPreviewString()).join(', ')}]` : (props.value as EntityPropertyValue).toPreviewString())
     } else {
         switch (props.dataType) {
             case Scalar.String: {
-                const stringValue: string = (props.value as string).trim()
+                const stringValue: string = ((props.value as EntityPropertyValue).value() as string).trim()
                 if (stringValue.startsWith('{') || stringValue.startsWith('[')) {
                     // probably JSON
                     valueToRender.renderer = {
                         type: RendererType.Code,
                         codeLanguage: EntityPropertyValueSupportedCodeLanguage.Json
                     } as CodeRenderer
-                    valueToRender.value = stringValue
+                    valueToRender.value = props.value
                 } else if (stringValue.startsWith('<')) {
                     if (hasHtmlTag(stringValue)) {
                         // probably HTML5
@@ -81,13 +91,13 @@ const valueToRender = computed<ValueToRender>(() => {
                             codeLanguage: EntityPropertyValueSupportedCodeLanguage.Xml
                         } as CodeRenderer
                     }
-                    valueToRender.value = stringValue
+                    valueToRender.value = props.value
                 } else {
                     // regular text or something we don't support yet
                     valueToRender.renderer = {
                         type: RendererType.Markdown
                     }
-                    valueToRender.value = stringValue
+                    valueToRender.value = props.value
                 }
                 break
             }
@@ -96,6 +106,18 @@ const valueToRender = computed<ValueToRender>(() => {
                     type: RendererType.Code,
                     codeLanguage: EntityPropertyValueSupportedCodeLanguage.Json
                 } as CodeRenderer
+                valueToRender.value = props.value
+                break
+            case ExtraEntityObjectType.Prices:
+                valueToRender.renderer = {
+                    type: RendererType.Price
+                }
+                valueToRender.value = props.value
+                break
+            case ExtraEntityObjectType.ReferenceAttributes:
+                valueToRender.renderer = {
+                    type: RendererType.ReferenceAttribute
+                }
                 valueToRender.value = props.value
                 break
             default:
@@ -133,6 +155,14 @@ function hasHtmlTag(s: string): boolean {
     />
     <LabEditorDataGridGridCellDetailHtmlRenderer
         v-else-if="valueToRender.renderer.type === RendererType.Html"
+        :value="valueToRender.value"
+    />
+    <LabEditorDataGridGridCellDetailPricesRenderer
+        v-else-if="valueToRender.renderer.type === RendererType.Price"
+        :value="valueToRender.value"
+    />
+    <LabEditorDataGridGridCellDetailReferenceAttributesRenderer
+        v-else-if="valueToRender.renderer.type === RendererType.ReferenceAttribute"
         :value="valueToRender.value"
     />
 </template>

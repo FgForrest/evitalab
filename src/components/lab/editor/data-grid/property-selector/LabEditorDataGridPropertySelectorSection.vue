@@ -1,19 +1,19 @@
 <script setup lang="ts">
+/**
+ * A single selectable section of selectable entity properties to fetch in grid.
+ * The entire section can be selected as well.
+ */
 
 import {
-    DataGridConsoleData,
-    DataGridConsoleParams,
     EntityPropertyDescriptor,
     EntityPropertyKey,
     EntityPropertySectionSelection,
     EntityPropertyType
 } from '@/model/editor/data-grid'
 import LabEditorDataGridPropertySelectorSectionEmptyItem from './LabEditorDataGridPropertySelectorSectionEmptyItem.vue'
-import { TabComponentProps } from '@/model/editor/editor'
 import VListItemDivider from '@/components/base/VListItemDivider.vue'
 
 const props = defineProps<{
-    gridProps: TabComponentProps<DataGridConsoleParams, DataGridConsoleData>,
     title: string, // todo lho this could be deleted when i18n is implemented, we could use the property type to resolve title
     propertyType: EntityPropertyType,
     selected: EntityPropertyKey[],

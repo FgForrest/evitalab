@@ -26,7 +26,7 @@ const actions = ref<object[]>([
         value: ActionType.OpenEvitaQLConsole,
         title: 'Open EvitaQL console',
         props: {
-            prependIcon: 'mdi-console'
+            prependIcon: 'mdi-variable'
         }
     },
     {
@@ -84,7 +84,7 @@ function handleAction(action: string) {
     switch (action) {
         case ActionType.OpenEvitaQLConsole:
             editorService.createTabRequest(
-                new EvitaQLConsoleRequest(
+                EvitaQLConsoleRequest.createNew(
                     connection,
                     props.catalog.name
                 )
@@ -92,25 +92,25 @@ function handleAction(action: string) {
             break
         case ActionType.OpenGraphQLDataAPIConsole:
             editorService.createTabRequest(
-                new GraphQLConsoleRequest(
+                GraphQLConsoleRequest.createNew(
                     connection,
                     props.catalog.name,
-                    GraphQLInstanceType.DATA
+                    GraphQLInstanceType.Data
                 )
             )
             break
         case ActionType.OpenGraphQLSchemaAPIConsole:
             editorService.createTabRequest(
-                new GraphQLConsoleRequest(
+                GraphQLConsoleRequest.createNew(
                     connection,
                     props.catalog.name,
-                    GraphQLInstanceType.SCHEMA
+                    GraphQLInstanceType.Schema
                 )
             )
             break
         case ActionType.ViewSchema:
             editorService.createTabRequest(
-                new SchemaViewerRequest(
+                SchemaViewerRequest.createNew(
                     connection,
                     new CatalogSchemaPointer(props.catalog.name)
                 )

@@ -76,10 +76,10 @@ function handleAction(action: string, payload?: any) {
     switch (action) {
         case ActionType.OpenGraphQLSystemAPIConsole:
             editorService.createTabRequest(
-                new GraphQLConsoleRequest(
+                GraphQLConsoleRequest.createNew(
                     props.connection,
                     'system', // todo lho: this is not needed
-                    GraphQLInstanceType.SYSTEM
+                    GraphQLInstanceType.System
                 )
             )
             break

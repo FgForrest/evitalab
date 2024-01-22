@@ -26,7 +26,7 @@ if (props.schema.referencedEntityTypeManaged) {
             new KeywordValue(props.schema.referencedEntityType),
             undefined,
             item => {
-                editorService.createTabRequest(new SchemaViewerRequest(
+                editorService.createTabRequest(SchemaViewerRequest.createNew(
                     props.dataPointer.connection,
                     new EntitySchemaPointer(
                         props.dataPointer.schemaPointer.catalogName,
@@ -52,7 +52,7 @@ if (props.schema.referencedGroupType == undefined) {
             props.schema.referencedGroupType ? new KeywordValue(props.schema.referencedGroupType) : undefined,
             undefined,
             item => {
-                editorService.createTabRequest(new SchemaViewerRequest(
+                editorService.createTabRequest(SchemaViewerRequest.createNew(
                     props.dataPointer.connection,
                     new EntitySchemaPointer(
                         props.dataPointer.schemaPointer.catalogName,

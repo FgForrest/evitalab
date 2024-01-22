@@ -3,7 +3,8 @@ import { GraphQLInstancePointer, GraphQLInstanceType } from '@/model/editor/grap
 import { inject, InjectionKey } from 'vue'
 import { GraphQLResponse } from '@/model/graphql'
 import { GraphQLClient } from '@/services/graphql-client'
-import { UnexpectedError } from '@/model/lab'
+import { EvitaDBConnection, UnexpectedError } from '@/model/lab'
+import { LabService } from '@/services/lab.service'
 
 export const key: InjectionKey<GraphQLConsoleService> = Symbol()
 
@@ -46,14 +47,14 @@ export class GraphQLConsoleService {
      */
     private async callGraphQLApi(instancePointer: GraphQLInstancePointer, query: string, variables: object = {}): Promise<GraphQLResponse> {
         let path
-        if (instancePointer.instanceType === GraphQLInstanceType.SYSTEM) {
+        if (instancePointer.instanceType === GraphQLInstanceType.System) {
             path = 'system'
         } else {
             switch (instancePointer.instanceType) {
-                case GraphQLInstanceType.DATA:
+                case GraphQLInstanceType.Data:
                     path = instancePointer.catalogName
                     break
-                case GraphQLInstanceType.SCHEMA:
+                case GraphQLInstanceType.Schema:
                     path = `${instancePointer.catalogName}/schema`
                     break
                 default: throw new UnexpectedError(instancePointer.connection, `Unsupported GraphQL instance type '${instancePointer.instanceType}'.`)

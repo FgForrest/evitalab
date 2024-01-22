@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import {
+    EntityPropertyValue,
     EntityPropertyValueDesiredOutputFormat,
-    EntityPropertyValueSupportedCodeLanguage
+    EntityPropertyValueSupportedCodeLanguage, ExtraEntityObjectType
 } from '@/model/editor/data-grid'
 import { Scalar } from '@/model/evitadb'
 import LabEditorDataGridGridCellDetailAutoPrettyPrintRenderer
@@ -14,8 +15,8 @@ import LabEditorDataGridGridCellDetailHtmlRenderer
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCellDetailHtmlRenderer.vue'
 
 const props = withDefaults(defineProps<{
-    dataType?: Scalar | undefined,
-    value: any,
+    dataType?: Scalar | ExtraEntityObjectType | undefined,
+    value: EntityPropertyValue | EntityPropertyValue[],
     outputFormat?: EntityPropertyValueDesiredOutputFormat,
     fillSpace?: boolean
 }>(), {

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * Selector button to switch data locale.
+ */
+
 import VListItemDivider from '@/components/base/VListItemDivider.vue'
 
 const props = defineProps<{

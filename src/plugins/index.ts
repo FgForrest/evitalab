@@ -10,6 +10,7 @@ import vuetify from './vuetify'
 import { codemirror, defaultCodemirrorOptions } from './codemirror'
 import { toast, defaultToastOptions } from './toastification'
 import { store, key as storeKey } from '@/store'
+import VueApexCharts from 'vue3-apexcharts'
 import router from '@/router'
 import { registerServices } from '@/plugins/services'
 
@@ -24,6 +25,7 @@ export function registerPlugins(app: App) {
         .use(codemirror, defaultCodemirrorOptions)
         .use(toast, defaultToastOptions)
         .use(store, storeKey)
+        .use(VueApexCharts)
         .use(router)
 
     registerServices(app, store)

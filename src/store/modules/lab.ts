@@ -18,6 +18,9 @@ const preconfiguredConnectionsCookieName: string = 'evitalab_pconnections'
 
 const defaultServerName: string = 'standalone'
 
+const userConnectionsStorageKey: string = 'userConnections'
+
+
 /**
  * Stores global information about configured evitaDB servers.
  */
@@ -89,6 +92,7 @@ const state = (): LabState => {
         try {
             preconfiguredConnections = (JSON.parse(atob(preconfiguredConnectionsCookie)) as Array<any>)
                 .map(connection => EvitaDBConnection.fromJson(connection, true))
+            // todo validate duplicate connections, move this to Lab component to have access to Toaster
         } catch (e) {
             console.error('Failed to load preconfigured connections cookie', e)
         }
@@ -97,7 +101,7 @@ const state = (): LabState => {
     if (import.meta.env.DEV) {
         preconfiguredConnections.push(new EvitaDBConnection(
             'demo',
-            'Demo',
+            'Demo (dev)',
             true,
             'https://demo.evitadb.io/lab/api',
             'https://demo.evitadb.io:5555/rest',
@@ -105,7 +109,7 @@ const state = (): LabState => {
         ))
         preconfiguredConnections.push(new EvitaDBConnection(
             'localhost',
-            'Localhost',
+            'Localhost (dev)',
             true,
             'https://localhost:5555/lab/api',
             'https://localhost:5555/rest',
@@ -117,7 +121,7 @@ const state = (): LabState => {
     const storage = new LabStorage(serverName)
 
     // load user-defined connections from local storage
-    const userConnections: EvitaDBConnection[] = storage.getUserConnections()
+    const userConnections: EvitaDBConnection[] = storage.get(userConnectionsStorageKey, [])
 
     // expire cookies, so when the lab is reloaded, it will load new cookie values
     Cookies.remove(serverNameCookieName)
@@ -145,6 +149,7 @@ const getters: LabGetters = {
     },
     getConnection(state: LabState): (id: EvitaDBConnectionId) => EvitaDBConnection | undefined {
         return (id: EvitaDBConnectionId) => {
+            // todo index by id
             return [...state.preconfiguredConnections, ...state.userConnections].find((c: any) => c.id === id)
         }
     },
@@ -193,12 +198,12 @@ const mutations: LabMutations = {
             throw new DuplicateEvitaDBConnectionError(connection.name)
         }
         state.userConnections.push(connection)
-        state.storage.storeUserConnections(state.userConnections)
+        state.storage.set(userConnectionsStorageKey, state.userConnections)
     },
 
     removeConnection(state, connectionName): void {
         state.userConnections.splice(state.userConnections.findIndex(connection => connection.name === connectionName), 1)
-        state.storage.storeUserConnections(state.userConnections)
+        state.storage.set(userConnectionsStorageKey, state.userConnections)
     },
 
     putCatalogs(state, payload): void {

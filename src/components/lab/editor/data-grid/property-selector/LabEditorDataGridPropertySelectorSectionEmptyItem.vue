@@ -1,4 +1,7 @@
 <script setup lang="ts">
+/**
+ * Placeholder item for empty property selector section.
+ */
 
 </script>
 

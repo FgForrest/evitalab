@@ -22,7 +22,7 @@ function openReferenceSchema(): void {
     if (!(props.dataPointer.schemaPointer instanceof EntitySchemaPointer)) {
         throw new UnexpectedError(props.dataPointer.connection, 'Unsupported parent schema for entities.')
     }
-    editorService.createTabRequest(new SchemaViewerRequest(
+    editorService.createTabRequest(SchemaViewerRequest.createNew(
         props.dataPointer.connection,
         new ReferenceSchemaPointer(
             props.dataPointer.schemaPointer.catalogName,

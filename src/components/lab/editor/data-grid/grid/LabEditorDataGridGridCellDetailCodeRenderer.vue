@@ -1,7 +1,10 @@
 <script setup lang="ts">
+/**
+ * Entity property value renderer that tries to render the value in a code editor.
+ */
 
 import VStandardCodeMirror from '@/components/base/VStandardCodemirror.vue'
-import { EntityPropertyValueSupportedCodeLanguage } from '@/model/editor/data-grid'
+import { EntityPropertyValue, EntityPropertyValueSupportedCodeLanguage } from '@/model/editor/data-grid'
 import { computed, ref } from 'vue'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import { Extension } from '@codemirror/state'
@@ -21,7 +24,7 @@ enum ActionType {
 }
 
 const props = withDefaults(defineProps<{
-    value: any,
+    value: EntityPropertyValue | EntityPropertyValue[],
     codeLanguage?: EntityPropertyValueSupportedCodeLanguage,
     fillSpace?: boolean
 }>(), {

@@ -17,7 +17,7 @@ const emit = defineEmits<{
         :loading="loading"
         density="compact"
         @click="emit('click')"
-        class="v-btn--variant-primary"
+        class="v-btn--variant-primary ml-3"
     >
         <VIcon>mdi-play-outline</VIcon>
 

@@ -105,7 +105,6 @@ function copyPrimaryKey(): void {
                                         {{ groupStatistics?.count ?? '-' }}
                                         <VTooltip activator="parent">
                                             <VMarkdown v-if="groupStatistics?.count == undefined" source="No `count` property was fetched." />
-                                            <!-- todo jno review explanation -->
                                             <span v-else>The total number of entities matching any facet from this group without user filter.</span>
                                         </VTooltip>
                                     </span>

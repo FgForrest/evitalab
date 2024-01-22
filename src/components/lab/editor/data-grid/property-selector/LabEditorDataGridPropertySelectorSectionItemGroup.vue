@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * A single selectable subsection of selectable entity properties to fetch in grid where
+ * the group is also a selectable entity property.
+ */
 
 import { EntityPropertyDescriptor } from '@/model/editor/data-grid'
 import VListItemDivider from '@/components/base/VListItemDivider.vue'

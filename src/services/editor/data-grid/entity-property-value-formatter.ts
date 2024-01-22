@@ -1,3 +1,5 @@
+import { EntityPropertyValue } from '@/model/editor/data-grid'
+
 /**
  * Tries to format entity property raw value into implementation-defined-formatted string.
  */
@@ -9,6 +11,6 @@ export interface EntityPropertyValueFormatter {
      * @param value raw value to format
      * @param prettyPrint whether to pretty print the value
      */
-    format(value: any, prettyPrint?: boolean): string;
+    format(value: EntityPropertyValue | EntityPropertyValue[], prettyPrint?: boolean): string;
 }
 

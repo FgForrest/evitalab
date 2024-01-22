@@ -5,11 +5,15 @@
 
 import VCardTitleWithActions from '@/components/base/VCardTitleWithActions.vue'
 import {
-    EntityPropertyDescriptor,
+    EntityPropertyDescriptor, entityPropertyDescriptorKey,
     EntityPropertyType,
-    EntityPropertyValueDesiredOutputFormat, StaticEntityProperties
+    EntityPropertyValue,
+    EntityPropertyValueDesiredOutputFormat,
+    ExtraEntityObjectType,
+    FlatEntity, selectedEntityKey,
+    StaticEntityProperties
 } from '@/model/editor/data-grid'
-import { computed, ref } from 'vue'
+import { computed, provide, ref } from 'vue'
 import LabEditorDataGridGridCellDetailDelegateRenderer
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCellDetailDelegateRenderer.vue'
 import { Scalar } from '@/model/evitadb'
@@ -20,12 +24,15 @@ import LabEditorDataGridGridCellDetailOutputFormatSelector
 
 const props = defineProps<{
     modelValue: boolean,
+    entity: FlatEntity,
     propertyDescriptor: EntityPropertyDescriptor | undefined,
-    propertyValue: any
+    propertyValue: EntityPropertyValue | EntityPropertyValue[] | undefined
 }>()
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void
 }>()
+provide(selectedEntityKey, props.entity)
+provide(entityPropertyDescriptorKey, props.propertyDescriptor)
 
 const headerPrependIcon = computed<string | undefined>(() => {
     const propertyType: EntityPropertyType | undefined = props.propertyDescriptor?.type
@@ -40,7 +47,7 @@ const headerPrependIcon = computed<string | undefined>(() => {
 
 const globalOutputFormat = ref<EntityPropertyValueDesiredOutputFormat>(EntityPropertyValueDesiredOutputFormat.AutoPrettyPrint)
 
-const rawDataType = computed<string | undefined>(() => {
+const rawDataType = computed<Scalar | ExtraEntityObjectType | undefined>(() => {
     if (props.propertyDescriptor?.type === EntityPropertyType.Entity) {
         const propertyName = props.propertyDescriptor.key.name
         switch (propertyName) {
@@ -50,18 +57,22 @@ const rawDataType = computed<string | undefined>(() => {
             case StaticEntityProperties.PriceInnerRecordHandling: return Scalar.String
             default: return undefined
         }
+    } else if (props.propertyDescriptor?.type === EntityPropertyType.Prices) {
+        return ExtraEntityObjectType.Prices
+    } else if (props.propertyDescriptor?.type === EntityPropertyType.ReferenceAttributes) {
+        return ExtraEntityObjectType.ReferenceAttributes
     }
     return props.propertyDescriptor?.schema?.type
 })
 const isArray = computed<boolean>(() => rawDataType?.value?.endsWith('Array') || false)
-const componentDataType = computed<Scalar | undefined>(() => {
+const componentDataType = computed<Scalar | ExtraEntityObjectType | undefined>(() => {
     if (!rawDataType.value) {
         return undefined
     }
     if (isArray.value) {
-        return (rawDataType.value as string).replace('Array', '') as Scalar
+        return (rawDataType.value as string).replace('Array', '') as Scalar | ExtraEntityObjectType
     } else {
-        return rawDataType.value as Scalar
+        return rawDataType.value as Scalar | ExtraEntityObjectType
     }
 })
 
@@ -77,7 +88,7 @@ const componentDataType = computed<Scalar | undefined>(() => {
                 >
                     {{ headerPrependIcon }}
                 </VIcon>
-                <span>{{ propertyDescriptor?.title || 'Unknown property' }}</span>
+                <span>{{ propertyDescriptor?.flattenedTitle || 'Unknown property' }}</span>
             </template>
             <template #actions>
                 <LabEditorDataGridGridCellDetailOutputFormatSelector
@@ -102,7 +113,7 @@ const componentDataType = computed<Scalar | undefined>(() => {
             <LabEditorDataGridGridCellDetailDelegateRenderer
                 v-if="!isArray"
                 :data-type="componentDataType"
-                :value="propertyValue"
+                :value="propertyValue as EntityPropertyValue"
                 :output-format="globalOutputFormat"
             />
 
@@ -110,12 +121,12 @@ const componentDataType = computed<Scalar | undefined>(() => {
                 v-else
                 variant="accordion"
                 multiple
-                class="pa-4"
+                class="pa-4 data-grid-cell-detail-array"
             >
                 <LabEditorDataGridGridDetailValueListItem
                     v-for="(value, index) of propertyValue"
                     :key="index"
-                    :value="value"
+                    :value="value as EntityPropertyValue"
                     :component-data-type="componentDataType as Scalar"
                 />
             </VExpansionPanels>
@@ -139,17 +150,9 @@ const componentDataType = computed<Scalar | undefined>(() => {
     }
 }
 
-.array-item__title {
-    text-overflow: ellipsis;
-    text-wrap: nowrap;
-    overflow: hidden;
-    padding-right: 1rem;
-}
-.array-item__content {
-    position: relative;
-}
-
-:deep(.v-expansion-panel-text__wrapper) {
-    padding: 0;
+.data-grid-cell-detail-array {
+    :deep(.v-expansion-panel-text__wrapper) {
+        padding: 0;
+    }
 }
 </style>

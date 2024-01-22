@@ -1,6 +1,7 @@
 import {
+    AttributeHistogramsVisualiserService,
     FacetSummaryVisualiserService,
-    HierarchyVisualiserService
+    HierarchyVisualiserService, PriceHistogramVisualiserService
 } from '@/services/editor/result-visualiser/result-visualiser.service'
 import { Result, VisualisedHierarchyTreeNode, VisualisedNamedHierarchy } from '@/model/editor/result-visualiser'
 import { CatalogSchema, EntitySchema } from '@/model/evitadb'
@@ -8,7 +9,8 @@ import { EvitaDBConnection, UnexpectedError } from '@/model/lab'
 import {  LabService } from '@/services/lab.service'
 import { inject, InjectionKey } from 'vue'
 import {
-    JsonFacetSummaryVisualiserService, JsonHierarchyVisualiserService,
+    JsonAttributeHistogramsVisualiserService,
+    JsonFacetSummaryVisualiserService, JsonHierarchyVisualiserService, JsonPriceHistogramVisualiserService,
     JsonResultVisualiserService
 } from '@/services/editor/result-visualiser/json-result-visualiser.service'
 
@@ -24,6 +26,8 @@ export class EvitaQLResultVisualiserService extends JsonResultVisualiserService 
     private readonly labService: LabService
     private facetSummaryVisualiserService: EvitaQLFacetSummaryVisualiserService | undefined = undefined
     private hierarchyVisualiserService: EvitaQLHierarchyVisualiserService | undefined = undefined
+    private attributeHistogramsVisualiserService: EvitaQLAttributeHistogramsVisualiserService | undefined = undefined
+    private priceHistogramVisualiserService: EvitaQLPriceHistogramVisualiserService | undefined = undefined
 
     constructor(labService: LabService) {
         super()
@@ -111,10 +115,24 @@ export class EvitaQLResultVisualiserService extends JsonResultVisualiserService 
         }
         return this.hierarchyVisualiserService
     }
+
+    getAttributeHistogramsService(): AttributeHistogramsVisualiserService {
+        if (!this.attributeHistogramsVisualiserService) {
+            this.attributeHistogramsVisualiserService = new EvitaQLAttributeHistogramsVisualiserService(this)
+        }
+        return this.attributeHistogramsVisualiserService
+    }
+
+    getPriceHistogramService(): PriceHistogramVisualiserService {
+        if (!this.priceHistogramVisualiserService) {
+            this.priceHistogramVisualiserService = new EvitaQLPriceHistogramVisualiserService(this)
+        }
+        return this.priceHistogramVisualiserService
+    }
 }
 
 /**
- * {@link FacetSummaryVisualiserService} for GraphQL query language.
+ * {@link FacetSummaryVisualiserService} for EvitaQL query language.
  */
 export class EvitaQLFacetSummaryVisualiserService extends JsonFacetSummaryVisualiserService<EvitaQLResultVisualiserService> {
     constructor(visualiserService: EvitaQLResultVisualiserService) {
@@ -123,7 +141,7 @@ export class EvitaQLFacetSummaryVisualiserService extends JsonFacetSummaryVisual
 }
 
 /**
- * {@link HierarchyVisualiserService} for GraphQL query language.
+ * {@link HierarchyVisualiserService} for EvitaQL query language.
  */
 export class EvitaQLHierarchyVisualiserService extends JsonHierarchyVisualiserService<EvitaQLResultVisualiserService> {
 
@@ -199,6 +217,24 @@ export class EvitaQLHierarchyVisualiserService extends JsonHierarchyVisualiserSe
         }
 
         return node
+    }
+}
+
+/**
+ * {@link AttributeHistogramsVisualiserService} for EvitaQL query language.
+ */
+export class EvitaQLAttributeHistogramsVisualiserService extends JsonAttributeHistogramsVisualiserService<EvitaQLResultVisualiserService> {
+    constructor(visualiserService: EvitaQLResultVisualiserService) {
+        super(visualiserService)
+    }
+}
+
+/**
+ * {@link PriceHistogramVisualiserService} for EvitaQL query language.
+ */
+export class EvitaQLPriceHistogramVisualiserService extends JsonPriceHistogramVisualiserService<EvitaQLResultVisualiserService> {
+    constructor(visualiserService: EvitaQLResultVisualiserService) {
+        super(visualiserService)
     }
 }
 

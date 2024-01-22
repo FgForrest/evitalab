@@ -77,7 +77,6 @@ function copyPrimaryKey(): void {
                         <VMarkdown source="No `primaryKey` property or representative attributes were fetched." />
                     </VTooltip>
                     <VTooltip v-if="facetStatistics?.impactMatchCount === 0" activator="parent">
-                        <!-- todo jno review explanation -->
                         No entities would be returned if this facet was requested because no entity has combination of
                         already requested facets plus this one.
                     </VTooltip>
@@ -106,13 +105,11 @@ function copyPrimaryKey(): void {
                                 <br/>
 
                                 <VMarkdown v-if="facetStatistics?.numberOfEntities == undefined" source="The `totalRecordCount` property was not found in neither `recordPage` nor `recordStrip`." />
-                                <!-- todo jno review explanation -->
                                 <span v-else>The total number of entities matching the user filter.</span>
 
                                 <br/>
 
                                 <VMarkdown v-if="facetStatistics?.impactDifference == undefined" source="The `impact.difference` property was not found." />
-                                <!-- todo jno review explanation -->
                                 <span v-else>The difference from the current number of entities matching the user filter if this facet was requested.</span>
 
                                 <br/>
@@ -122,7 +119,6 @@ function copyPrimaryKey(): void {
                                 <br/>
 
                                 <VMarkdown v-if="facetStatistics?.impactMatchCount == undefined" source="The `impact.matchCount` property was not found." />
-                                <!-- todo jno review explanation -->
                                 <span v-else>The total number of entities matching the user filter if this facet was requested.</span>
 
                                 <br/>
@@ -132,7 +128,6 @@ function copyPrimaryKey(): void {
                                 <br/>
 
                                 <VMarkdown v-if="facetStatistics?.count == undefined" source="The `count` property was not found." />
-                                <!-- todo jno review explanation -->
                                 <span v-else>The total number of entities matching this facet without the user filter.</span>
                             </VTooltip>
                         </VChip>

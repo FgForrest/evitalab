@@ -36,6 +36,7 @@ evitaLab allows you to:
 - [x] browse entities in interactive table
 - [x] execute GraphQL queries
 - [x] execute evitaQL queries
+- [x] visualise extra results 
 - [x] manage connections to multiple evitaDB instances
 
 ## Running locally

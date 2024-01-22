@@ -4,6 +4,7 @@ import { State } from '@/store'
 import { LabService, key as labServiceKey } from '@/services/lab.service'
 import { EditorService, key as editorServiceKey } from '@/services/editor/editor.service'
 import { DemoSnippetResolver, key as demoSnippetResolverKey } from '@/services/editor/demo-snippet-resolver.service'
+import { SharedTabResolver, key as sharedTabResolverKey } from '@/services/editor/shared-tab-resolver.service'
 import { GraphQLConsoleService, key as graphQLConsoleServiceKey } from '@/services/editor/graphql-console.service'
 import { DataGridService, key as dataGridServiceKey } from '@/services/editor/data-grid.service'
 import { EvitaQLConsoleService, key as evitaQLConsoleServiceKey } from '@/services/editor/evitaql-console.service'
@@ -23,8 +24,9 @@ export function registerServices(app: App, store: Store<State>): void {
     const evitaDBDocsClient: EvitaDBDocsClient = new EvitaDBDocsClient()
 
     const labService: LabService = new LabService(store, evitaDBClient, evitaDBDocsClient)
-    const editorService: EditorService = new EditorService(store)
+    const editorService: EditorService = new EditorService(store, labService)
     const demoSnippetResolver: DemoSnippetResolver = new DemoSnippetResolver(labService)
+    const sharedTabResolver: SharedTabResolver = new SharedTabResolver(labService)
     const dataGridService: DataGridService = new DataGridService(labService, evitaDBClient, graphQLClient)
     const graphQLConsoleService: GraphQLConsoleService = new GraphQLConsoleService(graphQLClient)
     const evitaQLConsoleService: EvitaQLConsoleService = new EvitaQLConsoleService(evitaDBClient)
@@ -37,6 +39,7 @@ export function registerServices(app: App, store: Store<State>): void {
         .provide(labServiceKey, labService)
         .provide(editorServiceKey, editorService)
         .provide(demoSnippetResolverKey, demoSnippetResolver)
+        .provide(sharedTabResolverKey, sharedTabResolver)
         .provide(dataGridServiceKey, dataGridService)
         .provide(graphQLConsoleServiceKey, graphQLConsoleService)
         .provide(evitaQLConsoleServiceKey, evitaQLConsoleService)

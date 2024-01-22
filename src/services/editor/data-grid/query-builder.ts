@@ -1,5 +1,5 @@
 import { DataGridDataPointer, EntityPropertyKey } from '@/model/editor/data-grid'
-import { AttributeSchemaUnion } from '@/model/evitadb'
+import { AttributeSchemaUnion, OrderDirection, QueryPriceMode, ReferenceSchema } from '@/model/evitadb'
 
 /**
  * Builds query from arguments based on language of implementation.
@@ -13,6 +13,7 @@ export interface QueryBuilder {
      * @param filterBy filter by part of query in language of implementation
      * @param orderBy order by part of query in language of implementation
      * @param dataLocale locale of data in query, if undefined, only global data are returned
+     * @param priceType price type of data in query, undefined if the target collection doesn't support prices
      * @param requiredData defines which data should be fetched from collection as entity fields
      * @param pageNumber page number of query result
      * @param pageSize page size of query result
@@ -21,6 +22,7 @@ export interface QueryBuilder {
                filterBy: string,
                orderBy: string,
                dataLocale: string | undefined,
+               priceType: QueryPriceMode | undefined,
                requiredData: EntityPropertyKey[],
                pageNumber: number,
                pageSize: number): Promise<string>
@@ -30,7 +32,7 @@ export interface QueryBuilder {
      *
      * @param orderDirection direction of order by clause
      */
-    buildPrimaryKeyOrderBy(orderDirection: string): string
+    buildPrimaryKeyOrderBy(orderDirection: OrderDirection): string
 
     /**
      * Builds single attributeNatural order constraint in language of implementation for order by clause.
@@ -38,7 +40,17 @@ export interface QueryBuilder {
      * @param attributeSchema attribute schema to build constraint for
      * @param orderDirection direction of order by clause
      */
-    buildAttributeOrderBy(attributeSchema: AttributeSchemaUnion, orderDirection: string): string
+    buildAttributeOrderBy(attributeSchema: AttributeSchemaUnion, orderDirection: OrderDirection): string
+
+    /**
+     * Builds a single attributeNatural order constraint wrapped within referenceProperty in language of implementation
+     * for order by clause.
+     *
+     * @param referenceSchema parent reference schema of the attribute
+     * @param attributeSchema attribute schema to build constraint for
+     * @param orderDirection direction of order by clause
+     */
+    buildReferenceAttributeOrderBy(referenceSchema: ReferenceSchema, attributeSchema: AttributeSchemaUnion, orderDirection: OrderDirection): string
 
     /**
      * Builds single entityPrimaryKeyInSet filter constraint in language of implementation for filter by clause of a parent entity.
@@ -61,4 +73,13 @@ export interface QueryBuilder {
      * @param referencedPrimaryKeys primary keys of referenced entities
      */
     buildReferencedEntityFilterBy(referencedPrimaryKeys: number | number[]): string
+
+    /**
+     * Builds filter by clause to compute priceForSale of an entity.
+     *
+     * @param entityPrimaryKey primary key of entity for which to compute priceForSale
+     * @param priceLists price lists to use for computation, order is important
+     * @param currency currency to use for computation
+     */
+    buildPriceForSaleFilterBy(entityPrimaryKey: number, priceLists: string[], currency: string): string
 }

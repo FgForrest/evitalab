@@ -22,7 +22,7 @@ function openEntitySchema(): void {
     if (!(props.dataPointer.schemaPointer instanceof CatalogSchemaPointer)) {
         throw new UnexpectedError(props.dataPointer.connection, 'Unsupported parent schema for entities.')
     }
-    editorService.createTabRequest(new SchemaViewerRequest(
+    editorService.createTabRequest(SchemaViewerRequest.createNew(
         props.dataPointer.connection,
         new EntitySchemaPointer(
             props.dataPointer.schemaPointer.catalogName,

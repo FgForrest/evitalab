@@ -1,14 +1,15 @@
 import {
     Result,
-    VisualisedFacetGroupStatistics, VisualisedFacetStatistics, VisualisedNamedHierarchy,
+    VisualisedFacetGroupStatistics, VisualisedFacetStatistics, VisualisedHistogram, VisualisedNamedHierarchy,
     VisualiserType,
     VisualiserTypeType
 } from '@/model/editor/result-visualiser'
 import {
-    FacetSummaryVisualiserService, HierarchyVisualiserService,
+    AttributeHistogramsVisualiserService,
+    FacetSummaryVisualiserService, HierarchyVisualiserService, PriceHistogramVisualiserService,
     ResultVisualiserService
 } from '@/services/editor/result-visualiser/result-visualiser.service'
-import { EntitySchema, ReferenceSchema } from '@/model/evitadb'
+import { AttributeSchemaUnion, EntitySchema, ReferenceSchema } from '@/model/evitadb'
 import { UnexpectedError } from '@/model/lab'
 
 /**
@@ -40,6 +41,18 @@ export abstract class JsonResultVisualiserService extends ResultVisualiserServic
                     value: VisualiserTypeType.Hierarchy
                 })
             }
+            if (extraResults['attributeHistogram']) {
+                visualiserTypes.push({
+                    title: 'Attribute histograms',
+                    value: VisualiserTypeType.AttributeHistograms
+                })
+            }
+            if (extraResults['priceHistogram']) {
+                visualiserTypes.push({
+                    title: 'Price histogram',
+                    value: VisualiserTypeType.PriceHistogram
+                })
+            }
         }
 
         return visualiserTypes
@@ -51,6 +64,10 @@ export abstract class JsonResultVisualiserService extends ResultVisualiserServic
                 return queryResult?.['extraResults']?.['facetSummary']
             case VisualiserTypeType.Hierarchy:
                 return queryResult?.['extraResults']?.['hierarchy']
+            case VisualiserTypeType.AttributeHistograms:
+                return queryResult?.['extraResults']?.['attributeHistogram']
+            case VisualiserTypeType.PriceHistogram:
+                return queryResult?.['extraResults']?.['priceHistogram']
             default:
                 return undefined
         }
@@ -163,4 +180,41 @@ export abstract class JsonHierarchyVisualiserService<VS extends JsonResultVisual
     }
 
     abstract resolveNamedHierarchy(namedHierarchyResult: Result[], entityRepresentativeAttributes: string[]): VisualisedNamedHierarchy
+}
+
+/**
+ * Common abstract for all JSON-based attribute histogram visualiser services.
+ */
+export abstract class JsonAttributeHistogramsVisualiserService<VS extends JsonResultVisualiserService> implements AttributeHistogramsVisualiserService {
+    protected readonly visualiserService: VS
+
+    protected constructor(visualiserService: VS) {
+        this.visualiserService = visualiserService
+    }
+
+    resolveAttributeHistogramsByAttributes(attributeHistogramsResult: Result, entitySchema: EntitySchema): [AttributeSchemaUnion, VisualisedHistogram][] {
+        const attributeHistograms: [AttributeSchemaUnion, VisualisedHistogram][] = []
+        for (const attributeName of Object.keys(attributeHistogramsResult)) {
+            const attributeSchema: AttributeSchemaUnion | undefined = Object.values(entitySchema.attributes)
+                .find(attribute => attribute.nameVariants.camelCase === attributeName)
+            if (attributeSchema == undefined) {
+                throw new UnexpectedError(undefined, `Attribute '${attributeName}' not found in entity '${entitySchema.name}'.`)
+            }
+            const histogramResult: Result = attributeHistogramsResult[attributeName]
+            attributeHistograms.push([attributeSchema, VisualisedHistogram.fromJson(histogramResult)])
+        }
+        return attributeHistograms
+    }
+}
+
+export abstract class JsonPriceHistogramVisualiserService<VS extends JsonResultVisualiserService> implements PriceHistogramVisualiserService {
+    protected readonly visualiserService: VS
+
+    protected constructor(visualiserService: VS) {
+        this.visualiserService = visualiserService
+    }
+
+    resolvePriceHistogram(priceHistogramResult: Result): VisualisedHistogram {
+        return VisualisedHistogram.fromJson(priceHistogramResult)
+    }
 }

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+/**
+ * One-line CodeMirror component with content history support (e.g., for previously executed queries).
+ */
 
 import { Codemirror } from 'vue-codemirror'
 import { Extension, EditorState } from '@codemirror/state'
@@ -20,24 +23,28 @@ import { autocompletion, closeBrackets, closeBracketsKeymap, completionKeymap } 
 import { lintKeymap } from '@codemirror/lint'
 import { dracula } from '@ddietr/codemirror-themes/dracula.js'
 import { ViewUpdate } from '@codemirror/view'
+import { computed, ref } from 'vue'
+import { EditorView } from 'codemirror'
 
 const props = withDefaults(
     defineProps<{
         modelValue: string
-        additionalExtensions?: Extension[]
+        additionalExtensions?: Extension[],
+        historyRecords?: string[],
         prependInnerIcon?: string
         placeholder?: string
         disabled?: boolean
     }>(),
     {
         disabled: false,
-        additionalExtensions: () => []
+        additionalExtensions: () => [],
+        historyRecords: undefined,
     }
 )
-
 const emit = defineEmits<{
-    (e: 'update', value: ViewUpdate): void,
+    (e: 'update:editor', value: ViewUpdate): void,
     (e: 'update:modelValue', value: string): void,
+    (e: 'update:historyClear'): void,
     (e: 'execute'): void
 }>()
 
@@ -56,8 +63,18 @@ const extensions: Extension[] = [
     keymap.of([
         {
             key: 'Enter',
+            mac: 'Return',
             run: () => {
                 emit('execute')
+                return true
+            }
+        },
+        {
+            key: 'Alt-ArrowDown',
+            mac: 'Option-ArrowDown',
+            run: () => {
+                historyListButton.value?.$el?.click()
+                historyListButton.value?.$el?.focus()
                 return true
             }
         },
@@ -71,23 +88,101 @@ const extensions: Extension[] = [
     EditorState.transactionFilter.of(tr => tr.newDoc.lines > 1 ? [] : tr),
     ...props.additionalExtensions
 ]
+const editorView = ref<EditorView>()
+
+const historyListButton = ref<any>()
+const hasHistoryItems = computed<boolean>(() => props.historyRecords != undefined && props.historyRecords?.length > 0)
+const historyListItems = computed<any[]>(() => {
+    if (props.historyRecords?.length === 0) {
+        return [{
+            title: 'Empty history',
+            value: ''
+        }]
+    }
+    return props.historyRecords?.map(record => {
+        return {
+            title: record.length > 40 ? record.substring(0, 37) + '...' : record,
+            value: record
+        }
+    }) || []
+})
+function pickHistoryRecord(selected: unknown[]): void {
+    if (selected.length > 0) {
+        const historyRecord: string = selected[0] as string
+        emit('update:modelValue', historyRecord)
+        historyListButton.value?.$el?.click()
+        editorView.value?.focus()
+    }
+}
+function clearHistory(): void {
+    emit('update:historyClear')
+}
+
+function handleEditorUpdate(update: ViewUpdate): void {
+    editorView.value = update.view
+    emit('update:editor', update)
+}
 </script>
 
 <template>
     <div :class="['cm-oneline', { 'cm-oneline--with-prepend-icon': prependInnerIcon }]">
-        <VIcon
-            v-if="prependInnerIcon"
-            class="cm-oneline__prepend-inner-icon"
-        >
-            {{ prependInnerIcon }}
-        </VIcon>
+        <template v-if="prependInnerIcon">
+            <template v-if="historyRecords != undefined">
+                <VBtn
+                    v-if="prependInnerIcon"
+                    ref="historyListButton"
+                    icon
+                    density="compact"
+                    class="cm-oneline__history-list-button"
+                >
+                    <VIcon
+                        v-if="prependInnerIcon"
+                        class="cm-oneline__prepend-inner-icon"
+                    >
+                        {{ prependInnerIcon }}
+                    </VIcon>
+
+                    <VTooltip activator="parent">
+                        Show history
+                    </VTooltip>
+
+                    <VMenu activator="parent">
+                        <VList
+                            density="compact"
+                            :items="historyListItems"
+                            :disabled="!hasHistoryItems"
+                            @update:selected="pickHistoryRecord"
+                        />
+
+                        <template v-if="hasHistoryItems">
+                            <VDivider/>
+
+                            <VList>
+                                <VListItem prepend-icon="mdi-playlist-remove" @click="clearHistory">
+                                    Clear
+                                </VListItem>
+                            </VList>
+                        </template>
+                    </VMenu>
+                </VBtn>
+            </template>
+            <template v-else>
+                <VIcon
+                    v-if="prependInnerIcon"
+                    class="cm-oneline__prepend-inner-icon"
+                >
+                    {{ prependInnerIcon }}
+                </VIcon>
+            </template>
+        </template>
 
         <Codemirror
+            ref="input"
             :model-value="modelValue"
             :extensions="extensions"
             :placeholder="placeholder"
             :disabled="disabled"
-            @update="emit('update', $event)"
+            @update="handleEditorUpdate"
             @update:model-value="$emit('update:modelValue', $event)"
             style="cursor: text; min-width: 0;"
         />
@@ -112,6 +207,10 @@ const extensions: Extension[] = [
 
     &__prepend-inner-icon {
         opacity: var(--v-medium-emphasis-opacity);
+    }
+
+    &__history-list-button {
+        padding: 0 !important;
     }
 
     & :deep(.cm-scroller) {

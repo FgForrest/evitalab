@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * Ancestor for selectable entity property items.
+ */
+
 import { EntityPropertyKey } from '@/model/editor/data-grid'
 import VMarkdown from '@/components/base/VMarkdown.vue'
 

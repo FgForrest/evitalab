@@ -1,8 +1,8 @@
-import { EntitySchema, ReferenceSchema } from '@/model/evitadb'
+import { AttributeSchemaUnion, EntitySchema, ReferenceSchema } from '@/model/evitadb'
 import {
     Result,
     VisualisedFacetGroupStatistics,
-    VisualisedFacetStatistics,
+    VisualisedFacetStatistics, VisualisedHistogram,
     VisualisedNamedHierarchy, VisualiserType
 } from '@/model/editor/result-visualiser'
 import { EvitaDBConnection } from '@/model/lab'
@@ -41,6 +41,8 @@ export abstract class ResultVisualiserService {
 
     abstract getFacetSummaryService(): FacetSummaryVisualiserService
     abstract getHierarchyService(): HierarchyVisualiserService
+    abstract getAttributeHistogramsService(): AttributeHistogramsVisualiserService
+    abstract getPriceHistogramService(): PriceHistogramVisualiserService
 
     // todo lho refactor into common function
     toPrintableAttributeValue(attributeValue: any): string | undefined {
@@ -98,3 +100,24 @@ export interface HierarchyVisualiserService {
     resolveNamedHierarchy(namedHierarchyResult: Result[], entityRepresentativeAttributes: string[]): VisualisedNamedHierarchy
 }
 
+/**
+ * Service for visualising raw JSON attribute histograms.
+ */
+export interface AttributeHistogramsVisualiserService {
+
+    /**
+     * Resolves attribute histograms from the attribute histograms result.
+     */
+    resolveAttributeHistogramsByAttributes(attributeHistogramsResult: Result, entitySchema: EntitySchema): [AttributeSchemaUnion, VisualisedHistogram][]
+}
+
+/**
+ * Service for visualising raw JSON price histograms.
+ */
+export interface PriceHistogramVisualiserService {
+
+    /**
+     * Resolves visualisable price histogram from the price histogram result.
+     */
+    resolvePriceHistogram(priceHistogramResult: Result): VisualisedHistogram
+}

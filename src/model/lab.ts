@@ -1,4 +1,6 @@
-import { v4 as uuidv4 } from 'uuid'
+import XXH, { HashObject } from 'xxhashjs'
+
+const hasher: HashObject = XXH.h64()
 
 /**
  * Represents unique identifier of a single evitaDB server connection.
@@ -17,7 +19,7 @@ export class EvitaDBConnection {
     readonly gqlUrl?: string
 
     constructor(id: EvitaDBConnectionId | undefined, name: string, preconfigured: boolean, labApiUrl?: string, restUrl?: string, gqlUrl?: string) {
-        this.id = id ? id : uuidv4()
+        this.id = id ? id : hasher.update(name).digest().toString(16)
         this.name = name
         this.preconfigured = preconfigured
         this.labApiUrl = this.normalizeApiUrl(labApiUrl)

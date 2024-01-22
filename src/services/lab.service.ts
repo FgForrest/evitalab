@@ -38,8 +38,12 @@ export class LabService {
         return this.store.state.lab.readOnly
     }
 
-    getConnection = (id: EvitaDBConnectionId): EvitaDBConnection | undefined => {
-        return this.store.getters['lab/getConnection'](id)
+    getConnection = (id: EvitaDBConnectionId): EvitaDBConnection => {
+        const connection: EvitaDBConnection | undefined = this.store.getters['lab/getConnection'](id)
+        if (connection == undefined) {
+            throw new UnexpectedError(undefined, `Connection for ID '${id}' not found.`)
+        }
+        return connection
     }
 
     getConnections = (): EvitaDBConnection[] => {
