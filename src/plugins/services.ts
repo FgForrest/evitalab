@@ -14,11 +14,14 @@ import { GraphQLClient } from '@/services/graphql-client'
 import { EvitaDBDocsClient } from '@/services/evitadb-docs-client'
 import { GraphQLResultVisualiserService, key as graphqlResultVisualiserServiceKey } from '@/services/editor/result-visualiser/graphql-result-visualiser.service'
 import { EvitaQLResultVisualiserService, key as evitaQLResultVisualiserServiceKey } from '@/services/editor/result-visualiser/evitaql-result-visualiser.service'
+import { Keymap, key as keymapKey } from '@/model/editor/keymap/Keymap'
 
 /**
  * Creates and registers all lab services to the application.
  */
 export function registerServices(app: App, store: Store<State>): void {
+    const keymap: Keymap = new Keymap()
+
     const evitaDBClient: EvitaDBClient = new EvitaDBClient()
     const graphQLClient: GraphQLClient = new GraphQLClient()
     const evitaDBDocsClient: EvitaDBDocsClient = new EvitaDBDocsClient()
@@ -36,6 +39,7 @@ export function registerServices(app: App, store: Store<State>): void {
     const evitaQLResultVisualizerService: EvitaQLResultVisualiserService = new EvitaQLResultVisualiserService(labService)
 
     app
+        .provide(keymapKey, keymap)
         .provide(labServiceKey, labService)
         .provide(editorServiceKey, editorService)
         .provide(demoSnippetResolverKey, demoSnippetResolver)

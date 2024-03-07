@@ -10,39 +10,48 @@ import { Extension } from '@codemirror/state'
 import { graphql } from 'cm6-graphql'
 import { json } from '@codemirror/lang-json'
 
-import { computed, onBeforeMount, ref, watch } from 'vue'
+import { computed, onBeforeMount, onMounted, onUnmounted, ref, watch } from 'vue'
 import { GraphQLConsoleService, useGraphQLConsoleService } from '@/services/editor/graphql-console.service'
 import { GraphQLSchema, printSchema } from 'graphql'
-import { GraphQLConsoleData, GraphQLConsoleParams, GraphQLInstanceType } from '@/model/editor/graphql-console'
-import VStandardCodeMirror from '@/components/base/VStandardCodemirror.vue'
 import { Toaster, useToaster } from '@/services/editor/toaster'
-import { TabComponentEvents, TabComponentProps } from '@/model/editor/editor'
 import VExecuteQueryButton from '@/components/base/VExecuteQueryButton.vue'
 import VTabToolbar from '@/components/base/VTabToolbar.vue'
 import VSideTabs from '@/components/base/VSideTabs.vue'
-import LabEditorResultVisualiser
-    from '@/components/lab/editor/result-visualiser/LabEditorResultVisualiser.vue'
+import LabEditorResultVisualiser from '@/components/lab/editor/result-visualiser/LabEditorResultVisualiser.vue'
 import { ResultVisualiserService } from '@/services/editor/result-visualiser/result-visualiser.service'
 import {
     useGraphQLResultVisualiserService
 } from '@/services/editor/result-visualiser/graphql-result-visualiser.service'
 import LabEditorTabShareButton from '@/components/lab/editor/tab/LabEditorTabShareButton.vue'
 
-import { TabType } from '@/model/editor/tab/tab-type'
-import {
-    createGraphQLConsoleHistoryKey, createGraphQLConsoleHistoryRecord,
-    GraphQLConsoleHistoryKey,
-    GraphQLConsoleHistoryRecord
-} from '@/model/editor/tab/graphql-console/history'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
 import LabEditorGraphQLConsoleHistory from '@/components/lab/editor/graphql-console/LabEditorGraphQLConsoleHistory.vue'
 import { UnexpectedError } from '@/model/lab'
+import { Keymap, useKeymap } from '@/model/editor/keymap/Keymap'
+import VQueryEditor from '@/components/base/VQueryEditor.vue'
+import VPreviewEditor from '@/components/base/VPreviewEditor.vue'
+import { Command } from '@/model/editor/keymap/Command'
+import VActionTooltip from '@/components/base/VActionTooltip.vue'
+import { TabComponentProps } from '@/model/editor/tab/TabComponentProps'
+import { GraphQLConsoleParams } from '@/model/editor/tab/graphQLConsole/GraphQLConsoleParams'
+import { GraphQLConsoleData } from '@/model/editor/tab/graphQLConsole/GraphQLConsoleData'
+import { TabComponentEvents } from '@/model/editor/tab/TabComponentEvents'
+import { GraphQLInstanceType } from '@/model/editor/tab/graphQLConsole/GraphQLInstanceType'
+import {
+    createGraphQLConsoleHistoryKey,
+    GraphQLConsoleHistoryKey
+} from '@/model/editor/tab/graphQLConsole/history/GraphQLConsoleHistoryKey'
+import {
+    createGraphQLConsoleHistoryRecord,
+    GraphQLConsoleHistoryRecord
+} from '@/model/editor/tab/graphQLConsole/history/GraphQLConsoleHistoryRecord'
+import { TabType } from '@/model/editor/tab/TabType'
 
 enum EditorTabType {
     Query = 'query',
     Variables = 'variables',
-    Schema = 'schema',
-    History = 'history'
+    History = 'history',
+    Schema = 'schema'
 }
 
 enum ResultTabType {
@@ -50,6 +59,7 @@ enum ResultTabType {
     Visualiser = 'visualiser'
 }
 
+const keymap: Keymap = useKeymap()
 const graphQLConsoleService: GraphQLConsoleService = useGraphQLConsoleService()
 const editorService: EditorService = useEditorService()
 const visualiserService: ResultVisualiserService = useGraphQLResultVisualiserService()
@@ -66,18 +76,19 @@ path.value.push(props.params.instancePointer.instanceType) // todo lho i18n
 const editorTab = ref<EditorTabType>(EditorTabType.Query)
 const resultTab = ref<ResultTabType>(ResultTabType.Raw)
 
+const shareTabButtonRef = ref<InstanceType<typeof LabEditorTabShareButton> | undefined>()
+
 const graphQLSchema = ref<GraphQLSchema>()
 
-const queryCode = ref<string>(props.data?.query ? props.data.query : `# Write your GraphQL query for catalog ${props.params.instancePointer.catalogName} here.\n`)
+const queryEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
+const queryCode = ref<string>(props.data.query ? props.data.query : `# Write your GraphQL query for catalog ${props.params.instancePointer.catalogName} here.\n`)
 const queryExtensions: Extension[] = []
 
-const variablesCode = ref<string>(props.data?.variables ? props.data.variables : '{\n  \n}')
+const variablesEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
+const variablesCode = ref<string>(props.data.variables ? props.data.variables : '{\n  \n}')
 const variablesExtensions: Extension[] = [json()]
 
-const schemaEditorInitialized = ref<boolean>(false)
-const schemaCode = ref<string>('')
-const schemaExtensions: Extension[] = [graphql()]
-
+const historyRef = ref<InstanceType<typeof LabEditorGraphQLConsoleHistory> | undefined>()
 const historyKey = computed<GraphQLConsoleHistoryKey>(() => createGraphQLConsoleHistoryKey(props.params.instancePointer))
 const historyRecords = computed<GraphQLConsoleHistoryRecord[]>(() => {
     return [...editorService.getTabHistoryRecords(historyKey.value)].reverse()
@@ -86,15 +97,23 @@ function pickHistoryRecord(record: GraphQLConsoleHistoryRecord): void {
     queryCode.value = record[1] || ''
     variablesCode.value = record[2] || ''
     editorTab.value = EditorTabType.Query
+    setTimeout(() => queryEditorRef.value?.focus())
 }
 function clearHistory(): void {
     editorService.clearTabHistory(historyKey.value)
 }
 
+const schemaEditorRef = ref<InstanceType<typeof VPreviewEditor> | undefined>()
+const schemaEditorInitialized = ref<boolean>(false)
+const schemaCode = ref<string>('')
+const schemaExtensions: Extension[] = [graphql()]
+
 const lastAppliedQueryCode = ref<string>('')
+const rawResultEditorRef = ref<InstanceType<typeof VPreviewEditor> | undefined>()
 const resultCode = ref<string>('')
 const resultExtensions: Extension[] = [json()]
 
+const resultVisualiserRef = ref<InstanceType<typeof LabEditorResultVisualiser> | undefined>()
 const supportsVisualisation = computed<boolean>(() => {
     return props.params.instancePointer.instanceType === GraphQLInstanceType.Data
 })
@@ -125,6 +144,48 @@ onBeforeMount(() => {
             toaster.error(error)
         })
 })
+onMounted(() => {
+    // register console specific keyboard shortcuts
+    keymap.bind(Command.GraphQLConsole_ExecuteQuery, props.id, executeQuery)
+    keymap.bind(Command.GraphQLConsole_ShareTab, props.id, () => shareTabButtonRef.value?.share())
+    keymap.bind(Command.GraphQLConsole_Query_SwitchToQueryEditor, props.id, () => {
+        editorTab.value = EditorTabType.Query
+        focusQueryEditor()
+    })
+    keymap.bind(Command.GraphQLConsole_Query_SwitchToVariablesEditor, props.id, () => {
+        editorTab.value = EditorTabType.Variables
+        focusVariablesEditor()
+    })
+    keymap.bind(Command.GraphQLConsole_Query_SwitchToHistory, props.id, () => {
+        editorTab.value = EditorTabType.History
+        focusHistory()
+    })
+    keymap.bind(Command.GraphQLConsole_Query_SwitchToSchemaViewer, props.id, () => {
+        editorTab.value = EditorTabType.Schema
+        focusSchemaEditor()
+    })
+    keymap.bind(Command.GraphQLConsole_Result_SwitchToRawResultViewer, props.id, () => {
+        resultTab.value = ResultTabType.Raw
+        focusRawResultEditor()
+    })
+    keymap.bind(Command.GraphQLConsole_Result_SwitchToResultVisualizer, props.id, () => {
+        resultTab.value = ResultTabType.Visualiser
+        focusResultVisualiser()
+    })
+
+    focusQueryEditor()
+})
+onUnmounted(() => {
+    // unregister console specific keyboard shortcuts
+    keymap.unbind(Command.GraphQLConsole_ExecuteQuery, props.id)
+    keymap.unbind(Command.GraphQLConsole_ShareTab, props.id)
+    keymap.unbind(Command.GraphQLConsole_Query_SwitchToQueryEditor, props.id)
+    keymap.unbind(Command.GraphQLConsole_Query_SwitchToVariablesEditor, props.id)
+    keymap.unbind(Command.GraphQLConsole_Query_SwitchToHistory, props.id)
+    keymap.unbind(Command.GraphQLConsole_Query_SwitchToSchemaViewer, props.id)
+    keymap.unbind(Command.GraphQLConsole_Result_SwitchToRawResultViewer, props.id)
+    keymap.unbind(Command.GraphQLConsole_Result_SwitchToResultVisualizer, props.id)
+})
 
 async function executeQuery(): Promise<void> {
     try {
@@ -139,6 +200,10 @@ async function executeQuery(): Promise<void> {
         resultCode.value = await graphQLConsoleService.executeGraphQLQuery(props.params.instancePointer, queryCode.value, JSON.parse(variablesCode.value))
         loading.value = false
         lastAppliedQueryCode.value = queryCode.value
+
+        if (resultTab.value === ResultTabType.Raw) {
+            focusRawResultEditor()
+        }
     } catch (error: any) {
         loading.value = false
         toaster.error(error)
@@ -156,6 +221,24 @@ function initializeSchemaEditor(): void {
     }
 }
 
+function focusQueryEditor(): void {
+    setTimeout(() => queryEditorRef.value?.focus())
+}
+function focusVariablesEditor(): void {
+    setTimeout(() => variablesEditorRef.value?.focus())
+}
+function focusHistory(): void {
+    setTimeout(() => historyRef.value?.focus())
+}
+function focusSchemaEditor(): void {
+    setTimeout(() => schemaEditorRef.value?.focus())
+}
+function focusRawResultEditor(): void {
+    setTimeout(() => rawResultEditorRef.value?.focus())
+}
+function focusResultVisualiser(): void {
+    setTimeout(() => resultVisualiserRef.value?.focus())
+}
 </script>
 
 <template>
@@ -169,6 +252,7 @@ function initializeSchemaEditor(): void {
         >
             <template #append>
                 <LabEditorTabShareButton
+                    ref="shareTabButtonRef"
                     :tab-type="TabType.GraphQLConsole"
                     :tab-params="params"
                     :tab-data="currentData"
@@ -185,7 +269,12 @@ function initializeSchemaEditor(): void {
                     </VTooltip>
                 </VBtn>
 
-                <VExecuteQueryButton :loading="loading" @click="executeQuery" />
+                <VExecuteQueryButton :loading="loading" @click="executeQuery">
+                    <VActionTooltip :command="Command.GraphQLConsole_ExecuteQuery">
+                        Execute query
+                    </VActionTooltip>
+                    Run
+                </VExecuteQueryButton>
             </template>
         </VTabToolbar>
 
@@ -197,27 +286,27 @@ function initializeSchemaEditor(): void {
                 >
                     <VTab :value="EditorTabType.Query">
                         <VIcon>mdi-database-search</VIcon>
-                        <VTooltip activator="parent">
+                        <VActionTooltip :command="Command.GraphQLConsole_Query_SwitchToQueryEditor">
                             Query
-                        </VTooltip>
+                        </VActionTooltip>
                     </VTab>
                     <VTab :value="EditorTabType.Variables">
                         <VIcon>mdi-variable</VIcon>
-                        <VTooltip activator="parent">
+                        <VActionTooltip :command="Command.GraphQLConsole_Query_SwitchToVariablesEditor">
                             Variables
-                        </VTooltip>
-                    </VTab>
-                    <VTab :value="EditorTabType.Schema">
-                        <VIcon>mdi-file-code</VIcon>
-                        <VTooltip activator="parent">
-                            Schema
-                        </VTooltip>
+                        </VActionTooltip>
                     </VTab>
                     <VTab :value="EditorTabType.History">
                         <VIcon>mdi-history</VIcon>
-                        <VTooltip activator="parent">
+                        <VActionTooltip :command="Command.GraphQLConsole_Query_SwitchToHistory">
                             History
-                        </VTooltip>
+                        </VActionTooltip>
+                    </VTab>
+                    <VTab :value="EditorTabType.Schema">
+                        <VIcon>mdi-file-code</VIcon>
+                        <VActionTooltip :command="Command.GraphQLConsole_Query_SwitchToSchemaViewer">
+                            Schema
+                        </VActionTooltip>
                     </VTab>
                 </VSideTabs>
             </VSheet>
@@ -229,35 +318,36 @@ function initializeSchemaEditor(): void {
                         direction="vertical"
                     >
                         <VWindowItem :value="EditorTabType.Query">
-                            <VStandardCodeMirror
+                            <VQueryEditor
+                                ref="queryEditorRef"
                                 v-model="queryCode"
                                 :additional-extensions="queryExtensions"
-                                @execute="executeQuery"
                             />
                         </VWindowItem>
 
                         <VWindowItem :value="EditorTabType.Variables">
-                            <VStandardCodeMirror
+                            <VQueryEditor
+                                ref="variablesEditorRef"
                                 v-model="variablesCode"
                                 :additional-extensions="variablesExtensions"
-                                @execute="executeQuery"
-                            />
-                        </VWindowItem>
-
-                        <VWindowItem :value="EditorTabType.Schema" @group:selected="initializeSchemaEditor">
-                            <VStandardCodeMirror
-                                v-model="schemaCode"
-                                read-only
-                                :additional-extensions="schemaExtensions"
-                                style="height: 100%"
                             />
                         </VWindowItem>
 
                         <VWindowItem :value="EditorTabType.History">
                             <LabEditorGraphQLConsoleHistory
+                                ref="historyRef"
                                 :items="historyRecords"
                                 @select-history-record="pickHistoryRecord"
                                 @update:clear-history="clearHistory"
+                            />
+                        </VWindowItem>
+
+                        <VWindowItem :value="EditorTabType.Schema" @group:selected="initializeSchemaEditor">
+                            <VPreviewEditor
+                                ref="schemaEditorRef"
+                                v-model="schemaCode"
+                                :additional-extensions="schemaExtensions"
+                                style="height: 100%"
                             />
                         </VWindowItem>
                     </VWindow>
@@ -269,8 +359,9 @@ function initializeSchemaEditor(): void {
                         direction="vertical"
                     >
                         <VWindowItem :value="ResultTabType.Raw">
-                            <VStandardCodeMirror
+                            <VPreviewEditor
                                 v-if="resultTab === ResultTabType.Raw"
+                                ref="rawResultEditorRef"
                                 v-model="resultCode"
                                 placeholder="Results will be displayed here..."
                                 read-only
@@ -281,6 +372,7 @@ function initializeSchemaEditor(): void {
                         <VWindowItem v-if="supportsVisualisation" :value="ResultTabType.Visualiser">
                             <LabEditorResultVisualiser
                                 v-if="resultTab === ResultTabType.Visualiser"
+                                ref="resultVisualiserRef"
                                 :catalog-pointer="params.instancePointer"
                                 :visualiser-service="visualiserService"
                                 :input-query="lastAppliedQueryCode || ''"
@@ -298,15 +390,15 @@ function initializeSchemaEditor(): void {
                 >
                     <VTab :value="ResultTabType.Raw">
                         <VIcon>mdi-code-braces</VIcon>
-                        <VTooltip activator="parent">
+                        <VActionTooltip :command="Command.GraphQLConsole_Result_SwitchToRawResultViewer">
                             Raw JSON result
-                        </VTooltip>
+                        </VActionTooltip>
                     </VTab>
                     <VTab v-if="supportsVisualisation" :value="ResultTabType.Visualiser">
                         <VIcon>mdi-file-tree-outline</VIcon>
-                        <VTooltip activator="parent">
+                        <VActionTooltip :command="Command.GraphQLConsole_Result_SwitchToResultVisualizer">
                             Result visualiser
-                        </VTooltip>
+                        </VActionTooltip>
                     </VTab>
                 </VSideTabs>
             </VSheet>

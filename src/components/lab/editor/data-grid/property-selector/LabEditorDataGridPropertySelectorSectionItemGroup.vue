@@ -4,8 +4,8 @@
  * the group is also a selectable entity property.
  */
 
-import { EntityPropertyDescriptor } from '@/model/editor/data-grid'
 import VListItemDivider from '@/components/base/VListItemDivider.vue'
+import { EntityPropertyDescriptor } from '@/model/editor/tab/dataGrid/data-grid'
 
 const props = defineProps<{
     filteredPropertyDescriptors: EntityPropertyDescriptor[],

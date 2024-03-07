@@ -4,7 +4,6 @@
  */
 
 import { EntitySchema, ReferenceSchema } from '@/model/evitadb'
-import { CatalogPointer } from '@/model/editor/editor'
 import { computed } from 'vue'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import LabEditorResultVisualiserMissingDataIndicator
@@ -13,6 +12,7 @@ import LabEditorResultVisualiserReferenceFacetGroupStatistics
     from '@/components/lab/editor/result-visualiser/facet-summary/LabEditorResultVisualiserReferenceFacetGroupStatistics.vue'
 import { ResultVisualiserService } from '@/services/editor/result-visualiser/result-visualiser.service'
 import { Result } from '@/model/editor/result-visualiser'
+import { CatalogPointer } from '@/model/editor/tab/CatalogPointer'
 
 const toaster: Toaster = useToaster()
 
@@ -48,7 +48,7 @@ function getCountForReference(referenceSchema: ReferenceSchema, groupStatisticsR
 </script>
 
 <template>
-    <VExpansionPanels v-if="referencesWithGroupStatisticsResults && referencesWithGroupStatisticsResults.length > 0" variant="accordion">
+    <VExpansionPanels v-if="referencesWithGroupStatisticsResults && referencesWithGroupStatisticsResults.length > 0">
         <VExpansionPanel v-for="referenceWithGroup in referencesWithGroupStatisticsResults" :key="referenceWithGroup[0].name">
             <VExpansionPanelTitle>
                 <VIcon class="mr-8">mdi-link-variant</VIcon>

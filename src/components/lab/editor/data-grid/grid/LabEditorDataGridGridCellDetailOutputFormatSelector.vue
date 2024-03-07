@@ -3,7 +3,7 @@
  * Selects the desired output format for a cell detail value.
  */
 
-import { EntityPropertyValueDesiredOutputFormat } from '@/model/editor/data-grid'
+import { EntityPropertyValueDesiredOutputFormat } from '@/model/editor/tab/dataGrid/data-grid'
 
 const formats: any[] = [
     {

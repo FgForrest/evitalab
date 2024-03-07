@@ -1,5 +1,5 @@
 import { EntityPropertyValueFormatter } from '@/services/editor/data-grid/entity-property-value-formatter'
-import { EntityPropertyValue } from '@/model/editor/data-grid'
+import { EntityPropertyValue } from '@/model/editor/tab/dataGrid/data-grid'
 
 /**
  * Tries to format the value as JSON. If the value is not a valid JSON, it will throw an error.

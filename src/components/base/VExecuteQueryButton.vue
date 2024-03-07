@@ -21,10 +21,12 @@ const emit = defineEmits<{
     >
         <VIcon>mdi-play-outline</VIcon>
 
-        <VTooltip activator="parent">
-            Execute query
-        </VTooltip>
-        Run
+        <slot>
+            <VTooltip activator="parent">
+                Execute query
+            </VTooltip>
+            Run
+        </slot>
     </VBtn>
 </template>
 

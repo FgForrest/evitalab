@@ -3,7 +3,7 @@
  * Filter component for prices renderer. Used to filter all available entity prices-
  */
 
-import { EntityPrice } from '@/model/editor/data-grid'
+import { EntityPrice } from '@/model/editor/tab/dataGrid/data-grid'
 
 const props = defineProps<{
     filterData: {

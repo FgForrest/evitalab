@@ -5,7 +5,6 @@
 import { computed, ref, watch } from 'vue'
 import LabEditorResultVisualiserFacetSummary
     from '@/components/lab/editor/result-visualiser/facet-summary/LabEditorResultVisualiserFacetSummary.vue'
-import { CatalogPointer } from '@/model/editor/editor'
 import LabEditorResultVisualiserMissingDataIndicator
     from '@/components/lab/editor/result-visualiser/LabEditorResultVisualiserMissingDataIndicator.vue'
 import { EntitySchema } from '@/model/evitadb'
@@ -19,6 +18,8 @@ import LabEditorResultVisualiserAttributeHistograms
     from '@/components/lab/editor/result-visualiser/histogram/LabEditorResultVisualiserAttributeHistograms.vue'
 import LabEditorResultVisualiserPriceHistogram
     from '@/components/lab/editor/result-visualiser/histogram/LabEditorResultVisualiserPriceHistogram.vue'
+import { VCombobox } from 'vuetify/components'
+import { CatalogPointer } from '@/model/editor/tab/CatalogPointer'
 
 const toaster: Toaster = useToaster()
 
@@ -29,6 +30,7 @@ const props = defineProps<{
     result: Result | undefined
 }>()
 
+const querySelectRef = ref<InstanceType<typeof VCombobox> | undefined>()
 const supportsMultipleQueries = computed<boolean>(() => {
     try {
         return props.visualiserService.supportsMultipleQueries()
@@ -106,6 +108,7 @@ watch(selectedQuery, async () => {
 })
 
 
+const visualiserTypesRef = ref<InstanceType<typeof VCombobox> | undefined>()
 const visualiserTypes = computed<VisualiserType[]>(() => {
     if (selectedQuery.value == undefined || selectedQueryResult.value == undefined) {
         return []
@@ -148,6 +151,23 @@ const resultForVisualiser = computed<Result | undefined>(() => {
         return undefined
     }
 })
+
+/**
+ * Focuses the first input in visualiser.
+ */
+function focus(): void {
+    if (supportsMultipleQueries.value) {
+        querySelectRef.value?.focus()
+    } else {
+        visualiserTypesRef.value?.focus()
+    }
+}
+
+defineExpose<{
+    focus: () => void
+}>({
+    focus
+})
 </script>
 
 <template>
@@ -155,6 +175,7 @@ const resultForVisualiser = computed<Result | undefined>(() => {
         <header>
             <VCombobox
                 v-if="supportsMultipleQueries"
+                ref="querySelectRef"
                 v-model="selectedQuery"
                 :disabled="queries.length == 0"
                 prepend-inner-icon="mdi-database-search"
@@ -164,6 +185,7 @@ const resultForVisualiser = computed<Result | undefined>(() => {
                 hide-details
             />
             <VCombobox
+                ref="visualiserTypesRef"
                 v-model="selectedVisualiserType"
                 :disabled="selectedQuery == undefined"
                 prepend-inner-icon="mdi-format-list-bulleted-type"

@@ -6,17 +6,27 @@ import {
 } from '@/model/lab'
 import { KyInstance } from 'ky/distribution/types/ky'
 import ky from 'ky'
+import { store } from '@/store'
 
 /**
  * Common base for all API clients.
  */
 export abstract class ApiClient {
     protected readonly httpClient: KyInstance
+    protected readonly myStore = store
 
     constructor() {
         this.httpClient = ky.create({
             timeout: 300000 // 5 minutes
         })
+    }
+
+    /**
+     * Resolves value for header 'X-EvitaDB-ClientID' used to identify evitaLab in tracing
+     * @protected
+     */
+    protected getClientIdHeaderValue(): string {
+        return 'evitaLab-' + encodeURIComponent(this.myStore.state.lab.serverName)
     }
 
     /**

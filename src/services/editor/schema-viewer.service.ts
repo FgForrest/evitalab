@@ -1,13 +1,6 @@
 import { LabService } from '@/services/lab.service'
 import { inject, InjectionKey } from 'vue'
-import {
-    AssociatedDataSchemaPointer,
-    CatalogAttributeSchemaPointer,
-    CatalogSchemaPointer, EntityAttributeSchemaPointer,
-    EntitySchemaPointer, ReferenceAttributeSchemaPointer, ReferenceSchemaPointer,
-    SchemaPointer,
-    SchemaViewerDataPointer
-} from '@/model/editor/schema-viewer'
+
 import {
     AssociatedDataSchema,
     AttributeSchemaUnion,
@@ -17,6 +10,15 @@ import {
     ReferenceSchema
 } from '@/model/evitadb'
 import { UnexpectedError } from '@/model/lab'
+import { SchemaViewerDataPointer } from '@/model/editor/tab/schemaViewer/SchemaViewerDataPointer'
+import { SchemaPointer } from '@/model/editor/tab/schemaViewer/SchemaPointer'
+import { CatalogSchemaPointer } from '@/model/editor/tab/schemaViewer/CatalogSchemaPointer'
+import { EntitySchemaPointer } from '@/model/editor/tab/schemaViewer/EntitySchemaPointer'
+import { CatalogAttributeSchemaPointer } from '@/model/editor/tab/schemaViewer/CatalogAttributeSchemaPointer'
+import { EntityAttributeSchemaPointer } from '@/model/editor/tab/schemaViewer/EntityAttributeSchemaPointer'
+import { ReferenceAttributeSchemaPointer } from '@/model/editor/tab/schemaViewer/ReferenceAttributeSchemaPointer'
+import { AssociatedDataSchemaPointer } from '@/model/editor/tab/schemaViewer/AssociatedDataSchemaPointer'
+import { ReferenceSchemaPointer } from '@/model/editor/tab/schemaViewer/ReferenceSchemaPointer'
 
 export const key: InjectionKey<SchemaViewerService> = Symbol()
 

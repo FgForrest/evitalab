@@ -1,10 +1,11 @@
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql'
-import { GraphQLInstancePointer, GraphQLInstanceType } from '@/model/editor/graphql-console'
 import { inject, InjectionKey } from 'vue'
 import { GraphQLResponse } from '@/model/graphql'
 import { GraphQLClient } from '@/services/graphql-client'
 import { EvitaDBConnection, UnexpectedError } from '@/model/lab'
 import { LabService } from '@/services/lab.service'
+import { GraphQLInstancePointer } from '@/model/editor/tab/graphQLConsole/GraphQLInstancePointer'
+import { GraphQLInstanceType } from '@/model/editor/tab/graphQLConsole/GraphQLInstanceType'
 
 export const key: InjectionKey<GraphQLConsoleService> = Symbol()
 

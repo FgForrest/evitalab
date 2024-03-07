@@ -1,5 +1,7 @@
 import store, { StoreBase } from 'store2'
-import XXH from 'xxhashjs'
+import XXH, { HashObject } from 'xxhashjs'
+
+const hasher: HashObject = XXH.h64()
 
 /**
  * Actual storage version of the current build.
@@ -18,7 +20,7 @@ export class LabStorage {
 
     constructor(serverName: string) {
         // obtain storage for the current build version a namespace
-        this.storage = store.namespace(`evitaLab:${XXH.h64(serverName, Math.random()).toString(16)}:${buildVersion}`)
+        this.storage = store.namespace(`evitaLab:${hasher.update(serverName).digest().toString(16)}:${buildVersion}`)
     }
 
     get<V>(key: string, def?: V): V {

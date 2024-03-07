@@ -3,7 +3,7 @@ import {
     EntityPropertyValue,
     EntityPropertyValueDesiredOutputFormat,
     EntityPropertyValueSupportedCodeLanguage, ExtraEntityObjectType
-} from '@/model/editor/data-grid'
+} from '@/model/editor/tab/dataGrid/data-grid'
 import { Scalar } from '@/model/evitadb'
 import LabEditorDataGridGridCellDetailAutoPrettyPrintRenderer
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCellDetailAutoPrettyPrintRenderer.vue'

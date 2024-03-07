@@ -3,8 +3,8 @@
  * Query history listing for EvitaQL console.
  */
 
-import { EvitaQLConsoleHistoryRecord } from '@/model/editor/tab/evitaql-console/history'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { EvitaQLConsoleHistoryRecord } from '@/model/editor/tab/evitaQLConsole/history/EvitaQLConsoleHistoryRecord'
 
 const props = defineProps<{
     items: EvitaQLConsoleHistoryRecord[]
@@ -14,6 +14,7 @@ const emit = defineEmits<{
     (e: 'update:clearHistory'): void
 }>()
 
+const historyListRef = ref<HTMLElement | undefined>()
 const historyListItems = computed<any[]>(() => {
     return props.items.map((record: EvitaQLConsoleHistoryRecord) => {
         return {
@@ -22,6 +23,23 @@ const historyListItems = computed<any[]>(() => {
             value: record
         }
     })
+})
+
+/**
+ * Focuses the first item in the history list.
+ */
+function focus() {
+    // @ts-ignore
+    let firstItem = historyListRef.value?.$el?.querySelector('.v-list-item');
+    if (firstItem) {
+        firstItem.focus();
+    }
+}
+
+defineExpose<{
+    focus: () => void
+}>({
+    focus
 })
 </script>
 
@@ -41,19 +59,21 @@ const historyListItems = computed<any[]>(() => {
                 Clear history
             </VBtn>
 
-            <VCard
-                v-for="item in historyListItems"
-                :key="item.key"
-                variant="tonal"
-                class="evitaql-editor-history__item"
-                @click="emit('selectHistoryRecord', item.value)"
-            >
-                <VCardText>
-                    <template v-for="(line, index) in item.preview" :key="index">
-                        {{ line }}<br/>
-                    </template>
-                </VCardText>
-            </VCard>
+            <VList ref="historyListRef" class="evitaql-editor-history__list">
+                <VListItem
+                    v-for="item in historyListItems"
+                    :key="item.key"
+                    variant="tonal"
+                    rounded
+                    @click="emit('selectHistoryRecord', item.value)"
+                >
+                    <VCardText>
+                        <template v-for="(line, index) in item.preview" :key="index">
+                            {{ line }}<br/>
+                        </template>
+                    </VCardText>
+                </VListItem>
+            </VList>
         </template>
     </div>
 </template>
@@ -63,7 +83,6 @@ const historyListItems = computed<any[]>(() => {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    padding: 1.5rem;
 
     position: absolute;
     left: 0;
@@ -72,8 +91,11 @@ const historyListItems = computed<any[]>(() => {
     bottom: 0;
     overflow-y: auto;
 
-    &__item {
-        flex-shrink: 0;
+    &__list {
+        padding: 0 1.5rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
     }
 
     &__empty-item {
@@ -82,6 +104,13 @@ const historyListItems = computed<any[]>(() => {
 
     &__clear-button {
         align-self: center;
+        margin-top: 1.5rem;
     }
+}
+
+:deep(.v-list-item) {
+    padding: 0;
+    padding-inline-start: 0 !important;
+    padding-inline-end: 0 !important;
 }
 </style>

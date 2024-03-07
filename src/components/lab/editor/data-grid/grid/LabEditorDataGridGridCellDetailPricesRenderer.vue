@@ -9,13 +9,13 @@ import {
     EntityPrices,
     EntityPropertyKey,
     EntityPropertyValue,
-    gridParamsKey,
+    gridPropsKey,
     NativeValue,
     queryFilterKey,
     queryLanguageKey,
     selectedEntityKey,
     StaticEntityProperties
-} from '@/model/editor/data-grid'
+} from '@/model/editor/tab/dataGrid/data-grid'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import VMarkdown from '@/components/base/VMarkdown.vue'
 import LabEditorDataGridGridCellDetailPricesRendererPrice
@@ -60,7 +60,7 @@ const props = withDefaults(defineProps<{
 }>(), {
     fillSpace: true
 })
-const gridParams = mandatoryInject(gridParamsKey)
+const gridProps = mandatoryInject(gridPropsKey)
 const queryLanguage = mandatoryInject(queryLanguageKey)
 const queryFilter = mandatoryInject(queryFilterKey)
 const selectedEntity = mandatoryInject(selectedEntityKey)
@@ -117,7 +117,7 @@ watch([selectedPriceLists, selectedCurrencies], async () => {
     computedPriceForSale.value = undefined
     if (selectedPriceLists.value.length > 0 && selectedCurrencies.value.length === 1) {
         computedPriceForSale.value = await dataGridService.computePriceForSale(
-            gridParams.dataPointer,
+            gridProps.params.dataPointer,
             queryLanguage.value!,
             (selectedEntity[EntityPropertyKey.entity(StaticEntityProperties.PrimaryKey).toString()] as NativeValue).value() as number,
             selectedPriceLists.value,
@@ -219,7 +219,7 @@ preselectFilterFromQuery()
                 />
             </header>
 
-            <VExpansionPanels variant="accordion" multiple>
+            <VExpansionPanels multiple>
                 <!-- virtual price for sale -->
                 <LabEditorDataGridGridCellDetailPricesRendererPriceItem
                     v-if="computedPriceForSale != undefined && priceInnerRecordHandling === PriceInnerRecordHandling.Sum"

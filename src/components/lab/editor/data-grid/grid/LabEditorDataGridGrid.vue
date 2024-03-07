@@ -15,15 +15,15 @@ import {
     EntityPropertyType,
     EntityPropertyValue,
     EntityReferenceValue,
-    FlatEntity, gridParamsKey,
+    FlatEntity, gridPropsKey,
     NativeValue,
     queryLanguageKey,
     StaticEntityProperties
-} from '@/model/editor/data-grid'
+} from '@/model/editor/tab/dataGrid/data-grid'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import { QueryLanguage, UnexpectedError } from '@/model/lab'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
-import { DataGridRequest } from '@/model/editor/data-grid-request'
+import { DataGridRequest } from '@/model/editor/tab/dataGrid/data-grid-request'
 import { DataGridService, useDataGridService } from '@/services/editor/data-grid.service'
 import LabEditorDataGridGridColumnHeader
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridColumnHeader.vue'
@@ -47,7 +47,7 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: 'gridUpdated', value: { page: number, itemsPerPage: number, sortBy: any[] }): void
 }>()
-const gridParams = mandatoryInject(gridParamsKey)
+const gridProps = mandatoryInject(gridPropsKey)
 const entityPropertyDescriptorIndex = mandatoryInject(entityPropertyDescriptorIndexKey)
 const queryLanguage = inject(queryLanguageKey, ref<QueryLanguage | undefined>(QueryLanguage.EvitaQL))
 const dataLocale = inject(dataLocaleKey)
@@ -60,7 +60,7 @@ const propertyDetailValue = ref<EntityPropertyValue | EntityPropertyValue[] | un
 function getPropertyDescriptor(key: string): EntityPropertyDescriptor | undefined {
     const descriptor = entityPropertyDescriptorIndex.value.get(key)
     if (descriptor == undefined) {
-        toaster.error(new UnexpectedError(gridParams.dataPointer.connection, 'Failed to find property descriptor for key: ' + key))
+        toaster.error(new UnexpectedError(gridProps.params.dataPointer.connection, 'Failed to find property descriptor for key: ' + key))
     }
     return descriptor
 }
@@ -77,10 +77,10 @@ function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string,
         propertyDescriptor.type === EntityPropertyType.Entity &&
         propertyDescriptor.key.name === StaticEntityProperties.ParentPrimaryKey) {
         // we want to open parent entity in appropriate new grid
-        editorService.createTabRequest(DataGridRequest.createNew(
-            gridParams.dataPointer.connection,
-            gridParams.dataPointer.catalogName,
-            gridParams.dataPointer.entityType,
+        editorService.createTab(DataGridRequest.createNew(
+            gridProps.params.dataPointer.connection,
+            gridProps.params.dataPointer.catalogName,
+            gridProps.params.dataPointer.entityType,
             new DataGridData(
                 queryLanguage?.value,
                 dataGridService.buildParentEntityFilterBy(queryLanguage.value as QueryLanguage, (value as EntityReferenceValue).primaryKey),
@@ -93,10 +93,10 @@ function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string,
         ((propertyDescriptor.type === EntityPropertyType.Attributes && propertyDescriptor.schema.type === Scalar.Predecessor) ||
         (propertyDescriptor.type === EntityPropertyType.AssociatedData && propertyDescriptor.schema.type === Scalar.Predecessor))) {
         // we want references to open referenced entities in appropriate new grid for referenced collection
-        editorService.createTabRequest(DataGridRequest.createNew(
-            gridParams.dataPointer.connection,
-            gridParams.dataPointer.catalogName,
-            gridParams.dataPointer.entityType,
+        editorService.createTab(DataGridRequest.createNew(
+            gridProps.params.dataPointer.connection,
+            gridProps.params.dataPointer.catalogName,
+            gridProps.params.dataPointer.entityType,
             new DataGridData(
                 queryLanguage.value,
                 dataGridService.buildPredecessorEntityFilterBy(queryLanguage.value as QueryLanguage, (value as NativeValue).value() as number),
@@ -107,9 +107,9 @@ function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string,
         ))
     } else if (propertyDescriptor && propertyDescriptor.type === EntityPropertyType.References) {
         // we want references to open referenced entities in appropriate new grid for referenced collection
-        editorService.createTabRequest(DataGridRequest.createNew(
-            gridParams.dataPointer.connection,
-            gridParams.dataPointer.catalogName,
+        editorService.createTab(DataGridRequest.createNew(
+            gridProps.params.dataPointer.connection,
+            gridProps.params.dataPointer.catalogName,
             propertyDescriptor.schema.referencedEntityType,
             new DataGridData(
                 queryLanguage.value,

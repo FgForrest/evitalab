@@ -3,13 +3,17 @@ import VPropertiesTableValue from '@/components/base/VPropertiesTableValue.vue'
 
 import { Property } from '@/model/properties-table'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
+    title?: string
     properties: Property[]
-}>()
+}>(), {
+    title: undefined
+})
 </script>
 
 <template>
     <table class="properties-table">
+        <caption v-if="title != undefined" class="text-high-emphasis text-left">{{ title }}</caption>
         <tr
             v-for="property in properties"
             :key="property.name"
@@ -33,7 +37,7 @@ const props = defineProps<{
 
     &__row {
         display: inline-grid;
-        grid-template-columns: 10rem 1fr;
+        grid-template-columns: 15rem 1fr;
         column-gap: 0.5rem;
         align-items: center;
     }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { EntityPropertyType } from '@/model/editor/data-grid'
+import { EntityPropertyType } from '@/model/editor/tab/dataGrid/data-grid'
 
 const props = defineProps<{
     column: any,

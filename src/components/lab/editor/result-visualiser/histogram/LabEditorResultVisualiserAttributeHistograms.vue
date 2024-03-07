@@ -34,7 +34,7 @@ const histogramsByAttributes = computed<[AttributeSchemaUnion, VisualisedHistogr
 </script>
 
 <template>
-    <VExpansionPanels v-if="histogramsByAttributes && histogramsByAttributes.length > 0" variant="accordion">
+    <VExpansionPanels v-if="histogramsByAttributes && histogramsByAttributes.length > 0">
         <VExpansionPanel v-for="histogramByAttributeResult in histogramsByAttributes" :key="histogramByAttributeResult[0].name">
             <VExpansionPanelTitle class="d-flex">
                 <VIcon class="mr-8">mdi-format-list-bulleted</VIcon>

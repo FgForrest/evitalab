@@ -68,6 +68,9 @@ export default createVuetify({
         },
         VBtn: {
             variant: 'outlined'
+        },
+        VExpansionPanels: {
+            variant: 'accordion'
         }
     },
 })

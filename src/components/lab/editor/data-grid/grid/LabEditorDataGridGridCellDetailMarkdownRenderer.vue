@@ -10,8 +10,7 @@ import LabEditorDataGridGridCellDetailValueRenderer
 import VMarkdown from '@/components/base/VMarkdown.vue'
 import { computed, ref } from 'vue'
 import { BigDecimal, DateTime, Long, Range, Scalar } from '@/model/evitadb'
-import { EntityPropertyValue, ExtraEntityObjectType, gridParamsKey, NativeValue } from '@/model/editor/data-grid'
-import { mandatoryInject } from '@/helpers/reactivity'
+import { EntityPropertyValue, ExtraEntityObjectType, NativeValue } from '@/model/editor/tab/dataGrid/data-grid'
 
 const toaster: Toaster = useToaster()
 
@@ -34,7 +33,6 @@ const props = withDefaults(defineProps<{
 }>(), {
     fillSpace: true
 })
-const gridParams = mandatoryInject(gridParamsKey)
 
 const prettyPrint = ref<boolean>(true)
 const actions = computed(() => {

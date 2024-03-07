@@ -4,14 +4,14 @@
  */
 
 import {
-    EntityPropertyDescriptor, gridParamsKey
-} from '@/model/editor/data-grid'
+    EntityPropertyDescriptor, gridPropsKey
+} from '@/model/editor/tab/dataGrid/data-grid'
 import { LabService, useLabService } from '@/services/lab.service'
 import LabEditorDataGridPropertyListItem from './LabEditorDataGridPropertySelectorSectionItem.vue'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
-import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
-import { AssociatedDataSchemaPointer } from '@/model/editor/schema-viewer'
+import { SchemaViewerRequest } from '@/model/editor/tab/schemaViewer/SchemaViewerRequest'
 import { mandatoryInject } from '@/helpers/reactivity'
+import { AssociatedDataSchemaPointer } from '@/model/editor/tab/schemaViewer/AssociatedDataSchemaPointer'
 
 const labService: LabService = useLabService()
 const editorService: EditorService = useEditorService()
@@ -22,17 +22,17 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: 'schemaOpen'): void
 }>()
-const gridParams = mandatoryInject(gridParamsKey)
+const gridProps = mandatoryInject(gridPropsKey)
 
 const flags: string[] = labService.getAssociatedDataSchemaFlags(props.propertyDescriptor.schema)
 
 function openSchema(): void {
-    editorService.createTabRequest(
+    editorService.createTab(
         SchemaViewerRequest.createNew(
-            gridParams.dataPointer.connection,
+            gridProps.params.dataPointer.connection,
             new AssociatedDataSchemaPointer(
-                gridParams.dataPointer.catalogName,
-                gridParams.dataPointer.entityType,
+                gridProps.params.dataPointer.catalogName,
+                gridProps.params.dataPointer.entityType,
                 props.propertyDescriptor.schema.name
             )
         )

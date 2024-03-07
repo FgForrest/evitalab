@@ -6,7 +6,6 @@ import { computed, ref } from 'vue'
 import { EntitySchema, ReferenceSchema } from '@/model/evitadb'
 import { LabService, useLabService } from '@/services/lab.service'
 import { Toaster, useToaster } from '@/services/editor/toaster'
-import { CatalogPointer } from '@/model/editor/editor'
 import LabEditorResultVisualiserFacetGroupStatistics
     from '@/components/lab/editor/result-visualiser/facet-summary/LabEditorResultVisualiserFacetGroupStatistics.vue'
 import LabEditorResultVisualiserFacetStatistics
@@ -14,6 +13,7 @@ import LabEditorResultVisualiserFacetStatistics
 import { Result } from '@/model/editor/result-visualiser'
 import { ResultVisualiserService } from '@/services/editor/result-visualiser/result-visualiser.service'
 import VListItemLazyIterator from '@/components/base/VListItemLazyIterator.vue'
+import { CatalogPointer } from '@/model/editor/tab/CatalogPointer'
 
 const statisticsPageSize: number = 10
 

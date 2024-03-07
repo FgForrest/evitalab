@@ -13,7 +13,14 @@ export class EvitaDBClient extends ApiClient {
      */
     async getCatalogSchema(connection: EvitaDBConnection, catalogName: string): Promise<CatalogSchema> {
         try {
-            return await this.httpClient.get(`${connection.labApiUrl}/schema/catalogs/${catalogName}`)
+            return await this.httpClient.get(
+                `${connection.labApiUrl}/schema/catalogs/${catalogName}`,
+                {
+                    headers: {
+                        'X-EvitaDB-ClientID': this.getClientIdHeaderValue()
+                    }
+                }
+            )
                 .json() as CatalogSchema
         } catch (e: any) {
             throw this.handleCallError(e, connection)
@@ -25,7 +32,14 @@ export class EvitaDBClient extends ApiClient {
      */
     async getCatalogs(connection: EvitaDBConnection): Promise<Catalog[]> {
         try {
-            return await this.httpClient.get(`${connection.labApiUrl}/data/catalogs`)
+            return await this.httpClient.get(
+                `${connection.labApiUrl}/data/catalogs`,
+                {
+                    headers: {
+                        'X-EvitaDB-ClientID': this.getClientIdHeaderValue()
+                    }
+                }
+            )
                 .json() as Catalog[]
         } catch (e: any) {
             throw this.handleCallError(e, connection)
@@ -41,7 +55,8 @@ export class EvitaDBClient extends ApiClient {
                 `${connection.labApiUrl}/data/catalogs/${catalogName}/collections/query`,
                 {
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-EvitaDB-ClientID': this.getClientIdHeaderValue()
                     },
                     body: JSON.stringify({
                         query

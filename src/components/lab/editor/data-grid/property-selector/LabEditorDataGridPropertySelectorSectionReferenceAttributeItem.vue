@@ -3,15 +3,13 @@
  * A single selectable reference attribute property item that will be then fetched into grid.
  */
 
-import {
-    EntityPropertyDescriptor, EntityPropertyKey, gridParamsKey
-} from '@/model/editor/data-grid'
 import { LabService, useLabService } from '@/services/lab.service'
 import LabEditorDataGridPropertyListItem from './LabEditorDataGridPropertySelectorSectionItem.vue'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
-import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
-import { ReferenceAttributeSchemaPointer } from '@/model/editor/schema-viewer'
 import { mandatoryInject } from '@/helpers/reactivity'
+import { EntityPropertyDescriptor, EntityPropertyKey, gridPropsKey } from '@/model/editor/tab/dataGrid/data-grid'
+import { SchemaViewerRequest } from '@/model/editor/tab/schemaViewer/SchemaViewerRequest'
+import { ReferenceAttributeSchemaPointer } from '@/model/editor/tab/schemaViewer/ReferenceAttributeSchemaPointer'
 
 const labService: LabService = useLabService()
 const editorService: EditorService = useEditorService()
@@ -24,17 +22,17 @@ const emit = defineEmits<{
     (e: 'toggle', value: { key: EntityPropertyKey, selected: boolean }): void
     (e: 'schemaOpen'): void
 }>()
-const gridParams = mandatoryInject(gridParamsKey)
+const gridProps = mandatoryInject(gridPropsKey)
 
 const flags: string[] = labService.getAttributeSchemaFlags(props.attributePropertyDescriptor.schema)
 
 function openSchema(): void {
-    editorService.createTabRequest(
+    editorService.createTab(
         SchemaViewerRequest.createNew(
-            gridParams.dataPointer.connection,
+            gridProps.params.dataPointer.connection,
             new ReferenceAttributeSchemaPointer(
-                gridParams.dataPointer.catalogName,
-                gridParams.dataPointer.entityType,
+                gridProps.params.dataPointer.catalogName,
+                gridProps.params.dataPointer.entityType,
                 props.referencePropertyDescriptor.schema.name,
                 props.attributePropertyDescriptor.schema.name
             )

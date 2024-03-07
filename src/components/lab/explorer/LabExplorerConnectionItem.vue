@@ -8,10 +8,10 @@ import VTreeViewItem from '@/components/base/VTreeViewItem.vue'
 import { Catalog } from '@/model/evitadb'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import LabExplorerConnectionRemoveDialog from './LabExplorerConnectionRemoveDialog.vue'
-import { GraphQLConsoleRequest } from '@/model/editor/graphql-console-request'
-import { GraphQLInstanceType } from '@/model/editor/graphql-console'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
 import VTreeViewItemEmpty from '@/components/base/VTreeViewItemEmpty.vue'
+import { GraphQLConsoleRequest } from '@/model/editor/tab/graphQLConsole/GraphQLConsoleRequest'
+import { GraphQLInstanceType } from '@/model/editor/tab/graphQLConsole/GraphQLInstanceType'
 
 enum ActionType {
     OpenGraphQLSystemAPIConsole = 'open-graphql-system-api-console',
@@ -75,7 +75,7 @@ async function loadCatalogs(): Promise<void> {
 function handleAction(action: string, payload?: any) {
     switch (action) {
         case ActionType.OpenGraphQLSystemAPIConsole:
-            editorService.createTabRequest(
+            editorService.createTab(
                 GraphQLConsoleRequest.createNew(
                     props.connection,
                     'system', // todo lho: this is not needed
@@ -96,7 +96,7 @@ function handleAction(action: string, payload?: any) {
     <VListGroup
         :value="connection.name"
     >
-        <template v-slot:activator="{ isOpen, props }">
+        <template #activator="{ isOpen, props }">
             <VTreeViewItem
                 v-bind="props"
                 openable

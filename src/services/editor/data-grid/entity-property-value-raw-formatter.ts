@@ -1,5 +1,5 @@
 import { EntityPropertyValueFormatter } from '@/services/editor/data-grid/entity-property-value-formatter'
-import { EntityPropertyValue } from '@/model/editor/data-grid'
+import { EntityPropertyValue } from '@/model/editor/tab/dataGrid/data-grid'
 
 /**
  * Doesn't do any formatting, just returns the value as string.

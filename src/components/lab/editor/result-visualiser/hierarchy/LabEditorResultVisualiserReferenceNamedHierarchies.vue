@@ -6,12 +6,11 @@ import { ref } from 'vue'
 import { EntitySchema, ReferenceSchema } from '@/model/evitadb'
 import { LabService, useLabService } from '@/services/lab.service'
 import { Toaster, useToaster } from '@/services/editor/toaster'
-import { CatalogPointer } from '@/model/editor/editor'
 import LabEditorResultVisualiserNamedHierarchy
     from '@/components/lab/editor/result-visualiser/hierarchy/LabEditorResultVisualiserNamedHierarchy.vue'
 import { Result } from '@/model/editor/result-visualiser'
 import { ResultVisualiserService } from '@/services/editor/result-visualiser/result-visualiser.service'
-import VListItemLazyIterator from '@/components/base/VListItemLazyIterator.vue'
+import { CatalogPointer } from '@/model/editor/tab/CatalogPointer'
 
 const labService: LabService = useLabService()
 const toaster: Toaster = useToaster()

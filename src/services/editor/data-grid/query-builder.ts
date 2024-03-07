@@ -1,5 +1,5 @@
-import { DataGridDataPointer, EntityPropertyKey } from '@/model/editor/data-grid'
 import { AttributeSchemaUnion, OrderDirection, QueryPriceMode, ReferenceSchema } from '@/model/evitadb'
+import { DataGridDataPointer, EntityPropertyKey } from '@/model/editor/tab/dataGrid/data-grid'
 
 /**
  * Builds query from arguments based on language of implementation.

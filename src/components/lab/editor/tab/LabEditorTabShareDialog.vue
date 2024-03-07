@@ -6,14 +6,11 @@
 
 import { computed } from 'vue'
 import { UnexpectedError } from '@/model/lab'
-import {
-    SerializableTabRequestComponentData,
-    SerializableTabRequestComponentParams
-} from '@/model/editor/editor'
 import { Toaster, useToaster } from '@/services/editor/toaster'
-import { ShareTabObject } from '@/model/editor/tab/share-tab-object'
-
-import { TabType } from '@/model/editor/tab/tab-type'
+import { TabType } from '@/model/editor/tab/TabType'
+import { TabRequestComponentData } from '@/model/editor/tab/TabRequestComponentData'
+import { TabRequestComponentParams } from '@/model/editor/tab/TabRequestComponentParams'
+import { ShareTabObject } from '@/model/editor/tab/ShareTabObject'
 
 /**
  * Smallest possible number of characters in a URL valid across all browser. Usually browser support more characters.
@@ -25,8 +22,8 @@ const toaster: Toaster = useToaster()
 const props = defineProps<{
     modelValue: boolean,
     tabType: TabType,
-    tabParams: SerializableTabRequestComponentParams<any>,
-    tabData: SerializableTabRequestComponentData<any> | undefined
+    tabParams: TabRequestComponentParams<any>,
+    tabData: TabRequestComponentData<any> | undefined
 }>()
 
 const emit = defineEmits<{
@@ -95,6 +92,7 @@ function copyLink(): void {
                     Cancel
                 </VBtn>
                 <VBtn
+                    variant="outlined"
                     prepend-icon="mdi-content-copy"
                     @click="copyLink"
                     class="ml-4"

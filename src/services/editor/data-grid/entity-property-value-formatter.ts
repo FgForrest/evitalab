@@ -1,4 +1,4 @@
-import { EntityPropertyValue } from '@/model/editor/data-grid'
+import { EntityPropertyValue } from '@/model/editor/tab/dataGrid/data-grid'
 
 /**
  * Tries to format entity property raw value into implementation-defined-formatted string.

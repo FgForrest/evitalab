@@ -4,7 +4,7 @@ import {
     EntityPropertyDescriptor,
     EntityPropertyType, EntityPropertyValue, priceTypeKey,
     StaticEntityProperties
-} from '@/model/editor/data-grid'
+} from '@/model/editor/tab/dataGrid/data-grid'
 import { computed, inject } from 'vue'
 import { Scalar } from '@/model/evitadb'
 import { Toaster, useToaster } from '@/services/editor/toaster'

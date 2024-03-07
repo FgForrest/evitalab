@@ -1,11 +1,14 @@
 <script setup lang="ts">
 
 import { QueryLanguage } from '@/model/lab'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { VBtn, VList } from 'vuetify/components'
+import VActionTooltip from '@/components/base/VActionTooltip.vue'
+import { Command } from '@/model/editor/keymap/Command'
 
 const queryLanguages = [
     {
-        title: 'EvitaQL',
+        title: 'evitaQL',
         icon: 'mdi-variable',
         value: QueryLanguage.EvitaQL
     },
@@ -23,19 +26,33 @@ const emit = defineEmits<{
     (e: 'update:selected', value: QueryLanguage): void
 }>()
 
+const queryLanguagesButtonRef = ref<InstanceType<typeof VBtn> | undefined>()
+
 const selectedIcon = computed<string>(() => {
     const language = queryLanguages.find(language => language.value === props.selected)
     return language ? language.icon : 'mdi-application-braces-outline'
+})
+
+function focus(): void {
+    queryLanguagesButtonRef.value?.$el?.click()
+    queryLanguagesButtonRef.value?.$el?.focus()
+}
+
+defineExpose<{
+    focus: () => void
+}>({
+    focus
 })
 </script>
 
 <template>
     <VBtn
+        ref="queryLanguagesButtonRef"
         icon
         density="comfortable"
     >
         <VIcon>{{ selectedIcon }}</VIcon>
-        <VTooltip activator="parent">Select query language</VTooltip>
+        <VActionTooltip :command="Command.EntityGrid_ChangeQueryLanguage">Select query language</VActionTooltip>
 
         <VMenu activator="parent">
             <VList

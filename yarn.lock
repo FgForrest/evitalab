@@ -386,10 +386,10 @@
     "@lezer/highlight" "^1.0.0"
     "@lezer/lr" "^1.0.0"
 
-"@lukashornych/codemirror-lang-evitaql@1.2.3":
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/@lukashornych/codemirror-lang-evitaql/-/codemirror-lang-evitaql-1.2.3.tgz#a846bbcb67f604b7687807c5ff1565b9e6889f8a"
-  integrity sha512-kit58NTrZB3EWfdi5QQbP/pi3W+2mwFkn3GuuuGf+ur7en0hLg0VgouK7b/QFXKsuEiflY2+S/AM71DRmg3GbA==
+"@lukashornych/codemirror-lang-evitaql@1.2.4":
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@lukashornych/codemirror-lang-evitaql/-/codemirror-lang-evitaql-1.2.4.tgz#ff37090b541e4d3e50d93d05822cfaa94bc5936f"
+  integrity sha512-xcD637tDdPSAX1zvgXzCkqX9Po0ufjPwfpDR98WKZwtFGc6ynuy0oU4w6k/+F+FRYiE5joSqyvJZqvm7er94AQ==
   dependencies:
     "@codemirror/autocomplete" "6.0.0"
     "@codemirror/language" "^6.0.0"
@@ -459,6 +459,11 @@
   version "7.0.12"
   resolved "https://registry.npmjs.org/@types/json-schema/-/json-schema-7.0.12.tgz"
   integrity sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==
+
+"@types/keymaster@^1.6.33":
+  version "1.6.33"
+  resolved "https://registry.yarnpkg.com/@types/keymaster/-/keymaster-1.6.33.tgz#2a96eeceed9bb24e43c270e6d038352a44502efd"
+  integrity sha512-J+dF4hsKaq+L5Ny6alxNC2XwJbONGmVbXmycH/GrlBAzTdYJJcG9kQ0PVVb/C6iFyujFY7J2oW+0Y8h5vtuACA==
 
 "@types/linkify-it@*":
   version "3.0.3"
@@ -1605,6 +1610,11 @@ json-stable-stringify-without-jsonify@^1.0.1:
   resolved "https://registry.npmjs.org/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz"
   integrity sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==
 
+keymaster@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/keymaster/-/keymaster-1.6.2.tgz#e1ae54d0ea9488f9f60b66b668f02e9a1946c6eb"
+  integrity sha512-OvA/AALN8IDKKkTk2Z+bDrzs/SQao4lo/QPbwSdDvm+frxfiYiYCSn1aHFUypJY3SruAO1y/c771agBmTXqUtg==
+
 ky@^0.33.3:
   version "0.33.3"
   resolved "https://registry.npmjs.org/ky/-/ky-0.33.3.tgz"
@@ -2251,11 +2261,6 @@ vue-histogram-slider@^0.3.8:
     d3-transition "^1.2.0"
     jquery "3.5"
     vue "^2.6.10"
-
-vue-hotkeys-rt@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.npmjs.org/vue-hotkeys-rt/-/vue-hotkeys-rt-0.2.3.tgz"
-  integrity sha512-jMnW6IXrlhEULcvwk+twyPqwpHRZD9sf9AIP1L2p3gBE5mN/RcfFLZFUcq60MYMp1q6j8vIqkDgh1H9nZjz7kg==
 
 vue-router@^4.0.0:
   version "4.2.3"

@@ -3,14 +3,14 @@
  * Manages selected entity properties that will be fetched into grid.
  */
 
-import { computed, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import {
     EntityPropertyDescriptor, entityPropertyDescriptorIndexKey,
     EntityPropertyKey,
     EntityPropertySectionSelection,
-    EntityPropertyType, gridParamsKey,
+    EntityPropertyType, gridPropsKey,
     parentEntityPropertyType
-} from '@/model/editor/data-grid'
+} from '@/model/editor/tab/dataGrid/data-grid'
 import VCardTitleWithActions from '@/components/base/VCardTitleWithActions.vue'
 import LabEditorDataGridPropertySelectorSection from './LabEditorDataGridPropertySelectorSection.vue'
 import LabEditorDataGridPropertySelectorSectionAttributeItem
@@ -23,7 +23,6 @@ import LabEditorDataGridPropertySelectorSectionReferenceItem
     from './LabEditorDataGridPropertySelectorSectionReferenceItem.vue'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import { UnexpectedError } from '@/model/lab'
-import Hotkeys from 'vue-hotkeys-rt/Hotkeys.vue'
 import VListItemDivider from '@/components/base/VListItemDivider.vue'
 import LabEditorDataGridPropertySelectorSectionReferenceAttributeItem
     from '@/components/lab/editor/data-grid/property-selector/LabEditorDataGridPropertySelectorSectionReferenceAttributeItem.vue'
@@ -32,6 +31,10 @@ import LabEditorDataGridPropertySelectorSectionItemGroup
 import LabEditorDataGridPropertySelectorSectionPricesItem
     from '@/components/lab/editor/data-grid/property-selector/LabEditorDataGridPropertySelectorSectionPricesItem.vue'
 import { mandatoryInject } from '@/helpers/reactivity'
+import { Keymap, useKeymap } from '@/model/editor/keymap/Keymap'
+import { Command } from '@/model/editor/keymap/Command'
+import VActionTooltip from '@/components/base/VActionTooltip.vue'
+import { propertySelectorScope } from '@/model/editor/tab/dataGrid/keymap/scopes'
 
 const topLevelSections: EntityPropertyType[] = [
     EntityPropertyType.Entity,
@@ -41,6 +44,7 @@ const topLevelSections: EntityPropertyType[] = [
     EntityPropertyType.References,
 ]
 
+const keymap: Keymap = useKeymap()
 const toaster: Toaster = useToaster()
 
 const props = defineProps<{
@@ -52,7 +56,7 @@ const emit = defineEmits<{
     (e: 'update:selected', value: EntityPropertyKey[]): void
     (e: 'schemaOpen'): void
 }>()
-const gridParams = mandatoryInject(gridParamsKey)
+const gridProps = mandatoryInject(gridPropsKey)
 const entityPropertyDescriptorIndex = mandatoryInject(entityPropertyDescriptorIndexKey)
 
 const filter = ref<string>('')
@@ -183,7 +187,7 @@ function togglePropertySectionSelection(sectionType: EntityPropertyType, newSele
 
         emit('update:selected', newSelected)
     } else {
-        toaster.error(new UnexpectedError(gridParams.dataPointer.connection, 'Cannot select `Some` properties in a section.'))
+        toaster.error(new UnexpectedError(gridProps.params.dataPointer.connection, 'Cannot select `Some` properties in a section.'))
     }
 }
 
@@ -224,6 +228,14 @@ function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescr
     }
 }
 
+onMounted(() => {
+    // register keyboard shortcuts for property selector
+    keymap.bindWithinScope(Command.EntityGrid_PropertySelector_FindProperty, gridProps.id, propertySelectorScope, () => filterInput?.value?.select())
+})
+onUnmounted(() => {
+    // unregister keyboard shortcuts for property selector
+    keymap.unbindWithinScope(Command.EntityGrid_PropertySelector_FindProperty, gridProps.id, propertySelectorScope)
+})
 </script>
 
 <template>
@@ -240,9 +252,9 @@ function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescr
                 v-bind="props"
             >
                 <VIcon>mdi-view-column-outline</VIcon>
-                <VTooltip activator="parent">
+                <VActionTooltip :command="Command.EntityGrid_OpenPropertySelector">
                     Select displayed properties
-                </VTooltip>
+                </VActionTooltip>
             </VBtn>
         </template>
 
@@ -266,10 +278,6 @@ function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescr
                 </template>
             </VCardTitleWithActions>
             <VCardText class="selector-body pt-0 pl-4 mt-4">
-                <Hotkeys
-                    :shortcuts="['F']"
-                    @triggered="filterInput?.select()"
-                />
                 <VTextField
                     ref="filterInput"
                     :model-value="filter"

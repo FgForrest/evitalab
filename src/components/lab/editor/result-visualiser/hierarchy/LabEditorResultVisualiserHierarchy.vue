@@ -4,7 +4,6 @@
  */
 
 import { EntitySchema, ReferenceSchema } from '@/model/evitadb'
-import { CatalogPointer } from '@/model/editor/editor'
 import { computed } from 'vue'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import LabEditorResultVisualiserMissingDataIndicator
@@ -13,6 +12,7 @@ import LabEditorResultVisualiserReferenceNamedHierarchies
     from '@/components/lab/editor/result-visualiser/hierarchy/LabEditorResultVisualiserReferenceNamedHierarchies.vue'
 import { ResultVisualiserService } from '@/services/editor/result-visualiser/result-visualiser.service'
 import { Result } from '@/model/editor/result-visualiser'
+import { CatalogPointer } from '@/model/editor/tab/CatalogPointer'
 
 const toaster: Toaster = useToaster()
 
@@ -43,7 +43,7 @@ function getPanelKey(referenceSchema: ReferenceSchema | undefined): string {
 </script>
 
 <template>
-    <VExpansionPanels v-if="referencesWithNamedHierarchiesResults && referencesWithNamedHierarchiesResults.length > 0" variant="accordion">
+    <VExpansionPanels v-if="referencesWithNamedHierarchiesResults && referencesWithNamedHierarchiesResults.length > 0">
         <VExpansionPanel v-for="referenceWithNamedHierarchResult in referencesWithNamedHierarchiesResults" :key="getPanelKey(referenceWithNamedHierarchResult[0])">
             <VExpansionPanelTitle class="d-flex">
                 <VIcon class="mr-8">mdi-link-variant</VIcon>

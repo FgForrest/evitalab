@@ -1,6 +1,6 @@
 import { inject, InjectionKey } from 'vue'
-import { EvitaQLDataPointer } from '@/model/editor/evitaql-console'
 import { EvitaDBClient } from '@/services/evitadb-client'
+import { EvitaQLDataPointer } from '@/model/editor/tab/evitaQLConsole/EvitaQLDataPointer'
 
 export const key: InjectionKey<EvitaQLConsoleService> = Symbol()
 

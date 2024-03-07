@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
-import { ref, watch } from 'vue'
-import { TabRequest, TabRequestComponentData } from '@/model/editor/editor'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
 import LabEditorTabWindow from './tab/LabEditorTabWindow.vue'
 import { ellipsis } from '@/utils/text-utils'
@@ -11,9 +10,15 @@ import { useToaster } from '@/services/editor/toaster'
 import { DemoSnippetResolver, useDemoSnippetResolver } from '@/services/editor/demo-snippet-resolver.service'
 import { SharedTabResolver, useSharedTabResolver } from '@/services/editor/shared-tab-resolver.service'
 import LabEditorTabSharedDialog from '@/components/lab/editor/tab/LabEditorTabSharedDialog.vue'
+import { Keymap, useKeymap } from '@/model/editor/keymap/Keymap'
+import { TabRequest } from '@/model/editor/tab/TabRequest'
+import { TabRequestComponentData } from '@/model/editor/tab/TabRequestComponentData'
+import { Command } from '@/model/editor/keymap/Command'
+import VActionTooltip from '@/components/base/VActionTooltip.vue'
 
 const currentRoute: RouteLocationNormalizedLoaded = useRoute()
 const toaster = useToaster()
+const keymap: Keymap = useKeymap()
 const editorService: EditorService = useEditorService()
 const demoCodeSnippetResolver: DemoSnippetResolver = useDemoSnippetResolver()
 const sharedTabResolver: SharedTabResolver = useSharedTabResolver()
@@ -26,27 +31,52 @@ const playgroundMode = ref<boolean>(false)
 const sharedTabDialogOpen = ref<boolean>(false)
 const sharedTabRequest = ref<TabRequest<any, any> | undefined>()
 
-const tabs = ref<TabRequest<any, any>[]>(editorService.getTabRequests())
+const tabs = ref<TabRequest<any, any>[]>(editorService.getTabs())
 watch(tabs, () => {
     // switch to newly opened tab
-    const newTab: TabRequest<any, any> | undefined = editorService.getNewTabRequest()
+    const newTab: TabRequest<any, any> | undefined = editorService.getNewTab()
     if (newTab) {
         currentTabId.value = newTab.id
-        editorService.markTabRequestAsVisited(newTab.id)
+        editorService.markTabAsVisited(newTab.id)
     }
 }, { deep: true })
 const currentTabId = ref<string | null>()
-let currentTabData: Map<string, TabRequestComponentData> = new Map<string, TabRequestComponentData>()
+watch(currentTabId, (newTabId, oldTabId) => {
+    if (newTabId != undefined) {
+        keymap.setContext(newTabId)
+    } else if (oldTabId != undefined) {
+        // no more tabs
+        keymap.resetActivatedContext()
+    }
+})
+let currentTabData: Map<string, TabRequestComponentData<any>> = new Map<string, TabRequestComponentData<any>>()
 
-function storeTabData(tabId: string, updatedData: TabRequestComponentData) {
+function storeTabData(tabId: string, updatedData: TabRequestComponentData<any>) {
     currentTabData.set(tabId, updatedData)
+}
+
+function moveTabCursor(diff: number) {
+    if (currentTabId.value == undefined) {
+        return
+    }
+
+    const currentTabIndex: number = editorService.getTabIndex(currentTabId.value as string)
+    let newTabIndex: number = currentTabIndex + diff
+    if (newTabIndex < 0) {
+        newTabIndex = tabs.value.length - 1
+    } else if (newTabIndex >= tabs.value.length) {
+        newTabIndex = 0
+    }
+    currentTabId.value = tabs.value[newTabIndex].id
 }
 
 function closeTab(tabId: string) {
     const prevTabsLength: number = tabs.value.length
     const prevTabIndex: number = tabs.value.findIndex(tab => tab.id === currentTabId.value)
     const closedTabIndex: number = tabs.value.findIndex(tab => tab.id === tabId)
-    editorService.destroyTabRequest(tabId)
+
+    editorService.destroyTab(tabId)
+    keymap.deleteContext(tabId)
 
     if (tabs.value.length === 0) {
         currentTabId.value = null
@@ -93,7 +123,7 @@ function restorePreviousSession(): void {
     try {
         let sessionRestored: boolean = false
 
-        const restoredTabData: Map<string, TabRequestComponentData> | undefined = editorService.createTabRequestsForTabsFromLastSession()
+        const restoredTabData: Map<string, TabRequestComponentData<any>> | undefined = editorService.createTabsForTabsFromLastSession()
         if (restoredTabData != undefined) {
             currentTabData = restoredTabData
             sessionRestored = true
@@ -123,7 +153,7 @@ resolveDemoCodeSnippet()
     .then(tabRequest => {
         if (tabRequest != undefined) {
             playgroundMode.value = true
-            editorService.createTabRequest(tabRequest)
+            editorService.createTab(tabRequest)
         }
         return resolveSharedTab()
     }).then(tabRequest => {
@@ -137,6 +167,23 @@ resolveDemoCodeSnippet()
             restorePreviousSession()
         }
     })
+
+onMounted(() => {
+    keymap.bindGlobal(Command.System_Editor_PreviousTab, () => moveTabCursor(-1))
+    keymap.bindGlobal(Command.System_Editor_NextTab, () => moveTabCursor(1))
+    keymap.bindGlobal(Command.System_Editor_CloseTab, () => {
+        if (currentTabId.value != undefined) {
+            closeTab(currentTabId.value as string)
+        }
+    })
+    keymap.bindGlobal(Command.System_Editor_CloseAllTabs, () => editorService.destroyAllTabs())
+})
+onUnmounted(() => {
+    keymap.unbindGlobal(Command.System_Editor_PreviousTab)
+    keymap.unbindGlobal(Command.System_Editor_NextTab)
+    keymap.unbindGlobal(Command.System_Editor_CloseTab)
+    keymap.unbindGlobal(Command.System_Editor_CloseAllTabs)
+})
 
 window.addEventListener('beforeunload', () => {
     if (!playgroundMode.value) {
@@ -179,11 +226,9 @@ window.addEventListener('beforeunload', () => {
                     @click.stop="closeTab(tab.id)"
                 >
                     <VIcon>mdi-close</VIcon>
-                    <VTooltip
-                        activator="parent"
-                    >
+                    <VActionTooltip :command="Command.System_Editor_CloseTab">
                         Close tab
-                    </VTooltip>
+                    </VActionTooltip>
                 </VBtn>
             </VTab>
         </VTabs>

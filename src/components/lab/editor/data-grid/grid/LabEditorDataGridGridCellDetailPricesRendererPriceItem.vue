@@ -4,7 +4,7 @@
  */
 
 import { QueryPriceMode } from '@/model/evitadb'
-import { EntityPrice, priceTypeKey } from '@/model/editor/data-grid'
+import { EntityPrice, priceTypeKey } from '@/model/editor/tab/dataGrid/data-grid'
 import { mandatoryInject } from '@/helpers/reactivity'
 import LabEditorDataGridGridCellDetailPricesRendererPrice
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCellDetailPricesRendererPrice.vue'

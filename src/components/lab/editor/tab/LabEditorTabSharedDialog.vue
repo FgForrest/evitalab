@@ -4,7 +4,7 @@
  */
 
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
-import { TabRequest } from '@/model/editor/editor'
+import { TabRequest } from '@/model/editor/tab/TabRequest'
 
 const editorService: EditorService = useEditorService()
 
@@ -16,8 +16,7 @@ const emit = defineEmits<{
 }>()
 
 function acceptSharedTab(): void {
-    console.log(props.tabRequest)
-    editorService.createTabRequest(props.tabRequest)
+    editorService.createTab(props.tabRequest)
     emit('resolve')
 }
 

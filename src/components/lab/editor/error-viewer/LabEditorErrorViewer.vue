@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import VStandardCodeMirror from '@/components/base/VStandardCodemirror.vue'
-import { ErrorViewerParams } from '@/model/editor/error-viewer'
 import { computed } from 'vue'
-import { TabComponentEvents, TabComponentProps, VoidTabRequestComponentData } from '@/model/editor/editor'
 import VTabToolbar from '@/components/base/VTabToolbar.vue'
+import VPreviewEditor from '@/components/base/VPreviewEditor.vue'
+import { TabComponentProps } from '@/model/editor/tab/TabComponentProps'
+import { ErrorViewerParams } from '@/model/editor/tab/errorViewer/ErrorViewerParams'
+import { VoidTabRequestComponentData } from '@/model/editor/tab/void/VoidTabRequestComponentData'
+import { TabComponentEvents } from '@/model/editor/tab/TabComponentEvents'
 
 const props = defineProps<TabComponentProps<ErrorViewerParams, VoidTabRequestComponentData>>()
 const emit = defineEmits<TabComponentEvents>()
@@ -43,10 +45,7 @@ emit('ready')
         </VTabToolbar>
 
         <VSheet class="error-viewer__body">
-            <VStandardCodeMirror
-                :model-value="detail"
-                read-only
-            />
+            <VPreviewEditor :model-value="detail"/>
         </VSheet>
     </div>
 </template>
@@ -55,10 +54,6 @@ emit('ready')
 .error-viewer {
     display: grid;
     grid-template-rows: 3rem 1fr;
-
-    &__header {
-        z-index: 100;
-    }
 
     &__body {
         position: relative;

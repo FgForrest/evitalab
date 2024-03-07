@@ -3,24 +3,33 @@
  * Universal button to share the current tab and its data with other users via a link pointing to the same evitaLab
  * instance.
  */
-import {
-    SerializableTabRequestComponentData, SerializableTabRequestComponentParams,
-} from '@/model/editor/editor'
 import { ref } from 'vue'
 import LabEditorTabShareDialog from '@/components/lab/editor/tab/LabEditorTabShareDialog.vue'
-
-import { TabType } from '@/model/editor/tab/tab-type'
+import { TabType } from '@/model/editor/tab/TabType'
+import { TabRequestComponentData } from '@/model/editor/tab/TabRequestComponentData'
+import { TabRequestComponentParams } from '@/model/editor/tab/TabRequestComponentParams'
 
 const props = withDefaults(defineProps<{
     tabType: TabType,
-    tabParams: SerializableTabRequestComponentParams<any>,
-    tabData: SerializableTabRequestComponentData<any> | undefined,
+    tabParams: TabRequestComponentParams<any>,
+    tabData: TabRequestComponentData<any> | undefined,
     disabled?: boolean
 }>(), {
     disabled: false
 })
 
 const shareDialogOpen = ref<boolean>(false)
+
+function share() {
+    shareDialogOpen.value = true
+}
+
+// todo tooltip
+defineExpose<{
+    share: () => void
+}>({
+    share
+})
 </script>
 
 <template>

@@ -1,14 +1,13 @@
-import { TabRequest } from '@/model/editor/editor'
 import { UnexpectedError } from '@/model/lab'
-import { GraphQLConsoleRequest } from '@/model/editor/graphql-console-request'
 import { LabService } from '@/services/lab.service'
 import { inject, InjectionKey } from 'vue'
-import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
-import { EvitaQLConsoleRequest } from '@/model/editor/evitaql-console-request'
-import { DataGridRequest } from '@/model/editor/data-grid-request'
-import { ShareTabObject } from '@/model/editor/tab/share-tab-object'
-
-import { TabType } from '@/model/editor/tab/tab-type'
+import { TabRequest } from '@/model/editor/tab/TabRequest'
+import { ShareTabObject } from '@/model/editor/tab/ShareTabObject'
+import { TabType } from '@/model/editor/tab/TabType'
+import { DataGridRequest } from '@/model/editor/tab/dataGrid/data-grid-request'
+import { EvitaQLConsoleRequest } from '@/model/editor/tab/evitaQLConsole/EvitaQLConsoleRequest'
+import { GraphQLConsoleRequest } from '@/model/editor/tab/graphQLConsole/GraphQLConsoleRequest'
+import { SchemaViewerRequest } from '@/model/editor/tab/schemaViewer/SchemaViewerRequest'
 
 export const key: InjectionKey<SharedTabResolver> = Symbol()
 

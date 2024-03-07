@@ -5,7 +5,7 @@ import { TYPE } from 'vue-toastification/src/ts/constants'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
 import { v4 as uuidv4 } from 'uuid'
 import { LabError, UnexpectedError } from '@/model/lab'
-import { ErrorViewerRequest } from '@/model/editor/error-viewer-request'
+import { ErrorViewerRequest } from '@/model/editor/tab/errorViewer/ErrorViewerRequest'
 
 /**
  * Wrapper around the toastification plugin. Provides a more convenient API for firing toast notifications
@@ -60,7 +60,7 @@ export class Toaster {
             id,
             icon: 'mdi mdi-alert-circle-outline',
             onClick: () => {
-                this.editorService.createTabRequest(new ErrorViewerRequest(error.connection, error))
+                this.editorService.createTab(ErrorViewerRequest.createNew(error.connection, error))
                 this.toast.dismiss(id)
             }
         }

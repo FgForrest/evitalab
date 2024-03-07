@@ -1,13 +1,21 @@
 import { QueryExecutor } from '@/services/editor/data-grid/query-executor'
 import { LabService } from '@/services/lab.service'
-import {
-    DataGridDataPointer, EntityPrice, EntityPrices, EntityPropertyKey,
-    EntityPropertyType, EntityPropertyValue, EntityReferenceValue, FlatEntity, NativeValue,
-    QueryResult,
-    StaticEntityProperties, WritableEntityProperty
-} from '@/model/editor/data-grid'
 import { EvitaDBClient } from '@/services/evitadb-client'
 import { Response } from '@/model/evitadb'
+import {
+    DataGridDataPointer,
+    EntityPrice,
+    EntityPrices,
+    EntityPropertyKey,
+    EntityPropertyType,
+    EntityPropertyValue,
+    EntityReferenceValue,
+    FlatEntity,
+    NativeValue,
+    QueryResult,
+    StaticEntityProperties,
+    WritableEntityProperty
+} from '@/model/editor/tab/dataGrid/data-grid'
 
 /**
  * Query executor for EvitaQL language.

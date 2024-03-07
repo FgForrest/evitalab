@@ -12,7 +12,7 @@ import {
     ExtraEntityObjectType,
     FlatEntity, selectedEntityKey,
     StaticEntityProperties
-} from '@/model/editor/data-grid'
+} from '@/model/editor/tab/dataGrid/data-grid'
 import { computed, provide, ref } from 'vue'
 import LabEditorDataGridGridCellDetailDelegateRenderer
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCellDetailDelegateRenderer.vue'
@@ -119,7 +119,6 @@ const componentDataType = computed<Scalar | ExtraEntityObjectType | undefined>((
 
             <VExpansionPanels
                 v-else
-                variant="accordion"
                 multiple
                 class="pa-4 data-grid-cell-detail-array"
             >

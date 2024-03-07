@@ -1,23 +1,20 @@
 import { Store } from 'vuex'
 import { State } from '@/store'
-import {
-    SerializableTabRequestComponentData,
-    SerializableTabRequestComponentParams,
-    TabRequest,
-    TabRequestComponentData,
-} from '@/model/editor/editor'
 import { inject, InjectionKey } from 'vue'
-import { DataGridRequest } from '@/model/editor/data-grid-request'
-import { EvitaQLConsoleRequest } from '@/model/editor/evitaql-console-request'
-import { GraphQLConsoleRequest } from '@/model/editor/graphql-console-request'
-import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
 import { UnexpectedError } from '@/model/lab'
 import { LabService } from '@/services/lab.service'
-import { StoredTabObject } from '@/model/editor/tab/stored-tab-object'
 import { LabStorage } from '@/services/lab-storage'
-import { TabType } from '@/model/editor/tab/tab-type'
 import LZString from 'lz-string'
-import { TabHistoryKey } from '@/model/editor/tab/tab-history-key'
+import { TabRequest } from '@/model/editor/tab/TabRequest'
+import { TabRequestComponentData } from '@/model/editor/tab/TabRequestComponentData'
+import { StoredTabObject } from '@/model/editor/tab/StoredTabObject'
+import { TabType } from '@/model/editor/tab/TabType'
+import { DataGridRequest } from '@/model/editor/tab/dataGrid/data-grid-request'
+import { EvitaQLConsoleRequest } from '@/model/editor/tab/evitaQLConsole/EvitaQLConsoleRequest'
+import { GraphQLConsoleRequest } from '@/model/editor/tab/graphQLConsole/GraphQLConsoleRequest'
+import { SchemaViewerRequest } from '@/model/editor/tab/schemaViewer/SchemaViewerRequest'
+import { KeymapViewerRequest } from '@/model/editor/tab/keymapViewer/KeymapViewerRequest'
+import { TabHistoryKey } from '@/model/editor/tab/history/TabHistoryKey'
 
 export const key: InjectionKey<EditorService> = Symbol()
 
@@ -36,35 +33,39 @@ export class EditorService {
         this.labService = labService
     }
 
-    getTabRequests(): TabRequest<any, any>[] {
+    getTabs(): TabRequest<any, any>[] {
         return this.store.state.editor.tabRequests
     }
 
-    getTabRequest(id: string): TabRequest<any, any> | undefined {
-        return this.getTabRequests().find(it => it.id === id)
+    getTab(id: string): TabRequest<any, any> | undefined {
+        return this.getTabs().find(it => it.id === id)
     }
 
-    getTabRequestIndex(id: string): number {
-        return this.getTabRequests().findIndex(it => it.id === id)
+    getTabIndex(id: string): number {
+        return this.getTabs().findIndex(it => it.id === id)
     }
 
-    getNewTabRequest(): TabRequest<any, any> | undefined {
-        return this.getTabRequests().find(it => it.new)
+    getNewTab(): TabRequest<any, any> | undefined {
+        return this.getTabs().find(it => it.new)
     }
 
-    createTabRequest(tabRequest: TabRequest<any, any>): void {
-        this.store.commit('editor/addTabRequest', tabRequest)
+    createTab(tabRequest: TabRequest<any, any>): void {
+        this.store.commit('editor/addTab', tabRequest)
     }
 
-    markTabRequestAsVisited(tabId: string): void {
-        this.store.commit('editor/markTabRequestAsVisited', tabId)
+    markTabAsVisited(tabId: string): void {
+        this.store.commit('editor/markTabAsVisited', tabId)
     }
 
-    destroyTabRequest(tabId: string): void {
-        this.store.commit('editor/destroyTabRequest', tabId)
+    destroyTab(tabId: string): void {
+        this.store.commit('editor/destroyTab', tabId)
     }
 
-    createTabRequestsForTabsFromLastSession(): Map<string, TabRequestComponentData> | undefined {
+    destroyAllTabs(): void {
+        this.store.commit('editor/destroyAllTabs')
+    }
+
+    createTabsForTabsFromLastSession(): Map<string, TabRequestComponentData<any>> | undefined {
         const storage: LabStorage = this.store.state.lab.storage
         const lastOpenedTabs: StoredTabObject[] = storage.get(openedTabsStorageKey, [])
             .map((it: string) => StoredTabObject.restoreFromSerializable(it))
@@ -73,7 +74,7 @@ export class EditorService {
             return undefined
         }
 
-        const restoredTabsData: Map<string, TabRequestComponentData> = new Map()
+        const restoredTabsData: Map<string, TabRequestComponentData<any>> = new Map()
         lastOpenedTabs
             .map(storedTabObject => {
                 switch (storedTabObject.tabType) {
@@ -85,6 +86,8 @@ export class EditorService {
                         return GraphQLConsoleRequest.restoreFromJson(this.labService, storedTabObject.tabParams, storedTabObject.tabData || {})
                     case TabType.SchemaViewer:
                         return SchemaViewerRequest.restoreFromJson(this.labService, storedTabObject.tabParams)
+                    case TabType.KeymapViewer:
+                        return KeymapViewerRequest.createNew()
                     default:
                         throw new UnexpectedError(undefined, `Unsupported stored tab type '${storedTabObject.tabType}'.`)
                 }
@@ -93,14 +96,14 @@ export class EditorService {
                 if (tabRequest.initialData != undefined) {
                     restoredTabsData.set(tabRequest.id, tabRequest.initialData)
                 }
-                this.createTabRequest(tabRequest)
+                this.createTab(tabRequest)
             })
 
         return restoredTabsData
     }
 
-    storeOpenedTabs(tabsData: Map<string, TabRequestComponentData>): void {
-        const tabsToStore: string[] = this.getTabRequests()
+    storeOpenedTabs(tabsData: Map<string, TabRequestComponentData<any>>): void {
+        const tabsToStore: string[] = this.getTabs()
             .map(tabRequest => {
                 let tabType: TabType
                 if (tabRequest instanceof DataGridRequest) {
@@ -111,16 +114,18 @@ export class EditorService {
                     tabType = TabType.GraphQLConsole
                 } else if (tabRequest instanceof SchemaViewerRequest) {
                     tabType = TabType.SchemaViewer
+                } else if (tabRequest instanceof KeymapViewerRequest) {
+                    tabType = TabType.KeymapViewer
                 } else {
                     console.info(undefined, `Unsupported tab type '${tabRequest.constructor.name}'. Not storing for next session.`)
                     return undefined
                 }
 
-                const tabData: TabRequestComponentData | undefined = tabsData.get(tabRequest.id)
+                const tabData: TabRequestComponentData<any> | undefined = tabsData.get(tabRequest.id)
                 return new StoredTabObject(
                     tabType,
-                    (tabRequest.params as SerializableTabRequestComponentParams<any>).toSerializable(),
-                    tabData instanceof SerializableTabRequestComponentData ? tabData.toSerializable() : undefined
+                    tabRequest.params.toSerializable(),
+                    tabData != undefined ? tabData.toSerializable() : undefined
                 )
             })
             .filter(it => it != undefined)

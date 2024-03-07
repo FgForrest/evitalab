@@ -4,6 +4,10 @@
  */
 
 import VListItemDivider from '@/components/base/VListItemDivider.vue'
+import { ref } from 'vue'
+import { VBtn } from 'vuetify/components'
+import VActionTooltip from '@/components/base/VActionTooltip.vue'
+import { Command } from '@/model/editor/keymap/Command'
 
 const props = defineProps<{
     selected: string | undefined,
@@ -12,6 +16,8 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: 'update:selected', value: string | undefined): void
 }>()
+
+const dataLocaleButtonRef = ref<InstanceType<typeof VBtn> | undefined>()
 
 function handleDataLocaleSelect(selected: unknown[]) {
     if (selected.length > 0) {
@@ -25,19 +31,31 @@ function handleDataLocaleSelect(selected: unknown[]) {
         emit('update:selected', undefined)
     }
 }
+
+function focus(): void {
+    dataLocaleButtonRef.value?.$el?.click()
+    dataLocaleButtonRef.value?.$el?.focus()
+}
+
+defineExpose<{
+    focus: () => void
+}>({
+    focus
+})
 </script>
 
 <template>
     <VBtn
+        ref="dataLocaleButtonRef"
         icon
         density="comfortable"
     >
         <VIcon v-if="!selected">mdi-translate-off</VIcon>
         <VIcon v-else>mdi-translate</VIcon>
 
-        <VTooltip activator="parent">
+        <VActionTooltip :command="Command.EntityGrid_ChangeDataLocale">
             Select data locale
-        </VTooltip>
+        </VActionTooltip>
 
         <VMenu activator="parent">
             <VList

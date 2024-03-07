@@ -8,7 +8,7 @@ import {
     EntityPropertyValueSupportedCodeLanguage,
     QueryResult,
     StaticEntityProperties
-} from '@/model/editor/data-grid'
+} from '@/model/editor/tab/dataGrid/data-grid'
 import { QueryLanguage, UnexpectedError } from '@/model/lab'
 import { QueryExecutor } from '@/services/editor/data-grid/query-executor'
 import { QueryBuilder } from '@/services/editor/data-grid/query-builder'

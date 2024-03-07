@@ -3,8 +3,8 @@
  * Ancestor for selectable entity property items.
  */
 
-import { EntityPropertyKey } from '@/model/editor/data-grid'
 import VMarkdown from '@/components/base/VMarkdown.vue'
+import { EntityPropertyKey } from '@/model/editor/tab/dataGrid/data-grid'
 
 const props = withDefaults(defineProps<{
     value: EntityPropertyKey,

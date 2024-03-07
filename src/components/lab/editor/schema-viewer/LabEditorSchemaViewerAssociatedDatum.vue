@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import LabEditorViewerNameVariants from './LabEditorSchemaViewerNameVariants.vue'
 import LabEditorViewerContainer from './LabEditorSchemaViewerContainer.vue'
-import { SchemaViewerDataPointer } from '@/model/editor/schema-viewer'
 import { AssociatedDataSchema } from '@/model/evitadb'
 import { KeywordValue, Property, PropertyValue } from '@/model/properties-table'
+import { SchemaViewerDataPointer } from '@/model/editor/tab/schemaViewer/SchemaViewerDataPointer'
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,

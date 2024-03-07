@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { EntityPrice } from '@/model/editor/data-grid'
+import { EntityPrice } from '@/model/editor/tab/dataGrid/data-grid'
 import VPropertiesTable from '@/components/base/VPropertiesTable.vue'
 import { computed } from 'vue'
 import { KeywordValue, Property, PropertyValue, RangeValue } from '@/model/properties-table'

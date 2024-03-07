@@ -1,11 +1,10 @@
+import { LabService } from '@/services/lab.service'
 import {
-    DataGridDataPointer, EntityPropertyValue,
-    FlatEntity,
-    NativeValue,
+    DataGridDataPointer,
+    EntityPropertyValue, FlatEntity, NativeValue,
     QueryResult,
     WritableEntityProperty
-} from '@/model/editor/data-grid'
-import { LabService } from '@/services/lab.service'
+} from '@/model/editor/tab/dataGrid/data-grid'
 
 /**
  * Executes query against evitaDB server in language defined by implementation.

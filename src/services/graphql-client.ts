@@ -17,7 +17,8 @@ export class GraphQLClient extends ApiClient {
                     `${connection.gqlUrl}/${path}`,
                     {
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'X-EvitaDB-ClientID': this.getClientIdHeaderValue()
                         },
                         body: JSON.stringify({
                             query,

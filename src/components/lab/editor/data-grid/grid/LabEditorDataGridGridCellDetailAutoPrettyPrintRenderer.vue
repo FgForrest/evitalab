@@ -9,7 +9,7 @@ import {
     EntityPropertyValueSupportedCodeLanguage,
     ExtraEntityObjectType,
     NativeValue
-} from '@/model/editor/data-grid'
+} from '@/model/editor/tab/dataGrid/data-grid'
 import LabEditorDataGridGridCellDetailMarkdownRenderer
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCellDetailMarkdownRenderer.vue'
 import LabEditorDataGridGridCellDetailCodeRenderer

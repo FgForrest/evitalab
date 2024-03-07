@@ -15,27 +15,30 @@ import {
     EntityPropertyKey,
     EntityPropertyType,
     FlatEntity,
-    gridParamsKey,
+    gridPropsKey,
     priceTypeKey,
     queryFilterKey,
     queryLanguageKey,
     QueryResult
-} from '@/model/editor/data-grid'
+} from '@/model/editor/tab/dataGrid/data-grid'
 import { DataGridService, useDataGridService } from '@/services/editor/data-grid.service'
 import { QueryLanguage } from '@/model/lab'
 import { Toaster, useToaster } from '@/services/editor/toaster'
-import { TabComponentEvents, TabComponentProps } from '@/model/editor/editor'
 import LabEditorDataGridQueryInput from '@/components/lab/editor/data-grid/LabEditorDataGridQueryInput.vue'
 import LabEditorDataGridToolbar from '@/components/lab/editor/data-grid/LabEditorDataGridToolbar.vue'
 import LabEditorDataGridGrid from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGrid.vue'
 import { QueryPriceMode } from '@/model/evitadb'
+import { TabComponentProps } from '@/model/editor/tab/TabComponentProps'
+import { TabComponentEvents } from '@/model/editor/tab/TabComponentEvents'
+import VActionTooltip from '@/components/base/VActionTooltip.vue'
+import { Command } from '@/model/editor/keymap/Command'
 
 const dataGridService: DataGridService = useDataGridService()
 const toaster: Toaster = useToaster()
 
 const props = defineProps<TabComponentProps<DataGridParams, DataGridData>>()
 const emit = defineEmits<TabComponentEvents>()
-provide(gridParamsKey, props.params)
+provide(gridPropsKey, props!)
 
 // static data
 const path = ref<string[]>([
@@ -52,7 +55,7 @@ let gridHeaders: Map<string, any> = new Map<string, any>()
 let dataLocales: string[] = []
 
 // dynamic user data
-const selectedQueryLanguage = ref<QueryLanguage>(props.data?.queryLanguage ? props.data.queryLanguage : QueryLanguage.EvitaQL)
+const selectedQueryLanguage = ref<QueryLanguage>(props.data.queryLanguage ? props.data.queryLanguage : QueryLanguage.EvitaQL)
 provide(queryLanguageKey, readonly(selectedQueryLanguage))
 watch(selectedQueryLanguage, (newValue, oldValue) => {
     if (newValue[0] === oldValue[0]) {
@@ -66,23 +69,23 @@ watch(selectedQueryLanguage, (newValue, oldValue) => {
 })
 
 const loading = ref<boolean>(false)
-const pageNumber = ref<number>(props.data?.pageNumber ? props.data.pageNumber : 1)
-const pageSize = ref<number>(props.data?.pageSize ? props.data.pageSize : 25)
+const pageNumber = ref<number>(props.data.pageNumber ? props.data.pageNumber : 1)
+const pageSize = ref<number>(props.data.pageSize ? props.data.pageSize : 25)
 
-const filterByCode = ref<string>(props.data?.filterBy ? props.data.filterBy : '')
+const filterByCode = ref<string>(props.data.filterBy ? props.data.filterBy : '')
 const lastAppliedFilterByCode = ref<string>('')
 provide(queryFilterKey, readonly(lastAppliedFilterByCode))
-const orderByCode = ref<string>(props.data?.orderBy ? props.data.orderBy : '')
+const orderByCode = ref<string>(props.data.orderBy ? props.data.orderBy : '')
 
-const selectedDataLocale = ref<string | undefined>(props.data?.dataLocale ? props.data.dataLocale : undefined)
+const selectedDataLocale = ref<string | undefined>(props.data.dataLocale ? props.data.dataLocale : undefined)
 provide(dataLocaleKey, readonly(selectedDataLocale))
 watch(selectedDataLocale, () => executeQueryAutomatically())
 
-const selectedPriceType = ref<QueryPriceMode | undefined>(props.data?.priceType ? props.data.priceType : undefined)
+const selectedPriceType = ref<QueryPriceMode | undefined>(props.data.priceType ? props.data.priceType : undefined)
 watch(selectedPriceType, () => executeQueryAutomatically())
 provide(priceTypeKey, readonly(selectedPriceType))
 
-const displayedProperties = ref<EntityPropertyKey[]>(props.data?.displayedProperties ? props.data.displayedProperties : [])
+const displayedProperties = ref<EntityPropertyKey[]>(props.data.displayedProperties ? props.data.displayedProperties : [])
 watch(displayedProperties, (newValue, oldValue) => {
     updateDisplayedGridHeaders()
 
@@ -325,6 +328,9 @@ async function executeQuery(): Promise<void> {
             <p>Loaded query data must be manually executed.</p>
             <VBtn @click="executeQueryManually">
                 Execute query
+                <VActionTooltip :command="Command.EntityGrid_ExecuteQuery">
+                    Execute query
+                </VActionTooltip>
             </VBtn>
         </div>
     </div>

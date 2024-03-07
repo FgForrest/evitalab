@@ -3,8 +3,7 @@
  * Entity property value renderer that tries to render the value in a code editor.
  */
 
-import VStandardCodeMirror from '@/components/base/VStandardCodemirror.vue'
-import { EntityPropertyValue, EntityPropertyValueSupportedCodeLanguage } from '@/model/editor/data-grid'
+import { EntityPropertyValue, EntityPropertyValueSupportedCodeLanguage } from '@/model/editor/tab/dataGrid/data-grid'
 import { computed, ref } from 'vue'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import { Extension } from '@codemirror/state'
@@ -14,6 +13,7 @@ import { UnexpectedError } from '@/model/lab'
 import LabEditorDataGridGridCellDetailValueRenderer
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCellDetailValueRenderer.vue'
 import { DataGridService, useDataGridService } from '@/services/editor/data-grid.service'
+import VPreviewEditor from '@/components/base/VPreviewEditor.vue'
 
 const toaster: Toaster = useToaster()
 const dataGridService: DataGridService = useDataGridService()
@@ -105,9 +105,8 @@ function copyRenderedValue() {
         :actions="actions"
         @click:action="handleActionClick"
     >
-        <VStandardCodeMirror
+        <VPreviewEditor
             :model-value="formattedValue"
-            read-only
             :additional-extensions="codeBlockExtensions"
         />
     </LabEditorDataGridGridCellDetailValueRenderer>

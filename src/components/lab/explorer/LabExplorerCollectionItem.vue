@@ -4,13 +4,10 @@ import VTreeViewItem from '@/components/base/VTreeViewItem.vue'
 import { EvitaDBConnection } from '@/model/lab'
 import { inject, Ref, ref } from 'vue'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
-import { DataGridRequest } from '@/model/editor/data-grid-request'
-import { GraphQLConsoleRequest } from '@/model/editor/graphql-console-request'
-import { GraphQLInstanceType } from '@/model/editor/graphql-console'
-import { EvitaQLConsoleRequest } from '@/model/editor/evitaql-console-request'
-import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
-import { EntitySchemaPointer } from '@/model/editor/schema-viewer'
 import { CatalogSchema, EntitySchema } from '@/model/evitadb'
+import { DataGridRequest } from '@/model/editor/tab/dataGrid/data-grid-request'
+import { SchemaViewerRequest } from '@/model/editor/tab/schemaViewer/SchemaViewerRequest'
+import { EntitySchemaPointer } from '@/model/editor/tab/schemaViewer/EntitySchemaPointer'
 
 enum ActionType {
     ViewEntities = 'view-entities',
@@ -44,7 +41,7 @@ const connection = inject<EvitaDBConnection>('connection') as EvitaDBConnection
 const catalogSchema = inject<Ref<CatalogSchema | undefined>>('catalogSchema') as Ref<CatalogSchema>
 
 function openDataGrid() {
-    editorService.createTabRequest(DataGridRequest.createNew(
+    editorService.createTab(DataGridRequest.createNew(
         connection as EvitaDBConnection,
         catalogSchema.value.name,
         props.entitySchema.name,
@@ -59,7 +56,7 @@ function handleAction(action: string) {
             openDataGrid()
             break
         case ActionType.ViewSchema:
-            editorService.createTabRequest(
+            editorService.createTab(
                 SchemaViewerRequest.createNew(
                     connection,
                     new EntitySchemaPointer(

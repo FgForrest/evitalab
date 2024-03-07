@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import LabEditorTabLoadingScreen from '@/components/lab/editor/tab/LabEditorTabLoadingScreen.vue'
-import { TabRequestComponentData } from '@/model/editor/editor'
+import { TabRequestComponentData } from '@/model/editor/tab/TabRequestComponentData'
 
 const props = defineProps<{
     component: any,
     componentProps: any
 }>()
 const emit = defineEmits<{
-    (e: 'dataUpdate', value: TabRequestComponentData): void
+    (e: 'dataUpdate', value: TabRequestComponentData<any>): void
 }>()
 
 const componentReady = ref<boolean>(false)

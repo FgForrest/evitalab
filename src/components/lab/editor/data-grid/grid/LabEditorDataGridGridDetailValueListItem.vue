@@ -4,7 +4,7 @@ import LabEditorDataGridGridCellDetailDelegateRenderer
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCellDetailDelegateRenderer.vue'
 import LabEditorDataGridGridCellDetailOutputFormatSelector
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCellDetailOutputFormatSelector.vue'
-import { EntityPropertyValue, EntityPropertyValueDesiredOutputFormat } from '@/model/editor/data-grid'
+import { EntityPropertyValue, EntityPropertyValueDesiredOutputFormat } from '@/model/editor/tab/dataGrid/data-grid'
 import { computed, ref } from 'vue'
 import { Scalar } from '@/model/evitadb'
 

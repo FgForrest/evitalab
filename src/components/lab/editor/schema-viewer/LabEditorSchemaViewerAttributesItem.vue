@@ -1,20 +1,18 @@
 <script setup lang="ts">
-import {
-    CatalogAttributeSchemaPointer,
-    CatalogSchemaPointer,
-    EntityAttributeSchemaPointer,
-    EntitySchemaPointer,
-    ReferenceAttributeSchemaPointer,
-    ReferenceSchemaPointer,
-    SchemaViewerDataPointer
-} from '@/model/editor/schema-viewer'
 import { AttributeSchemaUnion } from '@/model/evitadb'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
-import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
 import { UnexpectedError } from '@/model/lab'
 import LabEditorSchemaViewerContainerSectionListItem
     from '@/components/lab/editor/schema-viewer/LabEditorSchemaViewerContainerSectionListItem.vue'
 import { LabService, useLabService } from '@/services/lab.service'
+import { SchemaViewerDataPointer } from '@/model/editor/tab/schemaViewer/SchemaViewerDataPointer'
+import { CatalogSchemaPointer } from '@/model/editor/tab/schemaViewer/CatalogSchemaPointer'
+import { SchemaViewerRequest } from '@/model/editor/tab/schemaViewer/SchemaViewerRequest'
+import { CatalogAttributeSchemaPointer } from '@/model/editor/tab/schemaViewer/CatalogAttributeSchemaPointer'
+import { EntitySchemaPointer } from '@/model/editor/tab/schemaViewer/EntitySchemaPointer'
+import { EntityAttributeSchemaPointer } from '@/model/editor/tab/schemaViewer/EntityAttributeSchemaPointer'
+import { ReferenceSchemaPointer } from '@/model/editor/tab/schemaViewer/ReferenceSchemaPointer'
+import { ReferenceAttributeSchemaPointer } from '@/model/editor/tab/schemaViewer/ReferenceAttributeSchemaPointer'
 
 const labService: LabService = useLabService()
 const editorService: EditorService = useEditorService()
@@ -29,7 +27,7 @@ const flags: string[] = labService.getAttributeSchemaFlags(props.schema)
 function openAttributeSchema(): void {
     const parentSchemaPointer = props.dataPointer.schemaPointer
     if (parentSchemaPointer instanceof CatalogSchemaPointer) {
-        editorService.createTabRequest(SchemaViewerRequest.createNew(
+        editorService.createTab(SchemaViewerRequest.createNew(
             props.dataPointer.connection,
             new CatalogAttributeSchemaPointer(
                 parentSchemaPointer.catalogName,
@@ -37,7 +35,7 @@ function openAttributeSchema(): void {
             )
         ))
     } else if (parentSchemaPointer instanceof EntitySchemaPointer) {
-        editorService.createTabRequest(SchemaViewerRequest.createNew(
+        editorService.createTab(SchemaViewerRequest.createNew(
             props.dataPointer.connection,
             new EntityAttributeSchemaPointer(
                 parentSchemaPointer.catalogName,
@@ -46,7 +44,7 @@ function openAttributeSchema(): void {
             )
         ))
     } else if (parentSchemaPointer instanceof ReferenceSchemaPointer) {
-        editorService.createTabRequest(SchemaViewerRequest.createNew(
+        editorService.createTab(SchemaViewerRequest.createNew(
             props.dataPointer.connection,
             new ReferenceAttributeSchemaPointer(
                 parentSchemaPointer.catalogName,

@@ -6,15 +6,15 @@
 import { computed, inject } from 'vue'
 import {
     DataGridData, dataLocaleKey,
-    entityPropertyDescriptorKey, EntityPropertyValue, EntityReferenceValue, gridParamsKey, queryLanguageKey
-} from '@/model/editor/data-grid'
+    entityPropertyDescriptorKey, EntityPropertyValue, EntityReferenceValue, gridPropsKey, queryLanguageKey
+} from '@/model/editor/tab/dataGrid/data-grid'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import { Scalar } from '@/model/evitadb'
 import LabEditorDataGridGridDetailValueListItem
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridDetailValueListItem.vue'
 import { mandatoryInject } from '@/helpers/reactivity'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
-import { DataGridRequest } from '@/model/editor/data-grid-request'
+import { DataGridRequest } from '@/model/editor/tab/dataGrid/data-grid-request'
 import { DataGridService, useDataGridService } from '@/services/editor/data-grid.service'
 import { QueryLanguage } from '@/model/lab'
 
@@ -28,7 +28,7 @@ const props = withDefaults(defineProps<{
 }>(), {
     fillSpace: true
 })
-const gridParams = mandatoryInject(gridParamsKey)
+const gridProps = mandatoryInject(gridPropsKey)
 const queryLanguage = mandatoryInject(queryLanguageKey)
 const dataLocale = inject(dataLocaleKey)
 const propertyDescriptor = mandatoryInject(entityPropertyDescriptorKey)
@@ -54,9 +54,9 @@ const attributeDataType = computed<Scalar>(() => {
 
 function openReference(primaryKey: number): void {
     // we want references to open referenced entities in appropriate new grid for referenced collection
-    editorService.createTabRequest(DataGridRequest.createNew(
-        gridParams.dataPointer.connection,
-        gridParams.dataPointer.catalogName,
+    editorService.createTab(DataGridRequest.createNew(
+        gridProps.params.dataPointer.connection,
+        gridProps.params.dataPointer.catalogName,
         propertyDescriptor!.parentSchema!.referencedEntityType,
         new DataGridData(
             queryLanguage.value,
@@ -71,10 +71,7 @@ function openReference(primaryKey: number): void {
 
 <template>
     <div class="reference-attributes">
-        <VExpansionPanels
-            variant="accordion"
-            class="pa-4 reference-attributes-renderer-reference-array"
-        >
+        <VExpansionPanels class="pa-4 reference-attributes-renderer-reference-array">
             <VExpansionPanel v-for="reference of referencesWithAttributes" :key="reference.primaryKey">
                 <VExpansionPanelTitle>
                     <VIcon class="mr-3">mdi-link-variant</VIcon>
@@ -91,7 +88,7 @@ function openReference(primaryKey: number): void {
                 </VExpansionPanelTitle>
 
                 <VExpansionPanelText>
-                    <VExpansionPanels variant="accordion">
+                    <VExpansionPanels>
                         <LabEditorDataGridGridDetailValueListItem
                             v-for="(representativeAttribute, index) of reference.representativeAttributes"
                             :key="index"

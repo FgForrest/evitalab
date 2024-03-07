@@ -1,5 +1,5 @@
-import { TabRequest } from '@/model/editor/editor'
-import { TabHistoryKey } from '@/model/editor/tab/tab-history-key'
+import { TabRequest } from '@/model/editor/tab/TabRequest'
+import { TabHistoryKey } from '@/model/editor/tab/history/TabHistoryKey'
 
 export type EditorState = {
     readonly tabRequests: TabRequest<any, any>[],
@@ -11,9 +11,10 @@ type EditorGetters = {
 }
 
 type EditorMutations = {
-    addTabRequest: (state: EditorState, tabRequest: TabRequest<any, any>) => void,
-    markTabRequestAsVisited: (state: EditorState, id: string) => void,
-    destroyTabRequest: (state: EditorState, id: string) => void,
+    addTab: (state: EditorState, tabRequest: TabRequest<any, any>) => void,
+    markTabAsVisited: (state: EditorState, id: string) => void,
+    destroyTab: (state: EditorState, id: string) => void,
+    destroyAllTabs: (state: EditorState) => void,
 
     prefillTabHistory: (state: EditorState, tabHistory: Map<string, any[]>) => void,
     addTabHistoryRecord: <R>(state: EditorState, payload: { historyKey: TabHistoryKey<R>, record: R }) => void,
@@ -34,19 +35,27 @@ const getters: EditorGetters = {
 }
 
 const mutations: EditorMutations = {
-    addTabRequest (state, tabRequest): void {
-        state.tabRequests.push(tabRequest)
+    addTab (state, tabRequest): void {
+        // tab requests may share static ID to indicate only one such tab can be opened at a time
+        const tabRequestWithSameId = state.tabRequests.find(it => it.id === tabRequest.id)
+        if (tabRequestWithSameId == undefined) {
+            state.tabRequests.push(tabRequest)
+        }
     },
 
-    markTabRequestAsVisited (state, id): void {
+    markTabAsVisited (state, id): void {
         const tabRequest: TabRequest<any, any> | undefined = state.tabRequests.find(tabRequest => tabRequest.id === id)
         if (tabRequest) {
             tabRequest.new = false
         }
     },
 
-    destroyTabRequest (state, id): void {
+    destroyTab (state, id): void {
         state.tabRequests.splice(state.tabRequests.findIndex(tabRequest => tabRequest.id === id), 1)
+    },
+
+    destroyAllTabs (state): void {
+        state.tabRequests.splice(0)
     },
 
     prefillTabHistory (state, tabHistory): void {

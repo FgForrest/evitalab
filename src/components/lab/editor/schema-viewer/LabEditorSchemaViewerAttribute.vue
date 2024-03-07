@@ -8,7 +8,6 @@ import {
     GlobalAttributeSchema,
     GlobalAttributeUniquenessType
 } from '@/model/evitadb'
-import { SchemaViewerDataPointer } from '@/model/editor/schema-viewer'
 import {
     MultiValueFlagValue,
     KeywordValue,
@@ -16,6 +15,7 @@ import {
     PropertyValue,
     NotApplicableValue
 } from '@/model/properties-table'
+import { SchemaViewerDataPointer } from '@/model/editor/tab/schemaViewer/SchemaViewerDataPointer'
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,

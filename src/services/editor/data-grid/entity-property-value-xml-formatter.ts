@@ -1,7 +1,7 @@
 import { EntityPropertyValueFormatter } from '@/services/editor/data-grid/entity-property-value-formatter'
 import xmlFormat from 'xml-formatter'
 import { UnexpectedError } from '@/model/lab'
-import { EntityPropertyValue } from '@/model/editor/data-grid'
+import { EntityPropertyValue } from '@/model/editor/tab/dataGrid/data-grid'
 
 /**
  * Fake root element for pretty printing XML with multiple roots which is not valid XML but we in data, there may be partial

@@ -7,7 +7,7 @@ import LabEditorDataGridGridCellDetailValueRenderer
     from '@/components/lab/editor/data-grid/grid/LabEditorDataGridGridCellDetailValueRenderer.vue'
 import { computed } from 'vue'
 import DOMPurify from 'dompurify'
-import { EntityPropertyValue } from '@/model/editor/data-grid'
+import { EntityPropertyValue } from '@/model/editor/tab/dataGrid/data-grid'
 
 const props = withDefaults(defineProps<{
     value: EntityPropertyValue | EntityPropertyValue[],

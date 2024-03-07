@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import LabEditorViewerNameVariants from './LabEditorSchemaViewerNameVariants.vue'
 import LabEditorViewerContainer from './LabEditorSchemaViewerContainer.vue'
-import { EntitySchemaPointer, SchemaViewerDataPointer } from '@/model/editor/schema-viewer'
 import LabEditorSchemaViewerAttributes from './LabEditorSchemaViewerAttributes.vue'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
-import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
 import { ReferenceSchema } from '@/model/evitadb'
 import { KeywordValue, Property, PropertyValue } from '@/model/properties-table'
+import { SchemaViewerDataPointer } from '@/model/editor/tab/schemaViewer/SchemaViewerDataPointer'
+import { SchemaViewerRequest } from '@/model/editor/tab/schemaViewer/SchemaViewerRequest'
+import { EntitySchemaPointer } from '@/model/editor/tab/schemaViewer/EntitySchemaPointer'
 
 const editorService: EditorService = useEditorService()
 
@@ -26,7 +27,7 @@ if (props.schema.referencedEntityTypeManaged) {
             new KeywordValue(props.schema.referencedEntityType),
             undefined,
             item => {
-                editorService.createTabRequest(SchemaViewerRequest.createNew(
+                editorService.createTab(SchemaViewerRequest.createNew(
                     props.dataPointer.connection,
                     new EntitySchemaPointer(
                         props.dataPointer.schemaPointer.catalogName,
@@ -52,7 +53,7 @@ if (props.schema.referencedGroupType == undefined) {
             props.schema.referencedGroupType ? new KeywordValue(props.schema.referencedGroupType) : undefined,
             undefined,
             item => {
-                editorService.createTabRequest(SchemaViewerRequest.createNew(
+                editorService.createTab(SchemaViewerRequest.createNew(
                     props.dataPointer.connection,
                     new EntitySchemaPointer(
                         props.dataPointer.schemaPointer.catalogName,

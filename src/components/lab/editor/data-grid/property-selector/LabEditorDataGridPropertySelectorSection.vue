@@ -9,7 +9,7 @@ import {
     EntityPropertyKey,
     EntityPropertySectionSelection,
     EntityPropertyType
-} from '@/model/editor/data-grid'
+} from '@/model/editor/tab/dataGrid/data-grid'
 import LabEditorDataGridPropertySelectorSectionEmptyItem from './LabEditorDataGridPropertySelectorSectionEmptyItem.vue'
 import VListItemDivider from '@/components/base/VListItemDivider.vue'
 

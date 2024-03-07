@@ -4,15 +4,15 @@ import { LabService, useLabService } from '@/services/lab.service'
 import { EvitaDBConnection } from '@/model/lab'
 import VTreeViewItem from '@/components/base/VTreeViewItem.vue'
 import LabExplorerCollectionItem from './LabExplorerCollectionItem.vue'
-import { GraphQLConsoleRequest } from '@/model/editor/graphql-console-request'
-import { GraphQLInstanceType } from '@/model/editor/graphql-console'
 import { EditorService, useEditorService } from '@/services/editor/editor.service'
-import { EvitaQLConsoleRequest } from '@/model/editor/evitaql-console-request'
-import { SchemaViewerRequest } from '@/model/editor/schema-viewer-request'
-import { CatalogSchemaPointer } from '@/model/editor/schema-viewer'
 import { Catalog, CatalogSchema } from '@/model/evitadb'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import VTreeViewItemEmpty from '@/components/base/VTreeViewItemEmpty.vue'
+import { EvitaQLConsoleRequest } from '@/model/editor/tab/evitaQLConsole/EvitaQLConsoleRequest'
+import { GraphQLConsoleRequest } from '@/model/editor/tab/graphQLConsole/GraphQLConsoleRequest'
+import { GraphQLInstanceType } from '@/model/editor/tab/graphQLConsole/GraphQLInstanceType'
+import { SchemaViewerRequest } from '@/model/editor/tab/schemaViewer/SchemaViewerRequest'
+import { CatalogSchemaPointer } from '@/model/editor/tab/schemaViewer/CatalogSchemaPointer'
 
 enum ActionType {
     OpenEvitaQLConsole = 'open-evitaql-console',
@@ -24,7 +24,7 @@ enum ActionType {
 const actions = ref<object[]>([
     {
         value: ActionType.OpenEvitaQLConsole,
-        title: 'Open EvitaQL console',
+        title: 'Open evitaQL console',
         props: {
             prependIcon: 'mdi-variable'
         }
@@ -83,7 +83,7 @@ async function loadCatalogSchema(): Promise<void> {
 function handleAction(action: string) {
     switch (action) {
         case ActionType.OpenEvitaQLConsole:
-            editorService.createTabRequest(
+            editorService.createTab(
                 EvitaQLConsoleRequest.createNew(
                     connection,
                     props.catalog.name
@@ -91,7 +91,7 @@ function handleAction(action: string) {
             )
             break
         case ActionType.OpenGraphQLDataAPIConsole:
-            editorService.createTabRequest(
+            editorService.createTab(
                 GraphQLConsoleRequest.createNew(
                     connection,
                     props.catalog.name,
@@ -100,7 +100,7 @@ function handleAction(action: string) {
             )
             break
         case ActionType.OpenGraphQLSchemaAPIConsole:
-            editorService.createTabRequest(
+            editorService.createTab(
                 GraphQLConsoleRequest.createNew(
                     connection,
                     props.catalog.name,
@@ -109,7 +109,7 @@ function handleAction(action: string) {
             )
             break
         case ActionType.ViewSchema:
-            editorService.createTabRequest(
+            editorService.createTab(
                 SchemaViewerRequest.createNew(
                     connection,
                     new CatalogSchemaPointer(props.catalog.name)
@@ -124,7 +124,7 @@ function handleAction(action: string) {
     <VListGroup
         :value="`${connection.name}|${catalog.name}`"
     >
-        <template v-slot:activator="{ isOpen, props }">
+        <template #activator="{ isOpen, props }">
             <VTreeViewItem
                 v-if="!catalog.corrupted"
                 v-bind="props"
