@@ -1093,3 +1093,39 @@ export enum QueryPriceMode {
 }
 
 export type Range<T extends DateTime | BigDecimal | Long | number> = [T | undefined, T | undefined]
+
+export interface SchemaDiffRequest {
+    oldSchema: string
+    newSchema: string
+}
+
+export interface GraphQLSchemaDiff {
+    breakingChanges: GraphQLSchemaChange[]
+    nonBreakingChanges: GraphQLSchemaChange[]
+    unclassifiedChanges: GraphQLSchemaChange[]
+}
+
+export interface GraphQLSchemaChange {
+    type: GraphQLSchemaChangeType,
+    args: any[]
+}
+
+export interface GraphQLSchemaChangeType {
+    code: string,
+    severity: GraphQLSchemaChangeSeverity
+    actionType: ChangeActionType
+}
+
+export enum GraphQLSchemaChangeSeverity {
+    Breaking = 'BREAKING',
+    NonBreaking = 'NON_BREAKING',
+    Unclassified = 'UNCLASSIFIED'
+}
+
+export enum ChangeActionType {
+    Addition = 'ADDITION',
+    Removal = 'REMOVAL',
+    Modification = 'MODIFICATION',
+    Deprecation = 'DEPRECATION',
+    Unclassified = 'UNCLASSIFIED'
+}

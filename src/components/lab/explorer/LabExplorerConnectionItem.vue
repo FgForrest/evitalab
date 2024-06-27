@@ -50,7 +50,7 @@ if (!labService.isReadOnly() && !props.connection.preconfigured) {
         value: ActionType.Remove,
         title: 'Remove connection',
         props: {
-            prependIcon: 'mdi-delete'
+            prependIcon: 'mdi-delete-outline'
         }
     })
 }

@@ -32,4 +32,26 @@ export class GraphQLClient extends ApiClient {
             throw this.handleCallError(e, connection)
         }
     }
+
+    /**
+     * todo docs
+     * @param connection
+     * @param path
+     */
+    async fetchSchemaDefinition(connection: EvitaDBConnection, path: string): Promise<string> {
+        try {
+            return await this.httpClient.get(
+                `${connection.gqlUrl}/${path}`,
+                {
+                    headers: {
+                        'X-EvitaDB-ClientID': this.getClientIdHeaderValue(),
+                        'Accept': 'application/graphql'
+                    }
+                }
+            )
+                .text()
+        } catch (e: any) {
+            throw this.handleCallError(e, connection)
+        }
+    }
 }

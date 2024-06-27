@@ -10,7 +10,7 @@ import { LabService } from '@/services/lab.service'
 /**
  * Represents props of the LabEditorConsoleGraphQL component.
  */
-export class GraphQLConsoleParams extends SerializableTabRequestComponentParams<GraphQLConsoleParamsDto> implements TabRequestComponentParams, ExecutableTabRequest {
+export class GraphQLConsoleParams extends SerializableTabRequestComponentParams<GraphQLConsoleParamsDto> implements ExecutableTabRequest {
     readonly instancePointer: GraphQLInstancePointer
     readonly executeOnOpen: boolean
 
@@ -56,7 +56,7 @@ interface GraphQLConsoleParamsDto extends TabRequestComponentParamsDto {
 /**
  * Represents injectable/storable user data of the LabEditorConsoleGraphQL component.
  */
-export class GraphQLConsoleData extends SerializableTabRequestComponentData<GraphQLConsoleDataDto> implements TabRequestComponentData {
+export class GraphQLConsoleData extends SerializableTabRequestComponentData<GraphQLConsoleDataDto> {
     readonly query?: string
     readonly variables?: string
 

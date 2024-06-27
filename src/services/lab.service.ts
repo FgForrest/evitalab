@@ -207,6 +207,10 @@ export class LabService {
         return flags
     }
 
+    getApiCompatibilityServer(): string | undefined {
+        return this.store.state.lab.apiCompatibilityServer
+    }
+
     /**
      * Returns the latest evitaDB blog posts to display on news page.
      */

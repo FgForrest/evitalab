@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Pre-defined button to execute queries.
+ * Pre-defined button to execute queries etc.
  */
 const props = withDefaults(defineProps<{
     loading?: boolean
@@ -19,12 +19,11 @@ const emit = defineEmits<{
         @click="emit('click')"
         class="v-btn--variant-primary ml-3"
     >
-        <VIcon>mdi-play-outline</VIcon>
+        <VIcon>
+            <slot name="prepend-icon">mdi-play-outline</slot>
+        </VIcon>
 
-        <VTooltip activator="parent">
-            Execute query
-        </VTooltip>
-        Run
+        <slot />
     </VBtn>
 </template>
 

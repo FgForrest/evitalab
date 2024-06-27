@@ -127,7 +127,6 @@ export class RangeValue {
     }
 
     private formatPart(part: DateTime | BigDecimal | Long | number | undefined): string {
-        console.log(part)
         if (part == undefined) {
             return '∞'
         }

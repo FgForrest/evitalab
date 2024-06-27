@@ -2,7 +2,7 @@
 /**
  * Toolbar for the LabEditorDataGrid component.
  */
-import VExecuteQueryButton from '@/components/base/VExecuteQueryButton.vue'
+import VPrimaryActionButton from '@/components/base/VPrimaryActionButton.vue'
 import VTabToolbar from '@/components/base/VTabToolbar.vue'
 import { computed, inject } from 'vue'
 import LabEditorTabShareButton from '@/components/lab/editor/tab/LabEditorTabShareButton.vue'
@@ -50,7 +50,7 @@ const flags = computed<any>(() => {
                 :disabled="!gridParams.dataPointer.connection.preconfigured"
             />
 
-            <VExecuteQueryButton :loading="loading" @click="emit('executeQuery')" />
+            <VPrimaryActionButton :loading="loading" @click="emit('executeQuery')" />
         </template>
 
         <template #extension>

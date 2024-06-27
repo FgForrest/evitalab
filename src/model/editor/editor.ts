@@ -79,7 +79,7 @@ export interface ExecutableTabRequest extends TabRequestComponentParams {
 /**
  * Serializable DTO for storing {@link TabRequestComponentParams} in a storage or link.
  */
-export abstract class SerializableTabRequestComponentParams<DTO extends TabRequestComponentParamsDto> {
+export abstract class SerializableTabRequestComponentParams<DTO extends TabRequestComponentParamsDto> implements TabRequestComponentParams {
 
     /**
      * Converts the params to a DTO that can be safely serialized.
@@ -96,7 +96,7 @@ export interface TabRequestComponentParamsDto {
 /**
  * Serializable DTO for storing {@link TabRequestComponentData} in a storage or link.
  */
-export abstract class SerializableTabRequestComponentData<DTO extends TabRequestComponentDataDto> {
+export abstract class SerializableTabRequestComponentData<DTO extends TabRequestComponentDataDto> implements TabRequestComponentData {
 
     /**
      * Converts the params to a DTO that can be safely serialized.

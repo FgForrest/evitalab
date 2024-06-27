@@ -6,5 +6,6 @@ export enum TabType {
     EvitaQLConsole = 'evitaql-console',
     GraphQLConsole = 'graphql-console',
     SchemaViewer = 'schema-viewer',
+    SchemaDiffViewer = 'schema-diff-viewer',
     ErrorViewer = 'error-viewer'
 }

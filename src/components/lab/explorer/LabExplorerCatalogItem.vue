@@ -13,15 +13,29 @@ import { CatalogSchemaPointer } from '@/model/editor/schema-viewer'
 import { Catalog, CatalogSchema } from '@/model/evitadb'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import VTreeViewItemEmpty from '@/components/base/VTreeViewItemEmpty.vue'
+import { SchemaDiffViewerRequest } from '@/model/editor/tab/schema-diff-viewer/schema-diff-viewer-request'
 
 enum ActionType {
-    OpenEvitaQLConsole = 'open-evitaql-console',
-    OpenGraphQLDataAPIConsole = 'open-graphql-data-api-console',
-    OpenGraphQLSchemaAPIConsole = 'open-graphql-schema-api-console',
-    ViewSchema = 'view-schema'
+    OpenEvitaQLConsole = 'openEvitaQLConsole',
+    OpenGraphQLDataAPIConsole = 'openGraphQLDataApiConsole',
+    OpenGraphQLSchemaAPIConsole = 'openGraphQLSchemaApiConsole',
+    ViewSchema = 'viewSchema',
+
+    CompareSchema = 'compareSchema',
 }
 
+const labService: LabService = useLabService()
+const editorService: EditorService = useEditorService()
+const toaster: Toaster = useToaster()
+
+const props = defineProps<{
+    catalog: Catalog
+}>()
+
+const connection = inject('connection') as EvitaDBConnection
+
 const actions = ref<object[]>([
+    { type: 'subheader', title: 'View' },
     {
         value: ActionType.OpenEvitaQLConsole,
         title: 'Open EvitaQL console',
@@ -49,18 +63,17 @@ const actions = ref<object[]>([
         props: {
             prependIcon: 'mdi-file-code'
         }
+    },
+    { type: 'subheader', title: 'Manage' },
+    {
+        value: ActionType.CompareSchema,
+        title: 'Compare schema',
+        props: {
+            prependIcon: 'mdi-compare-horizontal',
+            disabled: labService.getApiCompatibilityServer() == undefined // todo replace with toggable features
+        }
     }
 ])
-
-const labService: LabService = useLabService()
-const editorService: EditorService = useEditorService()
-const toaster: Toaster = useToaster()
-
-const props = defineProps<{
-    catalog: Catalog
-}>()
-
-const connection = inject('connection') as EvitaDBConnection
 
 const catalogSchema = ref<CatalogSchema>()
 provide<Ref<CatalogSchema | undefined>>('catalogSchema', catalogSchema)
@@ -113,6 +126,14 @@ function handleAction(action: string) {
                 SchemaViewerRequest.createNew(
                     connection,
                     new CatalogSchemaPointer(props.catalog.name)
+                )
+            )
+            break
+        case ActionType.CompareSchema:
+            editorService.createTabRequest(
+                SchemaDiffViewerRequest.createNew(
+                    connection,
+                    props.catalog.name
                 )
             )
             break

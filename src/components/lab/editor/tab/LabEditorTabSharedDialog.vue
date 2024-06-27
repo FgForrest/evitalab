@@ -16,7 +16,6 @@ const emit = defineEmits<{
 }>()
 
 function acceptSharedTab(): void {
-    console.log(props.tabRequest)
     editorService.createTabRequest(props.tabRequest)
     emit('resolve')
 }

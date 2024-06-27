@@ -14,6 +14,7 @@ import { GraphQLClient } from '@/services/graphql-client'
 import { EvitaDBDocsClient } from '@/services/evitadb-docs-client'
 import { GraphQLResultVisualiserService, key as graphqlResultVisualiserServiceKey } from '@/services/editor/result-visualiser/graphql-result-visualiser.service'
 import { EvitaQLResultVisualiserService, key as evitaQLResultVisualiserServiceKey } from '@/services/editor/result-visualiser/evitaql-result-visualiser.service'
+import { SchemaDiffViewerService, key as schemaDiffViewerServiceKey } from '@/services/editor/tab/schema-diff-viewer/schema-diff-viewer.service'
 
 /**
  * Creates and registers all lab services to the application.
@@ -31,6 +32,7 @@ export function registerServices(app: App, store: Store<State>): void {
     const graphQLConsoleService: GraphQLConsoleService = new GraphQLConsoleService(graphQLClient)
     const evitaQLConsoleService: EvitaQLConsoleService = new EvitaQLConsoleService(evitaDBClient)
     const schemaViewerService: SchemaViewerService = new SchemaViewerService(labService)
+    const schemaViewerDiffService: SchemaDiffViewerService = new SchemaDiffViewerService(evitaDBClient, graphQLClient)
 
     const graphQLResultVisualizerService: GraphQLResultVisualiserService = new GraphQLResultVisualiserService(labService)
     const evitaQLResultVisualizerService: EvitaQLResultVisualiserService = new EvitaQLResultVisualiserService(labService)
@@ -44,6 +46,7 @@ export function registerServices(app: App, store: Store<State>): void {
         .provide(graphQLConsoleServiceKey, graphQLConsoleService)
         .provide(evitaQLConsoleServiceKey, evitaQLConsoleService)
         .provide(schemaViewerServiceKey, schemaViewerService)
+        .provide(schemaDiffViewerServiceKey, schemaViewerDiffService)
         .provide(graphqlResultVisualiserServiceKey, graphQLResultVisualizerService)
         .provide(evitaQLResultVisualiserServiceKey, evitaQLResultVisualizerService)
 }

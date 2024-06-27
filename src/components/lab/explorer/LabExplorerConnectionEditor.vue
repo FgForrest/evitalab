@@ -203,7 +203,7 @@ async function storeConnection(): Promise<void> {
             modifiedConnection.value.name!,
             false,
             modifiedConnection.value.labApiUrl!,
-            'https://localhost:5555/rest', // todo lho implement rest
+            undefined, // todo lho implement rest
             modifiedConnection.value.gqlUrl!
         ))
     } catch (e: any) {

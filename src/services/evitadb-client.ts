@@ -1,4 +1,11 @@
-import { Catalog, CatalogSchema, ModelError, QueryEntitiesRequestBody, Response } from '@/model/evitadb'
+import {
+    Catalog,
+    CatalogSchema,
+    GraphQLSchemaDiff,
+    ModelError,
+    QueryEntitiesRequestBody,
+    Response
+} from '@/model/evitadb'
 import { LabInvalidUsageError, EvitaDBConnection } from '@/model/lab'
 import { ApiClient } from '@/services/api-client'
 
@@ -70,6 +77,35 @@ export class EvitaDBClient extends ApiClient {
                 throw new QueryError(connection, (await e.response.json()) as ModelError)
             }
             throw this.handleCallError(e, connection)
+        }
+    }
+
+    /**
+     * todo
+     * @param oldSchema
+     * @param newSchema
+     */
+    async getGraphQLSchemaDiff(oldSchema: string, newSchema: string): Promise<GraphQLSchemaDiff> {
+        const oldSchemaBlob: Blob = new Blob([oldSchema], { type: 'text/plain' });
+        const newSchemaBlob: Blob = new Blob([newSchema], { type: 'text/plain' });
+
+        const formData: FormData = new FormData();
+        formData.append("oldSchema", oldSchemaBlob, "oldSchema.graphql");
+        formData.append("newSchema", newSchemaBlob, "newSchema.graphql");
+
+        try {
+            return await this.httpClient.post(
+                `${this.myStore.state.lab.apiCompatibilityServer}/lab/api/tools/api-schema-diff/graphql`,
+                {
+                    headers: {
+                        'X-EvitaDB-ClientID': this.getClientIdHeaderValue()
+                    },
+                    body: formData
+                }
+            )
+                .json() as GraphQLSchemaDiff
+        } catch (e: any) {
+            throw this.handleCallError(e)
         }
     }
 }

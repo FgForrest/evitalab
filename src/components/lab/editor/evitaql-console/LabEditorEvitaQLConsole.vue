@@ -15,7 +15,7 @@ import { EvitaQLConsoleService, useEvitaQLConsoleService } from '@/services/edit
 import { EvitaQLConsoleData, EvitaQLConsoleParams } from '@/model/editor/evitaql-console'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import { TabComponentEvents, TabComponentProps } from '@/model/editor/editor'
-import VExecuteQueryButton from '@/components/base/VExecuteQueryButton.vue'
+import VPrimaryActionButton from '@/components/base/VPrimaryActionButton.vue'
 import VTabToolbar from '@/components/base/VTabToolbar.vue'
 import VSideTabs from '@/components/base/VSideTabs.vue'
 import { ResultVisualiserService } from '@/services/editor/result-visualiser/result-visualiser.service'
@@ -133,7 +133,7 @@ if (props.params.executeOnOpen) {
                     :disabled="!params.dataPointer.connection.preconfigured"
                 />
 
-                <VExecuteQueryButton :loading="loading" @click="executeQuery" />
+                <VPrimaryActionButton :loading="loading" @click="executeQuery" />
             </template>
         </VTabToolbar>
 

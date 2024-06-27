@@ -18,6 +18,7 @@ import { LabStorage } from '@/services/lab-storage'
 import { TabType } from '@/model/editor/tab/tab-type'
 import LZString from 'lz-string'
 import { TabHistoryKey } from '@/model/editor/tab/tab-history-key'
+import { SchemaDiffViewerRequest } from '@/model/editor/tab/schema-diff-viewer/schema-diff-viewer-request'
 
 export const key: InjectionKey<EditorService> = Symbol()
 
@@ -85,6 +86,8 @@ export class EditorService {
                         return GraphQLConsoleRequest.restoreFromJson(this.labService, storedTabObject.tabParams, storedTabObject.tabData || {})
                     case TabType.SchemaViewer:
                         return SchemaViewerRequest.restoreFromJson(this.labService, storedTabObject.tabParams)
+                    case TabType.SchemaDiffViewer:
+                        return SchemaDiffViewerRequest.restoreFromJson(this.labService, storedTabObject.tabParams, storedTabObject.tabData || {})
                     default:
                         throw new UnexpectedError(undefined, `Unsupported stored tab type '${storedTabObject.tabType}'.`)
                 }
@@ -111,6 +114,8 @@ export class EditorService {
                     tabType = TabType.GraphQLConsole
                 } else if (tabRequest instanceof SchemaViewerRequest) {
                     tabType = TabType.SchemaViewer
+                } else if (tabRequest instanceof SchemaDiffViewerRequest) {
+                    tabType = TabType.SchemaDiffViewer
                 } else {
                     console.info(undefined, `Unsupported tab type '${tabRequest.constructor.name}'. Not storing for next session.`)
                     return undefined

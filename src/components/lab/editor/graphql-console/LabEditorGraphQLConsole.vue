@@ -17,7 +17,7 @@ import { GraphQLConsoleData, GraphQLConsoleParams, GraphQLInstanceType } from '@
 import VStandardCodeMirror from '@/components/base/VStandardCodemirror.vue'
 import { Toaster, useToaster } from '@/services/editor/toaster'
 import { TabComponentEvents, TabComponentProps } from '@/model/editor/editor'
-import VExecuteQueryButton from '@/components/base/VExecuteQueryButton.vue'
+import VPrimaryActionButton from '@/components/base/VPrimaryActionButton.vue'
 import VTabToolbar from '@/components/base/VTabToolbar.vue'
 import VSideTabs from '@/components/base/VSideTabs.vue'
 import LabEditorResultVisualiser
@@ -185,7 +185,7 @@ function initializeSchemaEditor(): void {
                     </VTooltip>
                 </VBtn>
 
-                <VExecuteQueryButton :loading="loading" @click="executeQuery" />
+                <VPrimaryActionButton :loading="loading" @click="executeQuery" />
             </template>
         </VTabToolbar>
 

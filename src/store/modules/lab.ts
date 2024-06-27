@@ -15,6 +15,10 @@ const readonlyCookieName: string = 'evitalab_readonly'
  * Cookie containing preconfigured connections. These will be displayed next to the user-defined connections.
  */
 const preconfiguredConnectionsCookieName: string = 'evitalab_pconnections'
+/**
+ * Cookie containing URL of the API compatibility server.
+ */
+const apiCompatibilityServerCookieName: string = 'evitalab_apicompatibilityserver'
 
 const defaultServerName: string = 'standalone'
 
@@ -36,6 +40,10 @@ export type LabState = {
      * List of preconfigured evitaDB servers by hosted server.
      */
     readonly preconfiguredConnections: EvitaDBConnection[],
+    /**
+     * URL of API compatibility server.
+     */
+    readonly apiCompatibilityServer?: string
     /**
      * List of configured evitaDB servers by user.
      */
@@ -117,6 +125,13 @@ const state = (): LabState => {
         ))
     }
 
+    const apiCompatibilityServerCookie: string | undefined = Cookies.get(apiCompatibilityServerCookieName)
+    let apiCompatibilityServer: string | undefined = apiCompatibilityServerCookie != undefined ? atob(apiCompatibilityServerCookie) : undefined
+    // automatic development api compatibility server as fallback
+    if (import.meta.env.DEV && apiCompatibilityServer == undefined) {
+        apiCompatibilityServer = 'https://localhost:5555'
+    }
+
     // initialize storage for the current instance
     const storage = new LabStorage(serverName)
 
@@ -133,6 +148,7 @@ const state = (): LabState => {
         storage,
         readOnly,
         preconfiguredConnections,
+        apiCompatibilityServer,
         userConnections,
         catalogs: new Map<EvitaDBConnectionId, Map<string, Catalog>>(),
         catalogSchemas: new Map<EvitaDBConnectionId, Map<string, CatalogSchema>>(),
