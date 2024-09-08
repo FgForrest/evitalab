@@ -25,6 +25,8 @@ import { KeymapViewerTabDefinition } from '@/modules/keymap/viewer/workspace/mod
 import { mandatoryInject } from '@/utils/reactivity'
 import { ServerStatusTabFactory } from '@/modules/server-status/service/ServerStatusTabFactory'
 import { ServerStatusTabDefinition } from '@/modules/server-status/model/ServerStatusTabDefinition'
+import { RestConsoleTabDefinition } from '@/modules/rest-console/console/workspace/model/RestConsoleTabDefinition'
+import { RestConsoleTabFactory } from '@/modules/rest-console/console/workspace/service/RestConsoleTabFactory'
 
 const openedTabsStorageKey: string = 'openedTabs'
 const tabHistoryStorageKey: string = 'tabHistory'
@@ -41,6 +43,7 @@ export class WorkspaceService {
     private readonly entityViewerTabFactory: EntityViewerTabFactory
     private readonly evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory
     private readonly graphQLConsoleTabFactory: GraphQLConsoleTabFactory
+    private readonly restConsoleTabFactory: RestConsoleTabFactory
     private readonly schemaViewerTabFactory: SchemaViewerTabFactory
     private readonly keymapViewerTabFactory: KeymapViewerTabFactory
     private readonly serverStatusTabFactory: ServerStatusTabFactory
@@ -50,6 +53,7 @@ export class WorkspaceService {
                 entityViewerTabFactory: EntityViewerTabFactory,
                 evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory,
                 graphQLConsoleTabFactory: GraphQLConsoleTabFactory,
+                restConsoleTabFactory: RestConsoleTabFactory,
                 schemaViewerTabFactory: SchemaViewerTabFactory,
                 keymapViewerTabFactory: KeymapViewerTabFactory,
                 serverStatusTabFactory: ServerStatusTabFactory) {
@@ -58,6 +62,7 @@ export class WorkspaceService {
         this.entityViewerTabFactory = entityViewerTabFactory
         this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
         this.graphQLConsoleTabFactory = graphQLConsoleTabFactory
+        this.restConsoleTabFactory = restConsoleTabFactory
         this.schemaViewerTabFactory = schemaViewerTabFactory
         this.keymapViewerTabFactory = keymapViewerTabFactory
         this.serverStatusTabFactory = serverStatusTabFactory
@@ -148,6 +153,8 @@ export class WorkspaceService {
                     case 'graphql-console':
                     case TabType.GraphQLConsole:
                         return this.graphQLConsoleTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
+                    case TabType.RestConsole:
+                        return this.restConsoleTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
                     case 'schema-viewer':
                     case TabType.SchemaViewer:
                         return this.schemaViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
@@ -176,27 +183,9 @@ export class WorkspaceService {
     storeOpenedTabs(): void {
         const tabsToStore: string[] = this.getTabDefinitions()
             .map(tabRequest => {
-                let tabType: TabType
-                if (tabRequest instanceof EntityViewerTabDefinition) {
-                    tabType = TabType.EntityViewer
-                } else if (tabRequest instanceof EvitaQLConsoleTabDefinition) {
-                    tabType = TabType.EvitaQLConsole
-                } else if (tabRequest instanceof GraphQLConsoleTabDefinition) {
-                    tabType = TabType.GraphQLConsole
-                } else if (tabRequest instanceof SchemaViewerTabDefinition) {
-                    tabType = TabType.SchemaViewer
-                } else if (tabRequest instanceof KeymapViewerTabDefinition) {
-                    tabType = TabType.KeymapViewer
-                } else if(tabRequest instanceof ServerStatusTabDefinition) {
-                    tabType = TabType.ServerStatus
-                } else {
-                    console.info(undefined, `Unsupported tab type '${tabRequest.constructor.name}'. Not storing for next session.`)
-                    return undefined
-                }
-
                 const tabData: TabData<any> | undefined = this.store.tabData.get(tabRequest.id)
                 return new StoredTabObject(
-                    tabType,
+                    tabRequest.type,
                     tabRequest.params.toSerializable(),
                     tabData != undefined ? tabData.toSerializable() : undefined
                 )

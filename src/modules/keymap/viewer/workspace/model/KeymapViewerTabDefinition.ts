@@ -3,6 +3,7 @@ import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { VoidTabParams } from '@/modules/workspace/tab/model/void/VoidTabParams'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import KeymapViewer from '@/modules/keymap/viewer/component/KeymapViewer.vue'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
 
 /**
  * Creates new keymap viewer tab if there is no one opened yet.
@@ -18,5 +19,9 @@ export class KeymapViewerTabDefinition extends TabDefinition<VoidTabParams, Void
             new VoidTabParams(),
             new VoidTabData()
         )
+    }
+
+    get type(): TabType {
+        return TabType.KeymapViewer
     }
 }

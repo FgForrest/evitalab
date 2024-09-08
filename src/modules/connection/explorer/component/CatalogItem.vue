@@ -11,48 +11,41 @@ import { MenuAction } from '@/modules/base/model/menu/MenuAction'
 import { CatalogActionType } from '@/modules/connection/explorer/model/CatalogActionType'
 import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
 import { CatalogSchemaPointer } from '@/modules/schema-viewer/viewer/model/CatalogSchemaPointer'
-import {
-    useWorkspaceService,
-    WorkspaceService,
-} from '@/modules/workspace/service/WorkspaceService'
+import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import {
     EvitaQLConsoleTabFactory,
-    useEvitaQLConsoleTabFactory,
+    useEvitaQLConsoleTabFactory
 } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
 import {
     GraphQLConsoleTabFactory,
-    useGraphQLConsoleTabFactory,
+    useGraphQLConsoleTabFactory
 } from '@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFactory'
 import {
     SchemaViewerTabFactory,
-    useSchemaViewerTabFactory,
+    useSchemaViewerTabFactory
 } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
 import VTreeViewItem from '@/modules/base/component/VTreeViewItem.vue'
 import VTreeViewEmptyItem from '@/modules/base/component/VTreeViewEmptyItem.vue'
 import CollectionItem from '@/modules/connection/explorer/component/CollectionItem.vue'
-import {
-    provideCatalog,
-    useConnection,
-} from '@/modules/connection/explorer/component/dependecies'
+import { provideCatalog, useConnection } from '@/modules/connection/explorer/component/dependecies'
 import { MenuItem } from '@/modules/base/model/menu/MenuItem'
 import { MenuSubheader } from '@/modules/base/model/menu/MenuSubheader'
-import {
-    EvitaLabConfig,
-    useEvitaLabConfig,
-} from '@/modules/config/EvitaLabConfig'
+import { EvitaLabConfig, useEvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 import DropCatalog from '@/modules/connection/explorer/component/DropCatalog.vue'
 import RenameCatalog from '@/modules/connection/explorer/component/RenameCatalog.vue'
 import ReplaceCatalog from '@/modules/connection/explorer/component/ReplaceCatalog.vue'
 import CreateCollection from '@/modules/connection/explorer/component/CreateCollection.vue'
+import {
+    RestConsoleTabFactory,
+    useRestConsoleTabFactory
+} from '@/modules/rest-console/console/workspace/service/RestConsoleTabFactory'
 
 const evitaLabConfig: EvitaLabConfig = useEvitaLabConfig()
 const workspaceService: WorkspaceService = useWorkspaceService()
-const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory =
-    useEvitaQLConsoleTabFactory()
-const graphQLConsoleTabFactory: GraphQLConsoleTabFactory =
-    useGraphQLConsoleTabFactory()
-const schemaViewerTabFactory: SchemaViewerTabFactory =
-    useSchemaViewerTabFactory()
+const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory = useEvitaQLConsoleTabFactory()
+const graphQLConsoleTabFactory: GraphQLConsoleTabFactory = useGraphQLConsoleTabFactory()
+const restConsoleTabFactory: RestConsoleTabFactory = useRestConsoleTabFactory()
+const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
 const { t } = useI18n()
 const componentVisible = ref<boolean>(false)
 const PopupComponent = shallowRef(DropCatalog || RenameCatalog || CreateCollection || ReplaceCatalog)
@@ -131,6 +124,21 @@ function createActions(): Map<
                         connection,
                         props.catalog.name,
                         GraphQLInstanceType.Schema
+                    )
+                )
+            }
+        )
+    )
+    actions.set(
+        CatalogActionType.OpenRestConsole,
+        createMenuAction(
+            CatalogActionType.OpenRestConsole,
+            'mdi-api',
+            () => {
+                workspaceService.createTab(
+                    restConsoleTabFactory.createNew(
+                        connection,
+                        props.catalog.name
                     )
                 )
             }

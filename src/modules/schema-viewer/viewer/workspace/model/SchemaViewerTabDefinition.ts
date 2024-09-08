@@ -3,6 +3,7 @@ import SchemaViewer from '@/modules/schema-viewer/viewer/component/SchemaViewer.
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { SchemaViewerTabParams } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabParams'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
 
 /**
  * Creates new schema viewer tab.
@@ -18,5 +19,9 @@ export class SchemaViewerTabDefinition extends TabDefinition<SchemaViewerTabPara
             params,
             new VoidTabData()
         )
+    }
+
+    get type(): TabType {
+        return TabType.SchemaViewer
     }
 }

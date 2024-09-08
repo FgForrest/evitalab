@@ -3,6 +3,7 @@ import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { EntityViewerTabParams } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabParams'
 import { EntityViewerTabData } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabData'
 import EntityViewer from '@/modules/entity-viewer/viewer/component/EntityViewer.vue'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
 
 /**
  * Creates new data grid tab.
@@ -18,5 +19,9 @@ export class EntityViewerTabDefinition extends TabDefinition<EntityViewerTabPara
             params,
             initialData
         )
+    }
+
+    get type(): TabType {
+        return TabType.EntityViewer
     }
 }

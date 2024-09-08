@@ -31,6 +31,10 @@ import {
     ServerStatusTabFactory,
     serverStatusTabFactoryInjectionKey
 } from '@/modules/server-status/service/ServerStatusTabFactory'
+import {
+    RestConsoleTabFactory,
+    restConsoleTabFactoryInjectionKey
+} from '@/modules/rest-console/console/workspace/service/RestConsoleTabFactory'
 
 export class WorkspaceModuleRegistrar implements ModuleRegistrar {
 
@@ -47,6 +51,8 @@ export class WorkspaceModuleRegistrar implements ModuleRegistrar {
         builder.provide(evitaQLConsoleTabFactoryInjectionKey, evitaQLConsoleTabFactory)
         const graphQLConsoleTabFactory: GraphQLConsoleTabFactory = new GraphQLConsoleTabFactory(connectionService)
         builder.provide(graphQLConsoleTabFactoryInjectionKey, graphQLConsoleTabFactory)
+        const restConsoleTabFactory: RestConsoleTabFactory = new RestConsoleTabFactory(connectionService)
+        builder.provide(restConsoleTabFactoryInjectionKey, restConsoleTabFactory)
         const schemaViewerTabFactory: SchemaViewerTabFactory = new SchemaViewerTabFactory(connectionService)
         builder.provide(schemaViewerTabFactoryInjectionKey, schemaViewerTabFactory)
         const keymapViewerTabFactory: KeymapViewerTabFactory = new KeymapViewerTabFactory()
@@ -69,6 +75,7 @@ export class WorkspaceModuleRegistrar implements ModuleRegistrar {
                 entityViewerTabFactory,
                 evitaQLConsoleTabFactory,
                 graphQLConsoleTabFactory,
+                restConsoleTabFactory,
                 schemaViewerTabFactory,
                 keymapViewerTabFactory,
                 serverStatusTabFactory

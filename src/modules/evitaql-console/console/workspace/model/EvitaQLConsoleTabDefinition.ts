@@ -3,6 +3,7 @@ import { DefineComponent, markRaw } from 'vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { EvitaQLConsoleTabParams } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabParams'
 import { EvitaQLConsoleTabData } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabData'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
 
 /**
  * Creates new EvitaQL tab.
@@ -18,6 +19,10 @@ export class EvitaQLConsoleTabDefinition extends TabDefinition<EvitaQLConsoleTab
             params,
             initialData
         )
+    }
+
+    get type(): TabType {
+        return TabType.EvitaQLConsole
     }
 }
 

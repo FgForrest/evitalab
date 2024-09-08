@@ -3,6 +3,7 @@ import { DefineComponent, markRaw } from 'vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { GraphQLConsoleTabParams } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabParams'
 import { GraphQLConsoleTabData } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabData'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
 
 /**
  * Defines a GraphQL console tab.
@@ -18,6 +19,10 @@ export class GraphQLConsoleTabDefinition extends TabDefinition<GraphQLConsoleTab
             params,
             initialData
         )
+    }
+
+    get type(): TabType {
+        return TabType.GraphQLConsole
     }
 }
 

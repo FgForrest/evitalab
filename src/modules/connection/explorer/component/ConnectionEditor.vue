@@ -113,6 +113,29 @@ const gqlUrlRules = [
         return t('explorer.connection.editor.form.graphQLApiUrl.validations.unreachable')
     }
 ]
+const restUrlRules = [
+    (value: any) => {
+        if (value) return true
+        return t('explorer.connection.editor.form.restApiUrl.validations.required')
+    },
+    (value: any) => {
+        try {
+            new URL(value)
+            return true
+        } catch (e) {
+            return t('explorer.connection.editor.form.restApiUrl.validations.invalidUrl')
+        }
+    },
+    async (value: any) => {
+        const result = await testGqlApiConnection()
+        if (result) {
+            modifiedConnection.value.restUrlTested = ApiTestResult.Success
+            return true
+        }
+        modifiedConnection.value.restUrlTested = ApiTestResult.Failure
+        return t('explorer.connection.editor.form.restApiUrl.validations.unreachable')
+    }
+]
 
 const form = ref<HTMLFormElement | null>(null)
 const mode = computed<Mode>(() => props.connection ? Mode.Modify : Mode.Add)
@@ -123,7 +146,9 @@ const modifiedConnection = ref<{
     grpcUrl: string
     grpcUrlTested: ApiTestResult
     gqlUrl: string,
-    gqlUrlTested: ApiTestResult
+    gqlUrlTested: ApiTestResult,
+    restUrl: string,
+    restUrlTested: ApiTestResult
 }>({
     name: '',
     systemApiUrl: '',
@@ -131,7 +156,9 @@ const modifiedConnection = ref<{
     grpcUrl: '',
     grpcUrlTested: ApiTestResult.NotTested,
     gqlUrl: '',
-    gqlUrlTested: ApiTestResult.NotTested
+    gqlUrlTested: ApiTestResult.NotTested,
+    restUrl: '',
+    restUrlTested: ApiTestResult.NotTested
 })
 
 function getApiTestedIndicator(result: ApiTestResult): any  {
@@ -189,6 +216,24 @@ async function testGqlApiConnection(): Promise<boolean> {
     }
 }
 
+async function testRestApiConnection(): Promise<boolean> {
+    // todo lho cors doesnt work
+    return true
+    // try {
+    //     const response: any = await ky.get(
+    //         modifiedConnection.value.restUrl + '/system/liveness',
+    //         {
+    //             headers: {
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         }
+    //     ).json()
+    //     return response?.liveness || false
+    // } catch (e) {
+    //     return false
+    // }
+}
+
 async function testConnection(): Promise<boolean> {
     let success: boolean = true
 
@@ -200,7 +245,7 @@ async function testConnection(): Promise<boolean> {
         modifiedConnection.value.systemApiUrlTested = ApiTestResult.Failure
     }
 
-    // test lab API
+    // test grpc API
     const labApiResult = await testLabApiConnection()
     if (labApiResult) {
         modifiedConnection.value.grpcUrlTested = ApiTestResult.Success
@@ -216,6 +261,14 @@ async function testConnection(): Promise<boolean> {
     } else {
         success = false
         modifiedConnection.value.gqlUrlTested = ApiTestResult.Failure
+    }
+
+    const restApiResult = await testRestApiConnection()
+    if (restApiResult) {
+        modifiedConnection.value.restUrlTested = ApiTestResult.Success
+    } else {
+        success = false
+        modifiedConnection.value.restUrlTested = ApiTestResult.Failure
     }
 
     if (success) {
@@ -236,7 +289,9 @@ function cancel(): void {
         grpcUrl: '',
         grpcUrlTested: ApiTestResult.NotTested,
         gqlUrl: '',
-        gqlUrlTested: ApiTestResult.NotTested
+        gqlUrlTested: ApiTestResult.NotTested,
+        restUrl: '',
+        restUrlTested: ApiTestResult.NotTested
     }
     emit('update:modelValue', false)
 }
@@ -256,7 +311,7 @@ async function storeConnection(): Promise<void> {
             modifiedConnection.value.systemApiUrl,
             modifiedConnection.value.grpcUrl!,
             modifiedConnection.value.gqlUrl!,
-            'https://localhost:5555/rest' // todo lho implement rest
+            modifiedConnection.value.restUrl!
         ))
     } catch (e: any) {
         toaster.error(e)
@@ -323,6 +378,15 @@ async function storeConnection(): Promise<void> {
                         required
                         :rules="gqlUrlRules"
                         :append-inner-icon="getApiTestedIndicator(modifiedConnection.gqlUrlTested)"
+                    />
+                    <VTextField
+                        v-model="modifiedConnection.restUrl"
+                        :label="t('explorer.connection.editor.form.restApiUrl.label')"
+                        placeholder="https://{evitadb-server}:5555/rest"
+                        variant="solo-filled"
+                        required
+                        :rules="restUrlRules"
+                        :append-inner-icon="getApiTestedIndicator(modifiedConnection.restUrlTested)"
                     />
                 </VForm>
             </VCardText>

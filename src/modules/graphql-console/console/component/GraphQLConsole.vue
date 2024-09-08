@@ -117,6 +117,7 @@ const schemaExtensions: Extension[] = [graphql()]
 
 const lastAppliedQueryCode = ref<string>('')
 const rawResultEditorRef = ref<InstanceType<typeof VPreviewEditor> | undefined>()
+// todo lho use object here, and serialize in editor not in service
 const resultCode = ref<string>('')
 const resultExtensions: Extension[] = [json()]
 

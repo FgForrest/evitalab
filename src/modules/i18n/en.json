@@ -325,6 +325,7 @@
         "openEvitaQLConsole": "Open evitaQL console",
         "openGraphQLDataApiConsole": "Open GraphQL Data API console",
         "openGraphQLSchemaApiConsole": "Open GraphQL Schema API console",
+        "openRestConsole": "Open REST console",
         "viewSchema": "View schema",
         "dropCatalog": "Drop catalog",
         "renameCatalog": "Rename catalog",
@@ -576,6 +577,25 @@
     },
     "button": {
       "instanceDetails": "GraphQL API instance details",
+      "clearHistory": "Clear history"
+    },
+    "notification": {
+      "failedToSaveQueryToHistory": "Failed to save query to history."
+    }
+  },
+  "restConsole": {
+    "placeholder": {
+      "results": "Results will be displayed here...",
+      "emptyHistory": "Empty history"
+    },
+    "editor": {
+      "label": {
+        "collection": "Select collection",
+        "operation": "Select operation"
+      }
+    },
+    "button": {
+      "instanceDetails": "REST API instance details",
       "clearHistory": "Clear history"
     },
     "notification": {

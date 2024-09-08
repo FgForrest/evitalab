@@ -5,6 +5,7 @@ export enum TabType {
     EntityViewer = 'entityViewer',
     EvitaQLConsole = 'evitaQLConsole',
     GraphQLConsole = 'graphQLConsole',
+    RestConsole = 'restConsole',
     SchemaViewer = 'schemaViewer',
     KeymapViewer = 'keymapViewer',
     ErrorViewer = 'errorViewer',
