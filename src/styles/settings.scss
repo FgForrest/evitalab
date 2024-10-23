@@ -51,7 +51,7 @@ $font-family: 'Poppins';
 // Global/Generic styles
 html {
   font-family: Poppins, sans-serif;
-  overflow-y: hidden;
+  overflow-y: hidden !important;
 }
 
 body::after {

@@ -1,0 +1,1261 @@
+{
+  "app": {
+    "name": "evitaLab"
+  },
+  "common": {
+    "placeholder": {
+      "empty": "<empty>",
+      "emptyArray": "<empty array>",
+      "null": "<null>",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "button": {
+      "close": "Close",
+      "cancel": "Cancel",
+      "remove": "Remove",
+      "save": "Save",
+      "run": "Run",
+      "add": "Add",
+      "create": "Create",
+      "drop": "Drop",
+      "delete": "Delete",
+      "executeQuery": "Execute query",
+      "showMore": "Show more",
+      "copy": "Copy",
+      "confirm": "Confirm",
+      "rename": "Rename",
+      "replace": "Replace",
+      "switch": "Switch"
+    },
+    "notification": {
+      "copiedToClipboard": "Copied to clipboard",
+      "failedToCopyToClipboard": "Failed to copy to clipboard"
+    },
+    "list": {
+      "empty": "No items found."
+    },
+    "codeEditor": {
+      "status": {
+        "cursorPosition": "Ln {line}, Col {column}",
+        "selectionRange": "{charsCount} chars",
+        "selectionRanges": "{linesCount} line breaks"
+      }
+    },
+    "dialog": {
+      "confirmDialog": {
+        "title": "Dangerous operation",
+        "message": "Warning! You are about to do dangerous operation. Are you sure you want to proceed?"
+      }
+    }
+  },
+  "panel": {
+    "manage": {
+      "manage": {
+        "title": "Manage",
+        "item": {
+          "keymap": "Keymap"
+        }
+      },
+      "evitaLabHelp": {
+        "title": "evitaLab Help",
+        "item": {
+          "evitaLabGithub": "evitaLab GitHub",
+          "discussEvitaLab": "Discuss evitaLab",
+          "reportEvitaLabIssue": "Report evitaLab issue"
+        }
+      },
+      "evitaDBHelp": {
+        "title": "evitaDB Help",
+        "item": {
+          "evitaDBDocumentation": "evitaDB Documentation",
+          "evitaDBGithub": "evitaDB GitHub",
+          "discussEvitaDB": "Discuss evitaDB",
+          "reportEvitaDBIssue": "Report evitaDB issue"
+        }
+      }
+    },
+    "item": {
+      "explorer": "Connection explorer"
+    },
+    "link": {
+      "evitaDBDocumentation": {
+        "icon": {
+          "alt": "evitaDB Documentation"
+        },
+        "tooltip": "Open evitaDB documentation"
+      },
+      "discord": {
+        "icon": {
+          "alt": "Discord"
+        },
+        "tooltip": "Discuss on Discord"
+      }
+    }
+  },
+  "welcomeScreen": {
+    "changelog": "changelog",
+    "description": "evitaDB web client",
+    "blog": {
+      "thumbnail": {
+        "alt": "Image - {title}"
+      },
+      "button": {
+        "read": "Read"
+      }
+    },
+    "link": {
+      "evitaDBDocumentation": {
+        "text": "Check out the {link}",
+        "link": "evitaDB documentation"
+      },
+      "evitaLabGitHub": {
+        "text": "Give us a ⭐ on {link}",
+        "link": "GitHub"
+      },
+      "discord": {
+        "text": "Reach out to us on {link}",
+        "link": "Discord"
+      },
+      "submitIssue": "Submit an issue"
+    }
+  },
+  "tab": {
+    "button": {
+      "closeTab": "Close tab"
+    },
+    "placeholder": {
+      "loading": "Loading, please wait ..."
+    }
+  },
+  "tabShare": {
+    "button": {
+      "shareTab": "Share this tab"
+    },
+    "tooltip": {
+      "nonSharableTab": "Cannot share this tab because it is using a user-defined evitaDB connection. Only pre-configured connections can be shared."
+    },
+    "sharedDialog": {
+      "title": "Shared tab found",
+      "text": {
+        "withoutInitialData": "The URL contains an embedded query from an unknown source. Do you want to open it? If you accept, evitaLab will <em>open a new tab</em> with the query, but will <em>not</em> execute it automatically. You can still decide if you want to execute it. If you reject, the query in the URL will be <em>discarded</em>.",
+        "withInitialData": "The URL contains an embedded shared tab from an unknown source. Do you want to open it? If you accept it, evitaLab will <em>open a new tab</em> with the query. If you reject it, it will be <em>discarded</em>."
+      },
+      "warning": {
+        "potentiallyUnsafe": "<em>Be careful!</em> The query in the URL may contain potentially malicious code."
+      },
+      "button": {
+        "reject": "Reject",
+        "accept": "Accept"
+      }
+    },
+    "shareDialog": {
+      "title": "Share this tab",
+      "text": "You can share this tab and its data with other users via a link. This link will open a new instance of evitaLab on their device and load this tab with the same query, which should give the same output as you see now.",
+      "notification": {
+        "linkCopied": "Link copied to clipboard."
+      },
+      "warning": {
+        "sensitiveData": "Be <em>careful</em> if you have sensitive data in the query, you are giving them away embedded in the link. Once you send the link, you lose control over it and it can be opened by <em>anyone</em> who has access to this evitaLab instance.",
+        "linkMayNotWork": "The link may <em>not</em> work in certain browsers due to its length exceeding {{ urlCharacterLimit }} characters."
+      },
+      "button": {
+        "copyLink": "Copy link"
+      }
+    }
+  },
+  "command": {
+    "system": {
+      "_title": "System",
+      "keymap": "Keymap",
+      "panels": {
+        "_title": "Panels",
+        "connectionsExplorer": "Explorer"
+      },
+      "editor": {
+        "_title": "Editor",
+        "previousTab": "Previous tab",
+        "nextTab": "Next tab",
+        "closeTab": "Close tab",
+        "closeAllTabs": "Close all tabs"
+      }
+    },
+    "queryEditor": {
+      "_title": "Query editor",
+      "moveLineUp": "Move line up",
+      "moveLineDown": "Move line down",
+      "copyLineUp": "Copy line up",
+      "copyLineDown": "Copy line down",
+      "simplifySelection": "Simplify selection",
+      "selectLine": "Select line",
+      "selectParentSyntax": "Select parent syntax",
+      "indentLess": "Indent less",
+      "indentMore": "Indent more",
+      "indentSelection": "Indent selection",
+      "deleteLine": "Delete line",
+      "cursorMatchingBracket": "Cursor matching bracket",
+      "toggleComment": "Toggle comment",
+      "toggleBlockComment": "Toggle block comment"
+    },
+    "inlineQueryEditor": {
+      "_title": "Inline query editor",
+      "openHistory": "Open history"
+    },
+    "entityViewer": {
+      "_title": "Entity grid",
+      "executeQuery": "Execute query",
+      "changeQueryLanguage": "Change query language",
+      "filterBy": "Filter by",
+      "orderBy": "Order by",
+      "changeDataLocale": "Change data locale",
+      "changePriceType": "Change price type",
+      "shareTab": "Share tab",
+      "openPropertySelector": "Open property selector",
+      "propertySelector": {
+        "_title": "Property selector",
+        "findProperty": "Find property"
+      }
+    },
+    "evitaQLConsole": {
+      "_title": "evitaQL console",
+      "executeQuery": "Execute query",
+      "shareTab": "Share tab",
+      "query": {
+        "_title": "Query",
+        "queryEditor": "Query editor",
+        "variablesEditor": "Variables editor",
+        "history": "History"
+      },
+      "result": {
+        "_title": "Result",
+        "rawResultViewer": "Raw result viewer",
+        "resultVisualizer": "Result visualizer"
+      }
+    },
+    "graphQLConsole": {
+      "_title": "GraphQL console",
+      "executeQuery": "Execute query",
+      "shareTab": "Share tab",
+      "query": {
+        "_title": "Query",
+        "queryEditor": "Query editor",
+        "variablesEditor": "Variables editor",
+        "history": "History",
+        "schemaViewer": "Schema viewer"
+      },
+      "result": {
+        "_title": "Result",
+        "rawResultViewer": "Raw result viewer",
+        "resultVisualizer": "Result visualizer"
+      }
+    },
+    "schemaViewer": {
+      "_title": "Schema viewer",
+      "shareTab": "Share tab"
+    }
+  },
+  "explorer": {
+    "title": "Connections Explorer",
+    "button": {
+      "connect": "Connect"
+    },
+    "connection": {
+      "flag": {
+        "preconfigured": "preconfigured"
+      },
+      "actions": {
+        "refresh": "Refresh",
+        "openGraphQLSystemApiConsole": "GraphQL System API console",
+        "create": "Create catalog",
+        "edit": "Edit connection",
+        "remove": "Remove connection",
+        "server": "Server",
+        "createCatalog": "Create catalog",
+        "catalogBackups": "Catalog backups",
+        "tasks": "Tasks",
+        "jfrRecordings": "JFR recordings"
+      },
+      "subheader": {
+        "modify": "Modify",
+        "catalogs": "Catalogs"
+      },
+      "notification": {
+        "couldNotLoadCatalogs": "Could not load catalogs for connection {connectionName}: {reason}",
+        "couldNotLoadServerStatus": "Could not load server status for connection {connectionName}: {reason}"
+      },
+      "connect": {
+        "title": "Connect to evitaDB server",
+        "button": {
+          "connect": "Connect"
+        },
+        "form": {
+          "connectionName": {
+            "label": "Connection name",
+            "validations": {
+              "required": "Name of connection is required.",
+              "duplicate": "Connection with this name already exists."
+            }
+          },
+          "serverUrl": {
+            "label": "Server URL",
+            "hint": "Base scheme://hostname:port of evitaLab API configured on the server you want to connect to.",
+            "validations": {
+              "required": "Server URL is required.",
+              "invalidUrl": "Server URL is not a valid URL.",
+              "notReady": "Server is not ready yet.",
+              "labApiMissing": "evitaLab API is not enabled on the server.",
+              "notLabUrl": "Server URL is not URL of evitaLab API.",
+              "grpcApiMissing": "gRPC API is not enabled on the server.",
+              "unreachable": "Server is not reachable."
+            }
+          }
+        },
+        "notification": {
+          "connectionSuccess": "Successfully connected.",
+          "connectionError": "Connection test failed.",
+          "connectionAdded": "The {connectionName} connection has been successfully added.",
+          "couldNotAddConnection": "Could not add the connection: {reason}"
+        }
+      },
+      "remove": {
+        "title": "Remove {connectionName} connection",
+        "question": "Do you want to remove the connection?",
+        "notification": {
+          "connectionRemoved": "The {connectionName} connection has been successfully removed.",
+          "couldNotRemoveConnection": "Could not remove the {connectionName} connection: {reason}"
+        }
+      }
+    },
+    "catalog": {
+      "flag": {
+        "corrupted": "corrupted",
+        "warmingUp": "warming up"
+      },
+      "subheader": {
+        "modify": "Modify",
+        "collections": "Collections"
+      },
+      "actions": {
+        "openEvitaQLConsole": "evitaQL console",
+        "openGraphQLDataApiConsole": "GraphQL Data API console",
+        "openGraphQLSchemaApiConsole": "GraphQL Schema API console",
+        "viewSchema": "Schema",
+        "dropCatalog": "Drop catalog",
+        "renameCatalog": "Rename catalog",
+        "replaceCatalog": "Replace catalog",
+        "createCollection": "Create collection",
+        "switchCatalogToAliveState": "Switch catalog to alive state"
+      },
+      "errors": {
+        "couldNotLoad": "This catalog couldn't be loaded because it's corrupted."
+      },
+      "create": {
+        "title": "Create catalog",
+        "form": {
+          "catalogName": {
+            "label": "Catalog name",
+            "validations": {
+              "required": "Catalog name is required.",
+              "empty": "Catalog name is required.",
+              "leadingTrailingWhiteSpace": "Catalog name cannot have leading or trailing whitespace characters.",
+              "keyword": "Catalog name is same as a reserved keyword.",
+              "format": "Catalog name doesn't match supported format.",
+              "notAvailable": "Catalog with this name already exists."
+            }
+          }
+        },
+        "notification": {
+          "catalogCreated": "The {catalogName} catalog has been successfully created.",
+          "couldNotCreateCatalog": "Could not create the {catalogName} catalog: {reason}"
+        }
+      },
+      "drop": {
+        "title": "Drop {catalogName} catalog",
+        "question": "Do you want to drop the catalog?",
+        "notification": {
+          "catalogDropped": "The {catalogName} catalog has been successfully dropped.",
+          "catalogNotDropped": "The {catalogName} catalog has been already dropped.",
+          "couldNotDropCatalog": "Could not drop the {catalogName} catalog: {reason}"
+        }
+      },
+      "rename": {
+        "title": "Rename {catalogName} catalog",
+        "form": {
+          "newName": {
+            "label": "New name",
+            "validations": {
+              "required": "New name is required.",
+              "empty": "New name is required.",
+              "leadingTrailingWhiteSpace": "New name cannot have leading or trailing whitespace characters.",
+              "keyword": "New name is same as a reserved keyword.",
+              "format": "New name doesn't match supported format.",
+              "notAvailable": "Catalog with this new name already exists."
+            }
+          }
+        },
+        "notification": {
+          "catalogRenamed": "The {catalogName} catalog has been successfully renamed to {newName}.",
+          "catalogNotRenamed": "The {catalogName} catalog has not been renamed.",
+          "couldNotRenameCatalog": "Could not rename catalog {catalogName}: {reason}"
+        }
+      },
+      "replace": {
+        "title": "Replace {catalogNameToBeReplaced} catalog",
+        "info": "The {catalogNameToBeReplaced} catalog's data will be replaced with a data from the {catalogNameToBeReplacedWith} catalog under the {catalogNameToBeReplaced} name. The {catalogNameToBeReplacedWith} catalog will be deleted.",
+        "form": {
+          "catalogNameToBeReplacedWith": {
+            "label": "With catalog",
+            "validations": {
+              "required": "Catalog is required.",
+              "notExists": "This catalog doesn't exist anymore."
+            }
+          }
+        },
+        "notification": {
+          "catalogReplaced": "The {catalogNameToBeReplaced} catalog has been successfully replaced with {catalogToBeReplacedWith}.",
+          "catalogNotReplaced": "The {catalogNameToBeReplaced} catalog has not been replaced.",
+          "couldNotReplaceCatalog": "Could not replace the {catalogNameToBeReplaced} catalog: {reason}"
+        }
+      },
+      "switchToAliveState": {
+        "title": "Switch {catalogName} catalog state",
+        "description": "Switch the catalog's state from the warm up to the alive.",
+        "warning": "Catalog in the alive state will no longer support bulk indexing. Instead, the catalog will use incremental indexing. However, it will support transactions and multiple parallel sessions.",
+        "notification": {
+          "catalogSwitched": "The {catalogName} catalog has been switched from the warm up state to the alive state.",
+          "catalogNotSwitched": "The {catalogName} catalog has not been switched to alive state. Probably it already is in the alive state.",
+          "couldNotSwitchCatalog": "Could not switch the {catalogName} catalog to the alive state: {reason}"
+        }
+      }
+    },
+    "collection": {
+      "subheader": {
+        "modify": "Modify"
+      },
+      "actions": {
+        "viewEntities": "Entities",
+        "viewSchema": "Schema",
+        "dropCollection": "Drop collection",
+        "renameCollection": "Rename collection"
+      },
+      "create": {
+        "title": "Create collection in {catalogName} catalog",
+        "form": {
+          "entityType": {
+            "label": "Entity type",
+            "validations": {
+              "required": "Entity type is required.",
+              "empty": "Entity type is required.",
+              "leadingTrailingWhiteSpace": "Entity type cannot have leading or trailing whitespace characters.",
+              "keyword": "Entity type is same as a reserved keyword.",
+              "format": "Entity type doesn't match supported format.",
+              "notAvailable": "Collection with this entity type already exists."
+            }
+          }
+        },
+        "notification": {
+          "collectionCreated": "The {entityType} collection has been successfully created.",
+          "couldNotCreateCollection": "Could not create the {entityType} collection: {reason}"
+        }
+      },
+      "drop": {
+        "title": "Drop {entityType} collection",
+        "question": "Do you want to drop the collection?",
+        "notification": {
+          "collectionDropped": "The {entityType} collection has been successfully dropped.",
+          "collectionNotDropped": "The {entityType} collection has been already dropped.",
+          "couldNotDropCollection": "Could not drop the {entityType} collection: {reason}"
+        }
+      },
+      "rename": {
+        "title": "Rename {entityType} collection",
+        "form": {
+          "newName": {
+            "label": "New name",
+            "validations": {
+              "required": "New name is required.",
+              "empty": "New name is required.",
+              "leadingTrailingWhiteSpace": "New name cannot have leading or trailing whitespace characters.",
+              "keyword": "New name is same as a reserved keyword.",
+              "format": "New name doesn't match supported format.",
+              "notAvailable": "Collection with this new name already exists."
+            }
+          }
+        },
+        "notification": {
+          "collectionRenamed": "The {entityType} collection has been successfully renamed to {newName}.",
+          "collectionNotRenamed": "The {entityType} collection has not been renamed.",
+          "couldNotRenameCollection": "Could not rename the {entityType} collection: {reason}"
+        }
+      }
+    }
+  },
+  "entityViewer": {
+    "loadedDataWarning": "Loaded query data must be manually executed.",
+    "dataLocaleSelector": {
+      "item": {
+        "none": "None"
+      }
+    },
+    "priceTypeSelector": {
+      "WITH_TAX": "With tax",
+      "WITHOUT_TAX": "Without tax"
+    },
+    "queryInput": {
+      "notification": {
+        "failedToSaveQueryToHistory": "Failed to save query to history."
+      }
+    },
+    "propertySelector": {
+      "title": "Displayed properties",
+      "label": {
+        "filterProperties": "Filter properties"
+      },
+      "button": {
+        "selectDisplayedProperties": "Select displayed properties"
+      },
+      "notification": {
+        "invalidPropertySectionSelection": "Cannot select `Some` properties in a section."
+      },
+      "section": {
+        "type": {
+          "entity": "Entity",
+          "attributes": "Attributes",
+          "associatedData": "Associated data",
+          "references": "References",
+          "referenceAttributes": "Reference attributes",
+          "prices": "Prices"
+        },
+        "button": {
+          "openSchema": "Open schema"
+        },
+        "placeholder": {
+          "noItemsForSearchedTerm": "No items found for searched term."
+        }
+      }
+    },
+    "grid": {
+      "notification": {
+        "failedToFindProperty": "Failed to find property descriptor for key: '{key}'",
+        "failedToFindRequestedProperties": "These properties were requested but not found in current data: {keys}"
+      },
+      "cell": {
+        "placeholder": {
+          "noLocaleSelected": "<no locale selected>"
+        },
+        "detail": {
+          "placeholder": {
+            "invalidValue": "Invalid value.",
+            "unknownProperty": "Unknown property"
+          }
+        }
+      },
+      "renderer": {
+        "button": {
+          "displayRawValue": "Display raw value",
+          "prettyPrintValue": "Pretty print value",
+          "selectOutputFormat": "Select output format"
+        },
+        "format": {
+          "autoPrettyPrint": "Auto pretty print",
+          "raw": "Raw value",
+          "markdown": "Markdown",
+          "json": "JSON",
+          "xml": "XML",
+          "html": "HTML"
+        }
+      },
+      "codeRenderer": {
+        "placeholder": {
+          "failedToFormatValue": "Error: Failed to format value as {codeLanguage}. \\r\\n\\r\\n{message}"
+        },
+        "notification": {
+          "unsupportedCodeLanguage": "Unsupported code language."
+        }
+      },
+      "htmlRenderer": {
+        "placeholder": {
+          "failedToRenderHtml": "Error: Failed to render HTML. Value is not a string."
+        }
+      },
+      "priceRenderer": {
+        "title": "Price for sale",
+        "label": {
+          "priceInnerRecordHandling": "Price inner record handling"
+        },
+        "notification": {
+          "invalidPricesObject": "Invalid prices object!"
+        },
+        "filter": {
+          "label": {
+            "priceId": "Price ID",
+            "priceList": "Price list",
+            "currency": "Currency",
+            "innerRecordIds": "Inner record IDs"
+          },
+          "help": {
+            "computePriceForSale": "No price for sale found. To compute price for sale, following constraints need to be present in the filter: `priceInPriceLists`, `priceInCurrency`.",
+            "missingPriceListsAndCurrencyForPriceForSale": "To compute a price for sale for the filtered prices, select at least one price list and one currency.",
+            "noPriceForSale": {
+              "text": "No price for sale was computed for the filtered prices because {reason}.",
+              "reason": {
+                "noPrices": "there are no prices left for this filter",
+                "noPriceLists": "no price lists are selected",
+                "noCurrency": "no currency is selected",
+                "tooManyCurrencies": "more than one currency is selected"
+              }
+            },
+            "priceListOrder": "The order of selected price lists <em>defines the price listing ordering</em>.<br/>It also <em>defines priority</em> of price lists for price for sale computation."
+          }
+        },
+        "price": {
+          "label": {
+            "priceId": "Price ID",
+            "priceList": "Price list",
+            "currency": "Currency",
+            "innerRecordId": "Inner record ID",
+            "sellable": "Sellable",
+            "validity": "Validity",
+            "priceWithoutTax": "Price without tax",
+            "priceWithTax": "Price with tax",
+            "taxRate": "Tax rate",
+            "virtual": "Virtual"
+          },
+          "tooltip": {
+            "sellablePrice": "This price is sellable.",
+            "notSellablePrice": "This price is not sellable."
+          },
+          "help": {
+            "priceForSale": "This price would be used as a price for sale if this filter were used in the main query.",
+            "virtualPriceForSale": "This is a virtual price for sale computed based on this filter. The price is virtual because the entity has price inner record handling set to `SUM`, therefore, the price for sale is a sum of internally selected prices."
+          }
+        }
+      },
+      "referenceAttributeRenderer": {
+        "button": {
+          "openReference": "Open reference in new tab"
+        }
+      }
+    }
+  },
+  "errorViewer": {
+    "placeholder": {
+      "noDetailsAvailable": "No details available."
+    },
+    "button": {
+      "submitIssue": "Submit an issue"
+    }
+  },
+  "evitaQLConsole": {
+    "placeholder": {
+      "writeQuery": "// Write your EvitaQL query for catalog {catalogName} here.\n",
+      "results": "Results will be displayed here...",
+      "emptyHistory": "Empty history"
+    },
+    "button": {
+      "clearHistory": "Clear history"
+    },
+    "notification": {
+      "failedToSaveQueryToHistory": "Failed to save query to history."
+    }
+  },
+  "graphQLConsole": {
+    "instanceType": {
+      "system": "System",
+      "data": "Data",
+      "schema": "Schema"
+    },
+    "placeholder": {
+      "writeQuery": "# Write your GraphQL query for catalog {catalogName} here.\n",
+      "results": "Results will be displayed here...",
+      "emptyHistory": "Empty history"
+    },
+    "button": {
+      "instanceDetails": "GraphQL API instance details",
+      "clearHistory": "Clear history"
+    },
+    "notification": {
+      "failedToSaveQueryToHistory": "Failed to save query to history."
+    }
+  },
+  "resultVisualizer": {
+    "selector": {
+      "label": {
+        "query": "From",
+        "data": "Visualise"
+      }
+    },
+    "visualiser": {
+      "placeholder": {
+        "noQueries": "No queries to visualise",
+        "noSelectedQuery": "Select query to visualise",
+        "noSelectedData": "Select what to visualise"
+      }
+    },
+    "facetStatisticsVisualiser": {
+      "placeholder": {
+        "noGroups": "No facet summary groups found."
+      },
+      "label": {
+        "externalGroup": "External",
+        "externalReference": "External"
+      },
+      "notification": {
+        "primaryKeyCopiedToClipboard": "Primary key copied to clipboard.",
+        "noPrimaryKeyProperty": "No primary key property was fetched."
+      },
+      "help": {
+        "noPrimaryKeyProperty": "No `primaryKey` property or representative attributes were fetched.",
+        "noGroupCountProperty": "No `count` property was fetched.",
+        "groupCountProperty": "The total number of entities matching any facet from this group without user filter.",
+        "externalGroup": "This is only a reference to an external entity that is managed by external system.",
+        "noRequestedProperty": "The `requested` property was not fetched.",
+        "noRepresentativeProperty": "No `primaryKey` property or representative attributes were fetched.",
+        "zeroImpactMatchCount": "No entities would be returned if this facet was requested because no entity has combination of already requested facets plus this one.",
+        "noTotalRecordCountProperty": "The `totalRecordCount` property was not found in neither `recordPage` nor `recordStrip`.",
+        "totalRecordCountProperty": "The total number of entities matching the user filter.",
+        "noImpactDifferenceProperty": "The `impact.difference` property was not found.",
+        "impactDifferenceProperty": "The difference from the current number of entities matching the user filter if this facet was requested.",
+        "noImpactMatchProperty": "The `impact.matchCount` property was not found.",
+        "impactMatchProperty": "The total number of entities matching the user filter if this facet was requested.",
+        "noCountProperty": "The `count` property was not found.",
+        "countProperty": "The total number of entities matching this facet without the user filter.",
+        "externalReference": "This is only a reference to an external entity that is managed by external system."
+      }
+    },
+    "hierarchyVisualiser": {
+      "placeholder": {
+        "noHierarchies": "No hierarchies found."
+      },
+      "label": {
+        "requested": "Requested",
+        "unknown": "Unknown"
+      },
+      "notification": {
+        "primaryKeyCopiedToClipboard": "Primary key copied to clipboard.",
+        "noPrimaryKeyProperty": "No primary key property was fetched.",
+        "parentPrimaryKeyCopiedToClipboard": "Parent primary key copied to clipboard.",
+        "noParentPrimaryKeyProperty": "No parent primary key property was fetched."
+      },
+      "help": {
+        "noRepresentativeProperty": "No `primaryKey` property or representative attributes were fetched.",
+        "requestedEntity": "The entity representing this hierarchy node was filtered by `hierarchyWithin`.",
+        "noChildrenCountProperty": "The `childrenCount` property was not found.",
+        "childrenCountProperty": "The count of child hierarchy nodes that exist in the hierarchy tree below the given node; the count is correct regardless of whether the children themselves are requested/traversed by the constraint definition, and respects hierarchyOfReference settings for automatic removal of hierarchy nodes that would contain empty result set of queried entities (REMOVE_EMPTY).",
+        "noQueriedEntityCountProperty": "The `queriedEntityCount` property was not found.",
+        "queriedEntityCountProperty": "The total number of queried entities that will be returned if the current query is focused on this particular hierarchy node using the hierarchyWithin filter constraint (the possible refining constraint in the form of directRelation and excludingRoot is not taken into account).",
+        "nodeCountProperty": "The number of actually fetched nodes.",
+        "requestedNode": "An entity representing a hierarchy node in this tree that was filtered by `hierarchyWithin`."
+      }
+    },
+    "histogram": {
+      "placeholder": {
+        "unknown": "unknown",
+        "missingPropertiesForChart": "Missing properties: {properties}. Cannot render the chart.",
+        "missingProperties": "Missing properties: {properties}.",
+        "missingPropertiesForSimulatedRange": "Missing properties: {properties}. Cannot simulate the range.",
+        "missingPropertiesForActualRange": "Missing properties {properties} for actual values. The range is only simulated from indexes."
+      },
+      "label": {
+        "allBuckets": "All buckets",
+        "requestedBuckets": "Requested buckets",
+        "overallCount": "Overall count",
+        "bucketIndex": "Bucket index",
+        "occurrences": "Occurrences",
+        "threshold": "Threshold",
+        "wasRequested": "Was requested"
+      },
+      "help": {
+        "noMinProperty": "No `min` property of the histogram was fetched.",
+        "noOverallCountProperty": "No `overallCount` property of the histogram was fetched.",
+        "noMaxProperty": "No `max` property of the histogram was fetched."
+      }
+    },
+    "attributeHistogram": {
+      "placeholder": {
+        "noAttributeHistograms": "No attribute histograms found."
+      }
+    },
+    "priceHistogram": {
+      "placeholder": {
+        "noPriceHistograms": "No price histogram found."
+      }
+    }
+  },
+  "schemaViewer": {
+    "section": {
+      "placeholder": {
+        "noItemsForSearchedTerm": "No items found for searched term."
+      },
+      "label": {
+        "filter": "Filter"
+      },
+      "flag": {
+        "entitySchema": {
+          "hierarchical": "hierarchical"
+        },
+        "attributeSchema": {
+          "representative": "representative",
+          "globallyUnique": "globally unique",
+          "globallyUniquePerLocale": "globally unique per locale",
+          "unique": "unique",
+          "uniquePerLocale": "unique per locale",
+          "filterable": "filterable",
+          "sortable": "sortable",
+          "localized": "localized",
+          "nullable": "nullable"
+        },
+        "associatedDataSchema": {
+          "localized": "localized",
+          "nullable": "nullable"
+        },
+        "referenceSchema": {
+          "external": "external",
+          "indexed": "indexed",
+          "faceted": "faceted"
+        }
+      }
+    },
+    "catalog": {
+      "label": {
+        "catalogId": "Catalog ID",
+        "version": "Version",
+        "description": "Description"
+      }
+    },
+    "entities": {
+      "title": "Entities"
+    },
+    "entity": {
+      "label": {
+        "version": "Version",
+        "description": "Description",
+        "deprecationNotice": "Deprecation notice",
+        "locales": "Locales",
+        "currencies": "Currencies",
+        "generatedPrimaryKey": "Generated primary key",
+        "hierarchical": "Hierarchical",
+        "prices": "Prices",
+        "indexedDecimalPlaces": "Indexed decimal places",
+        "evolutionModes": "Evolution modes"
+      }
+    },
+    "nameVariants": {
+      "title": "Name variants",
+      "prefixedTitle": "{prefix} name variants",
+      "label": {
+        "camelCase": "camelCase",
+        "kebabCase": "kebab-case",
+        "pascalCase": "PascalCase",
+        "snakeCase": "snake_case",
+        "upperSnakeCase": "UPPER_SNAKE_CASE"
+      }
+    },
+    "attributes": {
+      "title": "Attributes"
+    },
+    "attribute": {
+      "placeholder": {
+        "uniqueWithinCollection": "Within collection",
+        "uniqueWithinLocaleOfCollection": "Within locale of collection",
+        "globallyUniqueWithinCatalog": "Within catalog",
+        "globallyUniqueWithinLocaleOfCatalog": "Within locale of catalog"
+      },
+      "label": {
+        "type": "Type",
+        "description": "Description",
+        "deprecationNotice": "Deprecation notice",
+        "representative": "Representative",
+        "unique": "Unique",
+        "globallyUnique": "Globally unique",
+        "filterable": "Filterable",
+        "sortable": "Sortable",
+        "localized": "Localized",
+        "nullable": "Nullable",
+        "defaultValue": "Default value",
+        "indexedDecimalPlaces": "Indexed decimal places"
+      },
+      "help": {
+        "uniqueWithinCollection": "The attribute value must be unique among all the entities of the same collection.",
+        "uniqueWithinLocaleOfCollection": "The localized attribute value must be unique among all values of the same locale among all the entities.",
+        "globallyUniqueWithinCatalog": "The attribute value (either localized or non-localized) must be unique among all values among all the entities using this global attribute schema in the entire catalog.",
+        "globallyUniqueWithinLocaleOfCatalog": "The localized attribute value must be unique among all values of the same locale among all the entities using this global attribute schema in the entire catalog.",
+        "implicitlyFilterable": "The attribute is implicitly filterable because it is unique."
+      }
+    },
+    "associatedData": {
+      "title": "Associated data"
+    },
+    "associatedDatum": {
+      "label": {
+        "type": "Type",
+        "description": "Description",
+        "deprecationNotice": "Deprecation notice",
+        "localized": "Localized",
+        "nullable": "Nullable"
+      }
+    },
+    "references": {
+      "title": "References"
+    },
+    "reference": {
+      "label": {
+        "description": "Description",
+        "deprecationNotice": "Deprecation notice",
+        "cardinality": "Cardinality",
+        "referencedEntity": "Referenced entity",
+        "referencedEntityManaged": "Referenced entity managed",
+        "referencedGroup": "Referenced group",
+        "referencedGroupManaged": "Referenced group managed",
+        "indexed": "Indexed",
+        "faceted": "Faceted",
+        "referencedEntityNameVariants": "Referenced entity",
+        "referencedGroupNameVariants": "Referenced group"
+      }
+    }
+  },
+  "serverViewer": {
+    "toolbar": {
+      "title": "Server"
+    },
+    "button": {
+      "reload": "Reload"
+    },
+    "notification": {
+      "couldNotLoad": "Could not load server status: {reason}"
+    },
+    "serverTitle": {
+      "flags": {
+        "version": "version: {version}",
+        "readOnly": "read only"
+      }
+    },
+    "serverStatus": {
+      "title": "Status",
+      "stats": {
+        "started": "Started",
+        "uptime": "Uptime",
+        "readiness": {
+          "label": "Readiness",
+          "type": {
+            "starting": "starting",
+            "ready": "ready",
+            "stalling": "stalling",
+            "shutdown": "shutdown",
+            "unknown": "unknown"
+          }
+        },
+        "catalogsOk": "Catalogs",
+        "catalogsCorrupted": "Corrupted catalogs",
+        "healthProblems": {
+          "label": "Health problems",
+          "type": {
+            "memoryShortage": "memory shortage",
+            "externalApiUnavailable": "external API unavailable",
+            "inputQueuesOverloaded": "input queues overloaded",
+            "javaInternalErrors": "Java internal errors"
+          }
+        }
+      },
+      "apiType": {
+        "system": "System",
+        "grpc": "gRPC",
+        "graphQL": "GraphQL",
+        "rest": "REST",
+        "observability": "Observability",
+        "lab": "evitaLab"
+      },
+      "apiState": {
+        "disabled": "API is disabled",
+        "notReady": "API is not ready",
+        "ready": "API is ready"
+      },
+      "button": {
+        "openRuntimeConfiguration": "Runtime configuration",
+        "openApiDetail": "API detail"
+      },
+      "apiDetail": {
+        "title": "{apiType} API",
+        "props": {
+          "enabled": "Enabled",
+          "ready": "Ready",
+          "baseUrls": "Base URLs"
+        },
+        "endpoints": {
+          "title": "Endpoints"
+        }
+      },
+      "runtimeConfiguration": {
+        "title": "Runtime configuration",
+        "notification": {
+          "couldNotLoadConfiguration": "Could not load runtime configuration: {reason}"
+        }
+      }
+    }
+  },
+  "backupViewer": {
+    "title": "Catalog backups",
+    "button": {
+      "reloadBackups": "Reload backups",
+      "restoreLocalBackup": "Import and restore catalog from backup file",
+      "backupCatalog": "Backup catalog"
+    },
+    "tasks": {
+      "title": "Backups in preparation"
+    },
+    "list": {
+      "title": "Available backups",
+      "noFiles": "No catalog backups are available",
+      "backup": {
+        "button": {
+          "restoreBackupFile": "Restore backup file"
+        }
+      }
+    },
+    "notification": {
+      "couldNotLoadBackupFiles": "Could not load backup files: {reason}",
+      "couldNotDownloadBackupFile": "Could not download backup file {fileName}: {reason}"
+    },
+    "backup": {
+      "title": "Backup catalog",
+      "description": "Request a new backup for the catalog:",
+      "info": "The back up process may take a while. Therefore it will be started asynchronously. You can find it’s progress and backup file to download in task listing.",
+      "form": {
+        "catalogName": {
+          "label": "Catalog to backup",
+          "validations": {
+            "required": "Catalog to backup is required.",
+            "notExists": "Selected catalog doesn't exist anymore."
+          }
+        },
+        "pastMoment": {
+          "label": "Past moment"
+        },
+        "includeWal": {
+          "label": "Include WAL",
+          "description": "Will apply all mutations from WAL during restoration resulting in the latest version of catalog"
+        }
+      },
+      "button": {
+        "backup": "Backup"
+      },
+      "notification": {
+        "couldNotLoadAvailableCatalogs": "Could not load available catalogs: {reason}",
+        "couldNotLoadMinimalDate": "Could not load available moments: {reason}",
+        "backupRequested": "A backup for the {catalogName} catalog requested.",
+        "couldNotRequestBackup": "Could not request a backup for the {catalogName} catalog: {reason}"
+      }
+    },
+    "restore": {
+      "title": "Restore catalog from {fileName}",
+      "description": "Request restoration of the backup file into catalog:",
+      "info": "The restore process may take a while. Therefore, it will be started asynchronously. You can find it's progress in backups or tasks.",
+      "button": {
+        "restore": "Restore"
+      },
+      "form": {
+        "catalogName": {
+          "label": "Catalog name",
+          "validations": {
+            "required": "Catalog name is required.",
+            "empty": "Catalog name is required.",
+            "leadingTrailingWhiteSpace": "Catalog name cannot have leading or trailing whitespace characters.",
+            "keyword": "Catalog name is same as a reserved keyword.",
+            "format": "Catalog name doesn't match supported format.",
+            "notAvailable": "Catalog with this name already exists."
+          }
+        }
+      },
+      "notification": {
+        "restoreRequested": "A restoration of the {fileName} backup file has been requested.",
+        "couldNotRestoreBackupFile": "Could not restore backup file {fileName}: {reason}"
+      }
+    },
+    "restoreLocal": {
+      "title": "Restore catalog",
+      "description": "Request restoration of imported backup file into catalog:",
+      "info": "The restore process may take a while. Therefore, it will be started asynchronously. You can find it's progress in backups or tasks.",
+      "button": {
+        "restore": "Restore"
+      },
+      "form": {
+        "backupFile": {
+          "label": "Backup file",
+          "validations": {
+            "required": "Backup file is required."
+          }
+        },
+        "catalogName": {
+          "label": "Catalog name",
+          "validations": {
+            "required": "Catalog name is required.",
+            "empty": "Catalog name is required.",
+            "leadingTrailingWhiteSpace": "Catalog name cannot have leading or trailing whitespace characters.",
+            "keyword": "Catalog name is same as a reserved keyword.",
+            "format": "Catalog name doesn't match supported format.",
+            "notAvailable": "Catalog with this name already exists."
+          }
+        }
+      },
+      "notification": {
+        "restoreRequested": "A backup restoration has been requested.",
+        "couldNotRestoreBackupFile": "Could not restore backup file: {reason}"
+      }
+    }
+  },
+  "taskViewer": {
+    "path": "Tasks",
+    "tasksVisualizer": {
+      "button": {
+        "reload": "Reload tasks"
+      },
+      "noTasks": "No tasks are running",
+      "task": {
+        "state": {
+          "waitingForPrecondition": "waiting for precondition",
+          "queued": "queued",
+          "running": "running",
+          "finished": "finished",
+          "failed": "failed"
+        },
+        "trait": {
+          "canBeStarted": "can be started",
+          "canBeCancelled": "can be cancelled",
+          "needsToBeStopped": "needs to be stopped"
+        },
+        "button": {
+          "details": "Details",
+          "downloadFileResult": "Download result",
+          "textResult": "Result",
+          "exception": "Exception",
+          "cancel": "Forcefully cancel task"
+        },
+        "progress": {
+          "indeterminate": "running..."
+        },
+        "detail": {
+          "title": "Task",
+          "property": {
+            "id": "ID",
+            "types": "Types",
+            "name": "Name",
+            "state": "State",
+            "catalogName": "Catalog name",
+            "created": "Created",
+            "issued": {
+              "label": "Issued",
+              "notIssued": "<task hasn't yet been issued>"
+            },
+            "started": {
+              "label": "Started",
+              "notStarted": "<task hasn't yet been started>"
+            },
+            "finished": {
+              "label": "Finished",
+              "notStarted": "<task hasn't yet been started>",
+              "notFinished": "<task hasn't yet been finished>"
+            },
+            "duration": {
+              "label": "Duration",
+              "notStarted": "<task hasn't yet been started>"
+            },
+            "progress": "Progress",
+            "settings": "Settings",
+            "traits": "Traits"
+          }
+        },
+        "textResult": {
+          "title": "Task result"
+        },
+        "exception": {
+          "title": "Task exception"
+        },
+        "notification": {
+          "couldNotDownloadResultFile": "Could not download result file for task {taskName}: {reason}"
+        }
+      },
+      "notification": {
+        "couldNotLoadTaskStatuses": "Could not load task statuses: {reason}",
+        "taskCancelled": "The {taskName} task has been cancelled.",
+        "taskNotCancelled": "The {taskName} task has not been cancelled. Probably because it is already finished",
+        "couldNotCancelTask": "Could not cancel the {taskName} task: {reason}"
+      }
+    }
+  },
+  "jfrViewer": {
+    "path": "JFR Recordings",
+    "button": {
+      "startRecording": "Start recording",
+      "reloadRecordings": "Reload recordings"
+    },
+    "tasks": {
+      "title": "Running recordings",
+      "button": {
+        "stopRecording": "Stop recording"
+      }
+    },
+    "list": {
+      "title": "Finished recordings",
+      "noRecordings": "No JFR recordings are available"
+    },
+    "notification": {
+      "couldNotLoadRecordings": "Could not load JFR recording files: {reason}",
+      "couldNotDownloadRecordingFile": "Could not download recording file {fileName}: {reason}"
+    },
+    "startRecording": {
+      "title": "Start JFR recording",
+      "info": "This will start recording process in background which will be active until you stop it manually. Note that there can be only one recording active at the same time.",
+      "form": {
+        "events": {
+          "label": "Events to record",
+          "validations": {
+            "required": "Events are required."
+          }
+        }
+      },
+      "button": {
+        "startRecording": "Start recording"
+      },
+      "notification": {
+        "couldNotLoadEventTypes": "Could not load available event types for JFR recording: {reason}",
+        "couldNotStartRecording": "Could not start JFR recording: {reason}",
+        "recordingStarted": "JFR recording has been started.",
+        "recordingNotStarted": "JFR recording has not been started."
+      }
+    },
+    "stopRecording": {
+      "title": "Stop JFR recording",
+      "info": "This will stop the active recording process. The final recording will be available in the JFR recording listing.",
+      "button": {
+        "stopRecording": "Stop recording"
+      },
+      "notification": {
+        "couldNotStopRecording": "Could not stop JFR recording: {reason}",
+        "recordingStopped": "JFR recording has been stopped.",
+        "recordingNotStopped": "JFR recording has not been stopped."
+      }
+    }
+  },
+  "serverFileViewer": {
+    "list": {
+      "item": {
+        "button": {
+          "deleteFile": "Delete server file",
+          "downloadFile": "Download server file"
+        },
+        "notification": {
+          "couldNotDownloadFile": "Could not download {fileName} file: {reason}"
+        }
+      }
+    },
+    "delete": {
+      "title": "Delete {fileName} file",
+      "question": "Do you want to delete server file?",
+      "notification": {
+        "fileDeleted": "The {fileName} file has been successfully deleted.",
+        "fileNotDeleted": "The {fileName} file has not been deleted.",
+        "couldNotDeleteFile": "Could not delete the {fileName} file: {reason}"
+      }
+    }
+  }
+}

@@ -11,14 +11,21 @@ concurrency:
   group: ${{ github.head_ref || github.ref_name }}  # for the same branch (dev or PR)
   cancel-in-progress: true        # run only one workflow at a time (cancel the previous)
 
-jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+jobs:
+  verify:
+    name: Verify (build and test)
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -28,5 +35,37 @@ jobs:
       - name: Install dependencies
         run: npm install -g yarn && yarn install --frozen-lockfile
 
+      - name: Test
+        run: yarn test
+
       - name: Build
         run: yarn build
+
+  build-canary-docker:
+    name: Build canary Docker image
+    needs: verify
+
+    permissions:
+      packages: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker hub
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          build-args: EVITALAB_BUILD_VERSION=canary
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:canary

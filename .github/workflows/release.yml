@@ -5,7 +5,7 @@ name: Release
 on:
   push:
     branches:
-      - 'master'
+      - master
 
 concurrency:
   group: ${{ github.ref_name }}   # for the same branch
@@ -20,17 +20,9 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  build-and-release:
-    name: Build and release
-    permissions:
-      # write permission is required to create a github release
-      contents: write
-
-      # write permission is required for autolabeler
-      # otherwise, read permission is required at least
-      pull-requests: write
+  build:
+    name: Build
     outputs:
-      release_id: ${{ steps.create_release.outputs.id }}
       released_version: ${{ steps.release_version.outputs.version }}
 
     runs-on: ubuntu-latest
@@ -57,6 +49,9 @@ jobs:
       - name: Install dependencies
         run: npm install -g yarn && yarn install --frozen-lockfile
 
+      - name: Test
+        run: yarn test
+
       - name: Build
         env:
           EVITALAB_BUILD_VERSION: ${{ steps.release_version.outputs.version }}
@@ -64,6 +59,33 @@ jobs:
 
       - name: Include license in dist
         run: cp LICENSE ./dist
+
+      - name: Upload dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  release:
+    name: Release
+    needs: build
+
+    permissions:
+      # write permission is required to create a github release
+      contents: write
+
+      # write permission is required for autolabeler
+      # otherwise, read permission is required at least
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download built evitaLab
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: ./dist/
 
       - name: Create .zip of dist
         uses: thedoctor0/zip-release@0.7.1
@@ -83,7 +105,7 @@ jobs:
         id: create_release
         uses: release-drafter/release-drafter@v5
         with:
-          version: ${{ steps.release_version.outputs.version }}
+          version: ${{ needs.build.outputs.released_version }}
           publish: true
 
       - name: Upload dist.zip to release
@@ -102,11 +124,12 @@ jobs:
           asset_name: Dist (tar.gz)
           asset_content_type: application/gzip
 
-  build-and-release-docker:
-    name: Build and release Docker image
+  build-docker:
+    name: Build Docker image
+    needs: [build, release]
+
     permissions:
       packages: write
-    needs: build-and-release
 
     runs-on: ubuntu-latest
 
@@ -124,23 +147,62 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          build-args: EVITALAB_BUILD_VERSION=${{ needs.build-and-release.outputs.released_version }}
+          build-args: EVITALAB_BUILD_VERSION=${{ needs.build.outputs.released_version }}
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-release.outputs.released_version }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.released_version }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-  # todo lho cannot find release id
-#  publish-release:
-#    name: Publish release
-#    needs: build-and-release-docker
-#    permissions:
-#      # write permission is required to create a github release
-#      contents: write
-#
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - uses: StuYarrow/publish-release@v1.1.2
-#        with:
-#          id: ${{ needs.build-and-release.outputs.release_id }}
+  publish-to-evitadb:
+    name: Publish evitaLab to evitaDB
+    needs: [build, release]
+
+    steps:
+      - name: Download built evitaLab
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: ./dist/
+
+      - name: Clone evitaDB repository
+        env:
+          REPO: "https://x-access-token:${{ secrets.REPO_ACCESS_TOKEN }}@github.com/FgForrest/evitaDB.git"
+        run: |
+          git clone $REPO evitaDB
+          cd evitaDB
+          git remote set-url origin $REPO
+
+      - name: Copy built evitaLab to evitaDB
+        env:
+          DIST_TARGET: "evitaDB/evita_external_api/evita_external_api_lab/src/main/resources/META-INF/lab/gui/"
+        run: |
+          rm -r "$DIST_TARGET/dist"
+          cp -r ./dist "$DIST_TARGET/"
+
+      - name: Commit and push changes to evitaDB
+        env:
+          BRANCH_NAME: "update-evitalab-${{ needs.build.outputs.released_version }}"
+        run: |
+          cd evitaDB
+          git config user.name "evitaLab Bot"
+          git config user.email "lukashornych@proton.me"
+          git checkout -b $BRANCH_NAME
+          git add .
+          git commit -m "build: update evitaLab to ${{ needs.build.outputs.released_version }}"
+          git push origin $BRANCH_NAME
+
+      - name: Create pull request with new evitaLab
+        uses: actions/github-script@v7
+        with:
+          github-token: '${{ secrets.REPO_ACCESS_TOKEN }}'
+          script: |
+            const branchName = 'update-evitalab-${{ needs.build.outputs.released_version }}';
+            const { data: pullRequest } = await github.rest.pulls.create({
+              owner: 'FgForrest',
+              repo: 'evitaDB',
+              title: 'Update evitaLab to ${{ needs.build.outputs.released_version }}',
+              head: branchName,
+              base: 'dev',
+              body: 'This PR updates embedded evitaLab with new released version.'
+            });
+            console.log('Pull request created: ', pullRequest.html_url);
