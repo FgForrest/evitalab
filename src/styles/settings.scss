@@ -253,3 +253,7 @@ body::after {
     color: var(--el-color-primary-lightest);
   }
 }
+
+.v-time-picker-clock {
+  background-color: $gray-dark;
+}

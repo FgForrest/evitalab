@@ -36,8 +36,8 @@ export class ServerFileConverter {
             grpcFile.contentType,
             grpcFile.totalSizeInBytes,
             new OffsetDateTime(
-                grpcFile.created?.timestamp,
-                grpcFile.created?.offset
+                grpcFile.created!.timestamp!,
+                grpcFile.created!.offset
             ),
             grpcFile.origin!
         )

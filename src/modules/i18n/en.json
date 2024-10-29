@@ -11,6 +11,8 @@
       "no": "No"
     },
     "button": {
+      "previous": "Previous",
+      "next": "Next",
       "close": "Close",
       "cancel": "Cancel",
       "remove": "Remove",
@@ -46,6 +48,22 @@
       "confirmDialog": {
         "title": "Dangerous operation",
         "message": "Warning! You are about to do dangerous operation. Are you sure you want to proceed?"
+      }
+    },
+    "input": {
+      "dateTime": {
+        "timeOffset": {
+          "title": "Select time offset",
+          "hours": "Hours",
+          "minutes": "Minutes"
+        },
+        "help": {
+          "timeOffset": "in time offset of {offset}"
+        },
+        "error": {
+          "olderThanMin": "Date time is older than the minimum allowed.",
+          "newerThanMax": "Date time is newer than the maximum allowed."
+        }
       }
     }
   },

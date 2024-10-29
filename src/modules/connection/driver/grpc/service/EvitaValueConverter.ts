@@ -216,8 +216,8 @@ export class EvitaValueConverter {
             throw new Error('DateTimeRange has undefined prop from and to')
         else
             return new DateTimeRange(
-                new OffsetDateTime(value.from?.timestamp, value.from?.offset),
-                new OffsetDateTime(value.to?.timestamp, value.to?.offset)
+                new OffsetDateTime(value.from!.timestamp!, value.from!.offset),
+                new OffsetDateTime(value.to!.timestamp!, value.to!.offset)
             )
     }
 
@@ -319,7 +319,7 @@ export class EvitaValueConverter {
     ): Immutable.List<OffsetDateTime> {
         const offsetDateTimeArray: OffsetDateTime[] = []
         for (const grpcDateTime of value.value) {
-            offsetDateTimeArray.push(this.convertLocalDateTime(grpcDateTime))
+            offsetDateTimeArray.push(this.convertOffsetDateTime(grpcDateTime))
         }
         return Immutable.List(offsetDateTimeArray)
     }
@@ -369,12 +369,12 @@ export class EvitaValueConverter {
                 dateTimeRange.push(
                     new DateTimeRange(
                         new OffsetDateTime(
-                            grpcDateTimeRange.from?.timestamp,
-                            grpcDateTimeRange.from?.offset
+                            grpcDateTimeRange.from!.timestamp!,
+                            grpcDateTimeRange.from!.offset
                         ),
                         new OffsetDateTime(
-                            grpcDateTimeRange.to?.timestamp,
-                            grpcDateTimeRange.to?.offset
+                            grpcDateTimeRange.to!.timestamp!,
+                            grpcDateTimeRange.to!.offset
                         )
                     )
                 )

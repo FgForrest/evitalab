@@ -514,8 +514,8 @@ export class EvitaDBDriverGrpc implements EvitaDBDriver {
         return new CatalogVersionAtResponse(
             result.version,
             new OffsetDateTime(
-                result.introducedAt?.timestamp,
-                result.introducedAt?.offset
+                result.introducedAt!.timestamp!,
+                result.introducedAt!.offset
             )
         )
     }

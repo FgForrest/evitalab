@@ -4,13 +4,13 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { DateTime } from 'luxon'
-import { Timestamp } from '@bufbuild/protobuf'
 import { BackupViewerService, useBackupViewerService } from '@/modules/backup-viewer/service/BackupViewerService'
 import { Connection } from '@/modules/connection/model/Connection'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import { CatalogVersionAtResponse } from '@/modules/connection/model/CatalogVersionAtResponse'
 import Immutable from 'immutable'
 import { Catalog } from '@/modules/connection/model/Catalog'
+import VDateTimeInput from '@/modules/base/component/VDateTimeInput.vue'
 
 const backupViewerService: BackupViewerService = useBackupViewerService()
 const toaster: Toaster = useToaster()
@@ -36,20 +36,24 @@ watch(
 
 const availableCatalogs = ref<string[]>([])
 const availableCatalogsLoaded = ref<boolean>(false)
-const minimalDate = ref<string | undefined>()
-const minimalDateLoaded = ref<boolean>(false)
+const minDate = ref<DateTime | undefined>()
+const minDateLoaded = ref<boolean>(false)
+const maxDate = ref<DateTime | undefined>()
+const maxDateLoaded = ref<boolean>(false)
+const defaultTimeOffset = ref<string>('+00:00')
+const defaultTimeOffsetLoaded = ref<boolean>(false)
 
 const catalogName = ref<string | undefined>(undefined)
 watch(catalogName, async () => {
-    minimalDateLoaded.value = false
+    minDateLoaded.value = false
     pastMoment.value = undefined
     if (catalogName.value != undefined && catalogName.value.trim().length > 0) {
         await loadMinimalDate()
     } else {
-        minimalDate.value = undefined
+        minDate.value = undefined
     }
 })
-const pastMoment = ref<string>()
+const pastMoment = ref<DateTime | undefined>()
 const includeWal = ref<boolean>(false)
 
 const changed = computed<boolean>(() =>
@@ -89,8 +93,15 @@ async function loadMinimalDate(): Promise<void> {
             props.connection,
             catalogName.value!
         )
-        minimalDate.value = minimalBackupDate.introducedAt.toString()
-        minimalDateLoaded.value = true
+
+        minDate.value = minimalBackupDate.introducedAt.toDateTime()
+        minDateLoaded.value = true
+
+        maxDate.value = DateTime.now()
+        maxDateLoaded.value = true
+
+        defaultTimeOffset.value = minimalBackupDate.introducedAt.offset
+        defaultTimeOffsetLoaded.value = true
     } catch (e: any) {
         toaster.error(t(
             'backupViewer.backup.notification.couldNotLoadMinimalDate',
@@ -100,21 +111,9 @@ async function loadMinimalDate(): Promise<void> {
 }
 
 function reset(): void {
-    catalogName.value = ''
-    pastMoment.value = ''
+    catalogName.value = undefined
+    pastMoment.value = undefined
     includeWal.value = false
-}
-
-function convertPastMoment(): OffsetDateTime | undefined {
-    if (pastMoment.value === undefined) {
-        return undefined
-    }
-    // todo lho simplify
-    // todo lho verify date data type
-    const jsDate = new Date(pastMoment.value!)
-    const offsetDateTime: DateTime = DateTime.fromJSDate(jsDate)
-    const timestamp: Timestamp = Timestamp.fromDate(jsDate)
-    return new OffsetDateTime(timestamp, offsetDateTime.toFormat('ZZ'))
 }
 
 async function backup(): Promise<boolean> {
@@ -123,7 +122,9 @@ async function backup(): Promise<boolean> {
             props.connection,
             catalogName.value!,
             includeWal.value,
-            convertPastMoment()
+            pastMoment.value != undefined
+                ? OffsetDateTime.fromDateTime(pastMoment.value)
+                : undefined
         )
         toaster.success(t(
             'backupViewer.backup.notification.backupRequested',
@@ -174,12 +175,13 @@ async function backup(): Promise<boolean> {
                 :disabled="!availableCatalogsLoaded"
                 required
             />
-            <VDateInput
+            <VDateTimeInput
                 v-model="pastMoment"
                 :label="t('backupViewer.backup.form.pastMoment.label')"
-                :disabled="!minimalDateLoaded"
-                :min="minimalDate"
-                :max="new Date().toISOString()"
+                :disabled="!minDateLoaded || !maxDateLoaded || !defaultTimeOffsetLoaded"
+                :min="minDate"
+                :max="maxDate"
+                :default-time-offset="defaultTimeOffset"
             />
             <VCheckbox
                 v-model="includeWal"

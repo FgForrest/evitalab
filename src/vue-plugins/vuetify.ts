@@ -10,12 +10,18 @@ import 'vuetify/styles'
 
 // Composables
 import { VDateInput } from 'vuetify/labs/VDateInput'
+import { VTimePicker } from 'vuetify/labs/VTimePicker'
+import { VNumberInput } from 'vuetify/labs/VNumberInput'
+import { VPicker } from 'vuetify/labs/VPicker'
 import { createVuetify } from 'vuetify'
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
     components: {
         VDateInput,
+        VTimePicker,
+        VNumberInput,
+        VPicker
     },
     theme: {
         defaultTheme: 'dark',
@@ -83,6 +89,18 @@ export default createVuetify({
         VFileInput: {
             variant: 'solo-filled',
             density: 'compact'
+        },
+        VDateInput: {
+            variant: 'solo-filled',
+            density: 'compact',
+            elevation: 6
+        },
+        VNumberInput: {
+            variant: 'solo-filled',
+            density: 'compact',
+            VBtn: {
+                variant: 'flat'
+            }
         },
         VList: {
             density: 'compact'
