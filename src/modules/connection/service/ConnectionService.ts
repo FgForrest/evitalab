@@ -1,6 +1,5 @@
 import { InjectionKey } from 'vue'
 import { ConnectionStore } from '@/modules/connection/store/connectionStore'
-import Cookies from 'js-cookie'
 import { Connection } from '@/modules/connection/model/Connection'
 import { LabStorage } from '@/modules/storage/LabStorage'
 import { ConnectionId } from '@/modules/connection/model/ConnectionId'
@@ -14,11 +13,12 @@ import { EvitaDBDriverResolver } from '@/modules/connection/driver/EvitaDBDriver
 import { EvitaDBDriver } from '@/modules/connection/driver/EvitaDBDriver'
 import Immutable from 'immutable'
 import { ServerStatus } from '@/modules/connection/model/status/ServerStatus'
+import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 
 /**
  * Cookie containing preconfigured connections. These will be displayed next to the user-defined connections.
  */
-const preconfiguredConnectionsCookieName: string = 'evitalab_pconnections'
+const preconfiguredConnectionsSystemPropertyName: string = 'pconnections'
 const userConnectionsStorageKey: string = 'userConnections'
 
 export const connectionServiceInjectionKey: InjectionKey<ConnectionService> = Symbol('connectionService')
@@ -43,17 +43,22 @@ export class ConnectionService {
     /**
      * Loads data and initializes connection manager
      */
-    static load(store: ConnectionStore, labStorage: LabStorage, evitaDBDriverResolver: EvitaDBDriverResolver): ConnectionService {
+    static load(store: ConnectionStore,
+                evitaLabConfig: EvitaLabConfig,
+                labStorage: LabStorage,
+                evitaDBDriverResolver: EvitaDBDriverResolver): ConnectionService {
         let preconfiguredConnections: Connection[] = []
         // load preconfigured connections from cookie from hosted evitaDB instance
-        const preconfiguredConnectionsCookie: string | undefined = Cookies.get(preconfiguredConnectionsCookieName)
-        if (preconfiguredConnectionsCookie != undefined) {
+
+        const preconfiguredConnectionsSystemProperty: string | undefined =
+            evitaLabConfig.systemProperty(preconfiguredConnectionsSystemPropertyName)
+        if (preconfiguredConnectionsSystemProperty != undefined) {
             try {
-                preconfiguredConnections = (JSON.parse(atob(preconfiguredConnectionsCookie)) as Array<any>)
+                preconfiguredConnections = (JSON.parse(preconfiguredConnectionsSystemProperty) as Array<any>)
                     .map(connection => Connection.preconfiguredFromJson(connection))
                 // todo validate duplicate connections, move this to Lab component to have access to Toaster
             } catch (e) {
-                console.error('Failed to load preconfigured connections cookie', e)
+                console.error('Failed to load preconfigured connections from system properties', e)
             }
         }
         // automatic demo connection configuration for easier development
@@ -77,9 +82,6 @@ export class ConnectionService {
         // inject connections into the lab
         store.replacePreconfiguredConnections(preconfiguredConnections)
         store.replaceUserConnections(userConnections)
-
-        // expire cookies, so when the lab is reloaded, it will load new cookie values
-        Cookies.remove(preconfiguredConnectionsCookieName)
 
         return new ConnectionService(store, labStorage, evitaDBDriverResolver)
     }
@@ -148,7 +150,7 @@ export class ConnectionService {
             return await this.fetchAndCacheServerStatus(connection)
         }
 
-        let serverStatus: ServerStatus | undefined = this.store.cachedServerStatuses.get(connection.id)
+        let serverStatus: ServerStatus | undefined = this.store.cachedServerStatuses.get(connection.id) as ServerStatus | undefined
         if (serverStatus == undefined) {
             serverStatus = await this.fetchAndCacheServerStatus(connection)
             this.store.cachedServerStatuses.set(connection.id, serverStatus)

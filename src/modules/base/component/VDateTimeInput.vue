@@ -5,6 +5,7 @@ import { computed, ref, watch } from 'vue'
 import { DateTime } from 'luxon'
 import VTimeOffsetPicker from '@/modules/base/component/VTimeOffsetPicker.vue'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { timeOffsetFrom } from '@/utils/dateTime'
 
 enum Step {
     Date = 0,
@@ -17,7 +18,6 @@ const { t } = useI18n()
 
 const props = withDefaults(
     defineProps<{
-        modelValue?: DateTime,
         label?: string,
         disabled?: boolean,
         defaultTimeOffset?: string,
@@ -25,19 +25,19 @@ const props = withDefaults(
         max?: DateTime
     }>(),
     {
-        modelValue: undefined,
         label: undefined,
         disabled: false,
-        defaultTimeOffset: '+00:00'
+        defaultTimeOffset: () => timeOffsetFrom(DateTime.now())
     }
 )
-const emit = defineEmits<{
-    (e: 'update:modelValue', value: DateTime): void
-}>()
+
+/**
+ * Wizard
+ */
 
 const showMenu = ref<boolean>(false)
 watch(showMenu, (newValue) => {
-    if (!newValue) {
+    if (newValue) {
         currentStep.value = Step.Date
     }
 })
@@ -63,21 +63,30 @@ function goToNextStep(): void {
     }
 }
 
-const timeOffset = ref<string>(props.defaultTimeOffset)
+/**
+ * Raw data
+ */
+
+const timeOffset = ref<string>()
+const timeOffsetOverriddenByModel = ref<boolean>(false)
 watch(
     () => props.defaultTimeOffset,
-    () => timeOffset.value = props.defaultTimeOffset,
+    (newDefaultTimeOffset) => {
+        if (!timeOffsetOverriddenByModel.value) {
+            timeOffset.value = newDefaultTimeOffset
+        }
+    },
     { immediate: true }
 )
 
-const date = ref<Date>()
+const date = ref<Date | undefined>(undefined)
 const isoDate = computed<string | undefined>(() => {
     if (date.value == undefined) {
         return undefined
     }
     return `${date.value.getFullYear()}-${String(date.value.getMonth() + 1).padStart(2, '0')}-${String(date.value.getDate()).padStart(2, '0')}`
 })
-watch(date, (newValue) => {
+watch(date, (newValue, oldValue) => {
     if (newValue != undefined) {
         currentStep.value = Step.Time
     }
@@ -140,6 +149,10 @@ const maxTime = computed<string | undefined>(() => {
         })!
 })
 
+/**
+ * Computed data
+ */
+
 const computedOffsetDateTime = computed<DateTime | undefined>(() => {
     if (isoDate.value == undefined) {
         return undefined
@@ -159,29 +172,67 @@ const computedOffsetDateTime = computed<DateTime | undefined>(() => {
     return DateTime.fromISO(rawOffsetDateTime)
         .setZone(timeOffset.value) // a little bit of hack to not use default device locale
 })
-const displayedOffsetDateTime = ref<string>('')
+
+const model = defineModel<DateTime>({ required: false })
+watch(
+    model,
+    (newModel) => {
+        if (newModel == undefined) {
+            return
+        }
+        // We need to specify the date this way without specific time offset so
+        // that it thinks that the actual offset is the local offset.
+        // This makes sure that the picker displays correct date according to the
+        // actual offset not according to local offset of the device.
+        date.value = new Date(
+            newModel.year,
+            newModel.month - 1,
+            newModel.day,
+            newModel.hour,
+            newModel.minute,
+            newModel.second
+        )
+        time.value = newModel
+            .set({ millisecond: 0 })
+            .toISOTime({ includeOffset: false, suppressMilliseconds: true })!
+        timeOffset.value = timeOffsetFrom(newModel)
+        timeOffsetOverriddenByModel.value = true
+    },
+    { immediate: true }
+)
+
+const error = computed<string | undefined>(() => {
+    if (computedOffsetDateTime.value == undefined) {
+        return undefined
+    }
+
+    if (props.min != undefined && computedOffsetDateTime.value < props.min) {
+        return t('common.input.dateTime.error.olderThanMin')
+    }
+    if (props.max != undefined && computedOffsetDateTime.value > props.max) {
+        return t('common.input.dateTime.error.newerThanMax')
+    }
+
+    return undefined
+})
+
+const displayedOffsetDateTime = computed<string>(() => {
+    if (model.value == undefined) {
+        return ''
+    }
+    return model.value.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
+})
 
 function confirm(): void {
     if (computedOffsetDateTime.value == undefined) {
         throw new Error('Missing offset date time.')
     }
-
-    const offsetDateTime: DateTime = computedOffsetDateTime.value
-    if (props.min != undefined && offsetDateTime < props.min) {
-        toaster.error(t('common.input.dateTime.error.olderThanMin'))
-        currentStep.value = Step.Date
-        return
-    }
-    if (props.max != undefined && offsetDateTime > props.max) {
-        toaster.error(t('common.input.dateTime.error.newerThanMax'))
-        currentStep.value = Step.Date
+    if (error.value != undefined) {
         return
     }
 
-    displayedOffsetDateTime.value = computedOffsetDateTime.value
-        .toLocaleString(DateTime.DATETIME_FULL)
     showMenu.value = false
-    emit('update:modelValue', offsetDateTime)
+    model.value = computedOffsetDateTime.value
 }
 </script>
 
@@ -200,7 +251,7 @@ function confirm(): void {
             activator="parent"
             min-width="0"
         >
-            <VSheet v-if="showMenu" elevation="6">
+            <VSheet v-if="showMenu" elevation="6" class="wizard">
                 <VWindow v-if="showMenu" v-model="currentStep">
                     <VWindowItem>
                         <VDatePicker
@@ -224,11 +275,21 @@ function confirm(): void {
                     </VWindowItem>
                 </VWindow>
 
-                <div v-if="currentStep < Step.TimeOffset" class="time-offset-info text-disabled">
+                <div v-if="currentStep < Step.TimeOffset" class="wizard__time-offset-info text-disabled">
                     {{ t('common.input.dateTime.help.timeOffset', { offset: timeOffset }) }}
                 </div>
 
-                <footer class="actions">
+                <VScrollXTransition v-show="error != undefined">
+                    <VAlert
+                        type="error"
+                        icon="mdi-alert-circle-outline"
+                        class="wizard__error-alert"
+                    >
+                        {{ error }}
+                    </VAlert>
+                </VScrollXTransition>
+
+                <footer class="wizard__actions">
                     <VBtn
                         v-if="currentStep > Step.Date"
                         variant="tonal"
@@ -251,6 +312,7 @@ function confirm(): void {
                     <VBtn
                         v-else-if="currentStep === Step.TimeOffset"
                         prepend-icon="mdi-check"
+                        :disabled="error != undefined"
                         @click="confirm"
                     >
                         {{ t('common.button.confirm') }}
@@ -262,14 +324,22 @@ function confirm(): void {
 </template>
 
 <style lang="scss" scoped>
-.time-offset-info {
-    text-align: center;
-    margin: 0 1rem 1rem;
-}
+.wizard {
+    width: min-content;
 
-.actions {
-    display: flex;
-    padding: 0 1rem 1rem;
-    gap: 0.5rem;
+    &__time-offset-info {
+        text-align: center;
+        margin: 0 1rem 1rem;
+    }
+
+    &__error-alert {
+        margin: 0 1rem 1rem;
+    }
+
+    &__actions {
+        display: flex;
+        padding: 0 1rem 1rem;
+        gap: 0.5rem;
+    }
 }
 </style>

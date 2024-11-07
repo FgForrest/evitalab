@@ -1,6 +1,7 @@
 import { Timestamp } from '@bufbuild/protobuf'
 import { DateTime } from 'luxon'
 import { PrettyPrintable } from './PrettyPrintable'
+import { timeOffsetFrom } from '@/utils/dateTime'
 
 const offsetDateTimeFormatter = new Intl.DateTimeFormat([], {
     dateStyle: 'short',
@@ -20,7 +21,7 @@ export class OffsetDateTime implements PrettyPrintable {
 
     static fromDateTime(dateTime: DateTime): OffsetDateTime {
         const timestamp: Timestamp = Timestamp.fromDate(dateTime.toJSDate())
-        const offset: string = dateTime.zoneName!
+        const offset: string = timeOffsetFrom(dateTime)
         return new OffsetDateTime(timestamp, offset)
     }
 

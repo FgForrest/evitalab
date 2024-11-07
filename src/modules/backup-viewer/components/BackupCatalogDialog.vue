@@ -40,7 +40,7 @@ const minDate = ref<DateTime | undefined>()
 const minDateLoaded = ref<boolean>(false)
 const maxDate = ref<DateTime | undefined>()
 const maxDateLoaded = ref<boolean>(false)
-const defaultTimeOffset = ref<string>('+00:00')
+const defaultTimeOffset = ref<string>()
 const defaultTimeOffsetLoaded = ref<boolean>(false)
 
 const catalogName = ref<string | undefined>(undefined)
@@ -53,7 +53,7 @@ watch(catalogName, async () => {
         minDate.value = undefined
     }
 })
-const pastMoment = ref<DateTime | undefined>()
+const pastMoment = ref<DateTime | undefined>(undefined)
 const includeWal = ref<boolean>(false)
 
 const changed = computed<boolean>(() =>

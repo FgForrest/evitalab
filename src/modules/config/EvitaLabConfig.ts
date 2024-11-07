@@ -1,17 +1,21 @@
-import Cookies from 'js-cookie'
 import { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
+import Immutable from 'immutable'
+import { Router } from 'vue-router'
+
+const systemPropertiesControlParamName: string = 'evitalab'
+const systemPropertyUrlPrefix: string = 'evitalab-'
 
 /**
- * Cookie containing the name of a hosting server. This is mainly for namespacing storages.
+ * System property containing the name of a hosting server. This is mainly for namespacing storages.
  */
-const providerNameCookieName: string = 'evitalab_servername'
-/**
- * Cookie containing the read-only flag. This defines whether the lab is in read-only mode.
- */
-const readonlyCookieName: string = 'evitalab_readonly'
+const serverNameSystemPropertyName: string = 'server-name'
+const defaultServerName: string = 'standalone'
 
-const defaultName: string = 'standalone'
+/**
+ * System property containing the read-only flag. This defines whether the lab is in read-only mode.
+ */
+const readOnlySystemPropertyName: string = 'readonly'
 
 export const evitaLabConfigInjectionKey: InjectionKey<EvitaLabConfig> = Symbol('evitaLabConfig')
 
@@ -19,29 +23,54 @@ export const evitaLabConfigInjectionKey: InjectionKey<EvitaLabConfig> = Symbol('
  * Holds current evitaLab config
  */
 export class EvitaLabConfig {
-    readonly providerName: string
-    readonly readOnly: boolean
 
-    private constructor(providerName: string, readOnly: boolean) {
-        this.providerName = providerName
-        this.readOnly = readOnly
+    private readonly systemProperties: Immutable.Map<string, string>
+
+    private constructor(systemProperties: Immutable.Map<string, string>) {
+        this.systemProperties = systemProperties
     }
 
     /**
-     * Load config from cookies
+     * Load config
      */
-    static load(): EvitaLabConfig {
-        const providerNameCookie: string | undefined = Cookies.get(providerNameCookieName)
-        const providerName: string = providerNameCookie != undefined ? atob(providerNameCookie) : defaultName
+    static load(router: Router): EvitaLabConfig {
+        const systemProperties: Map<string, string> = new Map()
 
-        const readOnlyCookie: string | undefined = Cookies.get(readonlyCookieName)
-        const readOnly: boolean = readOnlyCookie != undefined && atob(readOnlyCookie) === 'true'
+        // resolve system properties from URL and hide them from user
+        const queryParams: URLSearchParams = new URLSearchParams(document.location.search)
+        const newQueryParams: Map<string, string> = new Map()
+        queryParams.forEach((value: string, key: string) => {
+            if (key === systemPropertiesControlParamName) {
+                // don't pass forward
+            } else if (key.startsWith(systemPropertyUrlPrefix)) {
+                systemProperties.set(key.substring(systemPropertyUrlPrefix.length), atob(value))
+            } else {
+                newQueryParams.set(key, value)
+            }
+        })
+        // keep in URL only non-system-property params
+        router.replace({
+            path: window.location.pathname,
+            query: Object.fromEntries(newQueryParams.entries())
+        })
 
-        // expire cookies, so when the lab is reloaded, it will load new cookie values
-        Cookies.remove(providerNameCookieName)
-        Cookies.remove(readonlyCookieName)
+        return new EvitaLabConfig(Immutable.Map(systemProperties));
+    }
 
-        return new EvitaLabConfig(providerName, readOnly);
+    get serverName(): string {
+        return this.systemProperty(serverNameSystemPropertyName) ?? defaultServerName
+    }
+
+    get readOnly(): boolean {
+        const rawReadOnly: string | undefined = this.systemProperty(readOnlySystemPropertyName)
+        if (rawReadOnly == undefined) {
+            return false
+        }
+        return rawReadOnly === 'true'
+    }
+
+    systemProperty(name: string): string | undefined {
+        return this.systemProperties.get(name)
     }
 }
 

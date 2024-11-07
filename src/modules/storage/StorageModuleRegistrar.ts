@@ -11,7 +11,7 @@ export class StorageModuleRegistrar implements ModuleRegistrar {
 
         builder.provide(
             labStorageInjectionKey,
-            new LabStorage(evitaLabConfig.providerName)
+            new LabStorage(evitaLabConfig.serverName)
         )
     }
 }

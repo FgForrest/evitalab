@@ -28,6 +28,7 @@ export class ConnectionModuleRegistrar implements ModuleRegistrar {
         const evitaDBDriverResolver: EvitaDBDriverResolver = new EvitaDBDriverResolver(evitaLabConfig)
         const connectionService: ConnectionService = ConnectionService.load(
             connectionStore,
+            evitaLabConfig,
             labStorage,
             evitaDBDriverResolver
         )

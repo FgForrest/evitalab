@@ -1,4 +1,3 @@
-import { App } from 'vue'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 
 // todo docs

@@ -5,8 +5,7 @@ import { InitializationError } from '@/modules/base/exception/InitializationErro
 
 export class ModuleContextBuilder {
 
-    private readonly app: App
-
+    readonly app: App
     private readonly resourceIndex: Map<string, any> = new Map()
 
     constructor(app: App) {

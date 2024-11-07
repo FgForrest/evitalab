@@ -28,7 +28,7 @@ export abstract class HttpApiClient {
      * @protected
      */
     protected getClientIdHeaderValue(): string {
-        return 'evitaLab-' + encodeURIComponent(this.evitaLabConfig.providerName)
+        return 'evitaLab-' + encodeURIComponent(this.evitaLabConfig.serverName)
     }
 
     /**
