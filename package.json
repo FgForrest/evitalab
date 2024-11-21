@@ -29,7 +29,7 @@
     "cm6-graphql": "^0.0.9",
     "codemirror": "^6.0.1",
     "core-js": "^3.29.0",
-    "dompurify": "^3.0.6",
+    "dompurify": "^3.2.1",
     "graphql": "^16.7.1",
     "highlight.js": "^11.9.0",
     "immutable": "^4.3.6",
