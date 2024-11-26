@@ -25,7 +25,7 @@ import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import EntityGrid from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGrid.vue'
 import Toolbar from '@/modules/entity-viewer/viewer/component/Toolbar.vue'
 import QueryInput from '@/modules/entity-viewer/viewer/component/QueryInput.vue'
-import Immutable, { List } from 'immutable'
+import Immutable from 'immutable'
 import { EntityAttributeSchema } from '@/modules/connection/model/schema/EntityAttributeSchema'
 import {
     provideDataLocale,
@@ -35,6 +35,14 @@ import {
     provideQueryLanguage,
     provideTabProps
 } from '@/modules/entity-viewer/viewer/component/dependencies'
+import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
+import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
+import {
+    ConnectionSubjectPath
+} from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
+import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
+import { EntityViewerTabDefinition } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabDefinition'
 
 const entityViewerService: EntityViewerService = useEntityViewerService()
 const toaster: Toaster = useToaster()
@@ -43,12 +51,21 @@ const { t } = useI18n()
 const props = defineProps<TabComponentProps<EntityViewerTabParams, EntityViewerTabData>>()
 const emit = defineEmits<TabComponentEvents>()
 provideTabProps(props!)
+defineExpose<TabComponentExpose>({
+    path(): SubjectPath | undefined {
+        const dataPointer: EntityViewerDataPointer = props.params.dataPointer
+        return new ConnectionSubjectPath(
+            dataPointer.connection,
+            [
+                SubjectPathItem.plain(dataPointer.catalogName),
+                SubjectPathItem.significant(EntityViewerTabDefinition.icon(), dataPointer.entityType)
+            ]
+        )
+    }
+})
 
 // static data
-const path = List([
-    props.params.dataPointer.catalogName,
-    props.params.dataPointer.entityType
-])
+const title = Immutable.List.of(props.params.dataPointer.entityType)
 
 let sortedEntityPropertyKeys: string[] = []
 let entityPropertyDescriptors: EntityPropertyDescriptor[] = []
@@ -56,7 +73,7 @@ const entityPropertyDescriptorIndex = ref<Immutable.Map<string, EntityPropertyDe
 provideEntityPropertyDescriptorIndex(entityPropertyDescriptorIndex)
 
 let gridHeaders: Map<string, any> = new Map<string, any>()
-let dataLocales: List<string> = List()
+let dataLocales: Immutable.List<string> = Immutable.List()
 
 // dynamic user data
 const selectedQueryLanguage = ref<QueryLanguage>(props.data.queryLanguage ? props.data.queryLanguage : QueryLanguage.EvitaQL)
@@ -120,7 +137,7 @@ const currentData = computed<EntityViewerTabData>(() => {
     )
 })
 watch(currentData, (data) => {
-    emit('dataUpdate', data)
+    emit('update:data', data)
 })
 
 onBeforeMount(() => {
@@ -315,8 +332,9 @@ async function executeQuery(): Promise<void> {
         class="data-grid"
     >
         <Toolbar
+            :icon="EntityViewerTabDefinition.icon()"
             :current-data="currentData"
-            :path="path"
+            :title="title"
             :loading="loading"
             @execute-query="executeQueryManually"
         >

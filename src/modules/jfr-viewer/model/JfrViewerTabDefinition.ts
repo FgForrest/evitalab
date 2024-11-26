@@ -9,10 +9,14 @@ export class JfrViewerTabDefinition extends TabDefinition<JfrViewerTabParams, Vo
         super(
             undefined,
             title,
-            'mdi-record-circle-outline',
+            JfrViewerTabDefinition.icon(),
             markRaw(JfrViewer as DefineComponent<any, any, any>),
             params,
             new VoidTabData()
         )
+    }
+
+    static icon(): string {
+        return 'mdi-record-circle-outline'
     }
 }

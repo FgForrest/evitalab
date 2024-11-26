@@ -1,13 +1,18 @@
 // todo docs
 export enum ConnectionItemType {
-    Refresh = 'refresh',
-    OpenGraphQLSystemAPIConsole = 'openGraphQLSystemApiConsole',
-    Edit = 'edit',
-    Remove = 'remove',
+    GraphQLSystemAPIConsole = 'graphQLSystemApiConsole',
+    JfrRecordings = 'jfrRecordings',
     Server = 'server',
     Tasks = 'tasks',
-    JfrRecordings = 'jfrRecordings',
+
+    ManageSubheader = 'manageSubheader',
+    Refresh = 'refresh',
+    CloseAllSessions = 'closeAllSessions',
+
     ModifySubheader = 'modifySubheader',
+    Edit = 'edit',
+    Remove = 'remove',
+
     CatalogsSubheader = 'catalogsSubheader',
     CreateCatalog = 'createCatalog',
     CatalogBackups = 'catalogBackups'

@@ -245,6 +245,10 @@ export class EvitaDBDriverGrpc implements EvitaDBDriver {
         return List(['all'])
     }
 
+    closeAllSessions(connection: Connection, catalogName?: string): void {
+        this.evitaSessionProvider.closeAllSessions(connection, catalogName)
+    }
+
     async getRuntimeConfiguration(connection: Connection): Promise<string> {
         return (
             await this.clientProvider

@@ -6,6 +6,7 @@ import { BackupViewerTabDefinition } from "../model/BackupViewerTabDefinition";
 import { TabParamsDto } from "@/modules/workspace/tab/model/TabParamsDto";
 import { BackupViewerTabParamsDto } from "../model/BackupViewerTabParamsDto";
 import { BackupViewerTabParams } from '@/modules/backup-viewer/model/BackupViewerTabParams'
+import { i18n } from '@/vue-plugins/i18n'
 
 export const backupsTabFactoryInjectionKey: InjectionKey<BackupViewerTabFactory> = Symbol('BackupsTabFactory')
 
@@ -31,9 +32,12 @@ export class BackupViewerTabFactory {
         )
     }
 
-    // todo lho i18n
     private constructTitle(connection: Connection): string {
-        return `Catalog backups [${connection.name}]`
+        return i18n.global.t(
+            'backupViewer.definition.title',
+            { connectionName: connection.name }
+        )
+
     }
 
     private restoreTabParamsFromSerializable(json: TabParamsDto): BackupViewerTabParams {

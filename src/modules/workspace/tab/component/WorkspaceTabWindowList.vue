@@ -9,7 +9,7 @@ import { useToaster } from '@/modules/notification/service/Toaster'
 import { DemoSnippetResolver, useDemoSnippetResolver } from '@/modules/workspace/service/DemoSnippetResolver'
 import { SharedTabResolver, useSharedTabResolver } from '@/modules/workspace/tab/service/SharedTabResolver'
 import { Command } from '@/modules/keymap/model/Command'
-import { ellipsis } from '../../../../utils/text'
+import { ellipsis } from '@/utils/text'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import TabWindow from '@/modules/workspace/tab/component/TabWindow.vue'
 import WelcomeScreen from '@/modules/welcome-screen/component/WelcomeScreen.vue'
@@ -45,9 +45,11 @@ const currentTabId = ref<string | null>()
 watch(currentTabId, (newTabId, oldTabId) => {
     if (newTabId != undefined) {
         keymap.setContext(newTabId)
+        workspaceService.subjectPathStatus.activatePath(newTabId)
     } else if (oldTabId != undefined) {
         // no more tabs
         keymap.resetActivatedContext()
+        workspaceService.subjectPathStatus.deactivatePath()
     }
 })
 
@@ -66,13 +68,14 @@ function moveTabCursor(diff: number) {
     currentTabId.value = tabDefinitions.value[newTabIndex].id
 }
 
-function closeTab(tabId: string) {
+function closeTab(tabId: string): void {
     const prevTabsLength: number = tabDefinitions.value.length
     const prevTabIndex: number = tabDefinitions.value.findIndex(tab => tab.id === currentTabId.value)
     const closedTabIndex: number = tabDefinitions.value.findIndex(tab => tab.id === tabId)
 
     workspaceService.destroyTab(tabId)
     keymap.deleteContext(tabId)
+    workspaceService.subjectPathStatus.deletePath(tabId)
 
     if (tabDefinitions.value.length === 0) {
         currentTabId.value = null
@@ -246,9 +249,9 @@ window.addEventListener('beforeunload', () => {
                 class="window-item"
             >
                 <TabWindow
+                    :id="tab.id"
                     :component="tab.component"
                     :component-props="tab.componentProps()"
-                    @data-update="workspaceService.replaceTabData(tab.id, $event)"
                 />
             </VWindowItem>
         </VWindow>

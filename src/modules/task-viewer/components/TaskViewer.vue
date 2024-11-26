@@ -8,13 +8,31 @@ import { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEv
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import TaskList from '@/modules/task-viewer/components/TaskList.vue'
 import { ref } from 'vue'
+import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
+import {
+    ConnectionSubjectPath
+} from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
+import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
+import { TaskViewerTabDefinition } from '@/modules/task-viewer/model/TaskViewerTabDefinition'
 
 const { t } = useI18n()
 
 const props = defineProps<TabComponentProps<TaskViewerTabParams, VoidTabData>>()
 const emit = defineEmits<TabComponentEvents>()
+defineExpose<TabComponentExpose>({
+    path(): SubjectPath | undefined {
+        return new ConnectionSubjectPath(
+            props.params.connection,
+            [SubjectPathItem.significant(
+                TaskViewerTabDefinition.icon(),
+                t('taskViewer.title')
+            )]
+        )
+    }
+})
 
-const path: List<string> = List([t('taskViewer.path')])
+const title: List<string> = List.of(t('taskViewer.title'))
 
 const taskListRef = ref<typeof TaskList>()
 
@@ -30,7 +48,7 @@ emit('ready')
 
 <template>
     <div class="task-viewer">
-        <VTabToolbar :prepend-icon="'mdi-chart-gantt'" :path="path">
+        <VTabToolbar :prepend-icon="TaskViewerTabDefinition.icon()" :title="title">
             <template #append>
                 <VBtn icon :loading="reloadingTasks" @click="reloadTasks">
                     <VIcon>mdi-refresh</VIcon>

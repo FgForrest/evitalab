@@ -51,6 +51,15 @@ import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import VSideTabs from '@/modules/base/component/VSideTabs.vue'
 import { List } from 'immutable'
 import { Response } from '@/modules/connection/model/data/Response'
+import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
+import {
+    ConnectionSubjectPath
+} from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
+import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
+import {
+    EvitaQLConsoleTabDefinition
+} from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabDefinition'
 
 enum EditorTabType {
     Query = 'query',
@@ -76,8 +85,19 @@ const props =
         TabComponentProps<EvitaQLConsoleTabParams, EvitaQLConsoleTabData>
     >()
 const emit = defineEmits<TabComponentEvents>()
+defineExpose<TabComponentExpose>({
+    path(): SubjectPath | undefined {
+        return new ConnectionSubjectPath(
+            props.params.dataPointer.connection,
+            [SubjectPathItem.significant(
+                EvitaQLConsoleTabDefinition.icon(),
+                props.params.dataPointer.catalogName
+            )]
+        )
+    }
+})
 
-const path = List([props.params.dataPointer.catalogName])
+const title: List<string> = List.of(props.params.dataPointer.catalogName)
 const editorTab = ref<EditorTabType>(EditorTabType.Query)
 const resultTab = ref<ResultTabType>(ResultTabType.Raw)
 
@@ -140,7 +160,7 @@ const currentData = computed<EvitaQLConsoleTabData>(() => {
     return new EvitaQLConsoleTabData(queryCode.value, variablesCode.value)
 })
 watch(currentData, (data) => {
-    emit('dataUpdate', data)
+    emit('update:data', data)
 })
 
 onMounted(() => {
@@ -249,7 +269,7 @@ if (props.params.executeOnOpen) {
 
 <template>
     <div class="evitaql-editor">
-        <VTabToolbar prepend-icon="mdi-variable" :path="path">
+        <VTabToolbar :prepend-icon="EvitaQLConsoleTabDefinition.icon()" :title="title">
             <template #append>
                 <ShareTabButton
                     ref="shareTabButtonRef"

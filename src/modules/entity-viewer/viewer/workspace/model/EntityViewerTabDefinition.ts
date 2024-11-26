@@ -13,10 +13,14 @@ export class EntityViewerTabDefinition extends TabDefinition<EntityViewerTabPara
         super(
             undefined,
             title,
-            'mdi-table',
+            EntityViewerTabDefinition.icon(),
             markRaw(EntityViewer as DefineComponent<any, any, any>),
             params,
             initialData
         )
+    }
+
+    static icon(): string {
+        return 'mdi-table'
     }
 }

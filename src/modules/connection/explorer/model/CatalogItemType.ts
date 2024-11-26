@@ -1,16 +1,19 @@
 // todo docs
 export enum CatalogItemType {
-    OpenEvitaQLConsole = 'openEvitaQLConsole',
-    OpenGraphQLDataAPIConsole = 'openGraphQLDataApiConsole',
-    OpenGraphQLSchemaAPIConsole = 'openGraphQLSchemaApiConsole',
+    EvitaQLConsole = 'evitaQLConsole',
+    GraphQLDataAPIConsole = 'graphQLDataApiConsole',
+    GraphQLSchemaAPIConsole = 'graphQLSchemaApiConsole',
     ViewSchema = 'viewSchema',
+
+    ManageSubheader = 'manageSubheader',
+    CloseAllSessions = 'closeAllSessions',
+
+    ModifySubheader = 'modifySubheader',
     DropCatalog = 'dropCatalog',
     RenameCatalog = 'renameCatalog',
     ReplaceCatalog = 'replaceCatalog',
     SwitchCatalogToAliveState = 'switchCatalogToAliveState',
-    ModifySubheader = 'modifySubheader',
+
     CollectionsSubheader = 'collectionsSubheader',
-    JobsSubheader = 'jobsSubheader',
-    CreateCollection = 'createCollection',
-    Jobs = 'jobs'
+    CreateCollection = 'createCollection'
 }

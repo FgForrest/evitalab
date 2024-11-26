@@ -4,6 +4,7 @@
  */
 import { computed } from 'vue'
 import { List } from 'immutable'
+import VTabToolbarTitle from '@/modules/base/component/VTabToolbarTitle.vue'
 
 type Flag = {
     title: string,
@@ -12,7 +13,7 @@ type Flag = {
 
 const props = withDefaults(defineProps<{
     prependIcon: string,
-    path: List<string>,
+    title: List<string>,
     flags?: List<string>
 }>(), {
     flags: () => List()
@@ -46,11 +47,8 @@ const normalizedFlags = computed<List<Flag>>(() => {
         />
 
         <VToolbarTitle class="ml-0 font-weight-bold">
-            <div style="display: flex">
-                <VBreadcrumbs
-                    :items="path.toArray()"
-                    class="pl-0 pr-0 pt-0 pb-0 mr-4"
-                />
+            <div class="tab-toolbar__title">
+                <VTabToolbarTitle :title="title" />
 
                 <VChipGroup v-if="normalizedFlags">
                     <VChip
@@ -76,5 +74,11 @@ const normalizedFlags = computed<List<Flag>>(() => {
 <style lang="scss" scoped>
 .tab-toolbar {
     z-index: 100;
+
+    &__title {
+        display: flex;
+        column-gap: 1rem;
+        align-items: center;
+    }
 }
 </style>

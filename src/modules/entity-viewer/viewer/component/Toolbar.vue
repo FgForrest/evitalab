@@ -19,8 +19,9 @@ const keymap: Keymap = useKeymap()
 const { t } = useI18n()
 
 const props = defineProps<{
+    icon: string,
     currentData: EntityViewerTabData,
-    path: List<string>,
+    title: List<string>,
     loading: boolean
 }>()
 const emit = defineEmits<{
@@ -54,8 +55,8 @@ onUnmounted(() => {
 
 <template>
     <VTabToolbar
-        prepend-icon="mdi-text-box-edit-outline"
-        :path="path"
+        :prepend-icon="icon"
+        :title="title"
         :flags="flags"
     >
         <template #append>

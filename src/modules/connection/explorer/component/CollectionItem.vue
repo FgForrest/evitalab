@@ -26,6 +26,8 @@ import { MenuItem } from '@/modules/base/model/menu/MenuItem'
 import DropCollectionDialog from '@/modules/connection/explorer/component/DropCollectionDialog.vue'
 import RenameCollectionDialog from '@/modules/connection/explorer/component/RenameCollectionDialog.vue'
 import { ServerStatus } from '@/modules/connection/model/status/ServerStatus'
+import { EntityViewerTabDefinition } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabDefinition'
+import { SchemaViewerTabDefinition } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabDefinition'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const entityViewerTabFactory: EntityViewerTabFactory = useEntityViewerTabFactory()
@@ -83,7 +85,7 @@ function createActions(): Map<CollectionActionType, MenuItem<CollectionActionTyp
         CollectionActionType.ViewEntities,
         createMenuAction(
             CollectionActionType.ViewEntities,
-            'mdi-table',
+            EntityViewerTabDefinition.icon(),
             openDataGrid
         )
     )
@@ -91,7 +93,7 @@ function createActions(): Map<CollectionActionType, MenuItem<CollectionActionTyp
         CollectionActionType.ViewSchema,
         createMenuAction(
             CollectionActionType.ViewSchema,
-            'mdi-file-code-outline',
+            SchemaViewerTabDefinition.icon(),
             () =>
                 workspaceService.createTab(
                     schemaViewerTabFactory.createNew(

@@ -41,11 +41,22 @@ import { EntityCollection } from '@/modules/connection/model/EntityCollection'
 import Immutable from 'immutable'
 import { ServerStatus } from '@/modules/connection/model/status/ServerStatus'
 import { ApiType } from '@/modules/connection/model/status/ApiType'
+import {
+    EvitaQLConsoleTabDefinition
+} from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabDefinition'
+import {
+    GraphQLConsoleTabDefinition
+} from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
+import { SchemaViewerTabDefinition } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabDefinition'
+import { ConnectionService, useConnectionService } from '@/modules/connection/service/ConnectionService'
+import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
+const connectionService: ConnectionService = useConnectionService()
 const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory = useEvitaQLConsoleTabFactory()
 const graphQLConsoleTabFactory: GraphQLConsoleTabFactory = useGraphQLConsoleTabFactory()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
+const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -75,15 +86,34 @@ const actions = computed<Map<CatalogItemType, MenuItem<CatalogItemType>>>(() => 
 const actionList = computed<MenuItem<CatalogItemType>[]>(() => Array.from(actions.value.values()))
 
 const entityCollections = computed<Immutable.List<EntityCollection>>(() => {
-    return props.catalog.entityCollections.sort((a: EntityCollection, b: EntityCollection) => {
-        return a.entityType.localeCompare(b.entityType)
-    })
+    return Immutable.List<EntityCollection>(props.catalog.entityCollections)
+        .sort((a: EntityCollection, b: EntityCollection) => {
+            return a.entityType.localeCompare(b.entityType)
+        })
 })
 
 const catalogRef = ref(props.catalog)
 provideCatalog(catalogRef as Ref<Catalog>)
 
 const loading = ref<boolean>(false)
+
+async function closeAllSessions(): Promise<void> {
+    try {
+        await connectionService.closeAllSessions(connection, props.catalog.name)
+        toaster.success(t(
+            'explorer.catalog.notification.closedAllSessions',
+            { catalogName: props.catalog.name }
+        ))
+    } catch (e: any) {
+        toaster.error(t(
+            'explorer.catalog.notification.couldNotCloseSessions',
+            {
+                catalogName: props.catalog.name,
+                reason: e.message
+            }
+        ))
+    }
+}
 
 function handleAction(action: string): void {
     const foundedAction = actions.value?.get(action as CatalogItemType)
@@ -99,10 +129,10 @@ function createActions(): Map<CatalogItemType, MenuItem<CatalogItemType>> {
 
     const actions: Map<CatalogItemType, MenuItem<CatalogItemType>> = new Map()
     actions.set(
-        CatalogItemType.OpenEvitaQLConsole,
+        CatalogItemType.EvitaQLConsole,
         createMenuAction(
-            CatalogItemType.OpenEvitaQLConsole,
-            'mdi-variable',
+            CatalogItemType.EvitaQLConsole,
+            EvitaQLConsoleTabDefinition.icon(),
             () => {
                 workspaceService.createTab(
                     evitaQLConsoleTabFactory.createNew(
@@ -115,10 +145,10 @@ function createActions(): Map<CatalogItemType, MenuItem<CatalogItemType>> {
         )
     )
     actions.set(
-        CatalogItemType.OpenGraphQLDataAPIConsole,
+        CatalogItemType.GraphQLDataAPIConsole,
         createMenuAction(
-            CatalogItemType.OpenGraphQLDataAPIConsole,
-            'mdi-graphql',
+            CatalogItemType.GraphQLDataAPIConsole,
+            GraphQLConsoleTabDefinition.icon(),
             () => {
                 workspaceService.createTab(
                     graphQLConsoleTabFactory.createNew(
@@ -132,10 +162,10 @@ function createActions(): Map<CatalogItemType, MenuItem<CatalogItemType>> {
         )
     )
     actions.set(
-        CatalogItemType.OpenGraphQLSchemaAPIConsole,
+        CatalogItemType.GraphQLSchemaAPIConsole,
         createMenuAction(
-            CatalogItemType.OpenGraphQLSchemaAPIConsole,
-            'mdi-graphql',
+            CatalogItemType.GraphQLSchemaAPIConsole,
+            GraphQLConsoleTabDefinition.icon(),
             () => {
                 workspaceService.createTab(
                     graphQLConsoleTabFactory.createNew(
@@ -152,7 +182,7 @@ function createActions(): Map<CatalogItemType, MenuItem<CatalogItemType>> {
         CatalogItemType.ViewSchema,
         createMenuAction(
             CatalogItemType.ViewSchema,
-            'mdi-file-code-outline',
+            SchemaViewerTabDefinition.icon(),
             () => {
                 workspaceService.createTab(
                     schemaViewerTabFactory.createNew(
@@ -162,6 +192,19 @@ function createActions(): Map<CatalogItemType, MenuItem<CatalogItemType>> {
                 )
             },
             catalogNotCorrupted
+        )
+    )
+
+    actions.set(
+        CatalogItemType.ManageSubheader,
+        new MenuSubheader(t('explorer.catalog.subheader.manage'))
+    )
+    actions.set(
+        CatalogItemType.CloseAllSessions,
+        createMenuAction(
+            CatalogItemType.CloseAllSessions,
+            'mdi-lan-disconnect',
+            () => closeAllSessions()
         )
     )
 

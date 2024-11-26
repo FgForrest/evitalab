@@ -158,6 +158,10 @@ export class ConnectionService {
         return serverStatus
     }
 
+    async closeAllSessions(connection: Connection, catalogName?: string): Promise<void> {
+        (await this.getDriver(connection)).closeAllSessions(connection, catalogName)
+    }
+
     /**
      * Returns cached catalog. If not present, it tries to fetch current catalog.
      */

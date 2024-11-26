@@ -24,10 +24,12 @@ const props = withDefaults(defineProps<Props>(), {
 const actionsOpened = ref<boolean>(false)
 
 const emit = defineEmits<{
-    (e: 'click:action', value: string): void
+    (e: 'click:action', value: string): void,
+    (e: 'click:actionMenu'): void
 }>()
 
 function openActions(): void {
+    emit('click:actionMenu')
     if (props.actions && props.actions.length > 0) {
         actionsOpened.value = true
     }
@@ -103,6 +105,7 @@ function openActions(): void {
                     <VIcon
                         v-bind="props"
                         class="text-gray-light"
+                        @click="emit('click:actionMenu')"
                     >
                         mdi-dots-vertical
                     </VIcon>

@@ -13,11 +13,15 @@ export class GraphQLConsoleTabDefinition extends TabDefinition<GraphQLConsoleTab
         super(
             undefined,
             title,
-            'mdi-graphql',
+            GraphQLConsoleTabDefinition.icon(),
             markRaw(GraphQLConsole as DefineComponent<any, any, any>),
             params,
             initialData
         )
+    }
+
+    static icon(): string {
+        return 'mdi-graphql'
     }
 }
 

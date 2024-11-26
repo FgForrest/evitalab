@@ -37,11 +37,26 @@
     "list": {
       "empty": "No items found."
     },
-    "codeEditor": {
-      "status": {
-        "cursorPosition": "Ln {line}, Col {column}",
-        "selectionRange": "{charsCount} chars",
-        "selectionRanges": "{linesCount} line breaks"
+    "statusBar": {
+      "activeEditorStatus": {
+        "selections": {
+          "label": "Text selections in the active editor",
+          "value": {
+            "multipleSelections": "{count} selections",
+            "singleSelection": {
+              "cursorPosition": "Ln {line}, Col {column}",
+              "selectionRange": "{charsCount} chars",
+              "lineBreaks": "{lineBreaks} line breaks"
+            }
+          }
+        },
+        "tabSize": {
+          "label": "Current tab size configuration in the active editor",
+          "value": "{tabSize} spaces"
+        },
+        "language": {
+          "label": "Supported language in the active editor"
+        }
       }
     },
     "dialog": {
@@ -282,11 +297,12 @@
         "preconfigured": "preconfigured"
       },
       "actions": {
-        "refresh": "Refresh",
-        "openGraphQLSystemApiConsole": "GraphQL System API console",
+        "graphQLSystemApiConsole": "GraphQL System API console",
         "create": "Create catalog",
         "edit": "Edit connection",
         "remove": "Remove connection",
+        "refresh": "Refresh",
+        "closeAllSessions": "Close all sessions",
         "server": "Server",
         "createCatalog": "Create catalog",
         "catalogBackups": "Catalog backups",
@@ -294,12 +310,15 @@
         "jfrRecordings": "JFR recordings"
       },
       "subheader": {
+        "manage": "Manage",
         "modify": "Modify",
         "catalogs": "Catalogs"
       },
       "notification": {
         "couldNotLoadCatalogs": "Could not load catalogs for connection {connectionName}: {reason}",
-        "couldNotLoadServerStatus": "Could not load server status for connection {connectionName}: {reason}"
+        "couldNotLoadServerStatus": "Could not load server status for connection {connectionName}: {reason}",
+        "closedAllSessions": "All open sessions of all catalogs in connection {connectionName} were closed.",
+        "couldNotCloseSessions": "Could not close sessions of connection {connectionName}: {reason}"
       },
       "connect": {
         "title": "Connect to evitaDB server",
@@ -350,22 +369,25 @@
         "warmingUp": "warming up"
       },
       "subheader": {
+        "manage": "Manage",
         "modify": "Modify",
         "collections": "Collections"
       },
       "actions": {
-        "openEvitaQLConsole": "evitaQL console",
-        "openGraphQLDataApiConsole": "GraphQL Data API console",
-        "openGraphQLSchemaApiConsole": "GraphQL Schema API console",
+        "evitaQLConsole": "evitaQL console",
+        "graphQLDataApiConsole": "GraphQL Data API console",
+        "graphQLSchemaApiConsole": "GraphQL Schema API console",
         "viewSchema": "Schema",
+        "closeAllSessions": "Close all sessions",
         "dropCatalog": "Drop catalog",
         "renameCatalog": "Rename catalog",
         "replaceCatalog": "Replace catalog",
         "createCollection": "Create collection",
         "switchCatalogToAliveState": "Switch catalog to alive state"
       },
-      "errors": {
-        "couldNotLoad": "This catalog couldn't be loaded because it's corrupted."
+      "notification": {
+        "closedAllSessions": "All open sessions of catalog {catalogName} were closed.",
+        "couldNotCloseSessions": "Could not close sessions of catalog {catalogName}: {reason}"
       },
       "create": {
         "title": "Create catalog",
@@ -507,6 +529,9 @@
         }
       }
     }
+  },
+  "keymapViewer": {
+    "title": "Keymap"
   },
   "entityViewer": {
     "loadedDataWarning": "Loaded query data must be manually executed.",
@@ -657,6 +682,7 @@
     }
   },
   "errorViewer": {
+    "title": "Error: {name}",
     "placeholder": {
       "noDetailsAvailable": "No details available."
     },
@@ -801,6 +827,22 @@
     }
   },
   "schemaViewer": {
+    "title": {
+      "schema": {
+        "entity": "Entities",
+        "attribute": "Attributes",
+        "associatedData": "Associated data",
+        "reference": "References"
+      }
+    },
+    "path": {
+      "item": {
+        "entities": "entities",
+        "attributes": "attributes",
+        "associatedData": "associated data",
+        "references": "references"
+      }
+    },
     "section": {
       "placeholder": {
         "noItemsForSearchedTerm": "No items found for searched term."
@@ -856,6 +898,16 @@
         "prices": "Prices",
         "indexedDecimalPlaces": "Indexed decimal places",
         "evolutionModes": "Evolution modes"
+      },
+      "evolutionMode": {
+        "adaptPrimaryKeyGeneration": "Adapt Primary Key Generation",
+        "addingAttributes": "Adding Attributes",
+        "addingAssociatedData": "Adding Associated Data",
+        "addingReferences": "Adding References",
+        "addingPrices": "Adding Prices",
+        "addingLocales": "Adding Locales",
+        "addingCurrencies": "Adding Currencies",
+        "addingHierarchy": "Adding Hierarchy"
       }
     },
     "nameVariants": {
@@ -933,9 +985,10 @@
     }
   },
   "serverViewer": {
-    "toolbar": {
-      "title": "Server"
+    "definition": {
+      "title": "Server [{connectionName}]"
     },
+    "title": "Server",
     "button": {
       "reload": "Reload"
     },
@@ -1012,6 +1065,9 @@
     }
   },
   "backupViewer": {
+    "definition": {
+      "title": "Catalog backups [{connectionName}]"
+    },
     "title": "Catalog backups",
     "button": {
       "reloadBackups": "Reload backups",
@@ -1122,7 +1178,10 @@
     }
   },
   "taskViewer": {
-    "path": "Tasks",
+    "definition": {
+      "title": "Tasks [{connectionName}]"
+    },
+    "title": "Tasks",
     "tasksVisualizer": {
       "button": {
         "reload": "Reload tasks"
@@ -1201,7 +1260,10 @@
     }
   },
   "jfrViewer": {
-    "path": "JFR Recordings",
+    "definition": {
+      "title": "JFR Recordings [{connectionName}]"
+    },
+    "title": "JFR Recordings",
     "button": {
       "startRecording": "Start recording",
       "reloadRecordings": "Reload recordings"

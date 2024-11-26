@@ -5,14 +5,19 @@ import { BackupViewerTabParams } from '@/modules/backup-viewer/model/BackupViewe
 import BackupViewer from '@/modules/backup-viewer/components/BackupViewer.vue'
 
 export class BackupViewerTabDefinition extends TabDefinition<BackupViewerTabParams, VoidTabData> {
+
     constructor(title: string, params: BackupViewerTabParams) {
         super(
             undefined,
             title,
-            'mdi-cloud-download-outline',
+            BackupViewerTabDefinition.icon(),
             markRaw(BackupViewer as DefineComponent<any, any, any>),
             params,
             new VoidTabData()
         )
+    }
+
+    static icon(): string {
+        return 'mdi-cloud-download-outline'
     }
 }

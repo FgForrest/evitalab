@@ -14,6 +14,13 @@ import TaskList from '@/modules/task-viewer/components/TaskList.vue'
 import BackupList from '@/modules/backup-viewer/components/BackupList.vue'
 import BackupCatalogButton from '@/modules/backup-viewer/components/BackupCatalogButton.vue'
 import RestoreLocalBackupFileButton from '@/modules/backup-viewer/components/RestoreLocalBackupFileButton.vue'
+import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
+import {
+    ConnectionSubjectPath
+} from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
+import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
+import { BackupViewerTabDefinition } from '@/modules/backup-viewer/model/BackupViewerTabDefinition'
 
 const shownTaskStates: TaskState[] = [TaskState.WaitingForPrecondition, TaskState.Running, TaskState.Queued, TaskState.Failed]
 const shownTaskTypes: string[] = [backupTaskName, restoreTaskName]
@@ -22,11 +29,22 @@ const { t } = useI18n()
 
 const props = defineProps<TabComponentProps<BackupViewerTabParams, VoidTabData>>()
 const emit = defineEmits<TabComponentEvents>()
+defineExpose<TabComponentExpose>({
+    path(): SubjectPath | undefined {
+        return new ConnectionSubjectPath(
+            props.params.connection,
+            [SubjectPathItem.significant(
+                BackupViewerTabDefinition.icon(),
+                t('backupViewer.title')
+            )]
+        )
+    }
+})
 
 const taskListRef = ref<typeof TaskList>()
 const backupListRef = ref<typeof BackupList>()
 
-const path: List<string> = List([t('backupViewer.title')])
+const title: List<string> = List.of(t('backupViewer.title'))
 
 const backupsInPreparationPresent = ref<boolean>(false)
 
@@ -44,7 +62,7 @@ emit('ready')
 
 <template>
     <div class="backup-viewer">
-        <VTabToolbar prepend-icon="mdi-cloud-download-outline" :path="path">
+        <VTabToolbar :prepend-icon="BackupViewerTabDefinition.icon()" :title="title">
             <template #append>
                 <VBtn icon @click="reloadBackups">
                     <VIcon>mdi-refresh</VIcon>

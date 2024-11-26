@@ -31,6 +31,8 @@ import { BackupViewerTabDefinition } from '@/modules/backup-viewer/model/BackupV
 import { JfrViewerTabDefinition } from '@/modules/jfr-viewer/model/JfrViewerTabDefinition'
 import { BackupViewerTabFactory } from '@/modules/backup-viewer/service/BackupViewerTabFactory'
 import { JfrViewerTabFactory } from '@/modules/jfr-viewer/service/JfrViewerTabFactory'
+import { SubjectPathStatus } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathStatus'
+import { EditorStatus } from '@/modules/workspace/status-bar/model/editor-status/EditorStatus'
 
 const openedTabsStorageKey: string = 'openedTabs'
 const tabHistoryStorageKey: string = 'tabHistory'
@@ -336,6 +338,20 @@ export class WorkspaceService {
     storeTabHistory(): void {
         const serializedTabHistory: string = JSON.stringify(Array.from(this.store.tabHistory.entries()))
         this.labStorage.set(tabHistoryStorageKey, LZString.compressToEncodedURIComponent(serializedTabHistory))
+    }
+
+    /**
+     * Returns editor status provided by some editor. If any.
+     */
+    get editorStatus(): EditorStatus {
+        return this.store.editorStatus as EditorStatus
+    }
+
+    /**
+     * Returns subject path status holding currently activate subject path.
+     */
+    get subjectPathStatus(): SubjectPathStatus {
+        return this.store.subjectPathStatus as SubjectPathStatus
     }
 }
 

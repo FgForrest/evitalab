@@ -13,10 +13,14 @@ export class ErrorViewerTabDefinition extends TabDefinition<ErrorViewerTabParams
         super(
             undefined,
             title,
-            'mdi-alert-circle',
+            ErrorViewerTabDefinition.icon(),
             markRaw(ErrorViewer as DefineComponent<any, any, any>),
             params,
             new VoidTabData()
         )
+    }
+
+    static icon(): string {
+        return 'mdi-alert-outline'
     }
 }

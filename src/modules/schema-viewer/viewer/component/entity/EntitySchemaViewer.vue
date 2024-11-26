@@ -13,6 +13,7 @@ import SchemaContainer from '@/modules/schema-viewer/viewer/component/SchemaCont
 import AssociatedDataSchemaList
     from '@/modules/schema-viewer/viewer/component/associated-data/AssociatedDataSchemaList.vue'
 import ReferenceSchemaList from '@/modules/schema-viewer/viewer/component/reference/ReferenceSchemaList.vue'
+import { i18n } from '@/vue-plugins/i18n'
 
 const { t } = useI18n()
 
@@ -31,8 +32,14 @@ const properties = computed<Property[]>(() => [
     new Property(t('schemaViewer.entity.label.hierarchical'), new PropertyValue(props.schema.withHierarchy.getOrElse(false))),
     new Property(t('schemaViewer.entity.label.prices'), new PropertyValue(props.schema.withPrice.getOrElse(false))),
     new Property(t('schemaViewer.entity.label.indexedDecimalPlaces'), new PropertyValue(props.schema.indexedPricePlaces.getIfSupported()!)),
-    // todo lho i18n for items
-    new Property(t('schemaViewer.entity.label.evolutionModes'), props.schema.evolutionMode.getOrElse(List()).map(mode => new PropertyValue(new KeywordValue(mode))))
+    new Property(
+        t('schemaViewer.entity.label.evolutionModes'),
+        props.schema.evolutionMode.getOrElse(List()).map(mode => {
+            return new PropertyValue(new KeywordValue(
+                i18n.global.t(`schemaViewer.entity.evolutionMode.${mode}`)
+            ))
+        })
+    )
 ])
 </script>
 

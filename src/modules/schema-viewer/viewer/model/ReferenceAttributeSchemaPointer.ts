@@ -1,24 +1,33 @@
 import { DefineComponent, markRaw, Raw } from 'vue'
-import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer'
 import AttributeSchemaViewer from '@/modules/schema-viewer/viewer/component/attribute/AttributeSchemaViewer.vue'
-import { List } from 'immutable'
+import { SchemaType } from '@/modules/schema-viewer/viewer/model/SchemaType'
+import { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 
 /**
  * Points to evitaDB attribute schema nested inside a reference schema.
  */
-export class ReferenceAttributeSchemaPointer extends ReferenceSchemaPointer {
+export class ReferenceAttributeSchemaPointer implements SchemaPointer {
+    readonly catalogName: string
+    readonly entityType: string
+    readonly referenceName: string
     readonly attributeName: string
 
     constructor(catalogName: string, entityType: string, referenceName: string, attributeName: string) {
-        super(catalogName, entityType, referenceName)
+        this.catalogName = catalogName
+        this.entityType = entityType
+        this.referenceName = referenceName
         this.attributeName = attributeName
     }
 
-    component(): Raw<DefineComponent<any, any, any>> {
+    get component(): Raw<DefineComponent<any, any, any>> {
         return markRaw(AttributeSchemaViewer as DefineComponent<any, any, any>)
     }
 
-    path(): List<string> {
-        return List([this.catalogName, 'entities', this.entityType, 'references', this.referenceName, 'attributes', this.attributeName])
+    get schemaName(): string {
+        return this.attributeName
+    }
+
+    get schemaType(): SchemaType {
+        return SchemaType.Attribute
     }
 }

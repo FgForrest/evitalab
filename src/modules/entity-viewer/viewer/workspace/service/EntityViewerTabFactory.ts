@@ -29,7 +29,7 @@ export class EntityViewerTabFactory {
               initialData: EntityViewerTabData | undefined = undefined,
               executeOnOpen: boolean = false): EntityViewerTabDefinition {
         return new EntityViewerTabDefinition(
-            this.constructTitle(connection, catalogName, entityType),
+            this.constructTitle(connection, entityType),
             this.createNewTabParams(connection, catalogName, entityType, executeOnOpen),
             initialData ? initialData : new EntityViewerTabData()
         )
@@ -42,7 +42,6 @@ export class EntityViewerTabFactory {
         return new EntityViewerTabDefinition(
             this.constructTitle(
                 params.dataPointer.connection,
-                params.dataPointer.catalogName,
                 params.dataPointer.entityType
             ),
             params,
@@ -50,8 +49,8 @@ export class EntityViewerTabFactory {
         )
     }
 
-    private constructTitle(connection: Connection, catalogName: string, entityType: string): string {
-        return `${catalogName} - ${entityType} [${connection.name}]`
+    private constructTitle(connection: Connection, entityType: string): string {
+        return `${entityType} [${connection.name}]`
     }
 
     private createNewTabParams(connection: Connection, catalogName: string, entityType: string, executeOnOpen: boolean): EntityViewerTabParams {

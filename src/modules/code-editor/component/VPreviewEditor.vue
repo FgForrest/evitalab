@@ -9,6 +9,10 @@ import { basicSetup, EditorView } from 'codemirror'
 import { dracula } from '@ddietr/codemirror-themes/dracula.js'
 import { ref } from 'vue'
 import { ViewUpdate } from '@codemirror/view'
+import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
+import { workspaceStatusBarIntegration } from '@/modules/code-editor/extension/workspaceStatusBarIntegration'
+
+const workspaceService: WorkspaceService = useWorkspaceService()
 
 const props = withDefaults(
     defineProps<{
@@ -29,6 +33,7 @@ const extensions: Extension[] = [
     basicSetup,
     dracula,
     EditorState.readOnly.of(true),
+    workspaceStatusBarIntegration(workspaceService),
     ...props.additionalExtensions
 ]
 

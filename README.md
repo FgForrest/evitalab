@@ -27,8 +27,6 @@ You can try out evitaLab with evitaDB demo dataset at [demo.evitadb.io](https://
 
 ## Features
 
-evitaLab is currently in early development stage, and features are being added as we go.
-
 evitaLab allows you to:
 
 - [x] inspect schemas
@@ -40,6 +38,8 @@ evitaLab allows you to:
 - [x] manage connections to multiple evitaDB instances
 - [x] manage server (status, tasks, JFR recordings)
 - [x] manage catalogs and collections
+
+evitaLab is still in active development and new features are being added fairly frequently.
 
 ## Running locally
 
@@ -107,7 +107,7 @@ yarn install
 yarn dev
 ```
 
-You can find more indepth info about internal structure of evitaLab in [developer documentation](/documentation/developer/index.md).
+You can find more indepth info about internal structure and guidelines of evitaLab in [developer documentation](/documentation/developer/index.md).
 
 ## Licence
 
@@ -116,5 +116,4 @@ You can find more indepth info about internal structure of evitaLab in [develope
 ## Contribution
 
 Any contributions are welcome and appreciated. If you would like to contribute to evitaLab, feel free to open an issue
-and submit a pull request. However, keep in mind that this project is still in an early development stage and features
-may change or be completely removed.
+and submit a pull request.

@@ -13,10 +13,14 @@ export class SchemaViewerTabDefinition extends TabDefinition<SchemaViewerTabPara
         super(
             undefined,
             title,
-            'mdi-file-code',
+            SchemaViewerTabDefinition.icon(),
             markRaw(SchemaViewer as DefineComponent<any, any, any>),
             params,
             new VoidTabData()
         )
+    }
+
+    static icon(): string {
+        return 'mdi-graph-outline'
     }
 }

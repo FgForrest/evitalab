@@ -7,16 +7,31 @@ import { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEv
 import { ErrorViewerTabParams } from '@/modules/error-viewer/viewer/workspace/model/ErrorViewerTabParams'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import VPreviewEditor from '@/modules/code-editor/component/VPreviewEditor.vue'
-import { List } from 'immutable'
+import Immutable from 'immutable'
+import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
+import { SystemSubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SystemSubjectPath'
+import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
+import { ErrorViewerTabDefinition } from '@/modules/error-viewer/viewer/workspace/model/ErrorViewerTabDefinition'
 
 const { t } = useI18n()
 
 const props = defineProps<TabComponentProps<ErrorViewerTabParams, VoidTabData>>()
 const emit = defineEmits<TabComponentEvents>()
-
-const title = computed(() => {
-    return props.params.error.name
+defineExpose<TabComponentExpose>({
+    path(): SubjectPath | undefined {
+        return new SystemSubjectPath([
+            SubjectPathItem.significant(
+                ErrorViewerTabDefinition.icon(),
+                t('errorViewer.title', { name: props.params.error.name }
+            ))
+        ])
+    }
 })
+
+const title: Immutable.List<string> = Immutable.List.of(
+    t('errorViewer.title', { name: props.params.error.name })
+)
 
 const detail = computed(() => {
     if (props.params.error.detail == undefined) {
@@ -31,8 +46,8 @@ emit('ready')
 <template>
     <div class="error-viewer">
         <VTabToolbar
-            prepend-icon="mdi-alert-outline"
-            :path="List([title])"
+            :prepend-icon="ErrorViewerTabDefinition.icon()"
+            :title="title"
         >
             <!-- todo lho link to submit an issue to github -->
             <template #append>

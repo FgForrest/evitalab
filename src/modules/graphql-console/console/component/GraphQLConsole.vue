@@ -49,7 +49,14 @@ import { TabType } from '@/modules/workspace/tab/model/TabType'
 import VExecuteQueryButton from '@/modules/base/component/VExecuteQueryButton.vue'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import VSideTabs from '@/modules/base/component/VSideTabs.vue'
-import { List } from 'immutable'
+import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
+import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
+import Immutable from 'immutable'
+import { ConnectionSubjectPath } from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
+import {
+    GraphQLConsoleTabDefinition
+} from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
 
 enum EditorTabType {
     Query = 'query',
@@ -72,14 +79,29 @@ const { t } = useI18n()
 
 const props = defineProps<TabComponentProps<GraphQLConsoleTabParams, GraphQLConsoleTabData>>()
 const emit = defineEmits<TabComponentEvents>()
+defineExpose<TabComponentExpose>({
+    path(): SubjectPath {
+        const pathItems: SubjectPathItem[] = []
+        if (props.params.dataPointer.instanceType !== GraphQLInstanceType.System) {
+            pathItems.push(SubjectPathItem.plain(props.params.dataPointer.catalogName))
+        }
+        pathItems.push(SubjectPathItem.significant(
+            GraphQLConsoleTabDefinition.icon(),
+            t(`graphQLConsole.instanceType.${props.params.dataPointer.instanceType}`)
+        ))
+        return new ConnectionSubjectPath(props.params.dataPointer.connection, pathItems)
+    }
+})
 
-const path = ref<string[]>([])
-if (props.params.dataPointer.instanceType !== GraphQLInstanceType.System) {
-    path.value.push(props.params.dataPointer.catalogName)
-}
-path.value.push(t(`graphQLConsole.instanceType.${props.params.dataPointer.instanceType}`))
-// todo lho fix this workaround, where should we use the immutable list and where array?
-const immutablePath = computed(() => List(path.value))
+const title: Immutable.List<string> = (() => {
+    const title: string[] = []
+    if (props.params.dataPointer.instanceType !== GraphQLInstanceType.System) {
+        title.push(props.params.dataPointer.catalogName)
+    }
+    title.push(t(`graphQLConsole.instanceType.${props.params.dataPointer.instanceType}`))
+    return Immutable.List(title)
+})()
+
 const editorTab = ref<EditorTabType>(EditorTabType.Query)
 const resultTab = ref<ResultTabType>(ResultTabType.Raw)
 
@@ -132,7 +154,7 @@ const currentData = computed<GraphQLConsoleTabData>(() => {
     return new GraphQLConsoleTabData(queryCode.value, variablesCode.value)
 })
 watch(currentData, (data) => {
-    emit('dataUpdate', data)
+    emit('update:data', data)
 })
 
 onBeforeMount(() => {
@@ -250,7 +272,7 @@ function focusResultVisualiser(): void {
 
 <template>
     <div v-if="initialized" class="graphql-editor">
-        <VTabToolbar prepend-icon="mdi-graphql" :path="immutablePath">
+        <VTabToolbar :prepend-icon="GraphQLConsoleTabDefinition.icon()" :title="title">
             <template #append>
                 <ShareTabButton
                     ref="shareTabButtonRef"

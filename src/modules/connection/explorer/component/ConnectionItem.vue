@@ -36,8 +36,14 @@ import { ItemFlag } from '@/modules/base/model/tree-view/ItemFlag'
 import Immutable from 'immutable'
 import { ServerStatus } from '@/modules/connection/model/status/ServerStatus'
 import { ApiType } from '@/modules/connection/model/status/ApiType'
-import { CatalogItemType } from '@/modules/connection/explorer/model/CatalogItemType'
 import { BackupViewerTabFactory, useBackupsTabFactory } from '@/modules/backup-viewer/service/BackupViewerTabFactory'
+import {
+    GraphQLConsoleTabDefinition
+} from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
+import { ServerViewerTabDefinition } from '@/modules/server-viewer/model/ServerViewerTabDefinition'
+import { TaskViewerTabDefinition } from '@/modules/task-viewer/model/TaskViewerTabDefinition'
+import { JfrViewerTabDefinition } from '@/modules/jfr-viewer/model/JfrViewerTabDefinition'
+import { BackupViewerTabDefinition } from '@/modules/backup-viewer/model/BackupViewerTabDefinition'
 
 const evitaLabConfig: EvitaLabConfig = useEvitaLabConfig()
 const workspaceService: WorkspaceService = useWorkspaceService()
@@ -153,6 +159,24 @@ async function loadCatalogs(): Promise<boolean> {
     }
 }
 
+async function closeAllSessions(): Promise<void> {
+    try {
+        await connectionService.closeAllSessions(props.connection)
+        toaster.success(t(
+            'explorer.connection.notification.closedAllSessions',
+            { connectionName: props.connection.name }
+        ))
+    } catch (e: any) {
+        toaster.error(t(
+            'explorer.connection.notification.couldNotCloseSessions',
+            {
+                connectionName: props.connection.name,
+                reason: e.message
+            }
+        ))
+    }
+}
+
 function handleAction(action: string): void {
     if (actions.value == undefined) {
         return
@@ -174,34 +198,10 @@ async function createActions(): Promise<Map<ConnectionItemType, MenuItem<Connect
 
     const actions: Map<ConnectionItemType, MenuItem<ConnectionItemType>> = new Map()
     actions.set(
-        ConnectionItemType.Refresh,
-        createMenuAction(
-            ConnectionItemType.Refresh,
-            'mdi-refresh',
-            async () => await reload()
-        )
-    )
-    actions.set(
-        ConnectionItemType.OpenGraphQLSystemAPIConsole,
-        createMenuAction(
-            ConnectionItemType.OpenGraphQLSystemAPIConsole,
-            'mdi-graphql',
-            () =>
-                workspaceService.createTab(
-                    graphQLConsoleTabFactory.createNew(
-                        props.connection,
-                        'system', // todo lho: this is not needed
-                        GraphQLInstanceType.System
-                    )
-                ),
-            graphQlEnabled
-        )
-    )
-    actions.set(
         ConnectionItemType.Server,
         createMenuAction(
             ConnectionItemType.Server,
-            'mdi-database-outline',
+            ServerViewerTabDefinition.icon(),
             () =>
                 workspaceService.createTab(
                     serverStatusTabFactory.createNew(props.connection)
@@ -213,7 +213,7 @@ async function createActions(): Promise<Map<ConnectionItemType, MenuItem<Connect
         ConnectionItemType.Tasks,
         createMenuAction(
             ConnectionItemType.Tasks,
-            'mdi-chart-gantt',
+            TaskViewerTabDefinition.icon(),
             () => {
                 workspaceService.createTab(
                     taskViewerTabFactory.createNew(
@@ -228,7 +228,7 @@ async function createActions(): Promise<Map<ConnectionItemType, MenuItem<Connect
         ConnectionItemType.JfrRecordings,
         createMenuAction(
             ConnectionItemType.JfrRecordings,
-            'mdi-chart-timeline',
+            JfrViewerTabDefinition.icon(),
             () => {
                 workspaceService.createTab(
                     jfrViewerTabFactory.createNew(
@@ -237,6 +237,44 @@ async function createActions(): Promise<Map<ConnectionItemType, MenuItem<Connect
                 )
             },
             serverWritable && observabilityEnabled
+        )
+    )
+    actions.set(
+        ConnectionItemType.GraphQLSystemAPIConsole,
+        createMenuAction(
+            ConnectionItemType.GraphQLSystemAPIConsole,
+            GraphQLConsoleTabDefinition.icon(),
+            () =>
+                workspaceService.createTab(
+                    graphQLConsoleTabFactory.createNew(
+                        props.connection,
+                        'system', // todo lho: this is not needed
+                        GraphQLInstanceType.System
+                    )
+                ),
+            graphQlEnabled
+        )
+    )
+
+    actions.set(
+        ConnectionItemType.ManageSubheader,
+        new MenuSubheader(t('explorer.connection.subheader.manage'))
+    )
+    actions.set(
+        ConnectionItemType.Refresh,
+        createMenuAction(
+            ConnectionItemType.Refresh,
+            'mdi-refresh',
+            async () => await reload()
+        )
+    )
+    actions.set(
+        ConnectionItemType.CloseAllSessions,
+        createMenuAction(
+            ConnectionItemType.CloseAllSessions,
+            'mdi-lan-disconnect',
+            () => closeAllSessions(),
+            serverReady
         )
     )
 
@@ -282,7 +320,7 @@ async function createActions(): Promise<Map<ConnectionItemType, MenuItem<Connect
         ConnectionItemType.CatalogBackups,
         createMenuAction(
             ConnectionItemType.CatalogBackups,
-            'mdi-cloud-download-outline',
+            BackupViewerTabDefinition.icon(),
             () => {
                 workspaceService.createTab(
                     backupsService.createNew(props.connection)
@@ -323,6 +361,7 @@ function createMenuAction(
                     :flags="flags"
                     :actions="actionList"
                     @click="load()"
+                    @click:action-menu="load()"
                     @click:action="handleAction"
                 >
                     {{ connection.name }}

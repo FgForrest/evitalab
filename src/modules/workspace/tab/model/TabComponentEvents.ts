@@ -12,5 +12,5 @@ export interface TabComponentEvents {
     /**
      * Emitted when the tab component's data has been updated.
      */
-    (e: 'dataUpdate', value: TabData<any>): void
+    (e: 'update:data', value: TabData<any>): void
 }

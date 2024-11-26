@@ -6,6 +6,7 @@ import { TaskViewerTabParams } from '@/modules/task-viewer/model/TaskViewerTabPa
 import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
 import { TaskViewerTabParamsDto } from '@/modules/task-viewer/model/TaskViewerTabParamsDto'
 import { mandatoryInject } from '@/utils/reactivity'
+import { i18n } from '@/vue-plugins/i18n'
 
 export const taskViewerTabFactoryInjectionKey: InjectionKey<TaskViewerTabFactory> = Symbol('taskViewerTabFactory')
 
@@ -31,9 +32,11 @@ export class TaskViewerTabFactory {
         )
     }
 
-    // todo i18n
     private constructTitle(connection: Connection): string {
-        return `Tasks [${connection.name}]`
+        return i18n.global.t(
+            'taskViewer.definition.title',
+            { connectionName: connection.name }
+        )
     }
 
     private restoreTabParamsFromSerializable(json: TabParamsDto): TaskViewerTabParams {

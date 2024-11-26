@@ -13,6 +13,13 @@ import { ServerViewerService, useServerViewerService } from '@/modules/server-vi
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import ServerTitle from '@/modules/server-viewer/component/ServerTitle.vue'
 import ServerStatusComponent from '@/modules/server-viewer/component/server-status/ServerStatus.vue'
+import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
+import {
+    ConnectionSubjectPath
+} from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
+import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
+import { SchemaViewerTabDefinition } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabDefinition'
 
 const reloadInterval: number = 5000
 
@@ -22,9 +29,20 @@ const { t } = useI18n()
 
 const props = defineProps<TabComponentProps<ServerViewerTabParams, VoidTabData>>()
 const emit = defineEmits<TabComponentEvents>()
+defineExpose<TabComponentExpose>({
+    path(): SubjectPath | undefined {
+        return new ConnectionSubjectPath(
+            props.params.connection,
+            [SubjectPathItem.significant(
+                SchemaViewerTabDefinition.icon(),
+                t('serverViewer.title')
+            )]
+        )
+    }
+})
 
 const initialized = ref<boolean>(false)
-const path: List<string> = List([t('serverViewer.toolbar.title')])
+const title: List<string> = List.of(t('serverViewer.title'))
 
 const detailRef = ref<typeof ServerStatusComponent>()
 
@@ -87,7 +105,7 @@ onUnmounted(() => clearInterval(reloadInterval))
 
 <template>
     <div v-if="initialized" class="server-status">
-        <VTabToolbar prepend-icon="mdi-database-outline" :path="path">
+        <VTabToolbar :prepend-icon="SchemaViewerTabDefinition.icon()" :title="title">
             <template #append>
                 <VBtn icon @click="reload">
                     <VIcon>mdi-refresh</VIcon>

@@ -20,6 +20,18 @@ export class EvitaSessionProvider {
         this.clientProvider = clientProvider
     }
 
+    closeAllSessions(connection: Connection, catalogName?: string): void {
+        if (catalogName != undefined) {
+            this.activeReadOnlySessions.get(connection.id)?.get(catalogName)?.invalidate()
+            this.activeReadWriteSessions.get(connection.id)?.get(catalogName)?.invalidate()
+        } else {
+            this.activeReadOnlySessions.get(connection.id)
+                ?.forEach((session) => session.invalidate())
+            this.activeReadWriteSessions.get(connection.id)
+                ?.forEach((session) => session.invalidate())
+        }
+    }
+
     async executeInReadOnlySession<T>(connection: Connection,
                                       catalog: Catalog,
                                       sessionAction: (sessionId: string) => T,

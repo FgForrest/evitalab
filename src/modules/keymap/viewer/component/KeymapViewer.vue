@@ -13,12 +13,29 @@ import { KeywordValue } from '@/modules/base/model/properties-table/KeywordValue
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import VPropertiesTable from '@/modules/base/component/VPropertiesTable.vue'
-import { List } from 'immutable'
+import Immutable from 'immutable'
+import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
+import { SystemSubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SystemSubjectPath'
+import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
+import { KeymapViewerTabDefinition } from '@/modules/keymap/viewer/workspace/model/KeymapViewerTabDefinition'
 
 const keymap: Keymap = useKeymap()
 const { t } = useI18n()
 
 const emit = defineEmits<TabComponentEvents>()
+defineExpose<TabComponentExpose>({
+    path(): SubjectPath | undefined {
+        return new SystemSubjectPath([
+            SubjectPathItem.significant(
+                KeymapViewerTabDefinition.icon(),
+                t('keymapViewer.title')
+            )
+        ])
+    }
+})
+
+const title: Immutable.List<string> = Immutable.List.of(t('keymapViewer.title'))
 
 type Section = string
 type Subsection = string
@@ -68,8 +85,8 @@ emit('ready')
 <template>
     <div class="keymap-viewer">
         <VTabToolbar
-            prepend-icon="mdi-keyboard-outline"
-            :path="List(['Keymap'])"
+            :prepend-icon="KeymapViewerTabDefinition.icon()"
+            :title="title"
         />
 
         <VSheet class="keymap-viewer__body">

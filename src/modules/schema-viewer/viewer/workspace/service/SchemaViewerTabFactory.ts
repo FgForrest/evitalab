@@ -90,7 +90,7 @@ export class SchemaViewerTabFactory {
 
 
     private constructTitle(connection: Connection, schemaPointer: SchemaPointer): string {
-        return `${schemaPointer.path().slice(-1).get(0)} [${connection.name}]`
+        return `${schemaPointer.schemaName} [${connection.name}]`
     }
 }
 

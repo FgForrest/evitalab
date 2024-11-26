@@ -13,11 +13,15 @@ export class EvitaQLConsoleTabDefinition extends TabDefinition<EvitaQLConsoleTab
         super(
             undefined,
             title,
-            'mdi-console',
+            EvitaQLConsoleTabDefinition.icon(),
             markRaw(EvitaQLConsole as DefineComponent<any, any, any>),
             params,
             initialData
         )
+    }
+
+    static icon(): string {
+        return 'mdi-variable'
     }
 }
 

@@ -13,6 +13,13 @@ import TaskList from '@/modules/task-viewer/components/TaskList.vue'
 import RecordingList from '@/modules/jfr-viewer/components/RecordingList.vue'
 import StartRecordingButton from '@/modules/jfr-viewer/components/StartRecordingButton.vue'
 import EndRecordingButton from '@/modules/jfr-viewer/components/EndRecordingButton.vue'
+import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
+import {
+    ConnectionSubjectPath
+} from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
+import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
+import { JfrViewerTabDefinition } from '@/modules/jfr-viewer/model/JfrViewerTabDefinition'
 
 const shownTaskStates: TaskState[] = [TaskState.WaitingForPrecondition, TaskState.Running, TaskState.Queued, TaskState.Failed]
 const shownTaskTypes: string[] = [jfrRecorderTaskName]
@@ -21,11 +28,22 @@ const { t } = useI18n()
 
 const props = defineProps<TabComponentProps<JfrViewerTabParams, VoidTabData>>()
 const emit = defineEmits<TabComponentEvents>()
+defineExpose<TabComponentExpose>({
+    path(): SubjectPath | undefined {
+        return new ConnectionSubjectPath(
+            props.params.connection,
+            [SubjectPathItem.significant(
+                JfrViewerTabDefinition.icon(),
+                t('jfrViewer.title')
+            )]
+        )
+    }
+})
 
 const taskListRef = ref<typeof TaskList>()
 const recordingListRef = ref<typeof RecordingList>()
 
-const path: List<string> = List([t('jfrViewer.path')])
+const title: List<string> = List.of(t('jfrViewer.title'))
 
 const recordingsInPreparationPresent = ref<boolean>(false)
 
@@ -43,7 +61,7 @@ emit('ready')
 
 <template>
     <div class="jfr-viewer">
-        <VTabToolbar prepend-icon="mdi-record-circle-outline" :path="path">
+        <VTabToolbar :prepend-icon="JfrViewerTabDefinition.icon()" :title="title">
             <template #append>
                 <VBtn icon @click="reloadRecordings">
                     <VIcon>mdi-refresh</VIcon>

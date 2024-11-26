@@ -14,7 +14,7 @@ export class ErrorViewerTabFactory {
      */
     createNew(error: LabError): ErrorViewerTabDefinition {
         return new ErrorViewerTabDefinition(
-            error.message,
+            error.name,
             new ErrorViewerTabParams(error)
         )
     }

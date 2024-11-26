@@ -23,8 +23,11 @@ import { computed, ref } from 'vue'
 import { EditorView } from 'codemirror'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import { Command } from '@/modules/keymap/model/Command'
+import { workspaceStatusBarIntegration } from '@/modules/code-editor/extension/workspaceStatusBarIntegration'
+import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 
 const keymap: Keymap = useKeymap()
+const workspaceService: WorkspaceService = useWorkspaceService()
 
 const props = withDefaults(
     defineProps<{
@@ -71,6 +74,7 @@ const extensions: Extension[] = [
     ]),
     dracula,
     EditorState.transactionFilter.of(tr => tr.newDoc.lines > 1 ? [] : tr),
+    workspaceStatusBarIntegration(workspaceService),
     ...props.additionalExtensions
 ]
 

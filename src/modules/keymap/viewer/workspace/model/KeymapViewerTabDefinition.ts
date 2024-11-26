@@ -13,10 +13,14 @@ export class KeymapViewerTabDefinition extends TabDefinition<VoidTabParams, Void
         super(
             'keymap', // only one keymap viewer tab can be opened at a time, multiple doesn't make sense since it cannot be parametrized
             'Keymap',
-            'mdi-keyboard-outline',
+            KeymapViewerTabDefinition.icon(),
             markRaw(KeymapViewer as DefineComponent<any, any, any>),
             new VoidTabParams(),
             new VoidTabData()
         )
+    }
+
+    static icon(): string {
+        return 'mdi-keyboard-outline'
     }
 }

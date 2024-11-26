@@ -9,10 +9,14 @@ export class TaskViewerTabDefinition extends TabDefinition<TaskViewerTabParams, 
         super(
             undefined,
             title,
-            'mdi-chart-gantt',
+            TaskViewerTabDefinition.icon(),
             markRaw(TaskViewer as DefineComponent<any, any, any>),
             params,
             new VoidTabData()
         )
+    }
+
+    static icon(): string {
+        return 'mdi-chart-gantt'
     }
 }

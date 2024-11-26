@@ -6,6 +6,7 @@ import { InjectionKey } from 'vue'
 import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
 import { ServerViewerTabParamsDto } from '../model/ServerViewerTabParamsDto'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
+import { i18n } from '@/vue-plugins/i18n'
 
 export const serverViewerTabFactoryInjectionKey: InjectionKey<ServerViewerTabFactory> = Symbol('serverStatusTabFactory')
 
@@ -16,28 +17,33 @@ export class ServerViewerTabFactory {
         this.connectionService = connectionService
     }
 
-    createNew(connection: Connection, executeOnOpen: boolean = false) {
+    createNew(connection: Connection) {
         return new ServerViewerTabDefinition(
             this.constructTitle(connection),
-            this.createTabParams(connection, executeOnOpen))
-    }
-
-    private createTabParams(connection: Connection, executeOnOpen: boolean = false): ServerViewerTabParams {
-        return new ServerViewerTabParams(connection, executeOnOpen)
+            new ServerViewerTabParams(connection)
+        )
     }
 
     restoreFromJson(paramsJson: TabParamsDto): ServerViewerTabDefinition {
-        // todo lho fix params retore
-        const params: ServerViewerTabParamsDto = paramsJson as ServerViewerTabParams
+        const params: ServerViewerTabParams = this.restoreTabParamsFromSerializable(paramsJson)
         return new ServerViewerTabDefinition(
             this.constructTitle(params.connection),
-            new ServerViewerTabParams(this.connectionService.getConnection(params.connection.id))
+            params
         )
     }
 
     private constructTitle(connection: Connection): string {
-        // todo i18n
-        return `Server [${connection.name}]`
+        return i18n.global.t(
+            'serverViewer.definition.title',
+            { connectionName: connection.name }
+        )
+    }
+
+    private restoreTabParamsFromSerializable(json: TabParamsDto): ServerViewerTabParams {
+        const dto: ServerViewerTabParamsDto = json as ServerViewerTabParamsDto
+        return new ServerViewerTabParams(
+            this.connectionService.getConnection(dto.connectionId)
+        )
     }
 }
 

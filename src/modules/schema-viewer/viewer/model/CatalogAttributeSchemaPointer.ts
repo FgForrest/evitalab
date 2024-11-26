@@ -1,7 +1,7 @@
 import { DefineComponent, markRaw, Raw } from 'vue'
 import { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 import AttributeSchemaViewer from '@/modules/schema-viewer/viewer/component/attribute/AttributeSchemaViewer.vue'
-import { List } from 'immutable'
+import { SchemaType } from '@/modules/schema-viewer/viewer/model/SchemaType'
 
 /**
  * Points to evitaDB attribute schema nested inside a catalog schema.
@@ -15,11 +15,15 @@ export class CatalogAttributeSchemaPointer implements SchemaPointer {
         this.attributeName = attributeName
     }
 
-    component(): Raw<DefineComponent<any, any, any>> {
+    get component(): Raw<DefineComponent<any, any, any>> {
         return markRaw(AttributeSchemaViewer as DefineComponent<any, any, any>)
     }
 
-    path(): List<string> {
-        return List([this.catalogName, 'attributes', this.attributeName])
+    get schemaName(): string {
+        return this.attributeName
+    }
+
+    get schemaType(): SchemaType {
+        return SchemaType.Attribute
     }
 }

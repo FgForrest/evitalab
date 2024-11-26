@@ -19,6 +19,7 @@ export abstract class JsonResultVisualiserService extends ResultVisualiserServic
         const visualiserTypes: VisualiserType[] = []
 
         const extraResults = queryResult['extraResults']
+        // todo lho i18n, sync with EvitaQLResultVisualiserService?
         if (extraResults) {
             if (extraResults['facetSummary']) {
                 visualiserTypes.push({

@@ -6,6 +6,7 @@ import { JfrViewerTabParams } from '@/modules/jfr-viewer/model/JfrViewerTabParam
 import { mandatoryInject } from '@/utils/reactivity'
 import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
 import { JfrViewerTabParamsDto } from '@/modules/jfr-viewer/model/JfrViewerTabParamsDto'
+import { i18n } from '@/vue-plugins/i18n'
 
 export const jfrViewerTabFactoryInjectionKey: InjectionKey<JfrViewerTabFactory> = Symbol('jfrViewerTabFactory');
 
@@ -31,9 +32,11 @@ export class JfrViewerTabFactory {
         )
     }
 
-    // todo lho i18n
     private constructTitle(connection: Connection): string {
-        return `JFR Recordings [${connection.name}]`
+        return i18n.global.t(
+            'jfrViewer.definition.title',
+            { connectionName: connection.name }
+        )
     }
 
     private restoreTabParamsFromSerializable(json: TabParamsDto): JfrViewerTabParams {

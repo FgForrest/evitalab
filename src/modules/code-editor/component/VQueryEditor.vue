@@ -9,7 +9,10 @@ import { keymap, ViewUpdate } from '@codemirror/view'
 import { basicSetup, EditorView } from 'codemirror'
 import { dracula } from '@ddietr/codemirror-themes/dracula.js'
 import { ref } from 'vue'
-import VCodeEditorStatusBar from '@/modules/code-editor/component/VCodeEditorStatusBar.vue'
+import { workspaceStatusBarIntegration } from '@/modules/code-editor/extension/workspaceStatusBarIntegration'
+import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
+
+const workspaceService: WorkspaceService = useWorkspaceService()
 
 const props = withDefaults(
     defineProps<{
@@ -37,6 +40,7 @@ const extensions: Extension[] = [
     ]),
     basicSetup,
     dracula,
+    workspaceStatusBarIntegration(workspaceService),
     ...props.additionalExtensions
 ]
 
@@ -72,9 +76,6 @@ defineExpose<{
             @update:model-value="$emit('update:modelValue', $event)"
             style="height: 100%; cursor: text;"
         />
-        <VSheet>
-            <VCodeEditorStatusBar :state="editorState" />
-        </VSheet>
     </div>
 </template>
 
@@ -85,6 +86,6 @@ defineExpose<{
     left: 0;
     right: 0;
     top: 0;
-    bottom: 2rem;
+    bottom: 0;
 }
 </style>

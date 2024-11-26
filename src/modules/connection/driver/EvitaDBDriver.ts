@@ -7,9 +7,6 @@ import { ClassifierValidationErrorType } from '@/modules/connection/model/data-t
 import { ClassifierType } from '@/modules/connection/model/data-type/ClassifierType'
 import { OffsetDateTime } from '../model/data-type/OffsetDateTime'
 import { Uuid } from '../model/data-type/Uuid'
-import {
-    GrpcRestoreCatalogRequest, GrpcRestoreCatalogResponse
-} from '@/modules/connection/driver/grpc/gen/GrpcEvitaManagementAPI_pb'
 import { ServerStatus } from '@/modules/connection/model/status/ServerStatus'
 import { CatalogVersionAtResponse } from '@/modules/connection/model/CatalogVersionAtResponse'
 import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
@@ -28,6 +25,12 @@ export interface EvitaDBDriver {
      * Comparison is done using the `.satisfies(...)` method
      */
     getSupportedVersions(): List<string>
+
+    /**
+     * Closes all open session to specified catalog. Any subsequent call to session
+     * will request new session.
+     */
+    closeAllSessions(connection: Connection, catalogName?: string): void
 
     /**
      * Returns all available catalogs from server for the given evitaDB connection
