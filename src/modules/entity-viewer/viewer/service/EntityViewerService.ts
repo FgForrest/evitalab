@@ -316,7 +316,7 @@ export class EntityViewerService {
         for (const attributeSchema of entitySchema.attributes.getOrElseGet(() => ImmutableMap()).values()) {
             descriptors.push(new EntityPropertyDescriptor(
                 EntityPropertyType.Attributes,
-                EntityPropertyKey.attributes(attributeSchema.nameVariants.getIfSupported()?.get(NamingConvention.CamelCase)!),
+                EntityPropertyKey.attributes(attributeSchema.name),
                 attributeSchema.name,
                 attributeSchema.name,
                 undefined,
@@ -328,7 +328,7 @@ export class EntityViewerService {
         for (const associatedDataSchema of entitySchema.associatedData.getOrElseGet(() => ImmutableMap()).values()) {
             descriptors.push(new EntityPropertyDescriptor(
                 EntityPropertyType.AssociatedData,
-                EntityPropertyKey.associatedData(associatedDataSchema.nameVariants.getIfSupported()?.get(NamingConvention.CamelCase)!),
+                EntityPropertyKey.associatedData(associatedDataSchema.name),
                 associatedDataSchema.name,
                 associatedDataSchema.name,
                 undefined,
@@ -352,7 +352,7 @@ export class EntityViewerService {
         for (const referenceSchema of entitySchema.references.getOrElseGet(() => ImmutableMap()).values()) {
             descriptors.push(new EntityPropertyDescriptor(
                 EntityPropertyType.References,
-                EntityPropertyKey.references(referenceSchema.nameVariants.getIfSupported()?.get(NamingConvention.CamelCase)!),
+                EntityPropertyKey.references(referenceSchema.name),
                 referenceSchema.name,
                 referenceSchema.name,
                 undefined,
@@ -363,8 +363,8 @@ export class EntityViewerService {
                             return new EntityPropertyDescriptor(
                                 EntityPropertyType.ReferenceAttributes,
                                 EntityPropertyKey.referenceAttributes(
-                                    referenceSchema.nameVariants.getIfSupported()?.get(NamingConvention.CamelCase)!,
-                                    attributeSchema.nameVariants.getIfSupported()?.get(NamingConvention.CamelCase)!
+                                    referenceSchema.name,
+                                    attributeSchema.name
                                 ),
                                 attributeSchema.name,
                                 `${referenceSchema.name}: ${attributeSchema.name}`,

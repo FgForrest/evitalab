@@ -148,9 +148,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
             .map(it => {
                 const attributeSchema: AttributeSchema | undefined = entitySchema.attributes
                     .getIfSupported()
-                    ?.find(attributeSchema => attributeSchema.nameVariants
-                        .getIfSupported()
-                        ?.get(NamingConvention.CamelCase) === it)
+                    ?.find(attributeSchema => attributeSchema.name === it)
                 if (attributeSchema == undefined) {
                     throw new UnexpectedError(`Could not find attribute '${it}' in '${dataPointer.entityType}'.`)
                 }
@@ -186,9 +184,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
             .map(it => {
                 const associatedDataSchema: AssociatedDataSchema | undefined = entitySchema.associatedData
                     .getIfSupported()
-                    ?.find(associatedDataSchema => associatedDataSchema.nameVariants
-                        .getIfSupported()
-                        ?.get(NamingConvention.CamelCase) === it)
+                    ?.find(associatedDataSchema => associatedDataSchema.name === it)
                 if (associatedDataSchema == undefined) {
                     throw new UnexpectedError(`Could not find associated data '${it}' in '${dataPointer.entityType}'.`)
                 }
@@ -253,9 +249,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
         for (const requiredReference of requiredReferences) {
             const referenceSchema: ReferenceSchema | undefined = entitySchema.references
                 .getIfSupported()
-                ?.find(referenceSchema => referenceSchema.nameVariants
-                    .getIfSupported()
-                    ?.get(NamingConvention.CamelCase) === requiredReference)
+                ?.find(referenceSchema => referenceSchema.name === requiredReference)
             if (referenceSchema == undefined) {
                 throw new UnexpectedError(`Could not find reference '${requiredReference}' in '${dataPointer.entityType}'.`)
             }
@@ -268,9 +262,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                 .map(referenceAttribute => {
                     const attributeSchema: AttributeSchema | undefined = referenceSchema.attributes
                         .getIfSupported()
-                        ?.find(attributeSchema => attributeSchema.nameVariants
-                            .getIfSupported()
-                            ?.get(NamingConvention.CamelCase) === referenceAttribute)
+                        ?.find(attributeSchema => attributeSchema.name === referenceAttribute)
                     if (attributeSchema == undefined) {
                         throw new UnexpectedError(`Could not find attribute '${referenceAttribute}' in reference '${requiredReference}' in '${dataPointer.entityType}'.`)
                     }

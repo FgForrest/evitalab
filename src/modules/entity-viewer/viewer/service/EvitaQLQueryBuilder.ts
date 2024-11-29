@@ -6,7 +6,6 @@ import { EntitySchema } from '@/modules/connection/model/schema/EntitySchema'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { AttributeSchema } from '@/modules/connection/model/schema/AttributeSchema'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
-import { NamingConvention } from '@/modules/connection/model/NamingConvetion'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { AssociatedDataSchema } from '@/modules/connection/model/schema/AssociatedDataSchema'
 import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
@@ -120,9 +119,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
             .map(it => {
                 const attributeSchema: AttributeSchema | undefined = entitySchema.attributes
                     .getIfSupported()
-                    ?.find(attributeSchema => attributeSchema.nameVariants
-                        .getIfSupported()
-                        ?.get(NamingConvention.CamelCase) === it)
+                    ?.find(attributeSchema => attributeSchema.name === it)
                 if (attributeSchema == undefined) {
                     throw new UnexpectedError(`Could not find attribute '${it}' in '${dataPointer.entityType}' in connection '${dataPointer.connection.name}'.`)
                 }
@@ -151,9 +148,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
             .map(it => {
                 const associatedDataSchema: AssociatedDataSchema | undefined = entitySchema.associatedData
                     .getIfSupported()
-                    ?.find(associatedDataSchema => associatedDataSchema.nameVariants
-                        .getIfSupported()
-                        ?.get(NamingConvention.CamelCase) === it)
+                    ?.find(associatedDataSchema => associatedDataSchema.name === it)
                 if (associatedDataSchema == undefined) {
                     throw new UnexpectedError(`Could not find associated data '${it}' in '${dataPointer.entityType}' in connection '${dataPointer.connection.name}'.`)
                 }
@@ -205,9 +200,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
         for (const requiredReference of requiredReferences) {
             const referenceSchema: ReferenceSchema | undefined = entitySchema.references
                 .getIfSupported()
-                ?.find(referenceSchema => referenceSchema.nameVariants
-                    .getIfSupported()
-                    ?.get(NamingConvention.CamelCase) === requiredReference)
+                ?.find(referenceSchema => referenceSchema.name === requiredReference)
             if (referenceSchema == undefined) {
                 throw new UnexpectedError(`Could not find reference '${requiredReference}' in '${dataPointer.entityType}' in connection '${dataPointer.connection.name}'.`)
             }
@@ -220,9 +213,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
                 .map(referenceAttribute => {
                     const attributeSchema: AttributeSchema | undefined = referenceSchema.attributes
                         .getIfSupported()
-                        ?.find(attributeSchema => attributeSchema.nameVariants
-                            .getIfSupported()
-                            ?.get(NamingConvention.CamelCase) === referenceAttribute)
+                        ?.find(attributeSchema => attributeSchema.name === referenceAttribute)
                     if (attributeSchema == undefined) {
                         throw new UnexpectedError(`Could not find attribute '${referenceAttribute}' in reference '${requiredReference}' in '${dataPointer.entityType}' in connection '${dataPointer.connection.name}'.`)
                     }
