@@ -30,7 +30,7 @@
     "codemirror": "^6.0.1",
     "core-js": "^3.29.0",
     "dompurify": "^3.0.6",
-    "graphql": "^16.7.1",
+    "graphql": "^16.10.0",
     "highlight.js": "^11.9.0",
     "immutable": "^4.3.6",
     "keymaster": "^1.6.2",
