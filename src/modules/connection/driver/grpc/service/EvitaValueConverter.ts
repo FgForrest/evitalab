@@ -216,8 +216,8 @@ export class EvitaValueConverter {
             throw new Error('DateTimeRange has undefined prop from and to')
         else
             return new DateTimeRange(
-                new OffsetDateTime(value.from!.timestamp!, value.from!.offset),
-                new OffsetDateTime(value.to!.timestamp!, value.to!.offset)
+                value.from != undefined ? new OffsetDateTime(value.from!.timestamp!, value.from!.offset) : undefined,
+                value.to != undefined ? new OffsetDateTime(value.to!.timestamp!, value.to!.offset) : undefined
             )
     }
 
@@ -368,14 +368,18 @@ export class EvitaValueConverter {
             ) {
                 dateTimeRange.push(
                     new DateTimeRange(
-                        new OffsetDateTime(
-                            grpcDateTimeRange.from!.timestamp!,
-                            grpcDateTimeRange.from!.offset
-                        ),
-                        new OffsetDateTime(
-                            grpcDateTimeRange.to!.timestamp!,
-                            grpcDateTimeRange.to!.offset
-                        )
+                        grpcDateTimeRange.from != undefined
+                            ? new OffsetDateTime(
+                                grpcDateTimeRange.from!.timestamp!,
+                                grpcDateTimeRange.from!.offset
+                            )
+                            : undefined,
+                        grpcDateTimeRange.to != undefined
+                            ? new OffsetDateTime(
+                                grpcDateTimeRange.to!.timestamp!,
+                                grpcDateTimeRange.to!.offset
+                            )
+                            : undefined
                     )
                 )
             }
@@ -529,15 +533,19 @@ export class EvitaValueConverter {
         to: GrpcOffsetDateTime | undefined,
         hasOffset: boolean
     ): boolean {
-        if (!from && !to) return false
-        else if (from && to && !from.timestamp && !to.timestamp) return false
-        else if (
+        if (!from && !to) {
+            return false
+        } else if (from && to && !from.timestamp && !to.timestamp) {
+            return false
+        } else if (
             hasOffset &&
             ((from && from.timestamp && !from.offset) ||
                 (to && to.timestamp && !to.offset))
-        )
+        ) {
             return false
-        else return true
+        } else {
+            return true
+        }
     }
 
     private checkNumberRangeValidity(

@@ -3,6 +3,8 @@ import { OffsetDateTime } from "./OffsetDateTime"
 import { PrettyPrintable } from "./PrettyPrintable"
 import { Range } from "./Range"
 
+const emptyRangeEndSymbol: any = '∞'
+
 export class DateTimeRange extends Range<OffsetDateTime> implements PrettyPrintable {
 
     constructor(from?: OffsetDateTime, to?: OffsetDateTime) {
@@ -14,7 +16,13 @@ export class DateTimeRange extends Range<OffsetDateTime> implements PrettyPrinta
             dateStyle: 'medium',
             timeStyle: 'long',
         })
-        return `[${offsetDateTimeFormatter.format(this.from?.timestamp?.toDate()) ?? '∞'},${offsetDateTimeFormatter.format(this.to?.timestamp?.toDate()) ?? '∞'}]`
+        const formattedFrom: string = this.from != undefined
+            ? offsetDateTimeFormatter.format(this.from.timestamp!.toDate())
+            : emptyRangeEndSymbol
+        const formattedTo: string = this.to != undefined
+            ? offsetDateTimeFormatter.format(this.to.timestamp!.toDate())
+            : emptyRangeEndSymbol
+        return `[${formattedFrom},${formattedTo}]`
     }
 
     static until(to: OffsetDateTime): DateTimeRange {
@@ -34,6 +42,6 @@ export class DateTimeRange extends Range<OffsetDateTime> implements PrettyPrinta
     }
 
     override toString():string{
-        return `[${this.from ?? '∞'},${this.to ?? '∞'}]`
+        return `[${this.from ?? emptyRangeEndSymbol},${this.to ?? emptyRangeEndSymbol}]`
     }
 }
