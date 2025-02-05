@@ -33,6 +33,10 @@ import { BackupViewerTabFactory } from '@/modules/backup-viewer/service/BackupVi
 import { JfrViewerTabFactory } from '@/modules/jfr-viewer/service/JfrViewerTabFactory'
 import { SubjectPathStatus } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathStatus'
 import { EditorStatus } from '@/modules/workspace/status-bar/model/editor-status/EditorStatus'
+import { TrafficRecordingsViewerTabDefinition } from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabDefinition'
+import { TrafficRecordingsViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordingsViewerTabFactory'
+import { TrafficRecordHistoryViewerTabDefinition } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabDefinition'
+import { TrafficRecordHistoryViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
 
 const openedTabsStorageKey: string = 'openedTabs'
 const tabHistoryStorageKey: string = 'tabHistory'
@@ -55,6 +59,8 @@ export class WorkspaceService {
     private readonly taskViewerTabFactory: TaskViewerTabFactory
     private readonly backupViewerTabFactory: BackupViewerTabFactory
     private readonly jfrViewerTabFactory: JfrViewerTabFactory
+    private readonly trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory
+    private readonly trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory
 
     constructor(store: WorkspaceStore,
                 labStorage: LabStorage,
@@ -66,7 +72,9 @@ export class WorkspaceService {
                 serverViewerTabFactory: ServerViewerTabFactory,
                 taskViewerTabFactory: TaskViewerTabFactory,
                 backupViewerTabFactory: BackupViewerTabFactory,
-                jfrViewerTabFactory: JfrViewerTabFactory) {
+                jfrViewerTabFactory: JfrViewerTabFactory,
+                trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory,
+                trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory) {
         this.store = store
         this.labStorage = labStorage
         this.entityViewerTabFactory = entityViewerTabFactory
@@ -78,6 +86,8 @@ export class WorkspaceService {
         this.taskViewerTabFactory = taskViewerTabFactory
         this.backupViewerTabFactory = backupViewerTabFactory
         this.jfrViewerTabFactory = jfrViewerTabFactory
+        this.trafficRecordingsViewerTabFactory = trafficRecordingsViewerTabFactory
+        this.trafficRecordHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
     }
 
     getTabDefinitions(): TabDefinition<any, any>[] {
@@ -179,6 +189,10 @@ export class WorkspaceService {
                         return this.backupViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
                     case TabType.JfrViewer:
                         return this.jfrViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
+                    case TabType.TrafficRecordingsViewer:
+                        return this.trafficRecordingsViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
+                    case TabType.TrafficRecordHistoryViewer:
+                        return this.trafficRecordHistoryViewerTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
                     default:
                         throw new UnexpectedError(`Unsupported stored tab type '${storedTabObject.tabType}'.`)
                 }
@@ -219,6 +233,10 @@ export class WorkspaceService {
                     tabType = TabType.BackupViewer
                 } else if (tabRequest instanceof JfrViewerTabDefinition) {
                     tabType = TabType.JfrViewer
+                } else if (tabRequest instanceof TrafficRecordingsViewerTabDefinition) {
+                    tabType = TabType.TrafficRecordingsViewer
+                } else if (tabRequest instanceof TrafficRecordHistoryViewerTabDefinition) {
+                    tabType = TabType.TrafficRecordHistoryViewer
                 } else {
                     console.info(undefined, `Unsupported tab type '${tabRequest.constructor.name}'. Not storing for next session.`)
                     return undefined

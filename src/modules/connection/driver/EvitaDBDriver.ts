@@ -2,7 +2,7 @@ import { Catalog } from '@/modules/connection/model/Catalog'
 import { Connection } from '@/modules/connection/model/Connection'
 import { CatalogSchema } from '@/modules/connection/model/schema/CatalogSchema'
 import { Response } from '@/modules/connection/model/data/Response'
-import { List } from 'immutable'
+import Immutable, { List } from 'immutable'
 import { ClassifierValidationErrorType } from '@/modules/connection/model/data-type/ClassifierValidationErrorType'
 import { ClassifierType } from '@/modules/connection/model/data-type/ClassifierType'
 import { OffsetDateTime } from '../model/data-type/OffsetDateTime'
@@ -14,6 +14,8 @@ import { TaskState } from '@/modules/connection/model/task/TaskState'
 import { EventType } from '@/modules/connection/model/jfr/EventType'
 import { PaginatedList } from '@/modules/connection/model/PaginatedList'
 import { ServerFile } from '@/modules/connection/model/server-file/ServerFile'
+import { TrafficRecordingCaptureRequest } from '@/modules/connection/model/traffic/TrafficRecordingCaptureRequest'
+import { TrafficRecord } from '@/modules/connection/model/traffic/TrafficRecord'
 
 /**
  * evitaDB version-agnostic driver to access data from connected evitaDB server
@@ -118,6 +120,29 @@ export interface EvitaDBDriver {
     startJrfRecording(connection: Connection, allowedEvents: string[]):Promise<boolean>
     //TODO: Add doc
     stopJfrRecording(connection: Connection):Promise<boolean>
+    startTrafficRecording(connection: Connection,
+                          catalogName: string,
+                          samplingRate: number,
+                          maxDurationInMilliseconds: bigint | undefined,
+                          exportFile: boolean,
+                          maxFileSizeInBytes: bigint | undefined,
+                          chunkFileSizeInBytes: bigint | undefined): Promise<TaskStatus>
+    stopTrafficRecording(connection: Connection,
+                         trafficRecorderTask: TaskStatus): Promise<TaskStatus>
+    getTrafficRecordHistoryList(connection: Connection,
+                                catalogName: string,
+                                captureRequest: TrafficRecordingCaptureRequest,
+                                limit: number,
+                                reverse?: boolean): Promise<Immutable.List<TrafficRecord>>
+    getTrafficRecordingLabelNamesOrderedByCardinality(connection: Connection,
+                                                      catalogName: string,
+                                                      nameStartsWith: string,
+                                                      limit: number): Promise<Immutable.List<string>>
+    getTrafficRecordingLabelValuesOrderedByCardinality(connection: Connection,
+                                                       catalogName: string,
+                                                       labelName: string,
+                                                       valueStartsWith: string,
+                                                       limit: number): Promise<Immutable.List<string>>
 
     //TODO: Add doc
     createCollection(connection: Connection, catalogName: string, entityType: string): Promise<void>

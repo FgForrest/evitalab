@@ -5,8 +5,8 @@
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3, StringValue } from "@bufbuild/protobuf";
-import { GrpcAttributeUniquenessType, GrpcCatalogEvolutionMode, GrpcEvitaDataType, GrpcGlobalAttributeUniquenessType } from "./GrpcEnums_pb.js";
-import { GrpcEvitaValue, GrpcNameVariant } from "./GrpcEvitaDataTypes_pb.js";
+import { GrpcAttributeUniquenessType, GrpcCatalogEvolutionMode, GrpcEntityScope, GrpcEvitaDataType, GrpcGlobalAttributeUniquenessType } from "./GrpcEnums_pb.js";
+import { GrpcEvitaValue, GrpcNameVariant, GrpcScopedAttributeUniquenessType, GrpcScopedGlobalAttributeUniquenessType } from "./GrpcEvitaDataTypes_pb.js";
 
 /**
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcCatalogSchema
@@ -144,8 +144,10 @@ export class GrpcGlobalAttributeSchema extends Message<GrpcGlobalAttributeSchema
    *
    * As an example of unique attribute can be EAN - there is no sense in having two entities with same EAN, and it's
    * better to have this ensured by the database engine.
+   * deprecated in favor of `uniqueInScopes`
    *
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeUniquenessType unique = 4;
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeUniquenessType unique = 4 [deprecated = true];
+   * @deprecated
    */
   unique = GrpcAttributeUniquenessType.NOT_UNIQUE;
 
@@ -156,8 +158,10 @@ export class GrpcGlobalAttributeSchema extends Message<GrpcGlobalAttributeSchema
    *
    * When attribute is filterable, extra result `attributeHistogram`
    * can be requested for this attribute.
+   * deprecated in favor of `filterableInScopes`
    *
-   * @generated from field: bool filterable = 5;
+   * @generated from field: bool filterable = 5 [deprecated = true];
+   * @deprecated
    */
   filterable = false;
 
@@ -165,8 +169,10 @@ export class GrpcGlobalAttributeSchema extends Message<GrpcGlobalAttributeSchema
    * When attribute is sortable, it is possible to sort entities by this attribute. Do not mark attribute
    * as sortable unless you know that you'll sort entities along this attribute. Each sortable attribute occupies
    * (memory/disk) space in the form of index..
+   * deprecated in favor of `sortableInScopes`
    *
-   * @generated from field: bool sortable = 6;
+   * @generated from field: bool sortable = 6 [deprecated = true];
+   * @deprecated
    */
   sortable = false;
 
@@ -228,8 +234,10 @@ export class GrpcGlobalAttributeSchema extends Message<GrpcGlobalAttributeSchema
    *
    * As an example of unique attribute can be URL - there is no sense in having two entities with same URL, and it's
    * better to have this ensured by the database engine.
+   * deprecated in favor of `uniqueGloballyInScopes`
    *
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcGlobalAttributeUniquenessType uniqueGlobally = 13;
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcGlobalAttributeUniquenessType uniqueGlobally = 13 [deprecated = true];
+   * @deprecated
    */
   uniqueGlobally = GrpcGlobalAttributeUniquenessType.NOT_GLOBALLY_UNIQUE;
 
@@ -239,6 +247,49 @@ export class GrpcGlobalAttributeSchema extends Message<GrpcGlobalAttributeSchema
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcNameVariant nameVariant = 14;
    */
   nameVariant: GrpcNameVariant[] = [];
+
+  /**
+   * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity
+   * having certain value of this attribute among other entities in the same collection.
+   *
+   * As an example of unique attribute can be EAN - there is no sense in having two entities with same EAN, and it's
+   * better to have this ensured by the database engine.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcScopedAttributeUniquenessType uniqueInScopes = 15;
+   */
+  uniqueInScopes: GrpcScopedAttributeUniquenessType[] = [];
+
+  /**
+   * When attribute is filterable, it is possible to filter entities by this attribute. Do not mark attribute
+   * as filterable unless you know that you'll search entities by this attribute. Each filterable attribute occupies
+   * (memory/disk) space in the form of index.
+   *
+   * When attribute is filterable, extra result `attributeHistogram`
+   * can be requested for this attribute.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope filterableInScopes = 16;
+   */
+  filterableInScopes: GrpcEntityScope[] = [];
+
+  /**
+   * When attribute is sortable, it is possible to sort entities by this attribute. Do not mark attribute
+   * as sortable unless you know that you'll sort entities along this attribute. Each sortable attribute occupies
+   * (memory/disk) space in the form of index..
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope sortableInScopes = 17;
+   */
+  sortableInScopes: GrpcEntityScope[] = [];
+
+  /**
+   * When attribute is unique globally it is automatically filterable, and it is ensured there is exactly one single
+   * entity having certain value of this attribute in entire catalog.
+   *
+   * As an example of unique attribute can be URL - there is no sense in having two entities with same URL, and it's
+   * better to have this ensured by the database engine.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcScopedGlobalAttributeUniquenessType uniqueGloballyInScopes = 18;
+   */
+  uniqueGloballyInScopes: GrpcScopedGlobalAttributeUniquenessType[] = [];
 
   constructor(data?: PartialMessage<GrpcGlobalAttributeSchema>) {
     super();
@@ -262,6 +313,10 @@ export class GrpcGlobalAttributeSchema extends Message<GrpcGlobalAttributeSchema
     { no: 12, name: "indexedDecimalPlaces", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
     { no: 13, name: "uniqueGlobally", kind: "enum", T: proto3.getEnumType(GrpcGlobalAttributeUniquenessType) },
     { no: 14, name: "nameVariant", kind: "message", T: GrpcNameVariant, repeated: true },
+    { no: 15, name: "uniqueInScopes", kind: "message", T: GrpcScopedAttributeUniquenessType, repeated: true },
+    { no: 16, name: "filterableInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
+    { no: 17, name: "sortableInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
+    { no: 18, name: "uniqueGloballyInScopes", kind: "message", T: GrpcScopedGlobalAttributeUniquenessType, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcGlobalAttributeSchema {

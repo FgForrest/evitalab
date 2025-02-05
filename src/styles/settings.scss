@@ -160,6 +160,11 @@ body::after {
   background: var(--el-color-primary-dark);
 }
 
+// adjusting generic input hint styles
+.v-input__details {
+  padding-bottom: 0.5rem;
+}
+
 // pop up/overlay colors
 .v-overlay__content {
   background: var(--el-color-primary-dark);

@@ -19,7 +19,7 @@ import {
     ConnectionSubjectPath
 } from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
 import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
-import { SchemaViewerTabDefinition } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabDefinition'
+import { ServerViewerTabDefinition } from '@/modules/server-viewer/model/ServerViewerTabDefinition'
 
 const reloadInterval: number = 5000
 
@@ -34,7 +34,7 @@ defineExpose<TabComponentExpose>({
         return new ConnectionSubjectPath(
             props.params.connection,
             [SubjectPathItem.significant(
-                SchemaViewerTabDefinition.icon(),
+                ServerViewerTabDefinition.icon(),
                 t('serverViewer.title')
             )]
         )
@@ -105,7 +105,7 @@ onUnmounted(() => clearInterval(reloadInterval))
 
 <template>
     <div v-if="initialized" class="server-status">
-        <VTabToolbar :prepend-icon="SchemaViewerTabDefinition.icon()" :title="title">
+        <VTabToolbar :prepend-icon="ServerViewerTabDefinition.icon()" :title="title">
             <template #append>
                 <VBtn icon @click="reload">
                     <VIcon>mdi-refresh</VIcon>

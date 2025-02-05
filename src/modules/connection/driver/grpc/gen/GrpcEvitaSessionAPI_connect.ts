@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { GetMutationsHistoryPageRequest, GetMutationsHistoryPageResponse, GetMutationsHistoryRequest, GetMutationsHistoryResponse, GrpcBackupCatalogRequest, GrpcBackupCatalogResponse, GrpcCatalogSchemaResponse, GrpcCatalogStateResponse, GrpcCatalogVersionAtRequest, GrpcCatalogVersionAtResponse, GrpcCloseRequest, GrpcCloseResponse, GrpcDefineEntitySchemaRequest, GrpcDefineEntitySchemaResponse, GrpcDeleteCollectionRequest, GrpcDeleteCollectionResponse, GrpcDeleteEntitiesRequest, GrpcDeleteEntitiesResponse, GrpcDeleteEntityAndItsHierarchyResponse, GrpcDeleteEntityRequest, GrpcDeleteEntityResponse, GrpcEntityCollectionSizeRequest, GrpcEntityCollectionSizeResponse, GrpcEntityRequest, GrpcEntityResponse, GrpcEntitySchemaRequest, GrpcEntitySchemaResponse, GrpcEntityTypesResponse, GrpcGetCatalogSchemaRequest, GrpcGoLiveAndCloseResponse, GrpcQueryListResponse, GrpcQueryOneResponse, GrpcQueryRequest, GrpcQueryResponse, GrpcQueryUnsafeRequest, GrpcRenameCollectionRequest, GrpcRenameCollectionResponse, GrpcReplaceCollectionRequest, GrpcReplaceCollectionResponse, GrpcTransactionResponse, GrpcUpdateAndFetchCatalogSchemaResponse, GrpcUpdateAndFetchEntitySchemaResponse, GrpcUpdateCatalogSchemaRequest, GrpcUpdateCatalogSchemaResponse, GrpcUpdateEntitySchemaRequest, GrpcUpdateEntitySchemaResponse, GrpcUpsertEntityRequest, GrpcUpsertEntityResponse } from "./GrpcEvitaSessionAPI_pb.js";
+import { GetMutationsHistoryPageRequest, GetMutationsHistoryPageResponse, GetMutationsHistoryRequest, GetMutationsHistoryResponse, GrpcArchiveEntityRequest, GrpcArchiveEntityResponse, GrpcBackupCatalogRequest, GrpcBackupCatalogResponse, GrpcCatalogSchemaResponse, GrpcCatalogStateResponse, GrpcCatalogVersionAtRequest, GrpcCatalogVersionAtResponse, GrpcCloseRequest, GrpcCloseResponse, GrpcDefineEntitySchemaRequest, GrpcDefineEntitySchemaResponse, GrpcDeleteCollectionRequest, GrpcDeleteCollectionResponse, GrpcDeleteEntitiesRequest, GrpcDeleteEntitiesResponse, GrpcDeleteEntityAndItsHierarchyResponse, GrpcDeleteEntityRequest, GrpcDeleteEntityResponse, GrpcEntityCollectionSizeRequest, GrpcEntityCollectionSizeResponse, GrpcEntityRequest, GrpcEntityResponse, GrpcEntitySchemaRequest, GrpcEntitySchemaResponse, GrpcEntityTypesResponse, GrpcGetCatalogSchemaRequest, GrpcGoLiveAndCloseResponse, GrpcQueryListResponse, GrpcQueryOneResponse, GrpcQueryRequest, GrpcQueryResponse, GrpcQueryUnsafeRequest, GrpcRenameCollectionRequest, GrpcRenameCollectionResponse, GrpcReplaceCollectionRequest, GrpcReplaceCollectionResponse, GrpcRestoreEntityRequest, GrpcRestoreEntityResponse, GrpcTransactionResponse, GrpcUpdateAndFetchCatalogSchemaResponse, GrpcUpdateAndFetchEntitySchemaResponse, GrpcUpdateCatalogSchemaRequest, GrpcUpdateCatalogSchemaResponse, GrpcUpdateEntitySchemaRequest, GrpcUpdateEntitySchemaResponse, GrpcUpsertEntityRequest, GrpcUpsertEntityResponse } from "./GrpcEvitaSessionAPI_pb.js";
 import { Empty, MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -351,6 +351,28 @@ export const EvitaSessionService = {
       name: "DeleteEntities",
       I: GrpcDeleteEntitiesRequest,
       O: GrpcDeleteEntitiesResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * Procedure that archives an entity and returns it with required richness.
+     *
+     * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaSessionService.ArchiveEntity
+     */
+    archiveEntity: {
+      name: "ArchiveEntity",
+      I: GrpcArchiveEntityRequest,
+      O: GrpcArchiveEntityResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * Procedure that restores an entity and returns it with required richness.
+     *
+     * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaSessionService.RestoreEntity
+     */
+    restoreEntity: {
+      name: "RestoreEntity",
+      I: GrpcRestoreEntityRequest,
+      O: GrpcRestoreEntityResponse,
       kind: MethodKind.Unary,
     },
     /**

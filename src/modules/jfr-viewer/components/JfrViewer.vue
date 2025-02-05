@@ -92,7 +92,7 @@ emit('ready')
                 <template #item-append-action-buttons="{ task }">
                     <EndRecordingButton
                         :connection="params.connection"
-                        :task="task"
+                        :jfr-recorder-task="task"
                         @end="reloadRecordings"
                     />
                 </template>

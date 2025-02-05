@@ -19,6 +19,9 @@ const { t } = useI18n()
 const props = withDefaults(
     defineProps<{
         label?: string,
+        hint?: string,
+        clearable?: boolean,
+        hideDetails?: boolean,
         disabled?: boolean,
         defaultTimeOffset?: string,
         min?: DateTime,
@@ -26,6 +29,9 @@ const props = withDefaults(
     }>(),
     {
         label: undefined,
+        hint: undefined,
+        clearable: false,
+        hideDetails: false,
         disabled: false,
         defaultTimeOffset: () => timeOffsetFrom(DateTime.now())
     }
@@ -234,6 +240,11 @@ function confirm(): void {
     showMenu.value = false
     model.value = computedOffsetDateTime.value
 }
+
+function clear(): void {
+    model.value = undefined
+    // todo lho clear individual data
+}
 </script>
 
 <template>
@@ -242,9 +253,18 @@ function confirm(): void {
         :active="showMenu"
         :focus="showMenu"
         :label="label"
+        :hint="hint"
         :disabled="disabled"
+        :hide-details="hideDetails"
         readonly
     >
+        <template v-if="model != undefined" #append-inner="{ isFocused }">
+<!--            todo lho fix hide icon when not focused,  -->
+            <VIcon v-show="isFocused" @click="clear">
+                mdi-close-circle
+            </VIcon>
+        </template>
+
         <VMenu
             v-model="showMenu"
             :close-on-content-click="false"

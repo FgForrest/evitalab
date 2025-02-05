@@ -15,14 +15,13 @@ import { useI18n } from 'vue-i18n'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import {
     EvitaQLConsoleService,
-    useEvitaQLConsoleService,
+    useEvitaQLConsoleService
 } from '@/modules/evitaql-console/console/service/EvitaQLConsoleService'
-import {
-    useWorkspaceService,
-    WorkspaceService,
-} from '@/modules/workspace/service/WorkspaceService'
+import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
-import { useEvitaQLResultVisualiserService } from '@/modules/evitaql-console/console/result-visualiser/service/EvitaQLResultVisualiserService'
+import {
+    useEvitaQLResultVisualiserService
+} from '@/modules/evitaql-console/console/result-visualiser/service/EvitaQLResultVisualiserService'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 import { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
@@ -34,11 +33,11 @@ import { evitaQL } from '@lukashornych/codemirror-lang-evitaql'
 import EvitaQLConsoleHistory from '@/modules/evitaql-console/console/history/component/EvitaQLConsoleHistory.vue'
 import {
     createEvitaQLConsoleHistoryKey,
-    EvitaQLConsoleHistoryKey,
+    EvitaQLConsoleHistoryKey
 } from '@/modules/evitaql-console/console/history/model/EvitaQLConsoleHistoryKey'
 import {
     createEvitaQLConsoleHistoryRecord,
-    EvitaQLConsoleHistoryRecord,
+    EvitaQLConsoleHistoryRecord
 } from '@/modules/evitaql-console/console/history/model/EvitaQLConsoleHistoryRecord'
 import VPreviewEditor from '@/modules/code-editor/component/VPreviewEditor.vue'
 import ResultVisualiser from '@/modules/console/result-visualiser/component/ResultVisualiser.vue'
@@ -277,6 +276,7 @@ if (props.params.executeOnOpen) {
                     :tab-params="params"
                     :tab-data="currentData"
                     :disabled="!params.dataPointer.connection.preconfigured"
+                    :command="Command.EvitaQLConsole_ShareTab"
                 />
 
                 <VExecuteQueryButton :loading="loading" @click="executeQuery">

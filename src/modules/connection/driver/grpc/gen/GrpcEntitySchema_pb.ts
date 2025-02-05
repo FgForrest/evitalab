@@ -5,8 +5,8 @@
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3, StringValue } from "@bufbuild/protobuf";
-import { GrpcCurrency, GrpcEvitaValue, GrpcLocale, GrpcNameVariant } from "./GrpcEvitaDataTypes_pb.js";
-import { GrpcAttributeInheritanceBehavior, GrpcAttributeSchemaType, GrpcAttributeUniquenessType, GrpcCardinality, GrpcEvitaAssociatedDataDataType_GrpcEvitaDataType, GrpcEvitaDataType, GrpcEvolutionMode, GrpcGlobalAttributeUniquenessType, GrpcOrderBehaviour, GrpcOrderDirection } from "./GrpcEnums_pb.js";
+import { GrpcCurrency, GrpcEvitaValue, GrpcLocale, GrpcNameVariant, GrpcScopedAttributeUniquenessType, GrpcScopedGlobalAttributeUniquenessType } from "./GrpcEvitaDataTypes_pb.js";
+import { GrpcAttributeInheritanceBehavior, GrpcAttributeSchemaType, GrpcAttributeUniquenessType, GrpcCardinality, GrpcEntityScope, GrpcEvitaAssociatedDataDataType_GrpcEvitaDataType, GrpcEvitaDataType, GrpcEvolutionMode, GrpcGlobalAttributeUniquenessType, GrpcOrderBehaviour, GrpcOrderDirection } from "./GrpcEnums_pb.js";
 
 /**
  * This is the definition object for entity. Definition objects allow to describe the structure
@@ -208,6 +208,28 @@ export class GrpcEntitySchema extends Message<GrpcEntitySchema> {
    */
   nameVariant: GrpcNameVariant[] = [];
 
+  /**
+   * Contains set of all scopes the entity is indexed in and can be used for filtering entities and computation of
+   * extra data. If the hierarchy information is not indexed, it is still available on the entity itself (i.e. entity
+   * can define its parent entity), but it is not possible to work with the hierarchy information in any other way
+   * (calculating parent chain, children, siblings, etc.).
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope hierarchyIndexedInScopes = 17;
+   */
+  hierarchyIndexedInScopes: GrpcEntityScope[] = [];
+
+  /**
+   * Contains set of all scopes the price information is indexed in and can be used for filtering entities and computation
+   * of extra data. If the price information is not indexed, it is still available on the entity itself (i.e. entity
+   * can define its price), but it is not possible to work with the price information in any other way (calculating
+   * price histogram, filtering, sorting by price, etc.).
+   *
+   * Prices can be also set as non-indexed individually by setting {@link PriceContract#indexed()} to false.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope priceIndexedInScopes = 18;
+   */
+  priceIndexedInScopes: GrpcEntityScope[] = [];
+
   constructor(data?: PartialMessage<GrpcEntitySchema>) {
     super();
     proto3.util.initPartial(data, this);
@@ -232,6 +254,8 @@ export class GrpcEntitySchema extends Message<GrpcEntitySchema> {
     { no: 14, name: "evolutionMode", kind: "enum", T: proto3.getEnumType(GrpcEvolutionMode), repeated: true },
     { no: 15, name: "sortableAttributeCompounds", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "message", T: GrpcSortableAttributeCompoundSchema} },
     { no: 16, name: "nameVariant", kind: "message", T: GrpcNameVariant, repeated: true },
+    { no: 17, name: "hierarchyIndexedInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
+    { no: 18, name: "priceIndexedInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcEntitySchema {
@@ -311,13 +335,24 @@ export class GrpcAttributeSchema extends Message<GrpcAttributeSchema> {
    *
    * As an example of unique attribute can be EAN - there is no sense in having two entities with same EAN, and it's
    * better to have this ensured by the database engine.
+   * deprecated in favor of `uniqueInScopes`
    *
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeUniquenessType unique = 5;
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeUniquenessType unique = 5 [deprecated = true];
+   * @deprecated
    */
   unique = GrpcAttributeUniquenessType.NOT_UNIQUE;
 
   /**
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcGlobalAttributeUniquenessType uniqueGlobally = 6;
+   * When attribute is unique globally it is automatically filterable, and it is ensured there is exactly one single
+   * entity having certain value of this attribute in entire {@link CatalogContract}.
+   * {@link AttributeSchemaContract#getType() Type} of the unique attribute must implement {@link Comparable} interface.
+   *
+   * As an example of unique attribute can be URL - there is no sense in having two entities with same URL, and it's
+   * better to have this ensured by the database engine.
+   * deprecated in favor of `uniqueGloballyInScopes`
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcGlobalAttributeUniquenessType uniqueGlobally = 6 [deprecated = true];
+   * @deprecated
    */
   uniqueGlobally = GrpcGlobalAttributeUniquenessType.NOT_GLOBALLY_UNIQUE;
 
@@ -328,8 +363,10 @@ export class GrpcAttributeSchema extends Message<GrpcAttributeSchema> {
    *
    * When attribute is filterable, extra result `attributeHistogram`
    * can be requested for this attribute.
+   * deprecated in favor of `filterableInScopes`
    *
-   * @generated from field: bool filterable = 7;
+   * @generated from field: bool filterable = 7 [deprecated = true];
+   * @deprecated
    */
   filterable = false;
 
@@ -337,8 +374,10 @@ export class GrpcAttributeSchema extends Message<GrpcAttributeSchema> {
    * When attribute is sortable, it is possible to sort entities by this attribute. Do not mark attribute
    * as sortable unless you know that you'll sort entities along this attribute. Each sortable attribute occupies
    * (memory/disk) space in the form of index.
+   * deprecated in favor of `sortableInScopes`
    *
-   * @generated from field: bool sortable = 8;
+   * @generated from field: bool sortable = 8 [deprecated = true];
+   * @deprecated
    */
   sortable = false;
 
@@ -408,6 +447,50 @@ export class GrpcAttributeSchema extends Message<GrpcAttributeSchema> {
    */
   inherited = false;
 
+  /**
+   * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity
+   * having certain value of this attribute among other entities in the same collection.
+   *
+   * As an example of unique attribute can be EAN - there is no sense in having two entities with same EAN, and it's
+   * better to have this ensured by the database engine.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcScopedAttributeUniquenessType uniqueInScopes = 17;
+   */
+  uniqueInScopes: GrpcScopedAttributeUniquenessType[] = [];
+
+  /**
+   * When attribute is unique globally it is automatically filterable, and it is ensured there is exactly one single
+   * entity having certain value of this attribute in entire {@link CatalogContract}.
+   * {@link AttributeSchemaContract#getType() Type} of the unique attribute must implement {@link Comparable} interface.
+   *
+   * As an example of unique attribute can be URL - there is no sense in having two entities with same URL, and it's
+   * better to have this ensured by the database engine.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcScopedGlobalAttributeUniquenessType uniqueGloballyInScopes = 18;
+   */
+  uniqueGloballyInScopes: GrpcScopedGlobalAttributeUniquenessType[] = [];
+
+  /**
+   * When attribute is filterable, it is possible to filter entities by this attribute. Do not mark attribute
+   * as filterable unless you know that you'll search entities by this attribute. Each filterable attribute occupies
+   * (memory/disk) space in the form of index.
+   *
+   * When attribute is filterable, extra result `attributeHistogram`
+   * can be requested for this attribute.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope filterableInScopes = 19;
+   */
+  filterableInScopes: GrpcEntityScope[] = [];
+
+  /**
+   * When attribute is sortable, it is possible to sort entities by this attribute. Do not mark attribute
+   * as sortable unless you know that you'll sort entities along this attribute. Each sortable attribute occupies
+   * (memory/disk) space in the form of index.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope sortableInScopes = 20;
+   */
+  sortableInScopes: GrpcEntityScope[] = [];
+
   constructor(data?: PartialMessage<GrpcAttributeSchema>) {
     super();
     proto3.util.initPartial(data, this);
@@ -432,6 +515,10 @@ export class GrpcAttributeSchema extends Message<GrpcAttributeSchema> {
     { no: 14, name: "indexedDecimalPlaces", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
     { no: 15, name: "nameVariant", kind: "message", T: GrpcNameVariant, repeated: true },
     { no: 16, name: "inherited", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 17, name: "uniqueInScopes", kind: "message", T: GrpcScopedAttributeUniquenessType, repeated: true },
+    { no: 18, name: "uniqueGloballyInScopes", kind: "message", T: GrpcScopedGlobalAttributeUniquenessType, repeated: true },
+    { no: 19, name: "filterableInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
+    { no: 20, name: "sortableInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcAttributeSchema {
@@ -655,8 +742,10 @@ export class GrpcReferenceSchema extends Message<GrpcReferenceSchema> {
    * Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed,
    * the entity cannot be looked up by reference attributes or relation existence itself, but the data can be
    * fetched.
+   * deprecated in favor of `indexedInScopes`
    *
-   * @generated from field: bool indexed = 9;
+   * @generated from field: bool indexed = 9 [deprecated = true];
+   * @deprecated
    */
   indexed = false;
 
@@ -669,8 +758,10 @@ export class GrpcReferenceSchema extends Message<GrpcReferenceSchema> {
    * occupies (memory/disk) space in the form of index.
    *
    * Reference that was marked as faceted is called Facet.
+   * deprecated in favor of `facetedInScopes`
    *
-   * @generated from field: bool faceted = 10;
+   * @generated from field: bool faceted = 10 [deprecated = true];
+   * @deprecated
    */
   faceted = false;
 
@@ -784,6 +875,41 @@ export class GrpcReferenceSchema extends Message<GrpcReferenceSchema> {
    */
   attributeInheritanceFilter: string[] = [];
 
+  /**
+   * Contains true if the indexed property settings of the reflected reference is inherited from the target reference.
+   *
+   * @generated from field: bool indexedInherited = 25;
+   */
+  indexedInherited = false;
+
+  /**
+   * Contains `true` if the index for this reference should be created and maintained allowing to filter by
+   * `reference_{reference name}_having` filtering constraints. Index is also required when reference is
+   * `faceted`.
+   *
+   * Do not mark reference as faceted unless you know that you'll need to filter/sort entities by this reference.
+   * Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed,
+   * the entity cannot be looked up by reference attributes or relation existence itself, but the data can be
+   * fetched.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope indexedInScopes = 26;
+   */
+  indexedInScopes: GrpcEntityScope[] = [];
+
+  /**
+   * Contains `true` if the statistics data for this reference should be maintained and this allowing to get
+   * `facetStatistics` for this reference or use `facet_{reference name}_inSet`
+   * filtering constraint.
+   *
+   * Do not mark reference as faceted unless you want it among `facetStatistics`. Each faceted reference
+   * occupies (memory/disk) space in the form of index.
+   *
+   * Reference that was marked as faceted is called Facet.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope facetedInScopes = 27;
+   */
+  facetedInScopes: GrpcEntityScope[] = [];
+
   constructor(data?: PartialMessage<GrpcReferenceSchema>) {
     super();
     proto3.util.initPartial(data, this);
@@ -816,6 +942,9 @@ export class GrpcReferenceSchema extends Message<GrpcReferenceSchema> {
     { no: 22, name: "facetedInherited", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
     { no: 23, name: "attributeInheritanceBehavior", kind: "enum", T: proto3.getEnumType(GrpcAttributeInheritanceBehavior) },
     { no: 24, name: "attributeInheritanceFilter", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+    { no: 25, name: "indexedInherited", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 26, name: "indexedInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
+    { no: 27, name: "facetedInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcReferenceSchema {
@@ -892,6 +1021,14 @@ export class GrpcSortableAttributeCompoundSchema extends Message<GrpcSortableAtt
    */
   inherited = false;
 
+  /**
+   * When attribute sortable compound is indexed, it is possible to sort entities by this calculated attribute compound.
+   * This property contains set of all scopes this attribute compound is indexed in.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope indexedInScopes = 7;
+   */
+  indexedInScopes: GrpcEntityScope[] = [];
+
   constructor(data?: PartialMessage<GrpcSortableAttributeCompoundSchema>) {
     super();
     proto3.util.initPartial(data, this);
@@ -906,6 +1043,7 @@ export class GrpcSortableAttributeCompoundSchema extends Message<GrpcSortableAtt
     { no: 4, name: "attributeElements", kind: "message", T: GrpcAttributeElement, repeated: true },
     { no: 5, name: "nameVariant", kind: "message", T: GrpcNameVariant, repeated: true },
     { no: 6, name: "inherited", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 7, name: "indexedInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcSortableAttributeCompoundSchema {

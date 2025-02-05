@@ -115,7 +115,7 @@ export class CatalogSchemaConverter {
                 Value.of(attribute.filterable),
                 Value.of(attribute.sortable),
                 Value.of(attribute.nullable),
-                Value.of(this.evitaValueConverter.convert(attribute.defaultValue)),
+                Value.of(this.evitaValueConverter.convertGrpcValue(attribute.defaultValue)),
                 Value.of(attribute.localized),
                 Value.of(attribute.indexedDecimalPlaces)
             )
@@ -132,7 +132,7 @@ export class CatalogSchemaConverter {
                 Value.of(attribute.filterable),
                 Value.of(attribute.sortable),
                 Value.of(attribute.nullable),
-                Value.of(this.evitaValueConverter.convert(attribute.defaultValue)),
+                Value.of(this.evitaValueConverter.convertGrpcValue(attribute.defaultValue)),
                 Value.of(attribute.localized),
                 Value.of(attribute.indexedDecimalPlaces),
                 Value.of(attribute.representative)
@@ -173,7 +173,7 @@ export class CatalogSchemaConverter {
         )
 
         const defaultValue: Value<any | any[] | null> = Value.of(
-            this.evitaValueConverter.convert(globalAttributeSchema.defaultValue)
+            this.evitaValueConverter.convertGrpcValue(globalAttributeSchema.defaultValue)
         )
         const localized: Value<boolean> = Value.of(
             globalAttributeSchema.localized

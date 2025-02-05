@@ -68,7 +68,8 @@ export default createVuetify({
             variant: 'plain'
         },
         VChip: {
-            color: 'gray-light'
+            color: 'gray-light',
+            variant: 'plain'
         },
         VSelect: {
             variant: 'solo-filled',
@@ -101,6 +102,9 @@ export default createVuetify({
             VBtn: {
                 variant: 'flat'
             }
+        },
+        VCheckbox: {
+            density: 'compact'
         },
         VList: {
             density: 'compact'

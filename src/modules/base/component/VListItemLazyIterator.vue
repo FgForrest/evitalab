@@ -49,10 +49,7 @@ const pageOfItems = computed<any[]>(() => {
         <slot name="item" :item="item" :index="index" />
     </template>
     <VListItem v-if="lastPage > 1 && page < lastPage">
-        <VBtn
-            variant="outlined"
-            @click="emit('update:page', page + 1)"
-        >
+        <VBtn @click="emit('update:page', page + 1)">
             {{ t('common.button.showMore') }}
         </VBtn>
     </VListItem>

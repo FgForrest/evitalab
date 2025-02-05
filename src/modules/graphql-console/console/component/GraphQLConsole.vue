@@ -53,7 +53,9 @@ import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentEx
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
 import Immutable from 'immutable'
-import { ConnectionSubjectPath } from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
+import {
+    ConnectionSubjectPath
+} from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
 import {
     GraphQLConsoleTabDefinition
 } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
@@ -280,6 +282,7 @@ function focusResultVisualiser(): void {
                     :tab-params="params"
                     :tab-data="currentData"
                     :disabled="!params.dataPointer.connection.preconfigured"
+                    :command="Command.GraphQLConsole_ShareTab"
                 />
 
                 <VBtn
@@ -294,6 +297,7 @@ function focusResultVisualiser(): void {
                 </VBtn>
 
                 <VExecuteQueryButton :loading="loading" @click="executeQuery">
+<!--                    todo lho doesn't work, doesnt show command shortcut-->
                     <VActionTooltip :command="Command.GraphQLConsole_ExecuteQuery" />
                     {{ t('common.button.run') }}
                 </VExecuteQueryButton>

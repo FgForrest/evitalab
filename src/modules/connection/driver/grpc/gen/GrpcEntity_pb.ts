@@ -8,7 +8,7 @@ import { Int32Value, Message, proto3 } from "@bufbuild/protobuf";
 import { GrpcEvitaAssociatedDataValue, GrpcEvitaValue, GrpcLocale } from "./GrpcEvitaDataTypes_pb.js";
 import { GrpcLocalizedAttribute } from "./GrpcAttribute_pb.js";
 import { GrpcPrice } from "./GrpcPrice_pb.js";
-import { GrpcCardinality, GrpcPriceInnerRecordHandling } from "./GrpcEnums_pb.js";
+import { GrpcCardinality, GrpcEntityScope, GrpcPriceInnerRecordHandling } from "./GrpcEnums_pb.js";
 import { GrpcLocalizedAssociatedData } from "./GrpcAssociatedData_pb.js";
 
 /**
@@ -285,6 +285,13 @@ export class GrpcSealedEntity extends Message<GrpcSealedEntity> {
    */
   locales: GrpcLocale[] = [];
 
+  /**
+   * Identifies scope where the entity resides (either live or archived scope).
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntityScope scope = 17;
+   */
+  scope = GrpcEntityScope.SCOPE_LIVE;
+
   constructor(data?: PartialMessage<GrpcSealedEntity>) {
     super();
     proto3.util.initPartial(data, this);
@@ -309,6 +316,7 @@ export class GrpcSealedEntity extends Message<GrpcSealedEntity> {
     { no: 14, name: "globalAssociatedData", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "message", T: GrpcEvitaAssociatedDataValue} },
     { no: 15, name: "localizedAssociatedData", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "message", T: GrpcLocalizedAssociatedData} },
     { no: 16, name: "locales", kind: "message", T: GrpcLocale, repeated: true },
+    { no: 17, name: "scope", kind: "enum", T: proto3.getEnumType(GrpcEntityScope) },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcSealedEntity {

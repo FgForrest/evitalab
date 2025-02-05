@@ -71,6 +71,15 @@ async function confirm(): Promise<void> {
 
     props.reset()
 }
+
+defineExpose<{
+    validateForm: () => Promise<void>
+}>({
+    validateForm: async () => {
+        //@ts-ignore
+        await form.value?.validate()
+    },
+})
 </script>
 
 <template>

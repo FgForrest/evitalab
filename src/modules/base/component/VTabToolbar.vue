@@ -14,9 +14,11 @@ type Flag = {
 const props = withDefaults(defineProps<{
     prependIcon: string,
     title: List<string>,
-    flags?: List<string>
+    flags?: List<string>,
+    extensionHeight?: string | number
 }>(), {
-    flags: () => List()
+    flags: () => List(),
+    extensionHeight: undefined
 })
 
 const normalizedFlags = computed<List<Flag>>(() => {
@@ -37,6 +39,7 @@ const normalizedFlags = computed<List<Flag>>(() => {
     <VToolbar
         density="compact"
         elevation="2"
+        :extension-height="extensionHeight"
         class="tab-toolbar bg-primary-light"
     >
         <VAppBarNavIcon

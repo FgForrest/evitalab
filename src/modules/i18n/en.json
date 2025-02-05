@@ -285,6 +285,12 @@
     "schemaViewer": {
       "_title": "Schema viewer",
       "shareTab": "Share tab"
+    },
+    "trafficRecordHistoryViewer": {
+      "_title": "Traffic record history viewer",
+      "shareTab": "Share tab",
+      "reloadRecordHistory": "Reload record history",
+      "moveStartPointer": "Load only records newer than now"
     }
   },
   "explorer": {
@@ -307,7 +313,8 @@
         "createCatalog": "Create catalog",
         "catalogBackups": "Catalog backups",
         "tasks": "Tasks",
-        "jfrRecordings": "JFR recordings"
+        "jfrRecordings": "JFR recordings",
+        "trafficRecordings": "Traffic recordings"
       },
       "subheader": {
         "manage": "Manage",
@@ -371,7 +378,8 @@
       "subheader": {
         "manage": "Manage",
         "modify": "Modify",
-        "collections": "Collections"
+        "collections": "Collections",
+        "traffic": "Traffic"
       },
       "actions": {
         "evitaQLConsole": "evitaQL console",
@@ -383,7 +391,8 @@
         "renameCatalog": "Rename catalog",
         "replaceCatalog": "Replace catalog",
         "createCollection": "Create collection",
-        "switchCatalogToAliveState": "Switch catalog to alive state"
+        "switchCatalogToAliveState": "Switch catalog to alive state",
+        "activeTrafficRecording": "Active traffic recording"
       },
       "notification": {
         "closedAllSessions": "All open sessions of catalog {catalogName} were closed.",
@@ -1280,7 +1289,7 @@
     },
     "notification": {
       "couldNotLoadRecordings": "Could not load JFR recording files: {reason}",
-      "couldNotDownloadRecordingFile": "Could not download recording file {fileName}: {reason}"
+      "couldNotDownloadRecordingFile": "Could not download JFR recording file {fileName}: {reason}"
     },
     "startRecording": {
       "title": "Start JFR recording",
@@ -1335,6 +1344,349 @@
         "fileDeleted": "The {fileName} file has been successfully deleted.",
         "fileNotDeleted": "The {fileName} file has not been deleted.",
         "couldNotDeleteFile": "Could not delete the {fileName} file: {reason}"
+      }
+    }
+  },
+  "trafficViewer": {
+    "recordings": {
+      "definition": {
+        "title": "Traffic Recordings [{connectionName}]"
+      },
+      "title": "Traffic Recordings",
+      "button": {
+        "startRecording": "Start recording",
+        "reloadRecordings": "Reload recordings"
+      },
+      "tasks": {
+        "title": "Running recordings",
+        "button": {
+          "stopRecording": "Stop recording"
+        }
+      },
+      "list": {
+        "title": "Finished recordings",
+        "noRecordings": "No traffic recordings are available"
+      },
+      "notification": {
+        "couldNotLoadRecordings": "Could not load traffic recording files: {reason}",
+        "couldNotDownloadRecordingFile": "Could not download traffic recording file {fileName}: {reason}"
+      },
+      "startRecording": {
+        "title": "Start traffic recording",
+        "info": "This will start recording process in background which will be active until you stop it manually or is stopped automatically by defined limits. Note that there can be only one recording active at the same time.",
+        "infoForFileExport": "Once the recording process is finished, a file will be created and be ready for download.",
+        "button": {
+          "startRecording": "Start recording"
+        },
+        "form": {
+          "catalogName": {
+            "label": "Catalog to record",
+            "validations": {
+              "required": "Catalog to record is required.",
+              "notExists": "Selected catalog doesn't exist anymore."
+            }
+          },
+          "samplingRate": {
+            "label": "Sampling rate",
+            "hint": "The sampling rate of the traffic recording (100 % means all records will be recorded, 1 % means 1 % of records will be recorded).",
+            "unit": "%",
+            "validations": {
+              "required": "Sampling rate is required.",
+              "notNumber": "Sampling rate must be integer number.",
+              "outOfRange": "Sampling rate must be number between 1 and 100 (inclusive)."
+            }
+          },
+          "maxDurationInMilliseconds": {
+            "label": "Maximum duration",
+            "hint": "The duration of the recording, after this time the recording will be stopped automatically. Use combination of h, m, s, or ms units.",
+            "validations": {
+              "notDuration": "Maximum duration must be duration string.",
+              "outOfRange": "Maximum duration must be positive number and less than 2^63-1 in milliseconds."
+            }
+          },
+          "exportFile": {
+            "label": "Export to file",
+            "hint": "Whether to export the traffic into a file for download once the recording is finished."
+          },
+          "maxFileSizeInBytes": {
+            "label": "Maximum file size",
+            "hint": {
+              "default": "The size of the recording in bytes, after this size the recording will be stopped automatically. You can use k, M, G, Ki, Mi, or Gi unit prefix.",
+              "rounded": "The size of the recording will be rounded to full bytes."
+            },
+            "unit": "bytes",
+            "validations": {
+              "notByteSize": "Maximum file size must be byte size.",
+              "outOfRange": "Maximum file size must be positive number and less than 2^63-1."
+            }
+          },
+          "chunkFileSizeInBytes": {
+            "label": "Chunk file size",
+            "hint": {
+              "default": "The size of the chunk file in bytes. Individual files in the export file will be approximately this size. You can use k, M, G, Ki, Mi, or Gi unit prefix.",
+              "rounded": "The size of the chunk file will be rounded to full bytes."
+            },
+            "unit": "bytes",
+            "validations": {
+              "notByteSize": "Chunk file size must be byte size.",
+              "outOfRange": "Chunk file size must be positive number and less than 2^63-1."
+            }
+          }
+        },
+        "notification": {
+          "couldNotStartRecording": "Could not start traffic recording: {reason}",
+          "recordingStarted": "Traffic recording has been started."
+        }
+      },
+      "stopRecording": {
+        "title": "Stop traffic recording",
+        "info": "This will stop the active recording process. The final recording will be available in the traffic recording listing.",
+        "button": {
+          "stopRecording": "Stop recording"
+        },
+        "notification": {
+          "couldNotStopRecording": "Could not stop traffic recording: {reason}",
+          "recordingStopped": "Traffic recording has been stopped."
+        }
+      }
+    },
+    "recordHistory": {
+      "title": "Active traffic recording",
+      "notification": {
+        "couldNotLoadRecords": "Could not load traffic records: {reason}",
+        "couldNotLoadLatestRecording": "Could not load latest traffic record: {reason}"
+      },
+      "button": {
+        "reloadRecordHistory": "Reload record history",
+        "moveStartPointerToNewest": "Load only records newer than now",
+        "removeStartPointer": "Load entire record history",
+        "modifyStartPointer": "Change start of loaded record history"
+      },
+      "filter": {
+        "label": "Filter",
+        "form": {
+          "since": {
+            "label": "Since",
+            "hint": "Specifies the time from which the history should be returned."
+          },
+          "types": {
+            "label": "Types",
+            "valueDescriptor": "{count} types selected",
+            "hint": "Specifies the types of records to be returned.",
+            "type": {
+              "session": "Session",
+              "sourceQuery": "Source query",
+              "query": "Query",
+              "fetch": "Fetch",
+              "enrichment": "Enrichment",
+              "mutation": "Mutation"
+            }
+          },
+          "sessionId": {
+            "label": "Session ID",
+            "hint": "Specifies the session ID from which the history should be returned.",
+            "validations": {
+              "notUuid": "Session ID must be a UUID."
+            }
+          },
+          "longerThan": {
+            "label": "Longer than",
+            "hint": "Specifies the minimum duration in milliseconds of the traffic recording to be returned. Use combination of h, m, s, or ms units.",
+            "validations": {
+              "notNumber": "Threshold must be a duration.",
+              "outOfRange": "Threshold must be positive number and less than 2^53-1."
+            }
+          },
+          "fetchingMoreBytesThan": {
+            "label": "Fetching more bytes than",
+            "hint": "Specifies the minimum number of bytes that record should have fetched from the disk. You can use k, M, G, Ki, Mi, or Gi unit prefix.",
+            "unit": "bytes",
+            "validations": {
+              "notByteSize": "Threshold must be byte size.",
+              "outOfRange": "Threshold must be positive number and less than 2^53-1."
+            }
+          },
+          "labels": {
+            "label": "Labels",
+            "hint": "Specifies the client labels that the record must have (both name and value must match).",
+            "displayedLabels": "no labels | 1 label | {count} labels",
+            "form": {
+              "newLabelName": "Name",
+              "newLabelValue": "Value"
+            },
+            "button": {
+              "addLabel": "Add label"
+            }
+          }
+        },
+        "button": {
+          "apply": "Apply filter"
+        },
+        "notification": {
+          "invalidFilter": "Filter criteria are not valid."
+        }
+      },
+      "list": {
+        "info": {
+          "noActiveTrafficRecording": "There is no active traffic recording for the {catalogName} catalog. You need to either enable traffic recording on server options or start recording on demand in traffic recordings.",
+          "indexCreating": "Index is being created for the active traffic recording for the {catalogName} catalog. Please wait and reload history in a few moments.",
+          "noRecords": "There are no traffic records for defined filter."
+        },
+        "button": {
+          "loadMore": "Load more"
+        },
+        "notification": {
+          "noNewerRecords": "No newer records exist."
+        }
+      },
+      "record": {
+        "type": {
+          "common": {
+            "metadata": {
+              "group": {
+                "default": "Default metadata"
+              },
+              "item": {
+                "sessionId": {
+                  "tooltip": "Session ID under which the record was created",
+                  "notification": {
+                    "copiedToClipboard": "Session ID has been copied to clipboard"
+                  }
+                },
+                "created": {
+                  "tooltip": "Record creation time",
+                  "notification": {
+                    "copiedToClipboard": "Date time of record creation has been copied to clipboard"
+                  }
+                },
+                "duration": "Record processing duration",
+                "ioFetchedSizeBytes": {
+                  "tooltip": "Number of bytes read from disk",
+                  "value": "0 bytes fetched | 1 byte fetched | {count} fetched"
+                },
+                "ioFetchCount": {
+                  "tooltip": "Number of I/O accesses to disk",
+                  "value": "{count} disk accesses"
+                },
+                "finishedStatus": {
+                  "tooltip": {
+                    "success": "Record finished status",
+                    "error": "Record finished status: {error}"
+                  },
+                  "status": {
+                    "success": "Success",
+                    "error": "Error"
+                  }
+                },
+                "noStatistics": {
+                  "tooltip": "No final statistics where fetched, therefore some useful data are not displayed. Try fetching more records.",
+                  "title": "No statistics"
+                }
+              }
+            }
+          },
+          "sessionStart": {
+            "label": "Session start",
+            "title": "Session",
+            "action": {
+              "open": "Open traffic recording for this session"
+            }
+          },
+          "sessionClose": {
+            "label": "Session close",
+            "metadata": {
+              "item": {
+                "catalogVersion": "Used catalog version",
+                "trafficRecordCount": {
+                  "tooltip": "Traffic record count",
+                  "value": "no traffic | 1 traffic record | {count} traffic records"
+                },
+                "queryCount": {
+                  "tooltip": "Queries executed count",
+                  "value": "no queries | 1 query | {count} queries"
+                },
+                "entityFetchCount": {
+                  "tooltip": "Entities fetched count",
+                  "value": "no entities | 1 entity | {count} entities"
+                },
+                "mutationCount": {
+                  "tooltip": "Mutations executed count",
+                  "value": "no mutations | 1 mutation | {count} mutations"
+                }
+              }
+            }
+          },
+          "sourceQuery": {
+            "label": "Source query",
+            "title": "Source query: {queryType}",
+            "metadata": {
+              "group": {
+                "queryLabels": "Query labels"
+              },
+              "item": {
+                "queryLabel": "Query label"
+              }
+            },
+            "action": {
+              "query": "Open query in console"
+            }
+          },
+          "sourceQueryStatistics": {
+            "label": "Source query statistics",
+            "metadata": {
+              "item": {
+                "returnedRecordCount": {
+                  "tooltip": "Returned record count",
+                  "value": "no records returned | 1 record returned | {count} records returned"
+                },
+                "totalRecordCount": {
+                  "tooltip": "Total record count",
+                  "value": "no records | 1 record total | {count} records total"
+                }
+              }
+            }
+          },
+          "query": {
+            "label": "Query",
+            "title": "Query",
+            "metadata": {
+              "group": {
+                "queryLabels": "Query labels"
+              },
+              "item": {
+                "totalRecordCount": {
+                  "tooltip": "Total record count",
+                  "value": "no records | 1 record total | {count} records total"
+                },
+                "primaryKeys": {
+                  "tooltip": "Actual returned records count",
+                  "value": "no records returned | 1 record returned | {count} records returned"
+                },
+                "queryLabel": "Query label"
+              }
+            },
+            "action": {
+              "query": "Open query in console"
+            }
+          },
+          "fetch": {
+            "label": "Fetch",
+            "title": "Entity {primaryKey} fetch",
+            "action": {
+              "query": "Open fetch query in console"
+            }
+          },
+          "enrichment": {
+            "label": "Enrichment",
+            "title": "Entity {primaryKey} enrichment",
+            "action": {
+              "query": "Open enrichment query in console"
+            }
+          },
+          "mutation": {
+            "label": "Mutation"
+          }
+        }
       }
     }
   }

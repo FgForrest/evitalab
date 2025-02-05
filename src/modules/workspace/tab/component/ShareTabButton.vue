@@ -9,6 +9,8 @@ import { TabType } from '@/modules/workspace/tab/model/TabType'
 import { TabParams } from '@/modules/workspace/tab/model/TabParams'
 import { TabData } from '@/modules/workspace/tab/model/TabData'
 import ShareTabDialog from '@/modules/workspace/tab/component/ShareTabDialog.vue'
+import { Command } from '@/modules/keymap/model/Command'
+import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 
 const { t } = useI18n()
 
@@ -17,6 +19,7 @@ const props = withDefaults(defineProps<{
     tabParams: TabParams<any>,
     tabData: TabData<any> | undefined,
     disabled?: boolean
+    command: Command
 }>(), {
     disabled: false
 })
@@ -50,14 +53,14 @@ defineExpose<{
                 @click="shareDialogOpen = true"
             >
                 <VIcon>mdi-share-variant</VIcon>
-                <VTooltip activator="parent">
+                <VActionTooltip activator="parent" :command="command">
                     <template v-if="disabled">
                         {{ t('tabShare.tooltip.nonSharableTab') }}
                     </template>
                     <template v-else>
                         {{ t('tabShare.button.shareTab') }}
                     </template>
-                </VTooltip>
+                </VActionTooltip>
             </VBtn>
         </template>
     </ShareTabDialog>

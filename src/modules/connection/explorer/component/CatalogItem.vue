@@ -50,12 +50,18 @@ import {
 import { SchemaViewerTabDefinition } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabDefinition'
 import { ConnectionService, useConnectionService } from '@/modules/connection/service/ConnectionService'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { TrafficRecordHistoryViewerTabDefinition } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabDefinition'
+import {
+    TrafficRecordHistoryViewerTabFactory,
+    useTrafficRecordHistoryViewerTabFactory
+} from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const connectionService: ConnectionService = useConnectionService()
 const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory = useEvitaQLConsoleTabFactory()
 const graphQLConsoleTabFactory: GraphQLConsoleTabFactory = useGraphQLConsoleTabFactory()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
+const trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory = useTrafficRecordHistoryViewerTabFactory()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
@@ -192,6 +198,25 @@ function createActions(): Map<CatalogItemType, MenuItem<CatalogItemType>> {
                 )
             },
             catalogNotCorrupted
+        )
+    )
+
+    actions.set(
+        CatalogItemType.TrafficSubheader,
+        new MenuSubheader(t('explorer.catalog.subheader.traffic'))
+    )
+    actions.set(
+        CatalogItemType.ActiveTrafficRecording,
+        createMenuAction(
+            CatalogItemType.ActiveTrafficRecording,
+            TrafficRecordHistoryViewerTabDefinition.icon(),
+            () => workspaceService.createTab(
+                trafficRecordHistoryViewerTabFactory.createNew(
+                    connection,
+                    props.catalog.name
+                )
+            ),
+            catalogNotCorrupted && serverWritable
         )
     )
 

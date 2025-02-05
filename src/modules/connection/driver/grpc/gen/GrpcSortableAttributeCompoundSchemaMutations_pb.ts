@@ -6,10 +6,11 @@
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3, StringValue } from "@bufbuild/protobuf";
 import { GrpcAttributeElement } from "./GrpcEntitySchema_pb.js";
+import { GrpcEntityScope } from "./GrpcEnums_pb.js";
 
 /**
- * Mutation is responsible for setting up a new `AttributeSchema` in the `EntitySchema`.
- * Mutation can be used for altering also the existing `AttributeSchema` alone.
+ * Mutation is responsible for setting up a new `SortableAttributeCompoundSchema` in the `EntitySchema`.
+ * Mutation can be used for altering also the existing `SortableAttributeCompoundSchema` alone.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcCreateSortableAttributeCompoundSchemaMutation
  */
@@ -45,6 +46,14 @@ export class GrpcCreateSortableAttributeCompoundSchemaMutation extends Message<G
    */
   attributeElements: GrpcAttributeElement[] = [];
 
+  /**
+   * When attribute sortable compound is indexed, it is possible to sort entities by this calculated attribute compound.
+   * This property contains set of all scopes this attribute compound is indexed in.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope indexedInScopes = 5;
+   */
+  indexedInScopes: GrpcEntityScope[] = [];
+
   constructor(data?: PartialMessage<GrpcCreateSortableAttributeCompoundSchemaMutation>) {
     super();
     proto3.util.initPartial(data, this);
@@ -57,6 +66,7 @@ export class GrpcCreateSortableAttributeCompoundSchemaMutation extends Message<G
     { no: 2, name: "description", kind: "message", T: StringValue },
     { no: 3, name: "deprecationNotice", kind: "message", T: StringValue },
     { no: 4, name: "attributeElements", kind: "message", T: GrpcAttributeElement, repeated: true },
+    { no: 5, name: "indexedInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcCreateSortableAttributeCompoundSchemaMutation {
@@ -229,6 +239,56 @@ export class GrpcModifySortableAttributeCompoundSchemaNameMutation extends Messa
 }
 
 /**
+ * Mutation is responsible for setting set of scopes for indexing value in a `SortableAttributeCompoundSchema` in `EntitySchema`.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcSetSortableAttributeCompoundIndexedMutation
+ */
+export class GrpcSetSortableAttributeCompoundIndexedMutation extends Message<GrpcSetSortableAttributeCompoundIndexedMutation> {
+  /**
+   * Name of the sortable attribute compound the mutation is targeting.
+   *
+   * @generated from field: string name = 1;
+   */
+  name = "";
+
+  /**
+   * When attribute sortable compound is indexed, it is possible to sort entities by this calculated attribute compound.
+   * This property contains set of all scopes this attribute compound is indexed in.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope indexedInScopes = 2;
+   */
+  indexedInScopes: GrpcEntityScope[] = [];
+
+  constructor(data?: PartialMessage<GrpcSetSortableAttributeCompoundIndexedMutation>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcSetSortableAttributeCompoundIndexedMutation";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "indexedInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcSetSortableAttributeCompoundIndexedMutation {
+    return new GrpcSetSortableAttributeCompoundIndexedMutation().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcSetSortableAttributeCompoundIndexedMutation {
+    return new GrpcSetSortableAttributeCompoundIndexedMutation().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcSetSortableAttributeCompoundIndexedMutation {
+    return new GrpcSetSortableAttributeCompoundIndexedMutation().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GrpcSetSortableAttributeCompoundIndexedMutation | PlainMessage<GrpcSetSortableAttributeCompoundIndexedMutation> | undefined, b: GrpcSetSortableAttributeCompoundIndexedMutation | PlainMessage<GrpcSetSortableAttributeCompoundIndexedMutation> | undefined): boolean {
+    return proto3.util.equals(GrpcSetSortableAttributeCompoundIndexedMutation, a, b);
+  }
+}
+
+/**
  * Mutation is responsible for removing an existing `SortableAttributeCompound` in the `EntitySchema` or `ReferenceSchema`.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcRemoveSortableAttributeCompoundSchemaMutation
@@ -306,6 +366,12 @@ export class GrpcSortableAttributeCompoundSchemaMutation extends Message<GrpcSor
      */
     value: GrpcRemoveSortableAttributeCompoundSchemaMutation;
     case: "removeSortableAttributeCompoundSchemaMutation";
+  } | {
+    /**
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcSetSortableAttributeCompoundIndexedMutation setSortableAttributeCompoundIndexedMutation = 6;
+     */
+    value: GrpcSetSortableAttributeCompoundIndexedMutation;
+    case: "setSortableAttributeCompoundIndexedMutation";
   } | { case: undefined; value?: undefined } = { case: undefined };
 
   constructor(data?: PartialMessage<GrpcSortableAttributeCompoundSchemaMutation>) {
@@ -321,6 +387,7 @@ export class GrpcSortableAttributeCompoundSchemaMutation extends Message<GrpcSor
     { no: 3, name: "modifySortableAttributeCompoundSchemaDescriptionMutation", kind: "message", T: GrpcModifySortableAttributeCompoundSchemaDescriptionMutation, oneof: "mutation" },
     { no: 4, name: "modifySortableAttributeCompoundSchemaNameMutation", kind: "message", T: GrpcModifySortableAttributeCompoundSchemaNameMutation, oneof: "mutation" },
     { no: 5, name: "removeSortableAttributeCompoundSchemaMutation", kind: "message", T: GrpcRemoveSortableAttributeCompoundSchemaMutation, oneof: "mutation" },
+    { no: 6, name: "setSortableAttributeCompoundIndexedMutation", kind: "message", T: GrpcSetSortableAttributeCompoundIndexedMutation, oneof: "mutation" },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcSortableAttributeCompoundSchemaMutation {

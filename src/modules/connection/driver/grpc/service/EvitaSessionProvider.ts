@@ -26,9 +26,26 @@ export class EvitaSessionProvider {
             this.activeReadWriteSessions.get(connection.id)?.get(catalogName)?.invalidate()
         } else {
             this.activeReadOnlySessions.get(connection.id)
-                ?.forEach((session) => session.invalidate())
+                ?.forEach(async (session) => {
+                    this.terminateSession(connection, session).then()
+                    session.invalidate()
+                })
             this.activeReadWriteSessions.get(connection.id)
-                ?.forEach((session) => session.invalidate())
+                ?.forEach((session) => {
+                    this.terminateSession(connection, session).then()
+                    session.invalidate()
+                })
+        }
+    }
+
+    private async terminateSession(connection: Connection, session: SessionInfo): Promise<void> {
+        try {
+            await this.clientProvider.getEvitaClient(connection)
+                .terminateSession({
+                    sessionId: session.id,
+                })
+        } catch (e: any) {
+            console.error(`Could not terminate session '${session.id}' on server, invalidating only on client: ${e.message}`)
         }
     }
 

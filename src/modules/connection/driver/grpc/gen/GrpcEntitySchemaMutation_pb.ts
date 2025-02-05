@@ -8,7 +8,8 @@ import { Message, proto3 } from "@bufbuild/protobuf";
 import { GrpcCreateAssociatedDataSchemaMutation, GrpcModifyAssociatedDataSchemaDeprecationNoticeMutation, GrpcModifyAssociatedDataSchemaDescriptionMutation, GrpcModifyAssociatedDataSchemaNameMutation, GrpcModifyAssociatedDataSchemaTypeMutation, GrpcRemoveAssociatedDataSchemaMutation, GrpcSetAssociatedDataSchemaLocalizedMutation, GrpcSetAssociatedDataSchemaNullableMutation } from "./GrpcAssociatedDataSchemaMutations_pb.js";
 import { GrpcCreateAttributeSchemaMutation, GrpcModifyAttributeSchemaDefaultValueMutation, GrpcModifyAttributeSchemaDeprecationNoticeMutation, GrpcModifyAttributeSchemaDescriptionMutation, GrpcModifyAttributeSchemaNameMutation, GrpcModifyAttributeSchemaTypeMutation, GrpcRemoveAttributeSchemaMutation, GrpcSetAttributeSchemaFilterableMutation, GrpcSetAttributeSchemaLocalizedMutation, GrpcSetAttributeSchemaNullableMutation, GrpcSetAttributeSchemaRepresentativeMutation, GrpcSetAttributeSchemaSortableMutation, GrpcSetAttributeSchemaUniqueMutation, GrpcUseGlobalAttributeSchemaMutation } from "./GrpcAttributeSchemaMutations_pb.js";
 import { GrpcAllowCurrencyInEntitySchemaMutation, GrpcAllowEvolutionModeInEntitySchemaMutation, GrpcAllowLocaleInEntitySchemaMutation, GrpcDisallowCurrencyInEntitySchemaMutation, GrpcDisallowEvolutionModeInEntitySchemaMutation, GrpcDisallowLocaleInEntitySchemaMutation, GrpcModifyEntitySchemaDeprecationNoticeMutation, GrpcModifyEntitySchemaDescriptionMutation, GrpcSetEntitySchemaWithGeneratedPrimaryKeyMutation, GrpcSetEntitySchemaWithHierarchyMutation, GrpcSetEntitySchemaWithPriceMutation } from "./GrpcEntitySchemaMutations_pb.js";
-import { GrpcCreateReferenceSchemaMutation, GrpcCreateReflectedReferenceSchemaMutation, GrpcModifyReferenceAttributeSchemaMutation, GrpcModifyReferenceSchemaCardinalityMutation, GrpcModifyReferenceSchemaDeprecationNoticeMutation, GrpcModifyReferenceSchemaDescriptionMutation, GrpcModifyReferenceSchemaNameMutation, GrpcModifyReferenceSchemaRelatedEntityGroupMutation, GrpcModifyReferenceSchemaRelatedEntityMutation, GrpcModifyReflectedReferenceAttributeInheritanceSchemaMutation, GrpcRemoveReferenceSchemaMutation, GrpcSetReferenceSchemaFacetedMutation, GrpcSetReferenceSchemaFilterableMutation } from "./GrpcReferenceSchemaMutations_pb.js";
+import { GrpcCreateReferenceSchemaMutation, GrpcCreateReflectedReferenceSchemaMutation, GrpcModifyReferenceAttributeSchemaMutation, GrpcModifyReferenceSchemaCardinalityMutation, GrpcModifyReferenceSchemaDeprecationNoticeMutation, GrpcModifyReferenceSchemaDescriptionMutation, GrpcModifyReferenceSchemaNameMutation, GrpcModifyReferenceSchemaRelatedEntityGroupMutation, GrpcModifyReferenceSchemaRelatedEntityMutation, GrpcModifyReferenceSortableAttributeCompoundSchemaMutation, GrpcModifyReflectedReferenceAttributeInheritanceSchemaMutation, GrpcRemoveReferenceSchemaMutation, GrpcSetReferenceSchemaFacetedMutation, GrpcSetReferenceSchemaIndexedMutation } from "./GrpcReferenceSchemaMutations_pb.js";
+import { GrpcCreateSortableAttributeCompoundSchemaMutation, GrpcModifySortableAttributeCompoundSchemaDeprecationNoticeMutation, GrpcModifySortableAttributeCompoundSchemaDescriptionMutation, GrpcModifySortableAttributeCompoundSchemaNameMutation, GrpcRemoveSortableAttributeCompoundSchemaMutation, GrpcSetSortableAttributeCompoundIndexedMutation } from "./GrpcSortableAttributeCompoundSchemaMutations_pb.js";
 
 /**
  * Contains all possible entity schema mutations.
@@ -397,9 +398,9 @@ export class GrpcEntitySchemaMutation extends Message<GrpcEntitySchemaMutation> 
      * Mutation is responsible for setting value to a `ReferenceSchema.indexed` in `EntitySchema`.
      * Mutation can be used for altering also the existing `ReferenceSchema` alone.
      *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcSetReferenceSchemaFilterableMutation setReferenceSchemaIndexedMutation = 90;
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcSetReferenceSchemaIndexedMutation setReferenceSchemaIndexedMutation = 90;
      */
-    value: GrpcSetReferenceSchemaFilterableMutation;
+    value: GrpcSetReferenceSchemaIndexedMutation;
     case: "setReferenceSchemaIndexedMutation";
   } | {
     /**
@@ -420,6 +421,66 @@ export class GrpcEntitySchemaMutation extends Message<GrpcEntitySchemaMutation> 
      */
     value: GrpcModifyReflectedReferenceAttributeInheritanceSchemaMutation;
     case: "modifyReflectedReferenceAttributeInheritanceSchemaMutation";
+  } | {
+    /**
+     * Mutation is a holder for a single `SortableAttributeCompoundSchema` that affect any of
+     * `ReferenceSchema.sortableAttributeCompound` in the `EntitySchema`.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcModifyReferenceSortableAttributeCompoundSchemaMutation ModifyReferenceSortableAttributeCompoundSchemaMutation = 93;
+     */
+    value: GrpcModifyReferenceSortableAttributeCompoundSchemaMutation;
+    case: "ModifyReferenceSortableAttributeCompoundSchemaMutation";
+  } | {
+    /**
+     * Mutation is responsible for setting up a new `SortableAttributeCompoundSchema` in the `EntitySchema`.
+     * Mutation can be used for altering also the existing `SortableAttributeCompoundSchema` alone.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCreateSortableAttributeCompoundSchemaMutation createSortableAttributeCompoundSchemaMutation = 120;
+     */
+    value: GrpcCreateSortableAttributeCompoundSchemaMutation;
+    case: "createSortableAttributeCompoundSchemaMutation";
+  } | {
+    /**
+     * Mutation is responsible for setting value to a `SortableAttributeCompoundSchema.deprecationNotice` in `EntitySchema`
+     * or `ReferenceSchema`.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcModifySortableAttributeCompoundSchemaDeprecationNoticeMutation modifySortableAttributeCompoundSchemaDeprecationNoticeMutation = 121;
+     */
+    value: GrpcModifySortableAttributeCompoundSchemaDeprecationNoticeMutation;
+    case: "modifySortableAttributeCompoundSchemaDeprecationNoticeMutation";
+  } | {
+    /**
+     * Mutation is responsible for setting value to a `SortableAttributeCompoundSchema.description` in `EntitySchema` or
+     * `ReferenceSchema`.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcModifySortableAttributeCompoundSchemaDescriptionMutation modifySortableAttributeCompoundSchemaDescriptionMutation = 122;
+     */
+    value: GrpcModifySortableAttributeCompoundSchemaDescriptionMutation;
+    case: "modifySortableAttributeCompoundSchemaDescriptionMutation";
+  } | {
+    /**
+     * Mutation is responsible for renaming an existing `SortableAttributeCompoundSchema` in `EntitySchema` or `ReferenceSchema`.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcModifySortableAttributeCompoundSchemaNameMutation modifySortableAttributeCompoundSchemaNameMutation = 123;
+     */
+    value: GrpcModifySortableAttributeCompoundSchemaNameMutation;
+    case: "modifySortableAttributeCompoundSchemaNameMutation";
+  } | {
+    /**
+     * Mutation is responsible for removing an existing `SortableAttributeCompound` in the `EntitySchema` or `ReferenceSchema`.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcRemoveSortableAttributeCompoundSchemaMutation removeSortableAttributeCompoundSchemaMutation = 124;
+     */
+    value: GrpcRemoveSortableAttributeCompoundSchemaMutation;
+    case: "removeSortableAttributeCompoundSchemaMutation";
+  } | {
+    /**
+     * Mutation is responsible for setting set of scopes for indexing value in a `SortableAttributeCompoundSchema` in `EntitySchema`.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcSetSortableAttributeCompoundIndexedMutation setSortableAttributeCompoundIndexedMutation = 125;
+     */
+    value: GrpcSetSortableAttributeCompoundIndexedMutation;
+    case: "setSortableAttributeCompoundIndexedMutation";
   } | { case: undefined; value?: undefined } = { case: undefined };
 
   constructor(data?: PartialMessage<GrpcEntitySchemaMutation>) {
@@ -473,9 +534,16 @@ export class GrpcEntitySchemaMutation extends Message<GrpcEntitySchemaMutation> 
     { no: 87, name: "modifyReferenceSchemaRelatedEntityMutation", kind: "message", T: GrpcModifyReferenceSchemaRelatedEntityMutation, oneof: "mutation" },
     { no: 88, name: "removeReferenceSchemaMutation", kind: "message", T: GrpcRemoveReferenceSchemaMutation, oneof: "mutation" },
     { no: 89, name: "setReferenceSchemaFacetedMutation", kind: "message", T: GrpcSetReferenceSchemaFacetedMutation, oneof: "mutation" },
-    { no: 90, name: "setReferenceSchemaIndexedMutation", kind: "message", T: GrpcSetReferenceSchemaFilterableMutation, oneof: "mutation" },
+    { no: 90, name: "setReferenceSchemaIndexedMutation", kind: "message", T: GrpcSetReferenceSchemaIndexedMutation, oneof: "mutation" },
     { no: 91, name: "createReflectedReferenceSchemaMutation", kind: "message", T: GrpcCreateReflectedReferenceSchemaMutation, oneof: "mutation" },
     { no: 92, name: "modifyReflectedReferenceAttributeInheritanceSchemaMutation", kind: "message", T: GrpcModifyReflectedReferenceAttributeInheritanceSchemaMutation, oneof: "mutation" },
+    { no: 93, name: "ModifyReferenceSortableAttributeCompoundSchemaMutation", kind: "message", T: GrpcModifyReferenceSortableAttributeCompoundSchemaMutation, oneof: "mutation" },
+    { no: 120, name: "createSortableAttributeCompoundSchemaMutation", kind: "message", T: GrpcCreateSortableAttributeCompoundSchemaMutation, oneof: "mutation" },
+    { no: 121, name: "modifySortableAttributeCompoundSchemaDeprecationNoticeMutation", kind: "message", T: GrpcModifySortableAttributeCompoundSchemaDeprecationNoticeMutation, oneof: "mutation" },
+    { no: 122, name: "modifySortableAttributeCompoundSchemaDescriptionMutation", kind: "message", T: GrpcModifySortableAttributeCompoundSchemaDescriptionMutation, oneof: "mutation" },
+    { no: 123, name: "modifySortableAttributeCompoundSchemaNameMutation", kind: "message", T: GrpcModifySortableAttributeCompoundSchemaNameMutation, oneof: "mutation" },
+    { no: 124, name: "removeSortableAttributeCompoundSchemaMutation", kind: "message", T: GrpcRemoveSortableAttributeCompoundSchemaMutation, oneof: "mutation" },
+    { no: 125, name: "setSortableAttributeCompoundIndexedMutation", kind: "message", T: GrpcSetSortableAttributeCompoundIndexedMutation, oneof: "mutation" },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcEntitySchemaMutation {

@@ -5,7 +5,7 @@
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Int32Value, Int64Value, Message, proto3, protoInt64, StringValue, Timestamp } from "@bufbuild/protobuf";
-import { GrpcAttributeSpecialValue, GrpcCatalogState, GrpcEmptyHierarchicalEntityBehaviour, GrpcEvitaAssociatedDataDataType_GrpcEvitaDataType, GrpcEvitaDataType, GrpcFacetStatisticsDepth, GrpcHistogramBehavior, GrpcNamingConvention, GrpcOrderDirection, GrpcPriceContentMode, GrpcQueryPriceMode, GrpcStatisticsBase, GrpcStatisticsType, GrpcTaskSimplifiedState, GrpcTaskTrait } from "./GrpcEnums_pb.js";
+import { GrpcAttributeSpecialValue, GrpcAttributeUniquenessType, GrpcCatalogState, GrpcEmptyHierarchicalEntityBehaviour, GrpcEntityScope, GrpcEvitaAssociatedDataDataType_GrpcEvitaDataType, GrpcEvitaDataType, GrpcFacetStatisticsDepth, GrpcGlobalAttributeUniquenessType, GrpcHistogramBehavior, GrpcNamingConvention, GrpcOrderDirection, GrpcPriceContentMode, GrpcQueryPriceMode, GrpcStatisticsBase, GrpcStatisticsType, GrpcTaskSimplifiedState, GrpcTaskTrait } from "./GrpcEnums_pb.js";
 
 /**
  * Representation of IntegerNumberRange structures with optional from and to values.
@@ -1394,6 +1394,47 @@ export class GrpcHistogramBehaviorTypeArray extends Message<GrpcHistogramBehavio
 }
 
 /**
+ * Wrapper for representing an array of Scope enums.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcEntityScopeArray
+ */
+export class GrpcEntityScopeArray extends Message<GrpcEntityScopeArray> {
+  /**
+   * Value that supports storing a Scope array.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope value = 1;
+   */
+  value: GrpcEntityScope[] = [];
+
+  constructor(data?: PartialMessage<GrpcEntityScopeArray>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcEntityScopeArray";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "value", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcEntityScopeArray {
+    return new GrpcEntityScopeArray().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcEntityScopeArray {
+    return new GrpcEntityScopeArray().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcEntityScopeArray {
+    return new GrpcEntityScopeArray().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GrpcEntityScopeArray | PlainMessage<GrpcEntityScopeArray> | undefined, b: GrpcEntityScopeArray | PlainMessage<GrpcEntityScopeArray> | undefined): boolean {
+    return proto3.util.equals(GrpcEntityScopeArray, a, b);
+  }
+}
+
+/**
  * Structure that holds one of the supported data type values, its type and version of stored value.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcEvitaValue
@@ -2241,6 +2282,104 @@ export class GrpcNameVariant extends Message<GrpcNameVariant> {
 
   static equals(a: GrpcNameVariant | PlainMessage<GrpcNameVariant> | undefined, b: GrpcNameVariant | PlainMessage<GrpcNameVariant> | undefined): boolean {
     return proto3.util.equals(GrpcNameVariant, a, b);
+  }
+}
+
+/**
+ * uniqueness type associated with particular scope
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcScopedAttributeUniquenessType
+ */
+export class GrpcScopedAttributeUniquenessType extends Message<GrpcScopedAttributeUniquenessType> {
+  /**
+   * scope of entities where uniqueness is enforced
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntityScope scope = 1;
+   */
+  scope = GrpcEntityScope.SCOPE_LIVE;
+
+  /**
+   * type of uniqueness
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeUniquenessType uniquenessType = 2;
+   */
+  uniquenessType = GrpcAttributeUniquenessType.NOT_UNIQUE;
+
+  constructor(data?: PartialMessage<GrpcScopedAttributeUniquenessType>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcScopedAttributeUniquenessType";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "scope", kind: "enum", T: proto3.getEnumType(GrpcEntityScope) },
+    { no: 2, name: "uniquenessType", kind: "enum", T: proto3.getEnumType(GrpcAttributeUniquenessType) },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcScopedAttributeUniquenessType {
+    return new GrpcScopedAttributeUniquenessType().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcScopedAttributeUniquenessType {
+    return new GrpcScopedAttributeUniquenessType().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcScopedAttributeUniquenessType {
+    return new GrpcScopedAttributeUniquenessType().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GrpcScopedAttributeUniquenessType | PlainMessage<GrpcScopedAttributeUniquenessType> | undefined, b: GrpcScopedAttributeUniquenessType | PlainMessage<GrpcScopedAttributeUniquenessType> | undefined): boolean {
+    return proto3.util.equals(GrpcScopedAttributeUniquenessType, a, b);
+  }
+}
+
+/**
+ * uniqueness type associated with particular scope
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcScopedGlobalAttributeUniquenessType
+ */
+export class GrpcScopedGlobalAttributeUniquenessType extends Message<GrpcScopedGlobalAttributeUniquenessType> {
+  /**
+   * scope of entities where uniqueness is enforced
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntityScope scope = 1;
+   */
+  scope = GrpcEntityScope.SCOPE_LIVE;
+
+  /**
+   * type of uniqueness
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcGlobalAttributeUniquenessType uniquenessType = 2;
+   */
+  uniquenessType = GrpcGlobalAttributeUniquenessType.NOT_GLOBALLY_UNIQUE;
+
+  constructor(data?: PartialMessage<GrpcScopedGlobalAttributeUniquenessType>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcScopedGlobalAttributeUniquenessType";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "scope", kind: "enum", T: proto3.getEnumType(GrpcEntityScope) },
+    { no: 2, name: "uniquenessType", kind: "enum", T: proto3.getEnumType(GrpcGlobalAttributeUniquenessType) },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcScopedGlobalAttributeUniquenessType {
+    return new GrpcScopedGlobalAttributeUniquenessType().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcScopedGlobalAttributeUniquenessType {
+    return new GrpcScopedGlobalAttributeUniquenessType().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcScopedGlobalAttributeUniquenessType {
+    return new GrpcScopedGlobalAttributeUniquenessType().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GrpcScopedGlobalAttributeUniquenessType | PlainMessage<GrpcScopedGlobalAttributeUniquenessType> | undefined, b: GrpcScopedGlobalAttributeUniquenessType | PlainMessage<GrpcScopedGlobalAttributeUniquenessType> | undefined): boolean {
+    return proto3.util.equals(GrpcScopedGlobalAttributeUniquenessType, a, b);
   }
 }
 

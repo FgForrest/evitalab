@@ -5,6 +5,9 @@ export enum CatalogItemType {
     GraphQLSchemaAPIConsole = 'graphQLSchemaApiConsole',
     ViewSchema = 'viewSchema',
 
+    TrafficSubheader = 'trafficSubheader',
+    ActiveTrafficRecording = 'activeTrafficRecording',
+
     ManageSubheader = 'manageSubheader',
     CloseAllSessions = 'closeAllSessions',
 

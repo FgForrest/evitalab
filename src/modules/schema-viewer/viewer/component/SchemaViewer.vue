@@ -95,6 +95,7 @@ onUnmounted(() => {
                     :tab-params="params!"
                     :tab-data="undefined"
                     :disabled="!params.dataPointer.connection.preconfigured"
+                    :command="Command.SchemaViewer_ShareTab"
                 />
             </template>
         </VTabToolbar>

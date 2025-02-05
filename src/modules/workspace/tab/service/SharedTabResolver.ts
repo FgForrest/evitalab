@@ -8,8 +8,7 @@ import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/work
 import { GraphQLConsoleTabFactory } from '@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFactory'
 import { SchemaViewerTabFactory } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
 import { mandatoryInject } from '@/utils/reactivity'
-import { ServerViewerTabFactory } from '@/modules/server-viewer/service/ServerViewerTabFactory'
-import { TaskViewerTabFactory } from '@/modules/task-viewer/services/TaskViewerTabFactory'
+import { TrafficRecordHistoryViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
 
 export const sharedTabResolverInjectionKey: InjectionKey<SharedTabResolver> = Symbol('sharedTabResolver')
 
@@ -21,15 +20,18 @@ export class SharedTabResolver {
     private readonly evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory
     private readonly graphQLConsoleTabFactory: GraphQLConsoleTabFactory
     private readonly schemaViewerTabFactory: SchemaViewerTabFactory
+    private readonly trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory
 
     constructor(entityViewerTabFactory: EntityViewerTabFactory,
                 evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory,
                 graphQLConsoleTabFactory: GraphQLConsoleTabFactory,
-                schemaViewerTabFactory: SchemaViewerTabFactory) {
+                schemaViewerTabFactory: SchemaViewerTabFactory,
+                trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory) {
         this.entityViewerTabFactory = entityViewerTabFactory
         this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
         this.graphQLConsoleTabFactory = graphQLConsoleTabFactory
         this.schemaViewerTabFactory = schemaViewerTabFactory
+        this.trafficRecordHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
     }
 
     async resolve(shareTabObjectSerialized: string | undefined): Promise<TabDefinition<any, any> | undefined> {
@@ -52,6 +54,8 @@ export class SharedTabResolver {
             case 'schema-viewer':
             case TabType.SchemaViewer:
                 return this.schemaViewerTabFactory.restoreFromJson(shareTabObject.tabParams)
+            case TabType.TrafficRecordHistoryViewer:
+                return this.trafficRecordHistoryViewerTabFactory.restoreFromJson(shareTabObject.tabParams, shareTabObject.tabData)
             default:
                 throw new UnexpectedError(`Unsupported shared tab type '${shareTabObject.tabType}'.`)
         }

@@ -1686,6 +1686,32 @@ proto3.util.setEnumType(GrpcClassifierType, "io.evitadb.externalApi.grpc.generat
 ]);
 
 /**
+ * Enum defines the possible scopes where the entities can reside.
+ *
+ * @generated from enum io.evitadb.externalApi.grpc.generated.GrpcEntityScope
+ */
+export enum GrpcEntityScope {
+  /**
+   * Entities that are currently active and reside in the live data set block.
+   *
+   * @generated from enum value: SCOPE_LIVE = 0;
+   */
+  SCOPE_LIVE = 0,
+
+  /**
+   * Entities that are no longer active and reside in the archive block.
+   *
+   * @generated from enum value: SCOPE_ARCHIVED = 1;
+   */
+  SCOPE_ARCHIVED = 1,
+}
+// Retrieve enum metadata with: proto3.getEnumType(GrpcEntityScope)
+proto3.util.setEnumType(GrpcEntityScope, "io.evitadb.externalApi.grpc.generated.GrpcEntityScope", [
+  { no: 0, name: "SCOPE_LIVE" },
+  { no: 1, name: "SCOPE_ARCHIVED" },
+]);
+
+/**
  * This enum contains all supported data types of AssociatedData.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcEvitaAssociatedDataDataType

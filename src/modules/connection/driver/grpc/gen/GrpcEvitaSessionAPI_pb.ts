@@ -5,13 +5,14 @@
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Int32Value, Int64Value, Message, proto3, protoInt64 } from "@bufbuild/protobuf";
-import { GrpcAttributeSpecialValue, GrpcCatalogState, GrpcCommitBehavior, GrpcEmptyHierarchicalEntityBehaviour, GrpcFacetStatisticsDepth, GrpcHistogramBehavior, GrpcManagedReferencesBehaviour, GrpcOrderDirection, GrpcPriceContentMode, GrpcQueryPriceMode, GrpcStatisticsBase, GrpcStatisticsType } from "./GrpcEnums_pb.js";
-import { GrpcAttributeSpecialValueArray, GrpcBigDecimal, GrpcBigDecimalArray, GrpcBigDecimalNumberRange, GrpcBigDecimalNumberRangeArray, GrpcBooleanArray, GrpcCurrency, GrpcCurrencyArray, GrpcDateTimeRange, GrpcDateTimeRangeArray, GrpcEmptyHierarchicalEntityBehaviourArray, GrpcFacetStatisticsDepthArray, GrpcHistogramBehaviorTypeArray, GrpcIntegerArray, GrpcIntegerNumberRange, GrpcIntegerNumberRangeArray, GrpcLocale, GrpcLocaleArray, GrpcLongArray, GrpcLongNumberRange, GrpcLongNumberRangeArray, GrpcOffsetDateTime, GrpcOffsetDateTimeArray, GrpcOrderDirectionArray, GrpcPriceContentModeArray, GrpcQueryPriceModeArray, GrpcStatisticsBaseArray, GrpcStatisticsTypeArray, GrpcStringArray, GrpcTaskStatus, GrpcUuid } from "./GrpcEvitaDataTypes_pb.js";
-import { GrpcCaptureContent, GrpcCaptureCriteria, GrpcChangeCatalogCapture } from "./GrpcChangeCapture_pb.js";
+import { GrpcCatalogState, GrpcCommitBehavior, GrpcEntityScope } from "./GrpcEnums_pb.js";
+import { GrpcOffsetDateTime, GrpcTaskStatus, GrpcUuid } from "./GrpcEvitaDataTypes_pb.js";
+import { GrpcChangeCaptureContent, GrpcChangeCaptureCriteria, GrpcChangeCatalogCapture } from "./GrpcChangeCapture_pb.js";
 import { GrpcCatalogSchema } from "./GrpcCatalogSchema_pb.js";
 import { GrpcEntitySchema } from "./GrpcEntitySchema_pb.js";
 import { GrpcLocalCatalogSchemaMutation } from "./GrpcCatalogSchemaMutation_pb.js";
 import { GrpcModifyEntitySchemaMutation } from "./GrpcCatalogSchemaMutations_pb.js";
+import { GrpcQueryParam } from "./GrpcQueryParam_pb.js";
 import { GrpcBinaryEntity, GrpcEntityReference, GrpcSealedEntity } from "./GrpcEntity_pb.js";
 import { GrpcExtraResults } from "./GrpcExtraResults_pb.js";
 import { GrpcEntityMutation } from "./GrpcEntityMutation_pb.js";
@@ -184,16 +185,16 @@ export class GetMutationsHistoryPageRequest extends Message<GetMutationsHistoryP
   /**
    * The criteria of the capture, allows to define constraints on the returned mutations
    *
-   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcCaptureCriteria criteria = 5;
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureCriteria criteria = 5;
    */
-  criteria: GrpcCaptureCriteria[] = [];
+  criteria: GrpcChangeCaptureCriteria[] = [];
 
   /**
    * The scope of the returned data - either header of the mutation, or the whole mutation
    *
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCaptureContent content = 6;
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureContent content = 6;
    */
-  content = GrpcCaptureContent.HEADER;
+  content = GrpcChangeCaptureContent.CHANGE_HEADER;
 
   constructor(data?: PartialMessage<GetMutationsHistoryPageRequest>) {
     super();
@@ -207,8 +208,8 @@ export class GetMutationsHistoryPageRequest extends Message<GetMutationsHistoryP
     { no: 2, name: "pageSize", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
     { no: 3, name: "sinceVersion", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
     { no: 4, name: "sinceIndex", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
-    { no: 5, name: "criteria", kind: "message", T: GrpcCaptureCriteria, repeated: true },
-    { no: 6, name: "content", kind: "enum", T: proto3.getEnumType(GrpcCaptureContent) },
+    { no: 5, name: "criteria", kind: "message", T: GrpcChangeCaptureCriteria, repeated: true },
+    { no: 6, name: "content", kind: "enum", T: proto3.getEnumType(GrpcChangeCaptureContent) },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetMutationsHistoryPageRequest {
@@ -292,16 +293,16 @@ export class GetMutationsHistoryRequest extends Message<GetMutationsHistoryReque
   /**
    * The criteria of the capture, allows to define constraints on the returned mutations
    *
-   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcCaptureCriteria criteria = 3;
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureCriteria criteria = 3;
    */
-  criteria: GrpcCaptureCriteria[] = [];
+  criteria: GrpcChangeCaptureCriteria[] = [];
 
   /**
    * The scope of the returned data - either header of the mutation, or the whole mutation
    *
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCaptureContent content = 4;
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureContent content = 4;
    */
-  content = GrpcCaptureContent.HEADER;
+  content = GrpcChangeCaptureContent.CHANGE_HEADER;
 
   constructor(data?: PartialMessage<GetMutationsHistoryRequest>) {
     super();
@@ -313,8 +314,8 @@ export class GetMutationsHistoryRequest extends Message<GetMutationsHistoryReque
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "sinceVersion", kind: "message", T: Int64Value },
     { no: 2, name: "sinceIndex", kind: "message", T: Int32Value },
-    { no: 3, name: "criteria", kind: "message", T: GrpcCaptureCriteria, repeated: true },
-    { no: 4, name: "content", kind: "enum", T: proto3.getEnumType(GrpcCaptureContent) },
+    { no: 3, name: "criteria", kind: "message", T: GrpcChangeCaptureCriteria, repeated: true },
+    { no: 4, name: "content", kind: "enum", T: proto3.getEnumType(GrpcChangeCaptureContent) },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetMutationsHistoryRequest {
@@ -918,6 +919,13 @@ export class GrpcEntityRequest extends Message<GrpcEntityRequest> {
    */
   namedQueryParams: { [key: string]: GrpcQueryParam } = {};
 
+  /**
+   * The set of scopes to search for the entity.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope scopes = 6;
+   */
+  scopes: GrpcEntityScope[] = [];
+
   constructor(data?: PartialMessage<GrpcEntityRequest>) {
     super();
     proto3.util.initPartial(data, this);
@@ -931,6 +939,7 @@ export class GrpcEntityRequest extends Message<GrpcEntityRequest> {
     { no: 3, name: "require", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 4, name: "positionalQueryParams", kind: "message", T: GrpcQueryParam, repeated: true },
     { no: 5, name: "namedQueryParams", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "message", T: GrpcQueryParam} },
+    { no: 6, name: "scopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcEntityRequest {
@@ -2235,6 +2244,152 @@ export class GrpcDeleteEntityRequest extends Message<GrpcDeleteEntityRequest> {
 }
 
 /**
+ * Request for deleting an entity that should return the archived entity with required richness.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcArchiveEntityRequest
+ */
+export class GrpcArchiveEntityRequest extends Message<GrpcArchiveEntityRequest> {
+  /**
+   * Entity type of the entity to be archived.
+   *
+   * @generated from field: string entityType = 1;
+   */
+  entityType = "";
+
+  /**
+   * Primary key of the entity to be archived.
+   *
+   * @generated from field: google.protobuf.Int32Value primaryKey = 2;
+   */
+  primaryKey?: number;
+
+  /**
+   * The string part of the parametrised query require part.
+   *
+   * @generated from field: string require = 3;
+   */
+  require = "";
+
+  /**
+   * The positional query parameters.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcQueryParam positionalQueryParams = 4;
+   */
+  positionalQueryParams: GrpcQueryParam[] = [];
+
+  /**
+   * The named query parameters.
+   *
+   * @generated from field: map<string, io.evitadb.externalApi.grpc.generated.GrpcQueryParam> namedQueryParams = 5;
+   */
+  namedQueryParams: { [key: string]: GrpcQueryParam } = {};
+
+  constructor(data?: PartialMessage<GrpcArchiveEntityRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcArchiveEntityRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "entityType", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "primaryKey", kind: "message", T: Int32Value },
+    { no: 3, name: "require", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "positionalQueryParams", kind: "message", T: GrpcQueryParam, repeated: true },
+    { no: 5, name: "namedQueryParams", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "message", T: GrpcQueryParam} },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcArchiveEntityRequest {
+    return new GrpcArchiveEntityRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcArchiveEntityRequest {
+    return new GrpcArchiveEntityRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcArchiveEntityRequest {
+    return new GrpcArchiveEntityRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GrpcArchiveEntityRequest | PlainMessage<GrpcArchiveEntityRequest> | undefined, b: GrpcArchiveEntityRequest | PlainMessage<GrpcArchiveEntityRequest> | undefined): boolean {
+    return proto3.util.equals(GrpcArchiveEntityRequest, a, b);
+  }
+}
+
+/**
+ * Request for deleting an entity that should return the restored entity with required richness.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcRestoreEntityRequest
+ */
+export class GrpcRestoreEntityRequest extends Message<GrpcRestoreEntityRequest> {
+  /**
+   * Entity type of the entity to be restored.
+   *
+   * @generated from field: string entityType = 1;
+   */
+  entityType = "";
+
+  /**
+   * Primary key of the entity to be restored.
+   *
+   * @generated from field: google.protobuf.Int32Value primaryKey = 2;
+   */
+  primaryKey?: number;
+
+  /**
+   * The string part of the parametrised query require part.
+   *
+   * @generated from field: string require = 3;
+   */
+  require = "";
+
+  /**
+   * The positional query parameters.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcQueryParam positionalQueryParams = 4;
+   */
+  positionalQueryParams: GrpcQueryParam[] = [];
+
+  /**
+   * The named query parameters.
+   *
+   * @generated from field: map<string, io.evitadb.externalApi.grpc.generated.GrpcQueryParam> namedQueryParams = 5;
+   */
+  namedQueryParams: { [key: string]: GrpcQueryParam } = {};
+
+  constructor(data?: PartialMessage<GrpcRestoreEntityRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcRestoreEntityRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "entityType", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "primaryKey", kind: "message", T: Int32Value },
+    { no: 3, name: "require", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "positionalQueryParams", kind: "message", T: GrpcQueryParam, repeated: true },
+    { no: 5, name: "namedQueryParams", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "message", T: GrpcQueryParam} },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcRestoreEntityRequest {
+    return new GrpcRestoreEntityRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcRestoreEntityRequest {
+    return new GrpcRestoreEntityRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcRestoreEntityRequest {
+    return new GrpcRestoreEntityRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GrpcRestoreEntityRequest | PlainMessage<GrpcRestoreEntityRequest> | undefined, b: GrpcRestoreEntityRequest | PlainMessage<GrpcRestoreEntityRequest> | undefined): boolean {
+    return proto3.util.equals(GrpcRestoreEntityRequest, a, b);
+  }
+}
+
+/**
  * Request for deleting a collection of entities specified by a query.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcDeleteEntitiesRequest
@@ -2408,6 +2563,122 @@ export class GrpcDeleteEntityResponse extends Message<GrpcDeleteEntityResponse> 
 }
 
 /**
+ * Response to ArchiveEntity request.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcArchiveEntityResponse
+ */
+export class GrpcArchiveEntityResponse extends Message<GrpcArchiveEntityResponse> {
+  /**
+   * The archived entity. The used field is decided by the require block in the query.
+   *
+   * @generated from oneof io.evitadb.externalApi.grpc.generated.GrpcArchiveEntityResponse.response
+   */
+  response: {
+    /**
+     * The archived entity reference.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntityReference entityReference = 1;
+     */
+    value: GrpcEntityReference;
+    case: "entityReference";
+  } | {
+    /**
+     * The archived entity.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcSealedEntity entity = 2;
+     */
+    value: GrpcSealedEntity;
+    case: "entity";
+  } | { case: undefined; value?: undefined } = { case: undefined };
+
+  constructor(data?: PartialMessage<GrpcArchiveEntityResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcArchiveEntityResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "entityReference", kind: "message", T: GrpcEntityReference, oneof: "response" },
+    { no: 2, name: "entity", kind: "message", T: GrpcSealedEntity, oneof: "response" },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcArchiveEntityResponse {
+    return new GrpcArchiveEntityResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcArchiveEntityResponse {
+    return new GrpcArchiveEntityResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcArchiveEntityResponse {
+    return new GrpcArchiveEntityResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GrpcArchiveEntityResponse | PlainMessage<GrpcArchiveEntityResponse> | undefined, b: GrpcArchiveEntityResponse | PlainMessage<GrpcArchiveEntityResponse> | undefined): boolean {
+    return proto3.util.equals(GrpcArchiveEntityResponse, a, b);
+  }
+}
+
+/**
+ * Response to RestoreEntity request.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcRestoreEntityResponse
+ */
+export class GrpcRestoreEntityResponse extends Message<GrpcRestoreEntityResponse> {
+  /**
+   * The restored entity. The used field is decided by the require block in the query.
+   *
+   * @generated from oneof io.evitadb.externalApi.grpc.generated.GrpcRestoreEntityResponse.response
+   */
+  response: {
+    /**
+     * The restored entity reference.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntityReference entityReference = 1;
+     */
+    value: GrpcEntityReference;
+    case: "entityReference";
+  } | {
+    /**
+     * The restored entity.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcSealedEntity entity = 2;
+     */
+    value: GrpcSealedEntity;
+    case: "entity";
+  } | { case: undefined; value?: undefined } = { case: undefined };
+
+  constructor(data?: PartialMessage<GrpcRestoreEntityResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcRestoreEntityResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "entityReference", kind: "message", T: GrpcEntityReference, oneof: "response" },
+    { no: 2, name: "entity", kind: "message", T: GrpcSealedEntity, oneof: "response" },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcRestoreEntityResponse {
+    return new GrpcRestoreEntityResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcRestoreEntityResponse {
+    return new GrpcRestoreEntityResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcRestoreEntityResponse {
+    return new GrpcRestoreEntityResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GrpcRestoreEntityResponse | PlainMessage<GrpcRestoreEntityResponse> | undefined, b: GrpcRestoreEntityResponse | PlainMessage<GrpcRestoreEntityResponse> | undefined): boolean {
+    return proto3.util.equals(GrpcRestoreEntityResponse, a, b);
+  }
+}
+
+/**
  * Response to DeleteEntity request when hierarchy has been specified in filter.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcDeleteEntityAndItsHierarchyResponse
@@ -2441,6 +2712,13 @@ export class GrpcDeleteEntityAndItsHierarchyResponse extends Message<GrpcDeleteE
     case: "deletedRootEntity";
   } | { case: undefined; value?: undefined } = { case: undefined };
 
+  /**
+   * Deleted entity primary keys.
+   *
+   * @generated from field: repeated int32 deletedEntityPrimaryKeys = 4;
+   */
+  deletedEntityPrimaryKeys: number[] = [];
+
   constructor(data?: PartialMessage<GrpcDeleteEntityAndItsHierarchyResponse>) {
     super();
     proto3.util.initPartial(data, this);
@@ -2452,6 +2730,7 @@ export class GrpcDeleteEntityAndItsHierarchyResponse extends Message<GrpcDeleteE
     { no: 1, name: "deletedEntities", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
     { no: 2, name: "deletedRootEntityReference", kind: "message", T: GrpcEntityReference, oneof: "response" },
     { no: 3, name: "deletedRootEntity", kind: "message", T: GrpcSealedEntity, oneof: "response" },
+    { no: 4, name: "deletedEntityPrimaryKeys", kind: "scalar", T: 5 /* ScalarType.INT32 */, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcDeleteEntityAndItsHierarchyResponse {
@@ -2566,440 +2845,6 @@ export class GrpcTransactionResponse extends Message<GrpcTransactionResponse> {
 
   static equals(a: GrpcTransactionResponse | PlainMessage<GrpcTransactionResponse> | undefined, b: GrpcTransactionResponse | PlainMessage<GrpcTransactionResponse> | undefined): boolean {
     return proto3.util.equals(GrpcTransactionResponse, a, b);
-  }
-}
-
-/**
- * Structure that supports storing all possible parameters that could be used within query.
- *
- * @generated from message io.evitadb.externalApi.grpc.generated.GrpcQueryParam
- */
-export class GrpcQueryParam extends Message<GrpcQueryParam> {
-  /**
-   * The value of the parameter.
-   *
-   * @generated from oneof io.evitadb.externalApi.grpc.generated.GrpcQueryParam.queryParam
-   */
-  queryParam: {
-    /**
-     * The string value.
-     *
-     * @generated from field: string stringValue = 1;
-     */
-    value: string;
-    case: "stringValue";
-  } | {
-    /**
-     * The integer value.
-     *
-     * @generated from field: int32 integerValue = 2;
-     */
-    value: number;
-    case: "integerValue";
-  } | {
-    /**
-     * The long value.
-     *
-     * @generated from field: int64 longValue = 3;
-     */
-    value: bigint;
-    case: "longValue";
-  } | {
-    /**
-     * The boolean value.
-     *
-     * @generated from field: bool booleanValue = 4;
-     */
-    value: boolean;
-    case: "booleanValue";
-  } | {
-    /**
-     * The big decimal value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcBigDecimal bigDecimalValue = 5;
-     */
-    value: GrpcBigDecimal;
-    case: "bigDecimalValue";
-  } | {
-    /**
-     * The date time range value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcDateTimeRange dateTimeRangeValue = 6;
-     */
-    value: GrpcDateTimeRange;
-    case: "dateTimeRangeValue";
-  } | {
-    /**
-     * The integer number range value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcIntegerNumberRange integerNumberRangeValue = 7;
-     */
-    value: GrpcIntegerNumberRange;
-    case: "integerNumberRangeValue";
-  } | {
-    /**
-     * The long number range value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcLongNumberRange longNumberRangeValue = 8;
-     */
-    value: GrpcLongNumberRange;
-    case: "longNumberRangeValue";
-  } | {
-    /**
-     * The big decimal number range value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcBigDecimalNumberRange bigDecimalNumberRangeValue = 9;
-     */
-    value: GrpcBigDecimalNumberRange;
-    case: "bigDecimalNumberRangeValue";
-  } | {
-    /**
-     * The offset date time value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcOffsetDateTime offsetDateTimeValue = 10;
-     */
-    value: GrpcOffsetDateTime;
-    case: "offsetDateTimeValue";
-  } | {
-    /**
-     * The locale value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcLocale localeValue = 11;
-     */
-    value: GrpcLocale;
-    case: "localeValue";
-  } | {
-    /**
-     * The currency value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCurrency currencyValue = 12;
-     */
-    value: GrpcCurrency;
-    case: "currencyValue";
-  } | {
-    /**
-     * The facet statistics depth enum value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcFacetStatisticsDepth facetStatisticsDepthValue = 13;
-     */
-    value: GrpcFacetStatisticsDepth;
-    case: "facetStatisticsDepthValue";
-  } | {
-    /**
-     * The query price mode enum value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcQueryPriceMode queryPriceModelValue = 14;
-     */
-    value: GrpcQueryPriceMode;
-    case: "queryPriceModelValue";
-  } | {
-    /**
-     * The price content mode enum value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcPriceContentMode priceContentModeValue = 15;
-     */
-    value: GrpcPriceContentMode;
-    case: "priceContentModeValue";
-  } | {
-    /**
-     * The attribute special value enum value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeSpecialValue attributeSpecialValue = 16;
-     */
-    value: GrpcAttributeSpecialValue;
-    case: "attributeSpecialValue";
-  } | {
-    /**
-     * The order direction enum value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcOrderDirection orderDirectionValue = 17;
-     */
-    value: GrpcOrderDirection;
-    case: "orderDirectionValue";
-  } | {
-    /**
-     * The empty hierarchical entity behaviour enum value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEmptyHierarchicalEntityBehaviour emptyHierarchicalEntityBehaviour = 18;
-     */
-    value: GrpcEmptyHierarchicalEntityBehaviour;
-    case: "emptyHierarchicalEntityBehaviour";
-  } | {
-    /**
-     * The statistics base enum value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcStatisticsBase statisticsBase = 19;
-     */
-    value: GrpcStatisticsBase;
-    case: "statisticsBase";
-  } | {
-    /**
-     * The statistics type enum value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcStatisticsType statisticsType = 20;
-     */
-    value: GrpcStatisticsType;
-    case: "statisticsType";
-  } | {
-    /**
-     * The histogram behavior enum value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcHistogramBehavior histogramBehavior = 21;
-     */
-    value: GrpcHistogramBehavior;
-    case: "histogramBehavior";
-  } | {
-    /**
-     * The managed references behaviour
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcManagedReferencesBehaviour managedReferencesBehaviour = 22;
-     */
-    value: GrpcManagedReferencesBehaviour;
-    case: "managedReferencesBehaviour";
-  } | {
-    /**
-     * The expression
-     *
-     * @generated from field: string expressionValue = 23;
-     */
-    value: string;
-    case: "expressionValue";
-  } | {
-    /**
-     * The string array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcStringArray stringArrayValue = 101;
-     */
-    value: GrpcStringArray;
-    case: "stringArrayValue";
-  } | {
-    /**
-     * The integer array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcIntegerArray integerArrayValue = 102;
-     */
-    value: GrpcIntegerArray;
-    case: "integerArrayValue";
-  } | {
-    /**
-     * The long array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcLongArray longArrayValue = 103;
-     */
-    value: GrpcLongArray;
-    case: "longArrayValue";
-  } | {
-    /**
-     * The boolean array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcBooleanArray booleanArrayValue = 104;
-     */
-    value: GrpcBooleanArray;
-    case: "booleanArrayValue";
-  } | {
-    /**
-     * The big decimal array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcBigDecimalArray bigDecimalArrayValue = 105;
-     */
-    value: GrpcBigDecimalArray;
-    case: "bigDecimalArrayValue";
-  } | {
-    /**
-     * The date time range array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcDateTimeRangeArray dateTimeRangeArrayValue = 106;
-     */
-    value: GrpcDateTimeRangeArray;
-    case: "dateTimeRangeArrayValue";
-  } | {
-    /**
-     * The integer number range array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcIntegerNumberRangeArray integerNumberRangeArrayValue = 107;
-     */
-    value: GrpcIntegerNumberRangeArray;
-    case: "integerNumberRangeArrayValue";
-  } | {
-    /**
-     * The long number range array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcLongNumberRangeArray longNumberRangeArrayValue = 108;
-     */
-    value: GrpcLongNumberRangeArray;
-    case: "longNumberRangeArrayValue";
-  } | {
-    /**
-     * The big decimal number range array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcBigDecimalNumberRangeArray bigDecimalNumberRangeArrayValue = 109;
-     */
-    value: GrpcBigDecimalNumberRangeArray;
-    case: "bigDecimalNumberRangeArrayValue";
-  } | {
-    /**
-     * The offset date time array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcOffsetDateTimeArray offsetDateTimeArrayValue = 110;
-     */
-    value: GrpcOffsetDateTimeArray;
-    case: "offsetDateTimeArrayValue";
-  } | {
-    /**
-     * The locale array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcLocaleArray localeArrayValue = 111;
-     */
-    value: GrpcLocaleArray;
-    case: "localeArrayValue";
-  } | {
-    /**
-     * The currency array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCurrencyArray currencyArrayValue = 112;
-     */
-    value: GrpcCurrencyArray;
-    case: "currencyArrayValue";
-  } | {
-    /**
-     * The facet statistics depth array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcFacetStatisticsDepthArray facetStatisticsDepthArrayValue = 113;
-     */
-    value: GrpcFacetStatisticsDepthArray;
-    case: "facetStatisticsDepthArrayValue";
-  } | {
-    /**
-     * The query price mode array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcQueryPriceModeArray queryPriceModelArrayValue = 114;
-     */
-    value: GrpcQueryPriceModeArray;
-    case: "queryPriceModelArrayValue";
-  } | {
-    /**
-     * The price content mode array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcPriceContentModeArray priceContentModeArrayValue = 115;
-     */
-    value: GrpcPriceContentModeArray;
-    case: "priceContentModeArrayValue";
-  } | {
-    /**
-     * The attribute special value array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeSpecialValueArray attributeSpecialArrayValue = 116;
-     */
-    value: GrpcAttributeSpecialValueArray;
-    case: "attributeSpecialArrayValue";
-  } | {
-    /**
-     * The order direction array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcOrderDirectionArray orderDirectionArrayValue = 117;
-     */
-    value: GrpcOrderDirectionArray;
-    case: "orderDirectionArrayValue";
-  } | {
-    /**
-     * The empty hierarchical entity behaviour array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEmptyHierarchicalEntityBehaviourArray emptyHierarchicalEntityBehaviourArrayValue = 118;
-     */
-    value: GrpcEmptyHierarchicalEntityBehaviourArray;
-    case: "emptyHierarchicalEntityBehaviourArrayValue";
-  } | {
-    /**
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcStatisticsBaseArray statisticsBaseArrayValue = 119;
-     */
-    value: GrpcStatisticsBaseArray;
-    case: "statisticsBaseArrayValue";
-  } | {
-    /**
-     * The statistics type array value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcStatisticsTypeArray statisticsTypeArrayValue = 120;
-     */
-    value: GrpcStatisticsTypeArray;
-    case: "statisticsTypeArrayValue";
-  } | {
-    /**
-     * The histogram behavior enum value.
-     *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcHistogramBehaviorTypeArray histogramBehaviorTypeArrayValue = 121;
-     */
-    value: GrpcHistogramBehaviorTypeArray;
-    case: "histogramBehaviorTypeArrayValue";
-  } | { case: undefined; value?: undefined } = { case: undefined };
-
-  constructor(data?: PartialMessage<GrpcQueryParam>) {
-    super();
-    proto3.util.initPartial(data, this);
-  }
-
-  static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcQueryParam";
-  static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "stringValue", kind: "scalar", T: 9 /* ScalarType.STRING */, oneof: "queryParam" },
-    { no: 2, name: "integerValue", kind: "scalar", T: 5 /* ScalarType.INT32 */, oneof: "queryParam" },
-    { no: 3, name: "longValue", kind: "scalar", T: 3 /* ScalarType.INT64 */, oneof: "queryParam" },
-    { no: 4, name: "booleanValue", kind: "scalar", T: 8 /* ScalarType.BOOL */, oneof: "queryParam" },
-    { no: 5, name: "bigDecimalValue", kind: "message", T: GrpcBigDecimal, oneof: "queryParam" },
-    { no: 6, name: "dateTimeRangeValue", kind: "message", T: GrpcDateTimeRange, oneof: "queryParam" },
-    { no: 7, name: "integerNumberRangeValue", kind: "message", T: GrpcIntegerNumberRange, oneof: "queryParam" },
-    { no: 8, name: "longNumberRangeValue", kind: "message", T: GrpcLongNumberRange, oneof: "queryParam" },
-    { no: 9, name: "bigDecimalNumberRangeValue", kind: "message", T: GrpcBigDecimalNumberRange, oneof: "queryParam" },
-    { no: 10, name: "offsetDateTimeValue", kind: "message", T: GrpcOffsetDateTime, oneof: "queryParam" },
-    { no: 11, name: "localeValue", kind: "message", T: GrpcLocale, oneof: "queryParam" },
-    { no: 12, name: "currencyValue", kind: "message", T: GrpcCurrency, oneof: "queryParam" },
-    { no: 13, name: "facetStatisticsDepthValue", kind: "enum", T: proto3.getEnumType(GrpcFacetStatisticsDepth), oneof: "queryParam" },
-    { no: 14, name: "queryPriceModelValue", kind: "enum", T: proto3.getEnumType(GrpcQueryPriceMode), oneof: "queryParam" },
-    { no: 15, name: "priceContentModeValue", kind: "enum", T: proto3.getEnumType(GrpcPriceContentMode), oneof: "queryParam" },
-    { no: 16, name: "attributeSpecialValue", kind: "enum", T: proto3.getEnumType(GrpcAttributeSpecialValue), oneof: "queryParam" },
-    { no: 17, name: "orderDirectionValue", kind: "enum", T: proto3.getEnumType(GrpcOrderDirection), oneof: "queryParam" },
-    { no: 18, name: "emptyHierarchicalEntityBehaviour", kind: "enum", T: proto3.getEnumType(GrpcEmptyHierarchicalEntityBehaviour), oneof: "queryParam" },
-    { no: 19, name: "statisticsBase", kind: "enum", T: proto3.getEnumType(GrpcStatisticsBase), oneof: "queryParam" },
-    { no: 20, name: "statisticsType", kind: "enum", T: proto3.getEnumType(GrpcStatisticsType), oneof: "queryParam" },
-    { no: 21, name: "histogramBehavior", kind: "enum", T: proto3.getEnumType(GrpcHistogramBehavior), oneof: "queryParam" },
-    { no: 22, name: "managedReferencesBehaviour", kind: "enum", T: proto3.getEnumType(GrpcManagedReferencesBehaviour), oneof: "queryParam" },
-    { no: 23, name: "expressionValue", kind: "scalar", T: 9 /* ScalarType.STRING */, oneof: "queryParam" },
-    { no: 101, name: "stringArrayValue", kind: "message", T: GrpcStringArray, oneof: "queryParam" },
-    { no: 102, name: "integerArrayValue", kind: "message", T: GrpcIntegerArray, oneof: "queryParam" },
-    { no: 103, name: "longArrayValue", kind: "message", T: GrpcLongArray, oneof: "queryParam" },
-    { no: 104, name: "booleanArrayValue", kind: "message", T: GrpcBooleanArray, oneof: "queryParam" },
-    { no: 105, name: "bigDecimalArrayValue", kind: "message", T: GrpcBigDecimalArray, oneof: "queryParam" },
-    { no: 106, name: "dateTimeRangeArrayValue", kind: "message", T: GrpcDateTimeRangeArray, oneof: "queryParam" },
-    { no: 107, name: "integerNumberRangeArrayValue", kind: "message", T: GrpcIntegerNumberRangeArray, oneof: "queryParam" },
-    { no: 108, name: "longNumberRangeArrayValue", kind: "message", T: GrpcLongNumberRangeArray, oneof: "queryParam" },
-    { no: 109, name: "bigDecimalNumberRangeArrayValue", kind: "message", T: GrpcBigDecimalNumberRangeArray, oneof: "queryParam" },
-    { no: 110, name: "offsetDateTimeArrayValue", kind: "message", T: GrpcOffsetDateTimeArray, oneof: "queryParam" },
-    { no: 111, name: "localeArrayValue", kind: "message", T: GrpcLocaleArray, oneof: "queryParam" },
-    { no: 112, name: "currencyArrayValue", kind: "message", T: GrpcCurrencyArray, oneof: "queryParam" },
-    { no: 113, name: "facetStatisticsDepthArrayValue", kind: "message", T: GrpcFacetStatisticsDepthArray, oneof: "queryParam" },
-    { no: 114, name: "queryPriceModelArrayValue", kind: "message", T: GrpcQueryPriceModeArray, oneof: "queryParam" },
-    { no: 115, name: "priceContentModeArrayValue", kind: "message", T: GrpcPriceContentModeArray, oneof: "queryParam" },
-    { no: 116, name: "attributeSpecialArrayValue", kind: "message", T: GrpcAttributeSpecialValueArray, oneof: "queryParam" },
-    { no: 117, name: "orderDirectionArrayValue", kind: "message", T: GrpcOrderDirectionArray, oneof: "queryParam" },
-    { no: 118, name: "emptyHierarchicalEntityBehaviourArrayValue", kind: "message", T: GrpcEmptyHierarchicalEntityBehaviourArray, oneof: "queryParam" },
-    { no: 119, name: "statisticsBaseArrayValue", kind: "message", T: GrpcStatisticsBaseArray, oneof: "queryParam" },
-    { no: 120, name: "statisticsTypeArrayValue", kind: "message", T: GrpcStatisticsTypeArray, oneof: "queryParam" },
-    { no: 121, name: "histogramBehaviorTypeArrayValue", kind: "message", T: GrpcHistogramBehaviorTypeArray, oneof: "queryParam" },
-  ]);
-
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcQueryParam {
-    return new GrpcQueryParam().fromBinary(bytes, options);
-  }
-
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcQueryParam {
-    return new GrpcQueryParam().fromJson(jsonValue, options);
-  }
-
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcQueryParam {
-    return new GrpcQueryParam().fromJsonString(jsonString, options);
-  }
-
-  static equals(a: GrpcQueryParam | PlainMessage<GrpcQueryParam> | undefined, b: GrpcQueryParam | PlainMessage<GrpcQueryParam> | undefined): boolean {
-    return proto3.util.equals(GrpcQueryParam, a, b);
   }
 }
 

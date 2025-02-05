@@ -24,7 +24,7 @@ export class ServerStatusConverter {
     convert(serverStatus: GrpcEvitaServerStatusResponse):ServerStatus{
         return new ServerStatus(
             serverStatus.version,
-            this.evitaValueConverter.convertOffsetDateTime(serverStatus.startedAt!),
+            this.evitaValueConverter.convertGrpcOffsetDateTime(serverStatus.startedAt!),
             serverStatus.uptime,
             serverStatus.instanceId,
             serverStatus.catalogsCorrupted,

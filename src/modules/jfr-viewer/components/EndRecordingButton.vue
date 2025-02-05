@@ -11,7 +11,7 @@ const { t } = useI18n()
 
 const props = defineProps<{
     connection: Connection,
-    task: TaskStatus
+    jfrRecorderTask: TaskStatus
 }>()
 const emit = defineEmits<{
     (e: 'end'): void
@@ -34,7 +34,7 @@ function onEnd(): void {
     >
         <template #activator="{ props }">
             <VBtn
-                v-if="task.state === TaskState.Running"
+                v-if="jfrRecorderTask.state === TaskState.Running"
                 icon
                 :disabled="endRequested"
                 @click="showEndRecordingDialog = true"

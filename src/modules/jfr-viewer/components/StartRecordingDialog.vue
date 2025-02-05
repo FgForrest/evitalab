@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import VCardTitleWithActions from '@/modules/base/component/VCardTitleWithActions.vue'
 import { JfrViewerService, useJfrViewerService } from '../service/JfrViewerService'
 import { useI18n } from 'vue-i18n'
 import { Connection } from '@/modules/connection/model/Connection'

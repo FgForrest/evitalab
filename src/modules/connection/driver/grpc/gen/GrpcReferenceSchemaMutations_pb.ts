@@ -5,7 +5,7 @@
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { BoolValue, Message, proto3, StringValue } from "@bufbuild/protobuf";
-import { GrpcAttributeInheritanceBehavior, GrpcCardinality } from "./GrpcEnums_pb.js";
+import { GrpcAttributeInheritanceBehavior, GrpcCardinality, GrpcEntityScope } from "./GrpcEnums_pb.js";
 import { GrpcAttributeSchemaMutation } from "./GrpcAttributeSchemaMutations_pb.js";
 import { GrpcSortableAttributeCompoundSchemaMutation } from "./GrpcSortableAttributeCompoundSchemaMutations_pb.js";
 
@@ -91,8 +91,10 @@ export class GrpcCreateReferenceSchemaMutation extends Message<GrpcCreateReferen
    * Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed,
    * the entity cannot be looked up by reference attributes or relation existence itself, but the data is loaded
    * alongside other references if requested.
+   * deprecated in favor of `indexedInScopes`
    *
-   * @generated from field: bool filterable = 9;
+   * @generated from field: bool filterable = 9 [deprecated = true];
+   * @deprecated
    */
   filterable = false;
 
@@ -104,10 +106,39 @@ export class GrpcCreateReferenceSchemaMutation extends Message<GrpcCreateReferen
    * Do not mark reference as faceted unless you want it among `FacetStatistics`. Each faceted reference
    * occupies (memory/disk) space in the form of index.
    * Reference that was marked as faceted is called Facet.
+   * deprecated in favor of `facetedInScopes`
    *
-   * @generated from field: bool faceted = 10;
+   * @generated from field: bool faceted = 10 [deprecated = true];
+   * @deprecated
    */
   faceted = false;
+
+  /**
+   * Whether the index for this reference should be created and maintained allowing to filter by
+   * `referenceHaving` filtering constraints. Index is also required when reference is
+   * `faceted`.
+   *
+   * Do not mark reference as faceted unless you know that you'll need to filter/sort entities by this reference.
+   * Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed,
+   * the entity cannot be looked up by reference attributes or relation existence itself, but the data is loaded
+   * alongside other references if requested.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope indexedInScopes = 11;
+   */
+  indexedInScopes: GrpcEntityScope[] = [];
+
+  /**
+   * Whether the statistics data for this reference should be maintained and this allowing to get
+   * `facetSummary` for this reference or use `facetInSet`
+   * filtering query.
+   *
+   * Do not mark reference as faceted unless you want it among `FacetStatistics`. Each faceted reference
+   * occupies (memory/disk) space in the form of index.
+   * Reference that was marked as faceted is called Facet.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope facetedInScopes = 12;
+   */
+  facetedInScopes: GrpcEntityScope[] = [];
 
   constructor(data?: PartialMessage<GrpcCreateReferenceSchemaMutation>) {
     super();
@@ -127,6 +158,8 @@ export class GrpcCreateReferenceSchemaMutation extends Message<GrpcCreateReferen
     { no: 8, name: "referencedGroupTypeManaged", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
     { no: 9, name: "filterable", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
     { no: 10, name: "faceted", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 11, name: "indexedInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
+    { no: 12, name: "facetedInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcCreateReferenceSchemaMutation {
@@ -213,7 +246,8 @@ export class GrpcCreateReflectedReferenceSchemaMutation extends Message<GrpcCrea
    * occupies (memory/disk) space in the form of index.
    * Reference that was marked as faceted is called Facet.
    *
-   * @generated from field: google.protobuf.BoolValue faceted = 7;
+   * @generated from field: google.protobuf.BoolValue faceted = 7 [deprecated = true];
+   * @deprecated
    */
   faceted?: boolean;
 
@@ -232,6 +266,49 @@ export class GrpcCreateReflectedReferenceSchemaMutation extends Message<GrpcCrea
    */
   attributeInheritanceFilter: string[] = [];
 
+  /**
+   * when set to true, the value of `indexedInScope` field is ignored and the settings are inherited from the original
+   * reference.
+   *
+   * @generated from field: bool indexedInherited = 10;
+   */
+  indexedInherited = false;
+
+  /**
+   * Whether the index for this reference should be created and maintained allowing to filter by
+   * `referenceHaving` filtering constraints. Index is also required when reference is
+   * `faceted`.
+   *
+   * Do not mark reference as faceted unless you know that you'll need to filter/sort entities by this reference.
+   * Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed,
+   * the entity cannot be looked up by reference attributes or relation existence itself, but the data is loaded
+   * alongside other references if requested.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope indexedInScopes = 11;
+   */
+  indexedInScopes: GrpcEntityScope[] = [];
+
+  /**
+   * when set to true, the value of `facetedInScope` field is ignored and the settings are inherited from the original
+   * reference.
+   *
+   * @generated from field: bool facetedInherited = 12;
+   */
+  facetedInherited = false;
+
+  /**
+   * Whether the statistics data for this reference should be maintained and this allowing to get
+   * `facetSummary` for this reference or use `facetInSet`
+   * filtering query.
+   *
+   * Do not mark reference as faceted unless you want it among `FacetStatistics`. Each faceted reference
+   * occupies (memory/disk) space in the form of index.
+   * Reference that was marked as faceted is called Facet.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope facetedInScopes = 13;
+   */
+  facetedInScopes: GrpcEntityScope[] = [];
+
   constructor(data?: PartialMessage<GrpcCreateReflectedReferenceSchemaMutation>) {
     super();
     proto3.util.initPartial(data, this);
@@ -249,6 +326,10 @@ export class GrpcCreateReflectedReferenceSchemaMutation extends Message<GrpcCrea
     { no: 7, name: "faceted", kind: "message", T: BoolValue },
     { no: 8, name: "attributeInheritanceBehavior", kind: "enum", T: proto3.getEnumType(GrpcAttributeInheritanceBehavior) },
     { no: 9, name: "attributeInheritanceFilter", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+    { no: 10, name: "indexedInherited", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 11, name: "indexedInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
+    { no: 12, name: "facetedInherited", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 13, name: "facetedInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcCreateReflectedReferenceSchemaMutation {
@@ -812,8 +893,10 @@ export class GrpcSetReferenceSchemaFacetedMutation extends Message<GrpcSetRefere
    * Do not mark reference as faceted unless you want it among `FacetStatistics`. Each faceted reference
    * occupies (memory/disk) space in the form of index.
    * Reference that was marked as faceted is called Facet.
+   * deprecated in favor of `facetedInScopes`
    *
-   * @generated from field: bool faceted = 2;
+   * @generated from field: bool faceted = 2 [deprecated = true];
+   * @deprecated
    */
   faceted = false;
 
@@ -826,6 +909,19 @@ export class GrpcSetReferenceSchemaFacetedMutation extends Message<GrpcSetRefere
    */
   inherited = false;
 
+  /**
+   * Whether the statistics data for this reference should be maintained and this allowing to get
+   * `facetSummary` for this reference or use `facet_{reference name}_inSet`
+   * filtering query.
+   *
+   * Do not mark reference as faceted unless you want it among `FacetStatistics`. Each faceted reference
+   * occupies (memory/disk) space in the form of index.
+   * Reference that was marked as faceted is called Facet.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope facetedInScopes = 4;
+   */
+  facetedInScopes: GrpcEntityScope[] = [];
+
   constructor(data?: PartialMessage<GrpcSetReferenceSchemaFacetedMutation>) {
     super();
     proto3.util.initPartial(data, this);
@@ -837,6 +933,7 @@ export class GrpcSetReferenceSchemaFacetedMutation extends Message<GrpcSetRefere
     { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "faceted", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
     { no: 3, name: "inherited", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 4, name: "facetedInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcSetReferenceSchemaFacetedMutation {
@@ -857,18 +954,27 @@ export class GrpcSetReferenceSchemaFacetedMutation extends Message<GrpcSetRefere
 }
 
 /**
- * Mutation is responsible for setting value to a `ReferenceSchema.filtered` in `EntitySchema`.
+ * Mutation is responsible for setting value to a `ReferenceSchema.indexed` in `EntitySchema`.
  * Mutation can be used for altering also the existing `ReferenceSchema` alone.
  *
- * @generated from message io.evitadb.externalApi.grpc.generated.GrpcSetReferenceSchemaFilterableMutation
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcSetReferenceSchemaIndexedMutation
  */
-export class GrpcSetReferenceSchemaFilterableMutation extends Message<GrpcSetReferenceSchemaFilterableMutation> {
+export class GrpcSetReferenceSchemaIndexedMutation extends Message<GrpcSetReferenceSchemaIndexedMutation> {
   /**
    * Name of the reference the mutation is targeting.
    *
    * @generated from field: string name = 1;
    */
   name = "";
+
+  /**
+   * Set to true when the filterable property should be inherited from the original.
+   * This property makes sense only for inherited reference attributes on reflected reference. For all other cases it
+   * must be left as false. When set to TRUE the value of `filterable` field is ignored.
+   *
+   * @generated from field: bool inherited = 2;
+   */
+  inherited = false;
 
   /**
    * Whether the index for this reference should be created and maintained allowing to filter by
@@ -879,46 +985,37 @@ export class GrpcSetReferenceSchemaFilterableMutation extends Message<GrpcSetRef
    * the entity cannot be looked up by reference attributes or relation existence itself, but the data is loaded
    * alongside other references if requested.
    *
-   * @generated from field: bool filterable = 2;
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope indexedInScopes = 3;
    */
-  filterable = false;
+  indexedInScopes: GrpcEntityScope[] = [];
 
-  /**
-   * Set to true when the filterable property should be inherited from the original.
-   * This property makes sense only for inherited reference attributes on reflected reference. For all other cases it
-   * must be left as false. When set to TRUE the value of `filterable` field is ignored.
-   *
-   * @generated from field: bool inherited = 3;
-   */
-  inherited = false;
-
-  constructor(data?: PartialMessage<GrpcSetReferenceSchemaFilterableMutation>) {
+  constructor(data?: PartialMessage<GrpcSetReferenceSchemaIndexedMutation>) {
     super();
     proto3.util.initPartial(data, this);
   }
 
   static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcSetReferenceSchemaFilterableMutation";
+  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcSetReferenceSchemaIndexedMutation";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "filterable", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
-    { no: 3, name: "inherited", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 2, name: "inherited", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 3, name: "indexedInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcSetReferenceSchemaFilterableMutation {
-    return new GrpcSetReferenceSchemaFilterableMutation().fromBinary(bytes, options);
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcSetReferenceSchemaIndexedMutation {
+    return new GrpcSetReferenceSchemaIndexedMutation().fromBinary(bytes, options);
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcSetReferenceSchemaFilterableMutation {
-    return new GrpcSetReferenceSchemaFilterableMutation().fromJson(jsonValue, options);
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcSetReferenceSchemaIndexedMutation {
+    return new GrpcSetReferenceSchemaIndexedMutation().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcSetReferenceSchemaFilterableMutation {
-    return new GrpcSetReferenceSchemaFilterableMutation().fromJsonString(jsonString, options);
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcSetReferenceSchemaIndexedMutation {
+    return new GrpcSetReferenceSchemaIndexedMutation().fromJsonString(jsonString, options);
   }
 
-  static equals(a: GrpcSetReferenceSchemaFilterableMutation | PlainMessage<GrpcSetReferenceSchemaFilterableMutation> | undefined, b: GrpcSetReferenceSchemaFilterableMutation | PlainMessage<GrpcSetReferenceSchemaFilterableMutation> | undefined): boolean {
-    return proto3.util.equals(GrpcSetReferenceSchemaFilterableMutation, a, b);
+  static equals(a: GrpcSetReferenceSchemaIndexedMutation | PlainMessage<GrpcSetReferenceSchemaIndexedMutation> | undefined, b: GrpcSetReferenceSchemaIndexedMutation | PlainMessage<GrpcSetReferenceSchemaIndexedMutation> | undefined): boolean {
+    return proto3.util.equals(GrpcSetReferenceSchemaIndexedMutation, a, b);
   }
 }
 

@@ -14,16 +14,19 @@ import { ServerFileConverter } from '@/modules/connection/driver/grpc/service/Se
 import { GrpcTaskTrait } from '@/modules/connection/driver/grpc/gen/GrpcEnums_pb'
 import { TaskTrait } from '@/modules/connection/model/task/TaskTrait'
 import { FileTaskResult } from '@/modules/connection/model/task/FileTaskResult'
+import { EvitaValueConverter } from '@/modules/connection/driver/grpc/service/EvitaValueConverter'
 
 /**
  * Converts task statuses between evitaLab representation and evitaDB's gRPC
  * representation
  */
 export class TaskStatusConverter {
+    private readonly evitaValueConverter: EvitaValueConverter
     private readonly taskConverter: TaskStateConverter
     private readonly serverFileConverter: ServerFileConverter
 
-    constructor(taskConverter: TaskStateConverter, fileConverter: ServerFileConverter) {
+    constructor(evitaValueConverter: EvitaValueConverter, taskConverter: TaskStateConverter, fileConverter: ServerFileConverter) {
+        this.evitaValueConverter = evitaValueConverter
         this.taskConverter = taskConverter
         this.serverFileConverter = fileConverter
     }
@@ -53,32 +56,17 @@ export class TaskStatusConverter {
         return new TaskStatus(
             Immutable.List(taskTypes),
             grpcTaskStatus.taskName,
-            Uuid.createUUID(
-                grpcTaskStatus.taskId!.mostSignificantBits!,
-                grpcTaskStatus.taskId!.leastSignificantBits!
-            ),
+            this.evitaValueConverter.convertGrpcUuid(grpcTaskStatus.taskId!),
             grpcTaskStatus.catalogName,
-            new OffsetDateTime(
-                grpcTaskStatus.created!.timestamp!,
-                grpcTaskStatus.created!.offset
-            ),
+            this.evitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.created!),
             grpcTaskStatus.issued != undefined
-                ? new OffsetDateTime(
-                    grpcTaskStatus.issued!.timestamp!,
-                    grpcTaskStatus.issued!.offset
-                )
+                ? this.evitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.issued!)
                 : undefined,
             grpcTaskStatus.started != undefined
-                ? new OffsetDateTime(
-                    grpcTaskStatus.started.timestamp!,
-                    grpcTaskStatus.started.offset
-                )
+                ? this.evitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.started!)
                 : undefined,
             grpcTaskStatus.finished != undefined
-                ? new OffsetDateTime(
-                    grpcTaskStatus.finished?.timestamp!,
-                    grpcTaskStatus.finished?.offset
-                )
+                ? this.evitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.finished!)
                 : undefined,
             grpcTaskStatus.progress,
             grpcTaskStatus.settings!,

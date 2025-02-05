@@ -4,17 +4,17 @@ const stringWithCaseWordSplittingPattern: RegExp = /([^\s\-_A-Z]+)|([A-Z]+[^\s\-
 const unsupportedCharactersForWordSplittingPattern: RegExp = /[.:+\-@/\\|`~]/g
 
 /**
- * The number of bytes in a kilobyte.
+ * The number of bytes in a kibibyte.
  */
-const oneKB: number = 1024
+const oneKiB: number = 1024
 /**
- * The number of bytes in a megabyte.
+ * The number of bytes in a mebibyte.
  */
-const oneMB: number = oneKB * oneKB
+const oneMiB: number = oneKiB * oneKiB
 /**
- * The number of bytes in a gigabyte.
+ * The number of bytes in a gigibyte.
  */
-const oneGB: number = oneKB * oneMB
+const oneGiB: number = oneKiB * oneMiB
 
 const sizeFormatter: Intl.NumberFormat = new Intl.NumberFormat(
     navigator.language,
@@ -42,13 +42,25 @@ export function splitStringWithCaseIntoWords(s?: string): Immutable.List<string>
 }
 
 export function formatByteSize(sizeInBytes: number): string {
-    if (Math.floor(sizeInBytes / oneGB) > 0) {
-        return `${sizeFormatter.format(sizeInBytes / oneGB)} GB`
-    } else if (Math.floor(sizeInBytes / oneMB) > 0) {
-        return `${sizeFormatter.format(sizeInBytes / oneMB)} MB`
-    } else if (Math.floor(sizeInBytes / oneKB) > 0) {
-        return `${sizeFormatter.format(sizeInBytes / oneKB)} KB`
+    if (Math.floor(sizeInBytes / oneGiB) > 0) {
+        return `${sizeFormatter.format(sizeInBytes / oneGiB)} GiB`
+    } else if (Math.floor(sizeInBytes / oneMiB) > 0) {
+        return `${sizeFormatter.format(sizeInBytes / oneMiB)} MiB`
+    } else if (Math.floor(sizeInBytes / oneKiB) > 0) {
+        return `${sizeFormatter.format(sizeInBytes / oneKiB)} KiB`
     } else {
         return `${sizeFormatter.format(sizeInBytes)} B`
+    }
+}
+
+export function formatCount(count: number): string {
+    if (Math.floor(count / 1_000_000_000) > 0) {
+        return `${sizeFormatter.format(count / 1_000_000_000)}G`
+    } else if (Math.floor(count / 100_000) > 0) {
+        return `${sizeFormatter.format(count / 100_000)}M`
+    } else if (Math.floor(count / 1_000) > 0) {
+        return `${sizeFormatter.format(count / 1_000)}k`
+    } else {
+        return `${sizeFormatter.format(count)}`;
     }
 }

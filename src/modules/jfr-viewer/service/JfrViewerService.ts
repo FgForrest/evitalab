@@ -1,7 +1,6 @@
 import { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { Connection } from '@/modules/connection/model/Connection'
-import { Uuid } from '@/modules/connection/model/data-type/Uuid'
 import { EventType } from '@/modules/connection/model/jfr/EventType'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { jfrRecorderTaskName } from '@/modules/jfr-viewer/model/JfrRecorderTask'
@@ -17,9 +16,9 @@ export class JfrViewerService {
         this.connectionService = connectionService
     }
 
-    async getRecordings(connection: Connection):Promise<PaginatedList<ServerFile>>{
+    async getRecordings(connection: Connection, pageNumber: number, pageSize: number):Promise<PaginatedList<ServerFile>>{
         const driver = await this.connectionService.getDriver(connection)
-        return await driver.getFilesToFetch(connection, jfrRecorderTaskName, 1,20)
+        return await driver.getFilesToFetch(connection, jfrRecorderTaskName, pageNumber, pageSize)
     }
 
     async getEventTypes(connection: Connection):Promise<EventType[]>{

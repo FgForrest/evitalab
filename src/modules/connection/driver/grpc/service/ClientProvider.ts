@@ -8,10 +8,14 @@ import { EvitaSessionService } from '../gen/GrpcEvitaSessionAPI_connect'
 import { Connection } from '@/modules/connection/model/Connection'
 import { ConnectionId } from '@/modules/connection/model/ConnectionId'
 import { TransportProvider } from '@/modules/connection/driver/grpc/service/TransportProvider'
+import {
+    GrpcEvitaTrafficRecordingService
+} from '@/modules/connection/driver/grpc/gen/GrpcEvitaTrafficRecordingAPI_connect'
 
 export type EvitaClient = PromiseClient<typeof EvitaService>
 export type EvitaSessionClient = PromiseClient<typeof EvitaSessionService>
 export type EvitaManagementClient = PromiseClient<typeof EvitaManagementService>
+export type EvitaTrafficRecordingClient = PromiseClient<typeof GrpcEvitaTrafficRecordingService>
 
 /**
  * Creates and caches gRPC clients for connections
@@ -23,6 +27,7 @@ export class ClientProvider {
     private readonly evitaClients: Map<ConnectionId, EvitaClient> = new Map<ConnectionId, EvitaClient>();
     private readonly evitaManagementClients: Map<ConnectionId, EvitaManagementClient> = new Map<ConnectionId, EvitaManagementClient>
     private readonly evitaSessionClients: Map<ConnectionId, EvitaSessionClient> = new Map<ConnectionId, EvitaSessionClient>
+    private readonly evitaTrafficRecordingClients: Map<ConnectionId, EvitaTrafficRecordingClient> = new Map<ConnectionId, EvitaTrafficRecordingClient>
 
     /**
      * Returns client for Evita API of gRPC. Creates new one if missing.
@@ -57,5 +62,16 @@ export class ClientProvider {
             sessionClient = createPromiseClient(EvitaSessionService, this.transportProvider.getTransport(connection))
         }
         return sessionClient
+    }
+
+    /**
+     * Returns client for traffic recording API of gRPC. Creates new one if missing.
+     */
+    public getEvitaTrafficRecordingClient(connection: Connection): EvitaTrafficRecordingClient {
+        let trafficRecordingClient: EvitaTrafficRecordingClient | undefined = this.evitaTrafficRecordingClients?.get(connection.id)
+        if (trafficRecordingClient == undefined) {
+            trafficRecordingClient = createPromiseClient(GrpcEvitaTrafficRecordingService, this.transportProvider.getTransport(connection))
+        }
+        return trafficRecordingClient
     }
 }

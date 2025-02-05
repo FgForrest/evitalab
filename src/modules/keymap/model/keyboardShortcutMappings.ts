@@ -81,4 +81,10 @@ createKeyboardShortcutMapping(Command.GraphQLConsole_Result_ResultVisualizer, 'C
 
 createKeyboardShortcutMapping(Command.SchemaViewer_ShareTab, 'Ctrl+L', 'Cmd+L')
 
+// Traffic recording viewer
+
+createKeyboardShortcutMapping(Command.TrafficRecordHistoryViewer_ShareTab, 'Ctrl+L', 'Cmd+L')
+createKeyboardShortcutMapping(Command.TrafficRecordHistoryViewer_ReloadRecordHistory, 'Ctrl+D', 'Cmd+D')
+createKeyboardShortcutMapping(Command.TrafficRecordHistoryViewer_MoveStartPointer, 'Ctrl+M', 'Cmd+M')
+
 export { keyboardShortcutMappingIndex }

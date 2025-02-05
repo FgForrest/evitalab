@@ -1,9 +1,10 @@
 // todo docs
 export enum ConnectionItemType {
-    GraphQLSystemAPIConsole = 'graphQLSystemApiConsole',
-    JfrRecordings = 'jfrRecordings',
     Server = 'server',
     Tasks = 'tasks',
+    TrafficRecordings = 'trafficRecordings',
+    JfrRecordings = 'jfrRecordings',
+    GraphQLSystemAPIConsole = 'graphQLSystemApiConsole',
 
     ManageSubheader = 'manageSubheader',
     Refresh = 'refresh',

@@ -11,5 +11,7 @@ export enum TabType {
     ServerViewer = 'serverViewer',
     TaskViewer = 'taskViewer',
     BackupViewer = 'backupViewer',
-    JfrViewer = 'jfrViewer'
+    JfrViewer = 'jfrViewer',
+    TrafficRecordingsViewer = 'trafficRecordingsViewer',
+    TrafficRecordHistoryViewer = 'trafficRecordHistoryViewer'
 }

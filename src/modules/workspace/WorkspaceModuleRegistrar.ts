@@ -34,6 +34,14 @@ import {
 import { BackupViewerTabFactory, backupsTabFactoryInjectionKey } from '@/modules/backup-viewer/service/BackupViewerTabFactory'
 import { TaskViewerTabFactory, taskViewerTabFactoryInjectionKey } from '@/modules/task-viewer/services/TaskViewerTabFactory'
 import { JfrViewerTabFactory, jfrViewerTabFactoryInjectionKey } from '@/modules/jfr-viewer/service/JfrViewerTabFactory'
+import {
+    TrafficRecordingsViewerTabFactory,
+    trafficRecordingsViewerTabFactoryInjectionKey
+} from '@/modules/traffic-viewer/service/TrafficRecordingsViewerTabFactory'
+import {
+    TrafficRecordHistoryViewerTabFactory,
+    trafficRecordHistoryViewerTabFactoryInjectionKey
+} from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
 
 export class WorkspaceModuleRegistrar implements ModuleRegistrar {
 
@@ -60,6 +68,10 @@ export class WorkspaceModuleRegistrar implements ModuleRegistrar {
         builder.provide(taskViewerTabFactoryInjectionKey, taskViewerTabFactory)
         const jfrViewerTabFactory: JfrViewerTabFactory = new JfrViewerTabFactory(connectionService)
         builder.provide(jfrViewerTabFactoryInjectionKey, jfrViewerTabFactory)
+        const trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory = new TrafficRecordingsViewerTabFactory(connectionService)
+        builder.provide(trafficRecordingsViewerTabFactoryInjectionKey, trafficRecordingsViewerTabFactory)
+        const trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory = new TrafficRecordHistoryViewerTabFactory(connectionService)
+        builder.provide(trafficRecordHistoryViewerTabFactoryInjectionKey, trafficRecordHistoryViewerTabFactory)
         const backupViewerTabFactory: BackupViewerTabFactory = new BackupViewerTabFactory(connectionService)
         builder.provide(backupsTabFactoryInjectionKey, backupViewerTabFactory)
         // todo lho fix circular dep
@@ -82,7 +94,9 @@ export class WorkspaceModuleRegistrar implements ModuleRegistrar {
                 serverViewerTabFactory,
                 taskViewerTabFactory,
                 backupViewerTabFactory,
-                jfrViewerTabFactory
+                jfrViewerTabFactory,
+                trafficRecordingsViewerTabFactory,
+                trafficRecordHistoryViewerTabFactory
             )
         )
         builder.provide(
@@ -99,7 +113,8 @@ export class WorkspaceModuleRegistrar implements ModuleRegistrar {
                 entityViewerTabFactory,
                 evitaQLConsoleTabFactory,
                 graphQLConsoleTabFactory,
-                schemaViewerTabFactory
+                schemaViewerTabFactory,
+                trafficRecordHistoryViewerTabFactory
             )
         )
     }

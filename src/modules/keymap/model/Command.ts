@@ -75,5 +75,11 @@ export enum Command {
 
     // Schema viewer
 
-    SchemaViewer_ShareTab = 'schemaViewer.shareTab'
+    SchemaViewer_ShareTab = 'schemaViewer.shareTab',
+
+    // Traffic record history viewer
+
+    TrafficRecordHistoryViewer_ShareTab = 'trafficRecordHistoryViewer.shareTab',
+    TrafficRecordHistoryViewer_ReloadRecordHistory = 'trafficRecordHistoryViewer.reloadRecordHistory',
+    TrafficRecordHistoryViewer_MoveStartPointer = 'trafficRecordHistoryViewer.moveStartPointer'
 }

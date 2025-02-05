@@ -12,9 +12,9 @@ import { GrpcLocalMutation } from "./GrpcLocalMutation_pb.js";
 /**
  * The enum defines what catalog area is covered by the capture.
  *
- * @generated from enum io.evitadb.externalApi.grpc.generated.GrpcCaptureArea
+ * @generated from enum io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureArea
  */
-export enum GrpcCaptureArea {
+export enum GrpcChangeCaptureArea {
   /**
    * Changes in the schema are captured.
    *
@@ -36,8 +36,8 @@ export enum GrpcCaptureArea {
    */
   INFRASTRUCTURE = 2,
 }
-// Retrieve enum metadata with: proto3.getEnumType(GrpcCaptureArea)
-proto3.util.setEnumType(GrpcCaptureArea, "io.evitadb.externalApi.grpc.generated.GrpcCaptureArea", [
+// Retrieve enum metadata with: proto3.getEnumType(GrpcChangeCaptureArea)
+proto3.util.setEnumType(GrpcChangeCaptureArea, "io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureArea", [
   { no: 0, name: "SCHEMA" },
   { no: 1, name: "DATA" },
   { no: 2, name: "INFRASTRUCTURE" },
@@ -46,9 +46,9 @@ proto3.util.setEnumType(GrpcCaptureArea, "io.evitadb.externalApi.grpc.generated.
 /**
  * Enumeration of possible mutation types handled by evitaDB.
  *
- * @generated from enum io.evitadb.externalApi.grpc.generated.GrpcCaptureOperation
+ * @generated from enum io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureOperation
  */
-export enum GrpcCaptureOperation {
+export enum GrpcChangeCaptureOperation {
   /**
    * Create or update operation - i.e. there was data with such identity before, and it was updated.
    *
@@ -70,8 +70,8 @@ export enum GrpcCaptureOperation {
    */
   TRANSACTION = 2,
 }
-// Retrieve enum metadata with: proto3.getEnumType(GrpcCaptureOperation)
-proto3.util.setEnumType(GrpcCaptureOperation, "io.evitadb.externalApi.grpc.generated.GrpcCaptureOperation", [
+// Retrieve enum metadata with: proto3.getEnumType(GrpcChangeCaptureOperation)
+proto3.util.setEnumType(GrpcChangeCaptureOperation, "io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureOperation", [
   { no: 0, name: "UPSERT" },
   { no: 1, name: "REMOVE" },
   { no: 2, name: "TRANSACTION" },
@@ -80,9 +80,9 @@ proto3.util.setEnumType(GrpcCaptureOperation, "io.evitadb.externalApi.grpc.gener
 /**
  * The container type describes internal evitaDB data structures.
  *
- * @generated from enum io.evitadb.externalApi.grpc.generated.GrpcCaptureContainerType
+ * @generated from enum io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureContainerType
  */
-export enum GrpcCaptureContainerType {
+export enum GrpcChangeCaptureContainerType {
   /**
    * Catalog - similar to relational database schema.
    *
@@ -125,8 +125,8 @@ export enum GrpcCaptureContainerType {
    */
   CONTAINER_REFERENCE = 5,
 }
-// Retrieve enum metadata with: proto3.getEnumType(GrpcCaptureContainerType)
-proto3.util.setEnumType(GrpcCaptureContainerType, "io.evitadb.externalApi.grpc.generated.GrpcCaptureContainerType", [
+// Retrieve enum metadata with: proto3.getEnumType(GrpcChangeCaptureContainerType)
+proto3.util.setEnumType(GrpcChangeCaptureContainerType, "io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureContainerType", [
   { no: 0, name: "CONTAINER_CATALOG" },
   { no: 1, name: "CONTAINER_ENTITY" },
   { no: 2, name: "CONTAINER_ATTRIBUTE" },
@@ -138,104 +138,104 @@ proto3.util.setEnumType(GrpcCaptureContainerType, "io.evitadb.externalApi.grpc.g
 /**
  * Enum to specify the depth of details sent in the CDC event.
  *
- * @generated from enum io.evitadb.externalApi.grpc.generated.GrpcCaptureContent
+ * @generated from enum io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureContent
  */
-export enum GrpcCaptureContent {
+export enum GrpcChangeCaptureContent {
   /**
    * Only the header of the event is sent.
    *
-   * @generated from enum value: HEADER = 0;
+   * @generated from enum value: CHANGE_HEADER = 0;
    */
-  HEADER = 0,
+  CHANGE_HEADER = 0,
 
   /**
    * Entire mutation triggering the event is sent. In case of mutations with the large content (associated data
    * update), the size of the event can be significant. Consider whether you need the entire mutation or just the
    * header.
    *
-   * @generated from enum value: BODY = 1;
+   * @generated from enum value: CHANGE_BODY = 1;
    */
-  BODY = 1,
+  CHANGE_BODY = 1,
 }
-// Retrieve enum metadata with: proto3.getEnumType(GrpcCaptureContent)
-proto3.util.setEnumType(GrpcCaptureContent, "io.evitadb.externalApi.grpc.generated.GrpcCaptureContent", [
-  { no: 0, name: "HEADER" },
-  { no: 1, name: "BODY" },
+// Retrieve enum metadata with: proto3.getEnumType(GrpcChangeCaptureContent)
+proto3.util.setEnumType(GrpcChangeCaptureContent, "io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureContent", [
+  { no: 0, name: "CHANGE_HEADER" },
+  { no: 1, name: "CHANGE_BODY" },
 ]);
 
 /**
  * Record for the criteria of the capture request allowing to limit mutations to specific area of interest an its
  * properties.
  *
- * @generated from message io.evitadb.externalApi.grpc.generated.GrpcCaptureCriteria
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureCriteria
  */
-export class GrpcCaptureCriteria extends Message<GrpcCaptureCriteria> {
+export class GrpcChangeCaptureCriteria extends Message<GrpcChangeCaptureCriteria> {
   /**
    * The area of capture - either schema or data (correlates with the site)
    *
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCaptureArea area = 1;
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureArea area = 1;
    */
-  area = GrpcCaptureArea.SCHEMA;
+  area = GrpcChangeCaptureArea.SCHEMA;
 
   /**
    * The specific requirements for the designated area
    *
-   * @generated from oneof io.evitadb.externalApi.grpc.generated.GrpcCaptureCriteria.site
+   * @generated from oneof io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureCriteria.site
    */
   site: {
     /**
      * Criteria for schema capture
      *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCaptureSchemaSite schemaSite = 2;
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureSchemaSite schemaSite = 2;
      */
-    value: GrpcCaptureSchemaSite;
+    value: GrpcChangeCaptureSchemaSite;
     case: "schemaSite";
   } | {
     /**
      * Criteria for data capture
      *
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCaptureDataSite dataSite = 3;
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureDataSite dataSite = 3;
      */
-    value: GrpcCaptureDataSite;
+    value: GrpcChangeCaptureDataSite;
     case: "dataSite";
   } | { case: undefined; value?: undefined } = { case: undefined };
 
-  constructor(data?: PartialMessage<GrpcCaptureCriteria>) {
+  constructor(data?: PartialMessage<GrpcChangeCaptureCriteria>) {
     super();
     proto3.util.initPartial(data, this);
   }
 
   static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcCaptureCriteria";
+  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureCriteria";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "area", kind: "enum", T: proto3.getEnumType(GrpcCaptureArea) },
-    { no: 2, name: "schemaSite", kind: "message", T: GrpcCaptureSchemaSite, oneof: "site" },
-    { no: 3, name: "dataSite", kind: "message", T: GrpcCaptureDataSite, oneof: "site" },
+    { no: 1, name: "area", kind: "enum", T: proto3.getEnumType(GrpcChangeCaptureArea) },
+    { no: 2, name: "schemaSite", kind: "message", T: GrpcChangeCaptureSchemaSite, oneof: "site" },
+    { no: 3, name: "dataSite", kind: "message", T: GrpcChangeCaptureDataSite, oneof: "site" },
   ]);
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcCaptureCriteria {
-    return new GrpcCaptureCriteria().fromBinary(bytes, options);
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcChangeCaptureCriteria {
+    return new GrpcChangeCaptureCriteria().fromBinary(bytes, options);
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcCaptureCriteria {
-    return new GrpcCaptureCriteria().fromJson(jsonValue, options);
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcChangeCaptureCriteria {
+    return new GrpcChangeCaptureCriteria().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcCaptureCriteria {
-    return new GrpcCaptureCriteria().fromJsonString(jsonString, options);
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcChangeCaptureCriteria {
+    return new GrpcChangeCaptureCriteria().fromJsonString(jsonString, options);
   }
 
-  static equals(a: GrpcCaptureCriteria | PlainMessage<GrpcCaptureCriteria> | undefined, b: GrpcCaptureCriteria | PlainMessage<GrpcCaptureCriteria> | undefined): boolean {
-    return proto3.util.equals(GrpcCaptureCriteria, a, b);
+  static equals(a: GrpcChangeCaptureCriteria | PlainMessage<GrpcChangeCaptureCriteria> | undefined, b: GrpcChangeCaptureCriteria | PlainMessage<GrpcChangeCaptureCriteria> | undefined): boolean {
+    return proto3.util.equals(GrpcChangeCaptureCriteria, a, b);
   }
 }
 
 /**
  * Record describing the location and form of the CDC schema event in the evitaDB that should be captured.
  *
- * @generated from message io.evitadb.externalApi.grpc.generated.GrpcCaptureSchemaSite
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureSchemaSite
  */
-export class GrpcCaptureSchemaSite extends Message<GrpcCaptureSchemaSite> {
+export class GrpcChangeCaptureSchemaSite extends Message<GrpcChangeCaptureSchemaSite> {
   /**
    * The name of intercepted entity
    *
@@ -246,53 +246,53 @@ export class GrpcCaptureSchemaSite extends Message<GrpcCaptureSchemaSite> {
   /**
    * The intercepted type of operation
    *
-   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcCaptureOperation operation = 2;
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureOperation operation = 2;
    */
-  operation: GrpcCaptureOperation[] = [];
+  operation: GrpcChangeCaptureOperation[] = [];
 
   /**
    * the name of the intercepted container type
    *
-   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcCaptureContainerType containerType = 3;
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureContainerType containerType = 3;
    */
-  containerType: GrpcCaptureContainerType[] = [];
+  containerType: GrpcChangeCaptureContainerType[] = [];
 
-  constructor(data?: PartialMessage<GrpcCaptureSchemaSite>) {
+  constructor(data?: PartialMessage<GrpcChangeCaptureSchemaSite>) {
     super();
     proto3.util.initPartial(data, this);
   }
 
   static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcCaptureSchemaSite";
+  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureSchemaSite";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "entityType", kind: "message", T: StringValue },
-    { no: 2, name: "operation", kind: "enum", T: proto3.getEnumType(GrpcCaptureOperation), repeated: true },
-    { no: 3, name: "containerType", kind: "enum", T: proto3.getEnumType(GrpcCaptureContainerType), repeated: true },
+    { no: 2, name: "operation", kind: "enum", T: proto3.getEnumType(GrpcChangeCaptureOperation), repeated: true },
+    { no: 3, name: "containerType", kind: "enum", T: proto3.getEnumType(GrpcChangeCaptureContainerType), repeated: true },
   ]);
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcCaptureSchemaSite {
-    return new GrpcCaptureSchemaSite().fromBinary(bytes, options);
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcChangeCaptureSchemaSite {
+    return new GrpcChangeCaptureSchemaSite().fromBinary(bytes, options);
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcCaptureSchemaSite {
-    return new GrpcCaptureSchemaSite().fromJson(jsonValue, options);
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcChangeCaptureSchemaSite {
+    return new GrpcChangeCaptureSchemaSite().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcCaptureSchemaSite {
-    return new GrpcCaptureSchemaSite().fromJsonString(jsonString, options);
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcChangeCaptureSchemaSite {
+    return new GrpcChangeCaptureSchemaSite().fromJsonString(jsonString, options);
   }
 
-  static equals(a: GrpcCaptureSchemaSite | PlainMessage<GrpcCaptureSchemaSite> | undefined, b: GrpcCaptureSchemaSite | PlainMessage<GrpcCaptureSchemaSite> | undefined): boolean {
-    return proto3.util.equals(GrpcCaptureSchemaSite, a, b);
+  static equals(a: GrpcChangeCaptureSchemaSite | PlainMessage<GrpcChangeCaptureSchemaSite> | undefined, b: GrpcChangeCaptureSchemaSite | PlainMessage<GrpcChangeCaptureSchemaSite> | undefined): boolean {
+    return proto3.util.equals(GrpcChangeCaptureSchemaSite, a, b);
   }
 }
 
 /**
  * Record describing the location and form of the CDC data event in the evitaDB that should be captured.
  *
- * @generated from message io.evitadb.externalApi.grpc.generated.GrpcCaptureDataSite
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureDataSite
  */
-export class GrpcCaptureDataSite extends Message<GrpcCaptureDataSite> {
+export class GrpcChangeCaptureDataSite extends Message<GrpcChangeCaptureDataSite> {
   /**
    * the name of the intercepted entity type
    *
@@ -310,16 +310,16 @@ export class GrpcCaptureDataSite extends Message<GrpcCaptureDataSite> {
   /**
    * the intercepted type of operation
    *
-   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcCaptureOperation operation = 3;
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureOperation operation = 3;
    */
-  operation: GrpcCaptureOperation[] = [];
+  operation: GrpcChangeCaptureOperation[] = [];
 
   /**
    * the name of the intercepted container type
    *
-   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcCaptureContainerType containerType = 4;
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureContainerType containerType = 4;
    */
-  containerType: GrpcCaptureContainerType[] = [];
+  containerType: GrpcChangeCaptureContainerType[] = [];
 
   /**
    * the name of the container (e.g. attribute name, associated data name, reference name)
@@ -328,35 +328,35 @@ export class GrpcCaptureDataSite extends Message<GrpcCaptureDataSite> {
    */
   containerName: string[] = [];
 
-  constructor(data?: PartialMessage<GrpcCaptureDataSite>) {
+  constructor(data?: PartialMessage<GrpcChangeCaptureDataSite>) {
     super();
     proto3.util.initPartial(data, this);
   }
 
   static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcCaptureDataSite";
+  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureDataSite";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "entityType", kind: "message", T: StringValue },
     { no: 2, name: "entityPrimaryKey", kind: "message", T: Int32Value },
-    { no: 3, name: "operation", kind: "enum", T: proto3.getEnumType(GrpcCaptureOperation), repeated: true },
-    { no: 4, name: "containerType", kind: "enum", T: proto3.getEnumType(GrpcCaptureContainerType), repeated: true },
+    { no: 3, name: "operation", kind: "enum", T: proto3.getEnumType(GrpcChangeCaptureOperation), repeated: true },
+    { no: 4, name: "containerType", kind: "enum", T: proto3.getEnumType(GrpcChangeCaptureContainerType), repeated: true },
     { no: 5, name: "containerName", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
   ]);
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcCaptureDataSite {
-    return new GrpcCaptureDataSite().fromBinary(bytes, options);
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcChangeCaptureDataSite {
+    return new GrpcChangeCaptureDataSite().fromBinary(bytes, options);
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcCaptureDataSite {
-    return new GrpcCaptureDataSite().fromJson(jsonValue, options);
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcChangeCaptureDataSite {
+    return new GrpcChangeCaptureDataSite().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcCaptureDataSite {
-    return new GrpcCaptureDataSite().fromJsonString(jsonString, options);
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcChangeCaptureDataSite {
+    return new GrpcChangeCaptureDataSite().fromJsonString(jsonString, options);
   }
 
-  static equals(a: GrpcCaptureDataSite | PlainMessage<GrpcCaptureDataSite> | undefined, b: GrpcCaptureDataSite | PlainMessage<GrpcCaptureDataSite> | undefined): boolean {
-    return proto3.util.equals(GrpcCaptureDataSite, a, b);
+  static equals(a: GrpcChangeCaptureDataSite | PlainMessage<GrpcChangeCaptureDataSite> | undefined, b: GrpcChangeCaptureDataSite | PlainMessage<GrpcChangeCaptureDataSite> | undefined): boolean {
+    return proto3.util.equals(GrpcChangeCaptureDataSite, a, b);
   }
 }
 
@@ -383,9 +383,9 @@ export class GrpcChangeCatalogCapture extends Message<GrpcChangeCatalogCapture> 
   /**
    * the area of the operation
    *
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCaptureArea area = 3;
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureArea area = 3;
    */
-  area = GrpcCaptureArea.SCHEMA;
+  area = GrpcChangeCaptureArea.SCHEMA;
 
   /**
    * the name of the entity type or its schema that was affected by the operation
@@ -398,9 +398,9 @@ export class GrpcChangeCatalogCapture extends Message<GrpcChangeCatalogCapture> 
   /**
    * the operation that was performed
    *
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCaptureOperation operation = 5;
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureOperation operation = 5;
    */
-  operation = GrpcCaptureOperation.UPSERT;
+  operation = GrpcChangeCaptureOperation.UPSERT;
 
   /**
    * optional body of the operation when it is requested by the GrpcContent
@@ -437,9 +437,9 @@ export class GrpcChangeCatalogCapture extends Message<GrpcChangeCatalogCapture> 
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "version", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
     { no: 2, name: "index", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
-    { no: 3, name: "area", kind: "enum", T: proto3.getEnumType(GrpcCaptureArea) },
+    { no: 3, name: "area", kind: "enum", T: proto3.getEnumType(GrpcChangeCaptureArea) },
     { no: 4, name: "entityType", kind: "message", T: StringValue },
-    { no: 5, name: "operation", kind: "enum", T: proto3.getEnumType(GrpcCaptureOperation) },
+    { no: 5, name: "operation", kind: "enum", T: proto3.getEnumType(GrpcChangeCaptureOperation) },
     { no: 6, name: "schemaMutation", kind: "message", T: GrpcEntitySchemaMutation, oneof: "body" },
     { no: 7, name: "entityMutation", kind: "message", T: GrpcEntityMutation, oneof: "body" },
     { no: 8, name: "localMutation", kind: "message", T: GrpcLocalMutation, oneof: "body" },

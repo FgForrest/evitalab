@@ -5,8 +5,8 @@
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3, StringValue } from "@bufbuild/protobuf";
-import { GrpcAttributeUniquenessType, GrpcEvitaDataType, GrpcGlobalAttributeUniquenessType } from "./GrpcEnums_pb.js";
-import { GrpcEvitaValue } from "./GrpcEvitaDataTypes_pb.js";
+import { GrpcAttributeUniquenessType, GrpcEntityScope, GrpcEvitaDataType, GrpcGlobalAttributeUniquenessType } from "./GrpcEnums_pb.js";
+import { GrpcEvitaValue, GrpcScopedAttributeUniquenessType, GrpcScopedGlobalAttributeUniquenessType } from "./GrpcEvitaDataTypes_pb.js";
 
 /**
  * Mutation is responsible for setting up a new `AttributeSchema` in the `EntitySchema`.
@@ -41,8 +41,10 @@ export class GrpcCreateAttributeSchemaMutation extends Message<GrpcCreateAttribu
   /**
    * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity
    * having certain value of this attribute among other entities in the same collection.
+   * deprecated in favor of `uniqueInScopes`
    *
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeUniquenessType unique = 4;
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeUniquenessType unique = 4 [deprecated = true];
+   * @deprecated
    */
   unique = GrpcAttributeUniquenessType.NOT_UNIQUE;
 
@@ -50,8 +52,10 @@ export class GrpcCreateAttributeSchemaMutation extends Message<GrpcCreateAttribu
    * When attribute is filterable, it is possible to filter entities by this attribute. Do not mark attribute
    * as filterable unless you know that you'll search entities by this attribute. Each filterable attribute occupies
    * (memory/disk) space in the form of index.
+   * deprecated in favor of `filterableInScopes`
    *
-   * @generated from field: bool filterable = 5;
+   * @generated from field: bool filterable = 5 [deprecated = true];
+   * @deprecated
    */
   filterable = false;
 
@@ -59,8 +63,10 @@ export class GrpcCreateAttributeSchemaMutation extends Message<GrpcCreateAttribu
    * When attribute is sortable, it is possible to sort entities by this attribute. Do not mark attribute
    * as sortable unless you know that you'll sort entities along this attribute. Each sortable attribute occupies
    * (memory/disk) space in the form of index.
+   * deprecated in favor of `sortableInScopes`
    *
-   * @generated from field: bool sortable = 6;
+   * @generated from field: bool sortable = 6 [deprecated = true];
+   * @deprecated
    */
   sortable = false;
 
@@ -116,6 +122,32 @@ export class GrpcCreateAttributeSchemaMutation extends Message<GrpcCreateAttribu
    */
   defaultValue?: GrpcEvitaValue;
 
+  /**
+   * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity
+   * having certain value of this attribute among other entities in the same collection.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcScopedAttributeUniquenessType uniqueInScopes = 13;
+   */
+  uniqueInScopes: GrpcScopedAttributeUniquenessType[] = [];
+
+  /**
+   * When attribute is filterable, it is possible to filter entities by this attribute. Do not mark attribute
+   * as filterable unless you know that you'll search entities by this attribute. Each filterable attribute occupies
+   * (memory/disk) space in the form of index.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope filterableInScopes = 14;
+   */
+  filterableInScopes: GrpcEntityScope[] = [];
+
+  /**
+   * When attribute is sortable, it is possible to sort entities by this attribute. Do not mark attribute
+   * as sortable unless you know that you'll sort entities along this attribute. Each sortable attribute occupies
+   * (memory/disk) space in the form of index.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope sortableInScopes = 15;
+   */
+  sortableInScopes: GrpcEntityScope[] = [];
+
   constructor(data?: PartialMessage<GrpcCreateAttributeSchemaMutation>) {
     super();
     proto3.util.initPartial(data, this);
@@ -136,6 +168,9 @@ export class GrpcCreateAttributeSchemaMutation extends Message<GrpcCreateAttribu
     { no: 10, name: "type", kind: "enum", T: proto3.getEnumType(GrpcEvitaDataType) },
     { no: 11, name: "indexedDecimalPlaces", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
     { no: 12, name: "defaultValue", kind: "message", T: GrpcEvitaValue },
+    { no: 13, name: "uniqueInScopes", kind: "message", T: GrpcScopedAttributeUniquenessType, repeated: true },
+    { no: 14, name: "filterableInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
+    { no: 15, name: "sortableInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcCreateAttributeSchemaMutation {
@@ -188,16 +223,20 @@ export class GrpcCreateGlobalAttributeSchemaMutation extends Message<GrpcCreateG
   /**
    * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity
    * having certain value of this attribute among other entities in the same collection.
+   * deprecated in favor of `uniqueInScopes`
    *
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeUniquenessType unique = 4;
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeUniquenessType unique = 4 [deprecated = true];
+   * @deprecated
    */
   unique = GrpcAttributeUniquenessType.NOT_UNIQUE;
 
   /**
    * When attribute is unique globally it is automatically filterable, and it is ensured there is exactly one single
    * entity having certain value of this attribute in entire catalog.
+   * deprecated in favor of `uniqueGloballyInScopes`
    *
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcGlobalAttributeUniquenessType uniqueGlobally = 5;
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcGlobalAttributeUniquenessType uniqueGlobally = 5 [deprecated = true];
+   * @deprecated
    */
   uniqueGlobally = GrpcGlobalAttributeUniquenessType.NOT_GLOBALLY_UNIQUE;
 
@@ -205,8 +244,10 @@ export class GrpcCreateGlobalAttributeSchemaMutation extends Message<GrpcCreateG
    * When attribute is filterable, it is possible to filter entities by this attribute. Do not mark attribute
    * as filterable unless you know that you'll search entities by this attribute. Each filterable attribute occupies
    * (memory/disk) space in the form of index.
+   * deprecated in favor of `filterableInScopes`
    *
-   * @generated from field: bool filterable = 6;
+   * @generated from field: bool filterable = 6 [deprecated = true];
+   * @deprecated
    */
   filterable = false;
 
@@ -214,8 +255,10 @@ export class GrpcCreateGlobalAttributeSchemaMutation extends Message<GrpcCreateG
    * When attribute is sortable, it is possible to sort entities by this attribute. Do not mark attribute
    * as sortable unless you know that you'll sort entities along this attribute. Each sortable attribute occupies
    * (memory/disk) space in the form of index.
+   * deprecated in favor of `sortableInScopes`
    *
-   * @generated from field: bool sortable = 7;
+   * @generated from field: bool sortable = 7 [deprecated = true];
+   * @deprecated
    */
   sortable = false;
 
@@ -271,6 +314,40 @@ export class GrpcCreateGlobalAttributeSchemaMutation extends Message<GrpcCreateG
    */
   defaultValue?: GrpcEvitaValue;
 
+  /**
+   * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity
+   * having certain value of this attribute among other entities in the same collection.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcScopedAttributeUniquenessType uniqueInScopes = 14;
+   */
+  uniqueInScopes: GrpcScopedAttributeUniquenessType[] = [];
+
+  /**
+   * When attribute is unique globally it is automatically filterable, and it is ensured there is exactly one single
+   * entity having certain value of this attribute in entire catalog.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcScopedGlobalAttributeUniquenessType uniqueGloballyInScopes = 15;
+   */
+  uniqueGloballyInScopes: GrpcScopedGlobalAttributeUniquenessType[] = [];
+
+  /**
+   * When attribute is filterable, it is possible to filter entities by this attribute. Do not mark attribute
+   * as filterable unless you know that you'll search entities by this attribute. Each filterable attribute occupies
+   * (memory/disk) space in the form of index.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope filterableInScopes = 16;
+   */
+  filterableInScopes: GrpcEntityScope[] = [];
+
+  /**
+   * When attribute is sortable, it is possible to sort entities by this attribute. Do not mark attribute
+   * as sortable unless you know that you'll sort entities along this attribute. Each sortable attribute occupies
+   * (memory/disk) space in the form of index.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope sortableInScopes = 17;
+   */
+  sortableInScopes: GrpcEntityScope[] = [];
+
   constructor(data?: PartialMessage<GrpcCreateGlobalAttributeSchemaMutation>) {
     super();
     proto3.util.initPartial(data, this);
@@ -292,6 +369,10 @@ export class GrpcCreateGlobalAttributeSchemaMutation extends Message<GrpcCreateG
     { no: 11, name: "type", kind: "enum", T: proto3.getEnumType(GrpcEvitaDataType) },
     { no: 12, name: "indexedDecimalPlaces", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
     { no: 13, name: "defaultValue", kind: "message", T: GrpcEvitaValue },
+    { no: 14, name: "uniqueInScopes", kind: "message", T: GrpcScopedAttributeUniquenessType, repeated: true },
+    { no: 15, name: "uniqueGloballyInScopes", kind: "message", T: GrpcScopedGlobalAttributeUniquenessType, repeated: true },
+    { no: 16, name: "filterableInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
+    { no: 17, name: "sortableInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcCreateGlobalAttributeSchemaMutation {
@@ -632,10 +713,21 @@ export class GrpcSetAttributeSchemaFilterableMutation extends Message<GrpcSetAtt
    * When attribute is filterable, it is possible to filter entities by this attribute. Do not mark attribute
    * as filterable unless you know that you'll search entities by this attribute. Each filterable attribute occupies
    * (memory/disk) space in the form of index.
+   * deprecated in favor of `filterableInScopes`
    *
-   * @generated from field: bool filterable = 2;
+   * @generated from field: bool filterable = 2 [deprecated = true];
+   * @deprecated
    */
   filterable = false;
+
+  /**
+   * When attribute is filterable, it is possible to filter entities by this attribute. Do not mark attribute
+   * as filterable unless you know that you'll search entities by this attribute. Each filterable attribute occupies
+   * (memory/disk) space in the form of index.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope filterableInScopes = 3;
+   */
+  filterableInScopes: GrpcEntityScope[] = [];
 
   constructor(data?: PartialMessage<GrpcSetAttributeSchemaFilterableMutation>) {
     super();
@@ -647,6 +739,7 @@ export class GrpcSetAttributeSchemaFilterableMutation extends Message<GrpcSetAtt
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "filterable", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 3, name: "filterableInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcSetAttributeSchemaFilterableMutation {
@@ -683,10 +776,20 @@ export class GrpcSetAttributeSchemaGloballyUniqueMutation extends Message<GrpcSe
   /**
    * When attribute is unique globally it is automatically filterable, and it is ensured there is exactly one single
    * entity having certain value of this attribute in entire catalog.
+   * deprecated in favor of `uniqueGloballyInScopes`
    *
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcGlobalAttributeUniquenessType uniqueGlobally = 2;
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcGlobalAttributeUniquenessType uniqueGlobally = 2 [deprecated = true];
+   * @deprecated
    */
   uniqueGlobally = GrpcGlobalAttributeUniquenessType.NOT_GLOBALLY_UNIQUE;
+
+  /**
+   * When attribute is unique globally it is automatically filterable, and it is ensured there is exactly one single
+   * entity having certain value of this attribute in entire catalog.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcScopedGlobalAttributeUniquenessType uniqueGloballyInScopes = 15;
+   */
+  uniqueGloballyInScopes: GrpcScopedGlobalAttributeUniquenessType[] = [];
 
   constructor(data?: PartialMessage<GrpcSetAttributeSchemaGloballyUniqueMutation>) {
     super();
@@ -698,6 +801,7 @@ export class GrpcSetAttributeSchemaGloballyUniqueMutation extends Message<GrpcSe
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "uniqueGlobally", kind: "enum", T: proto3.getEnumType(GrpcGlobalAttributeUniquenessType) },
+    { no: 15, name: "uniqueGloballyInScopes", kind: "message", T: GrpcScopedGlobalAttributeUniquenessType, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcSetAttributeSchemaGloballyUniqueMutation {
@@ -888,10 +992,21 @@ export class GrpcSetAttributeSchemaSortableMutation extends Message<GrpcSetAttri
    * When attribute is sortable, it is possible to sort entities by this attribute. Do not mark attribute
    * as sortable unless you know that you'll sort entities along this attribute. Each sortable attribute occupies
    * (memory/disk) space in the form of index.
+   * deprecated in favor of `sortableInScopes`
    *
-   * @generated from field: bool sortable = 2;
+   * @generated from field: bool sortable = 2 [deprecated = true];
+   * @deprecated
    */
   sortable = false;
+
+  /**
+   * When attribute is sortable, it is possible to sort entities by this attribute. Do not mark attribute
+   * as sortable unless you know that you'll sort entities along this attribute. Each sortable attribute occupies
+   * (memory/disk) space in the form of index.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope sortableInScopes = 3;
+   */
+  sortableInScopes: GrpcEntityScope[] = [];
 
   constructor(data?: PartialMessage<GrpcSetAttributeSchemaSortableMutation>) {
     super();
@@ -903,6 +1018,7 @@ export class GrpcSetAttributeSchemaSortableMutation extends Message<GrpcSetAttri
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "sortable", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 3, name: "sortableInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcSetAttributeSchemaSortableMutation {
@@ -939,10 +1055,20 @@ export class GrpcSetAttributeSchemaUniqueMutation extends Message<GrpcSetAttribu
   /**
    * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity
    * having certain value of this attribute among other entities in the same collection.
+   * deprecated in favor of `uniqueInScopes`
    *
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeUniquenessType unique = 2;
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeUniquenessType unique = 2 [deprecated = true];
+   * @deprecated
    */
   unique = GrpcAttributeUniquenessType.NOT_UNIQUE;
+
+  /**
+   * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity
+   * having certain value of this attribute among other entities in the same collection.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcScopedAttributeUniquenessType uniqueInScopes = 13;
+   */
+  uniqueInScopes: GrpcScopedAttributeUniquenessType[] = [];
 
   constructor(data?: PartialMessage<GrpcSetAttributeSchemaUniqueMutation>) {
     super();
@@ -954,6 +1080,7 @@ export class GrpcSetAttributeSchemaUniqueMutation extends Message<GrpcSetAttribu
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "unique", kind: "enum", T: proto3.getEnumType(GrpcAttributeUniquenessType) },
+    { no: 13, name: "uniqueInScopes", kind: "message", T: GrpcScopedAttributeUniquenessType, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcSetAttributeSchemaUniqueMutation {

@@ -118,7 +118,7 @@ export class EntityConverter {
             if (attributeValue.value.value != undefined) {
                 attributeMap.set(
                     attributeName,
-                    this.evitaValueConverter.convert(attributeValue)
+                    this.evitaValueConverter.convertGrpcValue(attributeValue)
                 )
             }
         }
@@ -240,7 +240,7 @@ export class EntityConverter {
         ) {
             return JSON.parse(value.value.value as string)
         } else {
-            return this.evitaValueConverter.convert(value.value.value)
+            return this.evitaValueConverter.convertGrpcValue(value.value.value)
         }
     }
 

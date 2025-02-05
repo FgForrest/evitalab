@@ -5,6 +5,7 @@
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3 } from "@bufbuild/protobuf";
+import { GrpcEntityScope } from "./GrpcEnums_pb.js";
 
 /**
  * This mutation allows to set `parent` in the `entity`.
@@ -77,6 +78,47 @@ export class GrpcRemoveParentMutation extends Message<GrpcRemoveParentMutation> 
 
   static equals(a: GrpcRemoveParentMutation | PlainMessage<GrpcRemoveParentMutation> | undefined, b: GrpcRemoveParentMutation | PlainMessage<GrpcRemoveParentMutation> | undefined): boolean {
     return proto3.util.equals(GrpcRemoveParentMutation, a, b);
+  }
+}
+
+/**
+ * This mutation allows to set scope of the entity to ARCHIVED or LIVE state.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcSetEntityScopeMutation
+ */
+export class GrpcSetEntityScopeMutation extends Message<GrpcSetEntityScopeMutation> {
+  /**
+   * The new scope of the entity.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntityScope scope = 1;
+   */
+  scope = GrpcEntityScope.SCOPE_LIVE;
+
+  constructor(data?: PartialMessage<GrpcSetEntityScopeMutation>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcSetEntityScopeMutation";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "scope", kind: "enum", T: proto3.getEnumType(GrpcEntityScope) },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcSetEntityScopeMutation {
+    return new GrpcSetEntityScopeMutation().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GrpcSetEntityScopeMutation {
+    return new GrpcSetEntityScopeMutation().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GrpcSetEntityScopeMutation {
+    return new GrpcSetEntityScopeMutation().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GrpcSetEntityScopeMutation | PlainMessage<GrpcSetEntityScopeMutation> | undefined, b: GrpcSetEntityScopeMutation | PlainMessage<GrpcSetEntityScopeMutation> | undefined): boolean {
+    return proto3.util.equals(GrpcSetEntityScopeMutation, a, b);
   }
 }
 

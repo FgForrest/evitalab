@@ -22,13 +22,13 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { TimeoutError } from '../../exception/TimeoutError'
 import { EvitaDBInstanceNetworkError } from '@/modules/driver-support/exception/EvitaDBInstanceNetworkError'
 import { LabError } from '@/modules/base/exception/LabError'
-import { ClientProvider, EvitaSessionClient } from './service/ClientProvider'
+import { ClientProvider, EvitaSessionClient, EvitaTrafficRecordingClient } from './service/ClientProvider'
 import { EntityConverter } from './service/EntityConverter'
 import { EvitaValueConverter } from './service/EvitaValueConverter'
 import { ExtraResultConverter } from './service/ExtraResultConverter'
 import { ServerStatusConverter } from './service/ServerStatusConverter'
 import ky from 'ky'
-import { OffsetDateTime } from '../../model/data-type/OffsetDateTime'
+import { OffsetDateTime, Timestamp } from '../../model/data-type/OffsetDateTime'
 import { TaskStateConverter } from './service/TaskStateConverter'
 import { GrpcDefineCatalogResponse } from '@/modules/connection/driver/grpc/gen/GrpcEvitaAPI_pb'
 import { EvitaSessionProvider } from '@/modules/connection/driver/grpc/service/EvitaSessionProvider'
@@ -55,6 +55,14 @@ import { ServerFileConverter } from '@/modules/connection/driver/grpc/service/Se
 import { PaginatedList } from '@/modules/connection/model/PaginatedList'
 import { ServerFile } from '@/modules/connection/model/server-file/ServerFile'
 import { GrpcTaskStatus } from '@/modules/connection/driver/grpc/gen/GrpcEvitaDataTypes_pb'
+import {
+    GetTrafficHistoryListRequest,
+    GetTrafficHistoryListResponse, GetTrafficRecordingLabelNamesResponse,
+    GetTrafficRecordingStatusResponse, GetTrafficRecordingValuesNamesResponse
+} from '@/modules/connection/driver/grpc/gen/GrpcEvitaTrafficRecordingAPI_pb'
+import { TrafficRecordingCaptureRequest } from '@/modules/connection/model/traffic/TrafficRecordingCaptureRequest'
+import { TrafficRecordingConverter } from '@/modules/connection/driver/grpc/service/TrafficRecordingConverter'
+import { TrafficRecord } from '@/modules/connection/model/traffic/TrafficRecord'
 
 /**
  * Chunk size for upload local backup files
@@ -85,6 +93,7 @@ export class EvitaDBDriverGrpc implements EvitaDBDriver {
     private _taskStateConverter?: TaskStateConverter
     private _serverFileConverter?: ServerFileConverter
     private _taskStatusConverter?: TaskStatusConverter
+    private _trafficRecordingConverter?: TrafficRecordingConverter
 
     private reservedKeywords?: Immutable.Map<ClassifierType, Immutable.List<Keyword>>
 
@@ -474,53 +483,56 @@ export class EvitaDBDriverGrpc implements EvitaDBDriver {
         includingWAL: boolean,
         pastMoment: OffsetDateTime | undefined
     ): Promise<TaskStatus> {
-        const res = await this.clientProvider
-            .getEvitaClient(connection)
-            .createReadWriteSession({ catalogName })
-        const result = await this.clientProvider
-            .getEvitaSessionClient(connection)
-            .backupCatalog(
-                {
-                    includingWAL,
-                    pastMoment: pastMoment != undefined
-                        ? {
-                            offset: pastMoment.offset,
-                            timestamp: pastMoment.timestamp
+        return this.evitaSessionProvider.executeInReadWriteSession(
+            connection,
+            await this.getCatalog(connection, catalogName),
+            async (sessionId) => {
+                const result = await this.clientProvider
+                    .getEvitaSessionClient(connection)
+                    .backupCatalog(
+                        {
+                            includingWAL,
+                            pastMoment: pastMoment != undefined
+                                ? {
+                                    offset: pastMoment.offset,
+                                    timestamp: pastMoment.timestamp
+                                }
+                                : undefined,
+                        },
+                        {
+                            headers: {
+                                sessionId
+                            }
                         }
-                        : undefined,
-                },
-                {
-                    headers: {
-                        sessionId: res.sessionId
-                    }
-                }
-            )
-        return this.taskStatusConverter.convert(result.taskStatus!)
+                    )
+                return this.taskStatusConverter.convert(result.taskStatus!)
+            }
+        )
     }
 
     async getMinimalBackupDate(
         connection: Connection,
         catalogName: string
     ): Promise<CatalogVersionAtResponse> {
-        const res = await this.clientProvider
-            .getEvitaClient(connection)
-            .createReadOnlySession({ catalogName })
-        const result: GrpcCatalogVersionAtResponse = await this.clientProvider
-            .getEvitaSessionClient(connection)
-            .getCatalogVersionAt(
-                {},
-                {
-                    headers: {
-                        sessionId: res.sessionId
-                    }
-                }
-            )
-        return new CatalogVersionAtResponse(
-            result.version,
-            new OffsetDateTime(
-                result.introducedAt!.timestamp!,
-                result.introducedAt!.offset
-            )
+        return this.evitaSessionProvider.executeInReadOnlySession(
+            connection,
+            await this.getCatalog(connection, catalogName),
+            async (sessionId) => {
+                const result: GrpcCatalogVersionAtResponse = await this.clientProvider
+                    .getEvitaSessionClient(connection)
+                    .getCatalogVersionAt(
+                        {},
+                        {
+                            headers: {
+                                sessionId
+                            }
+                        }
+                    )
+                return new CatalogVersionAtResponse(
+                    result.version,
+                    this.evitaValueConverter.convertGrpcOffsetDateTime(result.introducedAt!)
+                )
+            }
         )
     }
 
@@ -637,7 +649,7 @@ export class EvitaDBDriverGrpc implements EvitaDBDriver {
                 if (chunkResponse.fileId == undefined) {
                     throw new UnexpectedError('No fileId was returned for uploaded chunk. Aborting...')
                 }
-                uploadedFileId = this.evitaValueConverter.convertUUID(chunkResponse.fileId)
+                uploadedFileId = this.evitaValueConverter.convertGrpcUuid(chunkResponse.fileId)
             }
         }
 
@@ -666,6 +678,147 @@ export class EvitaDBDriverGrpc implements EvitaDBDriver {
 
         })
         return result.ok
+    }
+
+    async startTrafficRecording(connection: Connection,
+                                catalogName: string,
+                                samplingRate: number,
+                                maxDurationInMilliseconds: bigint | undefined,
+                                exportFile: boolean,
+                                maxFileSizeInBytes: bigint | undefined,
+                                chunkFileSizeInBytes: bigint | undefined): Promise<TaskStatus> {
+        return this.evitaSessionProvider.executeInReadOnlySession(
+            connection,
+            await this.getCatalog(connection, catalogName),
+            async (sessionId) => {
+                const evitaTrafficRecordingClient: EvitaTrafficRecordingClient = this.clientProvider.getEvitaTrafficRecordingClient(connection)
+                const trafficResponse: GetTrafficRecordingStatusResponse = await evitaTrafficRecordingClient.startTrafficRecording(
+                    {
+                        samplingRate,
+                        maxDurationInMilliseconds,
+                        exportFile,
+                        maxFileSizeInBytes,
+                        chunkFileSizeInBytes
+                    },
+                    {
+                        headers: {
+                            sessionId
+                        }
+                    }
+                )
+                return this.taskStatusConverter.convert(trafficResponse.taskStatus!)
+            }
+        )
+    }
+
+    async stopTrafficRecording(connection: Connection,
+                               trafficRecorderTask: TaskStatus): Promise<TaskStatus> {
+        return this.evitaSessionProvider.executeInReadOnlySession(
+            connection,
+            await this.getCatalog(connection, trafficRecorderTask.catalogName!),
+            async (sessionId) => {
+                const response: GetTrafficRecordingStatusResponse = await this.clientProvider
+                    .getEvitaTrafficRecordingClient(connection)
+                    .stopTrafficRecording(
+                        {
+                            taskStatusId: {
+                                mostSignificantBits: trafficRecorderTask.taskId.mostSignificantBits,
+                                leastSignificantBits: trafficRecorderTask.taskId.leastSignificantBits
+                            }
+                        },
+                        {
+                            headers: {
+                                sessionId
+                            }
+                        }
+                    )
+                return this.taskStatusConverter.convert(response.taskStatus!)
+            }
+        )
+    }
+
+    async getTrafficRecordHistoryList(connection: Connection,
+                                      catalogName: string,
+                                      captureRequest: TrafficRecordingCaptureRequest,
+                                      limit: number,
+                                      reverse: boolean = false): Promise<Immutable.List<TrafficRecord>> {
+        return this.evitaSessionProvider.executeInReadOnlySession(
+            connection,
+            await this.getCatalog(connection, catalogName),
+            async (sessionId) => {
+                const request: GetTrafficHistoryListRequest = new GetTrafficHistoryListRequest({
+                    limit,
+                    criteria: this.trafficRecordingConverter.convertTrafficRecordingCaptureRequest(
+                        captureRequest
+                    )
+                })
+                const metadata = {
+                    headers: { sessionId }
+                }
+
+                let response: GetTrafficHistoryListResponse
+                if (!reverse) {
+                    response = await this.clientProvider
+                        .getEvitaTrafficRecordingClient(connection)
+                        .getTrafficRecordingHistoryList(request, metadata)
+                } else {
+                    response = await this.clientProvider
+                        .getEvitaTrafficRecordingClient(connection)
+                        .getTrafficRecordingHistoryListReversed(request, metadata)
+                }
+                return this.trafficRecordingConverter.convertGrpcTrafficRecords(response.trafficRecord)
+            }
+        )
+    }
+
+    async getTrafficRecordingLabelNamesOrderedByCardinality(connection: Connection,
+                                                            catalogName: string,
+                                                            nameStartsWith: string,
+                                                            limit: number): Promise<Immutable.List<string>> {
+        return this.evitaSessionProvider.executeInReadOnlySession(
+            connection,
+            await this.getCatalog(connection, catalogName),
+            async (sessionId) => {
+                const response: GetTrafficRecordingLabelNamesResponse = await this.clientProvider
+                    .getEvitaTrafficRecordingClient(connection)
+                    .getTrafficRecordingLabelsNamesOrderedByCardinality(
+                        {
+                            nameStartsWith,
+                            limit
+                        },
+                        {
+                            headers: { sessionId }
+                        }
+                    )
+                return Immutable.List(response.labelName || [])
+            }
+        )
+    }
+
+    async getTrafficRecordingLabelValuesOrderedByCardinality(connection: Connection,
+                                                            catalogName: string,
+                                                            labelName: string,
+                                                            valueStartsWith: string,
+                                                            limit: number): Promise<Immutable.List<string>> {
+        return this.evitaSessionProvider.executeInReadOnlySession(
+            connection,
+            await this.getCatalog(connection, catalogName),
+            async (sessionId) => {
+                const response: GetTrafficRecordingValuesNamesResponse = await this.clientProvider
+                    .getEvitaTrafficRecordingClient(connection)
+                    .getTrafficRecordingLabelValuesOrderedByCardinality(
+                        {
+                            labelName,
+                            valueStartsWith,
+                            limit
+                        },
+                        {
+                            headers: { sessionId }
+                        }
+                    )
+                return Immutable.List(response.labelValue || [])
+            }
+        )
     }
 
     async restoreCatalogFromServerFile(
@@ -775,18 +928,29 @@ export class EvitaDBDriverGrpc implements EvitaDBDriver {
 
     private get serverFileConverter(): ServerFileConverter {
         if (this._serverFileConverter == undefined) {
-            this._serverFileConverter = new ServerFileConverter()
+            this._serverFileConverter = new ServerFileConverter(this.evitaValueConverter)
         }
         return this._serverFileConverter
     }
+
     private get taskStatusConverter(): TaskStatusConverter {
         if (this._taskStatusConverter == undefined) {
             this._taskStatusConverter = new TaskStatusConverter(
+                this.evitaValueConverter,
                 this.taskStateConverter,
                 this.serverFileConverter
             )
         }
         return this._taskStatusConverter
+    }
+
+    private get trafficRecordingConverter(): TrafficRecordingConverter {
+        if (this._trafficRecordingConverter == undefined) {
+            this._trafficRecordingConverter = new TrafficRecordingConverter(
+                this.evitaValueConverter
+            )
+        }
+        return this._trafficRecordingConverter
     }
 
     private handleCallError(e: any, connection?: Connection): LabError {

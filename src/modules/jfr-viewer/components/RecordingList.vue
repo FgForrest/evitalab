@@ -42,7 +42,7 @@ const pageSize = ref<number>(20)
 
 async function loadRecordings(): Promise<boolean> {
     try {
-        recordings.value = await jfrViewerService.getRecordings(props.connection)
+        recordings.value = await jfrViewerService.getRecordings(props.connection, pageNumber.value, pageSize.value)
 
         if (recordings.value.pageNumber > 1 && recordings.value?.data.size === 0) {
             pageNumber.value--

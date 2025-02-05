@@ -66,6 +66,7 @@ onUnmounted(() => {
                 :tab-params="tabProps.params"
                 :tab-data="currentData"
                 :disabled="!tabProps.params.dataPointer.connection.preconfigured"
+                :command="Command.EntityViewer_ShareTab"
             />
 
             <VExecuteQueryButton :loading="loading" @click="emit('executeQuery')">

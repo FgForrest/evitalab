@@ -38,6 +38,7 @@ evitaLab allows you to:
 - [x] manage connections to multiple evitaDB instances
 - [x] manage server (status, tasks, JFR recordings)
 - [x] manage catalogs and collections
+- [x] analyze server traffic
 
 evitaLab is still in active development and new features are being added fairly frequently.
 

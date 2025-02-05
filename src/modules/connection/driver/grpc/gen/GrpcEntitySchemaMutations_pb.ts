@@ -6,7 +6,7 @@
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3, StringValue } from "@bufbuild/protobuf";
 import { GrpcCurrency, GrpcLocale } from "./GrpcEvitaDataTypes_pb.js";
-import { GrpcEvolutionMode } from "./GrpcEnums_pb.js";
+import { GrpcEntityScope, GrpcEvolutionMode } from "./GrpcEnums_pb.js";
 
 /**
  * Mutation is responsible for adding one or more currencies to a `EntitySchema.currencies` in `EntitySchema`.
@@ -408,6 +408,16 @@ export class GrpcSetEntitySchemaWithHierarchyMutation extends Message<GrpcSetEnt
    */
   withHierarchy = false;
 
+  /**
+   * Contains set of all scopes the entity is indexed in and can be used for filtering entities and computation of
+   * extra data. If the hierarchy information is not indexed, it is still available on the entity itself (i.e. entity
+   * can define its parent entity), but it is not possible to work with the hierarchy information in any other way
+   * (calculating parent chain, children, siblings, etc.).
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope indexedInScopes = 2;
+   */
+  indexedInScopes: GrpcEntityScope[] = [];
+
   constructor(data?: PartialMessage<GrpcSetEntitySchemaWithHierarchyMutation>) {
     super();
     proto3.util.initPartial(data, this);
@@ -417,6 +427,7 @@ export class GrpcSetEntitySchemaWithHierarchyMutation extends Message<GrpcSetEnt
   static readonly typeName = "io.evitadb.externalApi.grpc.generated.GrpcSetEntitySchemaWithHierarchyMutation";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "withHierarchy", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 2, name: "indexedInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcSetEntitySchemaWithHierarchyMutation {
@@ -469,6 +480,18 @@ export class GrpcSetEntitySchemaWithPriceMutation extends Message<GrpcSetEntityS
    */
   indexedPricePlaces = 0;
 
+  /**
+   * Contains set of all scopes the price information is indexed in and can be used for filtering entities and computation
+   * of extra data. If the price information is not indexed, it is still available on the entity itself (i.e. entity
+   * can define its price), but it is not possible to work with the price information in any other way (calculating
+   * price histogram, filtering, sorting by price, etc.).
+   *
+   * Prices can be also set as non-indexed individually by setting {@link PriceContract#indexed()} to false.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope indexedInScopes = 3;
+   */
+  indexedInScopes: GrpcEntityScope[] = [];
+
   constructor(data?: PartialMessage<GrpcSetEntitySchemaWithPriceMutation>) {
     super();
     proto3.util.initPartial(data, this);
@@ -479,6 +502,7 @@ export class GrpcSetEntitySchemaWithPriceMutation extends Message<GrpcSetEntityS
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "withPrice", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
     { no: 2, name: "indexedPricePlaces", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 3, name: "indexedInScopes", kind: "enum", T: proto3.getEnumType(GrpcEntityScope), repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcSetEntitySchemaWithPriceMutation {

@@ -5,15 +5,20 @@
 
 const props = defineProps<{
     icon?: string,
-    title?: string
+    title?: string,
+    color?: string
 }>()
 </script>
 
 <template>
     <div class="missing-data-indicator text-disabled">
         <slot>
-            <VIcon>{{ icon }}</VIcon>
-            <span>{{ title }}</span>
+            <VIcon :color="color">{{ icon }}</VIcon>
+            <span class="missing-data-indicator__title">{{ title }}</span>
+
+            <div class="missing-data-indicator__actions">
+                <slot name="actions" />
+            </div>
         </slot>
     </div>
 </template>
@@ -23,6 +28,7 @@ const props = defineProps<{
     align-self: stretch;
     flex-grow: 2;
     height: 100%;
+    width: 100%;
 
     display: flex;
     flex-direction: column;
@@ -32,6 +38,18 @@ const props = defineProps<{
 
     i {
         font-size: 4rem;
+    }
+
+    &__title {
+        max-width: 35rem;
+        text-align: center;
+    }
+
+    &__actions {
+        margin-top: 0.5rem;
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
     }
 }
 </style>

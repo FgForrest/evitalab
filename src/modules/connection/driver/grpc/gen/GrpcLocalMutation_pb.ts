@@ -8,7 +8,7 @@ import { Message, proto3 } from "@bufbuild/protobuf";
 import { GrpcApplyDeltaAttributeMutation, GrpcRemoveAttributeMutation, GrpcUpsertAttributeMutation } from "./GrpcAttributeMutations_pb.js";
 import { GrpcRemoveAssociatedDataMutation, GrpcUpsertAssociatedDataMutation } from "./GrpcAssociatedDataMutations_pb.js";
 import { GrpcRemovePriceMutation, GrpcSetPriceInnerRecordHandlingMutation, GrpcUpsertPriceMutation } from "./GrpcPriceMutations_pb.js";
-import { GrpcRemoveParentMutation, GrpcSetParentMutation } from "./GrpcEntityMutations_pb.js";
+import { GrpcRemoveParentMutation, GrpcSetEntityScopeMutation, GrpcSetParentMutation } from "./GrpcEntityMutations_pb.js";
 import { GrpcInsertReferenceMutation, GrpcReferenceAttributeMutation, GrpcRemoveReferenceGroupMutation, GrpcRemoveReferenceMutation, GrpcSetReferenceGroupMutation } from "./GrpcReferenceMutations_pb.js";
 
 /**
@@ -147,6 +147,14 @@ export class GrpcLocalMutation extends Message<GrpcLocalMutation> {
      */
     value: GrpcReferenceAttributeMutation;
     case: "referenceAttributeMutation";
+  } | {
+    /**
+     * This mutation allows to set scope of the entity to ARCHIVED or LIVE state.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcSetEntityScopeMutation setEntityScopeMutation = 16;
+     */
+    value: GrpcSetEntityScopeMutation;
+    case: "setEntityScopeMutation";
   } | { case: undefined; value?: undefined } = { case: undefined };
 
   constructor(data?: PartialMessage<GrpcLocalMutation>) {
@@ -172,6 +180,7 @@ export class GrpcLocalMutation extends Message<GrpcLocalMutation> {
     { no: 13, name: "setReferenceGroupMutation", kind: "message", T: GrpcSetReferenceGroupMutation, oneof: "mutation" },
     { no: 14, name: "removeReferenceGroupMutation", kind: "message", T: GrpcRemoveReferenceGroupMutation, oneof: "mutation" },
     { no: 15, name: "referenceAttributeMutation", kind: "message", T: GrpcReferenceAttributeMutation, oneof: "mutation" },
+    { no: 16, name: "setEntityScopeMutation", kind: "message", T: GrpcSetEntityScopeMutation, oneof: "mutation" },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GrpcLocalMutation {

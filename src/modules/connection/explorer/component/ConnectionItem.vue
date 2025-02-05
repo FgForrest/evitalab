@@ -44,6 +44,11 @@ import { ServerViewerTabDefinition } from '@/modules/server-viewer/model/ServerV
 import { TaskViewerTabDefinition } from '@/modules/task-viewer/model/TaskViewerTabDefinition'
 import { JfrViewerTabDefinition } from '@/modules/jfr-viewer/model/JfrViewerTabDefinition'
 import { BackupViewerTabDefinition } from '@/modules/backup-viewer/model/BackupViewerTabDefinition'
+import {
+    TrafficRecordingsViewerTabFactory,
+    useTrafficRecordingsViewerTabFactory
+} from '@/modules/traffic-viewer/service/TrafficRecordingsViewerTabFactory'
+import { TrafficRecordingsViewerTabDefinition } from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabDefinition'
 
 const evitaLabConfig: EvitaLabConfig = useEvitaLabConfig()
 const workspaceService: WorkspaceService = useWorkspaceService()
@@ -52,6 +57,7 @@ const graphQLConsoleTabFactory: GraphQLConsoleTabFactory = useGraphQLConsoleTabF
 const serverStatusTabFactory: ServerViewerTabFactory = useServerStatusTabFactory()
 const taskViewerTabFactory: TaskViewerTabFactory = useTaskViewerTabFactory()
 const jfrViewerTabFactory: JfrViewerTabFactory = useJfrViewerTabFactory()
+const trafficViewerTabFactory: TrafficRecordingsViewerTabFactory = useTrafficRecordingsViewerTabFactory()
 const backupsService: BackupViewerTabFactory = useBackupsTabFactory()
 
 const toaster: Toaster = useToaster()
@@ -216,9 +222,20 @@ async function createActions(): Promise<Map<ConnectionItemType, MenuItem<Connect
             TaskViewerTabDefinition.icon(),
             () => {
                 workspaceService.createTab(
-                    taskViewerTabFactory.createNew(
-                        props.connection
-                    )
+                    taskViewerTabFactory.createNew(props.connection)
+                )
+            },
+            serverWritable
+        )
+    )
+    actions.set(
+        ConnectionItemType.TrafficRecordings,
+        createMenuAction(
+            ConnectionItemType.TrafficRecordings,
+            TrafficRecordingsViewerTabDefinition.icon(),
+            () => {
+                workspaceService.createTab(
+                    trafficViewerTabFactory.createNew(props.connection)
                 )
             },
             serverWritable
