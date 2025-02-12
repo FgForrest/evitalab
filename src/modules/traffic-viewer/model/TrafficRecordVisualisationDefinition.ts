@@ -120,7 +120,7 @@ export class MetadataItem {
         let durationIndicator: MetadataItemSeverity = MetadataItemSeverity.Success
         if (thresholds != undefined) {
             if (durationInMillis > thresholds[1]) {
-                durationIndicator = MetadataItemSeverity.Failure
+                durationIndicator = MetadataItemSeverity.Error
             } else if (durationInMillis > thresholds[0]) {
                 durationIndicator = MetadataItemSeverity.Warning
             }
@@ -132,7 +132,7 @@ export class MetadataItem {
             i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.duration'),
             // note: typescript cannot comprehend that there is luxon extensions that overrides it...
             // @ts-ignore
-            duration.toHuman({ smallestUnit: 'milliseconds', biggestUnit: 'milliseconds' }),
+            duration.toShortHuman(),
             durationIndicator
         )
     }
@@ -176,9 +176,9 @@ export class MetadataItem {
             return new MetadataItem(
                 metadataItemFinishedStatusIdentifier,
                 'mdi-alert-circle-outline',
-                i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.finishedStatus.tooltip.error', { error: finishedWithError }),
+                i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.finishedStatus.tooltip.error', { error: JSON.stringify(finishedWithError) }),
                 i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.finishedStatus.status.error'),
-                MetadataItemSeverity.Failure
+                MetadataItemSeverity.Error
             )
         }
     }
@@ -216,7 +216,7 @@ export class MetadataGroup {
 export enum MetadataItemSeverity {
     Success = 'success',
     Warning = 'warning',
-    Failure = 'failure',
+    Error = 'error',
     Info = 'info'
 }
 

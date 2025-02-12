@@ -1,7 +1,12 @@
 import { Duration, DurationLikeObject, DurationUnit, ToHumanDurationOptions } from 'luxon'
 import { App, Plugin } from 'vue'
+import { round } from '@/utils/number'
 
 interface LuxonExtensionsOptions {}
+
+const hourInMillis: number = 60 * 60 * 1000
+const minuteInMillis: number = 60 * 1000
+const secondInMillis: number = 1000
 
 const LuxonExtensions: Plugin = {
     install(app: App, options: LuxonExtensionsOptions) {
@@ -105,6 +110,20 @@ const LuxonExtensions: Plugin = {
 
             return duration.shiftTo(...durationUnits).__toHuman__(opts);
         };
+        (Duration.prototype as any).toShortHuman = function (): string {
+            const normalized: Duration<any> = this.normalize();
+            const millis: number = normalized.toMillis()
+
+            if (millis > hourInMillis) {
+                return `${round(millis / hourInMillis, 2)} h`
+            } else if (millis > minuteInMillis) {
+                return `${round(millis / minuteInMillis, 2)} min`
+            } else if (millis > secondInMillis) {
+                return `${round(millis / secondInMillis, 2)} s`
+            } else {
+                return `${millis} ms`
+            }
+        }
     }
 }
 export default LuxonExtensions

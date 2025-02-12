@@ -1398,7 +1398,7 @@
           },
           "maxDurationInMilliseconds": {
             "label": "Maximum duration",
-            "hint": "The duration of the recording, after this time the recording will be stopped automatically. Use combination of h, m, s, or ms units.",
+            "hint": "The duration of the recording, after this time the recording will be stopped automatically. Use combination of h, min, s, or ms units.",
             "validations": {
               "notDuration": "Maximum duration must be duration string.",
               "outOfRange": "Maximum duration must be positive number and less than 2^63-1 in milliseconds."
@@ -1491,7 +1491,7 @@
           },
           "longerThan": {
             "label": "Longer than",
-            "hint": "Specifies the minimum duration in milliseconds of the traffic recording to be returned. Use combination of h, m, s, or ms units.",
+            "hint": "Specifies the minimum duration in milliseconds of the traffic recording to be returned. Use combination of h, min, s, or ms units.",
             "validations": {
               "notNumber": "Threshold must be a duration.",
               "outOfRange": "Threshold must be positive number and less than 2^53-1."

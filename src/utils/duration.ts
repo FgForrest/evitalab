@@ -1,10 +1,10 @@
-const humanDurationPartPattern: RegExp = /^(\d+)(ms|[hms])$/
+const humanDurationPartPattern: RegExp = /^(\d+)(h|min|s|ms)$/
 const hourInMs: bigint = BigInt(60 * 60 * 1000)
 const minuteInMs: bigint = BigInt(60 * 1000)
 const secondInMs: bigint = BigInt(1000)
 
 /**
- * Parses duration in human format e.g.: 1h 23m 22ms
+ * Parses duration in human format e.g.: 1h 23min 22ms
  */
 export function parseHumanDurationToMs(humanDuration: string): bigint {
     if (humanDuration.length === 0) {
@@ -22,7 +22,7 @@ export function parseHumanDurationToMs(humanDuration: string): bigint {
 
         switch (unit) {
             case 'h': durationInMs += value * hourInMs; break
-            case 'm': durationInMs += value * minuteInMs; break
+            case 'min': durationInMs += value * minuteInMs; break
             case 's': durationInMs += value * secondInMs; break
             case 'ms': durationInMs += value; break
             default: throw new Error(`Unsupported duration unit '${unit}'.`)

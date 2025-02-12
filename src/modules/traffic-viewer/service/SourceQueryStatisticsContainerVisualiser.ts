@@ -10,6 +10,7 @@ import {
 import { SourceQueryStatisticsContainer } from '@/modules/connection/model/traffic/SourceQueryStatisticsContainer'
 import { i18n } from '@/vue-plugins/i18n'
 import { formatCount } from '@/utils/string'
+import { SourceQueryContainer } from '@/modules/connection/model/traffic/SourceQueryContainer'
 
 /**
  * Source query statistics container isn't visualised but controls the flow of rendered UI.
@@ -29,20 +30,19 @@ export class SourceQueryStatisticsContainerVisualiser extends TrafficRecordVisua
         }
 
         const defaultMetadata: MetadataGroup = visualisedSourceQueryRecord.defaultMetadata!
-        const originalFinishedStatus: MetadataItem | undefined = defaultMetadata.items.find(item => item.identifier === metadataItemFinishedStatusIdentifier)
         const newMergedDefaultMetadata: MetadataItem[] = defaultMetadata.items.filter(item =>
             item.identifier !== metadataItemFinishedStatusIdentifier &&
             item.identifier !== 'noStatistics')
-        newMergedDefaultMetadata.push(...this.constructMetadata(trafficRecord, originalFinishedStatus))
+        newMergedDefaultMetadata.push(...this.constructMetadata(trafficRecord, visualisedSourceQueryRecord.source as SourceQueryContainer))
 
         defaultMetadata.items = newMergedDefaultMetadata
     }
 
     private constructMetadata(trafficRecord: SourceQueryStatisticsContainer,
-                              originalFinishedStatus: MetadataItem | undefined): MetadataItem[] {
+                              sourceQueryRecord: SourceQueryContainer): MetadataItem[] {
         const defaultMetadata: MetadataItem[] = []
 
-        const finishedWithError: string = [originalFinishedStatus, trafficRecord.finishedWithError]
+        const finishedWithError: string = [sourceQueryRecord.finishedWithError, trafficRecord.finishedWithError]
             .filter(status => status != undefined)
             .join('; ')
 

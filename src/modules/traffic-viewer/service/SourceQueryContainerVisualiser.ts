@@ -86,6 +86,10 @@ export class SourceQueryContainerVisualiser extends TrafficRecordVisualiser<Sour
             defaultMetadata.push(MetadataItem.sessionId(trafficRecord.sessionId))
         }
         defaultMetadata.push(MetadataItem.created(trafficRecord.created))
+        if (trafficRecord.finishedWithError != undefined) {
+            // at the start of source query, we want to display only errors, not success of the source query only
+            defaultMetadata.push(MetadataItem.finishedStatus(trafficRecord.finishedWithError))
+        }
         defaultMetadata.push(new MetadataItem(
             'noStatistics',
             'mdi-alert-outline',
