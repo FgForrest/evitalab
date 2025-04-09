@@ -44,7 +44,7 @@ jobs:
 
       - name: Resolve minimum evitaDB version
         id: min_evitadb_version
-        run: cat .evitadbrc >> "$GITHUB_OUTPUT"
+        run: echo "version=$(cat .evitadbrc)" >> "$GITHUB_OUTPUT"
 
       - name: Setup Node.js
         uses: actions/setup-node@v3

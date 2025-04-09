@@ -29,16 +29,16 @@ You can try out evitaLab with evitaDB demo dataset at [demo.evitadb.io](https://
 
 evitaLab allows you to:
 
-- [x] inspect schemas
-- [x] browse entities in interactive table
-- [x] execute GraphQL queries
-- [x] execute evitaQL queries
-- [x] visualise extra results
-- [x] share tabs between developers
-- [x] manage connections to multiple evitaDB instances
-- [x] manage server (status, tasks, JFR recordings)
-- [x] manage catalogs and collections
-- [x] analyze server traffic
+- ✅ inspect schemas
+- ✅ browse entities in interactive table
+- ✅ execute GraphQL queries
+- ✅ execute evitaQL queries
+- ✅ visualise extra results
+- ✅ share tabs between developers
+- ✅ manage connections to multiple evitaDB instances
+- ✅ manage server (status, tasks, JFR recordings)
+- ✅ manage catalogs and collections
+- ✅ analyze server traffic
 
 However, evitaLab is still in active development and more features are planned.
 
@@ -52,12 +52,12 @@ If you are looking for full local development experience, checkout the [evitaLab
 application instead. The desktop app builds on top of this evitaLab core and add proper server connection management as 
 well as other useful features:
 
-- connect to any server version in one app
-- receive evitaLab core updates as soon as they are released without waiting for server update
-- each connection stores its own tabs and history, even if each connection points to same server URL
+- ✅ connect to any server version in one app
+- ✅ receive evitaLab core updates as soon as they are released without waiting for server update
+- ✅ each connection stores its own tabs and history, even if each connection points to same server URL
     - _this is useful when you are using port forwarding for different server environments (prod, test, local) where local port is the same for each environment_
-- connections styling for better distinction between servers and environments
-- global notification system - displays toast notifications from desktop app and connections in one place
+- ✅ connections styling for better distinction between servers and environments
+- ✅ global notification system - displays toast notifications from desktop app and connections in one place
     - _this way you can see notifications from all connections all the time_
 
 ### Embedded in local evitaDB instance
