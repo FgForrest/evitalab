@@ -57,7 +57,7 @@ function initialize() {
             entityRepresentativeAttributes.push(...representativeAttributes)
             initialized.value = true
         })
-        .catch((e: Error) => toaster.error(e))
+        .catch((e: Error) => toaster.error('Could not load hierarchies', e).then())
 }
 initialize()
 </script>

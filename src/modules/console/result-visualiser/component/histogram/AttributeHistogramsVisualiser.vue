@@ -29,7 +29,7 @@ const histogramsByAttributes = computed<[AttributeSchema, VisualisedHistogram][]
             .getAttributeHistogramsService()
             .resolveAttributeHistogramsByAttributes(props.attributeHistogramsResult, props.entitySchema)
     } catch (e: any) {
-        toaster.error(e)
+        toaster.error('Could not resolve attribute histograms', e).then() // todo lho i18n
         return []
     }
 })

@@ -2,6 +2,7 @@ import { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import Immutable from 'immutable'
 import { Router } from 'vue-router'
+import { LabRunMode } from '@/LabRunMode'
 
 const systemPropertiesControlParamName: string = 'evitalab'
 const systemPropertyUrlPrefix: string = 'evitalab-'
@@ -24,16 +25,22 @@ export const evitaLabConfigInjectionKey: InjectionKey<EvitaLabConfig> = Symbol('
  */
 export class EvitaLabConfig {
 
+    private readonly _runMode: LabRunMode
+    private readonly _playgroundMode: boolean
     private readonly systemProperties: Immutable.Map<string, string>
 
-    private constructor(systemProperties: Immutable.Map<string, string>) {
+    private constructor(runMode: LabRunMode,
+                        playgroundMode: boolean,
+                        systemProperties: Immutable.Map<string, string>) {
+        this._runMode = runMode
+        this._playgroundMode = playgroundMode
         this.systemProperties = systemProperties
     }
 
     /**
      * Load config
      */
-    static load(router: Router): EvitaLabConfig {
+    static async load(router: Router): Promise<EvitaLabConfig> {
         const systemProperties: Map<string, string> = new Map()
 
         // resolve system properties from URL and hide them from user
@@ -49,12 +56,38 @@ export class EvitaLabConfig {
             }
         })
         // keep in URL only non-system-property params
-        router.replace({
+        await router.replace({
             path: window.location.pathname,
             query: Object.fromEntries(newQueryParams.entries())
         })
 
-        return new EvitaLabConfig(Immutable.Map(systemProperties));
+        // resolve run mode
+        const rawRunMode: string | undefined = import.meta.env.VITE_RUN_MODE
+        let runMode: LabRunMode
+        if (rawRunMode == undefined || rawRunMode.trim() === '' || rawRunMode === LabRunMode.Standalone) {
+            runMode = LabRunMode.Standalone
+        } else if (rawRunMode === LabRunMode.Driver) {
+            runMode = LabRunMode.Driver
+        } else {
+            throw new Error(`Unsupported run mode ${rawRunMode}`)
+        }
+
+        // resolve playground mode
+        const playgroundMode: boolean = newQueryParams.has('demoSnippetRequest') ||
+            newQueryParams.has('sharedTab')
+
+        return new EvitaLabConfig(runMode, playgroundMode, Immutable.Map(systemProperties));
+    }
+
+    get runMode(): LabRunMode {
+        return this._runMode
+    }
+
+    /**
+     * Represents editor mode where user data aren't stored at the end of the session. Useful for demo snippets or shared tabs.
+     */
+    get playgroundMode(): boolean {
+        return this._playgroundMode
     }
 
     get serverName(): string {

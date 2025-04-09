@@ -146,7 +146,7 @@ async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) 
         fetchError.value = undefined
 
         if (fetchedRecords.size === 0) {
-            toaster.info(t('trafficViewer.recordHistory.list.notification.noNewerRecords'))
+            await toaster.info(t('trafficViewer.recordHistory.list.notification.noNewerRecords'))
             done('ok')
             return
         }
@@ -186,7 +186,7 @@ async function tryReloadHistoryForPossibleNewRecords(): Promise<void> {
     await reloadHistory()
     fetchingNewRecordsWhenThereArentAny.value = false
     if (history.value.length === 0) {
-        toaster.info(t('trafficViewer.recordHistory.list.notification.noNewerRecords'))
+        await toaster.info(t('trafficViewer.recordHistory.list.notification.noNewerRecords'))
         return
     }
 }
@@ -234,7 +234,7 @@ function handleRecordFetchError(e: any): void {
     toaster.error(t(
         'trafficViewer.recordHistory.notification.couldNotLoadRecords',
         { reason: e.message }
-    ))
+    )).then()
 }
 
 async function moveStartPointerToNewest(): Promise<void> {
@@ -254,7 +254,7 @@ async function moveStartPointerToNewest(): Promise<void> {
             emit('update:startPointerActive', true)
         }
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'trafficViewer.recordHistory.notification.couldNotLoadLatestRecording',
             { reason: e.message }
         ))

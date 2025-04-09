@@ -49,14 +49,14 @@ function reset(): void {
 async function create(): Promise<boolean> {
     try {
         await catalogItemService.createCatalog(props.connection, catalogName.value)
-        toaster.success(t(
+        await toaster.success(t(
             'explorer.catalog.create.notification.catalogCreated',
             { catalogName: catalogName.value }
         ))
         emit('create')
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'explorer.catalog.create.notification.couldNotCreateCatalog',
             {
                 catalogName: catalogName.value,

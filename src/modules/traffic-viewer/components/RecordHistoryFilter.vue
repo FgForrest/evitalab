@@ -202,7 +202,7 @@ async function applyChangedCriteria(): Promise<void> {
     //@ts-ignore
     const { valid }: any = await form.value.validate()
     if (!valid) {
-        toaster.error(t('trafficViewer.recordHistory.filter.notification.invalidFilter'))
+        await toaster.error(t('trafficViewer.recordHistory.filter.notification.invalidFilter'))
         return
     }
 

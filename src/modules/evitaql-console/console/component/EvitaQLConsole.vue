@@ -215,12 +215,10 @@ async function executeQuery(): Promise<void> {
                 variablesCode.value
             )
         )
-    } catch (e) {
-        console.error(e)
-        toaster.error(
-            new UnexpectedError(
-                t('evitaQLConsole.notification.failedToSaveQueryToHistory')
-            )
+    } catch (e: any) {
+        await toaster.error(
+            t('evitaQLConsole.notification.failedToSaveQueryToHistory'),
+            e
         )
     }
 
@@ -238,7 +236,7 @@ async function executeQuery(): Promise<void> {
             focusRawResultEditor()
         }
     } catch (error: any) {
-        toaster.error(error)
+        await toaster.error('Could not execute query', error) // todo lho i18n
         loading.value = false
     }
 }

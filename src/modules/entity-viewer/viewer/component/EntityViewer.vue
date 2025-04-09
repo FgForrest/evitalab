@@ -177,7 +177,7 @@ onBeforeMount(() => {
             }
         })
         .catch(error => {
-            toaster.error(error)
+            toaster.error('Could not initialize entity viewer', error).then() // todo lho i18n
         })
 })
 
@@ -241,7 +241,7 @@ function preselectEntityProperties(): void {
             toaster.info(t(
                 'entityViewer.grid.notification.failedToFindRequestedProperties',
                 { keys: notFoundProperties.map(it => `'${it}'`).join(', ') }
-            ))
+            )).then()
         }
     } else {
         // preselect default properties
@@ -264,7 +264,7 @@ async function gridUpdated({ page, itemsPerPage, sortBy }: { page: number, items
         try {
             orderByCode.value = await entityViewerService.buildOrderByFromGridColumns(props.params.dataPointer, selectedQueryLanguage.value, sortBy)
         } catch (error: any) {
-            toaster.error(error)
+            await toaster.error('Could not build orderBy', error) // todo lho i18n
         }
     }
 
@@ -318,7 +318,7 @@ async function executeQuery(): Promise<void> {
 
         lastAppliedFilterByCode.value = filterByCode.value
     } catch (error: any) {
-        toaster.error(error)
+        await toaster.error(t('entityViewer.notification.couldNotExecuteQuery'), error)
     }
 
     loading.value = false

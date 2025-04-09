@@ -23,20 +23,20 @@ async function drop(): Promise<boolean> {
     try {
         const dropped: boolean = await catalogItemService.dropCatalog(props.connection, props.catalogName)
         if (dropped) {
-            toaster.success(t(
+            await toaster.success(t(
                 'explorer.catalog.drop.notification.catalogDropped',
                 { catalogName: props.catalogName }
             ))
             emit('drop')
         } else {
-            toaster.info(t(
+            await toaster.info(t(
                 'explorer.catalog.drop.notification.catalogNotDropped',
                 { catalogName: props.catalogName }
             ))
         }
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'explorer.catalog.drop.notification.couldNotDropCatalog',
             {
                 catalogName: props.catalogName,

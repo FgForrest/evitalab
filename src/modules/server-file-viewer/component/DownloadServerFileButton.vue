@@ -21,7 +21,7 @@ function onCouldNotDownloadResultFile(e: Error): void {
             fileName: props.file.name,
             reason: e.message
         }
-    ))
+    )).then()
 }
 </script>
 

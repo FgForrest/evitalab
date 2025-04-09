@@ -23,14 +23,14 @@ async function stopRecording(): Promise<boolean> {
         // todo lho revise driver logic
         const stopped: boolean = await jfrViewerService.stopRecording(props.connection)
         if (stopped) {
-            toaster.success(t('jfrViewer.stopRecording.notification.recordingStopped'))
+            await toaster.success(t('jfrViewer.stopRecording.notification.recordingStopped'))
             emit('end')
         } else {
-            toaster.info(t('jfrViewer.stopRecording.notification.recordingNotStopped'))
+            await toaster.info(t('jfrViewer.stopRecording.notification.recordingNotStopped'))
         }
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'jfrViewer.stopRecording.notification.couldNotStopRecording',
             { reason: e.message }
         ))

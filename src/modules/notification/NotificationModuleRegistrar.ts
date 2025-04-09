@@ -1,25 +1,32 @@
 import { ModuleRegistrar } from '@/ModuleRegistrar'
-import { ToastInterface } from 'vue-toastification/src/ts/interface'
-import { useToast as baseUseToast } from 'vue-toastification'
 import { WorkspaceService, workspaceServiceInjectionKey } from '@/modules/workspace/service/WorkspaceService'
-import { Toaster, toasterInjectionKey } from '@/modules/notification/service/Toaster'
+import { toasterInjectionKey } from '@/modules/notification/service/Toaster'
 import {
     ErrorViewerTabFactory,
     errorViewerTabFactoryInjectionKey
 } from '@/modules/error-viewer/viewer/workspace/service/ErrorViewerTabFactory'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
+import { EvitaLabConfig, evitaLabConfigInjectionKey } from '@/modules/config/EvitaLabConfig'
+import { ToasterFactory } from '@/modules/notification/service/ToasterFactory'
+import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
 
 // todo lho docs
 export class NotificationModuleRegistrar implements ModuleRegistrar {
 
-    register(builder: ModuleContextBuilder): void {
-        const baseToast: ToastInterface = baseUseToast()
+    async register(builder: ModuleContextBuilder): Promise<void> {
+        const evitaLabConfig: EvitaLabConfig = builder.inject(evitaLabConfigInjectionKey)
+        const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
         const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
         const errorViewerTabFactory: ErrorViewerTabFactory = builder.inject(errorViewerTabFactoryInjectionKey)
 
         builder.provide(
             toasterInjectionKey,
-            new Toaster(baseToast, workspaceService, errorViewerTabFactory)
+            ToasterFactory.createToaster(
+                evitaLabConfig,
+                connectionService,
+                workspaceService,
+                errorViewerTabFactory
+            )
         )
     }
 }

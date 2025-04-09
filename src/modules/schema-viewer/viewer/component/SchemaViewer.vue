@@ -61,7 +61,7 @@ const schemaLoaded = ref<boolean>(false)
 const schema = ref<any>()
 schemaViewerService.getSchema(props.params.dataPointer)
     .catch(error => {
-        toaster.error(error)
+        toaster.error('Could not load schema', error).then() // todo lho i18n
     })
     .then(s => {
         schema.value = s

@@ -8,7 +8,8 @@ import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 // todo docs
 export class ErrorViewerModuleRegistrar implements ModuleRegistrar {
 
-    register(builder: ModuleContextBuilder): void {
-        builder.provide(errorViewerTabFactoryInjectionKey, new ErrorViewerTabFactory())
+    async register(builder: ModuleContextBuilder): Promise<void> {
+        // todo lho fix circular dep
+        // builder.provide(errorViewerTabFactoryInjectionKey, new ErrorViewerTabFactory())
     }
 }

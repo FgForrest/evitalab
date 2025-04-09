@@ -9,7 +9,7 @@ import {
 // todo docs
 export class ServerViewerModuleRegistrar implements ModuleRegistrar {
 
-    register(builder: ModuleContextBuilder): void {
+    async register(builder: ModuleContextBuilder): Promise<void> {
         const evitaDBDriverResolver: EvitaDBDriverResolver = builder.inject(evitaDBDriverResolverInjectionKey)
         const serverViewerService: ServerViewerService = new ServerViewerService(evitaDBDriverResolver)
         builder.provide(serverViewerServiceInjectionKey, serverViewerService)

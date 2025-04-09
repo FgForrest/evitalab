@@ -116,13 +116,12 @@ watch(showPropertiesSelect, (newValue) => {
     }
 })
 
-function executeQuery(): void {
+async function executeQuery(): Promise<void> {
     try {
         workspaceService.addTabHistoryRecord(filterByHistoryKey.value, props.filterBy)
         workspaceService.addTabHistoryRecord(orderByHistoryKey.value, props.orderBy)
-    } catch (e) {
-        console.error(e)
-        toaster.error(new UnexpectedError(t('entityViewer.queryInput.notification.failedToSaveQueryToHistory')))
+    } catch (e: any) {
+        await toaster.error(t('entityViewer.queryInput.notification.failedToSaveQueryToHistory', e))
     }
     emit('executeQuery')
 }

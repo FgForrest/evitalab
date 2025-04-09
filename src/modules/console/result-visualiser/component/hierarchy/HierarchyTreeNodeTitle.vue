@@ -18,26 +18,26 @@ const props = defineProps<{
     node: VisualisedHierarchyTreeNode
 }>()
 
-function copyPrimaryKey(): void {
+async function copyPrimaryKey(): Promise<void> {
     if (props.node.primaryKey != undefined) {
         navigator.clipboard.writeText(`${props.node.primaryKey}`).then(() => {
-            toaster.info(t('resultVisualizer.hierarchyVisualiser.notification.primaryKeyCopiedToClipboard'))
+            toaster.info(t('resultVisualizer.hierarchyVisualiser.notification.primaryKeyCopiedToClipboard')).then()
         }).catch(() => {
-            toaster.error(new UnexpectedError(t('common.notification.failedToCopyToClipboard')))
+            toaster.error(t('common.notification.failedToCopyToClipboard')).then()
         })
     } else {
-        toaster.error(t('resultVisualizer.hierarchyVisualiser.notification.noPrimaryKeyProperty'))
+        await toaster.error(t('resultVisualizer.hierarchyVisualiser.notification.noPrimaryKeyProperty'))
     }
 }
-function copyParentPrimaryKey(): void {
+async function copyParentPrimaryKey(): Promise<void> {
     if (props.node.parentPrimaryKey != undefined) {
         navigator.clipboard.writeText(`${props.node.parentPrimaryKey}`).then(() => {
-            toaster.info(t('resultVisualizer.hierarchyVisualiser.notification.parentPrimaryKeyCopiedToClipboard'))
+            toaster.info(t('resultVisualizer.hierarchyVisualiser.notification.parentPrimaryKeyCopiedToClipboard')).then()
         }).catch(() => {
-            toaster.error(new UnexpectedError(t('common.notification.failedToCopyToClipboard')))
+            toaster.error(t('common.notification.failedToCopyToClipboard')).then()
         })
     } else {
-        toaster.error(t('resultVisualizer.hierarchyVisualiser.notification.noParentPrimaryKeyProperty'))
+        await toaster.error(t('resultVisualizer.hierarchyVisualiser.notification.noParentPrimaryKeyProperty'))
     }
 }
 </script>

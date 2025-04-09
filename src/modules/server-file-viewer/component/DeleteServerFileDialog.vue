@@ -31,12 +31,12 @@ async function deleteFile(): Promise<boolean> {
             props.file.fileId
         )
         if (deleted) {
-            toaster.success(t(
+            await toaster.success(t(
                 'serverFileViewer.delete.notification.fileDeleted',
                 { fileName: props.file.name }
             ))
         } else {
-            toaster.info(t(
+            await toaster.info(t(
                 'serverFileViewer.delete.notification.fileNotDeleted',
                 { fileName: props.file.name }
             ))
@@ -44,7 +44,7 @@ async function deleteFile(): Promise<boolean> {
         emit('delete')
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'serverFileViewer.delete.notification.couldNotDeleteFile',
             {
                 fileName: props.file.name,

@@ -22,7 +22,7 @@ function onCouldNotDownloadResultFile(e: Error): void {
             taskName: props.task.taskName,
             reason: e.message
         }
-    ))
+    )).then()
 }
 </script>
 

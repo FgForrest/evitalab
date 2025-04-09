@@ -172,7 +172,7 @@ onBeforeMount(() => {
             }
         })
         .catch(error => {
-            toaster.error(error)
+            toaster.error('Could get GraphQL Schema', error).then() // todo lho i18n
         })
 })
 onMounted(() => {
@@ -221,9 +221,8 @@ onUnmounted(() => {
 async function executeQuery(): Promise<void> {
     try {
         workspaceService.addTabHistoryRecord(historyKey.value, createGraphQLConsoleHistoryRecord(queryCode.value, variablesCode.value))
-    } catch (e) {
-        console.error(e)
-        toaster.error(new UnexpectedError(t('graphQLConsole.notification.failedToSaveQueryToHistory')))
+    } catch (e: any) {
+        await toaster.error(t('graphQLConsole.notification.failedToSaveQueryToHistory', e))
     }
 
     loading.value = true
@@ -237,7 +236,7 @@ async function executeQuery(): Promise<void> {
         }
     } catch (error: any) {
         loading.value = false
-        toaster.error(error)
+        await toaster.error('Could not execute query', error) // todo lho i18n
     }
 }
 

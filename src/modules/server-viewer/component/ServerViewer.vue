@@ -57,7 +57,7 @@ async function loadServerStatus(): Promise<boolean> {
         }
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'serverViewer.notification.couldNotLoad',
             { reason: e.message }
         ))

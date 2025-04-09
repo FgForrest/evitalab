@@ -5,7 +5,7 @@ import { TaskViewerService, taskViewerServiceInjectionKey } from "./services/Tas
 import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
 
 export class TaskViewerModuleRegistrar implements ModuleRegistrar {
-    register(builder: ModuleContextBuilder): void {
+    async register(builder: ModuleContextBuilder): Promise<void> {
         const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
         const taskViewerService: TaskViewerService = new TaskViewerService(connectionService)
         builder.provide(taskViewerServiceInjectionKey, taskViewerService)

@@ -63,7 +63,7 @@ async function rename(): Promise<boolean> {
             newName.value
         )
         if (renamed) {
-            toaster.success(t(
+            await toaster.success(t(
                 'explorer.collection.rename.notification.collectionRenamed',
                 {
                     entityType: props.entityType,
@@ -72,7 +72,7 @@ async function rename(): Promise<boolean> {
             ))
             emit('rename')
         } else {
-            toaster.info(t(
+            await toaster.info(t(
                 'explorer.collection.rename.notification.collectionNotRenamed',
                 {
                     entityType: props.entityType
@@ -81,7 +81,7 @@ async function rename(): Promise<boolean> {
         }
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'explorer.collection.rename.notification.couldNotRenameCollection',
             {
                 entityType: props.entityType,

@@ -89,8 +89,10 @@ export class MetadataItem {
             (ctx: TrafficRecordMetadataItemContext): void => {
                 navigator.clipboard.writeText(`${sessionId.toString()}`).then(() => {
                     ctx.toaster.info(i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.sessionId.notification.copiedToClipboard'))
+                        .then()
                 }).catch(() => {
-                    ctx.toaster.error(new UnexpectedError(i18n.global.t('common.notification.failedToCopyToClipboard')))
+                    ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
+                        .then()
                 })
             }
         )
@@ -107,8 +109,10 @@ export class MetadataItem {
             (ctx: TrafficRecordMetadataItemContext): void => {
                 navigator.clipboard.writeText(`${created.toString()}`).then(() => {
                     ctx.toaster.info(i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.created.notification.copiedToClipboard'))
+                        .then()
                 }).catch(() => {
-                    ctx.toaster.error(new UnexpectedError(i18n.global.t('common.notification.failedToCopyToClipboard')))
+                    ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
+                        .then()
                 })
             }
         )

@@ -27,20 +27,20 @@ async function switchCatalog(): Promise<boolean> {
     try {
         const switched: boolean = await catalogItemService.switchCatalogToAliveState(props.connection, props.catalogName)
         if (switched) {
-            toaster.success(t(
+            await toaster.success(t(
                 'explorer.catalog.switchToAliveState.notification.catalogSwitched',
                 { catalogName: props.catalogName }
             ))
             emit('switch')
         } else {
-            toaster.info(t(
+            await toaster.info(t(
                 'explorer.catalog.switchToAliveState.notification.catalogNotSwitched',
                 { catalogName: props.catalogName }
             ))
         }
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'explorer.catalog.switchToAliveState.notification.couldNotSwitchCatalog',
             {
                 catalogName: props.catalogName,

@@ -3,7 +3,9 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "dev-driver": "env VITE_RUN_MODE=\"DRIVER\" vite",
     "build": "vue-tsc --noEmit && vite build",
+    "build-driver": "vue-tsc --noEmit && env VITE_RUN_MODE=\"DRIVER\" vite build",
     "preview": "vite preview --port 3000",
     "lint": "eslint . --fix --ignore-path .gitignore",
     "test": "vitest"

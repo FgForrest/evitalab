@@ -40,7 +40,7 @@ async function loadEventTypes() {
         selectedTypes.value = eventTypes.value
         eventTypesLoaded.value = true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'jfrViewer.startRecording.notification.couldNotLoadEventTypes',
             { reason: e.message }
         ))
@@ -59,13 +59,13 @@ async function startRecording(): Promise<boolean> {
            selectedTypes.value!.map((x) => x.id)
         )
         if (started) {
-            toaster.success(t('jfrViewer.startRecording.notification.recordingStarted'))
+            await toaster.success(t('jfrViewer.startRecording.notification.recordingStarted'))
         } else {
-            toaster.info(t('jfrViewer.startRecording.notification.recordingNotStarted'))
+            await toaster.info(t('jfrViewer.startRecording.notification.recordingNotStarted'))
         }
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'jfrViewer.startRecording.notification.couldNotStartRecording',
             { reason: e.message }
         ))

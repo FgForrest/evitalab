@@ -18,7 +18,7 @@ import {
 // todo docs
 export class SchemaViewerModuleRegistrar implements ModuleRegistrar {
 
-    register(builder: ModuleContextBuilder): void {
+    async register(builder: ModuleContextBuilder): Promise<void> {
         const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
         const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
         const schemaViewerTabFactory: SchemaViewerTabFactory = builder.inject(schemaViewerTabFactoryInjectionKey)

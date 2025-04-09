@@ -26,7 +26,7 @@ const histogram = computed<VisualisedHistogram | undefined>(() => {
             .getPriceHistogramService()
             .resolvePriceHistogram(props.priceHistogramResult)
     } catch (e: any) {
-        toaster.error(e)
+        toaster.error('Could not resolve price histogram', e).then() // todo lho i18n
         return undefined
     }
 })

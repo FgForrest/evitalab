@@ -40,42 +40,40 @@ evitaLab allows you to:
 - [x] manage catalogs and collections
 - [x] analyze server traffic
 
-evitaLab is still in active development and new features are being added fairly frequently.
+However, evitaLab is still in active development and more features are planned.
 
 ## Running locally
 
-To run evitaLab locally, you can use either of the following ways. 
-In the future, we plan to provide pre-built binaries for all major desktop platforms, but currently [the docker image](#docker)
-is the closest thing we have.
+To run evitaLab locally, you can use either of the following ways.
+
+### Desktop application
+
+If you are looking for full local development experience, checkout the [evitaLab Desktop](https://github.com/lukashornych/evitalab-desktop/)
+application instead. The desktop app builds on top of this evitaLab core and add proper server connection management as 
+well as other useful features:
+
+- connect to any server version in one app
+- receive evitaLab core updates as soon as they are released without waiting for server update
+- each connection stores its own tabs and history, even if each connection points to same server URL
+    - _this is useful when you are using port forwarding for different server environments (prod, test, local) where local port is the same for each environment_
+- connections styling for better distinction between servers and environments
+- global notification system - displays toast notifications from desktop app and connections in one place
+    - _this way you can see notifications from all connections all the time_
 
 ### Embedded in local evitaDB instance
 
-The easiest and quickest way to run evitaLab locally is to enable it inside your configuration of evitaDB.
+If you don't want to install full desktop application, and you have evitaDB server running,
+the easiest and quickest way to run evitaLab locally is to enable it inside your configuration of evitaDB.
 By default, evitaDB will automatically expose its own local evitaLab instance on the [localhost:5555/lab](https://localhost:5555/lab)
 address. For more configuration, see [evitaDB documentation](https://evitadb.io/documentation/operate/configure#lab-configuration).
-
-### Docker
-
-The easiest and quickest way to run evitaLab locally without running evitaDB is to use Docker. 
-You can use the following command to install evitaLab locally:
-
-```shell
-docker run --name evitalab -ti -p 5566:3000 ghcr.io/lukashornych/evitalab:latest
-```
- 
-Next time you want to run the evitaLab, simply start use:
-
-```shell
-docker start evitalab
-````
-
-This will expose an evitaLab instance on [localhost:5566/lab](http://localhost:5566/lab) address.
 
 ### From dist
 
 If you want to run evitaLab manually, you can download the latest release from [releases page](https://github.com/lukashornych/evitalab/releases/tag/latest)
-and use any static web server to serve the files from `dist` directory. 
+and use any static web server to serve the files from `dist-standalone` directory. 
 For example, you can use [nginx](https://docs.nginx.com/nginx/admin-guide/web-server/serving-static-content/)
+
+This way you can host your own instance of evitaLab, for example, for your internal evitaDB server.
 
 ### From source
 
@@ -84,17 +82,23 @@ If you want to run a development version of the evitaLab, you can clone this rep
 Before you start, make sure you have [Node.js](https://nodejs.org/en/) in version specified in `.nvmrc` and [Yarn](https://yarnpkg.com/) 
 package manager installed.
 
-```shell
-# running using npm
-npm install
-npm run dev
+Then you can run it either in standalone mode:
 
-# running using yarn
+```shell
 yarn install
 yarn dev
 ```
 
-This will start a development server on [localhost:3000/lab](http://localhost:3000/lab) address.
+_this will start a development server on [localhost:3000/lab](http://localhost:3000/lab) address._
+
+Or the driver mode (for [evitaLab Desktop](https://github.com/lukashornych/evitalab-desktop)):
+
+```shell
+yarn install
+yarn dev-driver
+```
+
+_this will start a development server on [localhost:3000](http://localhost:3000) address._
 
 ## Development
 

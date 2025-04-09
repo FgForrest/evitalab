@@ -37,6 +37,7 @@ import { TrafficRecordingsViewerTabDefinition } from '@/modules/traffic-viewer/m
 import { TrafficRecordingsViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordingsViewerTabFactory'
 import { TrafficRecordHistoryViewerTabDefinition } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabDefinition'
 import { TrafficRecordHistoryViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
+import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 
 const openedTabsStorageKey: string = 'openedTabs'
 const tabHistoryStorageKey: string = 'tabHistory'
@@ -47,6 +48,7 @@ export const workspaceServiceInjectionKey: InjectionKey<WorkspaceService> = Symb
  * Handles lifecycle of the entire workspace. Mainly, it handles creation and destruction of tabs.
  */
 export class WorkspaceService {
+    private readonly evitaLabConfig: EvitaLabConfig
     private readonly store: WorkspaceStore
     private readonly labStorage: LabStorage
 
@@ -62,7 +64,8 @@ export class WorkspaceService {
     private readonly trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory
     private readonly trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory
 
-    constructor(store: WorkspaceStore,
+    constructor(evitaLabConfig: EvitaLabConfig,
+                store: WorkspaceStore,
                 labStorage: LabStorage,
                 entityViewerTabFactory: EntityViewerTabFactory,
                 evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory,
@@ -75,6 +78,7 @@ export class WorkspaceService {
                 jfrViewerTabFactory: JfrViewerTabFactory,
                 trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory,
                 trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory) {
+        this.evitaLabConfig = evitaLabConfig
         this.store = store
         this.labStorage = labStorage
         this.entityViewerTabFactory = entityViewerTabFactory
@@ -118,6 +122,7 @@ export class WorkspaceService {
         if (tabRequestWithSameId == undefined) {
             this.store.tabDefinitions.push(tabDefinition)
         }
+        this.storeOpenedTabs()
     }
 
     markTabAsVisited(tabId: string): void {
@@ -134,6 +139,7 @@ export class WorkspaceService {
      */
     replaceTabData(tabId: string, updatedData: TabData<any>): void {
         this.store.tabData.set(tabId, updatedData)
+        this.storeOpenedTabs()
     }
 
     destroyTab(tabId: string): void {
@@ -142,11 +148,13 @@ export class WorkspaceService {
             1
         )
         this.store.tabData.delete(tabId)
+        this.storeOpenedTabs()
     }
 
     destroyAllTabs(): void {
         this.store.tabDefinitions.splice(0)
         this.store.tabData.clear()
+        this.storeOpenedTabs()
     }
 
     /**
@@ -161,7 +169,7 @@ export class WorkspaceService {
             return false
         }
 
-        const restoredTabsData: Map<string, TabData<any>> = new Map()
+        let restoredTabsDataCount: number = 0
         lastOpenedTabs
             .map(storedTabObject => {
                 switch (storedTabObject.tabType as string) {
@@ -199,19 +207,22 @@ export class WorkspaceService {
             })
             .forEach(tabDefinition => {
                 if (tabDefinition.initialData != undefined) {
-                    restoredTabsData.set(tabDefinition.id, tabDefinition.initialData)
+                    this.store.tabData.set(tabDefinition.id, tabDefinition.initialData)
+                    restoredTabsDataCount++
                 }
                 this.createTab(tabDefinition)
             })
 
-        restoredTabsData.forEach((value, key) => this.store.tabData.set(key, value))
-        return restoredTabsData.size > 0
+        return restoredTabsDataCount > 0
     }
 
     /**
      * Stores current tabs into lab storage
      */
     storeOpenedTabs(): void {
+        if (this.evitaLabConfig.playgroundMode) {
+            return
+        }
         const tabsToStore: string[] = this.getTabDefinitions()
             .map(tabRequest => {
                 let tabType: TabType
@@ -322,6 +333,8 @@ export class WorkspaceService {
         if (records.length > 10) {
             records.shift()
         }
+
+        this.storeTabHistory()
     }
 
     /**
@@ -354,6 +367,9 @@ export class WorkspaceService {
      * Store current tab history into lab storage.
      */
     storeTabHistory(): void {
+        if (this.evitaLabConfig.playgroundMode) {
+            return
+        }
         const serializedTabHistory: string = JSON.stringify(Array.from(this.store.tabHistory.entries()))
         this.labStorage.set(tabHistoryStorageKey, LZString.compressToEncodedURIComponent(serializedTabHistory))
     }

@@ -56,14 +56,14 @@ async function create(): Promise<boolean> {
             props.catalogName,
             entityType.value
         )
-        toaster.success(t(
+        await toaster.success(t(
             'explorer.collection.create.notification.collectionCreated',
             { entityType: entityType.value }
         ))
         emit('create')
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'explorer.collection.create.notification.couldNotCreateCollection',
             {
                 entityType: entityType.value,

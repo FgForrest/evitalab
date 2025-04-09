@@ -26,11 +26,11 @@ async function stopRecording(): Promise<boolean> {
             props.connection,
             props.trafficRecorderTask
         )
-        toaster.success(t('trafficViewer.recordings.stopRecording.notification.recordingStopped'))
+        await toaster.success(t('trafficViewer.recordings.stopRecording.notification.recordingStopped'))
         emit('end', updatedTask)
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'trafficViewer.recordings.stopRecording.notification.couldNotStopRecording',
             { reason: e.message }
         ))

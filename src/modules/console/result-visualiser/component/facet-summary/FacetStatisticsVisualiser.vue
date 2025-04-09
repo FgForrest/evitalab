@@ -32,20 +32,20 @@ const facetStatistics = computed<VisualisedFacetStatistics | undefined>(() => {
             .getFacetSummaryService()
             .resolveFacetStatistics(props.queryResult, props.facetStatisticsResult, props.facetRepresentativeAttributes)
     } catch (e: any) {
-        toaster.error(e)
+        toaster.error('Could not resolve facet statistics', e).then() // todo lho i18n
         return undefined
     }
 })
 
-function copyPrimaryKey(): void {
+async function copyPrimaryKey(): Promise<void> {
     if (facetStatistics.value?.primaryKey != undefined) {
         navigator.clipboard.writeText(`${facetStatistics.value?.primaryKey}`).then(() => {
-            toaster.info(t('resultVisualizer.facetStatisticsVisualiser.notification.primaryKeyCopiedToClipboard'))
+            toaster.info(t('resultVisualizer.facetStatisticsVisualiser.notification.primaryKeyCopiedToClipboard')).then()
         }).catch(() => {
-            toaster.error(new UnexpectedError(t('common.notification.failedToCopyToClipboard')))
+            toaster.error(t('common.notification.failedToCopyToClipboard')).then()
         })
     } else {
-        toaster.error(t('resultVisualizer.facetStatisticsVisualiser.notification.noPrimaryKeyProperty'))
+        await toaster.error(t('resultVisualizer.facetStatisticsVisualiser.notification.noPrimaryKeyProperty'))
     }
 }
 </script>

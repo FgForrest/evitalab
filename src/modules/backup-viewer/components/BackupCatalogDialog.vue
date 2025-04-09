@@ -80,7 +80,7 @@ async function loadAvailableCatalogs(): Promise<void> {
             .toArray()
         availableCatalogsLoaded.value = true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'backupViewer.backup.notification.couldNotLoadAvailableCatalogs',
             { reason: e.message }
         ))
@@ -103,7 +103,7 @@ async function loadMinimalDate(): Promise<void> {
         defaultTimeOffset.value = minimalBackupDate.introducedAt.offset
         defaultTimeOffsetLoaded.value = true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'backupViewer.backup.notification.couldNotLoadMinimalDate',
             { reason: e.message }
         ))
@@ -126,14 +126,14 @@ async function backup(): Promise<boolean> {
                 ? OffsetDateTime.fromDateTime(pastMoment.value)
                 : undefined
         )
-        toaster.success(t(
+        await toaster.success(t(
             'backupViewer.backup.notification.backupRequested',
             { catalogName: catalogName.value }
         ))
         emit('backup')
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'backupViewer.backup.notification.couldNotRequestBackup',
             {
                 catalogName: catalogName.value,

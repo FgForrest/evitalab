@@ -18,7 +18,7 @@ import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 // todo docs
 export class EntityViewerModuleRegistrar implements ModuleRegistrar {
 
-    register(builder: ModuleContextBuilder): void {
+    async register(builder: ModuleContextBuilder): Promise<void> {
         const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
         const evitaDBDriverResolver: EvitaDBDriverResolver = builder.inject(evitaDBDriverResolverInjectionKey)
         const graphQLClient: GraphQLClient = builder.inject(graphQLClientInjectionKey)

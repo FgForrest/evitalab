@@ -104,7 +104,7 @@ const prices = computed<EntityPrices>(() => {
     if (!(props.value instanceof EntityPrices)) {
         toaster.error(
             t('entityViewer.grid.priceRenderer.notification.invalidPricesObject')
-        )
+        ).then()
         return new EntityPrices(undefined, [])
     }
     return props.value as EntityPrices

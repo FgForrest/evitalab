@@ -45,7 +45,7 @@ async function loadRuntimeConfiguration(reload: boolean = false): Promise<boolea
         }
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'serverViewer.serverStatus.runtimeConfiguration.notification.couldNotLoadConfiguration',
             { reason: e.message }
         ))

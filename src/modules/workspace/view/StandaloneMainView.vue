@@ -1,5 +1,9 @@
 <script lang="ts" setup>
 
+/**
+ * Bootstraps the workspace for standalone run mode
+ */
+
 import { ref } from 'vue'
 import { PanelType } from '@/modules/workspace/panel/model/PanelType'
 import WorkspacePanel from '@/modules/workspace/panel/component/WorkspacePanel.vue'

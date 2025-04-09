@@ -25,7 +25,7 @@ const emit = defineEmits<{
 async function removeConnection(): Promise<boolean> {
     try {
         connectionService.removeConnection(props.connection.id)
-        toaster.success(t(
+        await toaster.success(t(
             'explorer.connection.remove.notification.connectionRemoved',
             {
                 connectionName: props.connection.name
@@ -33,7 +33,7 @@ async function removeConnection(): Promise<boolean> {
         ))
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'explorer.connection.remove.notification.couldNotRemoveConnection',
             {
                 connectionName: props.connection.name,

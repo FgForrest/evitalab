@@ -35,7 +35,7 @@ import {
 } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
 
 export class TrafficViewerModuleRegistrar implements ModuleRegistrar {
-    register(builder: ModuleContextBuilder): void {
+    async register(builder: ModuleContextBuilder): Promise<void> {
         const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
         const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
         const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory = builder.inject(evitaQLConsoleTabFactoryInjectionKey)

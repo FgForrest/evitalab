@@ -52,7 +52,7 @@ const facetStatisticsResults = computed<Result[]>(() => {
             .getFacetSummaryService()
             .findFacetStatisticsResults(props.groupStatisticsResults[0])
     } catch (e: any) {
-        toaster.error(e)
+        toaster.error('Could not find facet statistics results', e).then() // todo lho i18n
         return []
     }
 })
@@ -94,7 +94,7 @@ function initialize() {
             initialized.value = true
         })
         .catch((e) => {
-            toaster.error(e)
+            toaster.error('Could not initialize facet groups statistics', e).then() // todo lho i18n
         })
 }
 initialize()

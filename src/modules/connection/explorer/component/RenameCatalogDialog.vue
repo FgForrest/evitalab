@@ -54,7 +54,7 @@ async function rename(): Promise<boolean> {
     try {
         const renamed: boolean = await catalogItemService.renameCatalog(props.connection, props.catalogName, newCatalogName.value)
         if (renamed) {
-            toaster.success(t(
+            await toaster.success(t(
                 'explorer.catalog.rename.notification.catalogRenamed',
                 {
                     catalogName: props.catalogName,
@@ -63,7 +63,7 @@ async function rename(): Promise<boolean> {
             ))
             emit('rename')
         } else {
-            toaster.info(t(
+            await toaster.info(t(
                 'explorer.catalog.rename.notification.catalogNotRenamed',
                 {
                     catalogName: props.catalogName
@@ -72,7 +72,7 @@ async function rename(): Promise<boolean> {
         }
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'explorer.catalog.rename.notification.couldNotRenameCatalog',
             {
                 catalogName: props.catalogName,

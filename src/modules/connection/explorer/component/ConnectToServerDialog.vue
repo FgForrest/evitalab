@@ -132,13 +132,13 @@ async function storeConnection(): Promise<boolean> {
             serverUrl.value
         ))
 
-        toaster.success(t(
+        await toaster.success(t(
             'explorer.connection.connect.notification.connectionAdded',
             { connectionName: connectionName.value }
         ))
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'explorer.connection.connect.notification.couldNotAddConnection',
             { reason: e.message }
         ))

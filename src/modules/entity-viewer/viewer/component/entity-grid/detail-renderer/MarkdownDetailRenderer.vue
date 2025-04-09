@@ -230,14 +230,10 @@ function copyRenderedValue() {
     navigator.clipboard
         .writeText(formattedValue.value)
         .then(() => {
-            toaster.info(t('common.notification.copiedToClipboard'))
+            toaster.info(t('common.notification.copiedToClipboard')).then()
         })
         .catch(() => {
-            toaster.error(
-                new UnexpectedError(
-                    t('common.notification.failedToCopyToClipboard')
-                )
-            )
+            toaster.error(t('common.notification.failedToCopyToClipboard')).then()
         })
 }
 

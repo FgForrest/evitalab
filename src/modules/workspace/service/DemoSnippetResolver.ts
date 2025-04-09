@@ -38,10 +38,7 @@ export class DemoSnippetResolver {
     /**
      * Resolves input request into tab request.
      */
-    async resolve(requestSerialized: string | undefined): Promise<TabDefinition<any, any> | undefined> {
-        if (requestSerialized == undefined) {
-            return undefined
-        }
+    async resolve(requestSerialized: string): Promise<TabDefinition<any, any>> {
         const request: DemoSnippetRequest = JSON.parse(atob(requestSerialized)) as DemoSnippetRequest
 
         const codeSnippetUrl: string = `${baseCodeSnippetUrl}/${request.branch}/${request.path}`

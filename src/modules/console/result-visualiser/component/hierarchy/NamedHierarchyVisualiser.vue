@@ -31,7 +31,7 @@ const namedHierarchy = computed<VisualisedNamedHierarchy | undefined>(() => {
             .getHierarchyService()
             .resolveNamedHierarchy(props.namedHierarchyResult, props.entityRepresentativeAttributes)
     } catch (e: any) {
-        toaster.error(e)
+        toaster.error('Could not resolve hierarchy', e).then() // todo lho i18n
         return undefined
     }
 })

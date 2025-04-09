@@ -14,6 +14,7 @@ import { EvitaDBDriver } from '@/modules/connection/driver/EvitaDBDriver'
 import Immutable from 'immutable'
 import { ServerStatus } from '@/modules/connection/model/status/ServerStatus'
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
+import { LabRunMode } from '@/LabRunMode'
 
 /**
  * Cookie containing preconfigured connections. These will be displayed next to the user-defined connections.
@@ -28,13 +29,15 @@ export const connectionServiceInjectionKey: InjectionKey<ConnectionService> = Sy
  * and so on.
  */
 export class ConnectionService {
+    private readonly evitaLabConfig: EvitaLabConfig
     private readonly store: ConnectionStore
     private readonly labStorage: LabStorage
     private readonly evitaDBDriverResolver: EvitaDBDriverResolver
 
     private readonly connectionDriverCache: Map<ConnectionId, EvitaDBDriver> = new Map()
 
-    private constructor(store: ConnectionStore, labStorage: LabStorage, evitaDBDriverResolver: EvitaDBDriverResolver) {
+    private constructor(evitaLabConfig: EvitaLabConfig, store: ConnectionStore, labStorage: LabStorage, evitaDBDriverResolver: EvitaDBDriverResolver) {
+        this.evitaLabConfig = evitaLabConfig
         this.store = store
         this.labStorage = labStorage
         this.evitaDBDriverResolver = evitaDBDriverResolver
@@ -63,16 +66,26 @@ export class ConnectionService {
         }
         // automatic demo connection configuration for easier development
         if (import.meta.env.DEV) {
-            preconfiguredConnections.push(Connection.preconfigured(
-                'dev-demo',
-                'Demo (dev)',
-                'https://demo.evitadb.io'
-            ))
-            preconfiguredConnections.push(Connection.preconfigured(
-                'dev-localhost',
-                'Localhost (dev)',
-                'http://localhost:5555'
-            ))
+            if (evitaLabConfig.runMode === LabRunMode.Standalone) {
+                preconfiguredConnections.push(Connection.preconfigured(
+                    'dev-demo',
+                    'Demo (dev)',
+                    'https://demo.evitadb.io'
+                ))
+                preconfiguredConnections.push(Connection.preconfigured(
+                    'dev-localhost',
+                    'Localhost (dev)',
+                    'http://localhost:5555'
+                ))
+            } else if (evitaLabConfig.runMode === LabRunMode.Driver) {
+                if (preconfiguredConnections.length === 0) {
+                    preconfiguredConnections.push(Connection.preconfigured(
+                        'dev-demo',
+                        'Demo (dev)',
+                        'https://demo.evitadb.io'
+                    ))
+                }
+            }
         }
 
         // load user-defined connections from local storage
@@ -83,7 +96,7 @@ export class ConnectionService {
         store.replacePreconfiguredConnections(preconfiguredConnections)
         store.replaceUserConnections(userConnections)
 
-        return new ConnectionService(store, labStorage, evitaDBDriverResolver)
+        return new ConnectionService(evitaLabConfig, store, labStorage, evitaDBDriverResolver)
     }
 
     /**
@@ -103,6 +116,20 @@ export class ConnectionService {
      */
     getConnections(): Immutable.List<Connection> {
         return this.store.connections
+    }
+
+    /**
+     * Returns single connection if in driver mode. Driver mode requires exactly one connection.
+     */
+    getDriverConnection(): Connection {
+        if (this.evitaLabConfig.runMode !== LabRunMode.Driver) {
+            throw new UnexpectedError('evitaLab is not in driver mode.')
+        }
+        const connections: Immutable.List<Connection> = this.getConnections()
+        if (connections.size !== 1) {
+            throw new UnexpectedError(`evitaLab in driver mode support exactly one connection only, found ${connections.size}.`)
+        }
+        return connections.get(0)!
     }
 
     isConnectionExists(connectionName: string): boolean {

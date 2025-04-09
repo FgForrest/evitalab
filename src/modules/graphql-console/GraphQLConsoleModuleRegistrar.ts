@@ -19,7 +19,7 @@ import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 // todo lho
 export class GraphQLConsoleModuleRegistrar implements ModuleRegistrar {
 
-    register(builder: ModuleContextBuilder): void {
+    async register(builder: ModuleContextBuilder): Promise<void> {
         const evitaLabConfig: EvitaLabConfig = builder.inject(evitaLabConfigInjectionKey)
         const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
 

@@ -61,7 +61,7 @@ async function loadBackupFiles(): Promise<boolean> {
         }
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'backupViewer.notification.couldNotLoadBackupFiles',
             { reason: e.message }
         ))

@@ -42,12 +42,18 @@ import {
     TrafficRecordHistoryViewerTabFactory,
     trafficRecordHistoryViewerTabFactoryInjectionKey
 } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
+import { EvitaLabConfig, evitaLabConfigInjectionKey } from '@/modules/config/EvitaLabConfig'
+import {
+    ErrorViewerTabFactory,
+    errorViewerTabFactoryInjectionKey
+} from '@/modules/error-viewer/viewer/workspace/service/ErrorViewerTabFactory'
 
 export class WorkspaceModuleRegistrar implements ModuleRegistrar {
 
-    register(builder: ModuleContextBuilder): void {
+    async register(builder: ModuleContextBuilder): Promise<void> {
         const workspaceStore: WorkspaceStore = useWorkspaceStore()
 
+        const evitaLabConfig: EvitaLabConfig = builder.inject(evitaLabConfigInjectionKey)
         const labStorage: LabStorage = builder.inject(labStorageInjectionKey)
         const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
 
@@ -74,6 +80,8 @@ export class WorkspaceModuleRegistrar implements ModuleRegistrar {
         builder.provide(trafficRecordHistoryViewerTabFactoryInjectionKey, trafficRecordHistoryViewerTabFactory)
         const backupViewerTabFactory: BackupViewerTabFactory = new BackupViewerTabFactory(connectionService)
         builder.provide(backupsTabFactoryInjectionKey, backupViewerTabFactory)
+        const errorViewerTabFactory: ErrorViewerTabFactory = new ErrorViewerTabFactory()
+        builder.provide(errorViewerTabFactoryInjectionKey, errorViewerTabFactory)
         // todo lho fix circular dep
         // const entityViewerTabFactory: EntityViewerTabFactory = builder.inject(entityViewerTabFactoryInjectionKey)
         // const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory = builder.inject(evitaQLConsoleTabFactoryInjectionKey)
@@ -84,6 +92,7 @@ export class WorkspaceModuleRegistrar implements ModuleRegistrar {
         builder.provide(
             workspaceServiceInjectionKey,
             new WorkspaceService(
+                evitaLabConfig,
                 workspaceStore,
                 labStorage,
                 entityViewerTabFactory,

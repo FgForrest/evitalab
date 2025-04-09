@@ -83,6 +83,9 @@
     }
   },
   "panel": {
+    "button": {
+      "manage": "Manage evitaLab"
+    },
     "manage": {
       "manage": {
         "title": "Manage",
@@ -127,30 +130,36 @@
     }
   },
   "welcomeScreen": {
-    "changelog": "changelog",
-    "description": "evitaDB web client",
-    "blog": {
-      "thumbnail": {
-        "alt": "Image - {title}"
+    "standalone": {
+      "changelog": "changelog",
+      "description": "evitaDB web client",
+      "blog": {
+        "thumbnail": {
+          "alt": "Image - {title}"
+        },
+        "button": {
+          "read": "Read"
+        }
       },
-      "button": {
-        "read": "Read"
+      "link": {
+        "evitaDBDocumentation": {
+          "text": "Check out the {link}",
+          "link": "evitaDB documentation"
+        },
+        "evitaLabGitHub": {
+          "text": "Give us a ⭐ on {link}",
+          "link": "GitHub"
+        },
+        "discord": {
+          "text": "Reach out to us on {link}",
+          "link": "Discord"
+        },
+        "submitIssue": "Submit an issue"
       }
     },
-    "link": {
-      "evitaDBDocumentation": {
-        "text": "Check out the {link}",
-        "link": "evitaDB documentation"
-      },
-      "evitaLabGitHub": {
-        "text": "Give us a ⭐ on {link}",
-        "link": "GitHub"
-      },
-      "discord": {
-        "text": "Reach out to us on {link}",
-        "link": "Discord"
-      },
-      "submitIssue": "Submit an issue"
+    "driver": {
+      "changelog": "changelog",
+      "description": "driver"
     }
   },
   "tab": {
@@ -294,7 +303,7 @@
     }
   },
   "explorer": {
-    "title": "Connections Explorer",
+    "title": "Connection Explorer",
     "button": {
       "connect": "Connect"
     },
@@ -355,8 +364,6 @@
           }
         },
         "notification": {
-          "connectionSuccess": "Successfully connected.",
-          "connectionError": "Connection test failed.",
           "connectionAdded": "The {connectionName} connection has been successfully added.",
           "couldNotAddConnection": "Could not add the connection: {reason}"
         }
@@ -544,6 +551,9 @@
   },
   "entityViewer": {
     "loadedDataWarning": "Loaded query data must be manually executed.",
+    "notification": {
+      "couldNotExecuteQuery": "Could not execute query"
+    },
     "dataLocaleSelector": {
       "item": {
         "none": "None"

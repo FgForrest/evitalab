@@ -106,12 +106,12 @@ const loading = ref<boolean>(false)
 async function closeAllSessions(): Promise<void> {
     try {
         await connectionService.closeAllSessions(connection, props.catalog.name)
-        toaster.success(t(
+        await toaster.success(t(
             'explorer.catalog.notification.closedAllSessions',
             { catalogName: props.catalog.name }
         ))
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'explorer.catalog.notification.couldNotCloseSessions',
             {
                 catalogName: props.catalog.name,

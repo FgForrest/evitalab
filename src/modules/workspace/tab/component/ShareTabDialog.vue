@@ -15,12 +15,18 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
 import VRejectDialogButton from '@/modules/base/component/VRejectDialogButton.vue'
 import VConfirmDialogButton from '@/modules/base/component/VConfirmDialogButton.vue'
+import { EvitaLabConfig, useEvitaLabConfig } from '@/modules/config/EvitaLabConfig'
+import { LabRunMode } from '@/LabRunMode'
+import { ConnectionService, useConnectionService } from '@/modules/connection/service/ConnectionService'
+import { Connection } from '@/modules/connection/model/Connection'
 
 /**
  * Smallest possible number of characters in a URL valid across all browser. Usually browser support more characters.
  */
 const urlCharacterLimit: number = 2083
 
+const evitaLabConfig: EvitaLabConfig = useEvitaLabConfig()
+const connectionService: ConnectionService = useConnectionService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
@@ -36,8 +42,17 @@ const emit = defineEmits<{
 }>()
 
 const evitaLabInstance = computed<string>(() => {
-    const location = window.location
-    return location.origin + location.pathname
+    if (evitaLabConfig.runMode === LabRunMode.Driver) {
+        // in driver mode we cannot send target user to local driver instance,
+        // instead we optimistically assume that an evitaLab instance is running
+        // on the server and redirect to it
+        // todo lho we need to support opening links with unknown connection in order for this to work
+        const driverConnection: Connection = connectionService.getDriverConnection()
+        return driverConnection.serverUrl + '/lab'
+    } else {
+        const location = window.location
+        return location.origin + location.pathname
+    }
 })
 const link = computed<string>(() => {
     const shareTabObject: ShareTabObject = new ShareTabObject(props.tabType, props.tabParams.toSerializable(), props.tabData?.toSerializable())
@@ -50,9 +65,9 @@ function cancel(): void {
 
 function copyLink(): void {
     navigator.clipboard.writeText(link.value).then(() => {
-        toaster.info(t('tabShare.shareDialog.notification.linkCopied'))
+        toaster.info(t('tabShare.shareDialog.notification.linkCopied')).then()
     }).catch(() => {
-        toaster.error(new UnexpectedError(t('common.notification.failedToCopyToClipboard')))
+        toaster.error(t('common.notification.failedToCopyToClipboard')).then()
     })
 
     emit('update:modelValue', false)

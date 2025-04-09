@@ -79,9 +79,9 @@ function toPrintablePropertyValue(value: EntityPropertyValue | EntityPropertyVal
 function copyValue(): void {
     if (printablePropertyValue.value) {
         navigator.clipboard.writeText(printablePropertyValue.value).then(() => {
-            toaster.info(t('common.notification.copiedToClipboard'))
+            toaster.info(t('common.notification.copiedToClipboard')).then()
         }).catch(() => {
-            toaster.error(new UnexpectedError(t('common.notification.failedToCopyToClipboard')))
+            toaster.error(t('common.notification.failedToCopyToClipboard')).then()
         })
     }
 }

@@ -106,7 +106,7 @@ function handleOptionClick(selected: any): void {
                 window.open('https://discord.gg/VsNBWxgmSw', '_blank');
                 break
             case ManageOptionType.ReportEvitaLabIssue:
-                window.open('https://github.com/lukashornych/evitalab/issues/new', '_blank');
+                window.open('https://github.com/lukashornych/evitalab/issues', '_blank');
                 break
             case ManageOptionType.EvitaDBDocumentation:
                 window.open('https://evitadb.io/documentation', '_blank');
@@ -118,10 +118,10 @@ function handleOptionClick(selected: any): void {
                 window.open('https://discord.gg/VsNBWxgmSw', '_blank');
                 break
             case ManageOptionType.ReportEvitaDBIssue:
-                window.open('https://github.com/FgForrest/evitaDB/issues/new', '_blank');
+                window.open('https://github.com/FgForrest/evitaDB/issues', '_blank');
                 break
             default:
-                toaster.error(new UnexpectedError(`Unknown manage option ${selected[0]}`))
+                toaster.error(`Unknown manage option ${selected[0]}`).then()
         }
     }
 }
@@ -143,7 +143,7 @@ onUnmounted(() => {
                 <slot />
 
                 <VTooltip activator="parent">
-                    Manage evitaLab
+                    {{ t('panel.button.manage') }}
                 </VTooltip>
             </VBtn>
         </template>

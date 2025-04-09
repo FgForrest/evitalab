@@ -24,6 +24,7 @@ jobs:
     name: Build
     outputs:
       released_version: ${{ steps.release_version.outputs.version }}
+      min_evitadb_version: ${{ steps.min_evitadb_version.outputs.version }}
 
     runs-on: ubuntu-latest
 
@@ -41,6 +42,10 @@ jobs:
           prefix: 'v'
           minor-identifier: '/feat(?:\\([^)]+\\))?:/'
 
+      - name: Resolve minimum evitaDB version
+        id: min_evitadb_version
+        run: cat .evitadbrc >> "$GITHUB_OUTPUT"
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -52,19 +57,39 @@ jobs:
       - name: Test
         run: yarn test
 
-      - name: Build
+      - name: Build standalone
         env:
           EVITALAB_BUILD_VERSION: ${{ steps.release_version.outputs.version }}
         run: yarn build
 
-      - name: Include license in dist
+      - name: Include license in standalone dist
         run: cp LICENSE ./dist
 
       - name: Upload dist
         uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-standalone
           path: dist/
+
+      - name: Cleanup standalone build
+        run: rm -rf dist
+
+      - name: Build driver
+        env:
+          EVITALAB_BUILD_VERSION: ${{ steps.release_version.outputs.version }}
+        run: yarn build-driver
+
+      - name: Include license in driver dist
+        run: cp LICENSE ./dist
+
+      - name: Upload dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-driver
+          path: dist/
+
+      - name: Cleanup driver build
+        run: rm -rf dist
 
   release:
     name: Release
@@ -81,25 +106,45 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download built evitaLab
+      - name: Download built evitaLab standalone
         uses: actions/download-artifact@v4
         with:
-          name: dist
-          path: ./dist/
+          name: dist-standalone
+          path: ./dist-standalone/
 
-      - name: Create .zip of dist
+      - name: Download built evitaLab driver
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-driver
+          path: ./dist-driver/
+
+      - name: Create .zip of dist standalone
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          filename: 'dist.zip'
-          path: './dist'
+          filename: 'dist-standalone.zip'
+          path: './dist-standalone'
 
-      - name: Create .tar.gz of dist
+      - name: Create .zip of dist driver
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          filename: 'dist-driver.zip'
+          path: './dist-driver'
+
+      - name: Create .tar.gz of dist standalone
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'tar'
-          filename: 'dist.tar.gz'
-          path: './dist'
+          filename: 'dist-standalone.tar.gz'
+          path: './dist-standalone'
+
+      - name: Create .tar.gz of dist driver
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'tar'
+          filename: 'dist-driver.tar.gz'
+          path: './dist-driver'
 
       - name: Create release
         id: create_release
@@ -108,50 +153,64 @@ jobs:
           version: ${{ needs.build.outputs.released_version }}
           publish: true
 
-      - name: Upload dist.zip to release
+      - name: Upload dist-standalone.zip to release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist.zip
-          asset_name: Dist (zip)
+          asset_path: ./dist-standalone.zip
+          asset_name: Dist Standalone (zip)
           asset_content_type: application/zip
 
-      - name: Upload dist.tar.gz to release
+      - name: Upload dist-driver.zip to release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist.tar.gz
-          asset_name: Dist (tar.gz)
+          asset_path: ./dist-driver.zip
+          asset_name: Dist Driver (zip)
+          asset_content_type: application/zip
+
+      - name: Upload dist-standalone.tar.gz to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist-standalone.tar.gz
+          asset_name: Dist Standalone (tar.gz)
           asset_content_type: application/gzip
 
-  build-docker:
-    name: Build Docker image
-    needs: [build, release]
+      - name: Upload dist-driver.tar.gz to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist-driver.tar.gz
+          asset_name: Dist Driver (tar.gz)
+          asset_content_type: application/gzip
 
-    permissions:
-      packages: write
+  publish-to-metadata-database:
+    name: Publish evitaLab released version to metadata database
+    needs: [build, release]
 
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout sources
-        uses: actions/checkout@v3
+      - name: Clone evitaLab metadata database repository
+        env:
+          REPO: "https://x-access-token:${{ secrets.REPO_ACCESS_TOKEN }}@github.com/lukashornych/evitalab-metadata-database.git"
+        run: |
+          git clone $REPO database
+          cd database
+          git remote set-url origin $REPO
 
-      - name: Log in to Docker hub
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Insert new evitaLab version into database
+        run: echo "${{ needs.build.outputs.released_version }},${{ needs.build.outputs.min_evitadb_version }}" >> database/evitalab-database.csv
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          build-args: EVITALAB_BUILD_VERSION=${{ needs.build.outputs.released_version }}
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.released_version }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+      - name: Commit and push changed to evitaLab metadata database
+        run: |
+          cd database
+          git config user.name "evitaLab Bot"
+          git config user.email "lukashornych@proton.me"
+          git add .
+          git commit -m "evitaLab release ${{ needs.build.outputs.released_version }}"
+          git push origin main
 
   publish-to-evitadb:
     name: Publish evitaLab to evitaDB
@@ -163,7 +222,7 @@ jobs:
       - name: Download built evitaLab
         uses: actions/download-artifact@v4
         with:
-          name: dist
+          name: dist-standalone
           path: ./dist/
 
       - name: Clone evitaDB repository
@@ -192,7 +251,6 @@ jobs:
           git add .
           git commit -m "build: update evitaLab to ${{ needs.build.outputs.released_version }}"
           git push origin $BRANCH_NAME
-
       - name: Create pull request with new evitaLab
         uses: actions/github-script@v7
         with:

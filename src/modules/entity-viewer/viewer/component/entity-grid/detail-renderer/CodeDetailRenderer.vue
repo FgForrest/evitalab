@@ -67,7 +67,8 @@ const codeBlockExtensions = computed<Extension[]>(() => {
         case EntityPropertyValueSupportedCodeLanguage.Xml:
             return [xml()]
         default:
-            toaster.error(new UnexpectedError(t('entityViewer.grid.codeRenderer.notification.unsupportedCodeLanguage')))
+            toaster.error(t('entityViewer.grid.codeRenderer.notification.unsupportedCodeLanguage'))
+                .then()
             return []
     }
 })
@@ -78,9 +79,9 @@ function handleActionClick(action: any) {
 
 function copyRenderedValue() {
     navigator.clipboard.writeText(formattedValue.value).then(() => {
-        toaster.info(t('common.notification.copiedToClipboard'))
+        toaster.info(t('common.notification.copiedToClipboard')).then()
     }).catch(() => {
-        toaster.error(new UnexpectedError(t('common.notification.failedToCopyToClipboard')))
+        toaster.error(t('common.notification.failedToCopyToClipboard')).then()
     })
 }
 

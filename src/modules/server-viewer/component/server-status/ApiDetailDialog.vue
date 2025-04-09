@@ -49,9 +49,9 @@ const baseProperties = computed<Property[]>(() => [
                     undefined,
                     (item) => {
                         navigator.clipboard.writeText(item!).then(() => {
-                            toaster.info(t('common.notification.copiedToClipboard'))
+                            toaster.info(t('common.notification.copiedToClipboard')).then()
                         }).catch(() => {
-                            toaster.error(new UnexpectedError(t('common.notification.failedToCopyToClipboard')))
+                            toaster.error(t('common.notification.failedToCopyToClipboard')).then()
                         })
                     }
                 ))
@@ -71,9 +71,9 @@ const endpoints = computed<Property[]>(() => {
                         undefined,
                         (item) => {
                             navigator.clipboard.writeText(item!).then(() => {
-                                toaster.info(t('common.notification.copiedToClipboard'))
+                                toaster.info(t('common.notification.copiedToClipboard')).then()
                             }).catch(() => {
-                                toaster.error(new UnexpectedError(t('common.notification.failedToCopyToClipboard')))
+                                toaster.error(t('common.notification.failedToCopyToClipboard')).then()
                             })
                         }
                     ))

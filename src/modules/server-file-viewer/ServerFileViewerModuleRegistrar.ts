@@ -8,7 +8,7 @@ import {
 
 export class ServerFileViewerModuleRegistrar implements ModuleRegistrar {
 
-    register(builder: ModuleContextBuilder): void {
+    async register(builder: ModuleContextBuilder): Promise<void> {
         const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
         const serverFileViewerService: ServerFileViewerService = new ServerFileViewerService(connectionService)
         builder.provide(serverFileViewerServiceInjectionKey, serverFileViewerService)

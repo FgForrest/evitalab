@@ -21,7 +21,7 @@ import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 // todo docs
 export class EvitaQLConsoleModuleRegistrar implements ModuleRegistrar {
 
-    register(builder: ModuleContextBuilder): void {
+    async register(builder: ModuleContextBuilder): Promise<void> {
         const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
         const evitaDBDriverResolver: EvitaDBDriverResolver = builder.inject(evitaDBDriverResolverInjectionKey)
 

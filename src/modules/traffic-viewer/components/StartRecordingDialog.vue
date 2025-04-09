@@ -168,7 +168,7 @@ async function loadAvailableCatalogs(): Promise<void> {
             .toArray()
         availableCatalogsLoaded.value = true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'backupViewer.backup.notification.couldNotLoadAvailableCatalogs',
             { reason: e.message }
         ))
@@ -201,11 +201,11 @@ async function startRecording(): Promise<boolean> {
                 ? parseHumanByteSizeToBigInt(chunkFileSizeInBytes.value.trim())[0]
                 : undefined
         )
-        toaster.success(t('trafficViewer.recordings.startRecording.notification.recordingStarted'))
+        await toaster.success(t('trafficViewer.recordings.startRecording.notification.recordingStarted'))
         emit('start', createdTask)
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'trafficViewer.recordings.startRecording.notification.couldNotStartRecording',
             { reason: e.message }
         ))

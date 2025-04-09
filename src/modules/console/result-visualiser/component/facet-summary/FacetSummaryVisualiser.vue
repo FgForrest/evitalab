@@ -34,7 +34,7 @@ const referencesWithGroupStatisticsResults = computed<[ReferenceSchema, Result[]
             .getFacetSummaryService()
             .findFacetGroupStatisticsByReferencesResults(props.facetSummaryResult, props.entitySchema)
     } catch (e: any) {
-        toaster.error(e.message)
+        toaster.error('Could not find facet group statistics results', e).then() // todo lho i18n
         return []
     }
 })

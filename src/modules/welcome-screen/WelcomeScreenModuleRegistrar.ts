@@ -11,7 +11,7 @@ import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 // todo docs
 export class WelcomeScreenModuleRegistrar implements ModuleRegistrar {
 
-    register(builder: ModuleContextBuilder): void {
+    async register(builder: ModuleContextBuilder): Promise<void> {
         const welcomeScreenStore: WelcomeScreenStore = useWelcomeScreenStore()
 
         const evitaLabConfig: EvitaLabConfig = builder.inject(evitaLabConfigInjectionKey)

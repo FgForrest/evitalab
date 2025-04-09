@@ -34,10 +34,7 @@ export class SharedTabResolver {
         this.trafficRecordHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
     }
 
-    async resolve(shareTabObjectSerialized: string | undefined): Promise<TabDefinition<any, any> | undefined> {
-        if (shareTabObjectSerialized == undefined) {
-            return undefined
-        }
+    async resolve(shareTabObjectSerialized: string): Promise<TabDefinition<any, any>> {
         const shareTabObject: ShareTabObject = ShareTabObject.fromLinkParam(shareTabObjectSerialized)
 
         switch (shareTabObject.tabType as string) {

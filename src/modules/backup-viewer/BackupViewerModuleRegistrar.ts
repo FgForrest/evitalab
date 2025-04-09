@@ -6,7 +6,7 @@ import { ConnectionService, connectionServiceInjectionKey } from '@/modules/conn
 //TODO: docs
 export class BackupViewerModuleRegistrar implements ModuleRegistrar {
 
-    register(builder: ModuleContextBuilder): void {
+    async register(builder: ModuleContextBuilder): Promise<void> {
         const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
         const backupViewerService: BackupViewerService = new BackupViewerService(connectionService)
         builder.provide(backupViewerServiceInjectionKey, backupViewerService)

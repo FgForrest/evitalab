@@ -67,11 +67,11 @@ async function restoreLocal(): Promise<boolean> {
             backupFile.value!,
             catalogName.value
         )
-        toaster.success(t('backupViewer.restoreLocal.notification.restoreRequested'))
+        await toaster.success(t('backupViewer.restoreLocal.notification.restoreRequested'))
         emit('restore')
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'backupViewer.restoreLocal.notification.couldNotRestoreBackupFile',
             { reason: e.message }
         ))

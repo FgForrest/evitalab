@@ -55,14 +55,14 @@ async function restore(): Promise<boolean> {
             props.backupFile.fileId,
             catalogName.value
         )
-        toaster.success(t(
+        await toaster.success(t(
             'backupViewer.restore.notification.restoreRequested',
             { fileName: props.backupFile.name }
         ))
         emit('restore')
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'backupViewer.restore.notification.couldNotRestoreBackupFile',
             {
                 fileName: props.backupFile.name,

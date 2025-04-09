@@ -27,20 +27,20 @@ async function drop(): Promise<boolean> {
     try {
         const deleted: boolean = await collectionItemService.dropCollection(props.connection, props.catalogName, props.entityType)
         if (deleted) {
-            toaster.success(t(
+            await toaster.success(t(
                 'explorer.collection.drop.notification.collectionDropped',
                 { entityType: props.entityType }
             ))
             emit('drop')
         } else {
-            toaster.info(t(
+            await toaster.info(t(
                 'explorer.collection.drop.notification.collectionNotDropped',
                 { entityType: props.entityType }
             ))
         }
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'explorer.collection.drop.notification.couldNotDropCollection',
             {
                 entityType: props.entityType,

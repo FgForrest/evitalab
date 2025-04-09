@@ -42,7 +42,7 @@ const supportsMultipleQueries = computed<boolean>(() => {
     try {
         return props.visualiserService.supportsMultipleQueries()
     } catch (e: any) {
-        toaster.error(e)
+        toaster.error('Could resolve multiple queries support', e).then() // todo lho i18n
         return false
     }
 })
@@ -53,7 +53,7 @@ const queries = computed<string[]>(() => {
     try {
         return props.visualiserService.findQueries(props.inputQuery, props.result)
     } catch (e: any) {
-        toaster.error(e)
+        toaster.error('Could not find queries', e).then() // todo lho i18n
         return []
     }
 })
@@ -91,7 +91,7 @@ const selectedQueryResult = computed<Result | undefined>(() => {
     try {
         return props.visualiserService.findQueryResult(props.result, selectedQuery.value as string)
     } catch (e: any) {
-        toaster.error(e)
+        toaster.error('Could not find query result', e).then() // todo lho i18n
         return undefined
     }
 })
@@ -110,7 +110,7 @@ watch(selectedQuery, async () => {
             props.catalogPointer.catalogName
         )
     } catch (e: any) {
-        toaster.error(e)
+        await toaster.error('Could not resolve entity schema', e) // todo lho i18n
     }
 }, { immediate: true })
 
@@ -123,7 +123,7 @@ const visualiserTypes = computed<VisualiserType[]>(() => {
     try {
         return props.visualiserService.findVisualiserTypes(selectedQueryResult.value as Result)
     } catch (e: any) {
-        toaster.error(e)
+        toaster.error('Could not find visualiser types', e).then() // todo lho i18n
         return []
     }
 })
@@ -153,7 +153,7 @@ const resultForVisualiser = computed<Result | undefined>(() => {
         return props.visualiserService
             .findResultForVisualiser(selectedQueryResult.value as Result, selectedVisualiserType.value as VisualiserTypeType)
     } catch (e: any) {
-        toaster.error(e)
+        toaster.error('Could not find result', e).then() // todo lho i18n
         return undefined
     }
 })

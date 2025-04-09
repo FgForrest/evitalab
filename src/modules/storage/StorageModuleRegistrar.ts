@@ -6,7 +6,7 @@ import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 // todo docs
 export class StorageModuleRegistrar implements ModuleRegistrar {
 
-    register(builder: ModuleContextBuilder): void {
+    async register(builder: ModuleContextBuilder): Promise<void> {
         const evitaLabConfig: EvitaLabConfig = builder.inject(evitaLabConfigInjectionKey)
 
         builder.provide(

@@ -6,8 +6,9 @@ import { Router } from 'vue-router'
 // todo docs
 export class ConfigModuleRegistrar implements ModuleRegistrar {
 
-    register(builder: ModuleContextBuilder): void {
+    async register(builder: ModuleContextBuilder): Promise<void> {
         const router: Router = builder.app.config.globalProperties.$router
-        builder.provide(evitaLabConfigInjectionKey, EvitaLabConfig.load(router))
+        const evitaLabConfig: EvitaLabConfig = await EvitaLabConfig.load(router)
+        builder.provide(evitaLabConfigInjectionKey, evitaLabConfig)
     }
 }

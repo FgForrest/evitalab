@@ -71,7 +71,7 @@ async function replace(): Promise<boolean> {
             props.catalogName
         )
         if (replaced) {
-            toaster.success(t(
+            await toaster.success(t(
                 'explorer.catalog.replace.notification.catalogReplaced',
                 {
                     catalogNameToBeReplaced: props.catalogName,
@@ -80,14 +80,14 @@ async function replace(): Promise<boolean> {
             ))
             emit('replace')
         } else {
-            toaster.info(t(
+            await toaster.info(t(
                 'explorer.catalog.replace.notification.catalogNotReplaced',
                 { catalogNameToBeReplaced: props.catalogName }
             ))
         }
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'explorer.catalog.replace.notification.couldNotReplaceCatalog',
             {
                 catalogNameToBeReplaced: props.catalogName,

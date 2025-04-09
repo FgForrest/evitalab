@@ -9,7 +9,7 @@ import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 // todo lho
 export class KeymapModuleRegistrar implements ModuleRegistrar {
 
-    register(builder: ModuleContextBuilder): void {
+    async register(builder: ModuleContextBuilder): Promise<void> {
         builder.provide(
             keymapInjectionKey,
             new Keymap()

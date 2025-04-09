@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
 import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { RouteLocationNormalizedLoaded, useRoute } from 'vue-router'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
@@ -15,19 +14,15 @@ import TabWindow from '@/modules/workspace/tab/component/TabWindow.vue'
 import WelcomeScreen from '@/modules/welcome-screen/component/WelcomeScreen.vue'
 import TabSharedDialog from '@/modules/workspace/tab/component/TabSharedDialog.vue'
 import { useI18n } from 'vue-i18n'
+import { EvitaLabConfig, useEvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 
-const currentRoute: RouteLocationNormalizedLoaded = useRoute()
+const evitaLabConfig: EvitaLabConfig = useEvitaLabConfig()
 const toaster = useToaster()
 const keymap: Keymap = useKeymap()
 const { t } = useI18n()
 const workspaceService: WorkspaceService = useWorkspaceService()
 const demoCodeSnippetResolver: DemoSnippetResolver = useDemoSnippetResolver()
 const sharedTabResolver: SharedTabResolver = useSharedTabResolver()
-
-/**
- * Represents editor mode where user data aren't stored at the end of the session. Useful for demo snippets or shared tabs.
- */
-const playgroundMode = ref<boolean>(false)
 
 const sharedTabDialogOpen = ref<boolean>(false)
 const sharedTabRequest = ref<TabDefinition<any, any> | undefined>()
@@ -89,8 +84,8 @@ function closeTab(tabId: string): void {
 /**
  * open demo code snippet if requested
  */
-async function resolveDemoCodeSnippet(): Promise<TabDefinition<any, any> | undefined> {
-    const demoSnippetRequestSerialized: string | undefined = currentRoute.query.demoSnippetRequest as string | undefined
+async function resolveDemoCodeSnippet(urlSearchParams: URLSearchParams): Promise<TabDefinition<any, any> | undefined> {
+    const demoSnippetRequestSerialized: string | null = urlSearchParams.get('demoSnippetRequest')
     if (demoSnippetRequestSerialized == undefined) {
         return undefined
     }
@@ -98,15 +93,15 @@ async function resolveDemoCodeSnippet(): Promise<TabDefinition<any, any> | undef
     try {
         return await demoCodeSnippetResolver.resolve(demoSnippetRequestSerialized)
     } catch (e: any) {
-        toaster.error(e)
+        await toaster.error('Could not resolve demo code snippet', e) // todo lho i18n
     }
 }
 
 /**
  * Open shared tab if requested
  */
-async function resolveSharedTab(): Promise<TabDefinition<any, any> | undefined> {
-    const sharedTabSerialized: string | undefined = currentRoute.query.sharedTab as string | undefined
+async function resolveSharedTab(urlSearchParams: URLSearchParams): Promise<TabDefinition<any, any> | undefined> {
+    const sharedTabSerialized: string | null = urlSearchParams.get('sharedTab')
     if (sharedTabSerialized == undefined) {
         return undefined
     }
@@ -114,7 +109,7 @@ async function resolveSharedTab(): Promise<TabDefinition<any, any> | undefined> 
     try {
         return await sharedTabResolver.resolve(sharedTabSerialized)
     } catch (e: any) {
-        toaster.error(e)
+        await toaster.error('Could not resolve shared tab', e) // todo lho i18n
     }
 }
 
@@ -133,38 +128,32 @@ function restorePreviousSession(): void {
         }
 
         if (sessionRestored) {
-            toaster.info('Your last session has been restored.')
+            toaster.info('Your last session has been restored.').then()
         }
     } catch (e) {
         console.error(e)
-        toaster.warning('Failed to fully restore your last session.')
+        toaster.warning('Failed to fully restore your last session.').then()
     }
 }
 
-function storeCurrentSession() {
-    workspaceService.storeOpenedTabs()
-    workspaceService.storeTabHistory()
-}
-
 // initialize the editor
-resolveDemoCodeSnippet()
-    .then(tabDefinition => {
-        if (tabDefinition != undefined) {
-            playgroundMode.value = true
-            workspaceService.createTab(tabDefinition)
-        }
-        return resolveSharedTab()
-    }).then(tabDefinition => {
-        if (tabDefinition != undefined) {
-            playgroundMode.value = true
-            sharedTabRequest.value = tabDefinition
-            sharedTabDialogOpen.value = true
-        }
-
-        if (!playgroundMode.value) {
-            restorePreviousSession()
-        }
-    })
+if (evitaLabConfig.playgroundMode) {
+    const urlSearchParams: URLSearchParams = new URLSearchParams(document.location.search)
+    resolveDemoCodeSnippet(urlSearchParams)
+        .then(tabDefinition => {
+            if (tabDefinition != undefined) {
+                workspaceService.createTab(tabDefinition)
+            }
+            return resolveSharedTab(urlSearchParams)
+        }).then(tabDefinition => {
+            if (tabDefinition != undefined) {
+                sharedTabRequest.value = tabDefinition
+                sharedTabDialogOpen.value = true
+            }
+        })
+} else {
+    restorePreviousSession()
+}
 
 onMounted(() => {
     keymap.bindGlobal(Command.System_Editor_PreviousTab, () => moveTabCursor(-1))
@@ -181,12 +170,6 @@ onUnmounted(() => {
     keymap.unbindGlobal(Command.System_Editor_NextTab)
     keymap.unbindGlobal(Command.System_Editor_CloseTab)
     keymap.unbindGlobal(Command.System_Editor_CloseAllTabs)
-})
-
-window.addEventListener('beforeunload', () => {
-    if (!playgroundMode.value) {
-        storeCurrentSession()
-    }
 })
 </script>
 

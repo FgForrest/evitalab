@@ -91,7 +91,7 @@ async function loadTaskStatuses(): Promise<boolean> {
         }
         return true
     } catch (e: any) {
-        toaster.error(t(
+        await toaster.error(t(
             'taskViewer.tasksVisualizer.notification.couldNotLoadTaskStatuses',
             { reason: e.message }
         ))

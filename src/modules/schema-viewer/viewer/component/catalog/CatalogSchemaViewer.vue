@@ -40,7 +40,7 @@ schemaViewerService
         catalogId.value = x.catalogId
         loaded.value = true
     })
-    .catch((e) => toaster.error(e))
+    .catch((e) => toaster.error('Could not load catalog', e)) // todo lho i18n
 
 props.schema
     .entitySchemas()

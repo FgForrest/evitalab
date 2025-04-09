@@ -1,4 +1,4 @@
-import { App, createApp } from 'vue'
+import { App, ComponentPublicInstance, createApp } from 'vue'
 import VueApexCharts from 'vue3-apexcharts'
 import { codemirror, defaultCodemirrorOptions } from '@/vue-plugins/codemirror'
 import { i18n } from '@/vue-plugins/i18n'
@@ -11,6 +11,8 @@ import vuetify from '@/vue-plugins/vuetify'
 import Lab from '@/Lab.vue'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 import luxonExtensions from '@/vue-plugins/luxonExtensions'
+import { LabRunMode } from '@/LabRunMode'
+import { evitaLabConfigInjectionKey } from '@/modules/config/EvitaLabConfig'
 
 /**
  * Bootstraps the entire evitaLab.
@@ -19,7 +21,7 @@ const app: App<Element> = createApp(Lab)
 
 // load Vue plugins
 loadFonts()
-    .then(() => {
+    .then(async () => {
         app
             .use(vuetify)
             .use(codemirror, defaultCodemirrorOptions)
@@ -32,7 +34,12 @@ loadFonts()
 
         // register evitaLab modules
         const moduleContextBuilder: ModuleContextBuilder = new ModuleContextBuilder(app)
-        modules.forEach(it => it.register(moduleContextBuilder))
+        for (const module of modules) {
+            await module.register(moduleContextBuilder)
+        }
 
-        app.mount('#app')
+        const mounted: ComponentPublicInstance = app.mount('#app')
+        if (moduleContextBuilder.inject(evitaLabConfigInjectionKey).runMode === LabRunMode.Driver) {
+            await mounted.$nextTick(()=>{ router.push("/"); })
+        }
     })
