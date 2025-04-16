@@ -28,7 +28,8 @@
       "confirm": "Confirm",
       "rename": "Rename",
       "replace": "Replace",
-      "switch": "Switch"
+      "switch": "Switch",
+      "accept": "Accept"
     },
     "notification": {
       "copiedToClipboard": "Copied to clipboard",
@@ -185,10 +186,20 @@
       },
       "warning": {
         "potentiallyUnsafe": "<em>Be careful!</em> The query in the URL may contain potentially malicious code."
-      },
-      "button": {
-        "reject": "Reject",
-        "accept": "Accept"
+      }
+    },
+    "sharedTroubleshooterDialog": {
+      "title": "Shared tab is broken",
+      "info": "Discovered shared tab contains data that are not available in this evitaLab instance. Please choose data that are available below.",
+      "form": {
+        "newConnectionId": {
+          "label": "New connection",
+          "hint": "Connection from shared tab is not available. Choose the most similar one.",
+          "validations": {
+            "required": "New connection is required.",
+            "notExists": "Chosen connection doesn't exists."
+          }
+        }
       }
     },
     "shareDialog": {

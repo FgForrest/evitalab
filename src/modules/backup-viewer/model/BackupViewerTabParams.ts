@@ -12,7 +12,8 @@ export class BackupViewerTabParams implements TabParams<BackupViewerTabParamsDto
 
     toSerializable(): BackupViewerTabParamsDto {
         return {
-            connectionId: this.connection.id
+            connectionId: this.connection.id,
+            connectionName: this.connection.name
         }
     }
 }

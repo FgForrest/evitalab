@@ -1,7 +1,4 @@
-import { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
-import { ConnectionId } from '@/modules/connection/model/ConnectionId'
+import { TabParamsDtoWithConnection } from '@/modules/workspace/tab/model/TabParamsDtoWithConnection'
 
-// todo docs
-export interface ServerViewerTabParamsDto extends TabDataDto {
-    readonly connectionId: ConnectionId
+export interface ServerViewerTabParamsDto extends TabParamsDtoWithConnection {
 }

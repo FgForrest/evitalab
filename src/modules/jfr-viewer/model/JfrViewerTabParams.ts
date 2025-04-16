@@ -13,6 +13,7 @@ export class JfrViewerTabParams implements TabParams<JfrViewerTabParamsDto> {
     toSerializable(): JfrViewerTabParamsDto {
         return {
             connectionId: this.connection.id,
+            connectionName: this.connection.name
         }
     }
 }

@@ -46,7 +46,6 @@ const evitaLabInstance = computed<string>(() => {
         // in driver mode we cannot send target user to local driver instance,
         // instead we optimistically assume that an evitaLab instance is running
         // on the server and redirect to it
-        // todo lho we need to support opening links with unknown connection in order for this to work
         const driverConnection: Connection = connectionService.getDriverConnection()
         return driverConnection.serverUrl + '/lab'
     } else {
@@ -79,6 +78,7 @@ function copyLink(): void {
         :model-value="modelValue"
         @update:model-value="$emit('update:modelValue', $event)"
         max-width="36rem"
+        persistent
     >
         <template #activator="{ props }">
             <slot name="activator" v-bind="props"/>

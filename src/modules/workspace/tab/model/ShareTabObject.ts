@@ -9,7 +9,7 @@ import { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
  */
 export class ShareTabObject extends SerializableTabObject {
 
-    constructor(tabType: TabType, tabParams: TabParamsDto, tabData: TabDataDto) {
+    constructor(tabType: TabType, tabParams: TabParamsDto, tabData: TabDataDto | undefined) {
         super(tabType, tabParams, tabData)
     }
 

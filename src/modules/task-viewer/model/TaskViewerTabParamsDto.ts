@@ -1,6 +1,4 @@
-import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
-import { ConnectionId } from '@/modules/connection/model/ConnectionId'
+import { TabParamsDtoWithConnection } from '@/modules/workspace/tab/model/TabParamsDtoWithConnection'
 
-export interface TaskViewerTabParamsDto extends TabParamsDto {
-    readonly connectionId: ConnectionId
+export interface TaskViewerTabParamsDto extends TabParamsDtoWithConnection {
 }

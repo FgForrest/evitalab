@@ -15,6 +15,7 @@ export class TrafficRecordHistoryViewerTabParams implements TabParams<TrafficRec
     toSerializable(): TrafficRecordHistoryViewerTabParamsDto {
         return {
             connectionId: this.dataPointer.connection.id,
+            connectionName: this.dataPointer.connection.name,
             catalogName: this.dataPointer.catalogName,
         }
     }

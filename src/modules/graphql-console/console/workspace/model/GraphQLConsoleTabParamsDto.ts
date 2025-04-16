@@ -1,12 +1,10 @@
-import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
-import { ConnectionId } from '@/modules/connection/model/ConnectionId'
 import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
+import { TabParamsDtoWithConnection } from '@/modules/workspace/tab/model/TabParamsDtoWithConnection'
 
 /**
- * Serializable DTO for storing {@link GraphQLConsoleParams} in a storage or link.
+ * Serializable DTO for storing {@link GraphQLConsoleTabParams} in a storage or link.
  */
-export interface GraphQLConsoleTabParamsDto extends TabParamsDto {
-    readonly connectionId: ConnectionId
+export interface GraphQLConsoleTabParamsDto extends TabParamsDtoWithConnection {
     readonly catalogName: string
     readonly instanceType: GraphQLInstanceType
 }

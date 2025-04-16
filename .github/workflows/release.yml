@@ -194,14 +194,16 @@ jobs:
     steps:
       - name: Clone evitaLab metadata database repository
         env:
-          REPO: "https://x-access-token:${{ secrets.REPO_ACCESS_TOKEN }}@github.com/lukashornych/evitalab-metadata-database.git"
+          REPO: "https://x-access-token:${{ secrets.REPO_ACCESS_TOKEN }}@github.com/FgForrest/evitalab-metadata-database.git"
         run: |
           git clone $REPO database
           cd database
           git remote set-url origin $REPO
 
       - name: Insert new evitaLab version into database
-        run: echo "${{ needs.build.outputs.released_version }},${{ needs.build.outputs.min_evitadb_version }}" >> database/evitalab-database.csv
+        run: |
+          NORMALIZED_LAB_VERSION=$(echo "${{ needs.build.outputs.released_version }}" | cut -c2-)
+          echo "$NORMALIZED_LAB_VERSION,${{ needs.build.outputs.min_evitadb_version }}" >> database/evitalab-database.csv
 
       - name: Commit and push changed to evitaLab metadata database
         run: |

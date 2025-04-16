@@ -12,7 +12,8 @@ export class TaskViewerTabParams implements TabParams<TaskViewerTabParamsDto> {
 
     toSerializable(): TaskViewerTabParamsDto {
         return {
-            connectionId: this.connection.id
+            connectionId: this.connection.id,
+            connectionName: this.connection.name
         }
     }
 }

@@ -100,13 +100,13 @@ function handleOptionClick(selected: any): void {
                 openKeymap()
                 break
             case ManageOptionType.EvitaLabGithub:
-                window.open('https://github.com/lukashornych/evitalab', '_blank');
+                window.open('https://github.com/FgForrest/evitalab', '_blank');
                 break
             case ManageOptionType.DiscussEvitaLab:
                 window.open('https://discord.gg/VsNBWxgmSw', '_blank');
                 break
             case ManageOptionType.ReportEvitaLabIssue:
-                window.open('https://github.com/lukashornych/evitalab/issues', '_blank');
+                window.open('https://github.com/FgForrest/evitalab/issues', '_blank');
                 break
             case ManageOptionType.EvitaDBDocumentation:
                 window.open('https://evitadb.io/documentation', '_blank');

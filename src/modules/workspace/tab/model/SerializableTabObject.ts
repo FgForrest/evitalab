@@ -8,9 +8,9 @@ import { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
 export abstract class SerializableTabObject {
     readonly tabType: TabType
     readonly tabParams: TabParamsDto
-    readonly tabData: TabDataDto
+    readonly tabData?: TabDataDto
 
-    protected constructor(tabType: TabType, tabParams: TabParamsDto, tabData: TabDataDto) {
+    protected constructor(tabType: TabType, tabParams: TabParamsDto, tabData: TabDataDto | undefined) {
         this.tabType = tabType
         this.tabParams = tabParams
         this.tabData = tabData

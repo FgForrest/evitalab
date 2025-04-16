@@ -14,7 +14,8 @@ export class ServerViewerTabParams implements TabParams<ServerViewerTabParamsDto
 
     toSerializable(): ServerViewerTabParamsDto {
         return {
-            connectionId: this.connection.id
+            connectionId: this.connection.id,
+            connectionName: this.connection.name
         }
     }
 

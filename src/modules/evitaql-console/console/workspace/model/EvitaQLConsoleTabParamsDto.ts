@@ -1,10 +1,8 @@
-import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
-import { ConnectionId } from '@/modules/connection/model/ConnectionId'
+import { TabParamsDtoWithConnection } from '@/modules/workspace/tab/model/TabParamsDtoWithConnection'
 
 /**
  * Serializable DTO for storing {@link EvitaQLConsoleTabParams} in a storage or link.
  */
-export interface EvitaQLConsoleTabParamsDto extends TabParamsDto {
-    readonly connectionId: ConnectionId
+export interface EvitaQLConsoleTabParamsDto extends TabParamsDtoWithConnection {
     readonly catalogName: string
 }

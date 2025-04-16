@@ -78,6 +78,7 @@ export class SchemaViewerTabParams implements TabParams<SchemaViewerTabParamsDto
 
         return {
             connectionId: this.dataPointer.connection.id,
+            connectionName: this.dataPointer.connection.name,
             schemaPointer: {
                 type: schemaPointerType,
                 params: schemaPointerParams

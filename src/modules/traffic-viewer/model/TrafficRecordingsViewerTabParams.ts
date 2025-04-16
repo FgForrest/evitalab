@@ -12,7 +12,8 @@ export class TrafficRecordingsViewerTabParams implements TabParams<TrafficRecord
 
     toSerializable(): TrafficRecordingsViewerTabParamsDto {
         return {
-            connectionId: this.connection.id
+            connectionId: this.connection.id,
+            connectionName: this.connection.name
         }
     }
 }

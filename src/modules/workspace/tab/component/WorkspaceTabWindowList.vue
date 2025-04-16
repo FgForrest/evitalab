@@ -6,7 +6,6 @@ import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import { DemoSnippetResolver, useDemoSnippetResolver } from '@/modules/workspace/service/DemoSnippetResolver'
-import { SharedTabResolver, useSharedTabResolver } from '@/modules/workspace/tab/service/SharedTabResolver'
 import { Command } from '@/modules/keymap/model/Command'
 import { ellipsis } from '@/utils/text'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
@@ -22,10 +21,8 @@ const keymap: Keymap = useKeymap()
 const { t } = useI18n()
 const workspaceService: WorkspaceService = useWorkspaceService()
 const demoCodeSnippetResolver: DemoSnippetResolver = useDemoSnippetResolver()
-const sharedTabResolver: SharedTabResolver = useSharedTabResolver()
 
-const sharedTabDialogOpen = ref<boolean>(false)
-const sharedTabRequest = ref<TabDefinition<any, any> | undefined>()
+const showSharedTabDialog = ref<boolean>(false)
 
 const tabDefinitions = ref<TabDefinition<any, any>[]>(workspaceService.getTabDefinitions())
 watch(tabDefinitions, () => {
@@ -97,20 +94,9 @@ async function resolveDemoCodeSnippet(urlSearchParams: URLSearchParams): Promise
     }
 }
 
-/**
- * Open shared tab if requested
- */
-async function resolveSharedTab(urlSearchParams: URLSearchParams): Promise<TabDefinition<any, any> | undefined> {
+async function hasSharedTab(urlSearchParams: URLSearchParams): Promise<boolean> {
     const sharedTabSerialized: string | null = urlSearchParams.get('sharedTab')
-    if (sharedTabSerialized == undefined) {
-        return undefined
-    }
-
-    try {
-        return await sharedTabResolver.resolve(sharedTabSerialized)
-    } catch (e: any) {
-        await toaster.error('Could not resolve shared tab', e) // todo lho i18n
-    }
+    return sharedTabSerialized != undefined
 }
 
 function restorePreviousSession(): void {
@@ -144,11 +130,10 @@ if (evitaLabConfig.playgroundMode) {
             if (tabDefinition != undefined) {
                 workspaceService.createTab(tabDefinition)
             }
-            return resolveSharedTab(urlSearchParams)
-        }).then(tabDefinition => {
-            if (tabDefinition != undefined) {
-                sharedTabRequest.value = tabDefinition
-                sharedTabDialogOpen.value = true
+            return hasSharedTab(urlSearchParams)
+        }).then(hasSharedTab => {
+            if (hasSharedTab) {
+                showSharedTabDialog.value = true
             }
         })
 } else {
@@ -243,11 +228,7 @@ onUnmounted(() => {
         </div>
     </VMain>
 
-    <TabSharedDialog
-        v-if="sharedTabRequest"
-        :tab-request="sharedTabRequest"
-        @resolve="sharedTabRequest = undefined"
-    />
+    <TabSharedDialog v-model="showSharedTabDialog" />
 </template>
 
 <style scoped>

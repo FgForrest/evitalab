@@ -66,10 +66,9 @@ async function confirm(): Promise<void> {
             //@ts-ignore
             form.value.reset()
         }
+        props.reset()
         emit('update:modelValue', false)
     }
-
-    props.reset()
 }
 
 defineExpose<{

@@ -1,5 +1,5 @@
 <h1 align="center" style="border-bottom: none">
-    <a href="https://evitadb.io" target="_blank"><img src="https://raw.githubusercontent.com/lukashornych/evitalab/dev/documentation/user/assets/img/evitalab.svg"/></a><br>evitaLab
+    <a href="https://evitadb.io" target="_blank"><img src="https://raw.githubusercontent.com/FgForrest/evitalab/dev/documentation/user/assets/img/evitalab.svg"/></a><br>evitaLab
 </h1>
 
 <p align="center">
@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/lukashornych/evitalab/releases" title="Releases"><img src="https://img.shields.io/github/v/release/lukashornych/evitalab?color=%23ff00a0&include_prereleases&label=version&sort=semver"/></a>
+  <a href="https://github.com/FgForrest/evitalab/releases" title="Releases"><img src="https://img.shields.io/github/v/release/FgForrest/evitalab?color=%23ff00a0&include_prereleases&label=version&sort=semver"/></a>
   &nbsp;
   <a href="https://vuejs.org/" title="Platform"><img src="https://img.shields.io/badge/Built%20with-Vue-green?color=42b883"/></a>
   &nbsp;
@@ -16,7 +16,7 @@
   &nbsp;
   <a href="https://discord.gg/VsNBWxgmSw" title="Discord"><img src="https://img.shields.io/discord/999338870996992223?color=5865f2"/></a>
   &nbsp;
-  <a href="https://github.com/lukashornych/evitalab/blob/master/LICENSE" title="License"><img src="https://img.shields.io/github/license/lukashornych/evitalab"/></a>
+  <a href="https://github.com/FgForrest/evitalab/blob/master/LICENSE" title="License"><img src="https://img.shields.io/github/license/FgForrest/evitalab"/></a>
 </p>
 
 evitaLab aims to provide a user-friendly client for evitaDB database to easily browse and modify data stored in the database.
@@ -48,7 +48,7 @@ To run evitaLab locally, you can use either of the following ways.
 
 ### Desktop application
 
-If you are looking for full local development experience, checkout the [evitaLab Desktop](https://github.com/lukashornych/evitalab-desktop/)
+If you are looking for full local development experience, checkout the [evitaLab Desktop](https://github.com/FgForrest/evitalab-desktop/)
 application instead. The desktop app builds on top of this evitaLab core and add proper server connection management as 
 well as other useful features:
 
@@ -69,7 +69,7 @@ address. For more configuration, see [evitaDB documentation](https://evitadb.io/
 
 ### From dist
 
-If you want to run evitaLab manually, you can download the latest release from [releases page](https://github.com/lukashornych/evitalab/releases/tag/latest)
+If you want to run evitaLab manually, you can download the latest release from [releases page](https://github.com/FgForrest/evitalab/releases)
 and use any static web server to serve the files from `dist-standalone` directory. 
 For example, you can use [nginx](https://docs.nginx.com/nginx/admin-guide/web-server/serving-static-content/)
 
@@ -91,7 +91,7 @@ yarn dev
 
 _this will start a development server on [localhost:3000/lab](http://localhost:3000/lab) address._
 
-Or the driver mode (for [evitaLab Desktop](https://github.com/lukashornych/evitalab-desktop)):
+Or the driver mode (for [evitaLab Desktop](https://github.com/FgForrest/evitalab-desktop)):
 
 ```shell
 yarn install

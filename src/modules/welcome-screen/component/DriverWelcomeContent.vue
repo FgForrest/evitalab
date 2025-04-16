@@ -36,7 +36,7 @@ const test = localStorage.getItem('test')
                         Connected to: <span class="font-weight-bold">{{ connectionName }}</span>
                     </h1>
                     <p class="text-white" style="font-size: 1rem;">{{ t('welcomeScreen.driver.description') }} {{ version }} <a
-                        class="text-primary-lightest text-body-2" href="https://github.com/lukashornych/evitalab/releases"
+                        class="text-primary-lightest text-body-2" href="https://github.com/FgForrest/evitalab/releases"
                         target="_blank">({{ t('welcomeScreen.driver.changelog') }})</a></p>
                 </div>
             </header>

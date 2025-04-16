@@ -15,6 +15,7 @@ import Immutable from 'immutable'
 import { ServerStatus } from '@/modules/connection/model/status/ServerStatus'
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 import { LabRunMode } from '@/LabRunMode'
+import { ConnectionNotFoundError } from '@/modules/connection/error/ConnectionNotFoundError'
 
 /**
  * Cookie containing preconfigured connections. These will be displayed next to the user-defined connections.
@@ -106,7 +107,7 @@ export class ConnectionService {
         const connection: Connection | undefined = this.store.connections
             .find(c => c.id === id) as Connection | undefined
         if (connection == undefined) {
-            throw new UnexpectedError(`Connection for ID '${id}' not found.`)
+            throw new ConnectionNotFoundError(id)
         }
         return connection
     }

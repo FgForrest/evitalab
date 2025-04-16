@@ -20,6 +20,7 @@ export class GraphQLConsoleTabParams implements TabParams<GraphQLConsoleTabParam
     toSerializable(): GraphQLConsoleTabParamsDto {
         return {
             connectionId: this.dataPointer.connection.id,
+            connectionName: this.dataPointer.connection.name,
             catalogName: this.dataPointer.catalogName,
             instanceType: this.dataPointer.instanceType
         }

@@ -18,6 +18,7 @@ export class EntityViewerTabParams implements TabParams<EntityViewerTabParamsDto
     toSerializable(): EntityViewerTabParamsDto {
         return {
             connectionId: this.dataPointer.connection.id,
+            connectionName: this.dataPointer.connection.name,
             catalogName: this.dataPointer.catalogName,
             entityType: this.dataPointer.entityType
         }
