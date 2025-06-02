@@ -339,7 +339,7 @@
       },
       "notification": {
         "couldNotLoadCatalogs": "Could not load catalogs: {reason}",
-        "couldNotLoadServerStatus": "Could not load server status: {reason}",
+        "couldNotLoadServerStatus": "Could not load server status: {reason}"
       }
     },
     "catalog": {

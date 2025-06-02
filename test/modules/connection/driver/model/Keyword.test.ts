@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest'
-import { Keyword } from '../../../../../src/modules/connection/driver/grpc/model/Keyword'
+import { Keyword } from '../../../../../src/modules/database-driver/connector/grpc/model/Keyword'
 
 /**
  * Tests for evitaDB keywords
