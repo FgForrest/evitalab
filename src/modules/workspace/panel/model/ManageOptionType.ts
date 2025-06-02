@@ -1,4 +1,3 @@
-// todo lho
 export enum ManageOptionType {
     Keymap = 'keymap',
     EvitaLabGithub = 'evitaLabGithub',

@@ -6,7 +6,7 @@ export enum Command {
 
     System_Keymap = 'system.keymap',
 
-    System_Panels_ConnectionsExplorer = 'system.panels.connectionsExplorer',
+    System_Panels_Connection = 'system.panels.connection',
 
     System_Editor_PreviousTab = 'system.editor.previousTab',
     System_Editor_NextTab = 'system.editor.nextTab',

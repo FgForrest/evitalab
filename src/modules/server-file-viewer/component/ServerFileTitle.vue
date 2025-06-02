@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { ServerFile } from '@/modules/connection/model/server-file/ServerFile'
+import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { computed } from 'vue'
 import { formatByteSize } from '@/utils/string'
 

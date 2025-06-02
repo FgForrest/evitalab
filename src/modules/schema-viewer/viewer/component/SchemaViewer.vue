@@ -23,6 +23,7 @@ import { SchemaPathFactory } from '@/modules/schema-viewer/viewer/service/schema
 import {
     useSchemaPathFactory
 } from '@/modules/schema-viewer/viewer/service/schema-path-factory/DelegatingSchemaPathFactory'
+import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 
 const keymap: Keymap = useKeymap()
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
@@ -42,6 +43,11 @@ defineExpose<TabComponentExpose>({
     }
 })
 
+const schemaChangeCallbackId = schemaViewerService.registerSchemaChangeCallback(
+    props.params.dataPointer,
+    async () => await loadSchema()
+)
+
 const title: Immutable.List<string> = (() => {
     const schemaPointer: SchemaPointer = props.params.dataPointer.schemaPointer
 
@@ -59,23 +65,37 @@ const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | null>(null)
 
 const schemaLoaded = ref<boolean>(false)
 const schema = ref<any>()
-schemaViewerService.getSchema(props.params.dataPointer)
-    .catch(error => {
-        toaster.error('Could not load schema', error).then() // todo lho i18n
-    })
-    .then(s => {
-        schema.value = s
-        schemaLoaded.value = true
-        emit('ready')
-    })
+
+async function loadSchema(): Promise<void> {
+    try {
+        schema.value = await schemaViewerService.getSchema(props.params.dataPointer)
+    } catch (e: any) {
+        await toaster.error('Could not load schema', e) // todo lho i18n
+    }
+}
+
+async function reloadSchema(): Promise<void> {
+    // call registered callback which will load new schema
+    await schemaViewerService.clearSchemaCache(props.params.dataPointer)
+}
 
 onMounted(() => {
     // register schema viewer specific keyboard shortcuts
     keymap.bind(Command.SchemaViewer_ShareTab, props.id, () => shareTabButtonRef.value?.share())
 })
 onUnmounted(() => {
+    schemaViewerService.unregisterSchemaChangeCallback(
+        props.params.dataPointer,
+        schemaChangeCallbackId
+    )
+
     // unregister schema viewer specific keyboard shortcuts
     keymap.unbind(Command.SchemaViewer_ShareTab, props.id)
+})
+
+loadSchema().then(() => {
+    schemaLoaded.value = true
+    emit('ready')
 })
 </script>
 
@@ -94,9 +114,14 @@ onUnmounted(() => {
                     :tab-type="TabType.SchemaViewer"
                     :tab-params="params!"
                     :tab-data="undefined"
-                    :disabled="!params.dataPointer.connection.preconfigured"
                     :command="Command.SchemaViewer_ShareTab"
                 />
+                <VBtn icon @click="reloadSchema()">
+                    <VIcon>mdi-refresh</VIcon>
+                    <VActionTooltip activator="parent">
+                        {{ t('common.button.reload') }}
+                    </VActionTooltip>
+                </VBtn>
             </template>
         </VTabToolbar>
 

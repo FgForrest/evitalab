@@ -3,14 +3,13 @@
  * Visualizes server tasks
  */
 
-import { Connection } from '@/modules/connection/model/Connection'
 import { TaskViewerService, useTaskViewerService } from '../services/TaskViewerService'
 import { computed, onUnmounted, ref, watch } from 'vue'
-import { TaskState } from '@/modules/connection/model/task/TaskState'
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
+import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import { useI18n } from 'vue-i18n'
-import { PaginatedList } from '@/modules/connection/model/PaginatedList'
+import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
 import TaskListItem from '@/modules/task-viewer/components/TaskListItem.vue'
 import VListItemDivider from '@/modules/base/component/VListItemDivider.vue'
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
@@ -22,7 +21,6 @@ const { t } = useI18n()
 const props = withDefaults(
     defineProps<{
         subheader?: string,
-        connection: Connection
         states?: TaskState[]
         taskTypes?: string[],
         pageSize?: number,
@@ -76,7 +74,6 @@ const shouldDisplayPagination = computed<boolean>(() => {
 async function loadTaskStatuses(): Promise<boolean> {
     try {
         taskStatuses.value = await taskViewerService.getTaskStatuses(
-            props.connection,
             pageNumber.value,
             props.pageSize,
             props.states,
@@ -147,10 +144,7 @@ defineExpose<{
         >
             <template #default="{ items }">
                 <template v-for="(item, index) in items" :key="item.raw.taskId.code">
-                    <TaskListItem
-                        :connection="connection"
-                        :task="item.raw"
-                    >
+                    <TaskListItem :task="item.raw">
                         <template #append-action-buttons="{ task }">
                             <slot name="item-append-action-buttons" :task="task"/>
                         </template>

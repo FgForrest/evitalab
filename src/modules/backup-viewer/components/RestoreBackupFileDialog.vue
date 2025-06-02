@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { computed, ref } from 'vue'
-import { ServerFile } from '@/modules/connection/model/server-file/ServerFile'
-import { Connection } from '@/modules/connection/model/Connection'
+import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { BackupViewerService, useBackupViewerService } from '@/modules/backup-viewer/service/BackupViewerService'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
-import { ClassifierValidationErrorType } from '@/modules/connection/model/data-type/ClassifierValidationErrorType'
+import { ClassifierValidationErrorType } from '@/modules/database-driver/data-type/ClassifierValidationErrorType'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 
 const backupViewerService: BackupViewerService = useBackupViewerService()
@@ -14,7 +13,6 @@ const { t } = useI18n()
 
 const props = defineProps<{
     modelValue: boolean,
-    connection: Connection,
     backupFile: ServerFile
 }>()
 const emit = defineEmits<{
@@ -30,12 +28,12 @@ const catalogNameRules = [
     },
     async (value: string): Promise<any> => {
         const classifierValidationResult : ClassifierValidationErrorType | undefined =
-            await backupViewerService.isCatalogNameValid(props.connection, value)
+            await backupViewerService.isCatalogNameValid(value)
         if (classifierValidationResult == undefined) return true
         return t(`backupViewer.restore.form.catalogName.validations.${classifierValidationResult}`)
     },
     async (value: string): Promise<any> => {
-        const available: boolean = await backupViewerService.isCatalogNameAvailable(props.connection, value)
+        const available: boolean = await backupViewerService.isCatalogNameAvailable(value)
         if (available) return true
         return t('backupViewer.restore.form.catalogName.validations.notAvailable')
     }
@@ -51,7 +49,6 @@ function reset(): void {
 async function restore(): Promise<boolean> {
     try {
         await backupViewerService.restoreBackupFile(
-            props.connection,
             props.backupFile.fileId,
             catalogName.value
         )

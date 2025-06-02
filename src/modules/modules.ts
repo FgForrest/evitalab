@@ -17,17 +17,23 @@ import { ServerViewerModuleRegistrar } from '@/modules/server-viewer/ServerViewe
 import { JfrViewerModuleRegistrar } from '@/modules/jfr-viewer/JfrViewerModuleRegistrar'
 import { ServerFileViewerModuleRegistrar } from '@/modules/server-file-viewer/ServerFileViewerModuleRegistrar'
 import { TrafficViewerModuleRegistrar } from '@/modules/traffic-viewer/TrafficViewerModuleRegistrar'
+import { ConnectionExplorerModuleRegistrar } from '@/modules/connection-explorer/ConnectionExplorerModuleRegistrar'
+import { DatabaseDriverModuleRegistrar } from '@/modules/database-driver/DatabaseDriverModuleRegistrar'
 
-// todo docs
+/**
+ * Registers all modules during startup.
+ */
 export const modules: ModuleRegistrar[] = [
     // base generic modules
     new ConfigModuleRegistrar(),
     new StorageModuleRegistrar(),
     new ConnectionModuleRegistrar(),
+    new DatabaseDriverModuleRegistrar(),
     new WorkspaceModuleRegistrar(),
     new NotificationModuleRegistrar(),
 
     // UI feature modules
+    new ConnectionExplorerModuleRegistrar(),
     new KeymapModuleRegistrar(),
     new WelcomeScreenModuleRegistrar(),
     new ErrorViewerModuleRegistrar(),

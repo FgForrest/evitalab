@@ -1,6 +1,5 @@
 import { ModuleRegistrar } from '@/ModuleRegistrar'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
-import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
 import {
     TrafficViewerService,
     trafficViewerServiceInjectionKey
@@ -33,19 +32,20 @@ import { MutationContainerVisualiser } from '@/modules/traffic-viewer/service/Mu
 import {
     TrafficRecordHistoryViewerTabFactory, trafficRecordHistoryViewerTabFactoryInjectionKey
 } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
+import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
 
 export class TrafficViewerModuleRegistrar implements ModuleRegistrar {
     async register(builder: ModuleContextBuilder): Promise<void> {
-        const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
+        const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
         const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
         const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory = builder.inject(evitaQLConsoleTabFactoryInjectionKey)
         const graphQLConsoleTabFactory: GraphQLConsoleTabFactory = builder.inject(graphQLConsoleTabFactoryInjectionKey)
         const trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory = builder.inject(trafficRecordHistoryViewerTabFactoryInjectionKey)
 
         const trafficViewerService: TrafficViewerService = new TrafficViewerService(
-            connectionService,
+            evitaClient,
             new TrafficRecordHistoryVisualisationProcessor(
-                connectionService,
+                evitaClient,
                 Immutable.List([
                     new EntityEnrichmentContainerVisualiser(
                         workspaceService,

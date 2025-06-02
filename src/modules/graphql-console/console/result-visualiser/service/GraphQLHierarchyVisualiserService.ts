@@ -19,7 +19,8 @@ export class GraphQLHierarchyVisualiserService extends JsonHierarchyVisualiserSe
         super(visualiserService)
     }
 
-    resolveNamedHierarchy(namedHierarchyResult: Result[], entityRepresentativeAttributes: string[]): VisualisedNamedHierarchy {
+    resolveNamedHierarchy(namedHierarchyResult: Result[],
+                          entityRepresentativeAttributes: string[]): VisualisedNamedHierarchy {
         const count: number | undefined = namedHierarchyResult.length
         const trees: VisualisedHierarchyTreeNode[] = []
         let requestedNode: VisualisedHierarchyTreeNode | undefined = undefined

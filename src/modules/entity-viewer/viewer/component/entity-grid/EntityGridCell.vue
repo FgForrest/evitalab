@@ -6,12 +6,12 @@ import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/E
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
-import { Scalar } from '@/modules/connection/model/data-type/Scalar'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { useDataLocale, usePriceType } from '@/modules/entity-viewer/viewer/component/dependencies'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
-import { isLocalizedSchema } from '@/modules/connection/model/schema/LocalizedSchema'
-import { isTypedSchema } from '@/modules/connection/model/schema/TypedSchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
+import { isLocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
+import { isTypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
+import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -32,7 +32,7 @@ const openableInNewTab = computed<boolean>(() => {
         return true
     } else if (props.propertyDescriptor?.schema != undefined &&
         isTypedSchema(props.propertyDescriptor.schema) &&
-        props.propertyDescriptor.schema.type.getIfSupported()! === Scalar.Predecessor) {
+        props.propertyDescriptor.schema.type === Scalar.Predecessor) {
         return true
     } else if (props.propertyDescriptor?.type === EntityPropertyType.References && props.propertyDescriptor.schema instanceof ReferenceSchema) {
         return true
@@ -45,7 +45,7 @@ const showDetailOnHover = computed<boolean>(() => printablePropertyValue.value.l
 const noLocaleSelected = computed<boolean>(() => {
     return props.propertyDescriptor?.schema != undefined &&
         isLocalizedSchema(props.propertyDescriptor.schema) &&
-        props.propertyDescriptor.schema.localized.getOrElse(false) &&
+        props.propertyDescriptor.schema.localized &&
         dataLocale.value == undefined
 })
 const emptyArray = computed<boolean>(() => {

@@ -4,7 +4,6 @@ import { useI18n } from 'vue-i18n'
 import { computed, ref, watch } from 'vue'
 import { DateTime } from 'luxon'
 import VTimeOffsetPicker from '@/modules/base/component/VTimeOffsetPicker.vue'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import { timeOffsetFrom } from '@/utils/dateTime'
 
 enum Step {
@@ -13,7 +12,6 @@ enum Step {
     TimeOffset = 2
 }
 
-const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = withDefaults(

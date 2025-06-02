@@ -43,7 +43,6 @@ import {
 import VPreviewEditor from '@/modules/code-editor/component/VPreviewEditor.vue'
 import ResultVisualiser from '@/modules/console/result-visualiser/component/ResultVisualiser.vue'
 import { Command } from '@/modules/keymap/model/Command'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import VExecuteQueryButton from '@/modules/base/component/VExecuteQueryButton.vue'
@@ -110,10 +109,14 @@ const resultTab = ref<ResultTabType>(ResultTabType.Raw)
 const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
 
 const graphQLSchema = ref<GraphQLSchema>()
+const graphQLSchemaChangeCallbackId = graphQLConsoleService.registerGraphQLSchemaChangeCallback(
+    props.params.dataPointer.catalogName,
+    async () => await loadGraphQLSchema()
+)
 
 const queryEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
 const queryCode = ref<string>(props.data.query ? props.data.query : t('graphQLConsole.placeholder.writeQuery', { catalogName: props.params.dataPointer.catalogName }))
-const queryExtensions: Extension[] = []
+const queryExtensions = ref<Extension[]>()
 
 const variablesEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
 const variablesCode = ref<string>(props.data.variables ? props.data.variables : '{\n  \n}')
@@ -159,11 +162,14 @@ watch(currentData, (data) => {
     emit('update:data', data)
 })
 
+async function loadGraphQLSchema(): Promise<void> {
+    const schema: GraphQLSchema = await graphQLConsoleService.getGraphQLSchema(props.params.dataPointer)
+    queryExtensions.value = graphql(schema)
+}
+
 onBeforeMount(() => {
-    graphQLConsoleService.getGraphQLSchema(props.params.dataPointer)
-        .then(schema => {
-            graphQLSchema.value = schema
-            queryExtensions.push(graphql(schema))
+    loadGraphQLSchema()
+        .then(() => {
             initialized.value = true
             emit('ready')
 
@@ -207,6 +213,11 @@ onMounted(() => {
     focusQueryEditor()
 })
 onUnmounted(() => {
+    graphQLConsoleService.unregisterGraphQLSchemaChangeCallback(
+        props.params.dataPointer.catalogName,
+        graphQLSchemaChangeCallbackId
+    )
+
     // unregister console specific keyboard shortcuts
     keymap.unbind(Command.GraphQLConsole_ExecuteQuery, props.id)
     keymap.unbind(Command.GraphQLConsole_ShareTab, props.id)
@@ -280,20 +291,19 @@ function focusResultVisualiser(): void {
                     :tab-type="TabType.GraphQLConsole"
                     :tab-params="params"
                     :tab-data="currentData"
-                    :disabled="!params.dataPointer.connection.preconfigured"
                     :command="Command.GraphQLConsole_ShareTab"
                 />
 
-                <VBtn
-                    icon
-                    density="compact"
-                >
-                    <VIcon>mdi-information-outline</VIcon>
-                    <VTooltip activator="parent">
-                        <!-- TODO implement -->
-                        {{ t('graphQLConsole.button.instanceDetails') }}
-                    </VTooltip>
-                </VBtn>
+                <!-- TODO implement -->
+<!--                <VBtn-->
+<!--                    icon-->
+<!--                    density="compact"-->
+<!--                >-->
+<!--                    <VIcon>mdi-information-outline</VIcon>-->
+<!--                    <VTooltip activator="parent">-->
+<!--                        {{ t('graphQLConsole.button.instanceDetails') }}-->
+<!--                    </VTooltip>-->
+<!--                </VBtn>-->
 
                 <VExecuteQueryButton :loading="loading" @click="executeQuery">
 <!--                    todo lho doesn't work, doesnt show command shortcut-->

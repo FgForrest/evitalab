@@ -2,7 +2,6 @@
 
 import StartRecordingDialog from '@/modules/jfr-viewer/components/StartRecordingDialog.vue'
 import VTabMainActionButton from '@/modules/base/component/VTabMainActionButton.vue'
-import { Connection } from '@/modules/connection/model/Connection'
 import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
 
@@ -10,7 +9,6 @@ const { t } = useI18n()
 
 const props = withDefaults(
     defineProps<{
-        connection: Connection,
         disabled?: boolean
     }>(),
     {
@@ -27,7 +25,6 @@ const showStartRecordingDialog = ref<boolean>(false)
 <template>
     <StartRecordingDialog
         v-model="showStartRecordingDialog"
-        :connection="connection"
         @start="emit('start')"
     >
         <template #activator="{ props }">

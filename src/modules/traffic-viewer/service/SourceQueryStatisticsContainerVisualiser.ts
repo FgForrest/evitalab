@@ -1,4 +1,4 @@
-import { TrafficRecord } from '@/modules/connection/model/traffic/TrafficRecord'
+import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { TrafficRecordVisualiser } from '@/modules/traffic-viewer/service/TrafficRecordVisualiser'
 import { TrafficRecordVisualisationContext } from '../model/TrafficRecordVisualisationContext'
 import {
@@ -7,10 +7,12 @@ import {
     metadataItemFinishedStatusIdentifier,
     TrafficRecordVisualisationDefinition
 } from '../model/TrafficRecordVisualisationDefinition'
-import { SourceQueryStatisticsContainer } from '@/modules/connection/model/traffic/SourceQueryStatisticsContainer'
 import { i18n } from '@/vue-plugins/i18n'
 import { formatCount } from '@/utils/string'
-import { SourceQueryContainer } from '@/modules/connection/model/traffic/SourceQueryContainer'
+import {
+    SourceQueryStatisticsContainer
+} from '@/modules/database-driver/request-response/traffic-recording/SourceQueryStatisticsContainer'
+import { SourceQueryContainer } from '@/modules/database-driver/request-response/traffic-recording/SourceQueryContainer'
 
 /**
  * Source query statistics container isn't visualised but controls the flow of rendered UI.

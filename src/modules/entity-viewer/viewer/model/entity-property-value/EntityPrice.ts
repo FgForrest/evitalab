@@ -1,12 +1,12 @@
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
-import { BigDecimal } from '@/modules/connection/model/data-type/BigDecimal'
 import {
     EntityPropertyValuePreviewStringContext
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValuePreviewStringContext'
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
-import { DateTimeRange } from '@/modules/connection/model/data-type/DateTimeRange'
-import { Price } from '@/modules/connection/model/data/Price'
-import { Currency } from '@/modules/connection/model/data-type/Currency'
+import { Currency } from '@/modules/database-driver/data-type/Currency'
+import { DateTimeRange } from '@/modules/database-driver/data-type/DateTimeRange'
+import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
+import { Price } from '@/modules/database-driver/request-response/data/Price'
 
 /**
  * Represents a single entity price.

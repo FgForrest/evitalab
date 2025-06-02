@@ -7,7 +7,7 @@ import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentPro
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import { JfrViewerTabParams } from '@/modules/jfr-viewer/model/JfrViewerTabParams'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
-import { TaskState } from '@/modules/connection/model/task/TaskState'
+import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
 import { jfrRecorderTaskName } from '@/modules/jfr-viewer/model/JfrRecorderTask'
 import TaskList from '@/modules/task-viewer/components/TaskList.vue'
 import RecordingList from '@/modules/jfr-viewer/components/RecordingList.vue'
@@ -70,7 +70,6 @@ emit('ready')
                     </VTooltip>
                 </VBtn>
                 <StartRecordingButton
-                    :connection="params.connection"
                     :disabled="recordingsInPreparationPresent"
                     @start="reloadRecordings"
                 />
@@ -81,7 +80,6 @@ emit('ready')
             <TaskList
                 ref="taskListRef"
                 v-show="recordingsInPreparationPresent"
-                :connection="params.connection"
                 :subheader="t('jfrViewer.tasks.title')"
                 :states="shownTaskStates"
                 :task-types="shownTaskTypes"
@@ -91,7 +89,6 @@ emit('ready')
             >
                 <template #item-append-action-buttons="{ task }">
                     <EndRecordingButton
-                        :connection="params.connection"
                         :jfr-recorder-task="task"
                         @end="reloadRecordings"
                     />
@@ -100,7 +97,6 @@ emit('ready')
 
             <RecordingList
                 ref="recordingListRef"
-                :connection="params.connection"
                 :recordings-in-preparation-present="recordingsInPreparationPresent"
             />
         </VSheet>

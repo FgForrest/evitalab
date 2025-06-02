@@ -11,9 +11,7 @@ import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import { TrafficViewerService, useTrafficViewerService } from '@/modules/traffic-viewer/service/TrafficViewerService'
 import { TrafficRecordHistoryDataPointer } from '@/modules/traffic-viewer/model/TrafficRecordHistoryDataPointer'
 import Immutable from 'immutable'
-import { TrafficRecord } from '@/modules/connection/model/traffic/TrafficRecord'
-import { TrafficRecordingCaptureRequest } from '@/modules/connection/model/traffic/TrafficRecordingCaptureRequest'
-import { TrafficRecordContent } from '@/modules/connection/model/traffic/TrafficRecordContent'
+import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import VListItemDivider from '@/modules/base/component/VListItemDivider.vue'
 import { TrafficRecordHistoryCriteria } from '@/modules/traffic-viewer/model/TrafficRecordHistoryCriteria'
 import {
@@ -22,10 +20,14 @@ import {
 import RecordHistoryItem from '@/modules/traffic-viewer/components/RecordHistoryItem.vue'
 import { convertUserToSystemRecordType } from '@/modules/traffic-viewer/model/UserTrafficRecordType'
 import { Code, ConnectError } from '@connectrpc/connect'
-import { TrafficRecordType } from '@/modules/connection/model/traffic/TrafficRecordType'
 import { Duration } from 'luxon'
 import { parseHumanDurationToMs } from '@/utils/duration'
 import { parseHumanByteSizeToNumber } from '@/utils/number'
+import { TrafficRecordType } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordType'
+import {
+    TrafficRecordingCaptureRequest
+} from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordingCaptureRequest'
+import { TrafficRecordContent } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordContent'
 
 // note: this is enum from vuetify, but vuetify doesn't export it
 type InfiniteScrollStatus = 'ok' | 'empty' | 'loading' | 'error';
@@ -193,7 +195,7 @@ async function tryReloadHistoryForPossibleNewRecords(): Promise<void> {
 
 async function fetchRecords(): Promise<Immutable.List<TrafficRecord>> {
     return await trafficViewerService.getRecordHistoryList(
-        props.dataPointer,
+        props.dataPointer.catalogName,
         nextPageRequest.value,
         limit.value
     )
@@ -216,7 +218,7 @@ function pushNewRecords(newRecords: Immutable.List<TrafficRecord>): void {
 
 async function processRecords(): Promise<void> {
     // note: we compute the history manually here because for some reason, computed ref wasn't working
-    history.value = (await trafficViewerService.processRecords(props.dataPointer, props.criteria, records)).toArray()
+    history.value = (await trafficViewerService.processRecords(props.dataPointer.catalogName, props.criteria, records)).toArray()
 }
 
 function handleRecordFetchError(e: any): void {
@@ -240,7 +242,7 @@ function handleRecordFetchError(e: any): void {
 async function moveStartPointerToNewest(): Promise<void> {
     try {
         const latestRecords: Immutable.List<TrafficRecord> = await trafficViewerService.getRecordHistoryList(
-            props.dataPointer,
+            props.dataPointer.catalogName,
             lastRecordRequest.value,
             1,
             true

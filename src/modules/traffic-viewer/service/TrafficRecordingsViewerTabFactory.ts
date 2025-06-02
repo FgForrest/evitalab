@@ -19,9 +19,10 @@ export class TrafficRecordingsViewerTabFactory {
         this.connectionService = connectionService
     }
 
-    createNew(connection: Connection): TrafficRecordingsViewerTabDefinition {
+    createNew(): TrafficRecordingsViewerTabDefinition {
+        const connection: Connection = this.connectionService.getConnection()
         return new TrafficRecordingsViewerTabDefinition(
-            this.constructTitle(connection),
+            this.constructTitle(),
             new TrafficRecordingsViewerTabParams(connection)
         )
     }
@@ -29,16 +30,13 @@ export class TrafficRecordingsViewerTabFactory {
     restoreFromJson(paramsJson: TabParamsDto): TrafficRecordingsViewerTabDefinition {
         const params: TrafficRecordingsViewerTabParams = this.restoreTabParamsFromSerializable(paramsJson)
         return new TrafficRecordingsViewerTabDefinition(
-            this.constructTitle(params.connection),
+            this.constructTitle(),
             params
         )
     }
 
-    private constructTitle(connection: Connection): string {
-        return i18n.global.t(
-            'trafficViewer.recordings.definition.title',
-            { connectionName: connection.name }
-        )
+    private constructTitle(): string {
+        return i18n.global.t('trafficViewer.recordings.definition.title')
     }
 
     private restoreTabParamsFromSerializable(json: TabParamsDto): TrafficRecordingsViewerTabParams {

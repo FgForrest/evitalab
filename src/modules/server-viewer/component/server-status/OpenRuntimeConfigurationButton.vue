@@ -2,14 +2,12 @@
 
 import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
-import { ServerStatus } from '@/modules/connection/model/status/ServerStatus'
-import { Connection } from '@/modules/connection/model/Connection'
 import RuntimeConfigurationDialog from '@/modules/server-viewer/component/server-status/RuntimeConfigurationDialog.vue'
+import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 
 const { t } = useI18n()
 
 const props = defineProps<{
-    connection: Connection
     serverStatus: ServerStatus
 }>()
 
@@ -28,7 +26,6 @@ defineExpose<{
     <RuntimeConfigurationDialog
         ref="dialogRef"
         v-model="showRuntimeConfigurationDialog"
-        :connection="connection"
         :server-status="serverStatus"
     >
         <template #activator="{ props }">

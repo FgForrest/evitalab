@@ -11,10 +11,10 @@ import {
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
 import { ReferenceAttributeSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceAttributeSchemaPointer'
-import { AttributeSchema } from '@/modules/connection/model/schema/AttributeSchema'
+import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { computed, ComputedRef } from 'vue'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import PropertySectionItem
     from '@/modules/entity-viewer/viewer/component/entity-property-selector/PropertySectionItem.vue'
 import { List } from 'immutable'
@@ -51,7 +51,6 @@ const flags: ComputedRef<List<string>> = computed(() => referenceAttributeSchema
 function openSchema(): void {
     workspaceService.createTab(
         schemaViewerTabFactory.createNew(
-            tabProps.params.dataPointer.connection,
             new ReferenceAttributeSchemaPointer(
                 tabProps.params.dataPointer.catalogName,
                 tabProps.params.dataPointer.entityType,
@@ -68,7 +67,7 @@ function openSchema(): void {
     <PropertySectionItem
         :value="attributePropertyDescriptor.key"
         :title="attributePropertyDescriptor.title"
-        :description="referenceAttributeSchema.description.getIfSupported()!"
+        :description="referenceAttributeSchema.description"
         :flags="flags"
         openable
         @toggle="emit('toggle', $event)"

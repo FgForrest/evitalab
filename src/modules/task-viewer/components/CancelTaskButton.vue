@@ -1,19 +1,17 @@
 <script setup lang="ts">
 
 import { computed, ref } from 'vue'
-import { TaskTrait } from '@/modules/connection/model/task/TaskTrait'
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { TaskViewerService, useTaskViewerService } from '@/modules/task-viewer/services/TaskViewerService'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import { useI18n } from 'vue-i18n'
-import { Connection } from '@/modules/connection/model/Connection'
+import { TaskTrait } from '@/modules/database-driver/request-response/task/TaskTrait'
 
 const taskViewerService: TaskViewerService = useTaskViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    connection: Connection
     task: TaskStatus
 }>()
 
@@ -29,7 +27,7 @@ const canBeCancelled = computed<boolean>(() => {
 async function cancelTask(): Promise<void> {
     cancelling.value = true
     try {
-        const cancelled = await taskViewerService.cancelTask(props.connection, props.task.taskId)
+        const cancelled = await taskViewerService.cancelTask(props.task.taskId)
         if (cancelled) {
             await toaster.success(t(
                 'taskViewer.tasksVisualizer.notification.taskCancelled',

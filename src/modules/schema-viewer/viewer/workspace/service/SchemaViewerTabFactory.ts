@@ -1,4 +1,3 @@
-// todo lho
 import { SchemaViewerTabParams } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabParams'
 import { Connection } from '@/modules/connection/model/Connection'
 import { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
@@ -29,10 +28,10 @@ export class SchemaViewerTabFactory {
         this.connectionService = connectionService
     }
 
-    createNew(connection: Connection,
-              schemaPointer: SchemaPointer): SchemaViewerTabDefinition {
+    createNew(schemaPointer: SchemaPointer): SchemaViewerTabDefinition {
+        const connection: Connection = this.connectionService.getConnection()
         return new SchemaViewerTabDefinition(
-            this.constructTitle(connection, schemaPointer),
+            this.constructTitle(schemaPointer),
             new SchemaViewerTabParams(
                 new SchemaViewerDataPointer(connection, schemaPointer)
             )
@@ -43,7 +42,7 @@ export class SchemaViewerTabFactory {
         const params: SchemaViewerTabParams = this.restoreTabParamsFromSerializable(paramsJson)
 
         return new SchemaViewerTabDefinition(
-            this.constructTitle(params.dataPointer.connection, params.dataPointer.schemaPointer),
+            this.constructTitle(params.dataPointer.schemaPointer),
             params
         )
     }
@@ -89,8 +88,8 @@ export class SchemaViewerTabFactory {
     }
 
 
-    private constructTitle(connection: Connection, schemaPointer: SchemaPointer): string {
-        return `${schemaPointer.schemaName} [${connection.name}]`
+    private constructTitle(schemaPointer: SchemaPointer): string {
+        return `${schemaPointer.schemaName}`
     }
 }
 

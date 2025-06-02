@@ -13,7 +13,6 @@ import { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
 import { QueryLanguage } from '@/modules/entity-viewer/viewer/model/QueryLanguage'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import {
@@ -22,7 +21,6 @@ import {
 } from '@/modules/entity-viewer/viewer/workspace/service/EntityViewerTabFactory'
 import { EntityViewerTabData } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabData'
 import { EntityReferenceValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceValue'
-import { Scalar } from '@/modules/connection/model/data-type/Scalar'
 import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue'
 import EntityGridColumnHeader from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridColumnHeader.vue'
 import EntityGridCell from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridCell.vue'
@@ -33,8 +31,9 @@ import {
     useQueryLanguage,
     useTabProps
 } from '@/modules/entity-viewer/viewer/component/dependencies'
-import { AttributeSchema } from '@/modules/connection/model/schema/AttributeSchema'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
+import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
+import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const entityViewerService: EntityViewerService = useEntityViewerService()
@@ -87,7 +86,6 @@ function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string,
         propertyDescriptor.key.name === StaticEntityProperties.ParentPrimaryKey) {
         // we want to open parent entity in appropriate new grid
         workspaceService.createTab(entityViewerTabFactory.createNew(
-            tabProps.params.dataPointer.connection,
             tabProps.params.dataPointer.catalogName,
             tabProps.params.dataPointer.entityType,
             new EntityViewerTabData(
@@ -99,11 +97,10 @@ function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string,
             true
         ))
     } else if (propertyDescriptor &&
-        ((propertyDescriptor.type === EntityPropertyType.Attributes && (propertyDescriptor.schema as AttributeSchema).type.getIfSupported()! === Scalar.Predecessor) ||
-        (propertyDescriptor.type === EntityPropertyType.AssociatedData && (propertyDescriptor.schema as AttributeSchema).type.getIfSupported()! === Scalar.Predecessor))) {
+        ((propertyDescriptor.type === EntityPropertyType.Attributes && (propertyDescriptor.schema as AttributeSchema).type === Scalar.Predecessor) ||
+        (propertyDescriptor.type === EntityPropertyType.AssociatedData && (propertyDescriptor.schema as AttributeSchema).type === Scalar.Predecessor))) {
         // we want references to open referenced entities in appropriate new grid for referenced collection
         workspaceService.createTab(entityViewerTabFactory.createNew(
-            tabProps.params.dataPointer.connection,
             tabProps.params.dataPointer.catalogName,
             tabProps.params.dataPointer.entityType,
             new EntityViewerTabData(
@@ -117,9 +114,8 @@ function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string,
     } else if (propertyDescriptor && propertyDescriptor.type === EntityPropertyType.References) {
         // we want references to open referenced entities in appropriate new grid for referenced collection
         workspaceService.createTab(entityViewerTabFactory.createNew(
-            tabProps.params.dataPointer.connection,
             tabProps.params.dataPointer.catalogName,
-            (propertyDescriptor.schema as ReferenceSchema).entityType.getIfSupported()!,
+            (propertyDescriptor.schema as ReferenceSchema).entityType,
             new EntityViewerTabData(
                 queryLanguage.value,
                 entityViewerService.buildReferencedEntityFilterBy(

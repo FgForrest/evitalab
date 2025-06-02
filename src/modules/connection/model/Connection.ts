@@ -5,17 +5,13 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 const hasher: HashObject = XXH.h64()
 
 /**
- * Represents a connection to a single evitaDB server. This allows the user to
- * fetch data from concrete evitaDB server.
+ * Represents a connection to an evitaDB server. This allows the user to
+ * fetch data from a specific evitaDB server.
  */
 export class Connection {
 
-    // todo lho introduce type: USER, PRECONFIGURED, TEMP to not cache temp connection
-    //  so that i can use entire driver stack without caching temp connection
-
     readonly id: ConnectionId
     readonly name: string
-    readonly preconfigured: boolean
     readonly serverUrl: string
 
     private _grpcUrl?: string
@@ -23,44 +19,38 @@ export class Connection {
     private _restUrl?: string
     private _observabilityUrl?: string
 
-    private constructor(id: ConnectionId | undefined,
+    constructor(id: ConnectionId | undefined,
                 name: string,
-                preconfigured: boolean,
                 serverUrl: string) {
+        // note: by default name hash is used, because otherwise we would generate
+        // new ID for each evitaLab session and a user would never be able to restore
+        // previous session
+        // (there is currently no easy way to store the generated ID in evitaLab or evitaDB if embedded)
         this.id = id ? id : hasher.update(name).digest().toString(16)
         this.name = name
-        this.preconfigured = preconfigured
         this.serverUrl = this.validateAndNormalizeUrl(serverUrl)
     }
 
-    static user(id: ConnectionId | undefined,
-                name: string,
-                serverUrl: string): Connection {
-        return new Connection(id, name, false, serverUrl)
-    }
-
-    static preconfigured(id: ConnectionId | undefined,
-                         name: string,
-                         serverUrl: string): Connection {
-        return new Connection(id, name, true, serverUrl)
-    }
-
-    static userFromJson(json: any): Connection {
+    static fromJson(json: any): Connection {
         return new Connection(
             json.id,
             json.name,
-            false,
             json.serverUrl
         )
     }
 
-    static preconfiguredFromJson(json: any): Connection {
-        return new Connection(
-            json.id,
-            json.name,
-            true,
-            json.serverUrl
-        )
+    get shortName(): string {
+        const parts: string[] = this.name.split(/[^a-zA-Z0-9]+/)
+        if (parts.length > 3) {
+            return parts.slice(0, 2)
+                    .map(part => part.substring(0, 1).toUpperCase())
+                    .join('') +
+                parts.at(-1)!
+                    .substring(0, 1)
+                    .toUpperCase()
+        } else {
+            return parts.map(part => part.substring(0, 1).toUpperCase()).join('')
+        }
     }
 
     get grpcUrl(): string {

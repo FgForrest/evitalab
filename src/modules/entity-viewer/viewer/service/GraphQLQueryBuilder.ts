@@ -1,17 +1,17 @@
 import { QueryBuilder } from '@/modules/entity-viewer/viewer/service/QueryBuilder'
-import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
-import { EntitySchema } from '@/modules/connection/model/schema/EntitySchema'
+import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { OrderDirection } from '@/modules/connection/model/schema/OrderDirection'
-import { AttributeSchema } from '@/modules/connection/model/schema/AttributeSchema'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
+import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
+import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
-import { NamingConvention } from '@/modules/connection/model/NamingConvetion'
-import { AssociatedDataSchema } from '@/modules/connection/model/schema/AssociatedDataSchema'
+import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
+import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
+import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 
 const priceInPriceListsConstraintPattern = /priceInPriceLists\s*:\s*\[?\s*"[A-Za-z0-9_.\-~]+"/
 const priceInCurrencyConstraintPattern = /priceInCurrency\s*:\s*[A-Z_]+/
@@ -34,10 +34,10 @@ const priceObjectFieldsTemplate =
  * Query builder for GraphQL language.
  */
 export class GraphQLQueryBuilder implements QueryBuilder {
-    private readonly connectionService: ConnectionService
+    private readonly evitaClient: EvitaClient
 
-    constructor(connectionService: ConnectionService) {
-        this.connectionService = connectionService
+    constructor(evitaClient: EvitaClient) {
+        this.evitaClient = evitaClient
     }
 
     async buildQuery(dataPointer: EntityViewerDataPointer,
@@ -48,10 +48,10 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                      requiredData: EntityPropertyKey[],
                      pageNumber: number,
                      pageSize: number): Promise<string> {
-        const entitySchema: EntitySchema = await this.connectionService.getEntitySchema(
-            dataPointer.connection,
+        const entitySchema: EntitySchema = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
-            dataPointer.entityType
+            session =>
+                session.getEntitySchemaOrThrowException(dataPointer.entityType)
         )
 
         const headerArguments: string[] = []
@@ -85,7 +85,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
         const queryHeader = headerArguments.length > 0 ? `(\n${headerArguments.join(", ")}\n)` : ''
         return `
         {
-            q: query${entitySchema.nameVariants.getIfSupported()?.get(NamingConvention.PascalCase)}${queryHeader} {
+            q: query${entitySchema.nameVariants.get(NamingConvention.PascalCase)}${queryHeader} {
                 recordPage(number: ${pageNumber}, size: ${pageSize}) {
                     data {
                         ${entityOutputFields.join("\n")}
@@ -108,13 +108,12 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                 if (it === StaticEntityProperties.ParentPrimaryKey) {
                     const representativeAttributes: AttributeSchema[] = Array.from(
                         entitySchema.attributes
-                            .getIfSupported()
-                            ?.values() || []
+                            .values() || []
                     )
-                        .filter(attributeSchema => attributeSchema.representative.getOrElse(false))
+                        .filter(attributeSchema => attributeSchema.representative)
                         .filter(attributeSchema => {
                             if (!dataLocale) {
-                                return !attributeSchema.localized.getOrElse(false)
+                                return !attributeSchema.localized
                             }
                             return true
                         })
@@ -127,7 +126,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                         entityOutputFields.push(`parents(stopAt: { distance: 1 }) {`)
                         entityOutputFields.push('   primaryKey')
                         entityOutputFields.push('   attributes {')
-                        entityOutputFields.push(`       ${representativeAttributes.map(attributeSchema => `${attributeSchema.nameVariants.getIfSupported()?.get(NamingConvention.CamelCase)}`).join(',')}`)
+                        entityOutputFields.push(`       ${representativeAttributes.map(attributeSchema => `${attributeSchema.nameVariants.get(NamingConvention.CamelCase)}`).join(',')}`)
                         entityOutputFields.push('   }')
                         entityOutputFields.push('}')
                     }
@@ -147,12 +146,11 @@ export class GraphQLQueryBuilder implements QueryBuilder {
             .map(({ name }) => name)
             .map(it => {
                 const attributeSchema: AttributeSchema | undefined = entitySchema.attributes
-                    .getIfSupported()
-                    ?.find(attributeSchema => attributeSchema.name === it)
+                    .find(attributeSchema => attributeSchema.name === it)
                 if (attributeSchema == undefined) {
                     throw new UnexpectedError(`Could not find attribute '${it}' in '${dataPointer.entityType}'.`)
                 }
-                if (!dataLocale && attributeSchema.localized.getOrElse(false)) {
+                if (!dataLocale && attributeSchema.localized) {
                     // we don't want try to fetch localized attributes when no locale is specified, that would throw an error in evitaDB
                     return undefined
                 }
@@ -183,12 +181,11 @@ export class GraphQLQueryBuilder implements QueryBuilder {
             .map(({ name }) => name)
             .map(it => {
                 const associatedDataSchema: AssociatedDataSchema | undefined = entitySchema.associatedData
-                    .getIfSupported()
-                    ?.find(associatedDataSchema => associatedDataSchema.name === it)
+                    .find(associatedDataSchema => associatedDataSchema.name === it)
                 if (associatedDataSchema == undefined) {
                     throw new UnexpectedError(`Could not find associated data '${it}' in '${dataPointer.entityType}'.`)
                 }
-                if (!dataLocale && associatedDataSchema.localized.getOrElse(false)) {
+                if (!dataLocale && associatedDataSchema.localized) {
                     // we don't want try to fetch localized associated data when no locale is specified, that would throw an error in evitaDB
                     return undefined
                 }
@@ -248,8 +245,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
 
         for (const requiredReference of requiredReferences) {
             const referenceSchema: ReferenceSchema | undefined = entitySchema.references
-                .getIfSupported()
-                ?.find(referenceSchema => referenceSchema.name === requiredReference)
+                .find(referenceSchema => referenceSchema.name === requiredReference)
             if (referenceSchema == undefined) {
                 throw new UnexpectedError(`Could not find reference '${requiredReference}' in '${dataPointer.entityType}'.`)
             }
@@ -261,35 +257,32 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                 .map(names => names[1])
                 .map(referenceAttribute => {
                     const attributeSchema: AttributeSchema | undefined = referenceSchema.attributes
-                        .getIfSupported()
-                        ?.find(attributeSchema => attributeSchema.name === referenceAttribute)
+                        .find(attributeSchema => attributeSchema.name === referenceAttribute)
                     if (attributeSchema == undefined) {
                         throw new UnexpectedError(`Could not find attribute '${referenceAttribute}' in reference '${requiredReference}' in '${dataPointer.entityType}'.`)
                     }
-                    if (!dataLocale && attributeSchema.localized.getOrElse(false)) {
+                    if (!dataLocale && attributeSchema.localized) {
                         // we don't want try to fetch localized attributes when no locale is specified, that would throw an error in evitaDB
                         return undefined
                     }
                     return attributeSchema.nameVariants
-                        .getIfSupported()
-                        ?.get(NamingConvention.CamelCase)
+                        .get(NamingConvention.CamelCase)
                 })
                 .filter(it => it != undefined)
                 .map(it => it as string)
 
             let requiredRepresentativeAttributes: string[] = []
-            if (referenceSchema.referencedEntityTypeManaged.getOrElse(false)) {
+            if (referenceSchema.referencedEntityTypeManaged) {
                 requiredRepresentativeAttributes = this.findRepresentativeAttributes(
-                    await this.connectionService.getEntitySchema(
-                        dataPointer.connection,
+                    await this.evitaClient.queryCatalog(
                         dataPointer.catalogName,
-                        referenceSchema.entityType.getIfSupported()!
+                        session =>
+                            session.getEntitySchemaOrThrowException(referenceSchema.entityType)
                     ),
                     dataLocale
                 )
                     .map(attributeSchema => attributeSchema.nameVariants
-                        .getIfSupported()
-                        ?.get(NamingConvention.CamelCase)!)
+                        .get(NamingConvention.CamelCase)!)
             }
 
             entityOutputFields.push(`reference_${requiredReference}: ${requiredReference} {`)
@@ -315,14 +308,12 @@ export class GraphQLQueryBuilder implements QueryBuilder {
 
     private findRepresentativeAttributes(entitySchema: EntitySchema, dataLocale: string | undefined): AttributeSchema[] {
         return Array.from(
-            entitySchema.attributes
-                .getIfSupported()
-                ?.values() || []
+            entitySchema.attributes.values() || []
         )
-            .filter(attributeSchema => attributeSchema.representative.getOrElse(false))
+            .filter(attributeSchema => attributeSchema.representative)
             .filter(attributeSchema => {
                 if (!dataLocale) {
-                    return !attributeSchema.localized.getOrElse(false)
+                    return !attributeSchema.localized
                 }
                 return true
             })
@@ -333,11 +324,11 @@ export class GraphQLQueryBuilder implements QueryBuilder {
     }
 
     buildAttributeOrderBy(attributeSchema: AttributeSchema, orderDirection: OrderDirection): string {
-        return `attribute${attributeSchema.nameVariants.getIfSupported()?.get(NamingConvention.PascalCase)}Natural: ${orderDirection}`
+        return `attribute${attributeSchema.nameVariants.get(NamingConvention.PascalCase)}Natural: ${orderDirection}`
     }
 
     buildReferenceAttributeOrderBy(referenceSchema: ReferenceSchema, attributeSchema: AttributeSchema, orderDirection: OrderDirection): string {
-        return `reference${referenceSchema.nameVariants.getIfSupported()?.get(NamingConvention.PascalCase)}Property: { attribute${attributeSchema.nameVariants.getIfSupported()?.get(NamingConvention.PascalCase)}Natural: ${orderDirection} }`
+        return `reference${referenceSchema.nameVariants.get(NamingConvention.PascalCase)}Property: { attribute${attributeSchema.nameVariants.get(NamingConvention.PascalCase)}Natural: ${orderDirection} }`
     }
 
     buildParentEntityFilterBy(parentPrimaryKey: number): string {

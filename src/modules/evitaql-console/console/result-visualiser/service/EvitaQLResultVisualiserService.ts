@@ -13,8 +13,8 @@ import {
 } from '@/modules/evitaql-console/console/result-visualiser/service/EvitaQLPriceHistogramVisualiserService'
 import { Result } from '@/modules/console/result-visualiser/model/Result'
 import { Connection } from '@/modules/connection/model/Connection'
-import { EntitySchema } from '@/modules/connection/model/schema/EntitySchema'
-import { CatalogSchema } from '@/modules/connection/model/schema/CatalogSchema'
+import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
+import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import {
     FacetSummaryVisualiserService
@@ -27,14 +27,13 @@ import {
     PriceHistogramVisualiserService
 } from '@/modules/console/result-visualiser/service/PriceHistogramVisualiserService'
 import { mandatoryInject } from '@/utils/reactivity'
-import { NamingConvention } from '@/modules/connection/model/NamingConvetion'
+import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
 import { VisualiserType } from '@/modules/console/result-visualiser/model/VisualiserType'
-import { Entity } from '@/modules/connection/model/data/Entity'
 import { VisualiserTypeType } from '@/modules/console/result-visualiser/model/VisualiserTypeType'
-import { ExtraResults } from '@/modules/connection/model/data/ExtraResults'
-import { Attributes } from '@/modules/connection/model/data/Attributes'
-import { Response } from '@/modules/connection/model/data/Response'
-import Immutable from 'immutable'
+import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
+import { ExtraResults } from '@/modules/database-driver/request-response/data/ExtraResults'
+import { Entity } from '@/modules/database-driver/request-response/data/Entity'
+import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 
 export const evitaQLResultVisualiserServiceInjectionKey: InjectionKey<EvitaQLResultVisualiserService> =
     Symbol('evitaQLResultViewerService')
@@ -48,7 +47,7 @@ export class EvitaQLResultVisualiserService extends ResultVisualiserService {
     private readonly collectionConstraintPattern: RegExp =
         /collection\(\s*['"]([A-Za-z0-9_.\-~]*)['"]\s*\)/
 
-    private readonly connectionService: ConnectionService
+    private readonly evitaClient: EvitaClient
     private facetSummaryVisualiserService:
         | EvitaQLFacetSummaryVisualiserService
         | undefined = undefined
@@ -62,42 +61,36 @@ export class EvitaQLResultVisualiserService extends ResultVisualiserService {
         | EvitaQLPriceHistogramVisualiserService
         | undefined = undefined
 
-    constructor(connectionService: ConnectionService) {
+    constructor(evitaClient: EvitaClient) {
         super()
-        this.connectionService = connectionService
+        this.evitaClient = evitaClient
     }
 
     findVisualiserTypes(queryResult: Result): VisualiserType[] {
         const visualiserTypes: VisualiserType[] = []
 
-        const extraResults = (queryResult as Response).extraResults.getOrElse(
-            undefined
-        )
+        const extraResults = (queryResult as EvitaResponse).extraResults
         if (extraResults != undefined) {
             // todo lho i18n
-            if (extraResults.facetGroupStatistics.isSupported() &&
-                extraResults.facetGroupStatistics.getOrElse(undefined) != undefined) {
+            if (extraResults.facetGroupStatistics != undefined) {
                 visualiserTypes.push(new VisualiserType(
                     'Facet summary',
                     VisualiserTypeType.FacetSummary
                 ))
             }
-            if (extraResults.hierarchy.isSupported() &&
-                extraResults.hierarchy.getOrElse(undefined) != undefined) {
+            if (extraResults.hierarchy != undefined) {
                 visualiserTypes.push(new VisualiserType(
                     'Hierarchy',
                     VisualiserTypeType.Hierarchy
                 ))
             }
-            if (extraResults.attributeHistogram.isSupported() &&
-                extraResults.attributeHistogram.getOrElse(undefined) != undefined) {
+            if (extraResults.attributeHistogram != undefined) {
                 visualiserTypes.push(new VisualiserType(
                     'Attribute histograms',
                     VisualiserTypeType.AttributeHistograms
                 ))
             }
-            if (extraResults.priceHistogram.isSupported() &&
-                extraResults.priceHistogram.getOrElse(undefined) != undefined) {
+            if (extraResults.priceHistogram != undefined) {
                 visualiserTypes.push(new VisualiserType(
                     'Price histogram',
                     VisualiserTypeType.PriceHistogram
@@ -113,18 +106,18 @@ export class EvitaQLResultVisualiserService extends ResultVisualiserService {
         visualiserType: string
     ): Result | undefined {
         const res: ExtraResults | undefined = (
-            queryResult as Response
-        ).extraResults.getIfSupported()
-        if (res) {
+            queryResult as EvitaResponse
+        ).extraResults
+        if (res != undefined) {
             switch (visualiserType) {
                 case VisualiserTypeType.FacetSummary:
-                    return res.facetGroupStatistics.getOrThrow()
+                    return res.facetGroupStatistics
                 case VisualiserTypeType.Hierarchy:
-                    return res.hierarchy.getOrThrow()
+                    return res.hierarchy
                 case VisualiserTypeType.AttributeHistograms:
-                    return res.attributeHistogram.getOrThrow()
+                    return res.attributeHistogram
                 case VisualiserTypeType.PriceHistogram:
-                    return res.priceHistogram.getOrThrow()
+                    return res.priceHistogram
                 default:
                     return undefined
             }
@@ -152,27 +145,22 @@ export class EvitaQLResultVisualiserService extends ResultVisualiserService {
 
     async getEntitySchemaForQuery(
         query: string,
-        connection: Connection,
         catalogName: string
     ): Promise<EntitySchema | undefined> {
         const entityType: string = query
         if (entityType.toLowerCase() === this.genericEntityType) {
             return undefined
         }
-        const catalogSchema: CatalogSchema =
-            await this.connectionService.getCatalogSchema(
-                connection,
-                catalogName
-            )
+        const catalogSchema: CatalogSchema = await this.evitaClient.queryCatalog(
+            catalogName,
+            session => session.getCatalogSchema()
+        )
         const entitySchema: EntitySchema | undefined = (
             await catalogSchema.entitySchemas()
         )
-            .getIfSupported()
-            ?.find(
+            .find(
                 (it) =>
-                    it.nameVariants
-                        .getIfSupported()
-                        ?.get(NamingConvention.PascalCase) === entityType
+                    it.nameVariants.get(NamingConvention.PascalCase) === entityType
             )
         if (entitySchema == undefined) {
             throw new UnexpectedError(
@@ -247,6 +235,18 @@ export class EvitaQLResultVisualiserService extends ResultVisualiserService {
                 new EvitaQLPriceHistogramVisualiserService()
         }
         return this.priceHistogramVisualiserService
+    }
+
+    async resolveRepresentativeAttributes(catalogName: string, entityType: string): Promise<string[]> {
+        return await this.evitaClient.queryCatalog(
+            catalogName,
+            async session => {
+                const entitySchema: EntitySchema = await session.getEntitySchemaOrThrowException(entityType)
+                return Array.from(entitySchema.attributes.values())
+                    .filter(attributeSchema => attributeSchema.representative)
+                    .map(attributeSchema => attributeSchema.nameVariants.get(NamingConvention.CamelCase)!)
+            }
+        )
     }
 }
 

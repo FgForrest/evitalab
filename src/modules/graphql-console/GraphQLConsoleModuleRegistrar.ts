@@ -7,35 +7,25 @@ import {
     GraphQLResultVisualiserService,
     graphQLResultVisualiserServiceInjectionKey
 } from '@/modules/graphql-console/console/result-visualiser/service/GraphQLResultVisualiserService'
-import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
 import {
     GraphQLConsoleTabFactory,
     graphQLConsoleTabFactoryInjectionKey
 } from '@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFactory'
-import { GraphQLClient, graphQLClientInjectionKey } from '@/modules/graphql-console/driver/service/GraphQLClient'
-import { EvitaLabConfig, evitaLabConfigInjectionKey } from '@/modules/config/EvitaLabConfig'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
+import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
 
-// todo lho
 export class GraphQLConsoleModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {
-        const evitaLabConfig: EvitaLabConfig = builder.inject(evitaLabConfigInjectionKey)
-        const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
+        const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
 
-        const graphQLClient: GraphQLClient = new GraphQLClient(evitaLabConfig)
-
-        builder.provide(
-            graphQLClientInjectionKey,
-            graphQLClient
-        )
         builder.provide(
             graphQLConsoleServiceInjectionKey,
-            new GraphQLConsoleService(graphQLClient)
+            new GraphQLConsoleService(evitaClient)
         )
         builder.provide(
             graphQLResultVisualiserServiceInjectionKey,
-            new GraphQLResultVisualiserService(connectionService)
+            new GraphQLResultVisualiserService(evitaClient)
         )
         // todo lho fix circular dep
         // builder.provide(

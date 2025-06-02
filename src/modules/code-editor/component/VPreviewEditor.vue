@@ -7,10 +7,11 @@ import { Codemirror } from 'vue-codemirror'
 import { EditorState, Extension } from '@codemirror/state'
 import { basicSetup, EditorView } from 'codemirror'
 import { dracula } from '@ddietr/codemirror-themes/dracula.js'
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { ViewUpdate } from '@codemirror/view'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { workspaceStatusBarIntegration } from '@/modules/code-editor/extension/workspaceStatusBarIntegration'
+import { v4 as uuidv4 } from 'uuid'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 
@@ -29,13 +30,21 @@ const emit = defineEmits<{
     (e: 'update:modelValue', value: string): void
 }>()
 
-const extensions: Extension[] = [
+const extensions = computed<Extension[]>(() => [
     basicSetup,
     dracula,
     EditorState.readOnly.of(true),
     workspaceStatusBarIntegration(workspaceService),
     ...props.additionalExtensions
-]
+])
+
+// used to forcefully reload codemirror component as it doesn't reload
+// automatically when props change
+const codemirrorInstanceKey = ref<string>()
+watch(
+    () => props.additionalExtensions,
+    () => codemirrorInstanceKey.value = uuidv4()
+)
 
 const editorView = ref<EditorView>()
 
@@ -60,6 +69,7 @@ defineExpose<{
 <template>
     <div :class="['preview-editor']">
         <Codemirror
+            :key="codemirrorInstanceKey"
             :model-value="modelValue"
             :extensions="extensions"
             :placeholder="placeholder"

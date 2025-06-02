@@ -3,61 +3,58 @@
  * Main lab panel with navigation and useful links
  */
 
-import { onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
-import { PanelType } from '@/modules/workspace/panel/model/PanelType'
 import { Command } from '@/modules/keymap/model/Command'
 import ManageMenu from '@/modules/workspace/panel/component/ManageMenu.vue'
-import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
-import { MenuAction } from '@/modules/base/model/menu/MenuAction'
+import ConnectionAvatar from '@/modules/workspace/panel/component/ConnectionAvatar.vue'
+import { ConnectionService, useConnectionService } from '@/modules/connection/service/ConnectionService'
+import { Connection } from '@/modules/connection/model/Connection'
+import { ConnectionId } from '@/modules/connection/model/ConnectionId'
 
+const connectionService: ConnectionService = useConnectionService()
 const keymap: Keymap = useKeymap()
 const { t } = useI18n()
 
 const props = defineProps<{
-    panel?: string
+    showPanel?: boolean
 }>()
+
+const connection: Connection = connectionService.getConnection()
+const selectedConnections = computed<ConnectionId[]>(() => {
+    if (props.showPanel) {
+        return [connection.id]
+    } else {
+        return []
+    }
+})
 
 const emit = defineEmits<{
-    (e: 'update:panel', value: string | null): void
+    (e: 'update:showPanel', value: boolean): void
 }>()
 
-const mainItems: MenuAction<PanelType>[] = createMainItems()
-
-function createMainItems(): MenuAction<PanelType>[] {
-    const mainItems: MenuAction<PanelType>[] = []
-    mainItems.push(new MenuAction(
-        PanelType.Explorer,
-        t(`panel.item.${PanelType.Explorer}`),
-        'mdi-connection',
-        () => {},
-        Command.System_Panels_ConnectionsExplorer
-    ))
-    return mainItems
-}
-
-function selectPanel(item: any): void {
+function selectConnection(item: any): void {
     if (!item.value) {
-        emit('update:panel', null)
+        emit('update:showPanel', false)
     } else {
-        emit('update:panel', item.id)
+        emit('update:showPanel', true)
     }
 }
 
 onMounted(() => {
     // register panel keyboard shortcuts
-    keymap.bindGlobal(Command.System_Panels_ConnectionsExplorer, () => {
-        if (props.panel === PanelType.Explorer) {
-            emit('update:panel', null)
+    keymap.bindGlobal(Command.System_Panels_Connection, () => {
+        if (props.showPanel) {
+            emit('update:showPanel', false)
         } else {
-            emit('update:panel', PanelType.Explorer)
+            emit('update:showPanel', true)
         }
     })
 })
 onUnmounted(() => {
     // unregister panel keyboard shortcuts
-    keymap.unbindGlobal(Command.System_Panels_ConnectionsExplorer)
+    keymap.unbindGlobal(Command.System_Panels_Connection)
 })
 </script>
 
@@ -83,18 +80,12 @@ onUnmounted(() => {
         <VList
             density="compact"
             nav
-            :selected="[panel]"
-            @click:select="selectPanel"
+            :selected="selectedConnections"
+            @click:select="selectConnection"
             class="navigation-items"
         >
-            <VListItem v-for="item in mainItems" :key="item.value" :value="item.value">
-                <VIcon>
-                    {{ item.prependIcon }}
-                </VIcon>
-
-                <VActionTooltip :command="item.command">
-                    {{ item.title }}
-                </VActionTooltip>
+            <VListItem :key="connection.id" :value="connection.id">
+                <ConnectionAvatar :connection="connection" />
             </VListItem>
         </VList>
 
@@ -143,6 +134,9 @@ onUnmounted(() => {
 }
 
 .navigation-items {
+    & :deep(.v-list-item) {
+        padding: 0.23rem;
+    }
     & :deep(.v-list-item__underlay) {
         display: none;
     }
@@ -152,10 +146,16 @@ onUnmounted(() => {
         border-radius: 50%;
         transition: background-color .1s ease-in-out;
     }
+    & :deep(.v-list-item__content) {
+        width: 2rem;
+        height: 2rem;
+    }
     & :deep(.v-list-item--active > .v-list-item__overlay) {
         background: $primary-lightest;
         opacity: 1;
-        border-radius: 50%;
+        border-radius: 4px;
+        width: 2.5rem;
+        height: 2.5rem;
     }
 }
 </style>

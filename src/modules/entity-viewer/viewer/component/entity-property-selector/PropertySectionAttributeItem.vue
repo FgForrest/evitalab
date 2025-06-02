@@ -7,7 +7,7 @@ import {
     SchemaViewerTabFactory,
     useSchemaViewerTabFactory
 } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
-import { AttributeSchema } from '@/modules/connection/model/schema/AttributeSchema'
+import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { computed, ComputedRef, ref, watch } from 'vue'
 import { List } from 'immutable'
@@ -39,7 +39,6 @@ const flags: ComputedRef<List<string>> = computed(() => schema.value!.representa
 function openSchema(): void {
     workspaceService.createTab(
         schemaViewerTabFactory.createNew(
-            tabProps.params.dataPointer.connection,
             new EntityAttributeSchemaPointer(
                 tabProps.params.dataPointer.catalogName,
                 tabProps.params.dataPointer.entityType,
@@ -55,7 +54,7 @@ function openSchema(): void {
     <PropertySectionItem
         :value="propertyDescriptor.key"
         :title="propertyDescriptor.title"
-        :description="schema!.description.getIfSupported()!"
+        :description="schema!.description"
         :flags="flags"
         openable
         @schema-open="openSchema"

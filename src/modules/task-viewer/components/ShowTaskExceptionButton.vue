@@ -2,7 +2,7 @@
 
 import TaskExceptionDialog from '@/modules/task-viewer/components/TaskExceptionDialog.vue'
 import { ref } from 'vue'
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()

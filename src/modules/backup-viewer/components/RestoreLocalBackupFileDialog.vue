@@ -2,10 +2,9 @@
 
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { BackupViewerService, useBackupViewerService } from '@/modules/backup-viewer/service/BackupViewerService'
-import { Connection } from '@/modules/connection/model/Connection'
 import { useI18n } from 'vue-i18n'
 import { computed, ref } from 'vue'
-import { ClassifierValidationErrorType } from '@/modules/connection/model/data-type/ClassifierValidationErrorType'
+import { ClassifierValidationErrorType } from '@/modules/database-driver/data-type/ClassifierValidationErrorType'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 
 const backupViewerService: BackupViewerService = useBackupViewerService()
@@ -14,7 +13,6 @@ const { t } = useI18n()
 
 const props = defineProps<{
     modelValue: boolean
-    connection: Connection
 }>()
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void,
@@ -36,12 +34,12 @@ const catalogNameRules = [
     },
     async (value: string): Promise<any> => {
         const classifierValidationResult : ClassifierValidationErrorType | undefined =
-            await backupViewerService.isCatalogNameValid(props.connection, value)
+            await backupViewerService.isCatalogNameValid(value)
         if (classifierValidationResult == undefined) return true
         return t(`backupViewer.restoreLocal.form.catalogName.validations.${classifierValidationResult}`)
     },
     async (value: string): Promise<any> => {
-        const available: boolean = await backupViewerService.isCatalogNameAvailable(props.connection, value)
+        const available: boolean = await backupViewerService.isCatalogNameAvailable(value)
         if (available) return true
         return t('backupViewer.restoreLocal.form.catalogName.validations.notAvailable')
     }
@@ -63,7 +61,6 @@ function reset(): void {
 async function restoreLocal(): Promise<boolean> {
     try {
         await backupViewerService.restoreLocalBackupFile(
-            props.connection,
             backupFile.value!,
             catalogName.value
         )

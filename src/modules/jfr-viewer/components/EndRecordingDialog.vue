@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
-import { Connection } from '@/modules/connection/model/Connection'
 import { JfrViewerService, useJfrViewerService } from '@/modules/jfr-viewer/service/JfrViewerService'
 import { useI18n } from 'vue-i18n'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
@@ -10,8 +9,7 @@ const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    modelValue: boolean,
-    connection: Connection
+    modelValue: boolean
 }>()
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void,
@@ -20,8 +18,7 @@ const emit = defineEmits<{
 
 async function stopRecording(): Promise<boolean> {
     try {
-        // todo lho revise driver logic
-        const stopped: boolean = await jfrViewerService.stopRecording(props.connection)
+        const stopped: boolean = await jfrViewerService.stopRecording()
         if (stopped) {
             await toaster.success(t('jfrViewer.stopRecording.notification.recordingStopped'))
             emit('end')

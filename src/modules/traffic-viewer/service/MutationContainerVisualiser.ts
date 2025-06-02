@@ -1,6 +1,5 @@
 import { TrafficRecordVisualiser } from '@/modules/traffic-viewer/service/TrafficRecordVisualiser'
-import { MutationContainer } from '@/modules/connection/model/traffic/MutationContainer'
-import { TrafficRecord } from '@/modules/connection/model/traffic/TrafficRecord'
+import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { TrafficRecordVisualisationContext } from '../model/TrafficRecordVisualisationContext'
 import {
     MetadataGroup,
@@ -9,6 +8,7 @@ import {
 } from '../model/TrafficRecordVisualisationDefinition'
 import { i18n } from '@/vue-plugins/i18n'
 import Immutable from 'immutable'
+import { MutationContainer } from '@/modules/database-driver/request-response/traffic-recording/MutationContainer'
 
 /**
  * Visualises mutation record.

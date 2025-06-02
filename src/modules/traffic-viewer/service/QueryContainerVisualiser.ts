@@ -1,6 +1,5 @@
 import { TrafficRecordVisualiser } from '@/modules/traffic-viewer/service/TrafficRecordVisualiser'
-import { QueryContainer } from '@/modules/connection/model/traffic/QueryContainer'
-import { TrafficRecord } from '@/modules/connection/model/traffic/TrafficRecord'
+import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { TrafficRecordVisualisationContext } from '../model/TrafficRecordVisualisationContext'
 import {
     Action,
@@ -15,9 +14,14 @@ import { i18n } from '@/vue-plugins/i18n'
 import Immutable from 'immutable'
 import { EvitaQLConsoleTabData } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabData'
 import { TrafficRecordMetadataItemContext } from '@/modules/traffic-viewer/model/TrafficRecordMetadataItemContext'
-import { Label, labelSourceQuery, systemLabels } from '@/modules/connection/model/traffic/Label'
 import { formatCount } from '@/utils/string'
 import { TrafficRecordPreparationContext } from '@/modules/traffic-viewer/model/TrafficRecordPreparationContext'
+import { QueryContainer } from '@/modules/database-driver/request-response/traffic-recording/QueryContainer'
+import {
+    Label,
+    labelSourceQuery,
+    systemLabels
+} from '@/modules/database-driver/request-response/traffic-recording/Label'
 
 /**
  * Visualises query record.
@@ -153,8 +157,7 @@ export class QueryContainerVisualiser extends TrafficRecordVisualiser<QueryConta
             'mdi-play',
             () => this.workspaceService.createTab(
                 this.evitaQLConsoleTabFactory.createNew(
-                    ctx.dataPointer.connection,
-                    ctx.dataPointer.catalogName,
+                    ctx.catalogName,
                     new EvitaQLConsoleTabData(trafficRecord.query)
                 )
             )

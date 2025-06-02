@@ -6,7 +6,6 @@ import {
 } from '@/modules/keymap/viewer/workspace/service/KeymapViewerTabFactory'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 
-// todo lho
 export class KeymapModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {

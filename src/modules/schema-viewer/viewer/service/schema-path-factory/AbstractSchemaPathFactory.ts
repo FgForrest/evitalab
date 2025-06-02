@@ -30,7 +30,7 @@ export abstract class AbstractSchemaPathFactory<T extends SchemaPointer> impleme
         return new ConnectionSubjectPath(
             connection,
             [
-                ...this.resolvePathItems(connection, schemaPointer),
+                ...this.resolvePathItems(schemaPointer),
                 SubjectPathItem.significant(
                     SchemaViewerTabDefinition.icon(),
                     schemaPointer.schemaName
@@ -39,13 +39,12 @@ export abstract class AbstractSchemaPathFactory<T extends SchemaPointer> impleme
         )
     }
 
-    protected resolvePathItems(connection: Connection, schemaPointer: T): SubjectPathItem[] {
+    protected resolvePathItems(schemaPointer: T): SubjectPathItem[] {
         return [
             SubjectPathItem.plain(
                 schemaPointer.catalogName,
                 () => {
                     this.createSchemaTab(
-                        connection,
                         new CatalogSchemaPointer(schemaPointer.catalogName)
                     )
                 }
@@ -53,9 +52,8 @@ export abstract class AbstractSchemaPathFactory<T extends SchemaPointer> impleme
         ]
     }
 
-    protected createSchemaTab(connection: Connection, schemaPointer: SchemaPointer): void {
+    protected createSchemaTab(schemaPointer: SchemaPointer): void {
         this.workspaceService.createTab(this.schemaViewerTabFactory.createNew(
-            connection,
             schemaPointer
         ))
     }

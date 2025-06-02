@@ -2,15 +2,15 @@
 
 import { useI18n } from 'vue-i18n'
 import { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer'
-import { GlobalAttributeSchema } from '@/modules/connection/model/schema/GlobalAttributeSchema'
-import { EntityAttributeSchema } from '@/modules/connection/model/schema/EntityAttributeSchema'
-import { AttributeSchema } from '@/modules/connection/model/schema/AttributeSchema'
+import { GlobalAttributeSchema } from '@/modules/database-driver/request-response/schema/GlobalAttributeSchema'
+import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
+import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { Property } from '@/modules/base/model/properties-table/Property'
 import { PropertyValue } from '@/modules/base/model/properties-table/PropertyValue'
 import { KeywordValue } from '@/modules/base/model/properties-table/KeywordValue'
-import { AttributeUniquenessType } from '@/modules/connection/model/schema/AttributeUniquenessType'
+import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType'
 import { MultiValueFlagValue } from '@/modules/base/model/properties-table/MultiValueFlagValue'
-import { GlobalAttributeUniquenessType } from '@/modules/connection/model/schema/GlobalAttributeUniquenessType'
+import { GlobalAttributeUniquenessType } from '@/modules/database-driver/request-response/schema/GlobalAttributeUniquenessType'
 import { NotApplicableValue } from '@/modules/base/model/properties-table/NotApplicableValue'
 import SchemaContainer from '@/modules/schema-viewer/viewer/component/SchemaContainer.vue'
 import NameVariants from '@/modules/schema-viewer/viewer/component/NameVariants.vue'
@@ -29,11 +29,11 @@ const entityAttribute = props.schema instanceof EntityAttributeSchema
 const properties = computed<Property[]>(() => {
     const properties: Property[] = []
 
-    properties.push(new Property(t('schemaViewer.attribute.label.type'), new PropertyValue(new KeywordValue(props.schema.type.getIfSupported()!))))
-    properties.push(new Property(t('schemaViewer.attribute.label.description'), new PropertyValue(props.schema.description.getIfSupported()!)))
-    properties.push(new Property(t('schemaViewer.attribute.label.deprecationNotice'), new PropertyValue(props.schema.deprecationNotice.getIfSupported()!)))
-    if (entityAttribute) properties.push(new Property(t('schemaViewer.attribute.label.representative'), new PropertyValue((props.schema as EntityAttributeSchema).representative.getOrElse(false) )))
-    switch (props.schema.uniquenessType.getIfSupported()!) {
+    properties.push(new Property(t('schemaViewer.attribute.label.type'), new PropertyValue(new KeywordValue(props.schema.type))))
+    properties.push(new Property(t('schemaViewer.attribute.label.description'), new PropertyValue(props.schema.description)))
+    properties.push(new Property(t('schemaViewer.attribute.label.deprecationNotice'), new PropertyValue(props.schema.deprecationNotice)))
+    if (entityAttribute) properties.push(new Property(t('schemaViewer.attribute.label.representative'), new PropertyValue((props.schema as EntityAttributeSchema).representative )))
+    switch (props.schema.uniquenessType) {
         case AttributeUniquenessType.NotUnique:
             properties.push(new Property(
                 t('schemaViewer.attribute.label.unique'),
@@ -62,7 +62,7 @@ const properties = computed<Property[]>(() => {
             break
     }
     if (globalAttribute) {
-        switch ((props.schema as GlobalAttributeSchema).globalUniquenessType.getIfSupported()!) {
+        switch ((props.schema as GlobalAttributeSchema).globalUniquenessType) {
             case GlobalAttributeUniquenessType.NotUnique:
                 properties.push(new Property(
                     t('schemaViewer.attribute.label.globallyUnique'),
@@ -91,10 +91,10 @@ const properties = computed<Property[]>(() => {
                 break
         }
     }
-    if (props.schema.filterable.getOrElse(false)) {
+    if (props.schema.filterable) {
         properties.push(new Property(t('schemaViewer.attribute.label.filterable'), new PropertyValue(true)))
-    } else if ((globalAttribute && (props.schema as GlobalAttributeSchema).globalUniquenessType.getIfSupported()! != GlobalAttributeUniquenessType.NotUnique) ||
-        props.schema.uniquenessType.getIfSupported()! != AttributeUniquenessType.NotUnique) {
+    } else if ((globalAttribute && (props.schema as GlobalAttributeSchema).globalUniquenessType != GlobalAttributeUniquenessType.NotUnique) ||
+        props.schema.uniquenessType != AttributeUniquenessType.NotUnique) {
         // implicitly filterable because of unique index
         properties.push(new Property(
             t('schemaViewer.attribute.label.filterable'),
@@ -103,11 +103,11 @@ const properties = computed<Property[]>(() => {
     } else {
         properties.push(new Property(t('schemaViewer.attribute.label.filterable'), new PropertyValue(false) ))
     }
-    properties.push(new Property(t('schemaViewer.attribute.label.sortable'), new PropertyValue(props.schema.sortable.getOrElse(false)) ))
-    properties.push(new Property(t('schemaViewer.attribute.label.localized'), new PropertyValue(props.schema.localized.getOrElse(false)) ))
-    properties.push(new Property(t('schemaViewer.attribute.label.nullable'), new PropertyValue(props.schema.nullable.getOrElse(false)) ))
-    properties.push(new Property(t('schemaViewer.attribute.label.defaultValue'), new PropertyValue(props.schema.defaultValue.getIfSupported()!) ))
-    properties.push(new Property(t('schemaViewer.attribute.label.indexedDecimalPlaces'), new PropertyValue(props.schema.indexedDecimalPlaces.getIfSupported()!) ))
+    properties.push(new Property(t('schemaViewer.attribute.label.sortable'), new PropertyValue(props.schema.sortable) ))
+    properties.push(new Property(t('schemaViewer.attribute.label.localized'), new PropertyValue(props.schema.localized) ))
+    properties.push(new Property(t('schemaViewer.attribute.label.nullable'), new PropertyValue(props.schema.nullable) ))
+    properties.push(new Property(t('schemaViewer.attribute.label.defaultValue'), new PropertyValue(props.schema.defaultValue) ))
+    properties.push(new Property(t('schemaViewer.attribute.label.indexedDecimalPlaces'), new PropertyValue(props.schema.indexedDecimalPlaces) ))
 
     return properties
 })
@@ -116,7 +116,7 @@ const properties = computed<Property[]>(() => {
 <template>
     <SchemaContainer :properties="properties">
         <template #nested-details>
-            <NameVariants :name-variants="schema.nameVariants.getIfSupported()!" />
+            <NameVariants :name-variants="schema.nameVariants" />
         </template>
     </SchemaContainer>
 </template>

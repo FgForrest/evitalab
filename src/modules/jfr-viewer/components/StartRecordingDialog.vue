@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import { JfrViewerService, useJfrViewerService } from '../service/JfrViewerService'
 import { useI18n } from 'vue-i18n'
-import { Connection } from '@/modules/connection/model/Connection'
 import { computed, ref } from 'vue'
-import { EventType } from '@/modules/connection/model/jfr/EventType'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
+import { EventType } from '@/modules/database-driver/request-response/jfr/EventType'
 
 const jfrViewerService: JfrViewerService = useJfrViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    modelValue: boolean,
-    connection: Connection
+    modelValue: boolean
 }>()
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void
@@ -36,7 +34,7 @@ loadEventTypes().then()
 
 async function loadEventTypes() {
     try {
-        eventTypes.value = await jfrViewerService.getEventTypes(props.connection)
+        eventTypes.value = await jfrViewerService.getEventTypes()
         selectedTypes.value = eventTypes.value
         eventTypesLoaded.value = true
     } catch (e: any) {
@@ -53,9 +51,7 @@ function reset(): void {
 
 async function startRecording(): Promise<boolean> {
     try {
-        // todo lho revise driver logic
         const started: boolean = await jfrViewerService.startRecording(
-           props.connection,
            selectedTypes.value!.map((x) => x.id)
         )
         if (started) {

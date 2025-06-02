@@ -32,13 +32,15 @@ export class GraphQLConsoleTabFactory {
     /**
      * Creates new tab definition
      */
-    createNew(connection: Connection,
-              catalogName: string,
-              instanceType: GraphQLInstanceType,
-              initialData: GraphQLConsoleTabData | undefined = undefined,
-              executeOnOpen: boolean = false): GraphQLConsoleTabDefinition {
+    createNew(
+        catalogName: string,
+        instanceType: GraphQLInstanceType,
+        initialData: GraphQLConsoleTabData | undefined = undefined,
+        executeOnOpen: boolean = false
+    ): GraphQLConsoleTabDefinition {
+        const connection: Connection = this.connectionService.getConnection()
         return new GraphQLConsoleTabDefinition(
-            this.constructTitle(connection, catalogName, instanceType),
+            this.constructTitle(catalogName, instanceType),
             this.createNewTabParams(connection, catalogName, instanceType, executeOnOpen),
             initialData ? initialData : new GraphQLConsoleTabData()
         )
@@ -53,7 +55,6 @@ export class GraphQLConsoleTabFactory {
 
         return new GraphQLConsoleTabDefinition(
             this.constructTitle(
-                params.dataPointer.connection,
                 params.dataPointer.catalogName,
                 params.dataPointer.instanceType
             ),
@@ -62,8 +63,10 @@ export class GraphQLConsoleTabFactory {
         )
     }
 
-    private constructTitle(connection: Connection, catalogName: string, instanceType: GraphQLInstanceType): string {
-        return (instanceType === GraphQLInstanceType.System ? instanceType : `${catalogName} - ${instanceType}`) + ` [${connection.name}]`
+    private constructTitle(catalogName: string, instanceType: GraphQLInstanceType): string {
+        return instanceType === GraphQLInstanceType.System
+            ? instanceType
+            : `${catalogName} - ${instanceType}`
     }
 
     /**

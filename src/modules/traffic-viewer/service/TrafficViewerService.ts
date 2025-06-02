@@ -1,24 +1,23 @@
 import { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
-import { ConnectionService } from '@/modules/connection/service/ConnectionService'
-import { Connection } from '@/modules/connection/model/Connection'
-import { PaginatedList } from '@/modules/connection/model/PaginatedList'
-import { ServerFile } from '@/modules/connection/model/server-file/ServerFile'
-import { EvitaDBDriver } from '@/modules/connection/driver/EvitaDBDriver'
+import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
+import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { trafficRecorderTaskName } from '@/modules/traffic-viewer/model/TrafficRecorderTask'
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import Immutable from 'immutable'
-import { Catalog } from '@/modules/connection/model/Catalog'
-import { TrafficRecordingCaptureRequest } from '@/modules/connection/model/traffic/TrafficRecordingCaptureRequest'
-import { TrafficRecord } from '@/modules/connection/model/traffic/TrafficRecord'
 import {
     TrafficRecordHistoryVisualisationProcessor
 } from '@/modules/traffic-viewer/service/TrafficRecordHistoryVisualisationProcessor'
-import { TrafficRecordHistoryDataPointer } from '@/modules/traffic-viewer/model/TrafficRecordHistoryDataPointer'
 import {
     TrafficRecordVisualisationDefinition
 } from '@/modules/traffic-viewer/model/TrafficRecordVisualisationDefinition'
 import { TrafficRecordHistoryCriteria } from '@/modules/traffic-viewer/model/TrafficRecordHistoryCriteria'
+import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
+import {
+    TrafficRecordingCaptureRequest
+} from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordingCaptureRequest'
+import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 
 export const trafficViewerServiceInjectionKey: InjectionKey<TrafficViewerService> = Symbol('trafficViewerService')
 
@@ -27,99 +26,101 @@ export const trafficViewerServiceInjectionKey: InjectionKey<TrafficViewerService
  */
 export class TrafficViewerService {
 
-    private readonly connectionService: ConnectionService
+    private readonly evitaClient: EvitaClient
     private readonly visualisationProcessor: TrafficRecordHistoryVisualisationProcessor
 
-    constructor(connectionService: ConnectionService, visualisationProcessor: TrafficRecordHistoryVisualisationProcessor) {
-        this.connectionService = connectionService
+    constructor(evitaClient: EvitaClient, visualisationProcessor: TrafficRecordHistoryVisualisationProcessor) {
+        this.evitaClient = evitaClient
         this.visualisationProcessor = visualisationProcessor
     }
 
-    async getAvailableCatalogs(connection: Connection): Promise<Immutable.List<Catalog>> {
-        return this.connectionService.getCatalogs(connection, true)
+    async getAvailableCatalogs(): Promise<Immutable.List<CatalogStatistics>> {
+        // todo lho force reload? it was there before
+        return await this.evitaClient.management.getCatalogStatistics()
     }
 
-    async isCatalogExists(connection: Connection, catalogName: string): Promise<boolean> {
-        const driver: EvitaDBDriver = await this.connectionService.getDriver(connection)
-        try {
-            await driver.getCatalog(connection, catalogName)
-            return true
-        } catch (e) {
-            return false
-        }
+    async isCatalogExists(catalogName: string): Promise<boolean> {
+        return (await this.evitaClient.getCatalogNames()).contains(catalogName)
     }
 
-    async getRecordings(connection: Connection, pageNumber: number, pageSize: number): Promise<PaginatedList<ServerFile>> {
-        const driver: EvitaDBDriver = await this.connectionService.getDriver(connection)
-        return await driver.getFilesToFetch(connection, trafficRecorderTaskName, pageNumber, pageSize)
+    async getRecordings(pageNumber: number, pageSize: number): Promise<PaginatedList<ServerFile>> {
+        return await this.evitaClient.management.listFilesToFetch(
+            pageNumber,
+            pageSize,
+            trafficRecorderTaskName
+        )
     }
 
-    async startRecording(connection: Connection,
-                         catalogName: string,
+    async startRecording(catalogName: string,
                          samplingRate: number,
                          maxDurationInMilliseconds: bigint | undefined,
                          exportFile: boolean,
                          maxFileSizeInBytes: bigint | undefined,
                          chunkFileSizeInBytes: bigint | undefined): Promise<TaskStatus> {
-        const driver: EvitaDBDriver = await this.connectionService.getDriver(connection)
-        return await driver.startTrafficRecording(
-            connection,
+        return await this.evitaClient.queryCatalog(
             catalogName,
-            samplingRate,
-            maxDurationInMilliseconds,
-            exportFile,
-            maxFileSizeInBytes,
-            chunkFileSizeInBytes
+            session => session.startRecording(
+                samplingRate,
+                exportFile,
+                maxDurationInMilliseconds,
+                maxFileSizeInBytes,
+                chunkFileSizeInBytes
+            )
         )
     }
 
-    async stopRecording(connection: Connection,
-                        trafficRecorderTask: TaskStatus): Promise<TaskStatus> {
-        const driver: EvitaDBDriver = await this.connectionService.getDriver(connection)
-        return await driver.stopTrafficRecording(connection, trafficRecorderTask)
+    async stopRecording(trafficRecorderTask: TaskStatus): Promise<TaskStatus> {
+        return await this.evitaClient.queryCatalog(
+            trafficRecorderTask.catalogName!,
+            session => session.stopRecording(trafficRecorderTask.taskId)
+        )
     }
 
-    async getRecordHistoryList(dataPointer: TrafficRecordHistoryDataPointer,
+    async getRecordHistoryList(catalogName: string,
                                captureRequest: TrafficRecordingCaptureRequest,
                                limit: number,
                                reverse: boolean = false): Promise<Immutable.List<TrafficRecord>> {
-        const driver: EvitaDBDriver = await this.connectionService.getDriver(dataPointer.connection)
-        return await driver.getTrafficRecordHistoryList(dataPointer.connection, dataPointer.catalogName, captureRequest, limit, reverse)
-    }
-
-    async processRecords(dataPointer: TrafficRecordHistoryDataPointer,
-                         historyCriteria: TrafficRecordHistoryCriteria,
-                         records: TrafficRecord[]): Promise<Immutable.List<TrafficRecordVisualisationDefinition>> {
-        return await this.visualisationProcessor.process(dataPointer, historyCriteria, records)
-    }
-
-    async getLabelNames(connection: Connection,
-                        catalogName: string,
-                        nameStartsWith: string,
-                        limit: number): Promise<Immutable.List<string>> {
-        const driver: EvitaDBDriver = await this.connectionService.getDriver(connection)
-        return await driver.getTrafficRecordingLabelNamesOrderedByCardinality(
-            connection,
+        return await this.evitaClient.queryCatalog(
             catalogName,
-            nameStartsWith,
-            limit
+            session => session.getRecordings(
+                captureRequest,
+                limit,
+                reverse
+            )
         )
     }
 
-    async getLabelValues(connection: Connection,
-                         catalogName: string,
+    async processRecords(catalogName: string,
+                         historyCriteria: TrafficRecordHistoryCriteria,
+                         records: TrafficRecord[]): Promise<Immutable.List<TrafficRecordVisualisationDefinition>> {
+        return await this.visualisationProcessor.process(catalogName, historyCriteria, records)
+    }
+
+    async getLabelNames(catalogName: string,
+                        nameStartsWith: string,
+                        limit: number): Promise<Immutable.List<string>> {
+        return await this.evitaClient.queryCatalog(
+            catalogName,
+            session => session.getLabelNamesOrderedByCardinality(
+                nameStartsWith,
+                limit
+            )
+        )
+    }
+
+    async getLabelValues(catalogName: string,
                          labelName: string,
                          valueStartsWith: string,
                          limit: number): Promise<Immutable.List<string>> {
-    const driver: EvitaDBDriver = await this.connectionService.getDriver(connection)
-    return await driver.getTrafficRecordingLabelValuesOrderedByCardinality(
-        connection,
-        catalogName,
-        labelName,
-        valueStartsWith,
-        limit
-    )
-}
+        return await this.evitaClient.queryCatalog(
+            catalogName,
+            session => session.getLabelValuesOrderedByCardinality(
+                labelName,
+                valueStartsWith,
+                limit
+            )
+        )
+    }
 }
 
 export function useTrafficViewerService(): TrafficViewerService {

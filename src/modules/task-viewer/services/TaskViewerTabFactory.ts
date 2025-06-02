@@ -17,9 +17,10 @@ export class TaskViewerTabFactory {
         this.connectionService = connectionService
     }
 
-    createNew(connection: Connection): TaskViewerTabDefinition {
+    createNew(): TaskViewerTabDefinition {
+        const connection: Connection = this.connectionService.getConnection()
         return new TaskViewerTabDefinition(
-            this.constructTitle(connection),
+            this.constructTitle(),
             new TaskViewerTabParams(connection)
         )
     }
@@ -27,16 +28,13 @@ export class TaskViewerTabFactory {
     restoreFromJson(paramsJson: TabParamsDto): TaskViewerTabDefinition {
         const params: TaskViewerTabParams = this.restoreTabParamsFromSerializable(paramsJson)
         return new TaskViewerTabDefinition(
-            this.constructTitle(params.connection),
+            this.constructTitle(),
             params
         )
     }
 
-    private constructTitle(connection: Connection): string {
-        return i18n.global.t(
-            'taskViewer.definition.title',
-            { connectionName: connection.name }
-        )
+    private constructTitle(): string {
+        return i18n.global.t('taskViewer.definition.title')
     }
 
     private restoreTabParamsFromSerializable(json: TabParamsDto): TaskViewerTabParams {

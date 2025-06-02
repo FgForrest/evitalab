@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer'
-import { AssociatedDataSchema } from '@/modules/connection/model/schema/AssociatedDataSchema'
+import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
 import SchemaContainerSection from '@/modules/schema-viewer/viewer/component/SchemaContainerSection.vue'
 import SchemaContainerSectionList from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionList.vue'
 import AssociatedDataSchemaListItem

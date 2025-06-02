@@ -2,7 +2,7 @@
 
 import { useI18n } from 'vue-i18n'
 import { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer'
-import { AttributeSchema } from '@/modules/connection/model/schema/AttributeSchema'
+import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import SchemaContainerSection from '@/modules/schema-viewer/viewer/component/SchemaContainerSection.vue'
 import SchemaContainerSectionList from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionList.vue'
 import AttributeSchemaListItem from '@/modules/schema-viewer/viewer/component/attribute/AttributeSchemaListItem.vue'

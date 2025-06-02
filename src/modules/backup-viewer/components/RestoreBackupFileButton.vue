@@ -1,15 +1,13 @@
 <script setup lang="ts">
 
-import { ServerFile } from '@/modules/connection/model/server-file/ServerFile'
+import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import RestoreBackupFileDialog from '@/modules/backup-viewer/components/RestoreBackupFileDialog.vue'
 import { ref } from 'vue'
-import { Connection } from '@/modules/connection/model/Connection'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
 const props = defineProps<{
-    connection: Connection
     backupFile: ServerFile
 }>()
 const emit = defineEmits<{
@@ -22,7 +20,6 @@ const showRestoreDialog = ref<boolean>(false)
 <template>
     <RestoreBackupFileDialog
         v-model="showRestoreDialog"
-        :connection="connection"
         :backup-file="backupFile"
         @restore="emit('restore')"
     >

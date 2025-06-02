@@ -17,9 +17,10 @@ const { t } = useI18n()
 const props = withDefaults(defineProps<{
     modelValue: boolean,
     originalConnectionName?: string,
-    troubleshooterCallback: SharedTabTroubleshooterCallback
+    troubleshooterCallback?: SharedTabTroubleshooterCallback
 }>(), {
-    originalConnectionName: undefined
+    originalConnectionName: undefined,
+    troubleshooterCallback: undefined
 })
 const emit = defineEmits<{
     (e: 'resolve', value: TabDefinition<any, any>): void,
@@ -29,21 +30,7 @@ const emit = defineEmits<{
 const availableConnections = ref<Connection[]>([])
 const availableConnectionsLoaded = ref<boolean>(false)
 const newConnectionId = ref<ConnectionId | undefined>(undefined)
-
-const newConnectionIdRules = [
-    (value: string): any => {
-        if (value != undefined && value.trim().length > 0) return true
-        return t('tabShare.sharedTroubleshooterDialog.form.newConnectionId.validations.required')
-    },
-    async (value: string): Promise<any> => {
-        try {
-            connectionService.getConnection(value)
-            return true
-        } catch (e) {
-            return t('tabShare.sharedTroubleshooterDialog.form.newConnectionId.validations.notExists')
-        }
-    }
-]
+const connectionMatchedByName = ref<boolean>(false)
 
 const changed = computed<boolean>(() =>
     newConnectionId.value != undefined && newConnectionId.value.trim().length > 0)
@@ -52,16 +39,14 @@ watch(
     () => props.modelValue,
     (newValue) => {
         if (newValue) {
-            availableConnections.value = connectionService.getConnections().toArray()
+            const connection: Connection = connectionService.getConnection()
+
+            availableConnections.value = [connection]
             availableConnectionsLoaded.value = true
-            if (props.originalConnectionName != undefined && props.originalConnectionName.trim().length > 0) {
-                const similarConnection: Connection | undefined = availableConnections.value
-                    .find(it =>
-                        it.name.trim().toLowerCase() === props.originalConnectionName!.trim().toLocaleLowerCase()) as Connection | undefined
-                if (similarConnection != undefined) {
-                    newConnectionId.value = similarConnection.id
-                }
-            }
+            newConnectionId.value = connection.id
+            connectionMatchedByName.value = props.originalConnectionName != undefined &&
+                props.originalConnectionName.trim().length > 0 &&
+                props.originalConnectionName.trim().toLowerCase() === connection.name.trim().toLowerCase()
         }
     }
 )
@@ -74,6 +59,9 @@ function reject(): void {
 }
 
 async function accept(): Promise<boolean> {
+    if (props.troubleshooterCallback == undefined) {
+        throw new Error('Cannot accept shared tab without troubleshooter callback.')
+    }
     try {
         const sharedTabRequest: TabDefinition<any, any> = await props.troubleshooterCallback(newConnectionId.value!)
         emit('resolve', sharedTabRequest)
@@ -111,13 +99,12 @@ async function accept(): Promise<boolean> {
             <VAutocomplete
                 v-model="newConnectionId"
                 :label="t('tabShare.sharedTroubleshooterDialog.form.newConnectionId.label')"
-                :hint="t('tabShare.sharedTroubleshooterDialog.form.newConnectionId.hint')"
+                :hint="connectionMatchedByName ? t('tabShare.sharedTroubleshooterDialog.form.newConnectionId.hint.connectionMatchedByName') : t('tabShare.sharedTroubleshooterDialog.form.newConnectionId.hint.connectionNotMatchedByName')"
                 :items="availableConnections"
                 item-title="name"
                 item-value="id"
-                :rules="newConnectionIdRules"
                 required
-                :disabled="!availableConnectionsLoaded"
+                disabled
             />
         </template>
 

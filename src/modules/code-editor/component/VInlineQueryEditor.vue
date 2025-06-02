@@ -19,12 +19,13 @@ import { bracketMatching, defaultHighlightStyle, indentOnInput, syntaxHighlighti
 import { autocompletion, closeBrackets, closeBracketsKeymap, completionKeymap } from '@codemirror/autocomplete'
 import { lintKeymap } from '@codemirror/lint'
 import { dracula } from '@ddietr/codemirror-themes/dracula.js'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { EditorView } from 'codemirror'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import { Command } from '@/modules/keymap/model/Command'
 import { workspaceStatusBarIntegration } from '@/modules/code-editor/extension/workspaceStatusBarIntegration'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
+import { v4 as uuidv4 } from 'uuid'
 
 const keymap: Keymap = useKeymap()
 const workspaceService: WorkspaceService = useWorkspaceService()
@@ -49,7 +50,7 @@ const emit = defineEmits<{
     (e: 'update:historyClear'): void
 }>()
 
-const extensions: Extension[] = [
+const extensions = computed<Extension[]>(() => [
     highlightSpecialChars(),
     history(),
     drawSelection(),
@@ -76,7 +77,15 @@ const extensions: Extension[] = [
     EditorState.transactionFilter.of(tr => tr.newDoc.lines > 1 ? [] : tr),
     workspaceStatusBarIntegration(workspaceService),
     ...props.additionalExtensions
-]
+])
+
+// used to forcefully reload codemirror component as it doesn't reload
+// automatically when props change
+const codemirrorInstanceKey = ref<string>()
+watch(
+    () => props.additionalExtensions,
+    () => codemirrorInstanceKey.value = uuidv4()
+)
 
 const editorView = ref<EditorView>()
 
@@ -174,6 +183,7 @@ function clearHistory(): void {
         </template>
 
         <Codemirror
+            :key="codemirrorInstanceKey"
             ref="input"
             :model-value="modelValue"
             :extensions="extensions"

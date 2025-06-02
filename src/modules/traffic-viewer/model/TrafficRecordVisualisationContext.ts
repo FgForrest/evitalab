@@ -2,7 +2,7 @@ import { TrafficRecordHistoryDataPointer } from '@/modules/traffic-viewer/model/
 import {
     TrafficRecordVisualisationDefinition
 } from '@/modules/traffic-viewer/model/TrafficRecordVisualisationDefinition'
-import { Uuid } from '@/modules/connection/model/data-type/Uuid'
+import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import Immutable from 'immutable'
 
@@ -11,14 +11,14 @@ import Immutable from 'immutable'
  */
 export class TrafficRecordVisualisationContext {
 
-    readonly dataPointer: TrafficRecordHistoryDataPointer
+    readonly catalogName: string
 
     private rootVisualisedRecords: TrafficRecordVisualisationDefinition[] = []
     private visualisedSessionRecordsIndex: Map<string, TrafficRecordVisualisationDefinition> = new Map()
     private visualisedSourceQueryRecordsIndex: Map<string, TrafficRecordVisualisationDefinition> = new Map()
 
-    constructor(dataPointer: TrafficRecordHistoryDataPointer) {
-        this.dataPointer = dataPointer
+    constructor(catalogName: string) {
+        this.catalogName = catalogName
     }
 
     getVisualisedRecords(): Immutable.List<TrafficRecordVisualisationDefinition> {

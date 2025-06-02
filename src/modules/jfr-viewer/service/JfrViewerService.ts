@@ -1,39 +1,38 @@
 import { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
-import { Connection } from '@/modules/connection/model/Connection'
-import { EventType } from '@/modules/connection/model/jfr/EventType'
-import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { jfrRecorderTaskName } from '@/modules/jfr-viewer/model/JfrRecorderTask'
-import { PaginatedList } from '@/modules/connection/model/PaginatedList'
-import { ServerFile } from '@/modules/connection/model/server-file/ServerFile'
+import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
+import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
+import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import { EventType } from '@/modules/database-driver/request-response/jfr/EventType'
 
 export const jfrViewerServiceInjectionKey: InjectionKey<JfrViewerService> = Symbol('jfrViewerService')
 
 export class JfrViewerService {
-    private readonly connectionService: ConnectionService
+    private readonly evitaClient: EvitaClient
 
-    constructor(connectionService: ConnectionService) {
-        this.connectionService = connectionService
+    constructor(evitaClient: EvitaClient) {
+        this.evitaClient = evitaClient
     }
 
-    async getRecordings(connection: Connection, pageNumber: number, pageSize: number):Promise<PaginatedList<ServerFile>>{
-        const driver = await this.connectionService.getDriver(connection)
-        return await driver.getFilesToFetch(connection, jfrRecorderTaskName, pageNumber, pageSize)
+    async getRecordings(pageNumber: number, pageSize: number): Promise<PaginatedList<ServerFile>> {
+        return await this.evitaClient.management.listFilesToFetch(
+            pageNumber,
+            pageSize,
+            jfrRecorderTaskName
+        )
     }
 
-    async getEventTypes(connection: Connection):Promise<EventType[]>{
-        const driver = await this.connectionService.getDriver(connection)
-        return await driver.downloadRecordingEventTypes(connection)
+    async getEventTypes(): Promise<EventType[]> {
+        return await this.evitaClient.management.listJfrRecordingEventTypes()
     }
 
-    async startRecording(connection: Connection, entityTypes: string[]): Promise<boolean> {
-        const driver = await this.connectionService.getDriver(connection)
-        return await driver.startJrfRecording(connection, entityTypes)
+    async startRecording(entityTypes: string[]): Promise<boolean> {
+        return await this.evitaClient.management.startJrfRecording(entityTypes)
     }
 
-    async stopRecording(connection: Connection): Promise<boolean>{
-        const driver = await this.connectionService.getDriver(connection)
-        return await driver.stopJfrRecording(connection)
+    async stopRecording(): Promise<boolean> {
+        return await this.evitaClient.management.stopJfrRecording()
     }
 }
 

@@ -1,107 +1,99 @@
 import { Connection } from '@/modules/connection/model/Connection'
-import { OffsetDateTime } from '@/modules/connection/model/data-type/OffsetDateTime'
-import { Uuid } from '@/modules/connection/model/data-type/Uuid'
+import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
+import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { mandatoryInject } from '@/utils/reactivity'
 import { InjectionKey } from 'vue'
-import { ConnectionService } from '@/modules/connection/service/ConnectionService'
-import { CatalogVersionAtResponse } from '@/modules/connection/model/CatalogVersionAtResponse'
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
-import { ClassifierValidationErrorType } from '@/modules/connection/model/data-type/ClassifierValidationErrorType'
-import { EvitaDBDriver } from '@/modules/connection/driver/EvitaDBDriver'
-import { ClassifierType } from '@/modules/connection/model/data-type/ClassifierType'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { PaginatedList } from '@/modules/connection/model/PaginatedList'
-import { ServerFile } from '@/modules/connection/model/server-file/ServerFile'
+import { CatalogVersionAtResponse } from '@/modules/database-driver/request-response/CatalogVersionAtResponse'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
+import { ClassifierValidationErrorType } from '@/modules/database-driver/data-type/ClassifierValidationErrorType'
+import { ClassifierType } from '@/modules/database-driver/data-type/ClassifierType'
+import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
+import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { backupTaskName } from '@/modules/backup-viewer/model/BackupTask'
-import { Catalog } from '@/modules/connection/model/Catalog'
 import Immutable from 'immutable'
+import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
+import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 
 export const backupViewerServiceInjectionKey: InjectionKey<BackupViewerService> = Symbol('backupViewerService')
 
 export class BackupViewerService {
-    private readonly connectionService: ConnectionService
+    private readonly evitaClient: EvitaClient
 
-    constructor(connectionService: ConnectionService) {
-        this.connectionService = connectionService
+    constructor(evitaClient: EvitaClient) {
+        this.evitaClient = evitaClient
     }
 
-    async getAvailableCatalogs(connection: Connection): Promise<Immutable.List<Catalog>> {
-        return this.connectionService.getCatalogs(connection, true)
+    registerAvailableCatalogsChangeCallback(callback: () => Promise<void>): string {
+        return this.evitaClient.management.registerCatalogStatisticsChangeCallback(callback)
     }
 
-    async isCatalogExists(connection: Connection, catalogName: string): Promise<boolean> {
-        const driver: EvitaDBDriver = await this.connectionService.getDriver(connection)
-        try {
-            await driver.getCatalog(connection, catalogName)
-            return true
-        } catch (e) {
-            return false
-        }
+    unregisterAvailableCatalogsChangeCallback(id: string): void {
+        this.evitaClient.management.unregisterCatalogStatisticsChangeCallback(id)
     }
 
-    async getMinimalBackupDate(
-        connection: Connection,
-        catalogName: string
-    ): Promise<CatalogVersionAtResponse> {
-        const driver = await this.connectionService.getDriver(connection)
-        return driver.getMinimalBackupDate(connection, catalogName)
+    async getAvailableCatalogs(): Promise<Immutable.List<CatalogStatistics>> {
+        return await this.evitaClient.management.getCatalogStatistics()
+    }
+
+    async isCatalogExists(catalogName: string): Promise<boolean> {
+        return (await this.evitaClient.getCatalogNames()).contains(catalogName)
+    }
+
+    async getMinimalBackupDate(catalogName: string): Promise<CatalogVersionAtResponse> {
+        return await this.evitaClient.queryCatalog(catalogName, async session => {
+            return await session.getCatalogVersionAt()
+        })
     }
 
     async backupCatalog(
-        connection: Connection,
         catalogName: string,
-        includingWAL: boolean,
-        pastMoment: OffsetDateTime | undefined
+        pastMoment: OffsetDateTime | undefined,
+        includingWAL: boolean
     ): Promise<TaskStatus> {
-        const driver = await this.connectionService.getDriver(connection)
-        return driver.createBackup(
-            connection,
+        return await this.evitaClient.management.backupCatalog(
             catalogName,
-            includingWAL,
-            pastMoment
+            pastMoment,
+            includingWAL
         )
     }
 
     async getBackupFiles(
-        connection: Connection,
         pageNumber: number,
         pageSize: number
     ): Promise<PaginatedList<ServerFile>> {
-        const driver = await this.connectionService.getDriver(connection)
-        return await driver.getFilesToFetch(connection, backupTaskName, pageNumber, pageSize)
+        return await this.evitaClient.management.listFilesToFetch(
+            pageNumber,
+            pageSize,
+            backupTaskName
+        )
     }
 
     async restoreBackupFile(
-        connection: Connection,
         fileId: Uuid,
         catalogName: string
     ): Promise<TaskStatus> {
-        const driver = await this.connectionService.getDriver(connection)
-        return await driver.restoreCatalogFromServerFile(connection, fileId, catalogName)
+        return await this.evitaClient.management.restoreCatalogFromServerFile(
+            fileId,
+            catalogName
+        )
     }
 
-    async isCatalogNameValid(connection: Connection, catalogName: string): Promise<ClassifierValidationErrorType | undefined> {
-        const driver: EvitaDBDriver = await this.connectionService.getDriver(connection)
-        return driver.isClassifierValid(connection, ClassifierType.Catalog, catalogName)
+    async isCatalogNameValid(catalogName: string): Promise<ClassifierValidationErrorType | undefined> {
+        return await this.evitaClient.management.isClassifierValid(
+            ClassifierType.Catalog,
+            catalogName
+        )
     }
 
-    async isCatalogNameAvailable(connection: Connection, catalogName: string): Promise<boolean> {
-        const driver: EvitaDBDriver = await this.connectionService.getDriver(connection)
-        try {
-            await driver.getCatalog(connection, catalogName)
-        } catch (e) {
-            // todo lho better exceptions
-            if (e instanceof UnexpectedError) {
-                // catalog not found
-                return true
-            }
-        }
-        return false
+    async isCatalogNameAvailable(catalogName: string): Promise<boolean> {
+        return !(await this.isCatalogExists(catalogName))
     }
 
-    async restoreLocalBackupFile(connection: Connection, file: Blob, catalogName: string): Promise<TaskStatus> {
-        const driver = await this.connectionService.getDriver(connection)
-        return await driver.restoreCatalog(connection, file, catalogName)
+    async restoreLocalBackupFile(file: Blob, catalogName: string): Promise<TaskStatus> {
+        return await this.evitaClient.management.restoreCatalog(
+            file,
+            catalogName
+        )
     }
 }
 

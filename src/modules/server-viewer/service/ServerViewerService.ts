@@ -1,27 +1,23 @@
-import { EvitaDBDriverResolver } from '@/modules/connection/driver/EvitaDBDriverResolver'
-import { Connection } from '@/modules/connection/model/Connection'
 import { mandatoryInject } from '@/utils/reactivity'
 import { InjectionKey } from 'vue'
-import { ServerStatus } from '@/modules/connection/model/status/ServerStatus'
+import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 
 export const serverViewerServiceInjectionKey: InjectionKey<ServerViewerService> = Symbol('serverViewerService')
 
-// todo docs
 export class ServerViewerService {
-    private readonly evitaDBDriverResolver: EvitaDBDriverResolver
+    private readonly evitaClient: EvitaClient
 
-    constructor(evitaDBDriver: EvitaDBDriverResolver) {
-        this.evitaDBDriverResolver = evitaDBDriver
+    constructor(evitaClient: EvitaClient) {
+        this.evitaClient = evitaClient
     }
 
-    async getServerStatus(connection: Connection):Promise<ServerStatus> {
-        const driver = await this.evitaDBDriverResolver.resolveDriver(connection)
-        return await driver.getServerStatus(connection)
+    async getServerStatus(): Promise<ServerStatus> {
+        return await this.evitaClient.management.getServerStatus()
     }
 
-    async getRuntimeConfiguration(connection: Connection): Promise<string> {
-        const driver = await this.evitaDBDriverResolver.resolveDriver(connection)
-        return await driver.getRuntimeConfiguration(connection)
+    async getRuntimeConfiguration(): Promise<string> {
+        return await this.evitaClient.management.getConfiguration()
     }
 }
 

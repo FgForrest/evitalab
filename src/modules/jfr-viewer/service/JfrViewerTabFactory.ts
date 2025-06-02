@@ -17,9 +17,10 @@ export class JfrViewerTabFactory {
         this.connectionService = connectionService
     }
 
-    createNew(connection: Connection): JfrViewerTabDefinition {
+    createNew(): JfrViewerTabDefinition {
+        const connection: Connection = this.connectionService.getConnection()
         return new JfrViewerTabDefinition(
-            this.constructTitle(connection),
+            this.constructTitle(),
             new JfrViewerTabParams(connection)
         )
     }
@@ -27,16 +28,13 @@ export class JfrViewerTabFactory {
     restoreFromJson(paramsJson: TabParamsDto):JfrViewerTabDefinition {
         const params: JfrViewerTabParams = this.restoreTabParamsFromSerializable(paramsJson)
         return new JfrViewerTabDefinition(
-            this.constructTitle(params.connection),
+            this.constructTitle(),
             params
         )
     }
 
-    private constructTitle(connection: Connection): string {
-        return i18n.global.t(
-            'jfrViewer.definition.title',
-            { connectionName: connection.name }
-        )
+    private constructTitle(): string {
+        return i18n.global.t('jfrViewer.definition.title')
     }
 
     private restoreTabParamsFromSerializable(json: TabParamsDto): JfrViewerTabParams {

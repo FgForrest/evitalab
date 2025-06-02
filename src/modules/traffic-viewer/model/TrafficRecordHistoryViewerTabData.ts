@@ -2,10 +2,10 @@ import { TabData } from '@/modules/workspace/tab/model/TabData'
 import {
     TrafficRecordHistoryViewerTabDataDto
 } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabDataDto'
-import { OffsetDateTime } from '@/modules/connection/model/data-type/OffsetDateTime'
-import { Uuid } from '@/modules/connection/model/data-type/Uuid'
-import { Label } from '@/modules/connection/model/traffic/Label'
+import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
+import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { UserTrafficRecordType } from '@/modules/traffic-viewer/model/UserTrafficRecordType'
+import { Label } from '@/modules/database-driver/request-response/traffic-recording/Label'
 
 export class TrafficRecordHistoryViewerTabData implements TabData<TrafficRecordHistoryViewerTabDataDto> {
 
