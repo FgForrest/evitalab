@@ -1,6 +1,5 @@
 import { TrafficRecordVisualiser } from '@/modules/traffic-viewer/service/TrafficRecordVisualiser'
-import { EntityEnrichmentContainer } from '@/modules/connection/model/traffic/EntityEnrichmentContainer'
-import { TrafficRecord } from '@/modules/connection/model/traffic/TrafficRecord'
+import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { TrafficRecordVisualisationContext } from '../model/TrafficRecordVisualisationContext'
 import {
     Action,
@@ -13,6 +12,9 @@ import Immutable from 'immutable'
 import { EvitaQLConsoleTabData } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabData'
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
+import {
+    EntityEnrichmentContainer
+} from '@/modules/database-driver/request-response/traffic-recording/EntityEnrichmentContainer'
 
 /**
  * Visualises entity enrichment container.
@@ -75,8 +77,7 @@ export class EntityEnrichmentContainerVisualiser extends TrafficRecordVisualiser
             'mdi-play',
             () => this.workspaceService.createTab(
                 this.evitaQLConsoleTabFactory.createNew(
-                    ctx.dataPointer.connection,
-                    ctx.dataPointer.catalogName,
+                    ctx.catalogName,
                     new EvitaQLConsoleTabData(trafficRecord.query)
                 )
             )

@@ -3,7 +3,6 @@ import { EvitaLabConfig, evitaLabConfigInjectionKey } from '@/modules/config/Evi
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 import { Router } from 'vue-router'
 
-// todo docs
 export class ConfigModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {

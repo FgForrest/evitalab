@@ -11,7 +11,7 @@ const props = defineProps<{
 }>()
 
 const connectionName = computed<string>(() => {
-    return connectionService.getDriverConnection().name
+    return connectionService.getConnection().name
 })
 
 const test = localStorage.getItem('test')

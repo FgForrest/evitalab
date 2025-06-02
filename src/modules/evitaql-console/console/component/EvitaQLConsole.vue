@@ -42,14 +42,12 @@ import {
 import VPreviewEditor from '@/modules/code-editor/component/VPreviewEditor.vue'
 import ResultVisualiser from '@/modules/console/result-visualiser/component/ResultVisualiser.vue'
 import { Command } from '@/modules/keymap/model/Command'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import VExecuteQueryButton from '@/modules/base/component/VExecuteQueryButton.vue'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import VSideTabs from '@/modules/base/component/VSideTabs.vue'
 import { List } from 'immutable'
-import { Response } from '@/modules/connection/model/data/Response'
 import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import {
@@ -59,6 +57,7 @@ import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-pa
 import {
     EvitaQLConsoleTabDefinition
 } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabDefinition'
+import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
 
 enum EditorTabType {
     Query = 'query',
@@ -146,7 +145,7 @@ const rawResult = computed<string>(() => {
 const rawResultEditorRef = ref<
     InstanceType<typeof VPreviewEditor> | undefined
 >()
-const result = ref<Response>()
+const result = ref<EvitaResponse>()
 const resultExtensions: Extension[] = [json()]
 
 const resultVisualiserRef = ref<
@@ -227,7 +226,7 @@ async function executeQuery(): Promise<void> {
         result.value = await evitaQLConsoleService.executeEvitaQLQuery(
             props.params.dataPointer,
             queryCode.value,
-            JSON.parse(variablesCode.value)
+            // JSON.parse(variablesCode.value) // todo lho support
         )
         loading.value = false
         enteredQueryCode.value = queryCode.value
@@ -273,7 +272,6 @@ if (props.params.executeOnOpen) {
                     :tab-type="TabType.EvitaQLConsole"
                     :tab-params="params"
                     :tab-data="currentData"
-                    :disabled="!params.dataPointer.connection.preconfigured"
                     :command="Command.EvitaQLConsole_ShareTab"
                 />
 

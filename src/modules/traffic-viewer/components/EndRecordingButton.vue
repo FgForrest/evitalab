@@ -1,16 +1,14 @@
 <script setup lang="ts">
 
-import { TaskState } from '@/modules/connection/model/task/TaskState'
+import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
 import { ref } from 'vue'
-import { Connection } from '@/modules/connection/model/Connection'
 import { useI18n } from 'vue-i18n'
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import EndRecordingDialog from '@/modules/traffic-viewer/components/EndRecordingDialog.vue'
 
 const { t } = useI18n()
 
 const props = defineProps<{
-    connection: Connection,
     trafficRecorderTask: TaskStatus
 }>()
 const emit = defineEmits<{
@@ -29,7 +27,6 @@ function onEnd(): void {
 <template>
     <EndRecordingDialog
         v-model="showEndRecordingDialog"
-        :connection="connection"
         :traffic-recorder-task="trafficRecorderTask"
         @end="onEnd"
     >

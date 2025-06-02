@@ -1,16 +1,14 @@
 <script setup lang="ts">
 
-import { TaskState } from '@/modules/connection/model/task/TaskState'
+import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
 import { ref } from 'vue'
-import { Connection } from '@/modules/connection/model/Connection'
 import EndRecordingDialog from '@/modules/jfr-viewer/components/EndRecordingDialog.vue'
 import { useI18n } from 'vue-i18n'
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 
 const { t } = useI18n()
 
 const props = defineProps<{
-    connection: Connection,
     jfrRecorderTask: TaskStatus
 }>()
 const emit = defineEmits<{
@@ -29,7 +27,6 @@ function onEnd(): void {
 <template>
     <EndRecordingDialog
         v-model="showEndRecordingDialog"
-        :connection="connection"
         @end="onEnd"
     >
         <template #activator="{ props }">

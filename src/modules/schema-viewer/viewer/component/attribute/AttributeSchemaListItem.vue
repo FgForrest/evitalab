@@ -2,7 +2,7 @@
 
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer'
-import { AttributeSchema } from '@/modules/connection/model/schema/AttributeSchema'
+import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { List } from 'immutable'
 import { CatalogSchemaPointer } from '@/modules/schema-viewer/viewer/model/CatalogSchemaPointer'
 import {
@@ -32,7 +32,6 @@ function openAttributeSchema(): void {
     const parentSchemaPointer = props.dataPointer.schemaPointer
     if (parentSchemaPointer instanceof CatalogSchemaPointer) {
         workspaceService.createTab(schemaViewerTabFactory.createNew(
-            props.dataPointer.connection,
             new CatalogAttributeSchemaPointer(
                 parentSchemaPointer.catalogName,
                 props.schema.name
@@ -40,7 +39,6 @@ function openAttributeSchema(): void {
         ))
     } else if (parentSchemaPointer instanceof EntitySchemaPointer) {
         workspaceService.createTab(schemaViewerTabFactory.createNew(
-            props.dataPointer.connection,
             new EntityAttributeSchemaPointer(
                 parentSchemaPointer.catalogName,
                 parentSchemaPointer.entityType,
@@ -49,7 +47,6 @@ function openAttributeSchema(): void {
         ))
     } else if (parentSchemaPointer instanceof ReferenceSchemaPointer) {
         workspaceService.createTab(schemaViewerTabFactory.createNew(
-            props.dataPointer.connection,
             new ReferenceAttributeSchemaPointer(
                 parentSchemaPointer.catalogName,
                 parentSchemaPointer.entityType,
@@ -66,7 +63,7 @@ function openAttributeSchema(): void {
 <template>
     <SchemaContainerSectionListItem
         :name="schema.name"
-        :deprecated="!!schema.deprecationNotice.getIfSupported()"
+        :deprecated="!!schema.deprecationNotice"
         :flags="flags"
         @open="openAttributeSchema"
     />

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 
 import VPropertiesTable from '@/modules/base/component/VPropertiesTable.vue'
-import { ServerStatus } from '@/modules/connection/model/status/ServerStatus'
 import { computed } from 'vue'
 import { Property } from '@/modules/base/model/properties-table/Property'
 import { useI18n } from 'vue-i18n'
 import { PropertyValue } from '@/modules/base/model/properties-table/PropertyValue'
 import { Duration } from 'luxon'
 import { KeywordValue } from '@/modules/base/model/properties-table/KeywordValue'
+import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 
 const { t } = useI18n()
 

@@ -1,17 +1,15 @@
 <script setup lang="ts">
 
 import VTabMainActionButton from '@/modules/base/component/VTabMainActionButton.vue'
-import { Connection } from '@/modules/connection/model/Connection'
 import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
 import StartRecordingDialog from '@/modules/traffic-viewer/components/StartRecordingDialog.vue'
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 
 const { t } = useI18n()
 
 const props = withDefaults(
     defineProps<{
-        connection: Connection,
         disabled?: boolean
     }>(),
     {
@@ -28,7 +26,6 @@ const showStartRecordingDialog = ref<boolean>(false)
 <template>
     <StartRecordingDialog
         v-model="showStartRecordingDialog"
-        :connection="connection"
         @start="emit('start', $event)"
     >
         <template #activator="{ props }">

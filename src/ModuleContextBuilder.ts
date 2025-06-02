@@ -1,8 +1,9 @@
-// todo docs
-// todo lho revise
 import { App, InjectionKey } from 'vue'
 import { InitializationError } from '@/modules/base/exception/InitializationError'
 
+/**
+ * Holds shared data while building modules.
+ */
 export class ModuleContextBuilder {
 
     readonly app: App

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { computed } from 'vue'
 import { fallbackTaskIcon, taskTypeToIconMapping } from '@/modules/task-viewer/model/taskTypeToIconMapping'
 

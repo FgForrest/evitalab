@@ -6,14 +6,13 @@
 
 import { TrafficRecordHistoryCriteria } from '@/modules/traffic-viewer/model/TrafficRecordHistoryCriteria'
 import VDateTimeInput from '@/modules/base/component/VDateTimeInput.vue'
-import { DateTime, Duration } from 'luxon'
+import { DateTime } from 'luxon'
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Label } from '@/modules/connection/model/traffic/Label'
 import { TrafficViewerService, useTrafficViewerService } from '@/modules/traffic-viewer/service/TrafficViewerService'
-import { Uuid } from '@/modules/connection/model/data-type/Uuid'
+import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { OffsetDateTime } from '@/modules/connection/model/data-type/OffsetDateTime'
+import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { TrafficRecordHistoryDataPointer } from '@/modules/traffic-viewer/model/TrafficRecordHistoryDataPointer'
 import Immutable from 'immutable'
 import {
@@ -23,6 +22,7 @@ import VLabelSelect from '@/modules/traffic-viewer/components/VLabelSelect.vue'
 import { parseHumanDurationToMs } from '@/utils/duration'
 import { parseHumanByteSizeToNumber } from '@/utils/number'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { Label } from '@/modules/database-driver/request-response/traffic-recording/Label'
 
 const trafficViewerService: TrafficViewerService = useTrafficViewerService()
 const toaster: Toaster = useToaster()
@@ -171,7 +171,6 @@ watch(labels, async (newValue) => {
 
 async function loadLabelNames(nameStartsWith: string): Promise<Immutable.List<string>> {
     return trafficViewerService.getLabelNames(
-        props.dataPointer.connection,
         props.dataPointer.catalogName,
         nameStartsWith,
         10
@@ -180,7 +179,6 @@ async function loadLabelNames(nameStartsWith: string): Promise<Immutable.List<st
 
 async function loadLabelValues(labelName: string, valueStartsWith: string): Promise<Immutable.List<string>> {
     return trafficViewerService.getLabelValues(
-        props.dataPointer.connection,
         props.dataPointer.catalogName,
         labelName,
         valueStartsWith,

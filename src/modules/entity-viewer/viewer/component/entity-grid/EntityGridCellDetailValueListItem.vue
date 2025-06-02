@@ -3,7 +3,6 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
-import { Scalar } from '@/modules/connection/model/data-type/Scalar'
 import {
     EntityPropertyValueDesiredOutputFormat
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValueDesiredOutputFormat'
@@ -11,6 +10,7 @@ import DetailOutputFormatSelector
     from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/DetailOutputFormatSelector.vue'
 import DelegateDetailRenderer
     from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/DelegateDetailRenderer.vue'
+import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 
 const { t } = useI18n()
 

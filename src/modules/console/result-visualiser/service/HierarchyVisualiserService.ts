@@ -1,7 +1,7 @@
 import { Result } from '@/modules/console/result-visualiser/model/Result'
 import { VisualisedNamedHierarchy } from '@/modules/console/result-visualiser/model/hierarchy/VisualisedNamedHierarchy'
-import { EntitySchema } from '@/modules/connection/model/schema/EntitySchema'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
+import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 
 /**
  * Service for visualising raw JSON hierarchies.

@@ -3,36 +3,35 @@
  * Visualises raw JSON facet summary.
  */
 
-import { computed } from 'vue'
+import { computed, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
-import { CatalogPointer } from '@/modules/connection/model/CatalogPointer'
 import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
 import { Result } from '@/modules/console/result-visualiser/model/Result'
-import { EntitySchema } from '@/modules/connection/model/schema/EntitySchema'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
+import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import ReferenceFacetGroupStatisticsVisualiser
     from '@/modules/console/result-visualiser/component/facet-summary/ReferenceFacetGroupStatisticsVisualiser.vue'
 import { List } from 'immutable'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
+import { useRootEntitySchema, useVisualiserService } from '@/modules/console/result-visualiser/component/dependencies'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    catalogPointer: CatalogPointer,
-    visualiserService: ResultVisualiserService,
-    queryResult: Result,
     facetSummaryResult: Result,
-    entitySchema: EntitySchema,
 }>()
+
+const visualiserService: ResultVisualiserService = useVisualiserService()
+const entitySchema: Ref<EntitySchema | undefined> = useRootEntitySchema()
 
 const referencesWithGroupStatisticsResults = computed<[ReferenceSchema, Result[]][]>(() => {
     try {
-        return props.visualiserService
+        return visualiserService
             .getFacetSummaryService()
-            .findFacetGroupStatisticsByReferencesResults(props.facetSummaryResult, props.entitySchema)
+            .findFacetGroupStatisticsByReferencesResults(props.facetSummaryResult, entitySchema.value!)
     } catch (e: any) {
         toaster.error('Could not find facet group statistics results', e).then() // todo lho i18n
         return []
@@ -41,11 +40,11 @@ const referencesWithGroupStatisticsResults = computed<[ReferenceSchema, Result[]
 
 function getCountForReference(referenceSchema: ReferenceSchema, groupStatisticsResults: Result): number {
     let results: any
-    if (referenceSchema.referencedGroupType.getIfSupported()! != undefined) {
+    if (referenceSchema.referencedGroupType != undefined) {
         results = groupStatisticsResults
 
     } else {
-        results = props.visualiserService
+        results = visualiserService
             .getFacetSummaryService()
             .findFacetStatisticsResults(groupStatisticsResults[0])
     }
@@ -68,9 +67,6 @@ function getCountForReference(referenceSchema: ReferenceSchema, groupStatisticsR
             </VExpansionPanelTitle>
             <VExpansionPanelText>
                 <ReferenceFacetGroupStatisticsVisualiser
-                    :catalog-pointer="catalogPointer"
-                    :visualiser-service="visualiserService"
-                    :query-result="queryResult"
                     :reference-schema="referenceWithGroup[0]"
                     :group-statistics-results="referenceWithGroup[1]"
                 />

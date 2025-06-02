@@ -3,8 +3,8 @@ import { EntityPrice } from '@/modules/entity-viewer/viewer/model/entity-propert
 import {
     EntityPropertyValuePreviewStringContext
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValuePreviewStringContext'
-import { BigDecimal } from '@/modules/connection/model/data-type/BigDecimal'
 import { QueryPriceMode } from '../QueryPriceMode'
+import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 
 /**
  * Holder for entity prices displayable data grid.

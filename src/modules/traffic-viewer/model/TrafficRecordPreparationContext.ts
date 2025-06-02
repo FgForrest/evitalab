@@ -1,7 +1,7 @@
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import Immutable from 'immutable'
-import { TrafficRecord } from '@/modules/connection/model/traffic/TrafficRecord'
-import { Uuid } from '@/modules/connection/model/data-type/Uuid'
+import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
+import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 
 /**
  * Generic context for record preparation before visualisation

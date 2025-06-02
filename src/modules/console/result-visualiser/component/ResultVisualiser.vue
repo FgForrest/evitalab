@@ -5,11 +5,10 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
-import { CatalogPointer } from '@/modules/connection/model/CatalogPointer'
 import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
 import { Result } from '@/modules/console/result-visualiser/model/Result'
 import { VAutocomplete } from 'vuetify/components'
-import { EntitySchema } from '@/modules/connection/model/schema/EntitySchema'
+import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { VisualiserType } from '@/modules/console/result-visualiser/model/VisualiserType'
 import { VisualiserTypeType } from '@/modules/console/result-visualiser/model/VisualiserTypeType'
 import FacetSummaryVisualiser
@@ -20,8 +19,13 @@ import AttributeHistogramsVisualiser
 import PriceHistogramVisualiser
     from '@/modules/console/result-visualiser/component/histogram/PriceHistogramVisualiser.vue'
 import VLoadingCircular from '@/modules/base/component/VLoadingCircular.vue'
-import { Response } from '@/modules/connection/model/data/Response'
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
+import { CatalogPointer } from '@/modules/viewer-support/model/CatalogPointer'
+import {
+    provideCatalogPointer, provideRootEntitySchema, provideQueryResult,
+    provideVisualiserService
+} from '@/modules/console/result-visualiser/component/dependencies'
+import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -30,8 +34,11 @@ const props = defineProps<{
     catalogPointer: CatalogPointer,
     visualiserService: ResultVisualiserService,
     inputQuery: string,
-    result: Response | undefined
+    result: EvitaResponse | undefined
 }>()
+
+provideCatalogPointer(props.catalogPointer)
+provideVisualiserService(props.visualiserService)
 
 const querySelectRef = ref<InstanceType<typeof VAutocomplete> | undefined>()
 const selectedQuery = ref<string | undefined>()
@@ -95,7 +102,9 @@ const selectedQueryResult = computed<Result | undefined>(() => {
         return undefined
     }
 })
+provideQueryResult(selectedQueryResult)
 const selectedQueryEntitySchema = ref<EntitySchema | undefined>()
+provideRootEntitySchema(selectedQueryEntitySchema)
 watch(selectedQuery, async () => {
     selectedQueryEntitySchema.value = undefined
     selectedVisualiserType.value = undefined
@@ -106,7 +115,6 @@ watch(selectedQuery, async () => {
     try {
         selectedQueryEntitySchema.value = await props.visualiserService.getEntitySchemaForQuery(
             selectedQuery.value as string,
-            props.catalogPointer.connection,
             props.catalogPointer.catalogName
         )
     } catch (e: any) {
@@ -205,28 +213,18 @@ defineExpose<{
 
         <FacetSummaryVisualiser
             v-if="selectedVisualiserType == VisualiserTypeType.FacetSummary && selectedQueryResult != undefined && selectedQueryEntitySchema != undefined && resultForVisualiser != undefined"
-            :catalog-pointer="catalogPointer"
-            :visualiser-service="visualiserService"
-            :query-result="selectedQueryResult"
             :facet-summary-result="resultForVisualiser"
-            :entity-schema="selectedQueryEntitySchema"
         />
         <HierarchyVisualiser
             v-if="selectedVisualiserType == VisualiserTypeType.Hierarchy && selectedQueryResult != undefined && selectedQueryEntitySchema != undefined && resultForVisualiser != undefined"
-            :catalog-pointer="catalogPointer"
-            :visualiser-service="visualiserService"
             :hierarchy-result="resultForVisualiser"
-            :entity-schema="selectedQueryEntitySchema"
         />
         <AttributeHistogramsVisualiser
             v-if="selectedVisualiserType == VisualiserTypeType.AttributeHistograms && selectedQueryResult != undefined && selectedQueryEntitySchema != undefined && resultForVisualiser != undefined"
-            :visualiser-service="visualiserService"
             :attribute-histograms-result="resultForVisualiser"
-            :entity-schema="selectedQueryEntitySchema"
         />
         <PriceHistogramVisualiser
             v-if="selectedVisualiserType == VisualiserTypeType.PriceHistogram && selectedQueryResult != undefined && selectedQueryEntitySchema != undefined && resultForVisualiser != undefined"
-            :visualiser-service="visualiserService"
             :price-histogram-result="resultForVisualiser"
         />
 

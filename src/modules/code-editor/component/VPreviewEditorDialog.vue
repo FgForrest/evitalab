@@ -3,10 +3,6 @@
 import { Extension } from '@codemirror/state'
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
 import VPreviewEditor from '@/modules/code-editor/component/VPreviewEditor.vue'
-import VCardTitleWithActions from '@/modules/base/component/VCardTitleWithActions.vue'
-import { useI18n } from 'vue-i18n'
-
-const { t } = useI18n()
 
 const props = withDefaults(
     defineProps<{

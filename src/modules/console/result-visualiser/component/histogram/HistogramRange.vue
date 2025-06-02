@@ -9,8 +9,8 @@ import { VisualisedHistogram } from '@/modules/console/result-visualiser/model/h
 import {
     VisualisedHistogramBucket
 } from '@/modules/console/result-visualiser/model/histogram/VisualisedHistogramBucket'
-import { BigDecimal } from '@/modules/connection/model/data-type/BigDecimal'
 import HistogramNote from '@/modules/console/result-visualiser/component/histogram/HistogramNote.vue'
+import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 
 const { t } = useI18n()
 

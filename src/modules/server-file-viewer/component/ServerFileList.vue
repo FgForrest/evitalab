@@ -1,12 +1,10 @@
 <script setup lang="ts">
 
 import VListItemDivider from '@/modules/base/component/VListItemDivider.vue'
-import { ServerFile } from '@/modules/connection/model/server-file/ServerFile'
-import { Connection } from '@/modules/connection/model/Connection'
+import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import ServerFileListItem from '@/modules/server-file-viewer/component/ServerFileListItem.vue'
 
 const props = defineProps<{
-    connection: Connection,
     files: ServerFile[],
     pageNumber: number,
     pageSize: number,
@@ -33,7 +31,6 @@ const emit = defineEmits<{
             <template #default="{ items }">
                 <template v-for="(item, index) in items" :key="item.raw.fileId.code">
                     <ServerFileListItem
-                        :connection="connection"
                         :file="item.raw"
                         @request-task-update="emit('requestTaskUpdate')"
                         @request-file-update="emit('requestFileUpdate')"

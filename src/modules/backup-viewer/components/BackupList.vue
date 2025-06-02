@@ -2,12 +2,11 @@
 
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
 import { computed, onUnmounted, ref, watch } from 'vue'
-import { PaginatedList } from '@/modules/connection/model/PaginatedList'
-import { ServerFile } from '@/modules/connection/model/server-file/ServerFile'
+import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
+import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { BackupViewerService, useBackupViewerService } from '@/modules/backup-viewer/service/BackupViewerService'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import { useI18n } from 'vue-i18n'
-import { Connection } from '@/modules/connection/model/Connection'
 import ServerFileList from '@/modules/server-file-viewer/component/ServerFileList.vue'
 import RestoreBackupFileButton from '@/modules/backup-viewer/components/RestoreBackupFileButton.vue'
 
@@ -18,7 +17,6 @@ const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    connection: Connection
     backupsInPreparationPresent: boolean
 }>()
 const emit = defineEmits<{
@@ -48,7 +46,6 @@ const pageSize = ref<number>(20)
 async function loadBackupFiles(): Promise<boolean> {
     try {
         backupFiles.value = await backupViewerService.getBackupFiles(
-            props.connection,
             pageNumber.value,
             pageSize.value
         )
@@ -107,7 +104,6 @@ defineExpose<{
 <template>
     <ServerFileList
         v-if="backupFilesLoaded && backupFileItems.length > 0"
-        :connection="connection"
         :files="backupFileItems"
         v-model:page-number="pageNumber"
         :page-size="pageSize"
@@ -121,7 +117,6 @@ defineExpose<{
 
         <template #item-append="{ file }">
             <RestoreBackupFileButton
-                :connection="connection"
                 :backup-file="file"
                 @restore="emit('requestTaskUpdate')"
             />

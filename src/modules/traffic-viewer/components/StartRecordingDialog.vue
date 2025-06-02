@@ -1,26 +1,24 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { Connection } from '@/modules/connection/model/Connection'
 import { computed, ref, watch } from 'vue'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { TrafficViewerService, useTrafficViewerService } from '@/modules/traffic-viewer/service/TrafficViewerService'
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import Immutable from 'immutable'
-import { Catalog } from '@/modules/connection/model/Catalog'
 import {
     int64MaxValue,
     parseHumanByteSizeToBigInt
 } from '@/utils/number'
 import { parseHumanDurationToMs } from '@/utils/duration'
+import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 
 const trafficViewerService: TrafficViewerService = useTrafficViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    modelValue: boolean,
-    connection: Connection
+    modelValue: boolean
 }>()
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void,
@@ -80,7 +78,7 @@ const catalogNameRules = [
         return t('trafficViewer.recordings.startRecording.form.catalogName.validations.required')
     },
     async (value: string): Promise<any> => {
-        const available: boolean = await trafficViewerService.isCatalogExists(props.connection, value)
+        const available: boolean = await trafficViewerService.isCatalogExists(value)
         if (available) return true
         return t('trafficViewer.recordings.startRecording.form.catalogName.validations.notExists')
     }
@@ -161,7 +159,8 @@ const chunkFileSizeInBytesRules = [
 
 async function loadAvailableCatalogs(): Promise<void> {
     try {
-        const fetchedAvailableCatalogs: Immutable.List<Catalog> = await trafficViewerService.getAvailableCatalogs(props.connection)
+        const fetchedAvailableCatalogs: Immutable.List<CatalogStatistics> =
+            await trafficViewerService.getAvailableCatalogs()
         availableCatalogs.value = fetchedAvailableCatalogs
             .filter(it => !it.corrupted)
             .map(it => it.name)
@@ -187,7 +186,6 @@ function reset(): void {
 async function startRecording(): Promise<boolean> {
     try {
         const createdTask: TaskStatus = await trafficViewerService.startRecording(
-            props.connection,
             catalogName.value!,
             Number(samplingRate.value),
             (maxDurationInMilliseconds.value != undefined && (maxDurationInMilliseconds.value as string).trim().length > 0)

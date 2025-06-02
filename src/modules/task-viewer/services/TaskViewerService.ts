@@ -1,33 +1,34 @@
-import { Connection } from "@/modules/connection/model/Connection";
-import { Uuid } from "@/modules/connection/model/data-type/Uuid";
 import { mandatoryInject } from "@/utils/reactivity";
 import { InjectionKey } from "vue";
-import { TaskState } from '@/modules/connection/model/task/TaskState'
-import { ConnectionService } from '@/modules/connection/service/ConnectionService'
-import { PaginatedList } from '@/modules/connection/model/PaginatedList'
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
+import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
+import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
+import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 
 export const taskViewerServiceInjectionKey: InjectionKey<TaskViewerService> = Symbol('taskViewerService')
 
 export class TaskViewerService {
-    private readonly connectionService: ConnectionService
+    private readonly evitaClient: EvitaClient
 
-    constructor(connectionService: ConnectionService) {
-        this.connectionService = connectionService
+    constructor(evitaClient: EvitaClient) {
+        this.evitaClient = evitaClient
     }
 
-    async getTaskStatuses(connection: Connection,
-                          pageNumber: number,
+    async getTaskStatuses(pageNumber: number,
                           pageSize: number,
                           states?: TaskState[],
                           taskTypes?: string[]): Promise<PaginatedList<TaskStatus>>{
-        const driver = await this.connectionService.getDriver(connection)
-        return await driver.getTaskStatuses(connection, pageNumber, pageSize, states, taskTypes)
+        return await this.evitaClient.management.listTaskStatuses(
+            pageNumber,
+            pageSize,
+            taskTypes,
+            states
+        )
     }
 
-    async cancelTask(connection: Connection, taskId: Uuid): Promise<boolean> {
-        const driver = await this.connectionService.getDriver(connection)
-        return await driver.cancelTask(connection, taskId)
+    async cancelTask(taskId: Uuid): Promise<boolean> {
+        return await this.evitaClient.management.cancelTask(taskId)
     }
 }
 

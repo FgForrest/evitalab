@@ -1,8 +1,6 @@
 <script setup lang="ts">
 
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
-import { ApiType } from '@/modules/connection/model/status/ApiType'
-import { ApiStatus } from '@/modules/connection/model/status/ApiStatus'
 import { useI18n } from 'vue-i18n'
 import VPropertiesTable from '@/modules/base/component/VPropertiesTable.vue'
 import { computed } from 'vue'
@@ -10,8 +8,9 @@ import { Property } from '@/modules/base/model/properties-table/Property'
 import { PropertyValue } from '@/modules/base/model/properties-table/PropertyValue'
 import { PlaceholderValue } from '@/modules/base/model/properties-table/PlaceholderValue'
 import { KeywordValue } from '@/modules/base/model/properties-table/KeywordValue'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { ApiType } from '@/modules/database-driver/request-response/status/ApiType'
+import { ApiStatus } from '@/modules/database-driver/request-response/status/ApiStatus'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()

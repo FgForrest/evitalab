@@ -2,7 +2,7 @@
 
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer'
-import { EntitySchema } from '@/modules/connection/model/schema/EntitySchema'
+import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { List } from 'immutable'
 import { CatalogSchemaPointer } from '@/modules/schema-viewer/viewer/model/CatalogSchemaPointer'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
@@ -29,7 +29,6 @@ function openEntitySchema(): void {
         throw new UnexpectedError('Unsupported parent schema for entities.')
     }
     workspaceService.createTab(schemaViewerTabFactory.createNew(
-        props.dataPointer.connection,
         new EntitySchemaPointer(
             props.dataPointer.schemaPointer.catalogName,
             props.schema.name
@@ -41,7 +40,7 @@ function openEntitySchema(): void {
 <template>
     <SchemaContainerSectionListItem
         :name="schema.name"
-        :deprecated="!!schema.deprecationNotice.getIfSupported()"
+        :deprecated="!!schema.deprecationNotice"
         :flags="flags"
         @open="openEntitySchema"
     />

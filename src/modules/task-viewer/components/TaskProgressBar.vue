@@ -1,10 +1,10 @@
 <script setup lang="ts">
 
-import { TaskState } from '@/modules/connection/model/task/TaskState'
+import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
 import { computed } from 'vue'
-import { TaskTrait } from '@/modules/connection/model/task/TaskTrait'
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { useI18n } from 'vue-i18n'
+import { TaskTrait } from '@/modules/database-driver/request-response/task/TaskTrait'
 
 const { t } = useI18n()
 

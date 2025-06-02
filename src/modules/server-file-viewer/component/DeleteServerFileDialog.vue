@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
-import { ServerFile } from '@/modules/connection/model/server-file/ServerFile'
+import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { useI18n } from 'vue-i18n'
 import { Connection } from '@/modules/connection/model/Connection'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
@@ -16,7 +16,6 @@ const { t } = useI18n()
 
 const props = defineProps<{
     modelValue: boolean,
-    connection: Connection
     file: ServerFile
 }>()
 const emit = defineEmits<{
@@ -27,7 +26,6 @@ const emit = defineEmits<{
 async function deleteFile(): Promise<boolean> {
     try {
         const deleted: boolean = await serverFileViewerService.deleteFile(
-            props.connection,
             props.file.fileId
         )
         if (deleted) {

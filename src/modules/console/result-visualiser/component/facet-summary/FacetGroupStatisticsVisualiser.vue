@@ -7,16 +7,16 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { Result } from '@/modules/console/result-visualiser/model/Result'
 import {
     VisualisedFacetGroupStatistics
 } from '@/modules/console/result-visualiser/model/facet-summary/VisualisedFacetGroupStatistics'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import VMarkdown from '@/modules/base/component/VMarkdown.vue'
 import VListItemLazyIterator from '@/modules/base/component/VListItemLazyIterator.vue'
 import FacetStatisticsVisualiser
     from '@/modules/console/result-visualiser/component/facet-summary/FacetStatisticsVisualiser.vue'
+import { useVisualiserService } from '@/modules/console/result-visualiser/component/dependencies'
 
 const facetStatisticsPageSize: number = 10
 
@@ -24,20 +24,20 @@ const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    visualiserService: ResultVisualiserService,
     referenceSchema: ReferenceSchema
-    queryResult: Result,
     groupStatisticsResult: Result | undefined,
     groupRepresentativeAttributes: string[],
     facetRepresentativeAttributes: string[]
 }>()
+
+const visualiserService: ResultVisualiserService = useVisualiserService()
 
 const groupStatistics = computed<VisualisedFacetGroupStatistics | undefined>(() => {
     if (props.groupStatisticsResult == undefined) {
         return undefined
     }
     try {
-        return props.visualiserService
+        return visualiserService
             .getFacetSummaryService()
             .resolveFacetGroupStatistics(props.groupStatisticsResult, props.groupRepresentativeAttributes)
     } catch (e: any) {
@@ -52,7 +52,7 @@ const facetStatisticsResults = computed<Result[]>(() => {
         return []
     }
     try {
-        return props.visualiserService
+        return visualiserService
             .getFacetSummaryService()
             .findFacetStatisticsResults(props.groupStatisticsResult)
     } catch (e: any) {
@@ -114,7 +114,7 @@ async function copyPrimaryKey(): Promise<void> {
                                         </VTooltip>
                                     </span>
                                 </VChip>
-                                <VChip v-if="!referenceSchema.referencedGroupTypeManaged.getOrElse(false)" prepend-icon="mdi-open-in-new">
+                                <VChip v-if="!referenceSchema.referencedGroupTypeManaged" prepend-icon="mdi-open-in-new">
                                     {{ t('resultVisualizer.facetStatisticsVisualiser.label.externalGroup') }}
                                     <VTooltip activator="parent">
                                         {{ t('resultVisualizer.facetStatisticsVisualiser.help.externalGroup') }}
@@ -135,9 +135,7 @@ async function copyPrimaryKey(): Promise<void> {
             >
                 <template #item="{ item: facetStatisticsResult }">
                     <FacetStatisticsVisualiser
-                        :visualiser-service="visualiserService"
                         :reference-schema="referenceSchema"
-                        :query-result="queryResult"
                         :facet-statistics-result="facetStatisticsResult"
                         :facet-representative-attributes="facetRepresentativeAttributes"
                     />

@@ -100,6 +100,12 @@ yarn dev-driver
 
 _this will start a development server on [localhost:3000](http://localhost:3000) address._
 
+By default, the development version of evitaLab starts with connection to the evitaDB Demo server. You can change it
+in the `.env` file by modifying the `VITE_DEV_CONNECTION` variable. Right now following values are supported:
+
+- `DEMO` - connects to the evitaDB Demo server
+- `LOCAL` - connects to a local evitaDB server running on the default port 5555
+
 ## Development
 
 If you would like to contribute to evitaLab source code or just simply play with it locally, you just need to

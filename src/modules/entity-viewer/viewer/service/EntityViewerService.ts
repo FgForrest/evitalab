@@ -1,6 +1,5 @@
 import { InjectionKey } from 'vue'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
-import { GraphQLClient } from '@/modules/graphql-console/driver/service/GraphQLClient'
 import { QueryLanguage } from '@/modules/entity-viewer/viewer/model/QueryLanguage'
 import { EvitaQLQueryBuilder } from '@/modules/entity-viewer/viewer/service/EvitaQLQueryBuilder'
 import { EvitaQLQueryExecutor } from '@/modules/entity-viewer/viewer/service/EvitaQLQueryExecutor'
@@ -26,21 +25,20 @@ import { QueryResult } from '@/modules/entity-viewer/viewer/model/QueryResult'
 import { EntityPrice } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrice'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EntityPrices } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrices'
-import { EntitySchema } from '@/modules/connection/model/schema/EntitySchema'
+import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
-import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
-import { EntityAttributeSchema } from '@/modules/connection/model/schema/EntityAttributeSchema'
-import { NamingConvention } from '@/modules/connection/model/NamingConvetion'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
-import { AttributeSchema } from '@/modules/connection/model/schema/AttributeSchema'
-import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
+import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
+import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
+import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
+import { List as ImmutableList } from 'immutable'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
-import { EvitaDBDriverResolver } from '@/modules/connection/driver/EvitaDBDriverResolver'
 import { mandatoryInject } from '@/utils/reactivity'
-import { Locale } from '@/modules/connection/model/data-type/Locale'
+import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import { Locale } from '@/modules/database-driver/data-type/Locale'
 
 export const entityViewerServiceInjectionKey: InjectionKey<EntityViewerService> = Symbol('entityViewerService')
 
@@ -48,25 +46,47 @@ export const entityViewerServiceInjectionKey: InjectionKey<EntityViewerService> 
  * Service for running the entity viewer component.
  */
 export class EntityViewerService {
-    private readonly connectionService: ConnectionService
+    private readonly evitaClient: EvitaClient
 
     private readonly queryBuilders: Map<QueryLanguage, QueryBuilder> = new Map<QueryLanguage, QueryBuilder>()
     private readonly queryExecutors: Map<QueryLanguage, QueryExecutor> = new Map<QueryLanguage, QueryExecutor>()
 
     private readonly entityPropertyValueFormatters: Map<EntityPropertyValueSupportedCodeLanguage, EntityPropertyValueFormatter> = new Map<EntityPropertyValueSupportedCodeLanguage, EntityPropertyValueFormatter>()
 
-    constructor(connectionService: ConnectionService, evitaDBDriverResolver: EvitaDBDriverResolver, graphQLClient: GraphQLClient) {
-        this.connectionService = connectionService
+    constructor(evitaClient: EvitaClient) {
+        this.evitaClient = evitaClient
 
-        this.queryBuilders.set(QueryLanguage.EvitaQL, new EvitaQLQueryBuilder(this.connectionService))
-        this.queryExecutors.set(QueryLanguage.EvitaQL, new EvitaQLQueryExecutor(this.connectionService, evitaDBDriverResolver))
+        this.queryBuilders.set(QueryLanguage.EvitaQL, new EvitaQLQueryBuilder(evitaClient))
+        this.queryExecutors.set(QueryLanguage.EvitaQL, new EvitaQLQueryExecutor(evitaClient))
 
-        this.queryBuilders.set(QueryLanguage.GraphQL, new GraphQLQueryBuilder(this.connectionService))
-        this.queryExecutors.set(QueryLanguage.GraphQL, new GraphQLQueryExecutor(this.connectionService, graphQLClient))
+        this.queryBuilders.set(QueryLanguage.GraphQL, new GraphQLQueryBuilder(evitaClient))
+        this.queryExecutors.set(QueryLanguage.GraphQL, new GraphQLQueryExecutor(evitaClient))
 
         this.entityPropertyValueFormatters.set(EntityPropertyValueSupportedCodeLanguage.Raw, new EntityPropertyValueRawFormatter())
         this.entityPropertyValueFormatters.set(EntityPropertyValueSupportedCodeLanguage.Json, new EntityPropertyValueJsonFormatter())
         this.entityPropertyValueFormatters.set(EntityPropertyValueSupportedCodeLanguage.Xml, new EntityPropertyValueXmlFormatter())
+    }
+
+    registerEntitySchemaChangeCallback(
+        dataPointer: EntityViewerDataPointer,
+        callback: () => Promise<void>
+    ): string {
+        return this.evitaClient.registerEntitySchemaChangedCallback(
+            dataPointer.catalogName,
+            dataPointer.entityType,
+            callback
+        )
+    }
+
+    unregisterEntitySchemaChangeCallback(
+        dataPointer: EntityViewerDataPointer,
+        id: string
+    ): void {
+        this.evitaClient.unregisterEntitySchemaChangedCallback(
+            dataPointer.catalogName,
+            dataPointer.entityType,
+            id
+        )
     }
 
     /**
@@ -153,7 +173,10 @@ export class EntityViewerService {
     async buildOrderByFromGridColumns(dataPointer: EntityViewerDataPointer,
                                       language: QueryLanguage,
                                       columns: any[]): Promise<string> {
-        const entitySchema: EntitySchema = await this.connectionService.getEntitySchema(dataPointer.connection, dataPointer.catalogName, dataPointer.entityType)
+        const entitySchema: EntitySchema  = await this.evitaClient.queryCatalog(
+            dataPointer.catalogName,
+            async session => await session.getEntitySchemaOrThrowException(dataPointer.entityType)
+        )
         const queryBuilder: QueryBuilder = this.getQueryBuilder(language)
 
         const orderBy: string[] = []
@@ -163,10 +186,8 @@ export class EntityViewerService {
                 orderBy.push(queryBuilder.buildPrimaryKeyOrderBy(column.order.toUpperCase()))
             } else if (propertyKey.type === EntityPropertyType.Attributes) {
                 const attributeSchema: EntityAttributeSchema | undefined = entitySchema.attributes
-                    .getIfSupported()
-                    ?.find(attributeSchema => attributeSchema.nameVariants
-                        .getIfSupported()
-                        ?.get(NamingConvention.CamelCase) === propertyKey.name)
+                    .find(attributeSchema => attributeSchema.nameVariants
+                        .get(NamingConvention.CamelCase) === propertyKey.name)
                 if (attributeSchema == undefined) {
                     throw new UnexpectedError(`Entity ${entitySchema.name} does not have attribute ${propertyKey.name}.`)
                 }
@@ -174,18 +195,14 @@ export class EntityViewerService {
                 orderBy.push(queryBuilder.buildAttributeOrderBy(attributeSchema, column.order.toUpperCase()))
             } else if (propertyKey.type === EntityPropertyType.ReferenceAttributes) {
                 const referenceSchema: ReferenceSchema | undefined = entitySchema.references
-                    .getIfSupported()
-                    ?.find(referenceSchema => referenceSchema.nameVariants
-                        .getIfSupported()
-                        ?.get(NamingConvention.CamelCase) === propertyKey.parentName)
+                    .find(referenceSchema => referenceSchema.nameVariants
+                        .get(NamingConvention.CamelCase) === propertyKey.parentName)
                 if (referenceSchema == undefined) {
                     throw new UnexpectedError(`Entity ${entitySchema.name} does not have reference ${propertyKey.parentName}.`)
                 }
                 const attributeSchema: AttributeSchema | undefined = referenceSchema.attributes
-                    .getIfSupported()
-                    ?.find(attributeSchema => attributeSchema.nameVariants
-                        .getIfSupported()
-                        ?.get(NamingConvention.CamelCase) === propertyKey.name)
+                    .find(attributeSchema => attributeSchema.nameVariants
+                        .get(NamingConvention.CamelCase) === propertyKey.name)
                 if (attributeSchema == undefined) {
                     throw new UnexpectedError(`Reference ${referenceSchema.name} does not have attribute ${propertyKey.name}.`)
                 }
@@ -233,32 +250,26 @@ export class EntityViewerService {
      * Returns a list of locales in which data are stored in given collection.
      */
     async getDataLocales(dataPointer: EntityViewerDataPointer): Promise<ImmutableList<Locale>> {
-        const entitySchema: EntitySchema = await this.connectionService.getEntitySchema(
-            dataPointer.connection,
+        const entitySchema: EntitySchema  = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
-            dataPointer.entityType
+            async session => await session.getEntitySchemaOrThrowException(dataPointer.entityType)
         )
-        return entitySchema.locales.getOrElseGet(() => ImmutableList())
+        return entitySchema.locales
     }
 
     async supportsPrices(dataPointer: EntityViewerDataPointer): Promise<boolean> {
-        const entitySchema: EntitySchema = await this.connectionService.getEntitySchema(
-            dataPointer.connection,
+        const entitySchema: EntitySchema  = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
-            dataPointer.entityType
+            async session => await session.getEntitySchemaOrThrowException(dataPointer.entityType)
         )
-        return entitySchema.withPrice.getOrElse(false)
+        return entitySchema.withPrice
     }
 
     /**
      * Builds a list of all possible entity properties for entities of given schema.
      */
     async getEntityPropertyDescriptors(dataPointer: EntityViewerDataPointer): Promise<EntityPropertyDescriptor[]> {
-        const entitySchema: EntitySchema = await this.connectionService.getEntitySchema(
-            dataPointer.connection,
-            dataPointer.catalogName,
-            dataPointer.entityType
-        )
+        const entitySchema = await this.getEntitySchema(dataPointer)
         const descriptors: EntityPropertyDescriptor[] = []
         // todo lho i18n
         descriptors.push(new EntityPropertyDescriptor(
@@ -279,7 +290,7 @@ export class EntityViewerService {
             undefined,
             ImmutableList()
         ))
-        if (entitySchema.withHierarchy.getOrElse(false)) {
+        if (entitySchema.withHierarchy) {
             descriptors.push(new EntityPropertyDescriptor(
                 EntityPropertyType.Entity,
                 EntityPropertyKey.entity(StaticEntityProperties.ParentPrimaryKey),
@@ -290,7 +301,7 @@ export class EntityViewerService {
                 ImmutableList()
             ))
         }
-        if (entitySchema.locales.getOrElseGet(() => ImmutableList()).size > 0) {
+        if (entitySchema.locales.size > 0) {
             descriptors.push(new EntityPropertyDescriptor(
                 EntityPropertyType.Entity,
                 EntityPropertyKey.entity(StaticEntityProperties.Locales),
@@ -301,7 +312,7 @@ export class EntityViewerService {
                 ImmutableList()
             ))
         }
-        if (entitySchema.withPrice.getOrElse(false)) {
+        if (entitySchema.withPrice) {
             descriptors.push(new EntityPropertyDescriptor(
                 EntityPropertyType.Entity,
                 EntityPropertyKey.entity(StaticEntityProperties.PriceInnerRecordHandling),
@@ -313,7 +324,7 @@ export class EntityViewerService {
             ))
         }
 
-        for (const attributeSchema of entitySchema.attributes.getOrElseGet(() => ImmutableMap()).values()) {
+        for (const attributeSchema of entitySchema.attributes.values()) {
             descriptors.push(new EntityPropertyDescriptor(
                 EntityPropertyType.Attributes,
                 EntityPropertyKey.attributes(attributeSchema.name),
@@ -325,7 +336,7 @@ export class EntityViewerService {
             ))
         }
 
-        for (const associatedDataSchema of entitySchema.associatedData.getOrElseGet(() => ImmutableMap()).values()) {
+        for (const associatedDataSchema of entitySchema.associatedData.values()) {
             descriptors.push(new EntityPropertyDescriptor(
                 EntityPropertyType.AssociatedData,
                 EntityPropertyKey.associatedData(associatedDataSchema.name),
@@ -337,7 +348,7 @@ export class EntityViewerService {
             ))
         }
 
-        if (entitySchema.withPrice.getOrElse(false)) {
+        if (entitySchema.withPrice) {
             descriptors.push(new EntityPropertyDescriptor(
                 EntityPropertyType.Prices,
                 EntityPropertyKey.prices(),
@@ -349,7 +360,7 @@ export class EntityViewerService {
             ))
         }
 
-        for (const referenceSchema of entitySchema.references.getOrElseGet(() => ImmutableMap()).values()) {
+        for (const referenceSchema of entitySchema.references.values()) {
             descriptors.push(new EntityPropertyDescriptor(
                 EntityPropertyType.References,
                 EntityPropertyKey.references(referenceSchema.name),
@@ -358,7 +369,7 @@ export class EntityViewerService {
                 undefined,
                 referenceSchema,
                 ImmutableList(
-                    Array.from(referenceSchema.attributes.getIfSupported()?.values()!)
+                    Array.from(referenceSchema.attributes.values())
                         .map(attributeSchema => {
                             return new EntityPropertyDescriptor(
                                 EntityPropertyType.ReferenceAttributes,
@@ -410,6 +421,13 @@ export class EntityViewerService {
             throw new UnexpectedError(`Query executor for language ${language} is not registered.`)
         }
         return queryExecutor
+    }
+
+    private async getEntitySchema(dataPointer: EntityViewerDataPointer): Promise<EntitySchema> {
+        return await this.evitaClient.queryCatalog(
+            dataPointer.catalogName,
+            async session => await session.getEntitySchemaOrThrowException(dataPointer.entityType)
+        )
     }
 }
 

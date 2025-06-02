@@ -16,9 +16,8 @@ import { TrafficRecordHistoryDataPointer } from '@/modules/traffic-viewer/model/
 import {
     TrafficRecordHistoryViewerTabDataDto
 } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabDataDto'
-import { Uuid } from '@/modules/connection/model/data-type/Uuid'
-import { Duration } from 'luxon'
-import { OffsetDateTime, Timestamp } from '@/modules/connection/model/data-type/OffsetDateTime'
+import { Uuid } from '@/modules/database-driver/data-type/Uuid'
+import { OffsetDateTime, Timestamp } from '@/modules/database-driver/data-type/OffsetDateTime'
 
 export const trafficRecordHistoryViewerTabFactoryInjectionKey: InjectionKey<TrafficRecordHistoryViewerTabFactory> = Symbol('trafficRecordingHistoryViewerTabFactory')
 
@@ -29,11 +28,13 @@ export class TrafficRecordHistoryViewerTabFactory {
         this.connectionService = connectionService
     }
 
-    createNew(connection: Connection,
-              catalogName: string,
-              initialData: TrafficRecordHistoryViewerTabData | undefined = undefined): TrafficRecordHistoryViewerTabDefinition {
+    createNew(
+        catalogName: string,
+        initialData: TrafficRecordHistoryViewerTabData | undefined = undefined
+    ): TrafficRecordHistoryViewerTabDefinition {
+        const connection: Connection = this.connectionService.getConnection()
         return new TrafficRecordHistoryViewerTabDefinition(
-            this.constructTitle(connection, catalogName),
+            this.constructTitle(catalogName),
             this.createNewTabParams(connection, catalogName),
             initialData != undefined ? initialData : new TrafficRecordHistoryViewerTabData(),
         )
@@ -44,17 +45,14 @@ export class TrafficRecordHistoryViewerTabFactory {
         const data: TrafficRecordHistoryViewerTabData = this.restoreTabDataFromSerializable(dataJson)
 
         return new TrafficRecordHistoryViewerTabDefinition(
-            this.constructTitle(
-                params.dataPointer.connection,
-                params.dataPointer.catalogName,
-            ),
+            this.constructTitle(params.dataPointer.catalogName),
             params,
             data
         )
     }
 
-    private constructTitle(connection: Connection, catalogName: string): string {
-        return `${catalogName} [${connection.name}]`
+    private constructTitle(catalogName: string): string {
+        return `${catalogName}`
     }
 
     private createNewTabParams(connection: Connection, catalogName: string): TrafficRecordHistoryViewerTabParams {

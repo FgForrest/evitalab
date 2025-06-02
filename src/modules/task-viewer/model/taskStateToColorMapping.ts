@@ -1,5 +1,5 @@
 import Immutable from 'immutable'
-import { TaskState } from '@/modules/connection/model/task/TaskState'
+import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
 
 /**
  * Maps {TaskState} to a color for a chip

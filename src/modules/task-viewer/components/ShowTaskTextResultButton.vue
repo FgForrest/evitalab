@@ -1,10 +1,10 @@
 <script setup lang="ts">
 
-import { TextTaskResult } from '@/modules/connection/model/task/TextTaskResult'
 import TaskTextResultDialog from '@/modules/task-viewer/components/TaskTextResultDialog.vue'
 import { ref } from 'vue'
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { useI18n } from 'vue-i18n'
+import { TextTaskResult } from '@/modules/database-driver/request-response/task/TextTaskResult'
 
 const { t } = useI18n()
 

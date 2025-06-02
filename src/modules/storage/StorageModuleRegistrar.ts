@@ -3,7 +3,6 @@ import { LabStorage, labStorageInjectionKey } from '@/modules/storage/LabStorage
 import { EvitaLabConfig, evitaLabConfigInjectionKey } from '@/modules/config/EvitaLabConfig'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 
-// todo docs
 export class StorageModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {

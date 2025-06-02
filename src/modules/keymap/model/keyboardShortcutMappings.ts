@@ -10,7 +10,7 @@ function createKeyboardShortcutMapping(command: Command, baseShortcut: string, m
 
 createKeyboardShortcutMapping(Command.System_Keymap, 'Ctrl+Alt+K', 'Cmd+Option+K')
 
-createKeyboardShortcutMapping(Command.System_Panels_ConnectionsExplorer, 'Alt+1', 'Ctrl+Shift+1')
+createKeyboardShortcutMapping(Command.System_Panels_Connection, 'Alt+1', 'Ctrl+Shift+1')
 
 createKeyboardShortcutMapping(Command.System_Editor_PreviousTab, 'Ctrl+Alt+PageUp', 'Cmd+Option+PageUp')
 createKeyboardShortcutMapping(Command.System_Editor_NextTab, 'Ctrl+Alt+PageDown', 'Cmd+Option+PageDown')

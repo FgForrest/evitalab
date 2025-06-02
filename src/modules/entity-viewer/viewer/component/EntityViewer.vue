@@ -5,7 +5,7 @@
 
 import 'splitpanes/dist/splitpanes.css'
 
-import { computed, onBeforeMount, ref, watch } from 'vue'
+import { computed, onBeforeMount, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { EntityViewerService, useEntityViewerService } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
@@ -26,7 +26,7 @@ import EntityGrid from '@/modules/entity-viewer/viewer/component/entity-grid/Ent
 import Toolbar from '@/modules/entity-viewer/viewer/component/Toolbar.vue'
 import QueryInput from '@/modules/entity-viewer/viewer/component/QueryInput.vue'
 import Immutable from 'immutable'
-import { EntityAttributeSchema } from '@/modules/connection/model/schema/EntityAttributeSchema'
+import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
 import {
     provideDataLocale,
     provideEntityPropertyDescriptorIndex,
@@ -71,6 +71,10 @@ let sortedEntityPropertyKeys: string[] = []
 let entityPropertyDescriptors: EntityPropertyDescriptor[] = []
 const entityPropertyDescriptorIndex = ref<Immutable.Map<string, EntityPropertyDescriptor>>(Immutable.Map<string, EntityPropertyDescriptor>())
 provideEntityPropertyDescriptorIndex(entityPropertyDescriptorIndex)
+const entitySchemaChangedCallbackId: string = entityViewerService.registerEntitySchemaChangeCallback(
+    props.params.dataPointer,
+    async () => await reloadEntityPropertyDescriptors()
+)
 
 let gridHeaders: Map<string, any> = new Map<string, any>()
 let dataLocales: Immutable.List<string> = Immutable.List()
@@ -151,19 +155,7 @@ onBeforeMount(() => {
         })
         .then(ep => {
             entityPropertyDescriptors = ep
-            const entityPropertyDescriptorIndexBuilder: Map<string, EntityPropertyDescriptor> = new Map()
-            for (const entityPropertyDescriptor of entityPropertyDescriptors) {
-                entityPropertyDescriptorIndexBuilder.set(entityPropertyDescriptor.key.toString(), entityPropertyDescriptor)
-                entityPropertyDescriptor.children.forEach(childPropertyDescriptor => {
-                    entityPropertyDescriptorIndexBuilder.set(childPropertyDescriptor.key.toString(), childPropertyDescriptor)
-                })
-
-                sortedEntityPropertyKeys.push(entityPropertyDescriptor.key.toString())
-                for (const childEntityPropertyDescriptor of entityPropertyDescriptor.children) {
-                    sortedEntityPropertyKeys.push(childEntityPropertyDescriptor.key.toString())
-                }
-            }
-            entityPropertyDescriptorIndex.value = Immutable.Map(entityPropertyDescriptorIndexBuilder)
+            entityPropertyDescriptorIndex.value = constructEntityPropertyDescriptorIndex(entityPropertyDescriptors)
             return initializeGridHeaders(entityPropertyDescriptors)
         })
         .then(gh => {
@@ -180,6 +172,38 @@ onBeforeMount(() => {
             toaster.error('Could not initialize entity viewer', error).then() // todo lho i18n
         })
 })
+
+async function reloadEntityPropertyDescriptors(): Promise<void> {
+    entityPropertyDescriptors = await entityViewerService.getEntityPropertyDescriptors(props.params.dataPointer)
+    entityPropertyDescriptorIndex.value = constructEntityPropertyDescriptorIndex(entityPropertyDescriptors)
+    gridHeaders = await initializeGridHeaders(entityPropertyDescriptors)
+
+    // remove selected properties which are not available anymore
+    const removeDisplayProperties: string[] = []
+    for (const displayedProperty of displayedEntityProperties.value) {
+        const serializedPropertyKey: string = displayedProperty.toString()
+        if (entityPropertyDescriptorIndex.value.get(serializedPropertyKey) == undefined) {
+            removeDisplayProperties.push(serializedPropertyKey)
+        }
+    }
+    displayedEntityProperties.value = displayedEntityProperties.value.filter(it => !removeDisplayProperties.includes(it.toString()))
+}
+
+function constructEntityPropertyDescriptorIndex(entityPropertyDescriptors: EntityPropertyDescriptor[]): Immutable.Map<string, EntityPropertyDescriptor> {
+    const entityPropertyDescriptorIndexBuilder: Map<string, EntityPropertyDescriptor> = new Map()
+    for (const entityPropertyDescriptor of entityPropertyDescriptors) {
+        entityPropertyDescriptorIndexBuilder.set(entityPropertyDescriptor.key.toString(), entityPropertyDescriptor)
+        entityPropertyDescriptor.children.forEach(childPropertyDescriptor => {
+            entityPropertyDescriptorIndexBuilder.set(childPropertyDescriptor.key.toString(), childPropertyDescriptor)
+        })
+
+        sortedEntityPropertyKeys.push(entityPropertyDescriptor.key.toString())
+        for (const childEntityPropertyDescriptor of entityPropertyDescriptor.children) {
+            sortedEntityPropertyKeys.push(childEntityPropertyDescriptor.key.toString())
+        }
+    }
+    return Immutable.Map(entityPropertyDescriptorIndexBuilder)
+}
 
 async function initializeGridHeaders(entityPropertyDescriptors: EntityPropertyDescriptor[]): Promise<Map<string, any>> {
     const gridHeaders: Map<string, any> = new Map<string, any>()
@@ -251,7 +275,7 @@ function preselectEntityProperties(): void {
                 it.key.type === EntityPropertyType.Prices ||
                 (it.schema != undefined &&
                     it.schema instanceof EntityAttributeSchema &&
-                    it.schema.representative.getOrElse(false)))
+                    it.schema.representative))
             .map(it => it.key)
     }
 
@@ -323,6 +347,13 @@ async function executeQuery(): Promise<void> {
 
     loading.value = false
 }
+
+onUnmounted(() => {
+    entityViewerService.unregisterEntitySchemaChangeCallback(
+        props.params.dataPointer,
+        entitySchemaChangedCallbackId
+    )
+})
 
 </script>
 

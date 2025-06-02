@@ -1,5 +1,5 @@
-import { BigDecimal } from "@/modules/connection/model/data-type/BigDecimal"
-import { HistogramBucket } from '@/modules/connection/model/data/HistogramBucket'
+import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
+import { HistogramBucket } from '@/modules/database-driver/request-response/data/HistogramBucket'
 
 /**
  * Single histogram bucket DTO ready for visualisation.
@@ -19,9 +19,9 @@ export class VisualisedHistogramBucket {
 
     static fromInternal(internal: HistogramBucket): VisualisedHistogramBucket {
         return new VisualisedHistogramBucket(
-            internal.threshold.getOrThrow(),
-            internal.occurrences.getOrThrow(),
-            internal.requested.getOrThrow(),
+            internal.threshold,
+            internal.occurrences,
+            internal.requested,
         )
     }
 

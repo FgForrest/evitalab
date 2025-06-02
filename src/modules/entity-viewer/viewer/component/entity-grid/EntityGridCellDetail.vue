@@ -13,7 +13,6 @@ import {
     EntityPropertyValueDesiredOutputFormat
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValueDesiredOutputFormat'
 import { ExtraEntityObjectType } from '@/modules/entity-viewer/viewer/model/ExtraEntityObjectType'
-import { Scalar } from '@/modules/connection/model/data-type/Scalar'
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import VCardTitleWithActions from '@/modules/base/component/VCardTitleWithActions.vue'
 import DetailOutputFormatSelector
@@ -26,7 +25,8 @@ import {
     provideEntityPropertyDescriptor,
     provideSelectedEntity
 } from '@/modules/entity-viewer/viewer/component/dependencies'
-import { isTypedSchema } from '@/modules/connection/model/schema/TypedSchema'
+import { isTypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
+import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 
 const { t } = useI18n()
 
@@ -70,7 +70,7 @@ const rawDataType = computed<Scalar | ExtraEntityObjectType | undefined>(() => {
     } else if (props.propertyDescriptor?.type === EntityPropertyType.ReferenceAttributes) {
         return ExtraEntityObjectType.ReferenceAttributes
     } else if (props.propertyDescriptor?.schema != undefined && isTypedSchema(props.propertyDescriptor.schema)) {
-        return props.propertyDescriptor.schema.type.getIfSupported()!
+        return props.propertyDescriptor.schema.type
     } else {
         return undefined
     }

@@ -8,7 +8,6 @@ import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentPro
 import { ServerViewerTabParams } from '@/modules/server-viewer/model/ServerViewerTabParams'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import { onUnmounted, ref } from 'vue'
-import { ServerStatus } from '@/modules/connection/model/status/ServerStatus'
 import { ServerViewerService, useServerViewerService } from '@/modules/server-viewer/service/ServerViewerService'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import ServerTitle from '@/modules/server-viewer/component/ServerTitle.vue'
@@ -20,6 +19,7 @@ import {
 } from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
 import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
 import { ServerViewerTabDefinition } from '@/modules/server-viewer/model/ServerViewerTabDefinition'
+import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 
 const reloadInterval: number = 5000
 
@@ -51,7 +51,7 @@ const serverStatusLoaded = ref<boolean>(false)
 
 async function loadServerStatus(): Promise<boolean> {
     try {
-        serverStatus.value = await serverViewerService.getServerStatus(props.params.connection)
+        serverStatus.value = await serverViewerService.getServerStatus()
         if (!serverStatusLoaded.value) {
             serverStatusLoaded.value = true
         }
@@ -100,7 +100,7 @@ loadServerStatus().then((loaded) => {
     reloadTimeoutId = setTimeout(reload, reloadInterval)
 })
 
-onUnmounted(() => clearInterval(reloadInterval))
+onUnmounted(() => clearInterval(reloadTimeoutId))
 </script>
 
 <template>
@@ -123,7 +123,6 @@ onUnmounted(() => clearInterval(reloadInterval))
                 <div class="tiles__row">
                     <ServerStatusComponent
                         ref="detailRef"
-                        :connection="params.connection"
                         :server-status="serverStatus!"
                     />
                 </div>

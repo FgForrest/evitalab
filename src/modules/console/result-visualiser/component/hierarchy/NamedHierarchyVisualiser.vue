@@ -12,6 +12,7 @@ import { VisualisedNamedHierarchy } from '@/modules/console/result-visualiser/mo
 import VMarkdown from '@/modules/base/component/VMarkdown.vue'
 import VListItemLazyIterator from '@/modules/base/component/VListItemLazyIterator.vue'
 import HierarchyTreeNode from '@/modules/console/result-visualiser/component/hierarchy/HierarchyTreeNode.vue'
+import { useVisualiserService } from '@/modules/console/result-visualiser/component/dependencies'
 
 const namedHierarchyTreesPageSize: number = 10
 
@@ -19,15 +20,16 @@ const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    visualiserService: ResultVisualiserService,
     name: string
     namedHierarchyResult: Result,
     entityRepresentativeAttributes: string[]
 }>()
 
+const visualiserService: ResultVisualiserService = useVisualiserService()
+
 const namedHierarchy = computed<VisualisedNamedHierarchy | undefined>(() => {
     try {
-        return props.visualiserService
+        return visualiserService
             .getHierarchyService()
             .resolveNamedHierarchy(props.namedHierarchyResult, props.entityRepresentativeAttributes)
     } catch (e: any) {

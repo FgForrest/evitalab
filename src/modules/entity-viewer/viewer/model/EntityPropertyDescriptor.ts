@@ -1,9 +1,9 @@
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
 import { List as ImmutableList } from 'immutable'
-import { Schema } from '@/modules/connection/model/schema/Schema'
-import { isSortableSchema } from '@/modules/connection/model/schema/SortableSchema'
-import { isLocalizedSchema } from '@/modules/connection/model/schema/LocalizedSchema'
+import { Schema } from '@/modules/database-driver/request-response/schema/Schema'
+import { isSortableSchema } from '@/modules/database-driver/request-response/schema/SortableSchema'
+import { isLocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
 import { sortableStaticEntityProperties } from '@/modules/entity-viewer/viewer/component/dependencies'
 
 
@@ -37,12 +37,12 @@ export class EntityPropertyDescriptor {
 
     isSortable(): boolean {
         return sortableStaticEntityProperties.includes(this.key.toString()) ||
-            (this.schema != undefined && isSortableSchema(this.schema) && this.schema.sortable.getOrElse(false)) ||
+            (this.schema != undefined && isSortableSchema(this.schema) && this.schema.sortable) ||
             false
     }
 
     isLocalized(): boolean {
-        return (this.schema != undefined && isLocalizedSchema(this.schema) && this.schema.localized.getOrElse(false)) ||
+        return (this.schema != undefined && isLocalizedSchema(this.schema) && this.schema.localized) ||
             false
     }
 }

@@ -1,4 +1,4 @@
-// todo docs
+
 import { LabError } from '@/modules/base/exception/LabError'
 import { ErrorViewerTabParams } from '@/modules/error-viewer/viewer/workspace/model/ErrorViewerTabParams'
 import { InjectionKey } from 'vue'

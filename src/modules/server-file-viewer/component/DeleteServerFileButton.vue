@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
-import { Connection } from '@/modules/connection/model/Connection'
-import { ServerFile } from '@/modules/connection/model/server-file/ServerFile'
+import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
 import DeleteServerFileDialog from '@/modules/server-file-viewer/component/DeleteServerFileDialog.vue'
@@ -9,7 +8,6 @@ import DeleteServerFileDialog from '@/modules/server-file-viewer/component/Delet
 const { t } = useI18n()
 
 const props = defineProps<{
-    connection: Connection
     file: ServerFile
 }>()
 const emit = defineEmits<{
@@ -22,7 +20,6 @@ const showDeleteDialog = ref<boolean>(false)
 <template>
     <DeleteServerFileDialog
         v-model="showDeleteDialog"
-        :connection="connection"
         :file="file"
         @delete="emit('delete')"
     >

@@ -1,11 +1,9 @@
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql'
-import { GraphQLClient } from '@/modules/graphql-console/driver/service/GraphQLClient'
 import { GraphQLConsoleDataPointer } from '@/modules/graphql-console/console/model/GraphQLConsoleDataPointer'
-import { GraphQLResponse } from '@/modules/graphql-console/driver/model/GraphQLResponse'
-import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
+import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import { GraphQLResponse } from '@/modules/database-driver/connector/gql/model/GraphQLResponse'
 
 export const graphQLConsoleServiceInjectionKey: InjectionKey<GraphQLConsoleService> = Symbol('graphQLConsoleService')
 
@@ -13,10 +11,18 @@ export const graphQLConsoleServiceInjectionKey: InjectionKey<GraphQLConsoleServi
  * Service for running GraphQL console component.
  */
 export class GraphQLConsoleService {
-    private readonly graphQLClient: GraphQLClient
+    private readonly evitaClient: EvitaClient
 
-    constructor(graphQLClient: GraphQLClient) {
-        this.graphQLClient = graphQLClient
+    constructor(evitaClient: EvitaClient) {
+        this.evitaClient = evitaClient
+    }
+
+    registerGraphQLSchemaChangeCallback(catalogName: string, callback: () => Promise<void>): string {
+        return this.evitaClient.registerCatalogSchemaChangedCallback(catalogName, callback)
+    }
+
+    unregisterGraphQLSchemaChangeCallback(catalogName: string, callbackId: string): void {
+        this.evitaClient.unregisterCatalogSchemaChangedCallback(catalogName, callbackId)
     }
 
     /**
@@ -49,22 +55,12 @@ export class GraphQLConsoleService {
     private async callGraphQLApi(dataPointer: GraphQLConsoleDataPointer,
                                  query: string,
                                  variables: object = {}): Promise<GraphQLResponse> {
-        let path
-        if (dataPointer.instanceType === GraphQLInstanceType.System) {
-            path = 'system'
-        } else {
-            switch (dataPointer.instanceType) {
-                case GraphQLInstanceType.Data:
-                    path = dataPointer.catalogName
-                    break
-                case GraphQLInstanceType.Schema:
-                    path = `${dataPointer.catalogName}/schema`
-                    break
-                default: throw new UnexpectedError(`Unsupported GraphQL instance type '${dataPointer.instanceType}'.`)
-            }
-        }
-
-        return await this.graphQLClient.fetch(dataPointer.connection, path, query, variables)
+        return await this.evitaClient.queryCatalogUsingGraphQL(
+            dataPointer.catalogName,
+            dataPointer.instanceType,
+            query,
+            variables
+        )
     }
 }
 

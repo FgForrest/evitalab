@@ -1,17 +1,16 @@
 import { ModuleRegistrar } from '@/ModuleRegistrar'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
-import { EvitaDBDriverResolver, evitaDBDriverResolverInjectionKey } from '../connection/driver/EvitaDBDriverResolver'
 import {
     ServerViewerService,
     serverViewerServiceInjectionKey
 } from '@/modules/server-viewer/service/ServerViewerService'
+import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
 
-// todo docs
 export class ServerViewerModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {
-        const evitaDBDriverResolver: EvitaDBDriverResolver = builder.inject(evitaDBDriverResolverInjectionKey)
-        const serverViewerService: ServerViewerService = new ServerViewerService(evitaDBDriverResolver)
+        const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
+        const serverViewerService: ServerViewerService = new ServerViewerService(evitaClient)
         builder.provide(serverViewerServiceInjectionKey, serverViewerService)
     }
 }

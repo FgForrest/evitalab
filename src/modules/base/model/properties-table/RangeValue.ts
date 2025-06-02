@@ -1,11 +1,11 @@
-import { LocalDateTime } from '@/modules/connection/model/data-type/LocalDateTime'
-import { BigDecimal } from '@/modules/connection/model/data-type/BigDecimal'
+import { LocalDateTime } from '@/modules/database-driver/data-type/LocalDateTime'
+import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { DateTimeRange } from '@/modules/connection/model/data-type/DateTimeRange'
-import { OffsetDateTime } from '@/modules/connection/model/data-type/OffsetDateTime'
-import { BigDecimalRange } from '@/modules/connection/model/data-type/BigDecimalRange'
-import { IntegerRange } from '@/modules/connection/model/data-type/IntegerRange'
-import { BigintRange } from '@/modules/connection/model/data-type/BigintRange'
+import { DateTimeRange } from '@/modules/database-driver/data-type/DateTimeRange'
+import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
+import { BigDecimalNumberRange } from '@/modules/database-driver/data-type/BigDecimalNumberRange'
+import { IntegerRange } from '@/modules/database-driver/data-type/IntegerRange'
+import { BigintNumberRange } from '@/modules/database-driver/data-type/BigintNumberRange'
 
 /**
  * Actual specific value of a property representing a range of values (e.g., date range, number range)
@@ -19,8 +19,8 @@ export class RangeValue {
     readonly range?:
         | (LocalDateTime | BigDecimal | bigint | number | undefined)[]
         | DateTimeRange
-        | BigDecimalRange
-        | BigintRange
+        | BigDecimalNumberRange
+        | BigintNumberRange
         | IntegerRange
     private serializedRange?: string[]
 

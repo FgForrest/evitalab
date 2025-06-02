@@ -1,6 +1,6 @@
 import { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
-import { Label } from '@/modules/connection/model/traffic/Label'
 import { UserTrafficRecordType } from '@/modules/traffic-viewer/model/UserTrafficRecordType'
+import { Label } from '@/modules/database-driver/request-response/traffic-recording/Label'
 
 export interface TrafficRecordHistoryViewerTabDataDto extends TabDataDto {
 

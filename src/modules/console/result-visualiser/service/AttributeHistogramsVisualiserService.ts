@@ -1,6 +1,6 @@
 import { Result } from '@/modules/console/result-visualiser/model/Result'
-import { EntitySchema } from '@/modules/connection/model/schema/EntitySchema'
-import { AttributeSchema } from '@/modules/connection/model/schema/AttributeSchema'
+import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
+import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { VisualisedHistogram } from '@/modules/console/result-visualiser/model/histogram/VisualisedHistogram'
 
 /**

@@ -3,14 +3,11 @@ import { EvitaQLResultVisualiserService } from '@/modules/evitaql-console/consol
 import { Result } from '@/modules/console/result-visualiser/model/Result'
 import { VisualisedNamedHierarchy } from '@/modules/console/result-visualiser/model/hierarchy/VisualisedNamedHierarchy'
 import { VisualisedHierarchyTreeNode } from '@/modules/console/result-visualiser/model/hierarchy/VisualisedHierarchyTreeNode'
-import { EntitySchema } from '@/modules/connection/model/schema/EntitySchema'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
-import { Entity } from '@/modules/connection/model/data/Entity'
-import { Value } from '@/modules/connection/model/Value'
-import { Hierarchy } from '@/modules/connection/model/data/Hierarchy'
-import { LevelInfo } from '@/modules/connection/model/data/LevelInfo'
-import Immutable, { List, Map } from 'immutable'
-import { no } from 'vuetify/locale'
+import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
+import Immutable, { List } from 'immutable'
+import { Hierarchy } from '@/modules/database-driver/request-response/data/Hierarchy'
+import { LevelInfo } from '@/modules/database-driver/request-response/data/LevelInfo'
 
 /**
  * {@link HierarchyVisualiserService} for EvitaQL query language.
@@ -23,17 +20,18 @@ export class EvitaQLHierarchyVisualiserService
     constructor(visualiserService: EvitaQLResultVisualiserService) {
         this.visualizerService = visualiserService
     }
+
     findNamedHierarchiesByReferencesResults(
         hierarchyResult: Immutable.Map<string, Hierarchy>,
         entitySchema: EntitySchema
     ): [ReferenceSchema | undefined, Result][] {
         const newHierarchy: [ReferenceSchema | undefined, Result][] = []
-        const references: Immutable.Map<string, ReferenceSchema> | undefined = entitySchema.references.getIfSupported()
+        const references: Immutable.Map<string, ReferenceSchema> | undefined = entitySchema.references
         if (references != undefined) {
             for (const [hierarchyName, hierarchy] of hierarchyResult) {
                 newHierarchy.push([
                     references.get(hierarchyName),
-                    hierarchy.hierarchy.getOrThrow(),
+                    hierarchy.hierarchy,
                 ])
             }
         }
@@ -76,25 +74,25 @@ export class EvitaQLHierarchyVisualiserService
         nodeCountHolder.count++
 
         // todo lho rewrite entity access
-        const primaryKey: number | undefined = nodeResult.entity.getOrThrow() != undefined
-            ? nodeResult.entity.getOrThrow()!.primaryKey
-            : nodeResult.entityReference.getOrThrow()!.primaryKey
+        const primaryKey: number | undefined = nodeResult.entity != undefined
+            ? nodeResult.entity.primaryKey
+            : nodeResult.entityReference!.primaryKey
         // only root nodes should display parents, we know parents in nested nodes from the direct parent in the tree
         let parentPrimaryKey: number | undefined = undefined
-        if (level === 1 && nodeResult.entity.getOrElse(undefined) != undefined) {
-            parentPrimaryKey = nodeResult.entity.getOrThrow()!.parentEntity?.primaryKey
+        if (level === 1 && nodeResult.entity != undefined) {
+            parentPrimaryKey = nodeResult.entity.parentEntity?.primaryKey
         }
         const title: string | undefined =
             this.visualizerService.resolveRepresentativeTitleForEntityResult(
-                nodeResult.entity.getOrElse(undefined),
+                nodeResult.entity,
                 entityRepresentativeAttributes
             )
-        const requested: boolean | undefined = nodeResult.requested.getOrElse(false)
-        const childrenCount: number | undefined = nodeResult.childrenCount.getOrElse(0)
-        const queriedEntityCount: number | undefined = nodeResult.queriedEntityCount.getOrElse(0)
+        const requested: boolean | undefined = nodeResult.requested
+        const childrenCount: number | undefined = nodeResult.childrenCount
+        const queriedEntityCount: number | undefined = nodeResult.queriedEntityCount
 
         const children: VisualisedHierarchyTreeNode[] = []
-        const childResults: List<LevelInfo> | undefined = nodeResult.children.getOrElse(List())
+        const childResults: List<LevelInfo> | undefined = nodeResult.children
         if (childResults != undefined && childResults.size > 0) {
             childResults.forEach((childResult: LevelInfo) => {
                 const childNode: VisualisedHierarchyTreeNode =

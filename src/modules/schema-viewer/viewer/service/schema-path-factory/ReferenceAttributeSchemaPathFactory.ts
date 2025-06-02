@@ -5,7 +5,6 @@ import { ReferenceAttributeSchemaPointer } from '@/modules/schema-viewer/viewer/
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { SchemaViewerTabFactory } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
 import { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
-import { Connection } from '@/modules/connection/model/Connection'
 import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
 import { i18n } from '@/vue-plugins/i18n'
 import { EntitySchemaPointer } from '@/modules/schema-viewer/viewer/model/EntitySchemaPointer'
@@ -24,15 +23,14 @@ export class ReferenceAttributeSchemaPathFactory extends AbstractSchemaPathFacto
         return schemaPointer instanceof ReferenceAttributeSchemaPointer
     }
 
-    protected resolvePathItems(connection: Connection, schemaPointer: ReferenceAttributeSchemaPointer): SubjectPathItem[] {
+    protected resolvePathItems(schemaPointer: ReferenceAttributeSchemaPointer): SubjectPathItem[] {
         return [
-            ...super.resolvePathItems(connection, schemaPointer),
+            ...super.resolvePathItems(schemaPointer),
             SubjectPathItem.plain(i18n.global.t('schemaViewer.path.item.entities')),
             SubjectPathItem.plain(
                 schemaPointer.entityType,
                 () => {
                     this.createSchemaTab(
-                        connection,
                         new EntitySchemaPointer(schemaPointer.catalogName, schemaPointer.entityType)
                     )
                 }
@@ -42,7 +40,6 @@ export class ReferenceAttributeSchemaPathFactory extends AbstractSchemaPathFacto
                 schemaPointer.referenceName,
                 () => {
                     this.createSchemaTab(
-                        connection,
                         new ReferenceSchemaPointer(schemaPointer.catalogName, schemaPointer.entityType, schemaPointer.referenceName)
                     )
                 }

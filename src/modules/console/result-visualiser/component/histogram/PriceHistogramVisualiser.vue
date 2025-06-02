@@ -11,18 +11,20 @@ import { Result } from '@/modules/console/result-visualiser/model/Result'
 import { VisualisedHistogram } from '@/modules/console/result-visualiser/model/histogram/VisualisedHistogram'
 import HistogramVisualiser from '@/modules/console/result-visualiser/component/histogram/HistogramVisualiser.vue'
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
+import { useVisualiserService } from '@/modules/console/result-visualiser/component/dependencies'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    visualiserService: ResultVisualiserService,
     priceHistogramResult: Result
 }>()
 
+const visualiserService: ResultVisualiserService = useVisualiserService()
+
 const histogram = computed<VisualisedHistogram | undefined>(() => {
     try {
-        return props.visualiserService
+        return visualiserService
             .getPriceHistogramService()
             .resolvePriceHistogram(props.priceHistogramResult)
     } catch (e: any) {

@@ -1,8 +1,8 @@
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
-import { OrderDirection } from '@/modules/connection/model/schema/OrderDirection'
-import { AttributeSchema } from '@/modules/connection/model/schema/AttributeSchema'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
+import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
+import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
 
 /**

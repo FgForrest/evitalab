@@ -60,7 +60,7 @@ emit('ready')
         </VTabToolbar>
 
         <VSheet class="task-viewer__body">
-            <TaskList ref="taskListRef" :connection="props.params.connection" />
+            <TaskList ref="taskListRef" />
         </VSheet>
     </div>
 </template>

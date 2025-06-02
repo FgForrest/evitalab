@@ -3,11 +3,10 @@
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
 import { useI18n } from 'vue-i18n'
 import { computed, onUnmounted, ref, watch } from 'vue'
-import { PaginatedList } from '@/modules/connection/model/PaginatedList'
-import { ServerFile } from '@/modules/connection/model/server-file/ServerFile'
+import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
+import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { JfrViewerService, useJfrViewerService } from '@/modules/jfr-viewer/service/JfrViewerService'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
-import { Connection } from '@/modules/connection/model/Connection'
 import ServerFileList from '@/modules/server-file-viewer/component/ServerFileList.vue'
 
 const jfrViewerService: JfrViewerService = useJfrViewerService()
@@ -15,7 +14,6 @@ const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    connection: Connection
     recordingsInPreparationPresent: boolean
 }>()
 
@@ -42,7 +40,7 @@ const pageSize = ref<number>(20)
 
 async function loadRecordings(): Promise<boolean> {
     try {
-        recordings.value = await jfrViewerService.getRecordings(props.connection, pageNumber.value, pageSize.value)
+        recordings.value = await jfrViewerService.getRecordings(pageNumber.value, pageSize.value)
 
         if (recordings.value.pageNumber > 1 && recordings.value?.data.size === 0) {
             pageNumber.value--
@@ -98,7 +96,6 @@ defineExpose<{
 <template>
     <ServerFileList
         v-if="recordingsLoaded && recordingItems.length > 0"
-        :connection="connection"
         :files="recordingItems"
         v-model:page-number="pageNumber"
         :page-size="pageSize"

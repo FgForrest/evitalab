@@ -1,8 +1,8 @@
 import { WelcomeScreenStore } from '@/modules/welcome-screen/store/welcomeScreenStore'
 import { EvitaDBBlogPost } from '@/modules/welcome-screen/model/EvitaDBBlogPost'
-import { EvitaDBDocsClient } from '@/modules/welcome-screen/driver/EvitaDBDocsClient'
 import { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
+import { EvitaDBDocsClient } from '@/modules/welcome-screen/service/EvitaDBDocsClient'
 
 export const welcomeScreenServiceInjectionKey: InjectionKey<WelcomeScreenService> = Symbol('welcomeScreenService')
 

@@ -4,7 +4,6 @@ import { ServerViewerTabParams } from './ServerViewerTabParams'
 import { DefineComponent, markRaw } from 'vue'
 import ServerViewer from '@/modules/server-viewer/component/ServerViewer.vue'
 
-// todo docs
 export class ServerViewerTabDefinition extends TabDefinition<ServerViewerTabParams, VoidTabData> {
     constructor(title: string, params: ServerViewerTabParams) {
         super(

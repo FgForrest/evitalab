@@ -11,7 +11,7 @@ import {
 import { AssociatedDataSchemaPointer } from '@/modules/schema-viewer/viewer/model/AssociatedDataSchemaPointer'
 import PropertySectionItem
     from '@/modules/entity-viewer/viewer/component/entity-property-selector/PropertySectionItem.vue'
-import { AssociatedDataSchema } from '@/modules/connection/model/schema/AssociatedDataSchema'
+import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { computed, ComputedRef } from 'vue'
 import { useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
@@ -39,7 +39,6 @@ const flags: ComputedRef<List<string>> = computed(() => schema.value!.representa
 function openSchema(): void {
     workspaceService.createTab(
         schemaViewerTabFactory.createNew(
-            tabProps.params.dataPointer.connection,
             new AssociatedDataSchemaPointer(
                 tabProps.params.dataPointer.catalogName,
                 tabProps.params.dataPointer.entityType,
@@ -55,7 +54,7 @@ function openSchema(): void {
     <PropertySectionItem
         :value="propertyDescriptor.key"
         :title="propertyDescriptor.title"
-        :description="schema.description.getIfSupported()!"
+        :description="schema.description"
         :flags="flags"
         openable
         @schema-open="openSchema"

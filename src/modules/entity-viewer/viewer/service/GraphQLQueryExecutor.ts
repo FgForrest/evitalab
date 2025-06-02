@@ -1,9 +1,6 @@
 import { QueryExecutor } from '@/modules/entity-viewer/viewer/service/QueryExecutor'
-import { GraphQLClient } from '@/modules/graphql-console/driver/service/GraphQLClient'
-import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import { QueryResult } from '@/modules/entity-viewer/viewer/model/QueryResult'
-import { QueryError } from '@/modules/connection/exception/QueryError'
 import { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
 import { WritableEntityProperty } from '@/modules/entity-viewer/viewer/model/WritableEntityProperty'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
@@ -14,23 +11,30 @@ import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityP
 import { EntityReferenceValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceValue'
 import { EntityPrices } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrices'
 import { EntityPrice } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrice'
+import { QueryError } from '@/modules/database-driver/exception/QueryError'
+import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
 
 
 /**
  * Query executor for GraphQL language.
  */
 export class GraphQLQueryExecutor extends QueryExecutor {
-    private readonly graphQLClient: GraphQLClient
+    private readonly evitaClient: EvitaClient
 
-    constructor(connectionService: ConnectionService, graphQLClient: GraphQLClient) {
-        super(connectionService)
-        this.graphQLClient = graphQLClient
+    constructor(evitaClient: EvitaClient) {
+        super()
+        this.evitaClient = evitaClient
     }
 
     async executeQuery(dataPointer: EntityViewerDataPointer, query: string): Promise<QueryResult> {
-        const result = await this.graphQLClient.fetch(dataPointer.connection, dataPointer.catalogName, query)
+        const result = await this.evitaClient.queryCatalogUsingGraphQL(
+            dataPointer.catalogName,
+            GraphQLInstanceType.Data,
+            query
+        )
         if (result.errors) {
-            throw new QueryError(dataPointer.connection, result.errors)
+            throw new QueryError(result.errors)
         }
 
         return {
