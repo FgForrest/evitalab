@@ -130,7 +130,8 @@ export class EvitaSchemaCache {
 
     async removeLatestEntitySchema(entityType?: string): Promise<void> {
         if (entityType == undefined) {
-            for (const cachedKey of this.cachedSchemas.keys()) {
+            const cachedSchemaKeys: string[] = Array.from(this.cachedSchemas.keys())
+            for (const cachedKey of cachedSchemaKeys) {
                 const entityType: string = this.parseEntityTypeFromLatestEntitySchemaCacheKey(cachedKey)
                 await this.removeLatestEntitySchema(entityType)
             }
