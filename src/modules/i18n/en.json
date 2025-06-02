@@ -340,48 +340,6 @@
       "notification": {
         "couldNotLoadCatalogs": "Could not load catalogs: {reason}",
         "couldNotLoadServerStatus": "Could not load server status: {reason}",
-        "closedAllSessions": "All open sessions of all catalogs in connection {connectionName} were closed.",
-        "couldNotCloseSessions": "Could not close sessions of connection {connectionName}: {reason}"
-      },
-      "connect": {
-        "title": "Connect to evitaDB server",
-        "button": {
-          "connect": "Connect"
-        },
-        "form": {
-          "connectionName": {
-            "label": "Connection name",
-            "validations": {
-              "required": "Name of connection is required.",
-              "duplicate": "Connection with this name already exists."
-            }
-          },
-          "serverUrl": {
-            "label": "Server URL",
-            "hint": "Base scheme://hostname:port of evitaLab API configured on the server you want to connect to.",
-            "validations": {
-              "required": "Server URL is required.",
-              "invalidUrl": "Server URL is not a valid URL.",
-              "notReady": "Server is not ready yet.",
-              "labApiMissing": "evitaLab API is not enabled on the server.",
-              "notLabUrl": "Server URL is not URL of evitaLab API.",
-              "grpcApiMissing": "gRPC API is not enabled on the server.",
-              "unreachable": "Server is not reachable."
-            }
-          }
-        },
-        "notification": {
-          "connectionAdded": "The {connectionName} connection has been successfully added.",
-          "couldNotAddConnection": "Could not add the connection: {reason}"
-        }
-      },
-      "remove": {
-        "title": "Remove {connectionName} connection",
-        "question": "Do you want to remove the connection?",
-        "notification": {
-          "connectionRemoved": "The {connectionName} connection has been successfully removed.",
-          "couldNotRemoveConnection": "Could not remove the {connectionName} connection: {reason}"
-        }
       }
     },
     "catalog": {
