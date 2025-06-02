@@ -28,7 +28,6 @@ const tabProps = useTabProps()
 function openSchema(): void {
     workspaceService.createTab(
         schemaViewerTabFactory.createNew(
-            tabProps.params.dataPointer.connection,
             new EntitySchemaPointer(
                 tabProps.params.dataPointer.catalogName,
                 tabProps.params.dataPointer.entityType

@@ -17,8 +17,8 @@ import {
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { Result } from '@/modules/console/result-visualiser/model/Result'
 import { Connection } from '@/modules/connection/model/Connection'
-import { EntitySchema } from '@/modules/connection/model/schema/EntitySchema'
-import { CatalogSchema } from '@/modules/connection/model/schema/CatalogSchema'
+import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
+import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import {
     FacetSummaryVisualiserService
@@ -31,7 +31,8 @@ import {
     PriceHistogramVisualiserService
 } from '@/modules/console/result-visualiser/service/PriceHistogramVisualiserService'
 import { mandatoryInject } from '@/utils/reactivity'
-import { NamingConvention } from '@/modules/connection/model/NamingConvetion'
+import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
+import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 
 export const graphQLResultVisualiserServiceInjectionKey: InjectionKey<GraphQLResultVisualiserService> = Symbol('graphQLResultVisualiserService')
 
@@ -40,15 +41,15 @@ export const graphQLResultVisualiserServiceInjectionKey: InjectionKey<GraphQLRes
  */
 export class GraphQLResultVisualiserService extends JsonResultVisualiserService {
 
-    private readonly connectionService: ConnectionService
+    private readonly evitaClient: EvitaClient
     private facetSummaryVisualiserService: GraphQLFacetSummaryVisualiserService | undefined = undefined
     private hierarchyVisualiserService: GraphQLHierarchyVisualiserService | undefined = undefined
     private attributeHistogramsVisualiserService: GraphQLAttributeHistogramsVisualiserService | undefined = undefined
     private priceHistogramVisualiserService: GraphQLPriceHistogramVisualiserService | undefined = undefined
 
-    constructor(connectionService: ConnectionService) {
+    constructor(evitaClient: EvitaClient) {
         super()
-        this.connectionService = connectionService
+        this.evitaClient = evitaClient
     }
 
     supportsMultipleQueries(): boolean {
@@ -75,18 +76,18 @@ export class GraphQLResultVisualiserService extends JsonResultVisualiserService 
         return dataResult[query]
     }
 
-    async getEntitySchemaForQuery(query: string, connection: Connection, catalogName: string): Promise<EntitySchema | undefined> {
+    async getEntitySchemaForQuery(query: string, catalogName: string): Promise<EntitySchema | undefined> {
         const entityType: string = (query).replace(/^(get|list|query)/, '')
         if (entityType.toLowerCase() === this.genericEntityType) {
             // generic query, no specific collection for all returned entities (each entity may be from a different collection)
             return undefined
         }
-        const catalogSchema: CatalogSchema = await this.connectionService.getCatalogSchema(connection, catalogName)
+        const catalogSchema: CatalogSchema = await this.evitaClient.queryCatalog(
+            catalogName,
+            session => session.getCatalogSchema()
+        )
         const entitySchema: EntitySchema | undefined = (await catalogSchema.entitySchemas())
-            .getIfSupported()
-            ?.find(it => it.nameVariants
-                .getIfSupported()
-                ?.get(NamingConvention.PascalCase) === entityType)
+            .find(it => it.nameVariants.get(NamingConvention.PascalCase) === entityType)
         if (entitySchema == undefined) {
             throw new UnexpectedError(`Entity schema '${entityType}' not found in catalog '${catalogName}'.`)
         }
@@ -143,6 +144,18 @@ export class GraphQLResultVisualiserService extends JsonResultVisualiserService 
             this.priceHistogramVisualiserService = new GraphQLPriceHistogramVisualiserService(this)
         }
         return this.priceHistogramVisualiserService
+    }
+
+    async resolveRepresentativeAttributes(catalogName: string, entityType: string): Promise<string[]> {
+        return await this.evitaClient.queryCatalog(
+            catalogName,
+            async session => {
+                const entitySchema: EntitySchema = await session.getEntitySchemaOrThrowException(entityType)
+                return Array.from(entitySchema.attributes.values())
+                    .filter(attributeSchema => attributeSchema.representative)
+                    .map(attributeSchema => attributeSchema.nameVariants.get(NamingConvention.CamelCase)!)
+            }
+        )
     }
 }
 

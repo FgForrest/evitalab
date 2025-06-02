@@ -3,34 +3,35 @@
  * Visualises raw JSON statistics of a single facet.
  */
 
-import { computed } from 'vue'
+import { computed, ComputedRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { Result } from '@/modules/console/result-visualiser/model/Result'
 import {
     VisualisedFacetStatistics
 } from '@/modules/console/result-visualiser/model/facet-summary/VisualisedFacetStatistics'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import VMarkdown from '@/modules/base/component/VMarkdown.vue'
+import { useQueryResult, useVisualiserService } from '@/modules/console/result-visualiser/component/dependencies'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    visualiserService: ResultVisualiserService,
     referenceSchema: ReferenceSchema,
-    queryResult: Result
     facetStatisticsResult: Result,
     facetRepresentativeAttributes: string[]
 }>()
 
+const visualiserService: ResultVisualiserService = useVisualiserService()
+const queryResult: ComputedRef<Result | undefined> = useQueryResult()
+
 const facetStatistics = computed<VisualisedFacetStatistics | undefined>(() => {
     try {
-        return props.visualiserService
+        return visualiserService
             .getFacetSummaryService()
-            .resolveFacetStatistics(props.queryResult, props.facetStatisticsResult, props.facetRepresentativeAttributes)
+            .resolveFacetStatistics(queryResult.value!, props.facetStatisticsResult, props.facetRepresentativeAttributes)
     } catch (e: any) {
         toaster.error('Could not resolve facet statistics', e).then() // todo lho i18n
         return undefined
@@ -136,7 +137,7 @@ async function copyPrimaryKey(): Promise<void> {
                             </VTooltip>
                         </VChip>
 
-                        <VChip v-if="!referenceSchema.referencedEntityTypeManaged.getOrElse(false)" prepend-icon="mdi-open-in-new">
+                        <VChip v-if="!referenceSchema.referencedEntityTypeManaged" prepend-icon="mdi-open-in-new">
                             {{ t('resultVisualizer.facetStatisticsVisualiser.label.externalReference') }}
                             <VTooltip activator="parent">
                                 {{ t('resultVisualizer.facetStatisticsVisualiser.help.externalReference') }}

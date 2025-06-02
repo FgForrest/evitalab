@@ -1,6 +1,5 @@
 import { TrafficRecordVisualiser } from '@/modules/traffic-viewer/service/TrafficRecordVisualiser'
-import { SourceQueryContainer } from '@/modules/connection/model/traffic/SourceQueryContainer'
-import { TrafficRecord } from '@/modules/connection/model/traffic/TrafficRecord'
+import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import Immutable from 'immutable'
 import {
     Action,
@@ -15,11 +14,16 @@ import { GraphQLConsoleTabFactory } from '@/modules/graphql-console/console/work
 import { TrafficRecordVisualisationContext } from '@/modules/traffic-viewer/model/TrafficRecordVisualisationContext'
 import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
 import { GraphQLConsoleTabData } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabData'
-import { Label, labelSourceType, systemLabels } from '@/modules/connection/model/traffic/Label'
 import { TrafficRecordMetadataItemContext } from '@/modules/traffic-viewer/model/TrafficRecordMetadataItemContext'
 import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
 import { EvitaQLConsoleTabData } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabData'
 import { TrafficRecordPreparationContext } from '@/modules/traffic-viewer/model/TrafficRecordPreparationContext'
+import { SourceQueryContainer } from '@/modules/database-driver/request-response/traffic-recording/SourceQueryContainer'
+import {
+    Label,
+    labelSourceType,
+    systemLabels
+} from '@/modules/database-driver/request-response/traffic-recording/Label'
 
 /**
  * Visualises the source query container record. Uses statistics from the `SourceQueryStatisticsContainer`.
@@ -144,8 +148,7 @@ export class SourceQueryContainerVisualiser extends TrafficRecordVisualiser<Sour
             const sourceQuery: { query: string, variables: any, extensions: any } = JSON.parse(trafficRecord.sourceQuery)
             queryActionCallback = () => this.workspaceService.createTab(
                 this.graphQLConsoleTabFactory.createNew(
-                    ctx.dataPointer.connection,
-                    ctx.dataPointer.catalogName,
+                    ctx.catalogName,
                     GraphQLInstanceType.Data,
                     new GraphQLConsoleTabData(
                         sourceQuery.query,
@@ -156,8 +159,7 @@ export class SourceQueryContainerVisualiser extends TrafficRecordVisualiser<Sour
         } else if (queryType === QueryType.Grpc) {
             queryActionCallback = () => this.workspaceService.createTab(
                 this.evitaQLConsoleTabFactory.createNew(
-                    ctx.dataPointer.connection,
-                    ctx.dataPointer.catalogName,
+                    ctx.catalogName,
                     new EvitaQLConsoleTabData(trafficRecord.sourceQuery)
                 )
             )

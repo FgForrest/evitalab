@@ -2,7 +2,7 @@
 
 import { useI18n } from 'vue-i18n'
 import VPreviewEditorDialog from '@/modules/code-editor/component/VPreviewEditorDialog.vue'
-import { TextTaskResult } from '@/modules/connection/model/task/TextTaskResult'
+import { TextTaskResult } from '@/modules/database-driver/request-response/task/TextTaskResult'
 
 const { t } = useI18n()
 

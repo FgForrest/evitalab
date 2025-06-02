@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
-import { Connection } from '@/modules/connection/model/Connection'
 import { useI18n } from 'vue-i18n'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import { TrafficViewerService, useTrafficViewerService } from '@/modules/traffic-viewer/service/TrafficViewerService'
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 
 const trafficViewerService: TrafficViewerService = useTrafficViewerService()
 const toaster: Toaster = useToaster()
@@ -12,7 +11,6 @@ const { t } = useI18n()
 
 const props = defineProps<{
     modelValue: boolean,
-    connection: Connection,
     trafficRecorderTask: TaskStatus
 }>()
 const emit = defineEmits<{
@@ -23,7 +21,6 @@ const emit = defineEmits<{
 async function stopRecording(): Promise<boolean> {
     try {
         const updatedTask: TaskStatus = await trafficViewerService.stopRecording(
-            props.connection,
             props.trafficRecorderTask
         )
         await toaster.success(t('trafficViewer.recordings.stopRecording.notification.recordingStopped'))

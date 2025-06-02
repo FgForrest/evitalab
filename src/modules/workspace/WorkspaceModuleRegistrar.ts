@@ -1,4 +1,3 @@
-// todo docs
 import { ModuleRegistrar } from '@/ModuleRegistrar'
 import { DemoSnippetResolver, demoSnippetResolverInjectionKey } from '@/modules/workspace/service/DemoSnippetResolver'
 import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
@@ -31,7 +30,7 @@ import {
     ServerViewerTabFactory,
     serverViewerTabFactoryInjectionKey
 } from '@/modules/server-viewer/service/ServerViewerTabFactory'
-import { BackupViewerTabFactory, backupsTabFactoryInjectionKey } from '@/modules/backup-viewer/service/BackupViewerTabFactory'
+import { BackupViewerTabFactory, backupViewerTabFactoryInjectionKey } from '@/modules/backup-viewer/service/BackupViewerTabFactory'
 import { TaskViewerTabFactory, taskViewerTabFactoryInjectionKey } from '@/modules/task-viewer/services/TaskViewerTabFactory'
 import { JfrViewerTabFactory, jfrViewerTabFactoryInjectionKey } from '@/modules/jfr-viewer/service/JfrViewerTabFactory'
 import {
@@ -79,7 +78,7 @@ export class WorkspaceModuleRegistrar implements ModuleRegistrar {
         const trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory = new TrafficRecordHistoryViewerTabFactory(connectionService)
         builder.provide(trafficRecordHistoryViewerTabFactoryInjectionKey, trafficRecordHistoryViewerTabFactory)
         const backupViewerTabFactory: BackupViewerTabFactory = new BackupViewerTabFactory(connectionService)
-        builder.provide(backupsTabFactoryInjectionKey, backupViewerTabFactory)
+        builder.provide(backupViewerTabFactoryInjectionKey, backupViewerTabFactory)
         const errorViewerTabFactory: ErrorViewerTabFactory = new ErrorViewerTabFactory()
         builder.provide(errorViewerTabFactoryInjectionKey, errorViewerTabFactory)
         // todo lho fix circular dep

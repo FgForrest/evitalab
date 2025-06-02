@@ -1,12 +1,11 @@
 import Immutable from 'immutable'
-import { OffsetDateTime } from '@/modules/connection/model/data-type/OffsetDateTime'
+import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { Duration } from 'luxon'
 import { i18n } from '@/vue-plugins/i18n'
-import { TrafficRecord } from '@/modules/connection/model/traffic/TrafficRecord'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
+import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { TrafficRecordMetadataItemContext } from '@/modules/traffic-viewer/model/TrafficRecordMetadataItemContext'
 import { formatByteSize, formatCount } from '@/utils/string'
-import { Uuid } from '@/modules/connection/model/data-type/Uuid'
+import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 
 /**
  * Defines how a particular traffic record should be displayed in UI

@@ -1,16 +1,16 @@
 import { ModuleRegistrar } from '@/ModuleRegistrar'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
-import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
 import {
     ServerFileViewerService,
     serverFileViewerServiceInjectionKey
 } from '@/modules/server-file-viewer/service/ServerFileViewerService'
+import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
 
 export class ServerFileViewerModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {
-        const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
-        const serverFileViewerService: ServerFileViewerService = new ServerFileViewerService(connectionService)
+        const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
+        const serverFileViewerService: ServerFileViewerService = new ServerFileViewerService(evitaClient)
         builder.provide(serverFileViewerServiceInjectionKey, serverFileViewerService)
     }
 }

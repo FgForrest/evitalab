@@ -9,10 +9,8 @@ import {
     PriceHistogramVisualiserService
 } from '@/modules/console/result-visualiser/service/PriceHistogramVisualiserService'
 import { Result } from '@/modules/console/result-visualiser/model/Result'
-import { Connection } from '@/modules/connection/model/Connection'
 import { VisualiserType } from '@/modules/console/result-visualiser/model/VisualiserType'
-import { EntitySchema } from '@/modules/connection/model/schema/EntitySchema'
-import { Value } from '@/modules/connection/model/Value'
+import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 
 /**
  * Service for visualising raw JSON results from query executions of specific query language into interactive GUI.
@@ -37,7 +35,7 @@ export abstract class ResultVisualiserService {
     /**
      * Returns entity schema for selected query.
      */
-    abstract getEntitySchemaForQuery(query: string, connection: Connection, catalogName: string): Promise<EntitySchema | undefined>
+    abstract getEntitySchemaForQuery(query: string, catalogName: string): Promise<EntitySchema | undefined>
 
     /**
      * Tries to find result-result-visualiser types in the root result.
@@ -56,6 +54,11 @@ export abstract class ResultVisualiserService {
     abstract getAttributeHistogramsService(): AttributeHistogramsVisualiserService
 
     abstract getPriceHistogramService(): PriceHistogramVisualiserService
+
+    /**
+     * Resolves representative attributes for the given entity type.
+     */
+    abstract resolveRepresentativeAttributes(catalogName: string, entityType: string): Promise<string[]>
 
     // todo lho refactor into common function
     toPrintableAttributeValue(attributeValue: any): string | undefined {

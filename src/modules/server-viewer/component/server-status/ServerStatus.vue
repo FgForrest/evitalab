@@ -1,7 +1,5 @@
 <script setup lang="ts">
 
-import { ServerStatus } from '@/modules/connection/model/status/ServerStatus'
-import { Connection } from '@/modules/connection/model/Connection'
 import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
 import OpenRuntimeConfigurationButton
@@ -9,11 +7,11 @@ import OpenRuntimeConfigurationButton
 import Tile from '@/modules/server-viewer/component/server-status/Tile.vue'
 import ApiInfoList from '@/modules/server-viewer/component/server-status/ApiInfoList.vue'
 import Stats from '@/modules/server-viewer/component/server-status/Stats.vue'
+import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 
 const { t } = useI18n()
 
 const props = defineProps<{
-    connection: Connection,
     serverStatus: ServerStatus
 }>()
 
@@ -45,7 +43,6 @@ defineExpose<{
                 <Tile prepend-icon="mdi-cog-outline">
                     <OpenRuntimeConfigurationButton
                         ref="runtimeConfigurationRef"
-                        :connection="connection"
                         :server-status="serverStatus"
                     />
                 </Tile>

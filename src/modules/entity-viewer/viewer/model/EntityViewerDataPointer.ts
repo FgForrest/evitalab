@@ -1,4 +1,4 @@
-import { CatalogPointer } from '@/modules/connection/model/CatalogPointer'
+import { CatalogPointer } from '@/modules/viewer-support/model/CatalogPointer'
 import { Connection } from '@/modules/connection/model/Connection'
 
 /**

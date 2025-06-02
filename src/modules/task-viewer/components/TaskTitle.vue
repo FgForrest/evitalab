@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { computed, onUnmounted, ref } from 'vue'
 import { taskStateToColorMapping } from '@/modules/task-viewer/model/taskStateToColorMapping'
 import { Duration } from 'luxon'

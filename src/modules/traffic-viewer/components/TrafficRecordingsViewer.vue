@@ -6,7 +6,7 @@ import { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEv
 import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
-import { TaskState } from '@/modules/connection/model/task/TaskState'
+import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
 import TaskList from '@/modules/task-viewer/components/TaskList.vue'
 import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
@@ -72,7 +72,6 @@ emit('ready')
                     </VTooltip>
                 </VBtn>
                 <StartRecordingButton
-                    :connection="params.connection"
                     :disabled="recordingsInPreparationPresent"
                     @start="reloadRecordings"
                 />
@@ -83,7 +82,6 @@ emit('ready')
             <TaskList
                 ref="taskListRef"
                 v-show="recordingsInPreparationPresent"
-                :connection="params.connection"
                 :subheader="t('trafficViewer.recordings.tasks.title')"
                 :states="shownTaskStates"
                 :task-types="shownTaskTypes"
@@ -93,7 +91,6 @@ emit('ready')
             >
                 <template #item-append-action-buttons="{ task }">
                     <EndRecordingButton
-                        :connection="params.connection"
                         :traffic-recorder-task="task"
                         @end="reloadRecordings"
                     />
@@ -102,7 +99,6 @@ emit('ready')
 
             <RecordingList
                 ref="recordingListRef"
-                :connection="params.connection"
                 :recordings-in-preparation-present="recordingsInPreparationPresent"
             />
         </VSheet>

@@ -15,7 +15,7 @@ import {
     TabParamsDtoWithConnection
 } from '@/modules/workspace/tab/model/TabParamsDtoWithConnection'
 import { InvalidConnectionInSharedTabError } from '@/modules/workspace/tab/error/InvalidConnectionInSharedTabError'
-import { ConnectionNotFoundError } from '@/modules/connection/error/ConnectionNotFoundError'
+import { ConnectionNotFoundError } from '@/modules/connection/exception/ConnectionNotFoundError'
 
 export const sharedTabResolverInjectionKey: InjectionKey<SharedTabResolver> = Symbol('sharedTabResolver')
 

@@ -1,9 +1,6 @@
 import { QueryExecutor } from '@/modules/entity-viewer/viewer/service/QueryExecutor'
-import { EvitaDBDriver } from '@/modules/connection/driver/EvitaDBDriver'
-import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import { QueryResult } from '@/modules/entity-viewer/viewer/model/QueryResult'
-import { Response } from '@/modules/connection/model/data/Response'
 import { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
 import { WritableEntityProperty } from '@/modules/entity-viewer/viewer/model/WritableEntityProperty'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
@@ -12,53 +9,45 @@ import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-propert
 import { EntityReferenceValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceValue'
 import { EntityPrice } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrice'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
-import { EvitaDBDriverResolver } from '@/modules/connection/driver/EvitaDBDriverResolver'
-import { Entity } from '@/modules/connection/model/data/Entity'
-import { Price } from '@/modules/connection/model/data/Price'
-import { Reference } from '@/modules/connection/model/data/Reference'
-import { Locale } from '@/modules/connection/model/data-type/Locale'
 import { EntityPrices } from '../model/entity-property-value/EntityPrices'
 import { GroupByUtil, Grouped } from '@/utils/GroupByUtil'
-import { EntityReferenceWithParent } from '@/modules/connection/model/data/EntityReferenceWithParent'
 import Immutable from 'immutable'
+import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
+import { Entity } from '@/modules/database-driver/request-response/data/Entity'
+import { Locale } from '@/modules/database-driver/data-type/Locale'
+import { EntityReferenceWithParent } from '@/modules/database-driver/request-response/data/EntityReferenceWithParent'
+import { Price } from '@/modules/database-driver/request-response/data/Price'
+import { Reference } from '@/modules/database-driver/request-response/data/Reference'
 
 /**
  * Query executor for EvitaQL language.
  */
 export class EvitaQLQueryExecutor extends QueryExecutor {
-    private readonly evitaDBDriverResolver: EvitaDBDriverResolver
+    protected readonly evitaClient: EvitaClient
 
-    constructor(
-        connectionService: ConnectionService,
-        evitaDBDriverResolver: EvitaDBDriverResolver
-    ) {
-        super(connectionService)
-        this.evitaDBDriverResolver = evitaDBDriverResolver
+    constructor(evitaClient: EvitaClient) {
+        super()
+        this.evitaClient = evitaClient
     }
 
     async executeQuery(
         dataPointer: EntityViewerDataPointer,
         query: string
     ): Promise<QueryResult> {
-        const evitaDBDriver: EvitaDBDriver =
-            await this.evitaDBDriverResolver.resolveDriver(
-                dataPointer.connection
-            )
-        const result: Response = await evitaDBDriver.query(
-            dataPointer.connection,
+        const result: EvitaResponse = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
-            query
+            session => session.query(query),
+            true // we want to load fresh entity data every time
         )
         return {
             entities:
-                result.recordPage
-                    .getIfSupported()
-                    ?.data.getIfSupported()
-                    ?.map((entity: Entity) => this.flattenEntity(entity)) || [],
+                result
+                    .recordPage
+                    .data.map((entity: Entity) => this.flattenEntity(entity)) ||
+                [],
             totalEntitiesCount:
-                result.recordPage
-                    .getIfSupported()
-                    ?.totalRecordCount?.getIfSupported() || 0,
+                result.recordPage.totalRecordCount || 0,
         }
     }
 

@@ -4,10 +4,10 @@
  * Select input for selected label by name and values.
  */
 
-import { Label } from '@/modules/connection/model/traffic/Label'
 import Immutable from 'immutable'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { Label } from '@/modules/database-driver/request-response/traffic-recording/Label'
 
 const { t } = useI18n()
 

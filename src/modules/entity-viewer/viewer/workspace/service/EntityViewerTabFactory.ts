@@ -14,7 +14,6 @@ import { mandatoryInject } from '@/utils/reactivity'
 
 export const entityViewerTabFactoryInjectionKey: InjectionKey<EntityViewerTabFactory> = Symbol('entityViewerTabFactory')
 
-// todo docs
 export class EntityViewerTabFactory {
 
     private readonly connectionService: ConnectionService
@@ -23,13 +22,15 @@ export class EntityViewerTabFactory {
         this.connectionService = connectionService
     }
 
-    createNew(connection: Connection,
-              catalogName: string,
-              entityType: string,
-              initialData: EntityViewerTabData | undefined = undefined,
-              executeOnOpen: boolean = false): EntityViewerTabDefinition {
+    createNew(
+        catalogName: string,
+        entityType: string,
+        initialData: EntityViewerTabData | undefined = undefined,
+        executeOnOpen: boolean = false
+    ): EntityViewerTabDefinition {
+        const connection: Connection = this.connectionService.getConnection()
         return new EntityViewerTabDefinition(
-            this.constructTitle(connection, entityType),
+            this.constructTitle(entityType),
             this.createNewTabParams(connection, catalogName, entityType, executeOnOpen),
             initialData ? initialData : new EntityViewerTabData()
         )
@@ -40,17 +41,14 @@ export class EntityViewerTabFactory {
         const data: EntityViewerTabData = this.restoreTabDataFromSerializable(dataJson)
 
         return new EntityViewerTabDefinition(
-            this.constructTitle(
-                params.dataPointer.connection,
-                params.dataPointer.entityType
-            ),
+            this.constructTitle(params.dataPointer.entityType),
             params,
             data
         )
     }
 
-    private constructTitle(connection: Connection, entityType: string): string {
-        return `${entityType} [${connection.name}]`
+    private constructTitle(entityType: string): string {
+        return `${entityType}`
     }
 
     private createNewTabParams(connection: Connection, catalogName: string, entityType: string, executeOnOpen: boolean): EntityViewerTabParams {

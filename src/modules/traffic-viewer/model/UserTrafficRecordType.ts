@@ -1,4 +1,4 @@
-import { TrafficRecordType } from '@/modules/connection/model/traffic/TrafficRecordType'
+import { TrafficRecordType } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordType'
 
 /**
  * Simplified and grouped traffic record types for users to choose from

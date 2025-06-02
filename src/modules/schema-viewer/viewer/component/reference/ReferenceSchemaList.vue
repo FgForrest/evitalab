@@ -5,7 +5,7 @@ import ReferenceSchemaListItem from '@/modules/schema-viewer/viewer/component/re
 import SchemaContainerSectionList from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionList.vue'
 import SchemaContainerSection from '@/modules/schema-viewer/viewer/component/SchemaContainerSection.vue'
 import { List } from 'immutable'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 
 const { t } = useI18n()
 

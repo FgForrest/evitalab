@@ -26,12 +26,14 @@ export class EvitaQLConsoleTabFactory {
         this.connectionService = connectionService
     }
 
-    createNew(connection: Connection,
-              catalogName: string,
-              initialData: EvitaQLConsoleTabData | undefined = undefined,
-              executeOnOpen: boolean = false): EvitaQLConsoleTabDefinition {
+    createNew(
+        catalogName: string,
+        initialData: EvitaQLConsoleTabData | undefined = undefined,
+        executeOnOpen: boolean = false
+    ): EvitaQLConsoleTabDefinition {
+        const connection: Connection = this.connectionService.getConnection()
         return new EvitaQLConsoleTabDefinition(
-            this.constructTitle(connection, catalogName),
+            this.constructTitle(catalogName),
             this.createNewTabParams(connection, catalogName, executeOnOpen),
             initialData ? initialData : new EvitaQLConsoleTabData()
         )
@@ -42,14 +44,14 @@ export class EvitaQLConsoleTabFactory {
         const data: EvitaQLConsoleTabData = this.restoreTabDataFromSerializable(dataJson)
 
         return new EvitaQLConsoleTabDefinition(
-            this.constructTitle(params.dataPointer.connection, params.dataPointer.catalogName),
+            this.constructTitle(params.dataPointer.catalogName),
             params,
             data
         )
     }
 
-    private constructTitle(connection: Connection, catalogName: string): string {
-        return `${catalogName} [${connection.name}]`
+    private constructTitle(catalogName: string): string {
+        return `${catalogName}`
     }
 
     private createNewTabParams(connection: Connection,

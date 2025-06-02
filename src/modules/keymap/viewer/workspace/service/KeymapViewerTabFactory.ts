@@ -1,4 +1,4 @@
-// todo docs
+
 import { KeymapViewerTabDefinition } from '@/modules/keymap/viewer/workspace/model/KeymapViewerTabDefinition'
 import { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'

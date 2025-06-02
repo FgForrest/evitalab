@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { EntitySchemaPointer } from '@/modules/schema-viewer/viewer/model/EntitySchemaPointer'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer'
@@ -28,7 +28,6 @@ function openReferenceSchema(): void {
         throw new UnexpectedError('Unsupported parent schema for entities.')
     }
     workspaceService.createTab(schemaViewerTabFactory.createNew(
-        props.dataPointer.connection,
         new ReferenceSchemaPointer(
             props.dataPointer.schemaPointer.catalogName,
             props.dataPointer.schemaPointer.entityType,
@@ -42,7 +41,7 @@ function openReferenceSchema(): void {
 <template>
     <SchemaContainerSectionListItem
         :name="schema.name"
-        :deprecated="!!schema.deprecationNotice.getIfSupported()"
+        :deprecated="!!schema.deprecationNotice"
         :flags="flags"
         @open="openReferenceSchema"
     />

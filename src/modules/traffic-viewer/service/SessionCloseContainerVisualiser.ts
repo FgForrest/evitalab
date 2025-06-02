@@ -1,4 +1,4 @@
-import { TrafficRecord } from '@/modules/connection/model/traffic/TrafficRecord'
+import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { TrafficRecordVisualiser } from '@/modules/traffic-viewer/service/TrafficRecordVisualiser'
 import { TrafficRecordVisualisationContext } from '../model/TrafficRecordVisualisationContext'
 import {
@@ -7,10 +7,12 @@ import {
     metadataItemFinishedStatusIdentifier,
     TrafficRecordVisualisationDefinition
 } from '../model/TrafficRecordVisualisationDefinition'
-import { SessionCloseContainer } from '@/modules/connection/model/traffic/SessionCloseContainer'
 import { i18n } from '@/vue-plugins/i18n'
 import { formatCount } from '@/utils/string'
 import { TrafficRecordPreparationContext } from '@/modules/traffic-viewer/model/TrafficRecordPreparationContext'
+import {
+    SessionCloseContainer
+} from '@/modules/database-driver/request-response/traffic-recording/SessionCloseContainer'
 
 /**
  * Session close container isn't visualised but controls the flow of rendered UI.

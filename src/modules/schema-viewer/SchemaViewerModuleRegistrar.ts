@@ -3,7 +3,6 @@ import {
     SchemaViewerService,
     schemaViewerServiceInjectionKey
 } from '@/modules/schema-viewer/viewer/service/SchemaViewerService'
-import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 import { WorkspaceService, workspaceServiceInjectionKey } from '@/modules/workspace/service/WorkspaceService'
 import {
@@ -14,18 +13,18 @@ import {
     DelegatingSchemaPathFactory,
     delegatingSchemaPathFactoryInjectionKey
 } from '@/modules/schema-viewer/viewer/service/schema-path-factory/DelegatingSchemaPathFactory'
+import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
 
-// todo docs
 export class SchemaViewerModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {
-        const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
+        const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
         const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
         const schemaViewerTabFactory: SchemaViewerTabFactory = builder.inject(schemaViewerTabFactoryInjectionKey)
 
         builder.provide(
             schemaViewerServiceInjectionKey,
-            new SchemaViewerService(connectionService)
+            new SchemaViewerService(evitaClient)
         )
         builder.provide(
             delegatingSchemaPathFactoryInjectionKey,

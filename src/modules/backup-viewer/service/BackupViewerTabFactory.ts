@@ -8,7 +8,7 @@ import { BackupViewerTabParamsDto } from "../model/BackupViewerTabParamsDto";
 import { BackupViewerTabParams } from '@/modules/backup-viewer/model/BackupViewerTabParams'
 import { i18n } from '@/vue-plugins/i18n'
 
-export const backupsTabFactoryInjectionKey: InjectionKey<BackupViewerTabFactory> = Symbol('BackupsTabFactory')
+export const backupViewerTabFactoryInjectionKey: InjectionKey<BackupViewerTabFactory> = Symbol('BackupsTabFactory')
 
 export class BackupViewerTabFactory {
     private readonly connectionService: ConnectionService
@@ -17,9 +17,10 @@ export class BackupViewerTabFactory {
         this.connectionService = connectionService
     }
 
-    createNew(connection: Connection): BackupViewerTabDefinition {
+    createNew(): BackupViewerTabDefinition {
+        const connection: Connection = this.connectionService.getConnection()
         return new BackupViewerTabDefinition(
-            this.constructTitle(connection),
+            this.constructTitle(),
             new BackupViewerTabParams(connection)
         )
     }
@@ -27,16 +28,13 @@ export class BackupViewerTabFactory {
     restoreFromJson(paramsJson: TabParamsDto): BackupViewerTabDefinition {
         const params: BackupViewerTabParams = this.restoreTabParamsFromSerializable(paramsJson)
         return new BackupViewerTabDefinition(
-            this.constructTitle(params.connection),
+            this.constructTitle(),
             params
         )
     }
 
-    private constructTitle(connection: Connection): string {
-        return i18n.global.t(
-            'backupViewer.definition.title',
-            { connectionName: connection.name }
-        )
+    private constructTitle(): string {
+        return i18n.global.t('backupViewer.definition.title')
 
     }
 
@@ -49,5 +47,5 @@ export class BackupViewerTabFactory {
 }
 
 export const useBackupsTabFactory = (): BackupViewerTabFactory => {
-    return mandatoryInject(backupsTabFactoryInjectionKey) as BackupViewerTabFactory
+    return mandatoryInject(backupViewerTabFactoryInjectionKey) as BackupViewerTabFactory
 }

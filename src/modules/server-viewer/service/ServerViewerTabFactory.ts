@@ -17,9 +17,10 @@ export class ServerViewerTabFactory {
         this.connectionService = connectionService
     }
 
-    createNew(connection: Connection) {
+    createNew() {
+        const connection: Connection = this.connectionService.getConnection()
         return new ServerViewerTabDefinition(
-            this.constructTitle(connection),
+            this.constructTitle(),
             new ServerViewerTabParams(connection)
         )
     }
@@ -27,16 +28,13 @@ export class ServerViewerTabFactory {
     restoreFromJson(paramsJson: TabParamsDto): ServerViewerTabDefinition {
         const params: ServerViewerTabParams = this.restoreTabParamsFromSerializable(paramsJson)
         return new ServerViewerTabDefinition(
-            this.constructTitle(params.connection),
+            this.constructTitle(),
             params
         )
     }
 
-    private constructTitle(connection: Connection): string {
-        return i18n.global.t(
-            'serverViewer.definition.title',
-            { connectionName: connection.name }
-        )
+    private constructTitle(): string {
+        return i18n.global.t('serverViewer.definition.title')
     }
 
     private restoreTabParamsFromSerializable(json: TabParamsDto): ServerViewerTabParams {

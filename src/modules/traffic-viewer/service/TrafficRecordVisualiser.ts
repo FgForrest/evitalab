@@ -1,6 +1,6 @@
-import { TrafficRecord } from '@/modules/connection/model/traffic/TrafficRecord'
 import { TrafficRecordVisualisationContext } from '@/modules/traffic-viewer/model/TrafficRecordVisualisationContext'
 import { TrafficRecordPreparationContext } from '@/modules/traffic-viewer/model/TrafficRecordPreparationContext'
+import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 
 /**
  * Provides definition about how to visualise traffic record to user

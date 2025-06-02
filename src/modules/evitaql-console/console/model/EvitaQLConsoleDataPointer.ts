@@ -1,5 +1,5 @@
 import { Connection } from '@/modules/connection/model/Connection'
-import { CatalogPointer } from '@/modules/connection/model/CatalogPointer'
+import { CatalogPointer } from '@/modules/viewer-support/model/CatalogPointer'
 
 /**
  * Points to concrete evitaDB EvitaQL instance

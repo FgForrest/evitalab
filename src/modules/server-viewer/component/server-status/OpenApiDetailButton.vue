@@ -1,10 +1,10 @@
 <script setup lang="ts">
 
 import { ref } from 'vue'
-import { ApiType } from '@/modules/connection/model/status/ApiType'
-import { ApiStatus } from '@/modules/connection/model/status/ApiStatus'
 import ApiDetailDialog from '@/modules/server-viewer/component/server-status/ApiDetailDialog.vue'
 import { useI18n } from 'vue-i18n'
+import { ApiType } from '@/modules/database-driver/request-response/status/ApiType'
+import { ApiStatus } from '@/modules/database-driver/request-response/status/ApiStatus'
 
 const { t } = useI18n()
 

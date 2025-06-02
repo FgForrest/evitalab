@@ -11,7 +11,7 @@ import {
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
 import { computed, ComputedRef } from 'vue'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { List } from 'immutable'
 import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer'
@@ -46,7 +46,6 @@ const flags: ComputedRef<List<string>> = computed(() => schema.value.representat
 function openSchema(): void {
     workspaceService.createTab(
         schemaViewerTabFactory.createNew(
-            tabProps.params.dataPointer.connection,
             new ReferenceSchemaPointer(
                 tabProps.params.dataPointer.catalogName,
                 tabProps.params.dataPointer.entityType,
@@ -62,7 +61,7 @@ function openSchema(): void {
     <PropertySectionItem
         :value="propertyDescriptor.key"
         :title="propertyDescriptor.title"
-        :description="schema.description.getIfSupported()!"
+        :description="schema.description"
         :flags="flags"
         openable
         :group-parent="groupParent"

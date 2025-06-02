@@ -46,7 +46,7 @@ const evitaLabInstance = computed<string>(() => {
         // in driver mode we cannot send target user to local driver instance,
         // instead we optimistically assume that an evitaLab instance is running
         // on the server and redirect to it
-        const driverConnection: Connection = connectionService.getDriverConnection()
+        const driverConnection: Connection = connectionService.getConnection()
         return driverConnection.serverUrl + '/lab'
     } else {
         const location = window.location

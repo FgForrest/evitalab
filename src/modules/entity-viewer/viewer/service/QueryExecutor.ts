@@ -1,4 +1,3 @@
-import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import { QueryResult } from '@/modules/entity-viewer/viewer/model/QueryResult'
 import { WritableEntityProperty } from '@/modules/entity-viewer/viewer/model/WritableEntityProperty'
@@ -11,11 +10,6 @@ import { List } from 'immutable'
  * Executes query against evitaDB server in language defined by implementation.
  */
 export abstract class QueryExecutor {
-    protected readonly connectionService: ConnectionService
-
-    protected constructor(connectionService: ConnectionService) {
-        this.connectionService = connectionService
-    }
 
     /**
      * Executes a query against evitaDB server in language defined by implementation and returns formatted data.

@@ -1,10 +1,10 @@
-import { BigDecimal } from '@/modules/connection/model/data-type/BigDecimal'
 import {
     VisualisedHistogramBucket
 } from '@/modules/console/result-visualiser/model/histogram/VisualisedHistogramBucket'
-import { Histogram } from '@/modules/connection/model/data/Histogram'
-import { HistogramBucket } from '@/modules/connection/model/data/HistogramBucket'
 import { List } from 'immutable'
+import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
+import { Histogram } from '@/modules/database-driver/request-response/data/Histogram'
+import { HistogramBucket } from '@/modules/database-driver/request-response/data/HistogramBucket'
 
 /**
  * Single returned histogram DTO ready for visualisation.
@@ -27,12 +27,11 @@ export class VisualisedHistogram {
 
     static fromInternal(internal: Histogram): VisualisedHistogram {
         const buckets = internal.buckets
-            .getOrThrow()
             .map((bucket: HistogramBucket) => VisualisedHistogramBucket.fromInternal(bucket))
         return new VisualisedHistogram(
-            internal.min.getOrThrow(),
-            internal.max.getOrThrow(),
-            internal.overallCount.getOrThrow(),
+            internal.min,
+            internal.max,
+            internal.overallCount,
             buckets
         )
     }

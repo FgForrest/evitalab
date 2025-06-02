@@ -3,11 +3,8 @@
  * Visualizes a single server task in list of tasks
  */
 
-import { TaskState } from '@/modules/connection/model/task/TaskState'
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
-import { Connection } from '@/modules/connection/model/Connection'
-import { FileTaskResult } from '@/modules/connection/model/task/FileTaskResult'
-import { TextTaskResult } from '@/modules/connection/model/task/TextTaskResult'
+import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import CancelTaskButton from '@/modules/task-viewer/components/CancelTaskButton.vue'
 import ShowTaskTextResultButton from '@/modules/task-viewer/components/ShowTaskTextResultButton.vue'
 import ShowTaskExceptionButton from '@/modules/task-viewer/components/ShowTaskExceptionButton.vue'
@@ -16,9 +13,10 @@ import TaskIcon from '@/modules/task-viewer/components/TaskIcon.vue'
 import TaskTitle from '@/modules/task-viewer/components/TaskTitle.vue'
 import TaskProgressBar from '@/modules/task-viewer/components/TaskProgressBar.vue'
 import DownloadTaskFileResultButton from '@/modules/task-viewer/components/DownloadTaskFileResultButton.vue'
+import { FileTaskResult } from '@/modules/database-driver/request-response/task/FileTaskResult'
+import { TextTaskResult } from '@/modules/database-driver/request-response/task/TextTaskResult'
 
 const props = defineProps<{
-    connection: Connection
     task: TaskStatus
 }>()
 </script>
@@ -40,12 +38,11 @@ const props = defineProps<{
                 <div class="task-actions__buttons">
                     <ShowTaskDetailButton :task="task" />
                     <template v-if="task.state === TaskState.Running">
-                        <CancelTaskButton :connection="connection" :task="task" />
+                        <CancelTaskButton :task="task" />
                     </template>
                     <template v-else-if="task.state === TaskState.Finished">
                         <DownloadTaskFileResultButton
                             v-if="task.result instanceof FileTaskResult"
-                            :connection="connection"
                             :task="task"
                         />
                         <ShowTaskTextResultButton

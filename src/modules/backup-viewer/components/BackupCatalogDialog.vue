@@ -1,24 +1,22 @@
 <script setup lang="ts">
-import { OffsetDateTime } from '@/modules/connection/model/data-type/OffsetDateTime'
-import { computed, ref, watch } from 'vue'
+import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { DateTime } from 'luxon'
 import { BackupViewerService, useBackupViewerService } from '@/modules/backup-viewer/service/BackupViewerService'
-import { Connection } from '@/modules/connection/model/Connection'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
-import { CatalogVersionAtResponse } from '@/modules/connection/model/CatalogVersionAtResponse'
+import { CatalogVersionAtResponse } from '@/modules/database-driver/request-response/CatalogVersionAtResponse'
 import Immutable from 'immutable'
-import { Catalog } from '@/modules/connection/model/Catalog'
 import VDateTimeInput from '@/modules/base/component/VDateTimeInput.vue'
+import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 
 const backupViewerService: BackupViewerService = useBackupViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    modelValue: boolean,
-    connection: Connection
+    modelValue: boolean
 }>()
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void,
@@ -28,13 +26,15 @@ const emit = defineEmits<{
 watch(
     () => props.modelValue,
     (newValue) => {
-        if (newValue) {
+        if (newValue && availableCatalogsLoaded.value == false) {
             loadAvailableCatalogs().then()
         }
     }
 )
 
 const availableCatalogs = ref<string[]>([])
+const availableCatalogsChangeCallbackId = backupViewerService.registerAvailableCatalogsChangeCallback(async () =>
+    await loadAvailableCatalogs())
 const availableCatalogsLoaded = ref<boolean>(false)
 const minDate = ref<DateTime | undefined>()
 const minDateLoaded = ref<boolean>(false)
@@ -65,7 +65,7 @@ const catalogNameRules = [
         return t('backupViewer.backup.form.catalogName.validations.required')
     },
     async (value: string): Promise<any> => {
-        const available: boolean = await backupViewerService.isCatalogExists(props.connection, value)
+        const available: boolean = await backupViewerService.isCatalogExists(value)
         if (available) return true
         return t('backupViewer.backup.form.catalogName.validations.notExists')
     }
@@ -73,7 +73,7 @@ const catalogNameRules = [
 
 async function loadAvailableCatalogs(): Promise<void> {
     try {
-        const fetchedAvailableCatalogs: Immutable.List<Catalog> = await backupViewerService.getAvailableCatalogs(props.connection)
+        const fetchedAvailableCatalogs: Immutable.List<CatalogStatistics> = await backupViewerService.getAvailableCatalogs()
         availableCatalogs.value = fetchedAvailableCatalogs
             .filter(it => !it.corrupted)
             .map(it => it.name)
@@ -90,7 +90,6 @@ async function loadAvailableCatalogs(): Promise<void> {
 async function loadMinimalDate(): Promise<void> {
     try {
         const minimalBackupDate: CatalogVersionAtResponse = await backupViewerService.getMinimalBackupDate(
-            props.connection,
             catalogName.value!
         )
 
@@ -119,12 +118,11 @@ function reset(): void {
 async function backup(): Promise<boolean> {
     try {
         await backupViewerService.backupCatalog(
-            props.connection,
             catalogName.value!,
-            includeWal.value,
             pastMoment.value != undefined
                 ? OffsetDateTime.fromDateTime(pastMoment.value)
-                : undefined
+                : undefined,
+            includeWal.value
         )
         await toaster.success(t(
             'backupViewer.backup.notification.backupRequested',
@@ -143,6 +141,10 @@ async function backup(): Promise<boolean> {
         return false
     }
 }
+
+onUnmounted(() => {
+    backupViewerService.unregisterAvailableCatalogsChangeCallback(availableCatalogsChangeCallbackId)
+})
 </script>
 
 <template>

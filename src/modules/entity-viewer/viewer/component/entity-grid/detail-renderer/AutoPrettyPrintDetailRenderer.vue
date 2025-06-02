@@ -7,7 +7,6 @@ import {
     EntityPropertyValueSupportedCodeLanguage
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValueSupportedCodeLanguage'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
-import { Scalar } from '@/modules/connection/model/data-type/Scalar'
 import { ExtraEntityObjectType } from '@/modules/entity-viewer/viewer/model/ExtraEntityObjectType'
 import { computed } from 'vue'
 import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue'
@@ -21,6 +20,7 @@ import PricesDetailRenderer
     from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/PricesDetailRenderer.vue'
 import ReferenceAttributesDetailRenderer
     from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/ReferenceAttributesDetailRenderer.vue'
+import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 
 /**
  * Used to decide whether XML is actually HTML5.

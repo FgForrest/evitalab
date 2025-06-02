@@ -2,7 +2,7 @@
 
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
 import { useI18n } from 'vue-i18n'
-import { TaskStatus } from '@/modules/connection/model/task/TaskStatus'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import VPropertiesTable from '@/modules/base/component/VPropertiesTable.vue'
 import { computed, onUnmounted, ref } from 'vue'
 import { Property } from '@/modules/base/model/properties-table/Property'
@@ -12,8 +12,8 @@ import { Duration } from 'luxon'
 import { ProgressValue } from '@/modules/base/model/properties-table/ProgressValue'
 import { taskStateToColorMapping } from '@/modules/task-viewer/model/taskStateToColorMapping'
 import { PlaceholderValue } from '@/modules/base/model/properties-table/PlaceholderValue'
-import { TaskTrait } from '@/modules/connection/model/task/TaskTrait'
-import { TaskState } from '@/modules/connection/model/task/TaskState'
+import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
+import { TaskTrait } from '@/modules/database-driver/request-response/task/TaskTrait'
 
 const { t } = useI18n()
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
-import { ServerStatus } from '@/modules/connection/model/status/ServerStatus'
 import { useI18n } from 'vue-i18n'
+import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 
 const { t } = useI18n()
 

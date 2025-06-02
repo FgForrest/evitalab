@@ -1,13 +1,12 @@
 import { ModuleContextBuilder } from "@/ModuleContextBuilder";
 import { ModuleRegistrar } from "@/ModuleRegistrar";
-import { EvitaDBDriverResolver, evitaDBDriverResolverInjectionKey } from "../connection/driver/EvitaDBDriverResolver";
 import { TaskViewerService, taskViewerServiceInjectionKey } from "./services/TaskViewerService";
-import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
+import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
 
 export class TaskViewerModuleRegistrar implements ModuleRegistrar {
     async register(builder: ModuleContextBuilder): Promise<void> {
-        const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
-        const taskViewerService: TaskViewerService = new TaskViewerService(connectionService)
+        const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
+        const taskViewerService: TaskViewerService = new TaskViewerService(evitaClient)
         builder.provide(taskViewerServiceInjectionKey, taskViewerService)
     }
 }

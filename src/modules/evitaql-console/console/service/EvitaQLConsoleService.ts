@@ -1,9 +1,8 @@
-import { EvitaDBDriver } from '@/modules/connection/driver/EvitaDBDriver'
 import { EvitaQLConsoleDataPointer } from '@/modules/evitaql-console/console/model/EvitaQLConsoleDataPointer'
 import { InjectionKey } from 'vue'
-import { EvitaDBDriverResolver } from '@/modules/connection/driver/EvitaDBDriverResolver'
 import { mandatoryInject } from '@/utils/reactivity'
-import { Response } from '@/modules/connection/model/data/Response'
+import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
 
 export const evitaQLConsoleServiceInjectionKey: InjectionKey<EvitaQLConsoleService> = Symbol('evitaQLConsoleService')
 
@@ -11,22 +10,23 @@ export const evitaQLConsoleServiceInjectionKey: InjectionKey<EvitaQLConsoleServi
  * Service for running EvitaQL console component.
  */
 export class EvitaQLConsoleService {
-    private readonly evitaDBDriverResolver: EvitaDBDriverResolver
+    private readonly evitaClient: EvitaClient
 
-    constructor(evitaDBDriver: EvitaDBDriverResolver) {
-        this.evitaDBDriverResolver = evitaDBDriver
+    constructor(evitaClient: EvitaClient) {
+        this.evitaClient = evitaClient
     }
 
     /**
-     * Executes user GraphQL query against a given evitaDB server and catalog.
+     * Executes user GraphQL query against a given catalog.
      */
-    // todo lho variables
-    async executeEvitaQLQuery(dataPointer: EvitaQLConsoleDataPointer, query: string, variables?: object): Promise<Response> {
-        const evitaDBDriver: EvitaDBDriver = await this.evitaDBDriverResolver.resolveDriver(dataPointer.connection)
-
-        let result: Response
+    async executeEvitaQLQuery(dataPointer: EvitaQLConsoleDataPointer, query: string): Promise<EvitaResponse> {
+        let result: EvitaResponse
         try {
-           result = await evitaDBDriver.query(dataPointer.connection, dataPointer.catalogName, query)
+           result = await this.evitaClient.queryCatalog(
+               dataPointer.catalogName,
+               session => session.query(query),
+               true // we want to always fetch fresh data
+           )
         } catch (e: any) {
             if (e.name === 'QueryError') {
                 result = e.error

@@ -1,9 +1,7 @@
 import { TrafficRecordVisualisationContext } from '@/modules/traffic-viewer/model/TrafficRecordVisualisationContext'
 import Immutable from 'immutable'
-import { TrafficRecord } from '@/modules/connection/model/traffic/TrafficRecord'
 import { TrafficRecordVisualiser } from '@/modules/traffic-viewer/service/TrafficRecordVisualiser'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { TrafficRecordHistoryDataPointer } from '@/modules/traffic-viewer/model/TrafficRecordHistoryDataPointer'
 import { TrafficRecordHistoryCriteria } from '@/modules/traffic-viewer/model/TrafficRecordHistoryCriteria'
 import {
     RequestedSessionStartRecord,
@@ -14,15 +12,21 @@ import {
     TrafficRecordVisualisationDefinition
 } from '@/modules/traffic-viewer/model/TrafficRecordVisualisationDefinition'
 import { UserTrafficRecordType } from '@/modules/traffic-viewer/model/UserTrafficRecordType'
-import { TrafficRecordingCaptureRequest } from '@/modules/connection/model/traffic/TrafficRecordingCaptureRequest'
-import { TrafficRecordContent } from '@/modules/connection/model/traffic/TrafficRecordContent'
-import { TrafficRecordType } from '@/modules/connection/model/traffic/TrafficRecordType'
-import { Label, labelSourceQuery } from '@/modules/connection/model/traffic/Label'
-import { ConnectionService } from '@/modules/connection/service/ConnectionService'
-import { EvitaDBDriver } from '@/modules/connection/driver/EvitaDBDriver'
-import { SourceQueryContainer } from '@/modules/connection/model/traffic/SourceQueryContainer'
-import { SourceQueryStatisticsContainer } from '@/modules/connection/model/traffic/SourceQueryStatisticsContainer'
-import { SessionStartContainer } from '@/modules/connection/model/traffic/SessionStartContainer'
+import { TrafficRecordType } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordType'
+import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
+import {
+    TrafficRecordingCaptureRequest
+} from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordingCaptureRequest'
+import { TrafficRecordContent } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordContent'
+import { Label, labelSourceQuery } from '@/modules/database-driver/request-response/traffic-recording/Label'
+import {
+    SessionStartContainer
+} from '@/modules/database-driver/request-response/traffic-recording/SessionStartContainer'
+import { SourceQueryContainer } from '@/modules/database-driver/request-response/traffic-recording/SourceQueryContainer'
+import {
+    SourceQueryStatisticsContainer
+} from '@/modules/database-driver/request-response/traffic-recording/SourceQueryStatisticsContainer'
 
 const additionSessionStartFetchRequestTypes: any = Immutable.List([TrafficRecordType.SessionStart])
 const additionSourceQueryFetchRequestTypes: any = Immutable.List([TrafficRecordType.SourceQuery, TrafficRecordType.SourceQueryStatistics])
@@ -32,15 +36,15 @@ const additionSourceQueryFetchRequestTypes: any = Immutable.List([TrafficRecordT
  */
 export class TrafficRecordHistoryVisualisationProcessor {
 
-    private readonly connectionService: ConnectionService
+    private readonly evitaClient: EvitaClient
     private readonly visualisers: Immutable.List<TrafficRecordVisualiser<any>>
 
-    constructor(connectionService: ConnectionService, visualisers: Immutable.List<TrafficRecordVisualiser<any>>) {
-        this.connectionService = connectionService
+    constructor(evitaClient: EvitaClient, visualisers: Immutable.List<TrafficRecordVisualiser<any>>) {
+        this.evitaClient = evitaClient
         this.visualisers = visualisers
     }
 
-    async process(dataPointer: TrafficRecordHistoryDataPointer,
+    async process(catalogName: string,
                   historyCriteria: TrafficRecordHistoryCriteria,
                   records: TrafficRecord[]): Promise<Immutable.List<TrafficRecordVisualisationDefinition>> {
         const preparationContext: TrafficRecordPreparationContext = new TrafficRecordPreparationContext()
@@ -50,12 +54,12 @@ export class TrafficRecordHistoryVisualisationProcessor {
 
         const recordsToVisualise: TrafficRecord[] = await this.processPreparedData(
             preparationContext,
-            dataPointer,
+            catalogName,
             historyCriteria,
             records
         )
 
-        const visualisationContext: TrafficRecordVisualisationContext = new TrafficRecordVisualisationContext(dataPointer)
+        const visualisationContext: TrafficRecordVisualisationContext = new TrafficRecordVisualisationContext(catalogName)
         for (const record of recordsToVisualise) {
             this.visualiseRecord(visualisationContext, record)
         }
@@ -63,7 +67,7 @@ export class TrafficRecordHistoryVisualisationProcessor {
     }
 
     private async processPreparedData(preparationContext: TrafficRecordPreparationContext,
-                                      dataPointer: TrafficRecordHistoryDataPointer,
+                                      catalogName: string,
                                       historyCriteria: TrafficRecordHistoryCriteria,
                                       records: TrafficRecord[]): Promise<TrafficRecord[]> {
         const recordsToVisualise: TrafficRecord[] = [...records]
@@ -73,9 +77,8 @@ export class TrafficRecordHistoryVisualisationProcessor {
         if (!requestedAdditionalSessionStartRecords.isEmpty() && historyCriteria.types?.includes(UserTrafficRecordType.Session)) {
             const sessionStartFetchRequest: TrafficRecordingCaptureRequest = this.createAdditionalSessionStartFetchRequest(requestedAdditionalSessionStartRecords)
             const sessionStartRecords: Immutable.List<TrafficRecord> = await this.fetchAdditionalRecords(
-                dataPointer,
+                catalogName,
                 sessionStartFetchRequest,
-                recordsToVisualise,
                 recordsToVisualise.length  // this is not ideal, but don't have better solution right now
             )
             this.insertFetchedSessionStartRecords(sessionStartRecords, requestedAdditionalSessionStartRecords, recordsToVisualise)
@@ -86,9 +89,8 @@ export class TrafficRecordHistoryVisualisationProcessor {
         if (!requestedAdditionalSourceQueryRecords.isEmpty() && historyCriteria.types?.includes(UserTrafficRecordType.SourceQuery)) {
             const sourceQueryFetchRequest: TrafficRecordingCaptureRequest = this.createAdditionalSourceQueryFetchRequest(requestedAdditionalSourceQueryRecords)
             const sourceQueryRecords: Immutable.List<TrafficRecord> = await this.fetchAdditionalRecords(
-                dataPointer,
+                catalogName,
                 sourceQueryFetchRequest,
-                recordsToVisualise,
                 recordsToVisualise.length * 2  // there are two record types we want to fetch... this is not ideal, but don't have better solution right now
             )
             this.insertFetchedSourceQueryRecords(sourceQueryRecords, requestedAdditionalSourceQueryRecords, recordsToVisualise)
@@ -132,16 +134,15 @@ export class TrafficRecordHistoryVisualisationProcessor {
         )
     }
 
-    private async fetchAdditionalRecords(dataPointer: TrafficRecordHistoryDataPointer,
-                                                    sourceQueryFetchRequest: TrafficRecordingCaptureRequest,
-                                                    records: TrafficRecord[],
-                                                    limit: number): Promise<Immutable.List<TrafficRecord>> {
-        const driver: EvitaDBDriver = await this.connectionService.getDriver(dataPointer.connection)
-        return await driver.getTrafficRecordHistoryList(
-            dataPointer.connection,
-            dataPointer.catalogName,
-            sourceQueryFetchRequest,
-            records.length * 2
+    private async fetchAdditionalRecords(catalogName: string,
+                                         sourceQueryFetchRequest: TrafficRecordingCaptureRequest,
+                                         limit: number): Promise<Immutable.List<TrafficRecord>> {
+        return await this.evitaClient.queryCatalog(
+            catalogName,
+            session => session.getRecordings(
+                sourceQueryFetchRequest,
+                limit
+            )
         )
     }
 

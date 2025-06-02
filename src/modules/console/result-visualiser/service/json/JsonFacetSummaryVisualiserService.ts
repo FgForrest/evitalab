@@ -5,8 +5,8 @@ import {
     FacetSummaryVisualiserService
 } from '@/modules/console/result-visualiser/service/FacetSummaryVisualiserService'
 import { Result } from '@/modules/console/result-visualiser/model/Result'
-import { EntitySchema } from '@/modules/connection/model/schema/EntitySchema'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
+import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import {
     VisualisedFacetGroupStatistics
@@ -14,7 +14,7 @@ import {
 import {
     VisualisedFacetStatistics
 } from '@/modules/console/result-visualiser/model/facet-summary/VisualisedFacetStatistics'
-import { NamingConvention } from '@/modules/connection/model/NamingConvetion'
+import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
 
 /**
  * Common abstract for all JSON-based facet summary visualiser services.
@@ -30,10 +30,8 @@ export abstract class JsonFacetSummaryVisualiserService<VS extends JsonResultVis
         const referencesWithGroups: [ReferenceSchema, Result[]][] = []
         for (const referenceName of Object.keys(facetSummaryResult)) {
             const referenceSchema: ReferenceSchema | undefined = entitySchema.references
-                .getIfSupported()
-                ?.find(reference => reference.nameVariants
-                    .getIfSupported()
-                    ?.get(NamingConvention.CamelCase) === referenceName)
+                .find(reference => reference.nameVariants
+                    .get(NamingConvention.CamelCase) === referenceName)
             if (referenceSchema == undefined) {
                 throw new UnexpectedError(`Reference '${referenceName}' not found in entity '${entitySchema.name}'.`)
             }

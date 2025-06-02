@@ -1,6 +1,6 @@
-import { Histogram } from '@/modules/connection/model/data/Histogram'
 import { VisualisedHistogram } from '@/modules/console/result-visualiser/model/histogram/VisualisedHistogram'
 import { PriceHistogramVisualiserService } from '@/modules/console/result-visualiser/service/PriceHistogramVisualiserService'
+import { Histogram } from '@/modules/database-driver/request-response/data/Histogram'
 
 /**
  * {@link PriceHistogramVisualiserService} for EvitaQL query language.

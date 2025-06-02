@@ -1,6 +1,5 @@
 <script setup lang="ts">
 
-import { Scalar } from '@/modules/connection/model/data-type/Scalar'
 import { ExtraEntityObjectType } from '@/modules/entity-viewer/viewer/model/ExtraEntityObjectType'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import {
@@ -17,6 +16,7 @@ import {
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValueSupportedCodeLanguage'
 import HtmlDetailRenderer
     from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/HtmlDetailRenderer.vue'
+import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 
 const props = withDefaults(defineProps<{
     dataType?: Scalar | ExtraEntityObjectType | undefined,

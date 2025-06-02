@@ -1,6 +1,5 @@
 import { TrafficRecordVisualiser } from '@/modules/traffic-viewer/service/TrafficRecordVisualiser'
-import { SessionStartContainer } from '@/modules/connection/model/traffic/SessionStartContainer'
-import { TrafficRecord } from '@/modules/connection/model/traffic/TrafficRecord'
+import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { TrafficRecordVisualisationContext } from '../model/TrafficRecordVisualisationContext'
 import {
     Action,
@@ -17,6 +16,9 @@ import {
 } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
 import { TrafficRecordHistoryViewerTabData } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabData'
 import { TrafficRecordPreparationContext } from '@/modules/traffic-viewer/model/TrafficRecordPreparationContext'
+import {
+    SessionStartContainer
+} from '@/modules/database-driver/request-response/traffic-recording/SessionStartContainer'
 
 /**
  * Visualises start of session/transaction. It uses `SessionCloseContainer` record for more statistics.
@@ -76,8 +78,7 @@ export class SessionStartContainerVisualiser extends TrafficRecordVisualiser<Ses
                 'mdi-open-in-new',
                 () => this.workspaceService.createTab(
                     this.trafficRecordHistoryViewerTabFactory.createNew(
-                        ctx.dataPointer.connection,
-                        ctx.dataPointer.catalogName,
+                        ctx.catalogName,
                         new TrafficRecordHistoryViewerTabData(
                             undefined,
                             undefined,

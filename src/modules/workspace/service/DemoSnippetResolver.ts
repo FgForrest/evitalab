@@ -49,20 +49,19 @@ export class DemoSnippetResolver {
             throw new UnexpectedError(`Cannot fetch demo code snippet '${request.path}' from GitHub from branch '${request.branch}'.`)
         }
 
-        const demoConnection: Connection = this.connectionService.getConnection(demoConnectionId)
+        // validate that connection exists
+        this.connectionService.getConnection(demoConnectionId)
 
         const extension: string = request.path.substring(request.path.lastIndexOf(".") + 1)
         switch (extension) {
             case CodeSnippetType.EvitaQL:
                 return this.evitaQLConsoleTabFactory.createNew(
-                    demoConnection,
                     demoCatalog,
                     new EvitaQLConsoleTabData(codeSnippetContent),
                     true
                 )
             case CodeSnippetType.GraphQL:
                 return this.graphQLConsoleTabFactory.createNew(
-                    demoConnection,
                     demoCatalog,
                     GraphQLInstanceType.Data,
                     new GraphQLConsoleTabData(codeSnippetContent),

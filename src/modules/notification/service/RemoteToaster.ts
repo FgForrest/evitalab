@@ -84,7 +84,7 @@ export class RemoteToaster implements Toaster {
     private async addNotification(severity: NotificationSeverity, title: string, clickCallback?: ToastClickCallback): Promise<void> {
         const id: NotificationId = await this.notificationManager.addNotification({
             severity,
-            source: new InstanceNotificationSource(this.connectionService.getDriverConnection().id),
+            source: new InstanceNotificationSource(this.connectionService.getConnection().id),
             message: title
         })
         if (clickCallback != undefined) {

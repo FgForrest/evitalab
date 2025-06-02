@@ -29,7 +29,8 @@
       "rename": "Rename",
       "replace": "Replace",
       "switch": "Switch",
-      "accept": "Accept"
+      "accept": "Accept",
+      "reload": "Reload"
     },
     "notification": {
       "copiedToClipboard": "Copied to clipboard",
@@ -112,9 +113,6 @@
         }
       }
     },
-    "item": {
-      "explorer": "Connection explorer"
-    },
     "link": {
       "evitaDBDocumentation": {
         "icon": {
@@ -194,10 +192,9 @@
       "form": {
         "newConnectionId": {
           "label": "New connection",
-          "hint": "Connection from shared tab is not available. Choose the most similar one.",
-          "validations": {
-            "required": "New connection is required.",
-            "notExists": "Chosen connection doesn't exists."
+          "hint": {
+            "connectionMatchedByName": "The exact connection from shared tab is not available. However connection with similar name is available.",
+            "connectionNotMatchedByName": "The connection from shared tab is not available. However you can try to use the current one."
           }
         }
       }
@@ -322,28 +319,27 @@
       "flag": {
         "preconfigured": "preconfigured"
       },
-      "actions": {
-        "graphQLSystemApiConsole": "GraphQL System API console",
-        "create": "Create catalog",
-        "edit": "Edit connection",
-        "remove": "Remove connection",
-        "refresh": "Refresh",
-        "closeAllSessions": "Close all sessions",
-        "server": "Server",
-        "createCatalog": "Create catalog",
-        "catalogBackups": "Catalog backups",
-        "tasks": "Tasks",
-        "jfrRecordings": "JFR recordings",
-        "trafficRecordings": "Traffic recordings"
-      },
-      "subheader": {
-        "manage": "Manage",
-        "modify": "Modify",
-        "catalogs": "Catalogs"
+      "menu": {
+        "item": {
+          "manageSubheader": "Manage",
+          "modifySubheader": "Modify",
+          "catalogsSubheader": "Catalogs",
+          "graphQLSystemApiConsole": "GraphQL System API console",
+          "create": "Create catalog",
+          "edit": "Edit connection",
+          "remove": "Remove connection",
+          "reload": "Reload",
+          "server": "Server",
+          "createCatalog": "Create catalog",
+          "catalogBackups": "Catalog backups",
+          "tasks": "Tasks",
+          "jfrRecordings": "JFR recordings",
+          "trafficRecordings": "Traffic recordings"
+        }
       },
       "notification": {
-        "couldNotLoadCatalogs": "Could not load catalogs for connection {connectionName}: {reason}",
-        "couldNotLoadServerStatus": "Could not load server status for connection {connectionName}: {reason}",
+        "couldNotLoadCatalogs": "Could not load catalogs: {reason}",
+        "couldNotLoadServerStatus": "Could not load server status: {reason}",
         "closedAllSessions": "All open sessions of all catalogs in connection {connectionName} were closed.",
         "couldNotCloseSessions": "Could not close sessions of connection {connectionName}: {reason}"
       },
@@ -404,8 +400,8 @@
         "graphQLDataApiConsole": "GraphQL Data API console",
         "graphQLSchemaApiConsole": "GraphQL Schema API console",
         "viewSchema": "Schema",
-        "closeAllSessions": "Close all sessions",
-        "dropCatalog": "Drop catalog",
+        "closeSharedSession": "Close shared session",
+        "deleteCatalog": "Delete catalog",
         "renameCatalog": "Rename catalog",
         "replaceCatalog": "Replace catalog",
         "createCollection": "Create collection",
@@ -413,8 +409,8 @@
         "activeTrafficRecording": "Active traffic recording"
       },
       "notification": {
-        "closedAllSessions": "All open sessions of catalog {catalogName} were closed.",
-        "couldNotCloseSessions": "Could not close sessions of catalog {catalogName}: {reason}"
+        "closedSharedSession": "Shared session of catalog {catalogName} was closed.",
+        "couldNotCloseSharedSession": "Could not close shared session of catalog {catalogName}: {reason}"
       },
       "create": {
         "title": "Create catalog",
@@ -436,13 +432,13 @@
           "couldNotCreateCatalog": "Could not create the {catalogName} catalog: {reason}"
         }
       },
-      "drop": {
-        "title": "Drop {catalogName} catalog",
-        "question": "Do you want to drop the catalog?",
+      "delete": {
+        "title": "Delete {catalogName} catalog",
+        "question": "Do you want to delete the catalog?",
         "notification": {
-          "catalogDropped": "The {catalogName} catalog has been successfully dropped.",
-          "catalogNotDropped": "The {catalogName} catalog has been already dropped.",
-          "couldNotDropCatalog": "Could not drop the {catalogName} catalog: {reason}"
+          "catalogDeleted": "The {catalogName} catalog has been successfully deleted.",
+          "catalogNotDeleted": "The {catalogName} catalog has been already deleted.",
+          "couldNotDeleteCatalog": "Could not delete the {catalogName} catalog: {reason}"
         }
       },
       "rename": {
@@ -502,7 +498,7 @@
       "actions": {
         "viewEntities": "Entities",
         "viewSchema": "Schema",
-        "dropCollection": "Drop collection",
+        "deleteCollection": "Delete collection",
         "renameCollection": "Rename collection"
       },
       "create": {
@@ -525,13 +521,13 @@
           "couldNotCreateCollection": "Could not create the {entityType} collection: {reason}"
         }
       },
-      "drop": {
-        "title": "Drop {entityType} collection",
-        "question": "Do you want to drop the collection?",
+      "delete": {
+        "title": "Delete {entityType} collection",
+        "question": "Do you want to delete the collection?",
         "notification": {
-          "collectionDropped": "The {entityType} collection has been successfully dropped.",
-          "collectionNotDropped": "The {entityType} collection has been already dropped.",
-          "couldNotDropCollection": "Could not drop the {entityType} collection: {reason}"
+          "collectionDeleted": "The {entityType} collection has been successfully deleted.",
+          "collectionNotDeleted": "The {entityType} collection has been already deleted.",
+          "couldNotDeleteCollection": "Could not delete the {entityType} collection: {reason}"
         }
       },
       "rename": {
@@ -1016,7 +1012,7 @@
   },
   "serverViewer": {
     "definition": {
-      "title": "Server [{connectionName}]"
+      "title": "Server"
     },
     "title": "Server",
     "button": {
@@ -1096,7 +1092,7 @@
   },
   "backupViewer": {
     "definition": {
-      "title": "Catalog backups [{connectionName}]"
+      "title": "Catalog backups"
     },
     "title": "Catalog backups",
     "button": {
@@ -1209,7 +1205,7 @@
   },
   "taskViewer": {
     "definition": {
-      "title": "Tasks [{connectionName}]"
+      "title": "Tasks"
     },
     "title": "Tasks",
     "tasksVisualizer": {
@@ -1291,7 +1287,7 @@
   },
   "jfrViewer": {
     "definition": {
-      "title": "JFR Recordings [{connectionName}]"
+      "title": "JFR Recordings"
     },
     "title": "JFR Recordings",
     "button": {
@@ -1371,7 +1367,7 @@
   "trafficViewer": {
     "recordings": {
       "definition": {
-        "title": "Traffic Recordings [{connectionName}]"
+        "title": "Traffic Recordings"
       },
       "title": "Traffic Recordings",
       "button": {

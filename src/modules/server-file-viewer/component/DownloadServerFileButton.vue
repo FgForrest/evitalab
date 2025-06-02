@@ -1,16 +1,14 @@
 <script setup lang="ts">
 
-import VDownloadServerFileButton from '@/modules/connection/component/VDownloadServerFileButton.vue'
-import { Connection } from '@/modules/connection/model/Connection'
-import { ServerFile } from '@/modules/connection/model/server-file/ServerFile'
+import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import { useI18n } from 'vue-i18n'
+import VDownloadServerFileButton from '@/modules/viewer-support/component/VDownloadServerFileButton.vue'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    connection: Connection,
     file: ServerFile
 }>()
 
@@ -27,7 +25,6 @@ function onCouldNotDownloadResultFile(e: Error): void {
 
 <template>
     <VDownloadServerFileButton
-        :connection="connection"
         :file="file"
         @error="onCouldNotDownloadResultFile($event)"
     >

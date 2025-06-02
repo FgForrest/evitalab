@@ -2,28 +2,32 @@
 /**
  * Visualises raw JSON hierarchies of a single reference
  */
-import { ref } from 'vue'
+import { Ref, ref } from 'vue'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
-import { ConnectionService, useConnectionService } from '@/modules/connection/service/ConnectionService'
-import { CatalogPointer } from '@/modules/connection/model/CatalogPointer'
 import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
 import { Result } from '@/modules/console/result-visualiser/model/Result'
-import { EntitySchema } from '@/modules/connection/model/schema/EntitySchema'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
+import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import NamedHierarchyVisualiser
     from '@/modules/console/result-visualiser/component/hierarchy/NamedHierarchyVisualiser.vue'
-import { NamingConvention } from '@/modules/connection/model/NamingConvetion'
+import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
+import { CatalogPointer } from '@/modules/viewer-support/model/CatalogPointer'
+import {
+    useCatalogPointer,
+    useRootEntitySchema,
+    useVisualiserService
+} from '@/modules/console/result-visualiser/component/dependencies'
 
-const connectionService: ConnectionService = useConnectionService()
 const toaster: Toaster = useToaster()
 
 const props = defineProps<{
-    catalogPointer: CatalogPointer,
-    visualiserService: ResultVisualiserService,
     namedHierarchiesResult: Result,
-    parentEntitySchema: EntitySchema,
     referenceSchema: ReferenceSchema | undefined
 }>()
+
+const visualiserService: ResultVisualiserService = useVisualiserService()
+const catalogPointer: CatalogPointer = useCatalogPointer()
+const rootEntitySchema: Ref<EntitySchema | undefined> = useRootEntitySchema()
 
 const initialized = ref<boolean>(false)
 const entityRepresentativeAttributes: string[] = []
@@ -32,24 +36,18 @@ function initialize() {
     let pipeline: Promise<string[]>
     if (!props.referenceSchema) {
         pipeline = new Promise(resolve => {
-            const representativeAttributes: string[] = Array.from(props.parentEntitySchema.attributes.getIfSupported()!.values()!)
-                .filter(attributeSchema => attributeSchema.representative.getOrElse(false))
-                .map(attributeSchema => attributeSchema.nameVariants.getIfSupported()!.get(NamingConvention.CamelCase)!)
+            const representativeAttributes: string[] = Array.from(rootEntitySchema.value!.attributes.values())
+                .filter(attributeSchema => attributeSchema.representative)
+                .map(attributeSchema => attributeSchema.nameVariants.get(NamingConvention.CamelCase)!)
             resolve(representativeAttributes)
         })
-    } else if (!props.referenceSchema.referencedEntityTypeManaged.getOrElse(false)) {
+    } else if (!props.referenceSchema.referencedEntityTypeManaged) {
         pipeline = new Promise(resolve => resolve([]))
     } else {
-        pipeline = connectionService.getEntitySchema(
-            props.catalogPointer.connection,
-            props.catalogPointer.catalogName,
-            props.referenceSchema.entityType.getIfSupported()! as string
+        pipeline = visualiserService.resolveRepresentativeAttributes(
+            catalogPointer.catalogName,
+            props.referenceSchema.entityType as string
         )
-            .then((entitySchema: EntitySchema) => {
-                return Array.from(entitySchema.attributes.getIfSupported()!.values()!)
-                    .filter(attributeSchema => attributeSchema.representative.getOrElse(false))
-                    .map(attributeSchema => attributeSchema.nameVariants.getIfSupported()!.get(NamingConvention.CamelCase)!)
-            })
     }
 
     pipeline
@@ -67,7 +65,6 @@ initialize()
         <NamedHierarchyVisualiser
             v-for="name in namedHierarchiesResult.keys()"
             :key="name"
-            :visualiser-service="visualiserService"
             :name="name as string"
             :named-hierarchy-result="namedHierarchiesResult.get(name) as Result"
             :entity-representative-attributes="entityRepresentativeAttributes"

@@ -4,10 +4,6 @@ import {
     evitaQLConsoleServiceInjectionKey
 } from '@/modules/evitaql-console/console/service/EvitaQLConsoleService'
 import {
-    EvitaDBDriverResolver,
-    evitaDBDriverResolverInjectionKey
-} from '@/modules/connection/driver/EvitaDBDriverResolver'
-import {
     EvitaQLConsoleTabFactory,
     evitaQLConsoleTabFactoryInjectionKey
 } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
@@ -17,21 +13,21 @@ import {
     evitaQLResultVisualiserServiceInjectionKey
 } from '@/modules/evitaql-console/console/result-visualiser/service/EvitaQLResultVisualiserService'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
+import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
 
 // todo docs
 export class EvitaQLConsoleModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {
-        const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
-        const evitaDBDriverResolver: EvitaDBDriverResolver = builder.inject(evitaDBDriverResolverInjectionKey)
+        const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
 
         builder.provide(
             evitaQLConsoleServiceInjectionKey,
-            new EvitaQLConsoleService(evitaDBDriverResolver)
+            new EvitaQLConsoleService(evitaClient)
         )
         builder.provide(
             evitaQLResultVisualiserServiceInjectionKey,
-            new EvitaQLResultVisualiserService(connectionService)
+            new EvitaQLResultVisualiserService(evitaClient)
         )
         // todo lho fix circular dep
         // builder.provide(

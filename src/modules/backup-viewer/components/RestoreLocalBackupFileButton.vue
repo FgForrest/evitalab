@@ -3,22 +3,14 @@
 import RestoreLocalBackupFileDialog from '@/modules/backup-viewer/components/RestoreLocalBackupFileDialog.vue'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Connection } from '@/modules/connection/model/Connection'
 
 const { t } = useI18n()
-
-const props = defineProps<{
-    connection: Connection
-}>()
 
 const showRestoreDialog = ref<boolean>(false)
 </script>
 
 <template>
-    <RestoreLocalBackupFileDialog
-        v-model="showRestoreDialog"
-        :connection="connection"
-    >
+    <RestoreLocalBackupFileDialog v-model="showRestoreDialog">
         <template #activator="{ props }">
             <VBtn
                 icon

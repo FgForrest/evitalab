@@ -9,7 +9,6 @@ import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/servi
 import { EntityViewerService, useEntityViewerService } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { EntityReferenceValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceValue'
-import { Scalar } from '@/modules/connection/model/data-type/Scalar'
 import {
     EntityViewerTabFactory,
     useEntityViewerTabFactory
@@ -25,8 +24,9 @@ import {
     useTabProps
 } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { ReferenceSchema } from '@/modules/connection/model/schema/ReferenceSchema'
-import { AttributeSchema } from '@/modules/connection/model/schema/AttributeSchema'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
+import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
+import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const entityViewerService: EntityViewerService = useEntityViewerService()
@@ -65,7 +65,7 @@ const referencesWithAttributes = computed<EntityReferenceValue[]>(() => {
 })
 
 const rawAttributeDataType = computed<Scalar>(() => {
-    return referenceAttributeSchema.value.type.getIfSupported()!
+    return referenceAttributeSchema.value.type
 })
 const isArray = computed<boolean>(() => rawAttributeDataType?.value?.endsWith('Array') || false)
 const attributeDataType = computed<Scalar>(() => {
@@ -79,9 +79,8 @@ const attributeDataType = computed<Scalar>(() => {
 function openReference(primaryKey: number): void {
     // we want references to open referenced entities in appropriate new grid for referenced collection
     workspaceService.createTab(entityViewerTabFactory.createNew(
-        gridProps.params.dataPointer.connection,
         gridProps.params.dataPointer.catalogName,
-        parentReferenceSchema.value.entityType.getIfSupported()!,
+        parentReferenceSchema.value.entityType,
         new EntityViewerTabData(
             queryLanguage.value,
             entityViewerService.buildReferencedEntityFilterBy(queryLanguage.value as QueryLanguage, [primaryKey]),

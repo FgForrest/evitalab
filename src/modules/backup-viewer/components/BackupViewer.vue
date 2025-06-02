@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n'
 import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import { BackupViewerTabParams } from '@/modules/backup-viewer/model/BackupViewerTabParams'
-import { TaskState } from '@/modules/connection/model/task/TaskState'
+import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import { backupTaskName } from '@/modules/backup-viewer/model/BackupTask'
 import { restoreTaskName } from '@/modules/backup-viewer/model/RestoreTask'
@@ -70,14 +70,8 @@ emit('ready')
                         {{ t('backupViewer.button.reloadBackups') }}
                     </VTooltip>
                 </VBtn>
-                <RestoreLocalBackupFileButton
-                    :connection="params.connection"
-                    @restore="reloadBackups"
-                />
-                <BackupCatalogButton
-                    :connection="params.connection"
-                    @backup="reloadBackups"
-                />
+                <RestoreLocalBackupFileButton @restore="reloadBackups" />
+                <BackupCatalogButton @backup="reloadBackups" />
             </template>
         </VTabToolbar>
 
@@ -85,7 +79,6 @@ emit('ready')
             <TaskList
                 ref="taskListRef"
                 v-show="backupsInPreparationPresent"
-                :connection="params.connection"
                 :subheader="t('backupViewer.tasks.title')"
                 :states="shownTaskStates"
                 :task-types="shownTaskTypes"
@@ -96,7 +89,6 @@ emit('ready')
 
             <BackupList
                 ref="backupListRef"
-                :connection="params.connection"
                 :backups-in-preparation-present="backupsInPreparationPresent"
                 @request-task-update="reloadTasks"
             />

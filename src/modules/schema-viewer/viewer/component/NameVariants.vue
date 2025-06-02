@@ -2,7 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import { Property } from '@/modules/base/model/properties-table/Property'
 import { PropertyValue } from '@/modules/base/model/properties-table/PropertyValue'
-import { NamingConvention } from '@/modules/connection/model/NamingConvetion'
+import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
 import { Map } from 'immutable'
 import SchemaContainerSection from '@/modules/schema-viewer/viewer/component/SchemaContainerSection.vue'
 import VPropertiesTable from '@/modules/base/component/VPropertiesTable.vue'
