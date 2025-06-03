@@ -38,18 +38,45 @@ import {
     backupViewerTabFactoryInjectionKey
 } from '@/modules/backup-viewer/service/BackupViewerTabFactory'
 import { JfrViewerTabFactory, jfrViewerTabFactoryInjectionKey } from '@/modules/jfr-viewer/service/JfrViewerTabFactory'
+import {
+    CatalogItemMenuFactory,
+    catalogItemMenuFactoryInjectionKey
+} from '@/modules/connection-explorer/service/CatalogItemMenuFactory'
+import {
+    EvitaQLConsoleTabFactory,
+    evitaQLConsoleTabFactoryInjectionKey
+} from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
+import {
+    SchemaViewerTabFactory,
+    schemaViewerTabFactoryInjectionKey
+} from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
+import {
+    TrafficRecordHistoryViewerTabFactory, trafficRecordHistoryViewerTabFactoryInjectionKey
+} from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
+import {
+    CollectionItemMenuFactory,
+    collectionItemMenuFactoryInjectionKey
+} from '@/modules/connection-explorer/service/CollectionItemMenuFactory'
+import {
+    EntityViewerTabFactory,
+    entityViewerTabFactoryInjectionKey
+} from '@/modules/entity-viewer/viewer/workspace/service/EntityViewerTabFactory'
 
 export class ConnectionExplorerModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {
         const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
         const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
+        const entityViewerTabFactory: EntityViewerTabFactory = builder.inject(entityViewerTabFactoryInjectionKey)
         const serverViewerTabFactory: ServerViewerTabFactory = builder.inject(serverViewerTabFactoryInjectionKey)
         const taskViewerTabFactory: TaskViewerTabFactory = builder.inject(taskViewerTabFactoryInjectionKey)
         const trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory = builder.inject(trafficRecordingsViewerTabFactoryInjectionKey)
         const jfrViewerTabFactory: JfrViewerTabFactory = builder.inject(jfrViewerTabFactoryInjectionKey)
         const graphQLConsoleTabFactory: GraphQLConsoleTabFactory = builder.inject(graphQLConsoleTabFactoryInjectionKey)
         const backupViewerTabFactory: BackupViewerTabFactory = builder.inject(backupViewerTabFactoryInjectionKey)
+        const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory = builder.inject(evitaQLConsoleTabFactoryInjectionKey)
+        const schemaViewerTabFactory: SchemaViewerTabFactory = builder.inject(schemaViewerTabFactoryInjectionKey)
+        const trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory = builder.inject(trafficRecordHistoryViewerTabFactoryInjectionKey)
 
         const connectionExplorerService: ConnectionExplorerService = new ConnectionExplorerService(evitaClient)
         const connectionExplorerPanelMenuFactory: ConnectionExplorerPanelMenuFactory = new ConnectionExplorerPanelMenuFactory(
@@ -62,11 +89,25 @@ export class ConnectionExplorerModuleRegistrar implements ModuleRegistrar {
             graphQLConsoleTabFactory,
             backupViewerTabFactory
         )
+        const catalogItemMenuFactory: CatalogItemMenuFactory = new CatalogItemMenuFactory(
+            workspaceService,
+            evitaQLConsoleTabFactory,
+            graphQLConsoleTabFactory,
+            schemaViewerTabFactory,
+            trafficRecordHistoryViewerTabFactory
+        )
+        const collectionItemMenuFactory: CollectionItemMenuFactory = new CollectionItemMenuFactory(
+            workspaceService,
+            entityViewerTabFactory,
+            schemaViewerTabFactory
+        )
         const catalogItemService: CatalogItemService = new CatalogItemService(evitaClient)
         const collectionItemService: CollectionItemService = new CollectionItemService(evitaClient)
 
         builder.provide(connectionExplorerServiceInjectionKey, connectionExplorerService)
         builder.provide(connectionExplorerPanelMenuFactoryInjectionKey, connectionExplorerPanelMenuFactory)
+        builder.provide(catalogItemMenuFactoryInjectionKey, catalogItemMenuFactory)
+        builder.provide(collectionItemMenuFactoryInjectionKey, collectionItemMenuFactory)
         builder.provide(catalogItemServiceInjectionKey, catalogItemService)
         builder.provide(collectionItemServiceInjectionKey, collectionItemService)
     }

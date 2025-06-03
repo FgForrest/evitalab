@@ -1,0 +1,67 @@
+import { MenuFactory } from '@/modules/base/service/menu/MenuFactory'
+import {
+    CodeDetailRendererMenuItemType
+} from '@/modules/entity-viewer/viewer/model/entity-grid/detail-renderer/CodeDetailRendererMenuItemType'
+import { MenuItem } from '@/modules/base/model/menu/MenuItem'
+import { MenuAction } from '@/modules/base/model/menu/MenuAction'
+import {
+    EntityPropertyValueSupportedCodeLanguage
+} from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValueSupportedCodeLanguage'
+import { i18n } from '@/vue-plugins/i18n'
+import { InjectionKey } from 'vue'
+import { mandatoryInject } from '@/utils/reactivity'
+
+export const codeDetailRendererMenuFactoryInjectionKey: InjectionKey<CodeDetailRendererMenuFactory> = Symbol('codeDetailRendererMenuFactoryInjectionKey')
+
+export function useCodeDetailRendererMenuFactory(): CodeDetailRendererMenuFactory {
+    return mandatoryInject(codeDetailRendererMenuFactoryInjectionKey)
+}
+
+/**
+ * This class is responsible for creating menus for code detail renderers.
+ * It extends `MenuFactory` with a specialization for `CodeDetailRendererMenuItemType`.
+ * The menu items include options like copying the rendered value and toggling pretty print mode,
+ * based on the provided configurations and callbacks.
+ */
+export class CodeDetailRendererMenuFactory extends MenuFactory<CodeDetailRendererMenuItemType> {
+
+    constructor() {
+        super()
+    }
+
+    async createItems(
+        codeLanguage?: EntityPropertyValueSupportedCodeLanguage,
+        prettyPrint?: boolean,
+        copyRenderedValueCallback?: () => void,
+        prettyPrintCallback?: () => void,
+    ): Promise<Map<CodeDetailRendererMenuItemType, MenuItem<CodeDetailRendererMenuItemType>>> {
+        if (codeLanguage == undefined) throw new Error('Code language is required.')
+        if (prettyPrint == undefined) throw new Error('Pretty print value is required.')
+        if (copyRenderedValueCallback == undefined) throw new Error('Copy rendered value callback is required.')
+        if (prettyPrintCallback == undefined) throw new Error('Pretty print callback is required.')
+
+        const items: Map<CodeDetailRendererMenuItemType, MenuItem<CodeDetailRendererMenuItemType>> = new Map()
+        this.createMenuAction(
+            items,
+            CodeDetailRendererMenuItemType.Copy,
+            'mdi-content-copy',
+            () => i18n.global.t('common.button.copy'),
+            () => copyRenderedValueCallback()
+        )
+        if (codeLanguage !== EntityPropertyValueSupportedCodeLanguage.Raw) {
+            this.createMenuAction(
+                items,
+                CodeDetailRendererMenuItemType.PrettyPrint,
+                prettyPrint
+                    ? 'mdi-raw'
+                    : 'mdi-auto-fix',
+                () => prettyPrint
+                    ? i18n.global.t('entityViewer.grid.renderer.button.displayRawValue')
+                    : i18n.global.t('entityViewer.grid.renderer.button.prettyPrintValue'),
+                () => prettyPrintCallback()
+            )
+        }
+
+        return items
+    }
+}

@@ -16,10 +16,10 @@ const emit = defineEmits<{
 
 const queryLanguagesButtonRef = ref<InstanceType<typeof VBtn> | undefined>()
 
-const actions: MenuAction<QueryLanguage>[] = createActions()
+const items: MenuAction<QueryLanguage>[] = createItems()
 
 const selectedIcon = computed<string>(() => {
-    const language = actions.find(language => language.value === props.selected)
+    const language = items.find(language => language.value === props.selected)
     return language ? language.prependIcon : 'mdi-application-braces-outline'
 })
 
@@ -28,9 +28,9 @@ function focus(): void {
     queryLanguagesButtonRef.value?.$el?.focus()
 }
 
-function createActions(): MenuAction<QueryLanguage>[] {
-    const actions: MenuAction<QueryLanguage>[] = []
-    actions.push(
+function createItems(): MenuAction<QueryLanguage>[] {
+    const items: MenuAction<QueryLanguage>[] = []
+    items.push(
         new MenuAction<QueryLanguage>(
             QueryLanguage.EvitaQL,
             'evitaQL',
@@ -38,7 +38,7 @@ function createActions(): MenuAction<QueryLanguage>[] {
             () => {}
         )
     )
-    actions.push(
+    items.push(
         new MenuAction<QueryLanguage>(
             QueryLanguage.GraphQL,
             'GraphQL',
@@ -46,7 +46,7 @@ function createActions(): MenuAction<QueryLanguage>[] {
             () => {}
         )
     )
-    return actions
+    return items
 }
 
 defineExpose<{
@@ -69,7 +69,7 @@ defineExpose<{
             <VList
                 :selected="[selected]"
                 density="compact"
-                :items="actions"
+                :items="items"
                 @update:selected="emit('update:selected', $event.length > 0 ? $event[0] as QueryLanguage : QueryLanguage.EvitaQL)"
             />
         </VMenu>
