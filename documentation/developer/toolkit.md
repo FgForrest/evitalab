@@ -3,6 +3,30 @@
 As mentioned in the [architecture section](architecture.md), there are several generic modules that provide base UI
 components, generic services and so on.
 
+## Database driver
+
+To access evitaDB server, there is the `EvitaClient` class which is an entrypoint for every database call.
+In components, you can access it via `useEvitaClient()`, in module registrar, you can access it via 
+`builder.inject(evitaClientInjectionKey)`.
+
+The client is designed similarly to Java driver or C# driver. It provides several sub-clients for different server actions.
+The main is accessing data using session. You can access the session using `queryCatalog` or `updateCatalog`.
+Both provide an active session in form of parameter into a passed logic function.
+Unlike other driver implementations, in evitaLab the `queryCatalog` shares a single session for each catalog. You can 
+request a new session, but it will be shared for next calls.
+The `updateCatalog` behaves more like in other driver implementations, it creates new session everytime (unless the catalog
+is in warming up mode). After the commit, both the read-write session and read-only shared session are closed to load
+fresh data next time.
+
+_In most cases, we want to use the client only in services, not directly in components (unless its tiny logic). Check
+[guidelines](./guidelines.md)_
+
+### Internal model
+
+Because we communicate with the evitaDB server using the gRPC API, its generated model is not very ideal. That's why the
+`EvitaClient` converts all gRPC models into internal models tailored to evitaLab needs.
+The internal evitaDB model mostly follows the model of evitaDB data model.
+
 ## UI components
 
 You should primarily use components from the [Vuetify](https://vuetifyjs.com/) framework. On top of that, there are several
@@ -23,22 +47,6 @@ be used freely.
 
 The implemented `ModuleRegistrar` then must be registered into the `modules/modules.ts` file so that the bootstrap process
 picks it up.
-
-## Connection support
-
-Connections allow accessing the remote evitaDB server, i.e. access schemas, data, and so on. The `connection` module
-provides the `Connection` class which is crucial for targeting the correct evitaDB server.
-The `ConnectionService` is then able to manage these connections, and provides way to access the data from evitaDB server.
-
-### Internal model and drivers
-
-Because we want to support multiple versions of evitaDB servers from a single instance of evitaLab, there is concept of
-evitaDB drivers in place. Each driver supports range of evitaDB server versions and defines how the server data
-are accessed and mapped into the internal evitaLab model.
-
-The internal evitaDB model mosty follows the model of evitaDB data model. The important part is that it has builtin 
-support for providing info about each property about supportability of a certain driver. This is done using a wrapper
-`Value` that provides methods for working with values that might not be supported by each evitaDB driver.
 
 ## Workspace support
 
