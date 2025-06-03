@@ -65,6 +65,7 @@ const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | null>(null)
 
 const schemaLoaded = ref<boolean>(false)
 const schema = ref<any>()
+const reloadingSchema = ref<boolean>(false)
 
 async function loadSchema(): Promise<void> {
     try {
@@ -75,8 +76,10 @@ async function loadSchema(): Promise<void> {
 }
 
 async function reloadSchema(): Promise<void> {
+    reloadingSchema.value = true
     // call registered callback which will load new schema
     await schemaViewerService.clearSchemaCache(props.params.dataPointer)
+    reloadingSchema.value = false
 }
 
 onMounted(() => {
@@ -116,7 +119,7 @@ loadSchema().then(() => {
                     :tab-data="undefined"
                     :command="Command.SchemaViewer_ShareTab"
                 />
-                <VBtn icon @click="reloadSchema()">
+                <VBtn :loading="reloadingSchema" icon @click="reloadSchema()">
                     <VIcon>mdi-refresh</VIcon>
                     <VActionTooltip activator="parent">
                         {{ t('common.button.reload') }}
