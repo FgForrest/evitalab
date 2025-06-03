@@ -220,7 +220,7 @@
       "keymap": "Keymap",
       "panels": {
         "_title": "Panels",
-        "connectionsExplorer": "Explorer"
+        "connection": "Connection"
       },
       "editor": {
         "_title": "Editor",
@@ -347,24 +347,24 @@
         "corrupted": "corrupted",
         "warmingUp": "warming up"
       },
-      "subheader": {
-        "manage": "Manage",
-        "modify": "Modify",
-        "collections": "Collections",
-        "traffic": "Traffic"
-      },
-      "actions": {
-        "evitaQLConsole": "evitaQL console",
-        "graphQLDataApiConsole": "GraphQL Data API console",
-        "graphQLSchemaApiConsole": "GraphQL Schema API console",
-        "viewSchema": "Schema",
-        "closeSharedSession": "Close shared session",
-        "deleteCatalog": "Delete catalog",
-        "renameCatalog": "Rename catalog",
-        "replaceCatalog": "Replace catalog",
-        "createCollection": "Create collection",
-        "switchCatalogToAliveState": "Switch catalog to alive state",
-        "activeTrafficRecording": "Active traffic recording"
+      "menu": {
+        "item": {
+          "manageSubheader": "Manage",
+          "modifySubheader": "Modify",
+          "collectionsSubheader": "Collections",
+          "trafficSubheader": "Traffic",
+          "evitaQLConsole": "evitaQL console",
+          "graphQLDataApiConsole": "GraphQL Data API console",
+          "graphQLSchemaApiConsole": "GraphQL Schema API console",
+          "viewSchema": "Schema",
+          "closeSharedSession": "Close shared session",
+          "deleteCatalog": "Delete catalog",
+          "renameCatalog": "Rename catalog",
+          "replaceCatalog": "Replace catalog",
+          "createCollection": "Create collection",
+          "switchCatalogToAliveState": "Switch catalog to alive state",
+          "activeTrafficRecording": "Active traffic recording"
+        }
       },
       "notification": {
         "closedSharedSession": "Shared session of catalog {catalogName} was closed.",
@@ -450,14 +450,14 @@
       }
     },
     "collection": {
-      "subheader": {
-        "modify": "Modify"
-      },
-      "actions": {
-        "viewEntities": "Entities",
-        "viewSchema": "Schema",
-        "deleteCollection": "Delete collection",
-        "renameCollection": "Rename collection"
+      "menu": {
+        "item": {
+          "modifySubheader": "Modify",
+          "entities": "Entities",
+          "schema": "Schema",
+          "deleteCollection": "Delete collection",
+          "renameCollection": "Rename collection"
+        }
       },
       "create": {
         "title": "Create collection in {catalogName} catalog",

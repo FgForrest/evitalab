@@ -1,4 +1,4 @@
-export enum MarkdownDetailRendererActionType {
+export enum CodeDetailRendererMenuItemType {
     Copy = 'copy',
     PrettyPrint = 'prettyPrint'
 }
