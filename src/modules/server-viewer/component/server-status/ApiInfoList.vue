@@ -1,12 +1,12 @@
 <script setup lang="ts">
 
-import Immutable from 'immutable'
+import { Map as ImmutableMap } from 'immutable'
 import ApiInfoListItem from '@/modules/server-viewer/component/server-status/ApiInfoListItem.vue'
 import { ApiType } from '@/modules/database-driver/request-response/status/ApiType'
 import { ApiStatus } from '@/modules/database-driver/request-response/status/ApiStatus'
 
 const props = defineProps<{
-    apis: Immutable.Map<ApiType, ApiStatus>
+    apis: ImmutableMap<ApiType, ApiStatus>
 }>()
 </script>
 

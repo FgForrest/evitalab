@@ -22,7 +22,7 @@ export class EvitaResponseConverter {
         return new EvitaResponse(
             this.convertDataChunk(grpcResponse.recordPage),
             this.extraResultConverter.convert(grpcResponse.extraResults),
-            grpcResponse.toJsonString()
+            JSON.stringify(grpcResponse)
         )
     }
 

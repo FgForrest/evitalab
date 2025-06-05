@@ -7,7 +7,7 @@ import {
     TrafficRecordVisualisationDefinition
 } from '../model/TrafficRecordVisualisationDefinition'
 import { i18n } from '@/vue-plugins/i18n'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { MutationContainer } from '@/modules/database-driver/request-response/traffic-recording/MutationContainer'
 
 /**
@@ -27,7 +27,7 @@ export class MutationContainerVisualiser extends TrafficRecordVisualiser<Mutatio
             i18n.global.t('trafficViewer.recordHistory.record.type.mutation.title'),
             JSON.stringify(trafficRecord.serializedMutation), // todo lho do better
             this.constructMetadata(trafficRecord, visualisedSessionRecord),
-            Immutable.List()
+            ImmutableList()
         )
 
         if (visualisedSessionRecord != undefined) {

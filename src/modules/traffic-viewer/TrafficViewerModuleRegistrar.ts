@@ -4,7 +4,7 @@ import {
     TrafficViewerService,
     trafficViewerServiceInjectionKey
 } from '@/modules/traffic-viewer/service/TrafficViewerService'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { SourceQueryContainerVisualiser } from '@/modules/traffic-viewer/service/SourceQueryContainerVisualiser'
 import { WorkspaceService, workspaceServiceInjectionKey } from '@/modules/workspace/service/WorkspaceService'
 import {
@@ -46,7 +46,7 @@ export class TrafficViewerModuleRegistrar implements ModuleRegistrar {
             evitaClient,
             new TrafficRecordHistoryVisualisationProcessor(
                 evitaClient,
-                Immutable.List([
+                ImmutableList([
                     new EntityEnrichmentContainerVisualiser(
                         workspaceService,
                         evitaQLConsoleTabFactory

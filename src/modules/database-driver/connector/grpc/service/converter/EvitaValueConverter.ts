@@ -10,7 +10,7 @@ import { LocalTime } from '@/modules/database-driver/data-type/LocalTime'
 import { OffsetDateTime, Timestamp } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { Predecessor } from '@/modules/database-driver/data-type/Predecessor'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import {
     GrpcBigDecimal,
     GrpcOffsetDateTime,
@@ -35,27 +35,28 @@ import {
     GrpcLocaleArray,
     GrpcCurrencyArray,
     GrpcUuidArray,
-    GrpcEvitaValue, GrpcDataItem
+    GrpcEvitaValue, 
+    GrpcDataItem
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { DateTime } from 'luxon'
 import { Range } from '@/modules/database-driver/data-type/Range'
 import { GrpcEvitaDataType } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { Currency } from '@/modules/database-driver/data-type/Currency'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { Timestamp as GrpcTimestamp } from '@bufbuild/protobuf'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
+import { Timestamp as GrpcTimestamp } from '@bufbuild/protobuf/wkt'
 
 /**
  * Convert gRPC evita value server representation into local evitaLab typescript representation
  */
 export class EvitaValueConverter {
 
-    convertGrpcValue(value: string | GrpcEvitaValue | GrpcDataItem | undefined): any {
+    convertGrpcValue(value: string | GrpcEvitaValue | GrpcDataItem | undefined, valueCase: string | undefined): any {
         if (typeof value === 'string') {
             return value
         } else if (value == undefined) {
             return undefined
-        } else if (value instanceof GrpcDataItem) {
+        } else if (valueCase === 'root') {
             // https://github.com/FgForrest/evitalab/issues/290
             throw new Error('Not implemented yet: https://github.com/FgForrest/evitalab/issues/290')
         } else {
@@ -286,10 +287,10 @@ export class EvitaValueConverter {
     }
 
     convertUuid(uuid: Uuid): GrpcUuid {
-        return new GrpcUuid({
+        return {
             mostSignificantBits: uuid.mostSignificantBits,
-            leastSignificantBits: uuid.leastSignificantBits,
-        })
+            leastSignificantBits: uuid.leastSignificantBits
+        } as GrpcUuid
     }
 
     convertGrpcPredecessor(value: GrpcPredecessor): Predecessor {
@@ -299,80 +300,80 @@ export class EvitaValueConverter {
         )
     }
 
-    convertGrpcStringArray(value: GrpcStringArray): Immutable.List<string> {
-        return Immutable.List(value.value)
+    convertGrpcStringArray(value: GrpcStringArray): ImmutableList<string> {
+        return ImmutableList(value.value)
     }
 
     convertGrpcIntegerArray(
         value: GrpcIntegerArray
-    ): Immutable.List<number> {
-        return Immutable.List(value.value)
+    ): ImmutableList<number> {
+        return ImmutableList(value.value)
     }
 
-    convertGrpcLongArray(value: GrpcLongArray): Immutable.List<bigint> {
-        return Immutable.List(value.value)
+    convertGrpcLongArray(value: GrpcLongArray): ImmutableList<bigint> {
+        return ImmutableList(value.value)
     }
 
     convertGrpcBooleanArray(
         value: GrpcBooleanArray
-    ): Immutable.List<boolean> {
-        return Immutable.List(value.value)
+    ): ImmutableList<boolean> {
+        return ImmutableList(value.value)
     }
 
     convertGrpcBigDecimalArray(
         value: GrpcBigDecimalArray
-    ): Immutable.List<BigDecimal> {
+    ): ImmutableList<BigDecimal> {
         const newBigDecimalArray: BigDecimal[] = []
         for (const grpcDecimal of value.value) {
             newBigDecimalArray.push(new BigDecimal(grpcDecimal.valueString))
         }
 
-        return Immutable.List(newBigDecimalArray)
+        return ImmutableList(newBigDecimalArray)
     }
 
     convertGrpcOffsetDateTimeArray(
         value: GrpcOffsetDateTimeArray
-    ): Immutable.List<OffsetDateTime> {
+    ): ImmutableList<OffsetDateTime> {
         const offsetDateTimeArray: OffsetDateTime[] = []
         for (const grpcDateTime of value.value) {
             offsetDateTimeArray.push(this.convertGrpcOffsetDateTime(grpcDateTime))
         }
-        return Immutable.List(offsetDateTimeArray)
+        return ImmutableList(offsetDateTimeArray)
     }
 
     convertGrpcLocalDateTimeArray(
         value: GrpcOffsetDateTimeArray
-    ): Immutable.List<LocalDateTime> {
+    ): ImmutableList<LocalDateTime> {
         const localeDateTimeArray: LocalDateTime[] = []
         for (const grpcDateTime of value.value) {
             localeDateTimeArray.push(this.convertGrpcLocalDateTime(grpcDateTime))
         }
-        return Immutable.List(localeDateTimeArray)
+        return ImmutableList(localeDateTimeArray)
     }
 
     convertGrpcLocalDateArray(
         value: GrpcOffsetDateTimeArray
-    ): Immutable.List<LocalDate> {
+    ): ImmutableList<LocalDate> {
         const localDateArray: LocalDate[] = []
         for (const localDate of value.value) {
             localDateArray.push(this.convertGrpcLocalDate(localDate))
         }
-        return Immutable.List(localDateArray)
+        return ImmutableList(localDateArray)
     }
 
     convertGrpcLocalTimeArray(
         value: GrpcOffsetDateTimeArray
-    ): Immutable.List<LocalTime> {
+    ): ImmutableList<LocalTime> {
         const localTimeArray: LocalTime[] = []
         for (const localTime of value.value) {
             localTimeArray.push(this.convertGrpcLocalTime(localTime))
         }
-        return Immutable.List(localTimeArray)
+        return ImmutableList(localTimeArray)
     }
 
     convertGrpcDateTimeRangeArray(
         value: GrpcDateTimeRangeArray
-    ): Immutable.List<DateTimeRange> {
+    ): ImmutableList<DateTimeRange> {
         const dateTimeRange: DateTimeRange[] = []
         for (const grpcDateTimeRange of value.value) {
             if (
@@ -394,12 +395,12 @@ export class EvitaValueConverter {
                 )
             }
         }
-        return Immutable.List(dateTimeRange)
+        return ImmutableList(dateTimeRange)
     }
 
     convertGrpcBigDecimalNumberRangeArray(
         value: GrpcBigDecimalNumberRangeArray
-    ): Immutable.List<Range<BigDecimal>> {
+    ): ImmutableList<Range<BigDecimal>> {
         const bigDecimalRange: Range<BigDecimal>[] = []
         for (const grpcBigDecimalRange of value.value) {
             bigDecimalRange.push(
@@ -413,36 +414,36 @@ export class EvitaValueConverter {
                 )
             )
         }
-        return Immutable.List(bigDecimalRange)
+        return ImmutableList(bigDecimalRange)
     }
 
     convertGrpcLongNumberRangeArray(
         value: GrpcLongNumberRangeArray
-    ): Immutable.List<Range<bigint>> {
+    ): ImmutableList<Range<bigint>> {
         const longNumberRangeArray: Range<bigint>[] = []
         for (const grpcLongRange of value.value) {
             longNumberRangeArray.push(
                 new BigintNumberRange(grpcLongRange.from, grpcLongRange.to)
             )
         }
-        return Immutable.List(longNumberRangeArray)
+        return ImmutableList(longNumberRangeArray)
     }
 
     convertGrpcIntegerNumberRangeArray(
         value: GrpcIntegerNumberRangeArray
-    ): Immutable.List<Range<number>> {
+    ): ImmutableList<Range<number>> {
         const integerNumberRangeArray: Range<number>[] = []
         for (const grpcIntegerNumber of value.value) {
             integerNumberRangeArray.push(
                 new IntegerRange(grpcIntegerNumber.from, grpcIntegerNumber.to)
             )
         }
-        return Immutable.List(integerNumberRangeArray)
+        return ImmutableList(integerNumberRangeArray)
     }
 
     convertGrpcShortNumberRangeArray(
         value: GrpcIntegerNumberRangeArray
-    ): Immutable.List<Range<number>> {
+    ): ImmutableList<Range<number>> {
         const shortNumberRangeArray: Range<number>[] = []
         for (const grpcShortNumberRange of value.value) {
             shortNumberRangeArray.push(
@@ -452,45 +453,45 @@ export class EvitaValueConverter {
                 )
             )
         }
-        return Immutable.List(shortNumberRangeArray)
+        return ImmutableList(shortNumberRangeArray)
     }
 
     convertGrpcByteNumberRangeArray(
         value: GrpcIntegerNumberRangeArray
-    ): Immutable.List<Range<number>> {
+    ): ImmutableList<Range<number>> {
         const byteNumberRangeArray: Range<number>[] = []
         for (const grpcIntegerNumber of value.value) {
             byteNumberRangeArray.push(
                 new IntegerRange(grpcIntegerNumber.from, grpcIntegerNumber.to)
             )
         }
-        return Immutable.List(byteNumberRangeArray)
+        return ImmutableList(byteNumberRangeArray)
     }
 
-    convertGrpcLocaleArray(value: GrpcLocaleArray): Immutable.List<Locale> {
+    convertGrpcLocaleArray(value: GrpcLocaleArray): ImmutableList<Locale> {
         const localeArray: Locale[] = []
         for (const locale of value.value) {
             localeArray.push(new Locale(locale.languageTag))
         }
-        return Immutable.List(localeArray)
+        return ImmutableList(localeArray)
     }
 
     convertGrpcCurrencyArray(
         value: GrpcCurrencyArray
-    ): Immutable.List<Currency> {
+    ): ImmutableList<Currency> {
         const currencyArray: Currency[] = []
         for (const currency of value.value) {
             currencyArray.push(new Currency(currency.code))
         }
-        return Immutable.List(currencyArray)
+        return ImmutableList(currencyArray)
     }
 
-    convertGrpcUuidArray(grpcUuids: GrpcUuidArray): Immutable.List<Uuid> {
+    convertGrpcUuidArray(grpcUuids: GrpcUuidArray): ImmutableList<Uuid> {
         const uuids: Uuid[] = []
         for (const grpcUuid of grpcUuids.value) {
             uuids.push(this.convertGrpcUuid(grpcUuid))
         }
-        return Immutable.List(uuids)
+        return ImmutableList(uuids)
     }
 
     convertGrpcLocalDate(offsetDateTime: GrpcOffsetDateTime): LocalDate {
@@ -529,10 +530,14 @@ export class EvitaValueConverter {
     }
 
     convertOffsetDateTime(offsetDateTime: OffsetDateTime): GrpcOffsetDateTime {
-        return new GrpcOffsetDateTime({
-            timestamp: offsetDateTime.timestamp,
-            offset: offsetDateTime.offset
-        })
+        return {
+            timestamp: {
+                nanos: offsetDateTime.timestamp.nanos,
+                seconds: offsetDateTime.timestamp.seconds
+            },
+            offset: offsetDateTime.offset,
+
+        } as GrpcOffsetDateTime
     }
 
     convertGrpcLocalTime(grpcTime: GrpcOffsetDateTime): LocalTime {

@@ -1,6 +1,6 @@
 import { GrpcHealthProblem, GrpcReadiness } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import Immutable from 'immutable'
+import { Set as ImmutableSet, Map as ImmutableMap, List as ImmutableList } from 'immutable'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
 import {
     GrpcApiStatus, GrpcEndpoint,
@@ -39,12 +39,12 @@ export class ServerStatusConverter {
         )
     }
 
-    private convertHealthProblems(grpcHealthProblems: GrpcHealthProblem[]): Immutable.Set<HealthProblem> {
+    private convertHealthProblems(grpcHealthProblems: GrpcHealthProblem[]): ImmutableSet<HealthProblem> {
         const healthProblems: HealthProblem[] = []
         for (const grpcHealthProblem of grpcHealthProblems) {
             healthProblems.push(this.convertHealthProblem(grpcHealthProblem))
         }
-        return Immutable.Set<HealthProblem>(healthProblems)
+        return ImmutableSet<HealthProblem>(healthProblems)
     }
 
     private convertHealthProblem(grpcHealthProblem: GrpcHealthProblem): HealthProblem {
@@ -70,7 +70,7 @@ export class ServerStatusConverter {
         }
     }
 
-    private convertApis(grpcApis: { [key: string]: GrpcApiStatus }): Immutable.Map<ApiType, ApiStatus> {
+    private convertApis(grpcApis: { [key: string]: GrpcApiStatus }): ImmutableMap<ApiType, ApiStatus> {
         const apis: Map<ApiType, ApiStatus> = new Map<ApiType, ApiStatus>()
         for (const grpcApiType in grpcApis) {
             apis.set(
@@ -78,7 +78,7 @@ export class ServerStatusConverter {
                 this.convertApiStatus(grpcApis[grpcApiType])
             )
         }
-        return Immutable.Map(apis)
+        return ImmutableMap(apis)
     }
 
     private convertApiType(grpcApiType: string): ApiType {
@@ -98,23 +98,23 @@ export class ServerStatusConverter {
         return new ApiStatus(
             grpcApiStatus.enabled,
             grpcApiStatus.ready,
-            Immutable.List(grpcApiStatus.baseUrl),
+            ImmutableList(grpcApiStatus.baseUrl),
             this.convertEndpoints(grpcApiStatus.endpoints)
         )
     }
 
-    private convertEndpoints(grpcEndpoints: GrpcEndpoint[]): Immutable.List<Endpoint> {
+    private convertEndpoints(grpcEndpoints: GrpcEndpoint[]): ImmutableList<Endpoint> {
         const endpoints: Endpoint[] = []
         for (const grpcEndpoint of grpcEndpoints) {
             endpoints.push(this.convertEndpoint(grpcEndpoint))
         }
-        return Immutable.List(endpoints)
+        return ImmutableList(endpoints)
     }
 
     private convertEndpoint(grpcEndpoint: GrpcEndpoint): Endpoint {
         return new Endpoint(
             grpcEndpoint.name,
-            Immutable.List(grpcEndpoint.url)
+            ImmutableList(grpcEndpoint.url)
         )
     }
 }

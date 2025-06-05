@@ -25,7 +25,7 @@ import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import EntityGrid from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGrid.vue'
 import Toolbar from '@/modules/entity-viewer/viewer/component/Toolbar.vue'
 import QueryInput from '@/modules/entity-viewer/viewer/component/QueryInput.vue'
-import Immutable from 'immutable'
+import { Map as ImmutableMap, List as ImmutableList } from 'immutable'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
 import {
     provideDataLocale,
@@ -65,11 +65,11 @@ defineExpose<TabComponentExpose>({
 })
 
 // static data
-const title = Immutable.List.of(props.params.dataPointer.entityType)
+const title = ImmutableList.of(props.params.dataPointer.entityType)
 
 let sortedEntityPropertyKeys: string[] = []
 let entityPropertyDescriptors: EntityPropertyDescriptor[] = []
-const entityPropertyDescriptorIndex = ref<Immutable.Map<string, EntityPropertyDescriptor>>(Immutable.Map<string, EntityPropertyDescriptor>())
+const entityPropertyDescriptorIndex = ref<ImmutableMap<string, EntityPropertyDescriptor>>(ImmutableMap<string, EntityPropertyDescriptor>())
 provideEntityPropertyDescriptorIndex(entityPropertyDescriptorIndex)
 const entitySchemaChangedCallbackId: string = entityViewerService.registerEntitySchemaChangeCallback(
     props.params.dataPointer,
@@ -77,7 +77,7 @@ const entitySchemaChangedCallbackId: string = entityViewerService.registerEntity
 )
 
 let gridHeaders: Map<string, any> = new Map<string, any>()
-let dataLocales: Immutable.List<string> = Immutable.List()
+let dataLocales: ImmutableList<string> = ImmutableList()
 
 // dynamic user data
 const selectedQueryLanguage = ref<QueryLanguage>(props.data.queryLanguage ? props.data.queryLanguage : QueryLanguage.EvitaQL)
@@ -189,7 +189,7 @@ async function reloadEntityPropertyDescriptors(): Promise<void> {
     displayedEntityProperties.value = displayedEntityProperties.value.filter(it => !removeDisplayProperties.includes(it.toString()))
 }
 
-function constructEntityPropertyDescriptorIndex(entityPropertyDescriptors: EntityPropertyDescriptor[]): Immutable.Map<string, EntityPropertyDescriptor> {
+function constructEntityPropertyDescriptorIndex(entityPropertyDescriptors: EntityPropertyDescriptor[]): ImmutableMap<string, EntityPropertyDescriptor> {
     const entityPropertyDescriptorIndexBuilder: Map<string, EntityPropertyDescriptor> = new Map()
     for (const entityPropertyDescriptor of entityPropertyDescriptors) {
         entityPropertyDescriptorIndexBuilder.set(entityPropertyDescriptor.key.toString(), entityPropertyDescriptor)
@@ -202,7 +202,7 @@ function constructEntityPropertyDescriptorIndex(entityPropertyDescriptors: Entit
             sortedEntityPropertyKeys.push(childEntityPropertyDescriptor.key.toString())
         }
     }
-    return Immutable.Map(entityPropertyDescriptorIndexBuilder)
+    return ImmutableMap(entityPropertyDescriptorIndexBuilder)
 }
 
 async function initializeGridHeaders(entityPropertyDescriptors: EntityPropertyDescriptor[]): Promise<Map<string, any>> {

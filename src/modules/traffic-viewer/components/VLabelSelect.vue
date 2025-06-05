@@ -4,7 +4,7 @@
  * Select input for selected label by name and values.
  */
 
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Label } from '@/modules/database-driver/request-response/traffic-recording/Label'
@@ -18,8 +18,8 @@ const props = withDefaults(
         hint?: string,
         clearable?: boolean,
         hideDetails?: boolean,
-        labelNamesProvider: (nameStartsWith: string) => Promise<Immutable.List<string>>,
-        labelValuesProvider: (labelName: string, valueStartsWith: string) => Promise<Immutable.List<string>>
+        labelNamesProvider: (nameStartsWith: string) => Promise<ImmutableList<string>>,
+        labelValuesProvider: (labelName: string, valueStartsWith: string) => Promise<ImmutableList<string>>
     }>(),
     {
         label: undefined,

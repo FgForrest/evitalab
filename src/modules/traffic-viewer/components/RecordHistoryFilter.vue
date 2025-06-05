@@ -14,7 +14,7 @@ import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { TrafficRecordHistoryDataPointer } from '@/modules/traffic-viewer/model/TrafficRecordHistoryDataPointer'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import {
     UserTrafficRecordType
 } from '@/modules/traffic-viewer/model/UserTrafficRecordType'
@@ -169,7 +169,7 @@ watch(labels, async (newValue) => {
     }
 })
 
-async function loadLabelNames(nameStartsWith: string): Promise<Immutable.List<string>> {
+async function loadLabelNames(nameStartsWith: string): Promise<ImmutableList<string>> {
     return trafficViewerService.getLabelNames(
         props.dataPointer.catalogName,
         nameStartsWith,
@@ -177,7 +177,7 @@ async function loadLabelNames(nameStartsWith: string): Promise<Immutable.List<st
     )
 }
 
-async function loadLabelValues(labelName: string, valueStartsWith: string): Promise<Immutable.List<string>> {
+async function loadLabelValues(labelName: string, valueStartsWith: string): Promise<ImmutableList<string>> {
     return trafficViewerService.getLabelValues(
         props.dataPointer.catalogName,
         labelName,

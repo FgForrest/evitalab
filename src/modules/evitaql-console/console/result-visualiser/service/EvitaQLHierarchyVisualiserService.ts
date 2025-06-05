@@ -5,7 +5,7 @@ import { VisualisedNamedHierarchy } from '@/modules/console/result-visualiser/mo
 import { VisualisedHierarchyTreeNode } from '@/modules/console/result-visualiser/model/hierarchy/VisualisedHierarchyTreeNode'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
-import Immutable, { List } from 'immutable'
+import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { Hierarchy } from '@/modules/database-driver/request-response/data/Hierarchy'
 import { LevelInfo } from '@/modules/database-driver/request-response/data/LevelInfo'
 
@@ -22,11 +22,11 @@ export class EvitaQLHierarchyVisualiserService
     }
 
     findNamedHierarchiesByReferencesResults(
-        hierarchyResult: Immutable.Map<string, Hierarchy>,
+        hierarchyResult: ImmutableMap<string, Hierarchy>,
         entitySchema: EntitySchema
     ): [ReferenceSchema | undefined, Result][] {
         const newHierarchy: [ReferenceSchema | undefined, Result][] = []
-        const references: Immutable.Map<string, ReferenceSchema> | undefined = entitySchema.references
+        const references: ImmutableMap<string, ReferenceSchema> | undefined = entitySchema.references
         if (references != undefined) {
             for (const [hierarchyName, hierarchy] of hierarchyResult) {
                 newHierarchy.push([
@@ -39,7 +39,7 @@ export class EvitaQLHierarchyVisualiserService
     }
 
     resolveNamedHierarchy(
-        namedHierarchyResult: List<LevelInfo>,
+        namedHierarchyResult: ImmutableList<LevelInfo>,
         entityRepresentativeAttributes: string[]
     ): VisualisedNamedHierarchy {
         const trees: VisualisedHierarchyTreeNode[] = []
@@ -92,7 +92,7 @@ export class EvitaQLHierarchyVisualiserService
         const queriedEntityCount: number | undefined = nodeResult.queriedEntityCount
 
         const children: VisualisedHierarchyTreeNode[] = []
-        const childResults: List<LevelInfo> | undefined = nodeResult.children
+        const childResults: ImmutableList<LevelInfo> | undefined = nodeResult.children
         if (childResults != undefined && childResults.size > 0) {
             childResults.forEach((childResult: LevelInfo) => {
                 const childNode: VisualisedHierarchyTreeNode =

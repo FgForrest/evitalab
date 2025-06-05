@@ -10,7 +10,7 @@ import { ClassifierType } from '@/modules/database-driver/data-type/ClassifierTy
 import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { backupTaskName } from '@/modules/backup-viewer/model/BackupTask'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 
@@ -31,7 +31,7 @@ export class BackupViewerService {
         this.evitaClient.management.unregisterCatalogStatisticsChangeCallback(id)
     }
 
-    async getAvailableCatalogs(): Promise<Immutable.List<CatalogStatistics>> {
+    async getAvailableCatalogs(): Promise<ImmutableList<CatalogStatistics>> {
         return await this.evitaClient.management.getCatalogStatistics()
     }
 

@@ -9,7 +9,7 @@ import {
     TrafficRecordVisualisationDefinition
 } from '../model/TrafficRecordVisualisationDefinition'
 import { i18n } from '@/vue-plugins/i18n'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import {
     TrafficRecordHistoryViewerTabFactory
@@ -71,8 +71,8 @@ export class SessionStartContainerVisualiser extends TrafficRecordVisualiser<Ses
     }
 
     private constructActions(ctx: TrafficRecordVisualisationContext,
-                             trafficRecord: SessionStartContainer): Immutable.List<Action> {
-        return Immutable.List([
+                             trafficRecord: SessionStartContainer): ImmutableList<Action> {
+        return ImmutableList([
             new Action(
                 i18n.global.t('trafficViewer.recordHistory.record.type.sessionStart.action.open'),
                 'mdi-open-in-new',

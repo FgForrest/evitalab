@@ -5,7 +5,7 @@ import { ReferenceSchema } from '@/modules/database-driver/request-response/sche
 import { VisualisedFacetGroupStatistics } from '@/modules/console/result-visualiser/model/facet-summary/VisualisedFacetGroupStatistics'
 import { VisualisedFacetStatistics } from '@/modules/console/result-visualiser/model/facet-summary/VisualisedFacetStatistics'
 import { Result } from '@/modules/console/result-visualiser/model/Result'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { GroupByUtil, Grouped } from '@/utils/GroupByUtil'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { FacetGroupStatistics } from '@/modules/database-driver/request-response/data/FacetGroupStatistics'
@@ -24,7 +24,7 @@ export class EvitaQLFacetSummaryVisualiserService
     }
 
     findFacetGroupStatisticsByReferencesResults(
-        facetSummaryResult: Immutable.List<FacetGroupStatistics>,
+        facetSummaryResult: ImmutableList<FacetGroupStatistics>,
         entitySchema: EntitySchema
     ): [ReferenceSchema, Result[]][] {
         const outputFacetSummary: [ReferenceSchema, Result[]][] = []

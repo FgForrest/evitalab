@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import CreateCatalogDialog from '@/modules/connection-explorer/component/CreateCatalogDialog.vue'
 import CatalogItem from '@/modules/connection-explorer/component/CatalogItem.vue'
 import VTreeViewEmptyItem from '@/modules/base/component/VTreeViewEmptyItem.vue'
@@ -34,7 +34,7 @@ const serverStatusChangeCallbackId: string = connectionExplorerService.registerS
 })
 provideServerStatus(serverStatus)
 
-const catalogs = ref<Immutable.List<CatalogStatistics> | undefined>()
+const catalogs = ref<ImmutableList<CatalogStatistics> | undefined>()
 const catalogChangeCallbackId: string = connectionExplorerService.registerCatalogChangeCallback(async () => {
     await loadCatalogs()
 })

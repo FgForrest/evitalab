@@ -1,5 +1,5 @@
 import { EntityCollectionStatistics } from './EntityCollectionStatistics'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState'
 
 /**
@@ -23,7 +23,7 @@ export class CatalogStatistics {
     /**
      * Set of all maintained entity collections - i.e. entity types.
      */
-    readonly entityCollectionStatistics: Immutable.List<EntityCollectionStatistics>
+    readonly entityCollectionStatistics: ImmutableList<EntityCollectionStatistics>
     /**
      * Whether this catalog is corrupted or can be freely used.
      */
@@ -46,7 +46,7 @@ export class CatalogStatistics {
         catalogId: string | undefined,
         version: BigInt,
         name: string,
-        entityCollectionStatistics: Immutable.List<EntityCollectionStatistics>,
+        entityCollectionStatistics: ImmutableList<EntityCollectionStatistics>,
         corrupted: boolean,
         catalogState: CatalogState,
         totalRecords: bigint,

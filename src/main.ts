@@ -27,10 +27,11 @@ loadFonts()
             .use(codemirror, defaultCodemirrorOptions)
             .use(toast, defaultToastOptions)
             .use(pinia)
-            .use(VueApexCharts)
             .use(i18n)
             .use(router)
             .use(luxonExtensions)
+            .component('apexcharts', VueApexCharts)
+            //.use(VueApexCharts(app)) -> Bad
 
         // register evitaLab modules
         const moduleContextBuilder: ModuleContextBuilder = new ModuleContextBuilder(app)

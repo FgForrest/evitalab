@@ -1,5 +1,5 @@
 import { GrpcReservedKeyword } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_pb'
-import Immutable from 'immutable'
+import { Map as ImmutableMap, List as ImmutableList } from 'immutable'
 import { ClassifierType } from '@/modules/database-driver/data-type/ClassifierType'
 import { GrpcClassifierType } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
@@ -10,7 +10,7 @@ import { Keyword } from '@/modules/database-driver/connector/grpc/model/Keyword'
  */
 export class ReservedKeywordsConverter {
 
-    convert(grpcReservedKeywords: GrpcReservedKeyword[]): Immutable.Map<ClassifierType, Immutable.List<Keyword>> {
+    convert(grpcReservedKeywords: GrpcReservedKeyword[]): ImmutableMap<ClassifierType, ImmutableList<Keyword>> {
         const reservedKeywords: Map<ClassifierType, Keyword[]> = new Map()
         for (const grpcReservedKeyword of grpcReservedKeywords) {
             const classifierType: ClassifierType = this.convertClassifierType(grpcReservedKeyword.classifierType)
@@ -22,9 +22,9 @@ export class ReservedKeywordsConverter {
             reservedKeywordsForClassifierType.push(this.convertReservedKeyword(grpcReservedKeyword))
         }
 
-        const immutableReservedKeywords: Map<ClassifierType, Immutable.List<Keyword>> = new Map()
-        reservedKeywords.forEach((value, key) => immutableReservedKeywords.set(key, Immutable.List(value)))
-        return Immutable.Map(immutableReservedKeywords)
+        const immutableReservedKeywords: Map<ClassifierType, ImmutableList<Keyword>> = new Map()
+        reservedKeywords.forEach((value, key) => immutableReservedKeywords.set(key, ImmutableList(value)))
+        return ImmutableMap(immutableReservedKeywords)
     }
 
     private convertClassifierType(grpcClassifierType: GrpcClassifierType): ClassifierType {

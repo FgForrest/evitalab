@@ -9,7 +9,7 @@ import { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import { mandatoryInject } from '@/utils/reactivity'
-import Immutable, { Map as ImmutableMap, List as ImmutableList } from 'immutable'
+import { Map as ImmutableMap, List as ImmutableList } from 'immutable'
 
 /**
  * Dependency injection key for data grid props
@@ -25,11 +25,11 @@ export const useTabProps = (): TabComponentProps<EntityViewerTabParams, EntityVi
 /**
  * Dependency injection key for index of available entity property descriptors
  */
-const entityPropertyDescriptorIndexInjectionKey: InjectionKey<Ref<Immutable.Map<string, EntityPropertyDescriptor>>> = Symbol('entityPropertyDescriptorIndex')
-export const provideEntityPropertyDescriptorIndex = (entityPropertyDescriptorIndex: Ref<Immutable.Map<string, EntityPropertyDescriptor>>): void => {
-    provide(entityPropertyDescriptorIndexInjectionKey, shallowReadonly(entityPropertyDescriptorIndex) as Ref<Immutable.Map<string, EntityPropertyDescriptor>>)
+const entityPropertyDescriptorIndexInjectionKey: InjectionKey<Ref<ImmutableMap<string, EntityPropertyDescriptor>>> = Symbol('entityPropertyDescriptorIndex')
+export const provideEntityPropertyDescriptorIndex = (entityPropertyDescriptorIndex: Ref<ImmutableMap<string, EntityPropertyDescriptor>>): void => {
+    provide(entityPropertyDescriptorIndexInjectionKey, shallowReadonly(entityPropertyDescriptorIndex) as Ref<ImmutableMap<string, EntityPropertyDescriptor>>)
 }
-export const useEntityPropertyDescriptorIndex = (): Ref<Immutable.Map<string, EntityPropertyDescriptor>> => {
+export const useEntityPropertyDescriptorIndex = (): Ref<ImmutableMap<string, EntityPropertyDescriptor>> => {
     return mandatoryInject(entityPropertyDescriptorIndexInjectionKey)
 }
 

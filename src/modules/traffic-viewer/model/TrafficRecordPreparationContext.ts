@@ -1,5 +1,5 @@
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import Immutable from 'immutable'
+import { Map as ImmutableMap } from 'immutable'
 import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 
@@ -31,8 +31,8 @@ export class TrafficRecordPreparationContext {
         }
     }
 
-    getRequestedAdditionalSourceQueryRecords(): Immutable.Map<string, RequestedSourceQueryRecord> {
-        return Immutable.Map(this.requestedAdditionalSourceQueryRecords)
+    getRequestedAdditionalSourceQueryRecords(): ImmutableMap<string, RequestedSourceQueryRecord> {
+        return ImmutableMap(this.requestedAdditionalSourceQueryRecords)
     }
 
     sessionStartRecordVisited(sessionId: Uuid): void {
@@ -54,8 +54,8 @@ export class TrafficRecordPreparationContext {
         }
     }
 
-    getRequestedAdditionalSessionStartRecords(): Immutable.Map<string, RequestedSessionStartRecord> {
-        return Immutable.Map(this.requestedAdditionalSessionStartRecords)
+    getRequestedAdditionalSessionStartRecords(): ImmutableMap<string, RequestedSessionStartRecord> {
+        return ImmutableMap(this.requestedAdditionalSessionStartRecords)
     }
 }
 

@@ -7,7 +7,7 @@ import { DateTime } from 'luxon'
 import { BackupViewerService, useBackupViewerService } from '@/modules/backup-viewer/service/BackupViewerService'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import { CatalogVersionAtResponse } from '@/modules/database-driver/request-response/CatalogVersionAtResponse'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import VDateTimeInput from '@/modules/base/component/VDateTimeInput.vue'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 
@@ -73,7 +73,7 @@ const catalogNameRules = [
 
 async function loadAvailableCatalogs(): Promise<void> {
     try {
-        const fetchedAvailableCatalogs: Immutable.List<CatalogStatistics> = await backupViewerService.getAvailableCatalogs()
+        const fetchedAvailableCatalogs: ImmutableList<CatalogStatistics> = await backupViewerService.getAvailableCatalogs()
         availableCatalogs.value = fetchedAvailableCatalogs
             .filter(it => !it.corrupted)
             .map(it => it.name)

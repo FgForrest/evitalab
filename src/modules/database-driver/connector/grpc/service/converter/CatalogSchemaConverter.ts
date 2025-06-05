@@ -106,7 +106,7 @@ export class CatalogSchemaConverter {
                 attribute.filterable,
                 attribute.sortable,
                 attribute.nullable,
-                this.evitaValueConverter.convertGrpcValue(attribute.defaultValue),
+                this.evitaValueConverter.convertGrpcValue(attribute.defaultValue, attribute.defaultValue?.value.case),
                 attribute.localized,
                 attribute.indexedDecimalPlaces
             )
@@ -121,7 +121,7 @@ export class CatalogSchemaConverter {
                 attribute.filterable,
                 attribute.sortable,
                 attribute.nullable,
-                this.evitaValueConverter.convertGrpcValue(attribute.defaultValue),
+                this.evitaValueConverter.convertGrpcValue(attribute.defaultValue, attribute.defaultValue?.value.case),
                 attribute.localized,
                 attribute.indexedDecimalPlaces,
                 attribute.representative
@@ -144,7 +144,7 @@ export class CatalogSchemaConverter {
             globalAttributeSchema.filterable,
             globalAttributeSchema.sortable,
             globalAttributeSchema.nullable,
-            this.evitaValueConverter.convertGrpcValue(globalAttributeSchema.defaultValue),
+            this.evitaValueConverter.convertGrpcValue(globalAttributeSchema.defaultValue, globalAttributeSchema.defaultValue?.value.case),
             globalAttributeSchema.localized,
             globalAttributeSchema.indexedDecimalPlaces,
             globalAttributeSchema.representative,
@@ -261,7 +261,7 @@ export class CatalogSchemaConverter {
             const driverEntityAttributeSchema: GrpcAttributeSchema =
                 entityAttributeSchemas[attributeName]
             entityAttributesSchemas.push(
-                this.convertGlobalAttributeSchema(
+                this.convertAttributeSchema(
                     driverEntityAttributeSchema
                 ) as EntityAttributeSchema
             )

@@ -1,5 +1,5 @@
 import { TrafficRecordVisualisationContext } from '@/modules/traffic-viewer/model/TrafficRecordVisualisationContext'
-import Immutable from 'immutable'
+import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { TrafficRecordVisualiser } from '@/modules/traffic-viewer/service/TrafficRecordVisualiser'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { TrafficRecordHistoryCriteria } from '@/modules/traffic-viewer/model/TrafficRecordHistoryCriteria'
@@ -28,8 +28,8 @@ import {
     SourceQueryStatisticsContainer
 } from '@/modules/database-driver/request-response/traffic-recording/SourceQueryStatisticsContainer'
 
-const additionSessionStartFetchRequestTypes: any = Immutable.List([TrafficRecordType.SessionStart])
-const additionSourceQueryFetchRequestTypes: any = Immutable.List([TrafficRecordType.SourceQuery, TrafficRecordType.SourceQueryStatistics])
+const additionSessionStartFetchRequestTypes: any = ImmutableList([TrafficRecordType.SessionStart])
+const additionSourceQueryFetchRequestTypes: any = ImmutableList([TrafficRecordType.SourceQuery, TrafficRecordType.SourceQueryStatistics])
 
 /**
  * Takes raw flat traffic records from server and processes them into visualisable tree structure.
@@ -37,16 +37,16 @@ const additionSourceQueryFetchRequestTypes: any = Immutable.List([TrafficRecordT
 export class TrafficRecordHistoryVisualisationProcessor {
 
     private readonly evitaClient: EvitaClient
-    private readonly visualisers: Immutable.List<TrafficRecordVisualiser<any>>
+    private readonly visualisers: ImmutableList<TrafficRecordVisualiser<any>>
 
-    constructor(evitaClient: EvitaClient, visualisers: Immutable.List<TrafficRecordVisualiser<any>>) {
+    constructor(evitaClient: EvitaClient, visualisers: ImmutableList<TrafficRecordVisualiser<any>>) {
         this.evitaClient = evitaClient
         this.visualisers = visualisers
     }
 
     async process(catalogName: string,
                   historyCriteria: TrafficRecordHistoryCriteria,
-                  records: TrafficRecord[]): Promise<Immutable.List<TrafficRecordVisualisationDefinition>> {
+                  records: TrafficRecord[]): Promise<ImmutableList<TrafficRecordVisualisationDefinition>> {
         const preparationContext: TrafficRecordPreparationContext = new TrafficRecordPreparationContext()
         for (const record of records) {
             this.prepareRecord(preparationContext, record)
@@ -72,11 +72,11 @@ export class TrafficRecordHistoryVisualisationProcessor {
                                       records: TrafficRecord[]): Promise<TrafficRecord[]> {
         const recordsToVisualise: TrafficRecord[] = [...records]
 
-        const requestedAdditionalSessionStartRecords: Immutable.Map<string, RequestedSessionStartRecord> =
+        const requestedAdditionalSessionStartRecords: ImmutableMap<string, RequestedSessionStartRecord> =
             preparationContext.getRequestedAdditionalSessionStartRecords()
         if (!requestedAdditionalSessionStartRecords.isEmpty() && historyCriteria.types?.includes(UserTrafficRecordType.Session)) {
             const sessionStartFetchRequest: TrafficRecordingCaptureRequest = this.createAdditionalSessionStartFetchRequest(requestedAdditionalSessionStartRecords)
-            const sessionStartRecords: Immutable.List<TrafficRecord> = await this.fetchAdditionalRecords(
+            const sessionStartRecords: ImmutableList<TrafficRecord> = await this.fetchAdditionalRecords(
                 catalogName,
                 sessionStartFetchRequest,
                 recordsToVisualise.length  // this is not ideal, but don't have better solution right now
@@ -84,11 +84,11 @@ export class TrafficRecordHistoryVisualisationProcessor {
             this.insertFetchedSessionStartRecords(sessionStartRecords, requestedAdditionalSessionStartRecords, recordsToVisualise)
         }
 
-        const requestedAdditionalSourceQueryRecords: Immutable.Map<string, RequestedSourceQueryRecord> =
+        const requestedAdditionalSourceQueryRecords: ImmutableMap<string, RequestedSourceQueryRecord> =
             preparationContext.getRequestedAdditionalSourceQueryRecords()
         if (!requestedAdditionalSourceQueryRecords.isEmpty() && historyCriteria.types?.includes(UserTrafficRecordType.SourceQuery)) {
             const sourceQueryFetchRequest: TrafficRecordingCaptureRequest = this.createAdditionalSourceQueryFetchRequest(requestedAdditionalSourceQueryRecords)
-            const sourceQueryRecords: Immutable.List<TrafficRecord> = await this.fetchAdditionalRecords(
+            const sourceQueryRecords: ImmutableList<TrafficRecord> = await this.fetchAdditionalRecords(
                 catalogName,
                 sourceQueryFetchRequest,
                 recordsToVisualise.length * 2  // there are two record types we want to fetch... this is not ideal, but don't have better solution right now
@@ -99,7 +99,7 @@ export class TrafficRecordHistoryVisualisationProcessor {
         return recordsToVisualise
     }
 
-    private createAdditionalSessionStartFetchRequest(requestedSessionStartRecords: Immutable.Map<string, RequestedSessionStartRecord>): TrafficRecordingCaptureRequest {
+    private createAdditionalSessionStartFetchRequest(requestedSessionStartRecords: ImmutableMap<string, RequestedSessionStartRecord>): TrafficRecordingCaptureRequest {
         return new TrafficRecordingCaptureRequest(
             TrafficRecordContent.Body,
             undefined,
@@ -115,7 +115,7 @@ export class TrafficRecordHistoryVisualisationProcessor {
         )
     }
 
-    private createAdditionalSourceQueryFetchRequest(requestedSourceQueryRecords: Immutable.Map<string, RequestedSourceQueryRecord>): TrafficRecordingCaptureRequest {
+    private createAdditionalSourceQueryFetchRequest(requestedSourceQueryRecords: ImmutableMap<string, RequestedSourceQueryRecord>): TrafficRecordingCaptureRequest {
         return new TrafficRecordingCaptureRequest(
             TrafficRecordContent.Body,
             undefined,
@@ -136,7 +136,7 @@ export class TrafficRecordHistoryVisualisationProcessor {
 
     private async fetchAdditionalRecords(catalogName: string,
                                          sourceQueryFetchRequest: TrafficRecordingCaptureRequest,
-                                         limit: number): Promise<Immutable.List<TrafficRecord>> {
+                                         limit: number): Promise<ImmutableList<TrafficRecord>> {
         return await this.evitaClient.queryCatalog(
             catalogName,
             session => session.getRecordings(
@@ -146,8 +146,8 @@ export class TrafficRecordHistoryVisualisationProcessor {
         )
     }
 
-    private insertFetchedSessionStartRecords(additionalSessionStartRecords: Immutable.List<TrafficRecord>,
-                                             requests: Immutable.Map<string, RequestedSessionStartRecord>,
+    private insertFetchedSessionStartRecords(additionalSessionStartRecords: ImmutableList<TrafficRecord>,
+                                             requests: ImmutableMap<string, RequestedSessionStartRecord>,
                                              records: TrafficRecord[]): void {
         let startInsertingAt: number = 0
         for (const sessionStartRecord of additionalSessionStartRecords) {
@@ -170,8 +170,8 @@ export class TrafficRecordHistoryVisualisationProcessor {
         }
     }
 
-    private insertFetchedSourceQueryRecords(additionalSourceQueryRecords: Immutable.List<TrafficRecord>,
-                                            requests: Immutable.Map<string, RequestedSourceQueryRecord>,
+    private insertFetchedSourceQueryRecords(additionalSourceQueryRecords: ImmutableList<TrafficRecord>,
+                                            requests: ImmutableMap<string, RequestedSourceQueryRecord>,
                                             records: TrafficRecord[]): void {
         for (const sourceQueryRecord of additionalSourceQueryRecords) {
             if (!(sourceQueryRecord instanceof SourceQueryContainer) && !(sourceQueryRecord instanceof SourceQueryStatisticsContainer)) {

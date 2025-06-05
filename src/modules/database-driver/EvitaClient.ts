@@ -11,7 +11,6 @@ import { CatalogState } from '@/modules/database-driver/request-response/Catalog
 import { EvitaClientManagement } from '@/modules/database-driver/EvitaClientManagement'
 import { EvitaSchemaCache } from '@/modules/database-driver/EvitaSchemaCache'
 import { Set } from 'immutable'
-import { Empty } from '@bufbuild/protobuf'
 import { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
@@ -57,7 +56,7 @@ export class EvitaClient extends AbstractEvitaClient {
      */
     async getCatalogNames(): Promise<Set<string>> {
         try {
-            const response: GrpcCatalogNamesResponse = await this.evitaClient.getCatalogNames(Empty)
+            const response: GrpcCatalogNamesResponse = await this.evitaClient.getCatalogNames({})
             return Set(response.catalogNames)
         } catch (e) {
             throw this.errorTransformer.transformError(e)
@@ -157,7 +156,7 @@ export class EvitaClient extends AbstractEvitaClient {
         try {
             const catalog: CatalogStatistics = await this.management.getCatalogStatisticsForCatalog(catalogName)
 
-            return await this.executeInSharedSession(
+            return (await this.executeInSharedSession<T>(
                 catalogName,
                 queryLogic,
                 catalog.isInWarmup,
@@ -165,7 +164,7 @@ export class EvitaClient extends AbstractEvitaClient {
                 // are visible everywhere, because there is only one shared session
                 catalog.isInWarmup ? false : forceNewSession,
                 true
-            )
+            )) as T
         } catch (e) {
             throw this.errorTransformer.transformError(e)
         }

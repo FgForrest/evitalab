@@ -1,7 +1,6 @@
-import { Empty, StringValue } from '@bufbuild/protobuf'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { splitStringWithCaseIntoWords } from '@/utils/string'
-import Immutable, { List } from 'immutable'
+import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { CatalogStatisticsConverter } from '@/modules/database-driver/connector/grpc/service/converter/CatalogStatisticsConverter'
 import { EvitaManagementServiceClient } from '@/modules/database-driver/AbstractEvitaClient'
 import {
@@ -22,7 +21,7 @@ import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTi
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
-import { GrpcTaskStatus } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
+import { GrpcTaskStatus, GrpcUuid } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
@@ -38,6 +37,7 @@ import { EventType } from '@/modules/database-driver/request-response/jfr/EventT
 import { EvitaCatalogStatisticsCache } from '@/modules/database-driver/EvitaCatalogStatisticsCache'
 import { EntityCollectionStatistics } from '@/modules/database-driver/request-response/EntityCollectionStatistics'
 import { EvitaServerMetadataCache } from '@/modules/database-driver/EvitaServerMetadataCache'
+import { StringValue } from '@bufbuild/protobuf/wkt'
 
 
 /**
@@ -60,7 +60,7 @@ export class EvitaClientManagement {
 
     private readonly classifierFormatPattern: RegExp = /^[A-Za-z][A-Za-z0-9_.\-~]{0,254}$/
 
-    private reservedKeywords?: Immutable.Map<ClassifierType, Immutable.List<Keyword>>
+    private reservedKeywords?: ImmutableMap<ClassifierType, ImmutableList<Keyword>>
 
     private readonly serverMetadataCache: EvitaServerMetadataCache
     private readonly catalogStatisticsCache: EvitaCatalogStatisticsCache
@@ -171,7 +171,7 @@ export class EvitaClientManagement {
     /**
      * Returns complete listing of all catalogs known to the Evita instance along with their states and basic statistics.
      */
-    async getCatalogStatistics(): Promise<List<CatalogStatistics>> {
+    async getCatalogStatistics(): Promise<ImmutableList<CatalogStatistics>> {
         return await this.catalogStatisticsCache.getLatestCatalogStatistics()
     }
 
@@ -271,17 +271,17 @@ export class EvitaClientManagement {
             while (offset < totalSize) {
                 readChunk();
                 const chunk: Uint8Array = await onLoadPromise();
-                const chunkRequest: GrpcRestoreCatalogUnaryRequest = new GrpcRestoreCatalogUnaryRequest({
+                const chunkRequest: GrpcRestoreCatalogUnaryRequest = {
                     catalogName,
                     backupFile: chunk,
                     fileId: uploadedFileId != undefined
                         ? {
                             mostSignificantBits: uploadedFileId.mostSignificantBits,
                             leastSignificantBits: uploadedFileId.leastSignificantBits
-                        }
+                        } as GrpcUuid
                         : undefined,
                     totalSizeInBytes: BigInt(file.size)
-                });
+                } as GrpcRestoreCatalogUnaryRequest;
 
                 const chunkResponse: GrpcRestoreCatalogUnaryResponse = await this.evitaManagementClientProvider()
                     .restoreCatalogUnary(
@@ -341,7 +341,7 @@ export class EvitaClientManagement {
                 .listTaskStatuses({
                     pageNumber,
                     pageSize,
-                    taskType: taskTypes?.map(taskType => StringValue.fromJson(taskType)) || undefined,
+                    taskType: taskTypes?.map(taskType => ({ value: taskType })) || undefined,
                     simplifiedState: params
                 })
             return this.taskStatusConverterProvider().convertTaskStatuses(result)
@@ -434,7 +434,7 @@ export class EvitaClientManagement {
         if (this.reservedKeywords == undefined) {
             try {
                 const response: GrpcReservedKeywordsResponse = await this.evitaManagementClientProvider()
-                    .listReservedKeywords(Empty)
+                    .listReservedKeywords({ })
                 this.reservedKeywords = this.reservedKeywordsConverterProvider().convert(response.keywords)
             } catch (e) {
                 this.errorTransformer.transformError(e)
@@ -467,7 +467,7 @@ export class EvitaClientManagement {
     private async fetchServerStatus(): Promise<ServerStatus> {
         try {
             const grpcServerStatus: GrpcEvitaServerStatusResponse = await this.evitaManagementClientProvider()
-                .serverStatus(Empty)
+                .serverStatus({})
             return this.serverStatusConverterProvider().convert(grpcServerStatus)
         } catch (e) {
             throw this.errorTransformer.transformError(e)
@@ -483,7 +483,7 @@ export class EvitaClientManagement {
 
     private async fetchConfiguration(): Promise<string> {
         try {
-            const response: GrpcEvitaConfigurationResponse = await this.evitaManagementClientProvider().getConfiguration(Empty)
+            const response: GrpcEvitaConfigurationResponse = await this.evitaManagementClientProvider().getConfiguration({})
             return response.configuration
         } catch (e) {
             throw this.errorTransformer.transformError(e)
@@ -522,10 +522,10 @@ export class EvitaClientManagement {
      * Fetches catalog statistics from the server.
      * @private
      */
-    private fetchCatalogStatistics = async (): Promise<List<CatalogStatistics>> => {
+    private fetchCatalogStatistics = async (): Promise<ImmutableList<CatalogStatistics>> => {
         try {
-            const response: GrpcEvitaCatalogStatisticsResponse = await this.evitaManagementClientProvider().getCatalogStatistics(Empty)
-            return List(
+            const response: GrpcEvitaCatalogStatisticsResponse = await this.evitaManagementClientProvider().getCatalogStatistics({})
+            return ImmutableList(
                 response.catalogStatistics
                     .map((x) => this.catalogStatisticsConverterProvider().convert(x))
             )
@@ -546,7 +546,7 @@ export class EvitaClientManagement {
         if (this.reservedKeywords == undefined) {
             throw new UnexpectedError('Missing reserved keywords.')
         }
-        const reservedKeywords: Immutable.List<Keyword> | undefined = this.reservedKeywords.get(classifierType)
+        const reservedKeywords: ImmutableList<Keyword> | undefined = this.reservedKeywords.get(classifierType)
         if (reservedKeywords == undefined) {
             return false
         }

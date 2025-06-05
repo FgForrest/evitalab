@@ -4,7 +4,7 @@ import { ClassifierValidationErrorType } from '@/modules/database-driver/data-ty
 import { ClassifierType } from '@/modules/database-driver/data-type/ClassifierType'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 
 export const catalogItemServiceInjectionKey: InjectionKey<CatalogItemService> = Symbol('catalogItemService')
 
@@ -18,7 +18,7 @@ export class CatalogItemService {
         this.evitaClient = evitaClient
     }
 
-    async getCatalogs(): Promise<Immutable.List<CatalogStatistics>> {
+    async getCatalogs(): Promise<ImmutableList<CatalogStatistics>> {
         return await this.evitaClient.management.getCatalogStatistics()
     }
 

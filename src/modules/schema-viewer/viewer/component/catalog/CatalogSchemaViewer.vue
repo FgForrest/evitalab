@@ -13,7 +13,7 @@ import SchemaContainer from '@/modules/schema-viewer/viewer/component/SchemaCont
 import NameVariants from '@/modules/schema-viewer/viewer/component/NameVariants.vue'
 import AttributeSchemaList from '@/modules/schema-viewer/viewer/component/attribute/AttributeSchemaList.vue'
 import EntitySchemaList from '@/modules/schema-viewer/viewer/component/entity/EntitySchemaList.vue'
-import Immutable, { List } from 'immutable'
+import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 
@@ -27,7 +27,7 @@ const props = defineProps<{
 const catalogId = ref<string>()
 const loaded = ref<boolean>(false)
 const loadedSchemas = ref<boolean>(false)
-const entitySchemas = ref<Immutable.Map<string, EntitySchema>>(Immutable.Map())
+const entitySchemas = ref<ImmutableMap<string, EntitySchema>>(ImmutableMap())
 
 const toaster: Toaster = useToaster()
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
@@ -75,13 +75,13 @@ const properties = computed<Property[]>(() => [
                 <AttributeSchemaList
                     v-if="schema.attributes && schema.attributes.size > 0"
                     :data-pointer="dataPointer"
-                    :attributes="List(schema.attributes.values())"
+                    :attributes="ImmutableList(schema.attributes.values())"
                 />
 
                 <EntitySchemaList
                     v-if="loadedSchemas && entitySchemas.size > 0"
                     :data-pointer="dataPointer"
-                    :entities="List(entitySchemas.values())"
+                    :entities="ImmutableList(entitySchemas.values())"
                 />
             </template>
         </SchemaContainer>

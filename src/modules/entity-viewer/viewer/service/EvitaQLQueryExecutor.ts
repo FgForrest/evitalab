@@ -11,7 +11,7 @@ import { EntityPrice } from '@/modules/entity-viewer/viewer/model/entity-propert
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { EntityPrices } from '../model/entity-property-value/EntityPrices'
 import { GroupByUtil, Grouped } from '@/utils/GroupByUtil'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
 import { Entity } from '@/modules/database-driver/request-response/data/Entity'
@@ -144,7 +144,7 @@ export class EvitaQLQueryExecutor extends QueryExecutor {
 
     private flattenPrices(entity: Entity): WritableEntityProperty | undefined {
         const priceForSale: Price | undefined = entity.priceForSale
-        const prices: Immutable.List<Price> = entity.prices
+        const prices: ImmutableList<Price> = entity.prices
         if (priceForSale == undefined && prices == undefined) {
             return undefined
         }

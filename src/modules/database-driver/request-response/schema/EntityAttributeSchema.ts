@@ -1,4 +1,4 @@
-import Immutable, { List, Map } from 'immutable'
+import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { NamingConvention } from '../NamingConvetion'
 import { AttributeSchema, AttributeSchemaFlag } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
@@ -15,7 +15,7 @@ export class EntityAttributeSchema extends AttributeSchema {
     readonly representative: boolean
 
     constructor(name: string,
-                nameVariants: Map<NamingConvention, string>,
+                nameVariants: ImmutableMap<NamingConvention, string>,
                 description: string | undefined,
                 deprecationNotice: string | undefined,
                 type: Scalar,
@@ -31,7 +31,7 @@ export class EntityAttributeSchema extends AttributeSchema {
         this.representative = representative
     }
 
-    get representativeFlags(): Immutable.List<string> {
+    get representativeFlags(): ImmutableList<string> {
         if (this._representativeFlags == undefined) {
             const representativeFlags: string[] = []
 
@@ -52,7 +52,7 @@ export class EntityAttributeSchema extends AttributeSchema {
             if (this.localized) representativeFlags.push(AttributeSchemaFlag.Localized)
             if (this.nullable) representativeFlags.push(AttributeSchemaFlag.Nullable)
 
-            this._representativeFlags = List(representativeFlags)
+            this._representativeFlags = ImmutableList(representativeFlags)
         }
         return this._representativeFlags
     }

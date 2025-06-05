@@ -1,5 +1,5 @@
 import { TaskState } from "./TaskState"
-import Immutable from 'immutable'
+import { List as ImmutableList, Set as ImmutableSet } from 'immutable'
 import { DateTime, Duration } from 'luxon'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
@@ -10,7 +10,7 @@ import { TaskTrait } from '@/modules/database-driver/request-response/task/TaskT
  * Represents a single server task that is being processed by the evitaDB.
  */
 export class TaskStatus {
-    readonly taskTypes: Immutable.List<string>
+    readonly taskTypes: ImmutableList<string>
     readonly taskName: string
     readonly taskId: Uuid
     readonly catalogName: string | undefined
@@ -23,12 +23,12 @@ export class TaskStatus {
     readonly result: TaskResult | undefined
     readonly exception: string | undefined
     readonly state: TaskState
-    readonly traits: Immutable.Set<TaskTrait>
+    readonly traits: ImmutableSet<TaskTrait>
 
     private _cancelRequested: boolean = false
     private _duration?: Duration = undefined
 
-    constructor(taskTypes: Immutable.List<string>,
+    constructor(taskTypes: ImmutableList<string>,
                 taskName: string,
                 taskId: Uuid,
                 catalogName: string | undefined,
@@ -41,7 +41,7 @@ export class TaskStatus {
                 result: TaskResult | undefined,
                 exception: string | undefined,
                 state: TaskState,
-                traits: Immutable.Set<TaskTrait>){
+                traits: ImmutableSet<TaskTrait>){
         this.taskTypes = taskTypes
         this.taskName = taskName
         this.taskId = taskId

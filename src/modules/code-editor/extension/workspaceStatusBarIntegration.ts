@@ -1,7 +1,7 @@
 import { EditorView } from 'codemirror'
 import { AnnotationType, Extension, Line, StateField, Annotation, EditorState } from '@codemirror/state'
 import { ViewPlugin, ViewUpdate } from '@codemirror/view'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { language, Language } from '@codemirror/language'
 import { jsonLanguage } from '@codemirror/lang-json'
 import { evitaQLQueryLanguage, evitaQLConstraintListLanguage } from '@lukashornych/codemirror-lang-evitaql'
@@ -102,7 +102,7 @@ export function workspaceStatusBarIntegration(workspaceService: WorkspaceService
 
             workspaceService.editorStatus.updateEditorInfo(
                 editorRegistrationId,
-                Immutable.List(newSelections)
+                ImmutableList(newSelections)
             )
         }
     })

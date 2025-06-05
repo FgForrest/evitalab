@@ -1,5 +1,5 @@
 import { Duration } from 'luxon'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { Label } from '@/modules/database-driver/request-response/traffic-recording/Label'
@@ -13,7 +13,7 @@ export class SourceQueryContainer extends TrafficRecord {
 
     readonly sourceQueryId: Uuid
     readonly sourceQuery: string
-    readonly labels: Immutable.List<Label>
+    readonly labels: ImmutableList<Label>
 
     constructor(sessionSequenceOrder: bigint,
                 sessionId: Uuid,
@@ -27,7 +27,7 @@ export class SourceQueryContainer extends TrafficRecord {
                 finishedWithError: string | undefined,
                 sourceQueryId: Uuid,
                 sourceQuery: string,
-                labels: Immutable.List<Label>) {
+                labels: ImmutableList<Label>) {
         super(
             sessionSequenceOrder,
             sessionId,

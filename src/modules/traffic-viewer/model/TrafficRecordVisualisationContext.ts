@@ -4,7 +4,7 @@ import {
 } from '@/modules/traffic-viewer/model/TrafficRecordVisualisationDefinition'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 
 /**
  * Generic context for record visualisation
@@ -21,8 +21,8 @@ export class TrafficRecordVisualisationContext {
         this.catalogName = catalogName
     }
 
-    getVisualisedRecords(): Immutable.List<TrafficRecordVisualisationDefinition> {
-        return Immutable.List(this.rootVisualisedRecords)
+    getVisualisedRecords(): ImmutableList<TrafficRecordVisualisationDefinition> {
+        return ImmutableList(this.rootVisualisedRecords)
     }
 
     addRootVisualisedRecord(record: TrafficRecordVisualisationDefinition): void {
