@@ -1603,7 +1603,7 @@ export enum GrpcCommitBehavior {
    * may decide to fsync changes from multiple transactions at once, so the transaction may wait longer than
    * necessary. This behaviour still does not guarantee that the changes will be visible immediately after
    * the commit - because they still need to be propagated to indexes in order new data can be found by queries.
-   * 
+   *
    * This behaviour is default.
    *
    * @generated from enum value: WAIT_FOR_LOG_PERSISTENCE = 1;

@@ -197,7 +197,7 @@ function clearHistory(): void {
 </template>
 
 <style lang="scss" scoped>
-@import "@/styles/colors.scss";
+@use "@/styles/colors.scss" as *;
 
 .inline-query-editor {
     display: inline-grid;

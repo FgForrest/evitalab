@@ -200,7 +200,7 @@ export type GrpcSetEntitySchemaWithGeneratedPrimaryKeyMutation = Message<"io.evi
   /**
    * Whether primary keys of entities of this type will not be provided by the external systems and Evita
    * is responsible for generating unique primary keys for the entity on insertion.
-   * 
+   *
    * Generated key is guaranteed to be unique, but may not represent continuous ascending series. Generated key
    * will be always greater than zero.
    *
@@ -225,11 +225,11 @@ export type GrpcSetEntitySchemaWithHierarchyMutation = Message<"io.evitadb.exter
   /**
    * Whether entities of this type are organized in a tree like structure (hierarchy) where certain entities
    * are subordinate of other entities.
-   * 
+   *
    * Entities may be organized in hierarchical fashion. That means that entity may refer to single parent entity and may be
    * referred by multiple child entities. Hierarchy is always composed of entities of same type.
    * Each entity must be part of at most single hierarchy (tree).
-   * 
+   *
    * Hierarchy can limit returned entities by using filtering constraints `hierarchy_{reference name}_within`. It's also used for
    * computation of extra data - such as `hierarchyParents`.
    *
@@ -263,12 +263,12 @@ export const GrpcSetEntitySchemaWithHierarchyMutationSchema: GenMessage<GrpcSetE
 export type GrpcSetEntitySchemaWithPriceMutation = Message<"io.evitadb.externalApi.grpc.generated.GrpcSetEntitySchemaWithPriceMutation"> & {
   /**
    * Whether entities of this type holds price information.
-   * 
+   *
    * Prices are specific to a very few entities, but because correct price computation is very complex in e-commerce
    * systems and highly affects performance of the entities filtering and sorting, they deserve first class support
    * in entity model. It is pretty common in B2B systems single product has assigned dozens of prices for the different
    * customers.
-   * 
+   *
    * Specifying prices on entity allows usage of `priceValidIn`, `priceInCurrency`
    * `priceBetween`, and `priceInPriceLists` filtering constraints and also price
    * ordering of the entities. Additional requirements
@@ -293,7 +293,7 @@ export type GrpcSetEntitySchemaWithPriceMutation = Message<"io.evitadb.externalA
    * of extra data. If the price information is not indexed, it is still available on the entity itself (i.e. entity
    * can define its price), but it is not possible to work with the price information in any other way (calculating
    * price histogram, filtering, sorting by price, etc.).
-   * 
+   *
    * Prices can be also set as non-indexed individually by setting {@link PriceContract#indexed()} to false.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope indexedInScopes = 3;

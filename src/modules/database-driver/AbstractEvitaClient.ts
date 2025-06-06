@@ -28,7 +28,6 @@ import { EvitaService } from './connector/grpc/gen/GrpcEvitaAPI_pb'
 import { EvitaSessionService } from './connector/grpc/gen/GrpcEvitaSessionAPI_pb'
 import { EvitaManagementService } from './connector/grpc/gen/GrpcEvitaManagementAPI_pb'
 import { GrpcEvitaTrafficRecordingService } from './connector/grpc/gen/GrpcEvitaTrafficRecordingAPI_pb'
-import { EvitaService as EvitaServiceConnect } from './connector/grpc/gen/GrpcEvitaAPI_connect'
 
 export type EvitaServiceClient = Client<typeof EvitaService>
 export type EvitaSessionServiceClient = Client<typeof EvitaSessionService>
@@ -92,7 +91,7 @@ export abstract class AbstractEvitaClient {
      */
     protected get evitaClient(): EvitaServiceClient {
         if (this._evitaClient == undefined) {
-            this._evitaClient = new EvitaServiceConnect(this.transport)
+            this._evitaClient = createClient(EvitaService, this.transport)
         }
         return this._evitaClient
     }

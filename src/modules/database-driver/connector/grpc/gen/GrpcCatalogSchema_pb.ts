@@ -59,10 +59,10 @@ export type GrpcCatalogSchema = Message<"io.evitadb.externalApi.grpc.generated.G
    * entity type that refers them. These attributes cannot be changed from within the entity schema. Entity schemas
    * will not be able to define their own attribute of same name that would clash with the global one (they may only
    * reference the attributes with the same name from the catalog schema).
-   * 
+   *
    * There may be entities that won't take advantage of certain global attributes (i.e. it's not guaranteed that all
    * entity types in catalog have all global attributes).
-   * 
+   *
    * The "catalog-wide" unique attributes allows Evita to fetch entity of any (and up-front unknown) entity type by
    * some unique attribute value - usually URL.
    *
@@ -90,14 +90,14 @@ export const GrpcCatalogSchemaSchema: GenMessage<GrpcCatalogSchema> = /*@__PURE_
  * catalog. Definition objects allow to describe the structure of the catalog so that
  * in any time everyone can consult complete structure of the catalog. Definition object is similar to Java reflection
  * process where you can also at any moment see which fields and methods are available for the class.
- * 
+ *
  * Catalog attributes allows defining set of data that are fetched in bulk along with the catalog body.
  * Attributes may be indexed for fast filtering or can be used to sort along. Attributes are not automatically indexed
  * in order not to waste precious memory space for data that will never be used in search queries.
- * 
+ *
  * Filtering in attributes is executed by using constraints like `and`, `or`, `not`. Sorting can be achieved with
  * `attributeNatural` or others.
- * 
+ *
  * Attributes are not recommended for bigger data as they are all loaded at once when requested.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcGlobalAttributeSchema
@@ -125,7 +125,7 @@ export type GrpcGlobalAttributeSchema = Message<"io.evitadb.externalApi.grpc.gen
   /**
    * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity
    * having certain value of this attribute among other entities in the same collection.
-   * 
+   *
    * As an example of unique attribute can be EAN - there is no sense in having two entities with same EAN, and it's
    * better to have this ensured by the database engine.
    * deprecated in favor of `uniqueInScopes`
@@ -139,7 +139,7 @@ export type GrpcGlobalAttributeSchema = Message<"io.evitadb.externalApi.grpc.gen
    * When attribute is filterable, it is possible to filter entities by this attribute. Do not mark attribute
    * as filterable unless you know that you'll search entities by this attribute. Each filterable attribute occupies
    * (memory/disk) space in the form of index.
-   * 
+   *
    * When attribute is filterable, extra result `attributeHistogram`
    * can be requested for this attribute.
    * deprecated in favor of `filterableInScopes`
@@ -215,7 +215,7 @@ export type GrpcGlobalAttributeSchema = Message<"io.evitadb.externalApi.grpc.gen
   /**
    * When attribute is unique globally it is automatically filterable, and it is ensured there is exactly one single
    * entity having certain value of this attribute in entire catalog.
-   * 
+   *
    * As an example of unique attribute can be URL - there is no sense in having two entities with same URL, and it's
    * better to have this ensured by the database engine.
    * deprecated in favor of `uniqueGloballyInScopes`
@@ -235,7 +235,7 @@ export type GrpcGlobalAttributeSchema = Message<"io.evitadb.externalApi.grpc.gen
   /**
    * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity
    * having certain value of this attribute among other entities in the same collection.
-   * 
+   *
    * As an example of unique attribute can be EAN - there is no sense in having two entities with same EAN, and it's
    * better to have this ensured by the database engine.
    *
@@ -247,7 +247,7 @@ export type GrpcGlobalAttributeSchema = Message<"io.evitadb.externalApi.grpc.gen
    * When attribute is filterable, it is possible to filter entities by this attribute. Do not mark attribute
    * as filterable unless you know that you'll search entities by this attribute. Each filterable attribute occupies
    * (memory/disk) space in the form of index.
-   * 
+   *
    * When attribute is filterable, extra result `attributeHistogram`
    * can be requested for this attribute.
    *
@@ -267,7 +267,7 @@ export type GrpcGlobalAttributeSchema = Message<"io.evitadb.externalApi.grpc.gen
   /**
    * When attribute is unique globally it is automatically filterable, and it is ensured there is exactly one single
    * entity having certain value of this attribute in entire catalog.
-   * 
+   *
    * As an example of unique attribute can be URL - there is no sense in having two entities with same URL, and it's
    * better to have this ensured by the database engine.
    *

@@ -47,7 +47,7 @@ export type GrpcUpsertPriceMutation = Message<"io.evitadb.externalApi.grpc.gener
   /**
    * Contains identification of the price in the external systems. This id is expected to be used for the synchronization
    * of the price in relation with the primary source of the prices.
-   * 
+   *
    * This id is used to uniquely find a price within same price list and currency and is mandatory.
    *
    * @generated from field: int32 priceId = 1;
@@ -58,7 +58,7 @@ export type GrpcUpsertPriceMutation = Message<"io.evitadb.externalApi.grpc.gener
    * Contains identification of the price list in the external system. Each price must reference a price list. Price list
    * identification may refer to another Evita entity or may contain any external price list identification
    * (for example id or unique name of the price list in the external system).
-   * 
+   *
    * Single entity is expected to have single price for the price list unless there is `validity` specified.
    * In other words there is no sense to have multiple concurrently valid prices for the same entity that have roots
    * in the same price list.
@@ -78,7 +78,7 @@ export type GrpcUpsertPriceMutation = Message<"io.evitadb.externalApi.grpc.gener
    * Some special products (such as master products, or product sets) may contain prices of all "subordinate" products
    * so that the aggregating product can represent them in certain views on the product. In that case there is need
    * to distinguish the projected prices of the subordinate product in the one that represents them.
-   * 
+   *
    * Inner record id must contain positive value.
    *
    * @generated from field: google.protobuf.Int32Value innerRecordId = 4;
@@ -149,7 +149,7 @@ export type GrpcRemovePriceMutation = Message<"io.evitadb.externalApi.grpc.gener
   /**
    * Contains identification of the price in the external systems. This id is expected to be used for the synchronization
    * of the price in relation with the primary source of the prices.
-   * 
+   *
    * This id is used to uniquely find a price within same price list and currency and is mandatory.
    *
    * @generated from field: int32 priceId = 1;
@@ -160,7 +160,7 @@ export type GrpcRemovePriceMutation = Message<"io.evitadb.externalApi.grpc.gener
    * Contains identification of the price list in the external system. Each price must reference a price list. Price list
    * identification may refer to another Evita entity or may contain any external price list identification
    * (for example id or unique name of the price list in the external system).
-   * 
+   *
    * Single entity is expected to have single price for the price list unless there is `validity` specified.
    * In other words there is no sense to have multiple concurrently valid prices for the same entity that have roots
    * in the same price list.

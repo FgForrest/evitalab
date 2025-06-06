@@ -96,7 +96,7 @@ export type GrpcCreateReferenceSchemaMutation = Message<"io.evitadb.externalApi.
    * Whether the index for this reference should be created and maintained allowing to filter by
    * `referenceHaving` filtering constraints. Index is also required when reference is
    * `faceted`.
-   * 
+   *
    * Do not mark reference as faceted unless you know that you'll need to filter/sort entities by this reference.
    * Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed,
    * the entity cannot be looked up by reference attributes or relation existence itself, but the data is loaded
@@ -112,7 +112,7 @@ export type GrpcCreateReferenceSchemaMutation = Message<"io.evitadb.externalApi.
    * Whether the statistics data for this reference should be maintained and this allowing to get
    * `facetSummary` for this reference or use `facetInSet`
    * filtering query.
-   * 
+   *
    * Do not mark reference as faceted unless you want it among `FacetStatistics`. Each faceted reference
    * occupies (memory/disk) space in the form of index.
    * Reference that was marked as faceted is called Facet.
@@ -127,7 +127,7 @@ export type GrpcCreateReferenceSchemaMutation = Message<"io.evitadb.externalApi.
    * Whether the index for this reference should be created and maintained allowing to filter by
    * `referenceHaving` filtering constraints. Index is also required when reference is
    * `faceted`.
-   * 
+   *
    * Do not mark reference as faceted unless you know that you'll need to filter/sort entities by this reference.
    * Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed,
    * the entity cannot be looked up by reference attributes or relation existence itself, but the data is loaded
@@ -141,7 +141,7 @@ export type GrpcCreateReferenceSchemaMutation = Message<"io.evitadb.externalApi.
    * Whether the statistics data for this reference should be maintained and this allowing to get
    * `facetSummary` for this reference or use `facetInSet`
    * filtering query.
-   * 
+   *
    * Do not mark reference as faceted unless you want it among `FacetStatistics`. Each faceted reference
    * occupies (memory/disk) space in the form of index.
    * Reference that was marked as faceted is called Facet.
@@ -220,7 +220,7 @@ export type GrpcCreateReflectedReferenceSchemaMutation = Message<"io.evitadb.ext
    * Whether the statistics data for this reference should be maintained and this allowing to get
    * `facetSummary` for this reference or use `facetInSet`
    * filtering query.
-   * 
+   *
    * Do not mark reference as faceted unless you want it among `FacetStatistics`. Each faceted reference
    * occupies (memory/disk) space in the form of index.
    * Reference that was marked as faceted is called Facet.
@@ -257,7 +257,7 @@ export type GrpcCreateReflectedReferenceSchemaMutation = Message<"io.evitadb.ext
    * Whether the index for this reference should be created and maintained allowing to filter by
    * `referenceHaving` filtering constraints. Index is also required when reference is
    * `faceted`.
-   * 
+   *
    * Do not mark reference as faceted unless you know that you'll need to filter/sort entities by this reference.
    * Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed,
    * the entity cannot be looked up by reference attributes or relation existence itself, but the data is loaded
@@ -279,7 +279,7 @@ export type GrpcCreateReflectedReferenceSchemaMutation = Message<"io.evitadb.ext
    * Whether the statistics data for this reference should be maintained and this allowing to get
    * `facetSummary` for this reference or use `facetInSet`
    * filtering query.
-   * 
+   *
    * Do not mark reference as faceted unless you want it among `FacetStatistics`. Each faceted reference
    * occupies (memory/disk) space in the form of index.
    * Reference that was marked as faceted is called Facet.
@@ -624,7 +624,7 @@ export type GrpcSetReferenceSchemaFacetedMutation = Message<"io.evitadb.external
    * Whether the statistics data for this reference should be maintained and this allowing to get
    * `facetSummary` for this reference or use `facet_{reference name}_inSet`
    * filtering query.
-   * 
+   *
    * Do not mark reference as faceted unless you want it among `FacetStatistics`. Each faceted reference
    * occupies (memory/disk) space in the form of index.
    * Reference that was marked as faceted is called Facet.
@@ -648,7 +648,7 @@ export type GrpcSetReferenceSchemaFacetedMutation = Message<"io.evitadb.external
    * Whether the statistics data for this reference should be maintained and this allowing to get
    * `facetSummary` for this reference or use `facet_{reference name}_inSet`
    * filtering query.
-   * 
+   *
    * Do not mark reference as faceted unless you want it among `FacetStatistics`. Each faceted reference
    * occupies (memory/disk) space in the form of index.
    * Reference that was marked as faceted is called Facet.
@@ -691,7 +691,7 @@ export type GrpcSetReferenceSchemaIndexedMutation = Message<"io.evitadb.external
   /**
    * Whether the index for this reference should be created and maintained allowing to filter by
    * `referenceHaving` filtering constraints. Index is also required when reference is `faceted`.
-   * 
+   *
    * Do not mark reference as faceted unless you know that you'll need to filter / sort entities by this reference.
    * Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed,
    * the entity cannot be looked up by reference attributes or relation existence itself, but the data is loaded

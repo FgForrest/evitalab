@@ -322,7 +322,7 @@ export class EvitaClientSession {
                 .getCatalogVersionAt({}, this._callMetadata)
 
             return new CatalogVersionAtResponse(
-                result.version,
+                BigInt(result.version),
                 this.evitaValueConverterProvider().convertGrpcOffsetDateTime(result.introducedAt!)
             )
         } catch (e) {
@@ -434,8 +434,8 @@ export class EvitaClientSession {
                 .stopTrafficRecording(
                     {
                         taskStatusId: {
-                            mostSignificantBits: taskId.mostSignificantBits,
-                            leastSignificantBits: taskId.leastSignificantBits
+                            mostSignificantBits: taskId.mostSignificantBits.toString(),
+                            leastSignificantBits: taskId.leastSignificantBits.toString()
                         }
                     },
                     this._callMetadata

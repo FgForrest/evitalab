@@ -15,20 +15,20 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file GrpcEntitySchema.proto.
  */
 export const file_GrpcEntitySchema: GenFile = /*@__PURE__*/
-  fileDesc("ChZHcnBjRW50aXR5U2NoZW1hLnByb3RvEiVpby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkIv8MChBHcnBjRW50aXR5U2NoZW1hEgwKBG5hbWUYASABKAkSDwoHdmVyc2lvbhgCIAEoBRIxCgtkZXNjcmlwdGlvbhgDIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRI3ChFkZXByZWNhdGlvbk5vdGljZRgEIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRIfChd3aXRoR2VuZXJhdGVkUHJpbWFyeUtleRgFIAEoCBIVCg13aXRoSGllcmFyY2h5GAYgASgIEhEKCXdpdGhQcmljZRgHIAEoCBIaChJpbmRleGVkUHJpY2VQbGFjZXMYCCABKAUSQgoHbG9jYWxlcxgJIAMoCzIxLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0xvY2FsZRJHCgpjdXJyZW5jaWVzGAogAygLMjMuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ3VycmVuY3kSWwoKYXR0cmlidXRlcxgLIAMoCzJHLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjaGVtYS5BdHRyaWJ1dGVzRW50cnkSYwoOYXNzb2NpYXRlZERhdGEYDCADKAsySy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlTY2hlbWEuQXNzb2NpYXRlZERhdGFFbnRyeRJbCgpyZWZlcmVuY2VzGA0gAygLMkcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5U2NoZW1hLlJlZmVyZW5jZXNFbnRyeRJPCg1ldm9sdXRpb25Nb2RlGA4gAygOMjguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZvbHV0aW9uTW9kZRJ7Chpzb3J0YWJsZUF0dHJpYnV0ZUNvbXBvdW5kcxgPIAMoCzJXLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjaGVtYS5Tb3J0YWJsZUF0dHJpYnV0ZUNvbXBvdW5kc0VudHJ5EksKC25hbWVWYXJpYW50GBAgAygLMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTmFtZVZhcmlhbnQSWAoYaGllcmFyY2h5SW5kZXhlZEluU2NvcGVzGBEgAygOMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5U2NvcGUSVAoUcHJpY2VJbmRleGVkSW5TY29wZXMYEiADKA4yNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlTY29wZRIcChRjYXRhbG9nU2NoZW1hVmVyc2lvbhgTIAEoAxptCg9BdHRyaWJ1dGVzRW50cnkSCwoDa2V5GAEgASgJEkkKBXZhbHVlGAIgASgLMjouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQXR0cmlidXRlU2NoZW1hOgI4ARp2ChNBc3NvY2lhdGVkRGF0YUVudHJ5EgsKA2tleRgBIAEoCRJOCgV2YWx1ZRgCIAEoCzI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0Fzc29jaWF0ZWREYXRhU2NoZW1hOgI4ARptCg9SZWZlcmVuY2VzRW50cnkSCwoDa2V5GAEgASgJEkkKBXZhbHVlGAIgASgLMjouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVmZXJlbmNlU2NoZW1hOgI4ARqNAQofU29ydGFibGVBdHRyaWJ1dGVDb21wb3VuZHNFbnRyeRILCgNrZXkYASABKAkSWQoFdmFsdWUYAiABKAsySi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTb3J0YWJsZUF0dHJpYnV0ZUNvbXBvdW5kU2NoZW1hOgI4ASKXCQoTR3JwY0F0dHJpYnV0ZVNjaGVtYRIMCgRuYW1lGAEgASgJElIKCnNjaGVtYVR5cGUYAiABKA4yPi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBdHRyaWJ1dGVTY2hlbWFUeXBlEjEKC2Rlc2NyaXB0aW9uGAMgASgLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlEjcKEWRlcHJlY2F0aW9uTm90aWNlGAQgASgLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlElYKBnVuaXF1ZRgFIAEoDjJCLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0F0dHJpYnV0ZVVuaXF1ZW5lc3NUeXBlQgIYARJkCg51bmlxdWVHbG9iYWxseRgGIAEoDjJILmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0dsb2JhbEF0dHJpYnV0ZVVuaXF1ZW5lc3NUeXBlQgIYARIWCgpmaWx0ZXJhYmxlGAcgASgIQgIYARIUCghzb3J0YWJsZRgIIAEoCEICGAESEQoJbG9jYWxpemVkGAkgASgIEhAKCG51bGxhYmxlGAogASgIEhYKDnJlcHJlc2VudGF0aXZlGAsgASgIEkYKBHR5cGUYDCABKA4yOC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFdml0YURhdGFUeXBlEksKDGRlZmF1bHRWYWx1ZRgNIAEoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhVmFsdWUSHAoUaW5kZXhlZERlY2ltYWxQbGFjZXMYDiABKAUSSwoLbmFtZVZhcmlhbnQYDyADKAsyNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNOYW1lVmFyaWFudBIRCglpbmhlcml0ZWQYECABKAgSYAoOdW5pcXVlSW5TY29wZXMYESADKAsySC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTY29wZWRBdHRyaWJ1dGVVbmlxdWVuZXNzVHlwZRJuChZ1bmlxdWVHbG9iYWxseUluU2NvcGVzGBIgAygLMk4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU2NvcGVkR2xvYmFsQXR0cmlidXRlVW5pcXVlbmVzc1R5cGUSUgoSZmlsdGVyYWJsZUluU2NvcGVzGBMgAygOMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5U2NvcGUSUAoQc29ydGFibGVJblNjb3BlcxgUIAMoDjI2LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjb3BlIu4CChhHcnBjQXNzb2NpYXRlZERhdGFTY2hlbWESDAoEbmFtZRgBIAEoCRIxCgtkZXNjcmlwdGlvbhgCIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRI3ChFkZXByZWNhdGlvbk5vdGljZRgDIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRJmCgR0eXBlGAQgASgOMlguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZpdGFBc3NvY2lhdGVkRGF0YURhdGFUeXBlLkdycGNFdml0YURhdGFUeXBlEhEKCWxvY2FsaXplZBgFIAEoCBIQCghudWxsYWJsZRgGIAEoCBJLCgtuYW1lVmFyaWFudBgHIAMoCzI2LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY05hbWVWYXJpYW50IsENChNHcnBjUmVmZXJlbmNlU2NoZW1hEgwKBG5hbWUYASABKAkSMQoLZGVzY3JpcHRpb24YAiABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSNwoRZGVwcmVjYXRpb25Ob3RpY2UYAyABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSSwoLY2FyZGluYWxpdHkYBCABKA4yNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDYXJkaW5hbGl0eRISCgplbnRpdHlUeXBlGAUgASgJEiUKGWVudGl0eVR5cGVSZWxhdGVzVG9FbnRpdHkYBiABKAhCAhgBEi8KCWdyb3VwVHlwZRgHIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRIkChhncm91cFR5cGVSZWxhdGVzVG9FbnRpdHkYCCABKAhCAhgBEhMKB2luZGV4ZWQYCSABKAhCAhgBEhMKB2ZhY2V0ZWQYCiABKAhCAhgBEl4KCmF0dHJpYnV0ZXMYCyADKAsySi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZWZlcmVuY2VTY2hlbWEuQXR0cmlidXRlc0VudHJ5En4KGnNvcnRhYmxlQXR0cmlidXRlQ29tcG91bmRzGAwgAygLMlouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVmZXJlbmNlU2NoZW1hLlNvcnRhYmxlQXR0cmlidXRlQ29tcG91bmRzRW50cnkSSwoLbmFtZVZhcmlhbnQYDSADKAsyNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNOYW1lVmFyaWFudBJVChVlbnRpdHlUeXBlTmFtZVZhcmlhbnQYDiADKAsyNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNOYW1lVmFyaWFudBJUChRncm91cFR5cGVOYW1lVmFyaWFudBgPIAMoCzI2LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY05hbWVWYXJpYW50EiMKG3JlZmVyZW5jZWRFbnRpdHlUeXBlTWFuYWdlZBgQIAEoCBIiChpyZWZlcmVuY2VkR3JvdXBUeXBlTWFuYWdlZBgRIAEoCBI8ChZyZWZsZWN0ZWRSZWZlcmVuY2VOYW1lGBIgASgLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlEhwKFGRlc2NyaXB0aW9uSW5oZXJpdGVkGBMgASgIEiIKGmRlcHJlY2F0aW9uTm90aWNlSW5oZXJpdGVkGBQgASgIEhwKFGNhcmRpbmFsaXR5SW5oZXJpdGVkGBUgASgIEhgKEGZhY2V0ZWRJbmhlcml0ZWQYFiABKAgSbQocYXR0cmlidXRlSW5oZXJpdGFuY2VCZWhhdmlvchgXIAEoDjJHLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0F0dHJpYnV0ZUluaGVyaXRhbmNlQmVoYXZpb3ISIgoaYXR0cmlidXRlSW5oZXJpdGFuY2VGaWx0ZXIYGCADKAkSGAoQaW5kZXhlZEluaGVyaXRlZBgZIAEoCBJPCg9pbmRleGVkSW5TY29wZXMYGiADKA4yNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlTY29wZRJPCg9mYWNldGVkSW5TY29wZXMYGyADKA4yNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlTY29wZRptCg9BdHRyaWJ1dGVzRW50cnkSCwoDa2V5GAEgASgJEkkKBXZhbHVlGAIgASgLMjouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQXR0cmlidXRlU2NoZW1hOgI4ARqNAQofU29ydGFibGVBdHRyaWJ1dGVDb21wb3VuZHNFbnRyeRILCgNrZXkYASABKAkSWQoFdmFsdWUYAiABKAsySi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTb3J0YWJsZUF0dHJpYnV0ZUNvbXBvdW5kU2NoZW1hOgI4ASKoAwojR3JwY1NvcnRhYmxlQXR0cmlidXRlQ29tcG91bmRTY2hlbWESDAoEbmFtZRgBIAEoCRIxCgtkZXNjcmlwdGlvbhgCIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRI3ChFkZXByZWNhdGlvbk5vdGljZRgDIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRJWChFhdHRyaWJ1dGVFbGVtZW50cxgEIAMoCzI7LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0F0dHJpYnV0ZUVsZW1lbnQSSwoLbmFtZVZhcmlhbnQYBSADKAsyNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNOYW1lVmFyaWFudBIRCglpbmhlcml0ZWQYBiABKAgSTwoPaW5kZXhlZEluU2NvcGVzGAcgAygOMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5U2NvcGUiyQEKFEdycGNBdHRyaWJ1dGVFbGVtZW50EhUKDWF0dHJpYnV0ZU5hbWUYASABKAkSTAoJZGlyZWN0aW9uGAIgASgOMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjT3JkZXJEaXJlY3Rpb24STAoJYmVoYXZpb3VyGAMgASgOMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjT3JkZXJCZWhhdmlvdXJCDFABqgIHRXZpdGFEQmIGcHJvdG8z", [file_GrpcEvitaDataTypes, file_GrpcEnums, file_google_protobuf_wrappers]);
+  fileDesc("ChZHcnBjRW50aXR5U2NoZW1hLnByb3RvEiVpby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkIoMNChBHcnBjRW50aXR5U2NoZW1hEgwKBG5hbWUYASABKAkSDwoHdmVyc2lvbhgCIAEoBRIxCgtkZXNjcmlwdGlvbhgDIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRI3ChFkZXByZWNhdGlvbk5vdGljZRgEIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRIfChd3aXRoR2VuZXJhdGVkUHJpbWFyeUtleRgFIAEoCBIVCg13aXRoSGllcmFyY2h5GAYgASgIEhEKCXdpdGhQcmljZRgHIAEoCBIaChJpbmRleGVkUHJpY2VQbGFjZXMYCCABKAUSQgoHbG9jYWxlcxgJIAMoCzIxLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0xvY2FsZRJHCgpjdXJyZW5jaWVzGAogAygLMjMuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ3VycmVuY3kSWwoKYXR0cmlidXRlcxgLIAMoCzJHLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjaGVtYS5BdHRyaWJ1dGVzRW50cnkSYwoOYXNzb2NpYXRlZERhdGEYDCADKAsySy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlTY2hlbWEuQXNzb2NpYXRlZERhdGFFbnRyeRJbCgpyZWZlcmVuY2VzGA0gAygLMkcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5U2NoZW1hLlJlZmVyZW5jZXNFbnRyeRJPCg1ldm9sdXRpb25Nb2RlGA4gAygOMjguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZvbHV0aW9uTW9kZRJ7Chpzb3J0YWJsZUF0dHJpYnV0ZUNvbXBvdW5kcxgPIAMoCzJXLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjaGVtYS5Tb3J0YWJsZUF0dHJpYnV0ZUNvbXBvdW5kc0VudHJ5EksKC25hbWVWYXJpYW50GBAgAygLMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTmFtZVZhcmlhbnQSWAoYaGllcmFyY2h5SW5kZXhlZEluU2NvcGVzGBEgAygOMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5U2NvcGUSVAoUcHJpY2VJbmRleGVkSW5TY29wZXMYEiADKA4yNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlTY29wZRIgChRjYXRhbG9nU2NoZW1hVmVyc2lvbhgTIAEoA0ICMAEabQoPQXR0cmlidXRlc0VudHJ5EgsKA2tleRgBIAEoCRJJCgV2YWx1ZRgCIAEoCzI6LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0F0dHJpYnV0ZVNjaGVtYToCOAEadgoTQXNzb2NpYXRlZERhdGFFbnRyeRILCgNrZXkYASABKAkSTgoFdmFsdWUYAiABKAsyPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBc3NvY2lhdGVkRGF0YVNjaGVtYToCOAEabQoPUmVmZXJlbmNlc0VudHJ5EgsKA2tleRgBIAEoCRJJCgV2YWx1ZRgCIAEoCzI6LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1JlZmVyZW5jZVNjaGVtYToCOAEajQEKH1NvcnRhYmxlQXR0cmlidXRlQ29tcG91bmRzRW50cnkSCwoDa2V5GAEgASgJElkKBXZhbHVlGAIgASgLMkouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU29ydGFibGVBdHRyaWJ1dGVDb21wb3VuZFNjaGVtYToCOAEilwkKE0dycGNBdHRyaWJ1dGVTY2hlbWESDAoEbmFtZRgBIAEoCRJSCgpzY2hlbWFUeXBlGAIgASgOMj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQXR0cmlidXRlU2NoZW1hVHlwZRIxCgtkZXNjcmlwdGlvbhgDIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRI3ChFkZXByZWNhdGlvbk5vdGljZRgEIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRJWCgZ1bmlxdWUYBSABKA4yQi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBdHRyaWJ1dGVVbmlxdWVuZXNzVHlwZUICGAESZAoOdW5pcXVlR2xvYmFsbHkYBiABKA4ySC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNHbG9iYWxBdHRyaWJ1dGVVbmlxdWVuZXNzVHlwZUICGAESFgoKZmlsdGVyYWJsZRgHIAEoCEICGAESFAoIc29ydGFibGUYCCABKAhCAhgBEhEKCWxvY2FsaXplZBgJIAEoCBIQCghudWxsYWJsZRgKIAEoCBIWCg5yZXByZXNlbnRhdGl2ZRgLIAEoCBJGCgR0eXBlGAwgASgOMjguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZpdGFEYXRhVHlwZRJLCgxkZWZhdWx0VmFsdWUYDSABKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFdml0YVZhbHVlEhwKFGluZGV4ZWREZWNpbWFsUGxhY2VzGA4gASgFEksKC25hbWVWYXJpYW50GA8gAygLMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTmFtZVZhcmlhbnQSEQoJaW5oZXJpdGVkGBAgASgIEmAKDnVuaXF1ZUluU2NvcGVzGBEgAygLMkguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU2NvcGVkQXR0cmlidXRlVW5pcXVlbmVzc1R5cGUSbgoWdW5pcXVlR2xvYmFsbHlJblNjb3BlcxgSIAMoCzJOLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Njb3BlZEdsb2JhbEF0dHJpYnV0ZVVuaXF1ZW5lc3NUeXBlElIKEmZpbHRlcmFibGVJblNjb3BlcxgTIAMoDjI2LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjb3BlElAKEHNvcnRhYmxlSW5TY29wZXMYFCADKA4yNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlTY29wZSLuAgoYR3JwY0Fzc29jaWF0ZWREYXRhU2NoZW1hEgwKBG5hbWUYASABKAkSMQoLZGVzY3JpcHRpb24YAiABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSNwoRZGVwcmVjYXRpb25Ob3RpY2UYAyABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSZgoEdHlwZRgEIAEoDjJYLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhQXNzb2NpYXRlZERhdGFEYXRhVHlwZS5HcnBjRXZpdGFEYXRhVHlwZRIRCglsb2NhbGl6ZWQYBSABKAgSEAoIbnVsbGFibGUYBiABKAgSSwoLbmFtZVZhcmlhbnQYByADKAsyNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNOYW1lVmFyaWFudCLBDQoTR3JwY1JlZmVyZW5jZVNjaGVtYRIMCgRuYW1lGAEgASgJEjEKC2Rlc2NyaXB0aW9uGAIgASgLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlEjcKEWRlcHJlY2F0aW9uTm90aWNlGAMgASgLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlEksKC2NhcmRpbmFsaXR5GAQgASgOMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2FyZGluYWxpdHkSEgoKZW50aXR5VHlwZRgFIAEoCRIlChllbnRpdHlUeXBlUmVsYXRlc1RvRW50aXR5GAYgASgIQgIYARIvCglncm91cFR5cGUYByABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSJAoYZ3JvdXBUeXBlUmVsYXRlc1RvRW50aXR5GAggASgIQgIYARITCgdpbmRleGVkGAkgASgIQgIYARITCgdmYWNldGVkGAogASgIQgIYARJeCgphdHRyaWJ1dGVzGAsgAygLMkouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVmZXJlbmNlU2NoZW1hLkF0dHJpYnV0ZXNFbnRyeRJ+Chpzb3J0YWJsZUF0dHJpYnV0ZUNvbXBvdW5kcxgMIAMoCzJaLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1JlZmVyZW5jZVNjaGVtYS5Tb3J0YWJsZUF0dHJpYnV0ZUNvbXBvdW5kc0VudHJ5EksKC25hbWVWYXJpYW50GA0gAygLMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTmFtZVZhcmlhbnQSVQoVZW50aXR5VHlwZU5hbWVWYXJpYW50GA4gAygLMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTmFtZVZhcmlhbnQSVAoUZ3JvdXBUeXBlTmFtZVZhcmlhbnQYDyADKAsyNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNOYW1lVmFyaWFudBIjChtyZWZlcmVuY2VkRW50aXR5VHlwZU1hbmFnZWQYECABKAgSIgoacmVmZXJlbmNlZEdyb3VwVHlwZU1hbmFnZWQYESABKAgSPAoWcmVmbGVjdGVkUmVmZXJlbmNlTmFtZRgSIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRIcChRkZXNjcmlwdGlvbkluaGVyaXRlZBgTIAEoCBIiChpkZXByZWNhdGlvbk5vdGljZUluaGVyaXRlZBgUIAEoCBIcChRjYXJkaW5hbGl0eUluaGVyaXRlZBgVIAEoCBIYChBmYWNldGVkSW5oZXJpdGVkGBYgASgIEm0KHGF0dHJpYnV0ZUluaGVyaXRhbmNlQmVoYXZpb3IYFyABKA4yRy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBdHRyaWJ1dGVJbmhlcml0YW5jZUJlaGF2aW9yEiIKGmF0dHJpYnV0ZUluaGVyaXRhbmNlRmlsdGVyGBggAygJEhgKEGluZGV4ZWRJbmhlcml0ZWQYGSABKAgSTwoPaW5kZXhlZEluU2NvcGVzGBogAygOMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5U2NvcGUSTwoPZmFjZXRlZEluU2NvcGVzGBsgAygOMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5U2NvcGUabQoPQXR0cmlidXRlc0VudHJ5EgsKA2tleRgBIAEoCRJJCgV2YWx1ZRgCIAEoCzI6LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0F0dHJpYnV0ZVNjaGVtYToCOAEajQEKH1NvcnRhYmxlQXR0cmlidXRlQ29tcG91bmRzRW50cnkSCwoDa2V5GAEgASgJElkKBXZhbHVlGAIgASgLMkouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU29ydGFibGVBdHRyaWJ1dGVDb21wb3VuZFNjaGVtYToCOAEiqAMKI0dycGNTb3J0YWJsZUF0dHJpYnV0ZUNvbXBvdW5kU2NoZW1hEgwKBG5hbWUYASABKAkSMQoLZGVzY3JpcHRpb24YAiABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSNwoRZGVwcmVjYXRpb25Ob3RpY2UYAyABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSVgoRYXR0cmlidXRlRWxlbWVudHMYBCADKAsyOy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBdHRyaWJ1dGVFbGVtZW50EksKC25hbWVWYXJpYW50GAUgAygLMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTmFtZVZhcmlhbnQSEQoJaW5oZXJpdGVkGAYgASgIEk8KD2luZGV4ZWRJblNjb3BlcxgHIAMoDjI2LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjb3BlIskBChRHcnBjQXR0cmlidXRlRWxlbWVudBIVCg1hdHRyaWJ1dGVOYW1lGAEgASgJEkwKCWRpcmVjdGlvbhgCIAEoDjI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY09yZGVyRGlyZWN0aW9uEkwKCWJlaGF2aW91chgDIAEoDjI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY09yZGVyQmVoYXZpb3VyQgxQAaoCB0V2aXRhREJiBnByb3RvMw", [file_GrpcEvitaDataTypes, file_GrpcEnums, file_google_protobuf_wrappers]);
 
 /**
  * This is the definition object for entity. Definition objects allow to describe the structure
  * of the entity type so that in any time everyone can consult complete structure of the entity type.
- * 
+ *
  * Based on our experience we've designed following data model for handling entities in evitaDB. Model is rather complex
  * but was designed to limit amount of data fetched from database and minimize an amount of data that are indexed and subject
  * to search.
- * 
+ *
  * Minimal entity definition consists of:
  * - entity type and
  * - primary key (even this is optional and may be autogenerated by the database).
- * 
+ *
  * Other entity data is purely optional and may not be used at all.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcEntitySchema
@@ -61,7 +61,7 @@ export type GrpcEntitySchema = Message<"io.evitadb.externalApi.grpc.generated.Gr
   /**
    * Deprecation notice contains information about planned removal of this entity from the model / client API.
    * This allows to plan and evolve the schema allowing clients to adapt early to planned breaking changes.
-   * 
+   *
    * If notice is `null`, this schema is considered not deprecated.
    *
    * @generated from field: google.protobuf.StringValue deprecationNotice = 4;
@@ -71,7 +71,7 @@ export type GrpcEntitySchema = Message<"io.evitadb.externalApi.grpc.generated.Gr
   /**
    * Contains `true` when primary keys of entities of this type will not be provided by the external systems and Evita
    * is responsible for generating unique primary keys for the entity on insertion.
-   * 
+   *
    * Generated key is guaranteed to be unique, but may not represent continuous ascending series. Generated key
    * will be always greater than zero.
    *
@@ -82,11 +82,11 @@ export type GrpcEntitySchema = Message<"io.evitadb.externalApi.grpc.generated.Gr
   /**
    * Contains `true` when entities of this type are organized in a tree like structure (hierarchy) where certain entities
    * are subordinate of other entities.
-   * 
+   *
    * Entities may be organized in hierarchical fashion. That means that entity may refer to single parent entity and may be
    * referred by multiple child entities. Hierarchy is always composed of entities of same type.
    * Each entity must be part of at most single hierarchy (tree).
-   * 
+   *
    * Hierarchy can limit returned entities by using filtering constraints. It's also used for
    * computation of extra data - such as `hierarchyParentsOfSelf`. It can also invert type of returned entities in case extra result
    * `hierarchyOfSelf` is requested.
@@ -97,12 +97,12 @@ export type GrpcEntitySchema = Message<"io.evitadb.externalApi.grpc.generated.Gr
 
   /**
    * Contains `true` when entities of this type holds price information.
-   * 
+   *
    * Prices are specific to a very few entities, but because correct price computation is very complex in e-commerce
    * systems and highly affects performance of the entities filtering and sorting, they deserve first class support
    * in entity model. It is pretty common in B2B systems single product has assigned dozens of prices for the different
    * customers.
-   * 
+   *
    * Specifying prices on entity allows usage of `priceValidIn`, `priceInCurrency`
    * `priceBetween`, and `priceInPriceLists` filtering constraints and also `priceNatural`,
    * ordering of the entities. Additional extra result
@@ -139,16 +139,16 @@ export type GrpcEntitySchema = Message<"io.evitadb.externalApi.grpc.generated.Gr
 
   /**
    * Contains index of all `AttributeSchema` that could be used as attributes of entity of this type.
-   * 
+   *
    * Entity (global) attributes allows defining set of data that are fetched in bulk along with the entity body.
    * Attributes may be indexed for fast filtering (`AttributeSchema.filterable`) or can be used to sort along
    * (`AttributeSchema.sortable`). Attributes are not automatically indexed in order not to waste precious
    * memory space for data that will never be used in search queries.
-   * 
+   *
    * Filtering in attributes is executed by using constraints like `and`,
    * `not`, `attributeEquals`, `attributeContains`
    * and many others. Sorting can be achieved with `attributeNatural` or others.
-   * 
+   *
    * Attributes are not recommended for bigger data as they are all loaded at once requested.
    * Large data that are occasionally used store in `associatedData`.
    *
@@ -158,12 +158,12 @@ export type GrpcEntitySchema = Message<"io.evitadb.externalApi.grpc.generated.Gr
 
   /**
    * Contains index of all `AssociatedDataSchema` that could be used as associated data of entity of this type.
-   * 
+   *
    * Associated data carry additional data entries that are never used for filtering / sorting but may be needed to be fetched
    * along with entity in order to present data to the target consumer (i.e. user / API / bot). Associated data may be stored
    * in slower storage and may contain wide range of data types - from small ones (i.e. numbers, strings, dates) up to large
    * binary arrays representing entire files (i.e. pictures, documents).
-   * 
+   *
    * The search query must contain specific associated data fields in order
    * associated data are fetched along with the entity. Associated data are stored and fetched separately by their name.
    *
@@ -173,19 +173,19 @@ export type GrpcEntitySchema = Message<"io.evitadb.externalApi.grpc.generated.Gr
 
   /**
    * Contains index of all `ReferenceSchema` that could be used as references of entity of this type.
-   * 
+   *
    * References refer to other entities (of same or different entity type).
    * Allows entity filtering (but not sorting) of the entities by using `facetInSet` constraint
    * and statistics computation when `facetStatistics` extra result is requested. Reference
    * is uniquely represented by int positive number (max. (2^63)-1) and entity type and can be
    * part of multiple reference groups, that are also represented by int and entity type.
-   * 
+   *
    * Reference id in one entity is unique and belongs to single reference group id. Among multiple entities reference may be part
    * of different reference groups. Referenced entity type may represent type of another Evita entity or may refer
    * to anything unknown to Evita that posses unique int key and is maintained by external systems (fe. tag assignment,
    * group assignment, category assignment, stock assignment and so on). Not all these data needs to be present in
    * Evita.
-   * 
+   *
    * References may carry additional key-value data linked to this entity relation (fe. item count present on certain stock).
    * The search query must contain specific `referenceContent` requirement in order
    * references are fetched along with the entity.
@@ -232,7 +232,7 @@ export type GrpcEntitySchema = Message<"io.evitadb.externalApi.grpc.generated.Gr
    * of extra data. If the price information is not indexed, it is still available on the entity itself (i.e. entity
    * can define its price), but it is not possible to work with the price information in any other way (calculating
    * price histogram, filtering, sorting by price, etc.).
-   * 
+   *
    * Prices can be also set as non-indexed individually by setting {@link PriceContract#indexed()} to false.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope priceIndexedInScopes = 18;
@@ -242,9 +242,9 @@ export type GrpcEntitySchema = Message<"io.evitadb.externalApi.grpc.generated.Gr
   /**
    * Contains current version of the catalog schema this entity schema belongs to.
    *
-   * @generated from field: int64 catalogSchemaVersion = 19;
+   * @generated from field: int64 catalogSchemaVersion = 19 [jstype = JS_STRING];
    */
-  catalogSchemaVersion: bigint;
+  catalogSchemaVersion: string;
 };
 
 /**
@@ -259,16 +259,16 @@ export const GrpcEntitySchemaSchema: GenMessage<GrpcEntitySchema> = /*@__PURE__*
  * entity. Definition objects allow to describe the structure of the entity type so that
  * in any time everyone can consult complete structure of the entity type. Definition object is similar to Java reflection
  * process where you can also at any moment see which fields and methods are available for the class.
- * 
+ *
  * Entity attributes allows defining set of data that are fetched in bulk along with the entity body.
  * Attributes may be indexed for fast filtering (`AttributeSchema.filterable`) or can be used to sort along
  * (`AttributeSchema.sortable`). Attributes are not automatically indexed in order not to waste precious
  * memory space for data that will never be used in search queries.
- * 
+ *
  * Filtering in attributes is executed by using constraints like `and`,
  * `not`, `attributeEquals`, `attributeContains`
  * and many others. Sorting can be achieved with `attributeNatural` or others.
- * 
+ *
  * Attributes are not recommended for bigger data as they are all loaded at once requested.
  * Large data that are occasionally used store in `associatedData`.
  *
@@ -301,7 +301,7 @@ export type GrpcAttributeSchema = Message<"io.evitadb.externalApi.grpc.generated
   /**
    * Deprecation notice contains information about planned removal of this entity from the model / client API.
    * This allows to plan and evolve the schema allowing clients to adapt early to planned breaking changes.
-   * 
+   *
    * If notice is `null`, this schema is considered not deprecated.
    *
    * @generated from field: google.protobuf.StringValue deprecationNotice = 4;
@@ -311,7 +311,7 @@ export type GrpcAttributeSchema = Message<"io.evitadb.externalApi.grpc.generated
   /**
    * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity
    * having certain value of this attribute among other entities in the same collection.
-   * 
+   *
    * As an example of unique attribute can be EAN - there is no sense in having two entities with same EAN, and it's
    * better to have this ensured by the database engine.
    * deprecated in favor of `uniqueInScopes`
@@ -325,7 +325,7 @@ export type GrpcAttributeSchema = Message<"io.evitadb.externalApi.grpc.generated
    * When attribute is unique globally it is automatically filterable, and it is ensured there is exactly one single
    * entity having certain value of this attribute in entire {@link CatalogContract}.
    * {@link AttributeSchemaContract#getType() Type} of the unique attribute must implement {@link Comparable} interface.
-   * 
+   *
    * As an example of unique attribute can be URL - there is no sense in having two entities with same URL, and it's
    * better to have this ensured by the database engine.
    * deprecated in favor of `uniqueGloballyInScopes`
@@ -339,7 +339,7 @@ export type GrpcAttributeSchema = Message<"io.evitadb.externalApi.grpc.generated
    * When attribute is filterable, it is possible to filter entities by this attribute. Do not mark attribute
    * as filterable unless you know that you'll search entities by this attribute. Each filterable attribute occupies
    * (memory/disk) space in the form of index.
-   * 
+   *
    * When attribute is filterable, extra result `attributeHistogram`
    * can be requested for this attribute.
    * deprecated in favor of `filterableInScopes`
@@ -429,7 +429,7 @@ export type GrpcAttributeSchema = Message<"io.evitadb.externalApi.grpc.generated
   /**
    * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity
    * having certain value of this attribute among other entities in the same collection.
-   * 
+   *
    * As an example of unique attribute can be EAN - there is no sense in having two entities with same EAN, and it's
    * better to have this ensured by the database engine.
    *
@@ -441,7 +441,7 @@ export type GrpcAttributeSchema = Message<"io.evitadb.externalApi.grpc.generated
    * When attribute is unique globally it is automatically filterable, and it is ensured there is exactly one single
    * entity having certain value of this attribute in entire {@link CatalogContract}.
    * {@link AttributeSchemaContract#getType() Type} of the unique attribute must implement {@link Comparable} interface.
-   * 
+   *
    * As an example of unique attribute can be URL - there is no sense in having two entities with same URL, and it's
    * better to have this ensured by the database engine.
    *
@@ -453,7 +453,7 @@ export type GrpcAttributeSchema = Message<"io.evitadb.externalApi.grpc.generated
    * When attribute is filterable, it is possible to filter entities by this attribute. Do not mark attribute
    * as filterable unless you know that you'll search entities by this attribute. Each filterable attribute occupies
    * (memory/disk) space in the form of index.
-   * 
+   *
    * When attribute is filterable, extra result `attributeHistogram`
    * can be requested for this attribute.
    *
@@ -482,7 +482,7 @@ export const GrpcAttributeSchemaSchema: GenMessage<GrpcAttributeSchema> = /*@__P
  * This is the definition object for associated data that is stored along with
  * entity. Definition objects allow to describe the structure of the entity type so that
  * in any time everyone can consult complete structure of the entity type.
- * 
+ *
  * Associated data carry additional data entries that are never used for filtering / sorting but may be needed to be fetched
  * along with entity in order to present data to the target consumer (i.e. user / API / bot). Associated data may be stored
  * in slower storage and may contain wide range of data types - from small ones (i.e. numbers, strings, dates) up to large
@@ -507,7 +507,7 @@ export type GrpcAssociatedDataSchema = Message<"io.evitadb.externalApi.grpc.gene
   /**
    * Deprecation notice contains information about planned removal of this entity from the model / client API.
    * This allows to plan and evolve the schema allowing clients to adapt early to planned breaking changes.
-   * 
+   *
    * If notice is `null`, this schema is considered not deprecated.
    *
    * @generated from field: google.protobuf.StringValue deprecationNotice = 3;
@@ -558,19 +558,19 @@ export const GrpcAssociatedDataSchemaSchema: GenMessage<GrpcAssociatedDataSchema
  * This is the definition object for reference that is stored along with
  * entity. Definition objects allow to describe the structure of the entity type so that
  * in any time everyone can consult complete structure of the entity type.
- * 
+ *
  * The references refer to other entities (of same or different entity type).
  * Allows entity filtering (but not sorting) of the entities by using `facet_{name}_inSet` query
  * and statistics computation if when requested. Reference
  * is uniquely represented by int positive number (max. (2^63)-1) and entity type and can be
  * part of multiple reference groups, that are also represented by int and entity type.
- * 
+ *
  * Reference id in one entity is unique and belongs to single reference group id. Among multiple entities reference may be part
  * of different reference groups. Referenced entity type may represent type of another Evita entity or may refer
  * to anything unknown to Evita that posses unique int key and is maintained by external systems (fe. tag assignment,
  * group assignment, category assignment, stock assignment and so on). Not all these data needs to be present in
  * Evita.
- * 
+ *
  * References may carry additional key-value data linked to this entity relation (fe. item count present on certain stock).
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcReferenceSchema
@@ -595,7 +595,7 @@ export type GrpcReferenceSchema = Message<"io.evitadb.externalApi.grpc.generated
   /**
    * Deprecation notice contains information about planned removal of this entity from the model / client API.
    * This allows to plan and evolve the schema allowing clients to adapt early to planned breaking changes.
-   * 
+   *
    * If notice is `null`, this schema is considered not deprecated.
    *
    * @generated from field: google.protobuf.StringValue deprecationNotice = 3;
@@ -651,7 +651,7 @@ export type GrpcReferenceSchema = Message<"io.evitadb.externalApi.grpc.generated
    * Contains `true` if the index for this reference should be created and maintained allowing to filter by
    * `reference_{reference name}_having` filtering constraints. Index is also required when reference is
    * `faceted`.
-   * 
+   *
    * Do not mark reference as faceted unless you know that you'll need to filter/sort entities by this reference.
    * Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed,
    * the entity cannot be looked up by reference attributes or relation existence itself, but the data can be
@@ -667,10 +667,10 @@ export type GrpcReferenceSchema = Message<"io.evitadb.externalApi.grpc.generated
    * Contains `true` if the statistics data for this reference should be maintained and this allowing to get
    * `facetStatistics` for this reference or use `facet_{reference name}_inSet`
    * filtering constraint.
-   * 
+   *
    * Do not mark reference as faceted unless you want it among `facetStatistics`. Each faceted reference
    * occupies (memory/disk) space in the form of index.
-   * 
+   *
    * Reference that was marked as faceted is called Facet.
    * deprecated in favor of `facetedInScopes`
    *
@@ -684,11 +684,11 @@ export type GrpcReferenceSchema = Message<"io.evitadb.externalApi.grpc.generated
    * Attributes may be indexed for fast filtering (`AttributeSchema.filterable`) or can be used to sort along
    * (`AttributeSchema.filterable`). Attributes are not automatically indexed in order not to waste precious
    * memory space for data that will never be used in search queries.
-   * 
+   *
    * Filtering in attributes is executed by using constraints like `and`,
    * `not`, `attributeEquals`, `attributeContains`
    * and many others. Sorting can be achieved with `attributeNatural` or others.
-   * 
+   *
    * Attributes are not recommended for bigger data as they are all loaded at once.
    *
    * @generated from field: map<string, io.evitadb.externalApi.grpc.generated.GrpcAttributeSchema> attributes = 11;
@@ -800,7 +800,7 @@ export type GrpcReferenceSchema = Message<"io.evitadb.externalApi.grpc.generated
    * Contains `true` if the index for this reference should be created and maintained allowing to filter by
    * `reference_{reference name}_having` filtering constraints. Index is also required when reference is
    * `faceted`.
-   * 
+   *
    * Do not mark reference as faceted unless you know that you'll need to filter/sort entities by this reference.
    * Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed,
    * the entity cannot be looked up by reference attributes or relation existence itself, but the data can be
@@ -814,10 +814,10 @@ export type GrpcReferenceSchema = Message<"io.evitadb.externalApi.grpc.generated
    * Contains `true` if the statistics data for this reference should be maintained and this allowing to get
    * `facetStatistics` for this reference or use `facet_{reference name}_inSet`
    * filtering constraint.
-   * 
+   *
    * Do not mark reference as faceted unless you want it among `facetStatistics`. Each faceted reference
    * occupies (memory/disk) space in the form of index.
-   * 
+   *
    * Reference that was marked as faceted is called Facet.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope facetedInScopes = 27;
@@ -860,7 +860,7 @@ export type GrpcSortableAttributeCompoundSchema = Message<"io.evitadb.externalAp
   /**
    * Deprecation notice contains information about planned removal of this entity from the model / client API.
    * This allows to plan and evolve the schema allowing clients to adapt early to planned breaking changes.
-   * 
+   *
    * If notice is `null`, this schema is considered not deprecated.
    *
    * @generated from field: google.protobuf.StringValue deprecationNotice = 3;

@@ -101,7 +101,7 @@ async function copyParentPrimaryKey(): Promise<void> {
 </template>
 
 <style lang="scss" scoped>
-@import "@/styles/colors.scss";
+@use "@/styles/colors.scss" as *;
 // todo lho better handling for small widths
 .node-title {
     display: flex;

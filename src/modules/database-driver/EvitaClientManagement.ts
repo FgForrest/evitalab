@@ -276,11 +276,11 @@ export class EvitaClientManagement {
                     backupFile: chunk,
                     fileId: uploadedFileId != undefined
                         ? {
-                            mostSignificantBits: uploadedFileId.mostSignificantBits,
-                            leastSignificantBits: uploadedFileId.leastSignificantBits
+                            mostSignificantBits: uploadedFileId.mostSignificantBits.toString(),
+                            leastSignificantBits: uploadedFileId.leastSignificantBits.toString()
                         } as GrpcUuid
                         : undefined,
-                    totalSizeInBytes: BigInt(file.size)
+                    totalSizeInBytes: BigInt(file.size).toString()
                 } as GrpcRestoreCatalogUnaryRequest;
 
                 const chunkResponse: GrpcRestoreCatalogUnaryResponse = await this.evitaManagementClientProvider()
@@ -313,8 +313,8 @@ export class EvitaClientManagement {
                 .restoreCatalogFromServerFile({
                     catalogName,
                     fileId: {
-                        leastSignificantBits: fileId.leastSignificantBits,
-                        mostSignificantBits: fileId.mostSignificantBits
+                        leastSignificantBits: fileId.leastSignificantBits.toString(),
+                        mostSignificantBits: fileId.mostSignificantBits.toString()
                     }
                 })
             return this.taskStatusConverterProvider().convert(result.task!)
@@ -358,8 +358,8 @@ export class EvitaClientManagement {
         try {
             const result = await this.evitaManagementClientProvider().cancelTask({
                 taskId: {
-                    leastSignificantBits: taskId.leastSignificantBits,
-                    mostSignificantBits: taskId.mostSignificantBits
+                    leastSignificantBits: taskId.leastSignificantBits.toString(),
+                    mostSignificantBits: taskId.mostSignificantBits.toString()
                 }
             })
             return result.success
@@ -397,8 +397,8 @@ export class EvitaClientManagement {
         try {
             const res = this.evitaManagementClientProvider().fetchFile({
                 fileId: {
-                    leastSignificantBits: fileId.leastSignificantBits,
-                    mostSignificantBits: fileId.mostSignificantBits
+                    leastSignificantBits: fileId.leastSignificantBits.toString(),
+                    mostSignificantBits: fileId.mostSignificantBits.toString()
                 }
             })
             const data: Uint8Array[] = []
@@ -420,8 +420,8 @@ export class EvitaClientManagement {
             const response: GrpcDeleteFileToFetchResponse = await this.evitaManagementClientProvider()
                 .deleteFile({
                     fileId: {
-                        leastSignificantBits: fileId.leastSignificantBits,
-                        mostSignificantBits: fileId.mostSignificantBits
+                        leastSignificantBits: fileId.leastSignificantBits.toString(),
+                        mostSignificantBits: fileId.mostSignificantBits.toString()
                     }
                 })
             return response.success

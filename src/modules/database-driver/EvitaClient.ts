@@ -433,7 +433,7 @@ export class EvitaClient extends AbstractEvitaClient {
         let sharedSession: EvitaClientSession | undefined = this.sharedSessions.get(catalogName)
 
         if (sharedSession != undefined && !sharedSession.isActive) {
-            console.error(`Session ${sharedSession.id} has been already closed but is still in the cache, that should not happen!. `)
+            console.warn(`Session ${sharedSession.id} has been already closed but is still in the cache, that should not happen!. `)
             this.sharedSessions.delete(catalogName)
             sharedSession = undefined
         }

@@ -283,13 +283,13 @@ export class EvitaValueConverter {
     }
 
     convertGrpcUuid(grpcUuid: GrpcUuid): Uuid {
-        return Uuid.fromBits(grpcUuid.mostSignificantBits, grpcUuid.leastSignificantBits)
+        return Uuid.fromBits(BigInt(grpcUuid.mostSignificantBits), BigInt(grpcUuid.leastSignificantBits))
     }
 
     convertUuid(uuid: Uuid): GrpcUuid {
         return {
-            mostSignificantBits: uuid.mostSignificantBits,
-            leastSignificantBits: uuid.leastSignificantBits
+            mostSignificantBits: uuid.mostSignificantBits.toString(),
+            leastSignificantBits: uuid.leastSignificantBits.toString()
         } as GrpcUuid
     }
 
@@ -311,7 +311,7 @@ export class EvitaValueConverter {
     }
 
     convertGrpcLongArray(value: GrpcLongArray): ImmutableList<bigint> {
-        return ImmutableList(value.value)
+        return ImmutableList(value.value.map(BigInt))
     }
 
     convertGrpcBooleanArray(

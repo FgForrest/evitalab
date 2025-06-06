@@ -23,7 +23,7 @@ function handleClick(): void {
 </template>
 
 <style lang="scss" scoped>
-@import "@/styles/colors.scss";
+@use "@/styles/colors.scss" as *;
 
 .subject-path-status-item {
     display: flex;

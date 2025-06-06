@@ -37,7 +37,7 @@ export type GrpcLocalMutation = Message<"io.evitadb.externalApi.grpc.generated.G
     /**
      * Increments or decrements existing numeric value by specified delta (negative number produces decremental of
      * existing number, positive one incrementation).
-     * 
+     *
      * Allows to specify the number range that is tolerated for the value after delta application has been finished to
      * verify for example that number of items on stock doesn't go below zero.
      *

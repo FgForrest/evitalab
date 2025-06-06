@@ -36,7 +36,7 @@ export class ServerFileConverter {
             grpcFile.name,
             grpcFile.description!,
             grpcFile.contentType,
-            grpcFile.totalSizeInBytes,
+            BigInt(grpcFile.totalSizeInBytes),
             this.evitaValueConverter.convertGrpcOffsetDateTime(grpcFile.created!),
             grpcFile.origin!
         )

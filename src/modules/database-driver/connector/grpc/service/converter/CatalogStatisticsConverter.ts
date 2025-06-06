@@ -13,14 +13,14 @@ export class CatalogStatisticsConverter {
     convert(catalog: GrpcCatalogStatistics): CatalogStatistics {
         return new CatalogStatistics(
             JSON.stringify(catalog.catalogId),
-            catalog.catalogVersion,
+            BigInt(catalog.catalogVersion),
             catalog.catalogName,
             this.convertEntityTypes(catalog.entityCollectionStatistics),
             catalog.corrupted,
             this.convertCatalogState(catalog.catalogState),
-            catalog.totalRecords,
-            catalog.indexCount,
-            catalog.sizeOnDiskInBytes
+            BigInt(catalog.totalRecords),
+            BigInt(catalog.indexCount),
+            BigInt(catalog.sizeOnDiskInBytes)
         )
     }
 
@@ -49,7 +49,7 @@ export class CatalogStatisticsConverter {
                     entityType.entityType,
                     entityType.totalRecords,
                     entityType.indexCount,
-                    entityType.sizeOnDiskInBytes
+                    BigInt(entityType.sizeOnDiskInBytes)
                 )
             )
         }

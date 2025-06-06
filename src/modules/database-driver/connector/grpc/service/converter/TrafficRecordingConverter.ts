@@ -90,7 +90,7 @@ export class TrafficRecordingConverter {
                 header.sessionSequenceOrder, header.sessionId, header.recordSessionOffset, header.sessionRecordsCount,
                 header.type, header.created, header.duration, header.ioFetchedSizeBytes, header.ioFetchCount,
                 header.finishedWithError,
-                grpcTrafficRecord.body.value.catalogVersion,
+                BigInt(grpcTrafficRecord.body.value.catalogVersion),
                 grpcTrafficRecord.body.value.trafficRecordCount,
                 grpcTrafficRecord.body.value.queryCount,
                 grpcTrafficRecord.body.value.entityFetchCount,
@@ -100,7 +100,7 @@ export class TrafficRecordingConverter {
                 header.sessionSequenceOrder, header.sessionId, header.recordSessionOffset, header.sessionRecordsCount,
                 header.type, header.created, header.duration, header.ioFetchedSizeBytes, header.ioFetchCount,
                 header.finishedWithError,
-                grpcTrafficRecord.body.value.catalogVersion
+                BigInt(grpcTrafficRecord.body.value.catalogVersion)
             );
             case 'sourceQuery': return new SourceQueryContainer(
                 header.sessionSequenceOrder, header.sessionId, header.recordSessionOffset, header.sessionRecordsCount,
@@ -226,7 +226,7 @@ export class TrafficRecordingConverter {
 
     private convertGrpcTrafficRecordHeader(grpcTrafficRecord: GrpcTrafficRecord): TrafficRecordHeader {
         return new TrafficRecordHeader(
-            grpcTrafficRecord.sessionSequenceOrder,
+            BigInt(grpcTrafficRecord.sessionSequenceOrder),
             this.evitaValueConverter.convertGrpcUuid(grpcTrafficRecord.sessionId!),
             grpcTrafficRecord.recordSessionOffset,
             grpcTrafficRecord.sessionRecordsCount,
