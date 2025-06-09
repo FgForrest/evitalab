@@ -5,7 +5,7 @@ import { Duration } from 'luxon'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
-import {
+import type {
     GrpcQueryLabel,
     GrpcTrafficRecord,
     GrpcTrafficRecordingCaptureCriteria, GrpcTrafficRecordingContent, GrpcTrafficRecordingType

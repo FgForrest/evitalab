@@ -1,11 +1,11 @@
-import { GrpcLocalizedAttribute } from '@/modules/database-driver/connector/grpc/gen/GrpcAttribute_pb'
-import {
+import type { GrpcLocalizedAttribute } from '@/modules/database-driver/connector/grpc/gen/GrpcAttribute_pb'
+import type {
     GrpcEntityReference,
     GrpcEntityReferenceWithParent,
     GrpcReference,
     GrpcSealedEntity,
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEntity_pb'
-import {
+import type {
     GrpcEvitaAssociatedDataValue,
     GrpcEvitaValue,
     GrpcLocale
@@ -19,8 +19,8 @@ import {
     GrpcEvitaAssociatedDataDataType_GrpcEvitaDataType,
     GrpcPriceInnerRecordHandling,
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
-import { GrpcLocalizedAssociatedData } from '@/modules/database-driver/connector/grpc/gen/GrpcAssociatedData_pb'
-import { GrpcPrice } from '@/modules/database-driver/connector/grpc/gen/GrpcPrice_pb'
+import type { GrpcLocalizedAssociatedData } from '@/modules/database-driver/connector/grpc/gen/GrpcAssociatedData_pb'
+import type { GrpcPrice } from '@/modules/database-driver/connector/grpc/gen/GrpcPrice_pb'
 import { Price } from '@/modules/database-driver/request-response/data/Price'
 import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { PriceInnerRecordHandling } from '@/modules/database-driver/data-type/PriceInnerRecordHandling'

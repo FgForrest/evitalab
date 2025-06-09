@@ -2,7 +2,7 @@ import { GrpcHealthProblem, GrpcReadiness } from '@/modules/database-driver/conn
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { Set as ImmutableSet, Map as ImmutableMap, List as ImmutableList } from 'immutable'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
-import {
+import type {
     GrpcApiStatus, GrpcEndpoint,
     GrpcEvitaServerStatusResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_pb'

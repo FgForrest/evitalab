@@ -1,9 +1,9 @@
 import { List as ImmutableList } from 'immutable'
 import { Code, ConnectError } from '@connectrpc/connect'
-import { EvitaSessionServiceClient, EvitaTrafficRecordingServiceClient } from '@/modules/database-driver/AbstractEvitaClient'
+import type { EvitaSessionServiceClient, EvitaTrafficRecordingServiceClient } from '@/modules/database-driver/AbstractEvitaClient'
 import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
 import { InstanceTerminatedError } from '@/modules/database-driver/exception/InstanceTerminatedError'
-import {
+import type {
     GrpcBackupCatalogResponse,
     GrpcCatalogSchemaResponse,
     GrpcCatalogVersionAtResponse, GrpcDefineEntitySchemaResponse,
@@ -21,12 +21,12 @@ import { CatalogState } from '@/modules/database-driver/request-response/Catalog
 import { CatalogVersionAtResponse } from '@/modules/database-driver/request-response/CatalogVersionAtResponse'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
 import { ErrorTransformer } from '@/modules/database-driver/exception/ErrorTransformer'
-import { GrpcEntitySchema } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchema_pb'
+import type { GrpcEntitySchema } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchema_pb'
 import { EvitaResponseConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaResponseConverter'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { TaskStatusConverter } from '@/modules/database-driver/connector/grpc/service/converter/TaskStatusConverter'
-import {
+import type {
     GetTrafficHistoryListRequest,
     GetTrafficHistoryListResponse,
     GetTrafficRecordingLabelNamesResponse,
@@ -41,7 +41,7 @@ import {
     TrafficRecordingConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/TrafficRecordingConverter'
 import { EvitaSchemaCache } from '@/modules/database-driver/EvitaSchemaCache'
-import { EntitySchemaAccessor } from '@/modules/database-driver/request-response/schema/EntitySchemaAccessor'
+import type { EntitySchemaAccessor } from '@/modules/database-driver/request-response/schema/EntitySchemaAccessor'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'

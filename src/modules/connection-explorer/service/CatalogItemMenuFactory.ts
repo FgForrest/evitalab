@@ -1,6 +1,6 @@
 import { MenuFactory } from '@/modules/base/service/menu/MenuFactory'
 import { CatalogMenuItemType } from '@/modules/connection-explorer/model/CatalogMenuItemType'
-import { MenuItem } from '@/modules/base/model/menu/MenuItem'
+import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
 import { ApiType } from '@/modules/database-driver/request-response/status/ApiType'
 import {
     EvitaQLConsoleTabDefinition

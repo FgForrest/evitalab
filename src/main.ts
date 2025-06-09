@@ -1,4 +1,5 @@
-import { App, ComponentPublicInstance, createApp } from 'vue'
+import type { App, ComponentPublicInstance } from 'vue'
+import { createApp } from 'vue'
 import VueApexCharts from 'vue3-apexcharts'
 import { codemirror, defaultCodemirrorOptions } from '@/vue-plugins/codemirror'
 import { i18n } from '@/vue-plugins/i18n'

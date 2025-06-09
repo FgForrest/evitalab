@@ -1,4 +1,4 @@
-import { GrpcReservedKeyword } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_pb'
+import type { GrpcReservedKeyword } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_pb'
 import { Map as ImmutableMap, List as ImmutableList } from 'immutable'
 import { ClassifierType } from '@/modules/database-driver/data-type/ClassifierType'
 import { GrpcClassifierType } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'

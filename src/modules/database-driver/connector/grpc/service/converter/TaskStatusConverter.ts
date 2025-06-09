@@ -6,13 +6,13 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { GrpcTaskTrait } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { ServerFileConverter } from '@/modules/database-driver/connector/grpc/service/converter/ServerFileConverter'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
-import { GrpcTaskStatusesResponse } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_pb'
-import { GrpcFile, GrpcTaskStatus } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
+import type { GrpcTaskStatusesResponse } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_pb'
+import type { GrpcFile, GrpcTaskStatus } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { TaskResult } from '@/modules/database-driver/request-response/task/TaskResult'
 import { TextTaskResult } from '@/modules/database-driver/request-response/task/TextTaskResult'
 import { FileTaskResult } from '@/modules/database-driver/request-response/task/FileTaskResult'
 import { TaskTrait } from '@/modules/database-driver/request-response/task/TaskTrait'
-import { StringValue } from '@bufbuild/protobuf/wkt'
+import type { StringValue } from '@bufbuild/protobuf/wkt'
 
 /**
  * Converts task statuses between evitaLab representation and evitaDB's gRPC

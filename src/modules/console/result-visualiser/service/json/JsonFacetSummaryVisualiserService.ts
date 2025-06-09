@@ -1,10 +1,10 @@
 import {
     JsonResultVisualiserService
 } from '@/modules/console/result-visualiser/service/json/JsonResultVisualiserService'
-import {
+import type {
     FacetSummaryVisualiserService
 } from '@/modules/console/result-visualiser/service/FacetSummaryVisualiserService'
-import { Result } from '@/modules/console/result-visualiser/model/Result'
+import type { Result } from '@/modules/console/result-visualiser/model/Result'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'

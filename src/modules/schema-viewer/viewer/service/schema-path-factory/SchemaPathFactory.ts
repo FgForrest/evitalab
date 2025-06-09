@@ -1,5 +1,5 @@
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
-import { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
+import type { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 import { Connection } from '@/modules/connection/model/Connection'
 
 /**

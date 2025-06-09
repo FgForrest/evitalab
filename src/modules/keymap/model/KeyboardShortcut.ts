@@ -1,5 +1,5 @@
 import keymaster from 'keymaster'
-import { KeyBinding } from '@codemirror/view'
+import type { KeyBinding } from '@codemirror/view'
 import { SystemType } from '@/modules/keymap/model/SystemType'
 
 /**

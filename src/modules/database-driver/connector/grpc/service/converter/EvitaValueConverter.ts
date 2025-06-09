@@ -11,7 +11,7 @@ import { OffsetDateTime, Timestamp } from '@/modules/database-driver/data-type/O
 import { Predecessor } from '@/modules/database-driver/data-type/Predecessor'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { List as ImmutableList } from 'immutable'
-import {
+import type {
     GrpcBigDecimal,
     GrpcOffsetDateTime,
     GrpcDateTimeRange,
@@ -35,7 +35,7 @@ import {
     GrpcLocaleArray,
     GrpcCurrencyArray,
     GrpcUuidArray,
-    GrpcEvitaValue, 
+    GrpcEvitaValue,
     GrpcDataItem
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { DateTime } from 'luxon'
@@ -44,7 +44,7 @@ import { GrpcEvitaDataType } from '@/modules/database-driver/connector/grpc/gen/
 import { Currency } from '@/modules/database-driver/data-type/Currency'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
-import { Timestamp as GrpcTimestamp } from '@bufbuild/protobuf/wkt'
+import type { Timestamp as GrpcTimestamp } from '@bufbuild/protobuf/wkt'
 
 /**
  * Convert gRPC evita value server representation into local evitaLab typescript representation

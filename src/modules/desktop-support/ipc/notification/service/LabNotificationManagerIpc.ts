@@ -1,5 +1,5 @@
-import { NotificationDefinitionDto } from '@/modules/desktop-support/ipc/notification/model/NotificationDefinitionDto'
-import { NotificationId } from '@/modules/desktop-support/ipc/notification/model/NotificationId'
+import type { NotificationDefinitionDto } from '@/modules/desktop-support/ipc/notification/model/NotificationDefinitionDto'
+import type { NotificationId } from '@/modules/desktop-support/ipc/notification/model/NotificationId'
 
 /**
  * Interface of notification manager IPC for driver

@@ -1,4 +1,4 @@
-import { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
+import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
 
 /**
  * Represents injectable/storable data of a component. This is used to pre-fill the component with

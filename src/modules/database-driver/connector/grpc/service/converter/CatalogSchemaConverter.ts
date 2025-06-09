@@ -1,11 +1,9 @@
-import {
+import type {
     GrpcCatalogSchema,
     GrpcGlobalAttributeSchema,
 } from '@/modules/database-driver/connector/grpc/gen/GrpcCatalogSchema_pb'
 import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
-import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
-import { Map, List } from 'immutable'
 import { GlobalAttributeSchema } from '@/modules/database-driver/request-response/schema/GlobalAttributeSchema'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import {
@@ -25,8 +23,7 @@ import { AttributeUniquenessType } from '@/modules/database-driver/request-respo
 import { OrderBehaviour } from '@/modules/database-driver/request-response/schema/OrderBehaviour'
 import { Cardinality } from '@/modules/database-driver/request-response/schema/Cardinality'
 import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
-import { Scalar } from '@/modules/database-driver/data-type/Scalar'
-import {
+import type {
     GrpcAssociatedDataSchema,
     GrpcAttributeElement,
     GrpcAttributeSchema,
@@ -34,7 +31,7 @@ import {
     GrpcReferenceSchema,
     GrpcSortableAttributeCompoundSchema,
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchema_pb'
-import {
+import type {
     GrpcCurrency,
     GrpcLocale,
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
@@ -46,7 +43,7 @@ import {
 import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
 import { ScalarConverter } from './ScalarConverter'
 import { EvitaValueConverter } from './EvitaValueConverter'
-import { EntitySchemaAccessor } from '@/modules/database-driver/request-response/schema/EntitySchemaAccessor'
+import type { EntitySchemaAccessor } from '@/modules/database-driver/request-response/schema/EntitySchemaAccessor'
 import { MapUtil } from '@/modules/database-driver/connector/grpc/utils/MapUtil'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { Currency } from '@/modules/database-driver/data-type/Currency'

@@ -1,6 +1,6 @@
 import { EntityConverter } from "./EntityConverter";
 import { ExtraResultConverter } from "./ExtraResultConverter";
-import {
+import type {
     GrpcDataChunk,
     GrpcPaginatedList,
     GrpcQueryResponse

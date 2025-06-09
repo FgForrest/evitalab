@@ -1,7 +1,8 @@
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { TrafficRecordingsViewerTabParams } from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabParams'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
-import { DefineComponent, markRaw } from 'vue'
+import { markRaw } from 'vue'
+import type { DefineComponent } from 'vue'
 import TrafficRecordingsViewer from '@/modules/traffic-viewer/components/TrafficRecordingsViewer.vue'
 
 export class TrafficRecordingsViewerTabDefinition extends TabDefinition<TrafficRecordingsViewerTabParams, VoidTabData> {

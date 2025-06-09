@@ -1,8 +1,8 @@
-import {
+import type {
     GraphQLConsoleTabParamsDto
 } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabParamsDto'
-import { TabParams } from '@/modules/workspace/tab/model/TabParams'
-import { ExecutableTabRequest } from '@/modules/workspace/tab/model/ExecutableTabRequest'
+import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
+import type { ExecutableTabRequest } from '@/modules/workspace/tab/model/ExecutableTabRequest'
 import { GraphQLConsoleDataPointer } from '@/modules/graphql-console/console/model/GraphQLConsoleDataPointer'
 
 /**

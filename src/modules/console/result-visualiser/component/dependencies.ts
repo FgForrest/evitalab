@@ -1,9 +1,10 @@
-import { ComputedRef, InjectionKey, provide, Ref } from 'vue'
+import { provide } from 'vue'
+import type { InjectionKey, Ref, ComputedRef } from 'vue'
 import { CatalogPointer } from '@/modules/viewer-support/model/CatalogPointer'
 import { mandatoryInject } from '@/utils/reactivity'
 import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
-import { Result } from '@/modules/console/result-visualiser/model/Result'
+import type { Result } from '@/modules/console/result-visualiser/model/Result'
 
 const catalogPointerInjectionKey: InjectionKey<CatalogPointer> = Symbol('catalogPointer')
 export function provideCatalogPointer(catalogPointer: CatalogPointer): void {

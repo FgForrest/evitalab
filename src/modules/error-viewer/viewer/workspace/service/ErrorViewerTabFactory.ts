@@ -1,7 +1,7 @@
 
 import { LabError } from '@/modules/base/exception/LabError'
 import { ErrorViewerTabParams } from '@/modules/error-viewer/viewer/workspace/model/ErrorViewerTabParams'
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { ErrorViewerTabDefinition } from '@/modules/error-viewer/viewer/workspace/model/ErrorViewerTabDefinition'
 import { mandatoryInject } from '@/utils/reactivity'
 

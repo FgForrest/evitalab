@@ -1,9 +1,9 @@
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql'
 import { GraphQLConsoleDataPointer } from '@/modules/graphql-console/console/model/GraphQLConsoleDataPointer'
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
-import { GraphQLResponse } from '@/modules/database-driver/connector/gql/model/GraphQLResponse'
+import type { GraphQLResponse } from '@/modules/database-driver/connector/gql/model/GraphQLResponse'
 
 export const graphQLConsoleServiceInjectionKey: InjectionKey<GraphQLConsoleService> = Symbol('graphQLConsoleService')
 

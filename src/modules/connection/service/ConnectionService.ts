@@ -1,6 +1,6 @@
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { Connection } from '@/modules/connection/model/Connection'
-import { ConnectionId } from '@/modules/connection/model/ConnectionId'
+import type { ConnectionId } from '@/modules/connection/model/ConnectionId'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 import { ConnectionNotFoundError } from '@/modules/connection/exception/ConnectionNotFoundError'

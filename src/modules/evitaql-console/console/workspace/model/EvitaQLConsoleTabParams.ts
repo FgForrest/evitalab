@@ -1,8 +1,8 @@
-import { ExecutableTabRequest } from '@/modules/workspace/tab/model/ExecutableTabRequest'
-import {
+import type { ExecutableTabRequest } from '@/modules/workspace/tab/model/ExecutableTabRequest'
+import type {
     EvitaQLConsoleTabParamsDto
 } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabParamsDto'
-import { TabParams } from '@/modules/workspace/tab/model/TabParams'
+import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
 import { EvitaQLConsoleDataPointer } from '@/modules/evitaql-console/console/model/EvitaQLConsoleDataPointer'
 
 /**

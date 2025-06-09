@@ -1,6 +1,5 @@
-import { EvitaDBBlogPost } from '@/modules/welcome-screen/model/EvitaDBBlogPost'
+import type { EvitaDBBlogPost } from '@/modules/welcome-screen/model/EvitaDBBlogPost'
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
-import { KyInstance } from 'ky/distribution/types/ky'
 import ky from 'ky'
 import { Connection } from '@/modules/connection/model/Connection'
 import { LabError } from '@/modules/base/exception/LabError'
@@ -8,6 +7,7 @@ import { EvitaDBInstanceServerError } from '@/modules/database-driver/exception/
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { TimeoutError } from '@/modules/database-driver/exception/TimeoutError'
 import { EvitaDBInstanceNetworkError } from '@/modules/database-driver/exception/EvitaDBInstanceNetworkError'
+import type { KyInstance } from 'ky/distribution/types/ky'
 
 /**
  * HTTP client for evitaDB docs website. Should not be used directly in components, instead it should be used as a low level

@@ -1,5 +1,5 @@
 import { TabHistoryKey } from '@/modules/workspace/tab/model/TabHistoryKey'
-import {
+import type {
     GraphQLConsoleHistoryRecord
 } from '@/modules/graphql-console/console/history/model/GraphQLConsoleHistoryRecord'
 import { GraphQLConsoleDataPointer } from '@/modules/graphql-console/console/model/GraphQLConsoleDataPointer'

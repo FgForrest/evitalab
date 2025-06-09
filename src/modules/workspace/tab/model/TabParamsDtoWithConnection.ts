@@ -1,5 +1,5 @@
-import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
-import { ConnectionId } from '@/modules/connection/model/ConnectionId'
+import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
+import type { ConnectionId } from '@/modules/connection/model/ConnectionId'
 
 /**
  * DTO for tab params that use connection.

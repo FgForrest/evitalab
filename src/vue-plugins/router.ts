@@ -1,4 +1,6 @@
-import { createRouter, createWebHashHistory, createWebHistory, Router, RouteRecordRaw, RouterHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, createWebHistory} from 'vue-router'
+import type { Router, RouterHistory } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
 import { LabRunMode } from '@/LabRunMode'
 
 const runMode: LabRunMode = resolveLabRunMode()
@@ -12,7 +14,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
         children: [
             {
                 path: '',
-                name: 'evitaLab',
+                name: 'evitasLab',
                 // route level code-splitting
                 // this generates a separate chunk (about.[hash].js) for this route
                 // which is lazy-loaded when the route is visited.

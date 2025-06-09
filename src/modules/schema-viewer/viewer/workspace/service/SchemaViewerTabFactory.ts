@@ -1,10 +1,10 @@
 import { SchemaViewerTabParams } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabParams'
 import { Connection } from '@/modules/connection/model/Connection'
-import { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
+import type { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 import { SchemaViewerTabDefinition } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabDefinition'
-import { SchemaViewerTabParamsDto } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabParamsDto'
+import type { SchemaViewerTabParamsDto } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabParamsDto'
 import { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer'
-import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
+import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { SchemaPointerType } from '@/modules/schema-viewer/viewer/model/SchemaPointerType'
 import { CatalogSchemaPointer } from '@/modules/schema-viewer/viewer/model/CatalogSchemaPointer'
@@ -15,7 +15,7 @@ import { ReferenceAttributeSchemaPointer } from '@/modules/schema-viewer/viewer/
 import { AssociatedDataSchemaPointer } from '@/modules/schema-viewer/viewer/model/AssociatedDataSchemaPointer'
 import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 
 export const schemaViewerTabFactoryInjectionKey: InjectionKey<SchemaViewerTabFactory> = Symbol('schemaViewerTabFactory')

@@ -10,24 +10,24 @@ import {
 import {
     GraphQLPriceHistogramVisualiserService
 } from '@/modules/graphql-console/console/result-visualiser/service/GraphQLPriceHistogramVisualiserService'
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import {
     JsonResultVisualiserService
 } from '@/modules/console/result-visualiser/service/json/JsonResultVisualiserService'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
-import { Result } from '@/modules/console/result-visualiser/model/Result'
+import type { Result } from '@/modules/console/result-visualiser/model/Result'
 import { Connection } from '@/modules/connection/model/Connection'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import {
+import type {
     FacetSummaryVisualiserService
 } from '@/modules/console/result-visualiser/service/FacetSummaryVisualiserService'
-import { HierarchyVisualiserService } from '@/modules/console/result-visualiser/service/HierarchyVisualiserService'
-import {
+import type { HierarchyVisualiserService } from '@/modules/console/result-visualiser/service/HierarchyVisualiserService'
+import type {
     AttributeHistogramsVisualiserService
 } from '@/modules/console/result-visualiser/service/AttributeHistogramsVisualiserService'
-import {
+import type {
     PriceHistogramVisualiserService
 } from '@/modules/console/result-visualiser/service/PriceHistogramVisualiserService'
 import { mandatoryInject } from '@/utils/reactivity'

@@ -1,4 +1,4 @@
-import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
+import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
 
 /**
  * Interface that is supposed to represent props of a component that is used to render inside a tab.

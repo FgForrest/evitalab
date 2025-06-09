@@ -1,5 +1,6 @@
 import { EditorView } from 'codemirror'
-import { AnnotationType, Extension, Line, StateField, Annotation, EditorState } from '@codemirror/state'
+import { AnnotationType, Line, StateField, Annotation, EditorState } from '@codemirror/state'
+import type { Extension } from '@codemirror/state'
 import { ViewPlugin, ViewUpdate } from '@codemirror/view'
 import { List as ImmutableList } from 'immutable'
 import { language, Language } from '@codemirror/language'

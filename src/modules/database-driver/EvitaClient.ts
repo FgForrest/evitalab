@@ -1,5 +1,5 @@
 import { AbstractEvitaClient } from '@/modules/database-driver/AbstractEvitaClient'
-import {
+import type {
     GrpcCatalogNamesResponse,
     GrpcDefineCatalogResponse,
     GrpcEvitaSessionResponse,
@@ -11,11 +11,11 @@ import { CatalogState } from '@/modules/database-driver/request-response/Catalog
 import { EvitaClientManagement } from '@/modules/database-driver/EvitaClientManagement'
 import { EvitaSchemaCache } from '@/modules/database-driver/EvitaSchemaCache'
 import { Set } from 'immutable'
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { GraphQLResponse } from '@/modules/database-driver/connector/gql/model/GraphQLResponse'
+import type { GraphQLResponse } from '@/modules/database-driver/connector/gql/model/GraphQLResponse'
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'

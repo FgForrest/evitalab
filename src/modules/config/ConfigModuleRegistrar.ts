@@ -1,7 +1,7 @@
-import { ModuleRegistrar } from '@/ModuleRegistrar'
+import type { ModuleRegistrar } from '@/ModuleRegistrar'
 import { EvitaLabConfig, evitaLabConfigInjectionKey } from '@/modules/config/EvitaLabConfig'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
-import { Router } from 'vue-router'
+import type { Router } from 'vue-router'
 
 export class ConfigModuleRegistrar implements ModuleRegistrar {
 

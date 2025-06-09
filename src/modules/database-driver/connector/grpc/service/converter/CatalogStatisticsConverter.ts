@@ -1,5 +1,5 @@
 import { GrpcCatalogState } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
-import {
+import type {
     GrpcCatalogStatistics,
     GrpcEntityCollectionStatistics
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'

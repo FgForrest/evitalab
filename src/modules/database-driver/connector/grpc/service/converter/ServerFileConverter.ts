@@ -1,6 +1,6 @@
-import { GrpcFile } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
+import type { GrpcFile } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
-import { GrpcFilesToFetchResponse } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_pb'
+import type { GrpcFilesToFetchResponse } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_pb'
 import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
 import { List as ImmutableList } from 'immutable'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'

@@ -1,13 +1,13 @@
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { SchemaViewerTabFactory } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
-import { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
+import type { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 import { Connection } from '@/modules/connection/model/Connection'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import {
+import type {
     SchemaPathFactory
 } from '@/modules/schema-viewer/viewer/service/schema-path-factory/SchemaPathFactory'
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import {
     CatalogSchemaPathFactory

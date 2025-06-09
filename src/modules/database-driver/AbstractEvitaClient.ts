@@ -1,4 +1,5 @@
-import { createClient, Client, Transport } from '@connectrpc/connect'
+import { createClient } from '@connectrpc/connect'
+import type { Client, Transport } from '@connectrpc/connect'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
 import {
     CatalogSchemaConverter
@@ -22,12 +23,12 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/TrafficRecordingConverter'
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
-import { KyInstance } from 'ky/distribution/types/ky'
 import ky from 'ky'
 import { EvitaService } from './connector/grpc/gen/GrpcEvitaAPI_pb'
 import { EvitaSessionService } from './connector/grpc/gen/GrpcEvitaSessionAPI_pb'
 import { EvitaManagementService } from './connector/grpc/gen/GrpcEvitaManagementAPI_pb'
 import { GrpcEvitaTrafficRecordingService } from './connector/grpc/gen/GrpcEvitaTrafficRecordingAPI_pb'
+import type { KyInstance } from 'ky/distribution/types/ky'
 
 export type EvitaServiceClient = Client<typeof EvitaService>
 export type EvitaSessionServiceClient = Client<typeof EvitaSessionService>

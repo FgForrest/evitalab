@@ -1,4 +1,5 @@
-import { DefineComponent, markRaw } from 'vue'
+import { markRaw } from 'vue'
+import type { DefineComponent } from 'vue'
 import SchemaViewer from '@/modules/schema-viewer/viewer/component/SchemaViewer.vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { SchemaViewerTabParams } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabParams'

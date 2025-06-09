@@ -1,8 +1,8 @@
 import {
     JsonResultVisualiserService
 } from '@/modules/console/result-visualiser/service/json/JsonResultVisualiserService'
-import { HierarchyVisualiserService } from '@/modules/console/result-visualiser/service/HierarchyVisualiserService'
-import { Result } from '@/modules/console/result-visualiser/model/Result'
+import type { HierarchyVisualiserService } from '@/modules/console/result-visualiser/service/HierarchyVisualiserService'
+import type { Result } from '@/modules/console/result-visualiser/model/Result'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'

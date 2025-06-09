@@ -1,4 +1,4 @@
-import { DefineComponent, Raw } from 'vue'
+import type { DefineComponent, Raw } from 'vue'
 import { SchemaType } from '@/modules/schema-viewer/viewer/model/SchemaType'
 
 /**

@@ -1,5 +1,5 @@
 import { TabHistoryKey } from '@/modules/workspace/tab/model/TabHistoryKey'
-import { OrderByHistoryRecord } from '@/modules/entity-viewer/viewer/history/OrderByHistoryRecord'
+import type { OrderByHistoryRecord } from '@/modules/entity-viewer/viewer/history/OrderByHistoryRecord'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 

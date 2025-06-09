@@ -1,5 +1,6 @@
-import { DefineComponent, markRaw, Raw } from 'vue'
-import { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
+import { markRaw } from 'vue'
+import type { DefineComponent, Raw } from 'vue'
+import type { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 import AttributeSchemaViewer from '@/modules/schema-viewer/viewer/component/attribute/AttributeSchemaViewer.vue'
 import { SchemaType } from '@/modules/schema-viewer/viewer/model/SchemaType'
 

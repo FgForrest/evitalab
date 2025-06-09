@@ -1,7 +1,7 @@
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { Map as ImmutableMap } from 'immutable'
-import { Router } from 'vue-router'
+import type { Router } from 'vue-router'
 import { LabRunMode } from '@/LabRunMode'
 
 const systemPropertiesControlParamName: string = 'evitalab'

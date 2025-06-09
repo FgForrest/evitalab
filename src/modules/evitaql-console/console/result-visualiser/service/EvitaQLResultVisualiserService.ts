@@ -1,6 +1,5 @@
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
-import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { EvitaQLFacetSummaryVisualiserService } from './EvitaQLFacetSummaryVisualiserService'
 import {
     EvitaQLHierarchyVisualiserService
@@ -11,19 +10,18 @@ import {
 import {
     EvitaQLPriceHistogramVisualiserService
 } from '@/modules/evitaql-console/console/result-visualiser/service/EvitaQLPriceHistogramVisualiserService'
-import { Result } from '@/modules/console/result-visualiser/model/Result'
-import { Connection } from '@/modules/connection/model/Connection'
+import type { Result } from '@/modules/console/result-visualiser/model/Result'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import {
+import type {
     FacetSummaryVisualiserService
 } from '@/modules/console/result-visualiser/service/FacetSummaryVisualiserService'
-import { HierarchyVisualiserService } from '@/modules/console/result-visualiser/service/HierarchyVisualiserService'
-import {
+import type { HierarchyVisualiserService } from '@/modules/console/result-visualiser/service/HierarchyVisualiserService'
+import type {
     AttributeHistogramsVisualiserService
 } from '@/modules/console/result-visualiser/service/AttributeHistogramsVisualiserService'
-import {
+import type {
     PriceHistogramVisualiserService
 } from '@/modules/console/result-visualiser/service/PriceHistogramVisualiserService'
 import { mandatoryInject } from '@/utils/reactivity'

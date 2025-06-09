@@ -1,14 +1,14 @@
-import {
+import type {
     FacetSummaryVisualiserService
 } from '@/modules/console/result-visualiser/service/FacetSummaryVisualiserService'
-import { HierarchyVisualiserService } from '@/modules/console/result-visualiser/service/HierarchyVisualiserService'
-import {
+import type { HierarchyVisualiserService } from '@/modules/console/result-visualiser/service/HierarchyVisualiserService'
+import type {
     AttributeHistogramsVisualiserService
 } from '@/modules/console/result-visualiser/service/AttributeHistogramsVisualiserService'
-import {
+import type {
     PriceHistogramVisualiserService
 } from '@/modules/console/result-visualiser/service/PriceHistogramVisualiserService'
-import { Result } from '@/modules/console/result-visualiser/model/Result'
+import type { Result } from '@/modules/console/result-visualiser/model/Result'
 import { VisualiserType } from '@/modules/console/result-visualiser/model/VisualiserType'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 

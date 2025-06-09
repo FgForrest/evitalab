@@ -1,10 +1,10 @@
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { Connection } from '@/modules/connection/model/Connection'
 import { TaskViewerTabDefinition } from '@/modules/task-viewer/model/TaskViewerTabDefinition'
 import { TaskViewerTabParams } from '@/modules/task-viewer/model/TaskViewerTabParams'
-import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
-import { TaskViewerTabParamsDto } from '@/modules/task-viewer/model/TaskViewerTabParamsDto'
+import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
+import type { TaskViewerTabParamsDto } from '@/modules/task-viewer/model/TaskViewerTabParamsDto'
 import { mandatoryInject } from '@/utils/reactivity'
 import { i18n } from '@/vue-plugins/i18n'
 

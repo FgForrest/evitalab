@@ -1,4 +1,4 @@
-import { Schema } from '@/modules/database-driver/request-response/schema/Schema'
+import type { Schema } from '@/modules/database-driver/request-response/schema/Schema'
 import { List as ImmutableList } from 'immutable'
 
 // todo docs

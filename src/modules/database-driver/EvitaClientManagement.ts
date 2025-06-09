@@ -2,13 +2,13 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { splitStringWithCaseIntoWords } from '@/utils/string'
 import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { CatalogStatisticsConverter } from '@/modules/database-driver/connector/grpc/service/converter/CatalogStatisticsConverter'
-import { EvitaManagementServiceClient } from '@/modules/database-driver/AbstractEvitaClient'
+import type { EvitaManagementServiceClient } from '@/modules/database-driver/AbstractEvitaClient'
 import {
     ReservedKeywordsConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/ReservedKeywordsConverter'
 import { TaskStateConverter } from '@/modules/database-driver/connector/grpc/service/converter/TaskStateConverter'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
-import {
+import type {
     GrpcDeleteFileToFetchResponse,
     GrpcEvitaCatalogStatisticsResponse,
     GrpcEvitaConfigurationResponse,
@@ -21,7 +21,7 @@ import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTi
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
-import { GrpcTaskStatus, GrpcUuid } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
+import type { GrpcTaskStatus, GrpcUuid } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
@@ -37,7 +37,7 @@ import { EventType } from '@/modules/database-driver/request-response/jfr/EventT
 import { EvitaCatalogStatisticsCache } from '@/modules/database-driver/EvitaCatalogStatisticsCache'
 import { EntityCollectionStatistics } from '@/modules/database-driver/request-response/EntityCollectionStatistics'
 import { EvitaServerMetadataCache } from '@/modules/database-driver/EvitaServerMetadataCache'
-import { StringValue } from '@bufbuild/protobuf/wkt'
+import type { StringValue } from '@bufbuild/protobuf/wkt'
 
 
 /**

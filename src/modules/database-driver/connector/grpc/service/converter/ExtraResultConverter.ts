@@ -1,4 +1,4 @@
-import {
+import type {
     GrpcExtraResults,
     GrpcFacetGroupStatistics,
     GrpcFacetStatistics,
@@ -15,7 +15,7 @@ import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { HistogramBucket } from '@/modules/database-driver/request-response/data/HistogramBucket'
 import { FacetGroupStatistics } from '@/modules/database-driver/request-response/data/FacetGroupStatistics'
 import { FacetStatistics } from '@/modules/database-driver/request-response/data/FacetStatistics'
-import { GrpcEntityReference } from '@/modules/database-driver/connector/grpc/gen/GrpcEntity_pb'
+import type { GrpcEntityReference } from '@/modules/database-driver/connector/grpc/gen/GrpcEntity_pb'
 import { EntityReference } from '@/modules/database-driver/request-response/data/EntityReference'
 import { Hierarchy } from '@/modules/database-driver/request-response/data/Hierarchy'
 import { LevelInfo } from '@/modules/database-driver/request-response/data/LevelInfo'

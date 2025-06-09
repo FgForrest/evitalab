@@ -1,10 +1,10 @@
 import { Connection } from "@/modules/connection/model/Connection";
 import { ConnectionService } from "@/modules/connection/service/ConnectionService";
 import { mandatoryInject } from "@/utils/reactivity";
-import { InjectionKey } from "vue";
+import type { InjectionKey } from "vue";
 import { BackupViewerTabDefinition } from "../model/BackupViewerTabDefinition";
-import { TabParamsDto } from "@/modules/workspace/tab/model/TabParamsDto";
-import { BackupViewerTabParamsDto } from "../model/BackupViewerTabParamsDto";
+import type { TabParamsDto } from "@/modules/workspace/tab/model/TabParamsDto";
+import type { BackupViewerTabParamsDto } from "../model/BackupViewerTabParamsDto";
 import { BackupViewerTabParams } from '@/modules/backup-viewer/model/BackupViewerTabParams'
 import { i18n } from '@/vue-plugins/i18n'
 

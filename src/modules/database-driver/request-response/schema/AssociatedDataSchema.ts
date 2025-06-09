@@ -1,8 +1,8 @@
 import { List, Map} from 'immutable'
 import { NamingConvention } from '../NamingConvetion'
 import { AbstractSchema } from '@/modules/database-driver/request-response/schema/AbstractSchema'
-import { TypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
-import { LocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
+import type { TypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
+import type { LocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 
 /**
