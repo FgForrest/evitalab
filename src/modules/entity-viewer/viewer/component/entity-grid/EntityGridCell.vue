@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { useDataLocale, usePriceType } from '@/modules/entity-viewer/viewer/component/dependencies'
-import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { isLocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
 import { isTypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
+import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue.ts'
+import type { Predecessor } from '@/modules/database-driver/data-type/Predecessor.ts'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -30,15 +32,19 @@ const printablePropertyValue = computed<string>(() => toPrintablePropertyValue(p
 const openableInNewTab = computed<boolean>(() => {
     if (props.propertyDescriptor?.type === EntityPropertyType.Entity && props.propertyDescriptor?.key.name === StaticEntityProperties.ParentPrimaryKey) {
         return true
-    } else if (props.propertyDescriptor?.schema != undefined &&
+    } else if(props.propertyDescriptor?.schema != undefined &&
         isTypedSchema(props.propertyDescriptor.schema) &&
-        props.propertyDescriptor.schema.type === Scalar.Predecessor) {
-        return true
-    } else if (props.propertyDescriptor?.type === EntityPropertyType.References && props.propertyDescriptor.schema instanceof ReferenceSchema) {
-        return true
-    } else {
+        props.propertyDescriptor.schema.type === Scalar.Predecessor &&
+        ((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
         return false
     }
+    else if (props.propertyDescriptor?.schema != undefined &&
+        isTypedSchema(props.propertyDescriptor.schema) &&
+        props.propertyDescriptor.schema.type === Scalar.Predecessor &&
+        ((props.propertyValue as NativeValue).value() as Predecessor).predecessorId !== -1) {
+        return true
+    } else
+        return false
 })
 const showDetailOnHover = computed<boolean>(() => printablePropertyValue.value.length <= 100)
 
@@ -85,6 +91,30 @@ function copyValue(): void {
         })
     }
 }
+
+function getIcon(): string {
+    if(props.propertyDescriptor?.schema != undefined &&
+        isTypedSchema(props.propertyDescriptor.schema) &&
+        props.propertyDescriptor.schema.type === Scalar.Predecessor) {
+        return openableInNewTab.value ? "mdi-refresh" : "mdi-arrow-right" //TODO: Change to correct icon
+    } else {
+        return "mdi-open-in-new"
+    }
+}
+
+function haveIcon(): boolean {
+    if(openableInNewTab.value) {
+        return true
+    }
+    else if(props.propertyDescriptor?.schema != undefined &&
+        isTypedSchema(props.propertyDescriptor.schema) &&
+        props.propertyDescriptor.schema.type === Scalar.Predecessor) {
+        return true
+    }
+    else {
+        return false
+    }
+}
 </script>
 
 <template>
@@ -104,7 +134,7 @@ function copyValue(): void {
                 <span class="text-disabled">{{ t('common.placeholder.null') }}</span>
             </template>
             <template v-else>
-                <VIcon v-if="openableInNewTab" class="mr-1">mdi-open-in-new</VIcon>
+                <VIcon v-if="haveIcon()" class="mr-1">{{ getIcon() }}</VIcon>
                 <span>
                     {{ printablePropertyValue }}
                     <VTooltip v-if="showDetailOnHover" activator="parent">
