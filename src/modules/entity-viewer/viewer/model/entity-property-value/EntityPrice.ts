@@ -1,5 +1,5 @@
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
-import {
+import type {
     EntityPropertyValuePreviewStringContext
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValuePreviewStringContext'
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'

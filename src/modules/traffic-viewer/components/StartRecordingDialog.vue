@@ -5,7 +5,7 @@ import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { TrafficViewerService, useTrafficViewerService } from '@/modules/traffic-viewer/service/TrafficViewerService'
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import {
     int64MaxValue,
     parseHumanByteSizeToBigInt
@@ -159,7 +159,7 @@ const chunkFileSizeInBytesRules = [
 
 async function loadAvailableCatalogs(): Promise<void> {
     try {
-        const fetchedAvailableCatalogs: Immutable.List<CatalogStatistics> =
+        const fetchedAvailableCatalogs: ImmutableList<CatalogStatistics> =
             await trafficViewerService.getAvailableCatalogs()
         availableCatalogs.value = fetchedAvailableCatalogs
             .filter(it => !it.corrupted)

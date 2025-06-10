@@ -1,4 +1,4 @@
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { jfrRecorderTaskName } from '@/modules/jfr-viewer/model/JfrRecorderTask'
 import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'

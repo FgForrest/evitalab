@@ -1,11 +1,11 @@
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { Connection } from '@/modules/connection/model/Connection'
 import { JfrViewerTabDefinition } from '@/modules/jfr-viewer/model/JfrViewerTabDefinition'
 import { JfrViewerTabParams } from '@/modules/jfr-viewer/model/JfrViewerTabParams'
 import { mandatoryInject } from '@/utils/reactivity'
-import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
-import { JfrViewerTabParamsDto } from '@/modules/jfr-viewer/model/JfrViewerTabParamsDto'
+import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
+import type { JfrViewerTabParamsDto } from '@/modules/jfr-viewer/model/JfrViewerTabParamsDto'
 import { i18n } from '@/vue-plugins/i18n'
 
 export const jfrViewerTabFactoryInjectionKey: InjectionKey<JfrViewerTabFactory> = Symbol('jfrViewerTabFactory');

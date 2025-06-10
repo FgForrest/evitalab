@@ -1,4 +1,5 @@
-import { DefineComponent, markRaw } from 'vue'
+import type { DefineComponent } from 'vue'
+import { markRaw } from 'vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { EntityViewerTabParams } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabParams'
 import { EntityViewerTabData } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabData'

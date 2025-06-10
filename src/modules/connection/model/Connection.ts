@@ -1,5 +1,6 @@
-import XXH, { HashObject } from 'xxhashjs'
-import { ConnectionId } from '@/modules/connection/model/ConnectionId'
+import XXH from 'xxhashjs'
+import type { HashObject } from 'xxhashjs'
+import type { ConnectionId } from '@/modules/connection/model/ConnectionId'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 
 const hasher: HashObject = XXH.h64()

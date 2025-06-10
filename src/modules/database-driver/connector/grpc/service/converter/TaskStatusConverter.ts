@@ -1,5 +1,4 @@
-import Immutable from 'immutable'
-import { StringValue } from '@bufbuild/protobuf'
+import { List as ImmutableList, Set as ImmutableSet } from 'immutable'
 import { TaskStateConverter } from './TaskStateConverter'
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
@@ -7,12 +6,13 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { GrpcTaskTrait } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { ServerFileConverter } from '@/modules/database-driver/connector/grpc/service/converter/ServerFileConverter'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
-import { GrpcTaskStatusesResponse } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_pb'
-import { GrpcFile, GrpcTaskStatus } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
+import type { GrpcTaskStatusesResponse } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_pb'
+import type { GrpcFile, GrpcTaskStatus } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { TaskResult } from '@/modules/database-driver/request-response/task/TaskResult'
 import { TextTaskResult } from '@/modules/database-driver/request-response/task/TextTaskResult'
 import { FileTaskResult } from '@/modules/database-driver/request-response/task/FileTaskResult'
 import { TaskTrait } from '@/modules/database-driver/request-response/task/TaskTrait'
+import type { StringValue } from '@bufbuild/protobuf/wkt'
 
 /**
  * Converts task statuses between evitaLab representation and evitaDB's gRPC
@@ -36,7 +36,7 @@ export class TaskStatusConverter {
         }
 
         return new PaginatedList(
-            Immutable.List(taskStatuses),
+            ImmutableList(taskStatuses),
             grpcTaskStatuses.pageNumber,
             grpcTaskStatuses.pageSize,
             grpcTaskStatuses.totalNumberOfRecords
@@ -52,7 +52,7 @@ export class TaskStatusConverter {
             grpcTaskStatus.result.value
         )
         return new TaskStatus(
-            Immutable.List(taskTypes),
+            ImmutableList(taskTypes),
             grpcTaskStatus.taskName,
             this.evitaValueConverter.convertGrpcUuid(grpcTaskStatus.taskId!),
             grpcTaskStatus.catalogName,
@@ -92,12 +92,12 @@ export class TaskStatusConverter {
         }
     }
 
-    private convertTaskTraits(grpcTaskTraits: GrpcTaskTrait[]): Immutable.Set<TaskTrait> {
+    private convertTaskTraits(grpcTaskTraits: GrpcTaskTrait[]): ImmutableSet<TaskTrait> {
         const taskTraits: TaskTrait[] = []
         for (const grpcTaskTrait of grpcTaskTraits) {
             taskTraits.push(this.convertTaskTrait(grpcTaskTrait))
         }
-        return Immutable.Set(taskTraits)
+        return ImmutableSet(taskTraits)
     }
 
     private convertTaskTrait(grpcTaskTrait: GrpcTaskTrait): TaskTrait {

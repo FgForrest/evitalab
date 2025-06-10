@@ -132,7 +132,7 @@ function openActions(): void {
 </template>
 
 <style lang="scss" scoped>
-@import "@/styles/colors.scss";
+@use "@/styles/colors.scss" as *;
 
 .tree-view-item {
     &__content {

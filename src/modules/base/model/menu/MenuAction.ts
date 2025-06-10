@@ -1,5 +1,5 @@
 import { Command } from '@/modules/keymap/model/Command'
-import { MenuItem } from './MenuItem'
+import type { MenuItem } from './MenuItem'
 
 /**
  * Represents a runnable menu action

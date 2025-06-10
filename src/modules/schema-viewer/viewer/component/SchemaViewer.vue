@@ -13,7 +13,7 @@ import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { SchemaViewerTabDefinition } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabDefinition'
 import { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 import { useI18n } from 'vue-i18n'
@@ -48,13 +48,13 @@ const schemaChangeCallbackId = schemaViewerService.registerSchemaChangeCallback(
     async () => await loadSchema()
 )
 
-const title: Immutable.List<string> = (() => {
+const title: ImmutableList<string> = (() => {
     const schemaPointer: SchemaPointer = props.params.dataPointer.schemaPointer
 
     if (schemaPointer.schemaType === SchemaType.Catalog) {
-        return Immutable.List.of(schemaPointer.schemaName)
+        return ImmutableList.of(schemaPointer.schemaName)
     } else {
-        return Immutable.List.of(
+        return ImmutableList.of(
             t(`schemaViewer.title.schema.${schemaPointer.schemaType}`),
             schemaPointer.schemaName
         )

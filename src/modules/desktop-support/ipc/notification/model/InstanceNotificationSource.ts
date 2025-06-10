@@ -1,5 +1,5 @@
-import { NotificationSourceDto } from '@/modules/desktop-support/ipc/notification/model/NotificationSourceDto'
-import { ConnectionId } from '@/modules/connection/model/ConnectionId'
+import type { NotificationSourceDto } from '@/modules/desktop-support/ipc/notification/model/NotificationSourceDto'
+import type { ConnectionId } from '@/modules/connection/model/ConnectionId'
 
 export const instanceNotificationSourceType = 'instance'
 

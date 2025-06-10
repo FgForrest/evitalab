@@ -1,4 +1,4 @@
-import { ModuleRegistrar } from '@/ModuleRegistrar'
+import type { ModuleRegistrar } from '@/ModuleRegistrar'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 import {
     CatalogItemService,

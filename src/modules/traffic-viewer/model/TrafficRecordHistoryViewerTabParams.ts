@@ -1,5 +1,5 @@
-import { TabParams } from '@/modules/workspace/tab/model/TabParams'
-import {
+import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
+import type {
     TrafficRecordHistoryViewerTabParamsDto
 } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabParamsDto'
 import { TrafficRecordHistoryDataPointer } from '@/modules/traffic-viewer/model/TrafficRecordHistoryDataPointer'

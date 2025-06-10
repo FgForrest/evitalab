@@ -1,8 +1,8 @@
 import LZString from 'lz-string'
 import { SerializableTabObject } from '@/modules/workspace/tab/model/SerializableTabObject'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
-import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
-import { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
+import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
+import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
 
 /**
  * Used to share a tab and its data between browsers (users).

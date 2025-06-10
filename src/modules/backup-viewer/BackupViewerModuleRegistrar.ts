@@ -1,7 +1,6 @@
 import { ModuleContextBuilder } from "@/ModuleContextBuilder";
-import { ModuleRegistrar } from "@/ModuleRegistrar";
+import type { ModuleRegistrar } from "@/ModuleRegistrar";
 import { BackupViewerService, backupViewerServiceInjectionKey } from "./service/BackupViewerService";
-import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
 import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
 
 export class BackupViewerModuleRegistrar implements ModuleRegistrar {

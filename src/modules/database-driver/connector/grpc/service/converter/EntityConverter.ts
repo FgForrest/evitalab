@@ -1,11 +1,11 @@
-import { GrpcLocalizedAttribute } from '@/modules/database-driver/connector/grpc/gen/GrpcAttribute_pb'
-import {
+import type { GrpcLocalizedAttribute } from '@/modules/database-driver/connector/grpc/gen/GrpcAttribute_pb'
+import type {
     GrpcEntityReference,
     GrpcEntityReferenceWithParent,
     GrpcReference,
     GrpcSealedEntity,
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEntity_pb'
-import {
+import type {
     GrpcEvitaAssociatedDataValue,
     GrpcEvitaValue,
     GrpcLocale
@@ -19,14 +19,14 @@ import {
     GrpcEvitaAssociatedDataDataType_GrpcEvitaDataType,
     GrpcPriceInnerRecordHandling,
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
-import { GrpcLocalizedAssociatedData } from '@/modules/database-driver/connector/grpc/gen/GrpcAssociatedData_pb'
-import { GrpcPrice } from '@/modules/database-driver/connector/grpc/gen/GrpcPrice_pb'
+import type { GrpcLocalizedAssociatedData } from '@/modules/database-driver/connector/grpc/gen/GrpcAssociatedData_pb'
+import type { GrpcPrice } from '@/modules/database-driver/connector/grpc/gen/GrpcPrice_pb'
 import { Price } from '@/modules/database-driver/request-response/data/Price'
 import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { PriceInnerRecordHandling } from '@/modules/database-driver/data-type/PriceInnerRecordHandling'
 import { EntityReference } from '@/modules/database-driver/request-response/data/EntityReference'
 import { Cardinality } from '@/modules/database-driver/request-response/schema/Cardinality'
-import Immutable from 'immutable'
+import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { EvitaValueConverter } from './EvitaValueConverter'
 import { AssociatedData } from '@/modules/database-driver/request-response/data/AssociatedData'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
@@ -98,34 +98,34 @@ export class EntityConverter {
             [key: string]: GrpcLocalizedAttribute
         }
     ): Attributes {
-        const globalAttributes: Immutable.Map<string, any> = this.convertAttributeMap(grpcGlobalAttributes)
+        const globalAttributes: ImmutableMap<string, any> = this.convertAttributeMap(grpcGlobalAttributes)
 
-        const localizedAttributes: Map<string, Immutable.Map<string, any>> = new Map<string, Immutable.Map<string, any>>()
+        const localizedAttributes: Map<string, ImmutableMap<string, any>> = new Map<string, ImmutableMap<string, any>>()
         for (const locale in grpcLocalizedAttributes) {
             const attributesForLocale: GrpcLocalizedAttribute = grpcLocalizedAttributes[locale]
-            const convertedAttributes: Immutable.Map<string, any> = this.convertAttributeMap(attributesForLocale.attributes)
+            const convertedAttributes: ImmutableMap<string, any> = this.convertAttributeMap(attributesForLocale.attributes)
             localizedAttributes.set(locale, convertedAttributes)
         }
 
-        return new Attributes(globalAttributes, Immutable.Map<string, Immutable.Map<string, any>>(localizedAttributes))
+        return new Attributes(globalAttributes, ImmutableMap<string, ImmutableMap<string, any>>(localizedAttributes))
     }
 
-    private convertAttributeMap(grpcAttributeMap: { [key: string]: GrpcEvitaValue }): Immutable.Map<string, any> {
+    private convertAttributeMap(grpcAttributeMap: { [key: string]: GrpcEvitaValue }): ImmutableMap<string, any> {
         const attributeMap: Map<string, any> = new Map<string, any>()
         for (const attributeName in grpcAttributeMap) {
             const attributeValue: GrpcEvitaValue = grpcAttributeMap[attributeName]
             if (attributeValue.value.value != undefined) {
                 attributeMap.set(
                     attributeName,
-                    this.evitaValueConverter.convertGrpcValue(attributeValue)
+                    this.evitaValueConverter.convertGrpcValue(attributeValue, attributeValue.value.case)
                 )
             }
         }
-        return Immutable.Map(attributeMap)
+        return ImmutableMap(attributeMap)
     }
 
-    private convertReferences(grpcReferences: GrpcReference[]): Immutable.List<Reference> {
-        return Immutable.List(grpcReferences.map(it => this.convertReference(it)))
+    private convertReferences(grpcReferences: GrpcReference[]): ImmutableList<Reference> {
+        return ImmutableList(grpcReferences.map(it => this.convertReference(it)))
     }
 
     private convertReference(grpcReference: GrpcReference): Reference {
@@ -204,21 +204,21 @@ export class EntityConverter {
             [key: string]: GrpcLocalizedAssociatedData
         }
     ): AssociatedData {
-        const globalAssociatedData: Immutable.Map<string, any> = this.convertAssociatedDataMap(grpcGlobalAssociatedData)
+        const globalAssociatedData: ImmutableMap<string, any> = this.convertAssociatedDataMap(grpcGlobalAssociatedData)
 
-        const localizedAssociatedData: Map<string, Immutable.Map<string, any>> = new Map<string, Immutable.Map<string, any>>()
+        const localizedAssociatedData: Map<string, ImmutableMap<string, any>> = new Map<string, ImmutableMap<string, any>>()
         for (const locale in grpcLocalizedAssociatedData) {
             const associatedDataForLocale: GrpcLocalizedAssociatedData = grpcLocalizedAssociatedData[locale]
-            const convertedAssociatedData: Immutable.Map<string, any> = this.convertAssociatedDataMap(associatedDataForLocale.associatedData)
+            const convertedAssociatedData: ImmutableMap<string, any> = this.convertAssociatedDataMap(associatedDataForLocale.associatedData)
             localizedAssociatedData.set(locale, convertedAssociatedData)
         }
 
-        return new AssociatedData(globalAssociatedData, Immutable.Map(localizedAssociatedData))
+        return new AssociatedData(globalAssociatedData, ImmutableMap(localizedAssociatedData))
     }
 
     private convertAssociatedDataMap(grpcAssociatedDataMap: {
         [key: string]: GrpcEvitaAssociatedDataValue
-    }): Immutable.Map<string, any> {
+    }): ImmutableMap<string, any> {
         const associatedDataMap: Map<string, any> = new Map<string, any>()
         for (const associatedValueName in grpcAssociatedDataMap) {
             const associatedDataValue = grpcAssociatedDataMap[associatedValueName]
@@ -227,7 +227,7 @@ export class EntityConverter {
                 this.convertAssociatedDataValue(associatedDataValue)
             )
         }
-        return Immutable.Map(associatedDataMap)
+        return ImmutableMap(associatedDataMap)
     }
 
     private convertAssociatedDataValue(
@@ -239,20 +239,20 @@ export class EntityConverter {
         ) {
             return JSON.parse(value.value.value as string)
         } else {
-            return this.evitaValueConverter.convertGrpcValue(value.value.value)
+            return this.evitaValueConverter.convertGrpcValue(value.value.value, value.value.case)
         }
     }
 
-    private convertLocales(locales: GrpcLocale[]): Immutable.List<Locale> {
+    private convertLocales(locales: GrpcLocale[]): ImmutableList<Locale> {
         const newLocales: Locale[] = []
         for (const locale of locales) {
             newLocales.push(new Locale(locale.languageTag))
         }
-        return Immutable.List(newLocales)
+        return ImmutableList(newLocales)
     }
 
-    private convertPrices(grpcPrices: GrpcPrice[]): Immutable.List<Price> {
-        return Immutable.List(grpcPrices.map(it => this.convertPrice(it)))
+    private convertPrices(grpcPrices: GrpcPrice[]): ImmutableList<Price> {
+        return ImmutableList(grpcPrices.map(it => this.convertPrice(it)))
     }
 
     private convertPrice(grpcPrice: GrpcPrice) {

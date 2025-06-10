@@ -1,6 +1,6 @@
-import { TabParams } from '@/modules/workspace/tab/model/TabParams'
-import { EntityViewerTabParamsDto } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabParamsDto'
-import { ExecutableTabRequest } from '@/modules/workspace/tab/model/ExecutableTabRequest'
+import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
+import type { EntityViewerTabParamsDto } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabParamsDto'
+import type { ExecutableTabRequest } from '@/modules/workspace/tab/model/ExecutableTabRequest'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 
 /**

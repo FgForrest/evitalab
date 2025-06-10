@@ -18,7 +18,7 @@ import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { bracketMatching, defaultHighlightStyle, indentOnInput, syntaxHighlighting } from '@codemirror/language'
 import { autocompletion, closeBrackets, closeBracketsKeymap, completionKeymap } from '@codemirror/autocomplete'
 import { lintKeymap } from '@codemirror/lint'
-import { dracula } from '@ddietr/codemirror-themes/dracula.js'
+import { dracula } from '@ddietr/codemirror-themes/dracula'
 import { computed, ref, watch } from 'vue'
 import { EditorView } from 'codemirror'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
@@ -197,7 +197,7 @@ function clearHistory(): void {
 </template>
 
 <style lang="scss" scoped>
-@import "@/styles/colors.scss";
+@use "@/styles/colors.scss" as *;
 
 .inline-query-editor {
     display: inline-grid;

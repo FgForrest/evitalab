@@ -1,4 +1,4 @@
-import { App, InjectionKey } from 'vue'
+import type { App, InjectionKey } from 'vue'
 import { InitializationError } from '@/modules/base/exception/InitializationError'
 
 /**

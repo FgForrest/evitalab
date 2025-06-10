@@ -1,4 +1,4 @@
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 
 export const toasterInjectionKey: InjectionKey<Toaster> = Symbol('toaster')

@@ -1,4 +1,4 @@
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 
 /**
  * Label associated with the query / source query.
@@ -24,4 +24,4 @@ export const graphQlSourceTypeLabelValue: string = 'GraphQL'
  * Labels that shouldn't be visualised because they are useful only for the evitaLab
  * or evitaDB internally
  */
-export const systemLabels: Immutable.List<string> = Immutable.List([labelSourceQuery])
+export const systemLabels: ImmutableList<string> = ImmutableList([labelSourceQuery])

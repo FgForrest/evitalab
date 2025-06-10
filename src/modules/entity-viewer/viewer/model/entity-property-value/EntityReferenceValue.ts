@@ -26,7 +26,7 @@ export class EntityReferenceValue extends EntityPropertyValue {
         for (const representativeAttribute of this.representativeAttributes) {
             const representativeAttributeValue = representativeAttribute.value()
             if (representativeAttributeValue == undefined) {
-                return super.emptyEntityPropertyValuePlaceholder
+                return this.emptyEntityPropertyValuePlaceholder
             } else {
                 flattenedRepresentativeAttributes.push(representativeAttributeValue.toString())
             }

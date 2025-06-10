@@ -1,5 +1,5 @@
 import { LabError } from '@/modules/base/exception/LabError'
-import { ConnectionId } from '@/modules/connection/model/ConnectionId'
+import type { ConnectionId } from '@/modules/connection/model/ConnectionId'
 
 /**
  * Thrown when requested connection by ID could not be found in storage

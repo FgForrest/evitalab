@@ -1,4 +1,4 @@
-import { MenuItem } from '@/modules/base/model/menu/MenuItem'
+import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
 import { MenuAction } from '@/modules/base/model/menu/MenuAction'
 import { MenuSubheader } from '@/modules/base/model/menu/MenuSubheader'
 

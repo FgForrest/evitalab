@@ -1,11 +1,11 @@
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { Duration } from 'luxon'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
-import {
+import type {
     GrpcQueryLabel,
     GrpcTrafficRecord,
     GrpcTrafficRecordingCaptureCriteria, GrpcTrafficRecordingContent, GrpcTrafficRecordingType
@@ -44,12 +44,12 @@ export class TrafficRecordingConverter {
         this.evitaValueConverter = evitaValueConverter
     }
 
-    convertGrpcTrafficRecords(grpcTrafficRecords: GrpcTrafficRecord[]): Immutable.List<TrafficRecord> {
+    convertGrpcTrafficRecords(grpcTrafficRecords: GrpcTrafficRecord[]): ImmutableList<TrafficRecord> {
         const trafficRecords: TrafficRecord[] = []
         for (const grpcTrafficRecord of grpcTrafficRecords) {
             trafficRecords.push(this.convertGrpcTrafficRecord(grpcTrafficRecord))
         }
-        return Immutable.List(trafficRecords)
+        return ImmutableList(trafficRecords)
     }
 
     convertGrpcTrafficRecord(grpcTrafficRecord: GrpcTrafficRecord): TrafficRecord {
@@ -69,7 +69,7 @@ export class TrafficRecordingConverter {
                 grpcTrafficRecord.body.value.queryDescription,
                 grpcTrafficRecord.body.value.query,
                 grpcTrafficRecord.body.value.totalRecordCount,
-                Immutable.List(grpcTrafficRecord.body.value.primaryKeys),
+                ImmutableList(grpcTrafficRecord.body.value.primaryKeys),
                 this.convertGrpcQueryLabels(grpcTrafficRecord.body.value.labels)
             );
             case 'enrichment': return new EntityEnrichmentContainer(
@@ -90,7 +90,7 @@ export class TrafficRecordingConverter {
                 header.sessionSequenceOrder, header.sessionId, header.recordSessionOffset, header.sessionRecordsCount,
                 header.type, header.created, header.duration, header.ioFetchedSizeBytes, header.ioFetchCount,
                 header.finishedWithError,
-                grpcTrafficRecord.body.value.catalogVersion,
+                BigInt(grpcTrafficRecord.body.value.catalogVersion),
                 grpcTrafficRecord.body.value.trafficRecordCount,
                 grpcTrafficRecord.body.value.queryCount,
                 grpcTrafficRecord.body.value.entityFetchCount,
@@ -100,7 +100,7 @@ export class TrafficRecordingConverter {
                 header.sessionSequenceOrder, header.sessionId, header.recordSessionOffset, header.sessionRecordsCount,
                 header.type, header.created, header.duration, header.ioFetchedSizeBytes, header.ioFetchCount,
                 header.finishedWithError,
-                grpcTrafficRecord.body.value.catalogVersion
+                BigInt(grpcTrafficRecord.body.value.catalogVersion)
             );
             case 'sourceQuery': return new SourceQueryContainer(
                 header.sessionSequenceOrder, header.sessionId, header.recordSessionOffset, header.sessionRecordsCount,
@@ -124,7 +124,7 @@ export class TrafficRecordingConverter {
     }
 
     convertTrafficRecordingCaptureRequest(captureRequest: TrafficRecordingCaptureRequest): GrpcTrafficRecordingCaptureCriteria {
-        return new GrpcTrafficRecordingCaptureCriteria({
+        return {
             content: this.convertTrafficRecordContent(captureRequest.content),
             since: captureRequest.since != undefined
                 ? this.evitaValueConverter.convertOffsetDateTime(captureRequest.since)
@@ -144,7 +144,7 @@ export class TrafficRecordingConverter {
             labels: captureRequest.labels != undefined
                 ? this.convertLabels(captureRequest.labels)
                 : undefined
-        })
+        } as GrpcTrafficRecordingCaptureCriteria
     }
 
     convertTrafficRecordContent(trafficRecordingContent: TrafficRecordContent): GrpcTrafficRecordingContent {
@@ -156,7 +156,7 @@ export class TrafficRecordingConverter {
         }
     }
 
-    convertTrafficRecordTypes(trafficRecordTypes: Immutable.List<TrafficRecordType>): GrpcTrafficRecordingType[] {
+    convertTrafficRecordTypes(trafficRecordTypes: ImmutableList<TrafficRecordType>): GrpcTrafficRecordingType[] {
         const grpcTrafficRecordingTypes: GrpcTrafficRecordingType[] = []
         for (const trafficRecordingType of trafficRecordTypes) {
             grpcTrafficRecordingTypes.push(this.convertTrafficRecordType(trafficRecordingType))
@@ -194,7 +194,7 @@ export class TrafficRecordingConverter {
         }
     }
 
-    convertLabels(labels: Immutable.List<Label>): GrpcQueryLabel[] {
+    convertLabels(labels: ImmutableList<Label>): GrpcQueryLabel[] {
         const grpcQueryLabels: GrpcQueryLabel[] = []
         for (const label of labels) {
             grpcQueryLabels.push(this.convertLabel(label))
@@ -203,18 +203,18 @@ export class TrafficRecordingConverter {
     }
 
     convertLabel(label: Label): GrpcQueryLabel {
-        return new GrpcQueryLabel({
+        return {
             name: label.name,
             value: label.value
-        })
+        } as GrpcQueryLabel
     }
 
-    convertGrpcQueryLabels(grpcQueryLabels: GrpcQueryLabel[]): Immutable.List<Label> {
+    convertGrpcQueryLabels(grpcQueryLabels: GrpcQueryLabel[]): ImmutableList<Label> {
         const labels: Label[] = []
         for (const grpcQueryLabel of grpcQueryLabels) {
             labels.push(this.convertGrpcQueryLabel(grpcQueryLabel))
         }
-        return Immutable.List(labels)
+        return ImmutableList(labels)
     }
 
     convertGrpcQueryLabel(grpcQueryLabel: GrpcQueryLabel): Label {
@@ -226,7 +226,7 @@ export class TrafficRecordingConverter {
 
     private convertGrpcTrafficRecordHeader(grpcTrafficRecord: GrpcTrafficRecord): TrafficRecordHeader {
         return new TrafficRecordHeader(
-            grpcTrafficRecord.sessionSequenceOrder,
+            BigInt(grpcTrafficRecord.sessionSequenceOrder),
             this.evitaValueConverter.convertGrpcUuid(grpcTrafficRecord.sessionId!),
             grpcTrafficRecord.recordSessionOffset,
             grpcTrafficRecord.sessionRecordsCount,

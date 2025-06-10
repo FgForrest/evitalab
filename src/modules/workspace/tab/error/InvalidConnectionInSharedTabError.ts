@@ -1,4 +1,4 @@
-import { SharedTabTroubleshooterCallback } from '@/modules/workspace/tab/service/SharedTabTroubleshooterCallback'
+import type { SharedTabTroubleshooterCallback } from '@/modules/workspace/tab/service/SharedTabTroubleshooterCallback'
 import { LabError } from '@/modules/base/exception/LabError'
 
 export class InvalidConnectionInSharedTabError extends LabError {

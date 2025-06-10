@@ -1,4 +1,4 @@
-import { Result } from '@/modules/console/result-visualiser/model/Result'
+import type { Result } from '@/modules/console/result-visualiser/model/Result'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { VisualisedHistogram } from '@/modules/console/result-visualiser/model/histogram/VisualisedHistogram'

@@ -6,7 +6,7 @@
 import { Codemirror } from 'vue-codemirror'
 import { EditorState, Extension } from '@codemirror/state'
 import { basicSetup, EditorView } from 'codemirror'
-import { dracula } from '@ddietr/codemirror-themes/dracula.js'
+import { dracula } from '@ddietr/codemirror-themes/dracula'
 import { computed, ref, watch } from 'vue'
 import { ViewUpdate } from '@codemirror/view'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'

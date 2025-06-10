@@ -17,7 +17,7 @@ import CreateCollectionDialog from '@/modules/connection-explorer/component/Crea
 import SwitchCatalogToAliveStateDialog
     from '@/modules/connection-explorer/component/SwitchCatalogToAliveStateDialog.vue'
 import { ItemFlag } from '@/modules/base/model/tree-view/ItemFlag'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
@@ -69,8 +69,8 @@ const menuItemList = computed<MenuItem<CatalogMenuItemType>[]>(() => {
     return Array.from(menuItems.value.values())
 })
 
-const entityCollections = computed<Immutable.List<EntityCollectionStatistics>>(() => {
-    return Immutable.List<EntityCollectionStatistics>(props.catalog.entityCollectionStatistics)
+const entityCollections = computed<ImmutableList<EntityCollectionStatistics>>(() => {
+    return ImmutableList<EntityCollectionStatistics>(props.catalog.entityCollectionStatistics)
         .sort((a: EntityCollectionStatistics, b: EntityCollectionStatistics) => {
             return a.entityType.localeCompare(b.entityType)
         })

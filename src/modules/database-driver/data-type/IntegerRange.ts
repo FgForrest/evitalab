@@ -1,4 +1,4 @@
-import { PrettyPrintable } from "./PrettyPrintable";
+import type { PrettyPrintable } from "./PrettyPrintable";
 import { Range } from "./Range";
 
 /**

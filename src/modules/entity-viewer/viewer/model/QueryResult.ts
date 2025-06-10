@@ -1,4 +1,4 @@
-import { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
+import type { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
 
 /**
  * Holds query result of data grid console query.

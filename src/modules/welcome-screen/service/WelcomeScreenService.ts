@@ -1,6 +1,6 @@
-import { WelcomeScreenStore } from '@/modules/welcome-screen/store/welcomeScreenStore'
-import { EvitaDBBlogPost } from '@/modules/welcome-screen/model/EvitaDBBlogPost'
-import { InjectionKey } from 'vue'
+import type { WelcomeScreenStore } from '@/modules/welcome-screen/store/welcomeScreenStore'
+import type { EvitaDBBlogPost } from '@/modules/welcome-screen/model/EvitaDBBlogPost'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaDBDocsClient } from '@/modules/welcome-screen/service/EvitaDBDocsClient'
 

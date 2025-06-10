@@ -1,4 +1,4 @@
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 
 const stringWithCaseWordSplittingPattern: RegExp = /([^\s\-_A-Z]+)|([A-Z]+[^\s\-_A-Z]*)/g
 const unsupportedCharactersForWordSplittingPattern: RegExp = /[.:+\-@/\\|`~]/g
@@ -25,9 +25,9 @@ const sizeFormatter: Intl.NumberFormat = new Intl.NumberFormat(
  * Splits string into words.
  * @param s input string to split
  */
-export function splitStringWithCaseIntoWords(s?: string): Immutable.List<string> {
+export function splitStringWithCaseIntoWords(s?: string): ImmutableList<string> {
     if (s == undefined || s.trim().length === 0) {
-        return Immutable.List()
+        return ImmutableList()
     }
 
     // remove unsupported characters in concrete cases (not base case)
@@ -38,7 +38,7 @@ export function splitStringWithCaseIntoWords(s?: string): Immutable.List<string>
     for (const result of results) {
         words.push(result[0])
     }
-    return Immutable.List(words)
+    return ImmutableList(words)
 }
 
 export function formatByteSize(sizeInBytes: number): string {

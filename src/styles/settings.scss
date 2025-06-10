@@ -19,10 +19,10 @@
   $table-border-color: rgba(var(--v-border-color), var(--v-border-opacity)),
 );
 
-@import 'colors';
-@import "md-content";
-@import "btn";
-@import "chip";
+@use 'colors';
+@use "md-content";
+@use "btn";
+@use "chip";
 
 .v-application.v-theme--dark {
   --el-color-primary-dark: #131323;
@@ -44,7 +44,7 @@ $font-family: 'Poppins';
 }
 
 .v-field--variant-solo-filled .v-field__overlay {
-  background-color: $primary-dark !important;
+  background-color: colors.$primary-dark !important;
   opacity: 1 !important;
 }
 
@@ -66,10 +66,10 @@ body::after {
   border-radius: 50%;
   pointer-events: none;
   box-shadow:
-          0 0 20px 20px rgba($primary-lightest, 0.2),
-          0 0 40px 40px rgba($primary-lightest, 0.2),
-          0 0 80px 80px rgba($primary-lightest, 0.2),
-          0 0 120px 120px rgba($primary-lightest, 0.2);
+          0 0 20px 20px rgba(colors.$primary-lightest, 0.2),
+          0 0 40px 40px rgba(colors.$primary-lightest, 0.2),
+          0 0 80px 80px rgba(colors.$primary-lightest, 0.2),
+          0 0 120px 120px rgba(colors.$primary-lightest, 0.2);
   opacity: .25;
   z-index: 1;
 }
@@ -126,13 +126,13 @@ body::after {
 }
 
 .v-field__input {
-  background: $primary-dark!important;
+  background: colors.$primary-dark!important;
   box-shadow: none!important;
   border-radius: 0.25rem;
 }
 
 .v-label.v-field-label {
-  color: $gray-light !important;
+  color: colors.$gray-light !important;
   z-index: 1;
 }
 
@@ -191,11 +191,11 @@ body::after {
   background-color: #1f3a38;
 
   .Vue-Toastification__icon {
-    color: $success;
+    color: colors.$success;
   }
 
   .Vue-Toastification__progress-bar {
-    background-color: $success;
+    background-color: colors.$success;
   }
 }
 
@@ -203,11 +203,11 @@ body::after {
   background-color: #23355c;
 
   .Vue-Toastification__icon {
-    color: $info;
+    color: colors.$info;
   }
 
   .Vue-Toastification__progress-bar {
-    background-color: $info;
+    background-color: colors.$info;
   }
 }
 
@@ -215,11 +215,11 @@ body::after {
   background-color: #4c4029;
 
   .Vue-Toastification__icon {
-    color: $warning;
+    color: colors.$warning;
   }
 
   .Vue-Toastification__progress-bar {
-    background-color: $warning;
+    background-color: colors.$warning;
   }
 }
 
@@ -227,11 +227,11 @@ body::after {
   background-color: #4c232f;
 
   .Vue-Toastification__icon {
-    color: $error;
+    color: colors.$error;
   }
 
   .Vue-Toastification__progress-bar {
-    background-color: $error;
+    background-color: colors.$error;
   }
 }
 // Overlay
@@ -260,5 +260,5 @@ body::after {
 }
 
 .v-time-picker-clock {
-  background-color: $gray-dark;
+  background-color: colors.$gray-dark;
 }

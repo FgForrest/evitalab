@@ -1,5 +1,5 @@
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { PrettyPrintable } from '@/modules/database-driver/data-type/PrettyPrintable'
+import type { PrettyPrintable } from '@/modules/database-driver/data-type/PrettyPrintable'
 
 /**
  * Range type that envelopes {@link Number} types.

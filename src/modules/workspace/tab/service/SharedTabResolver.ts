@@ -1,4 +1,4 @@
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { ShareTabObject } from '@/modules/workspace/tab/model/ShareTabObject'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
@@ -9,11 +9,11 @@ import { GraphQLConsoleTabFactory } from '@/modules/graphql-console/console/work
 import { SchemaViewerTabFactory } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
 import { mandatoryInject } from '@/utils/reactivity'
 import { TrafficRecordHistoryViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
-import { ConnectionId } from '@/modules/connection/model/ConnectionId'
+import type { ConnectionId } from '@/modules/connection/model/ConnectionId'
 import {
     isTabParamsDtoWithConnection,
-    TabParamsDtoWithConnection
 } from '@/modules/workspace/tab/model/TabParamsDtoWithConnection'
+import type { TabParamsDtoWithConnection } from '@/modules/workspace/tab/model/TabParamsDtoWithConnection'
 import { InvalidConnectionInSharedTabError } from '@/modules/workspace/tab/error/InvalidConnectionInSharedTabError'
 import { ConnectionNotFoundError } from '@/modules/connection/exception/ConnectionNotFoundError'
 

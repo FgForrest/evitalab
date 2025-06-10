@@ -1,6 +1,6 @@
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EditorInfo } from '@/modules/workspace/status-bar/model/editor-status/EditorInfo'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { EditorSelection } from '@/modules/workspace/status-bar/model/editor-status/EditorSelection'
 
 /**
@@ -65,7 +65,7 @@ export class EditorStatus {
      * @param id editor id
      * @param newSelections new selections in the active editor
      */
-    updateEditorInfo(id: string, newSelections: Immutable.List<EditorSelection>): void {
+    updateEditorInfo(id: string, newSelections: ImmutableList<EditorSelection>): void {
         const editorInfo: EditorInfo | undefined = this.availableEditorInfos.get(id)
         if (editorInfo == undefined) {
             throw new UnexpectedError(`There is no defined editor under id ${id}`)

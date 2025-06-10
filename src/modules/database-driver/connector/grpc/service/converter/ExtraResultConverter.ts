@@ -1,4 +1,4 @@
-import {
+import type {
     GrpcExtraResults,
     GrpcFacetGroupStatistics,
     GrpcFacetStatistics,
@@ -8,14 +8,14 @@ import {
     GrpcLevelInfo,
     GrpcLevelInfos,
 } from '@/modules/database-driver/connector/grpc/gen/GrpcExtraResults_pb'
-import Immutable, { List } from 'immutable'
+import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { EntityConverter } from './EntityConverter'
 import { Histogram } from '@/modules/database-driver/request-response/data/Histogram'
 import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { HistogramBucket } from '@/modules/database-driver/request-response/data/HistogramBucket'
 import { FacetGroupStatistics } from '@/modules/database-driver/request-response/data/FacetGroupStatistics'
 import { FacetStatistics } from '@/modules/database-driver/request-response/data/FacetStatistics'
-import { GrpcEntityReference } from '@/modules/database-driver/connector/grpc/gen/GrpcEntity_pb'
+import type { GrpcEntityReference } from '@/modules/database-driver/connector/grpc/gen/GrpcEntity_pb'
 import { EntityReference } from '@/modules/database-driver/request-response/data/EntityReference'
 import { Hierarchy } from '@/modules/database-driver/request-response/data/Hierarchy'
 import { LevelInfo } from '@/modules/database-driver/request-response/data/LevelInfo'
@@ -42,7 +42,7 @@ export class ExtraResultConverter {
 
     convertAttributeHistogram(histograms: {
         [key: string]: GrpcHistogram
-    }): Immutable.Map<string, Histogram> | undefined {
+    }): ImmutableMap<string, Histogram> | undefined {
         const newHistograms = new Map<string, Histogram>()
         for (const histogramName in histograms) {
             const histogram = histograms[histogramName]
@@ -56,12 +56,12 @@ export class ExtraResultConverter {
                 )
             )
         }
-        return newHistograms.size === 0 ? undefined : Immutable.Map(newHistograms)
+        return newHistograms.size === 0 ? undefined : ImmutableMap(newHistograms)
     }
 
     convertHistogramBuckets(
         buckets: GrpcHistogram_GrpcBucket[]
-    ): List<HistogramBucket> {
+    ): ImmutableList<HistogramBucket> {
         const newBuckets: HistogramBucket[] = []
         for (const bucket of buckets) {
             newBuckets.push(
@@ -72,12 +72,12 @@ export class ExtraResultConverter {
                 )
             )
         }
-        return List(newBuckets)
+        return ImmutableList(newBuckets)
     }
 
     convertFacetGroupStatistics(
         facetGroupStatistics: GrpcFacetGroupStatistics[]
-    ): Immutable.List<FacetGroupStatistics> | undefined {
+    ): ImmutableList<FacetGroupStatistics> | undefined {
         const newFacetGroupStatistics: FacetGroupStatistics[] = []
         for (const facetGroupStatistic of facetGroupStatistics) {
             newFacetGroupStatistics.push(
@@ -98,12 +98,12 @@ export class ExtraResultConverter {
                 )
             )
         }
-        return newFacetGroupStatistics.length === 0 ? undefined : Immutable.List(newFacetGroupStatistics)
+        return newFacetGroupStatistics.length === 0 ? undefined : ImmutableList(newFacetGroupStatistics)
     }
 
     convertFacetStatistics(
         facetStatistics: GrpcFacetStatistics[]
-    ): Immutable.List<FacetStatistics> {
+    ): ImmutableList<FacetStatistics> {
         const newFacetStatistics: FacetStatistics[] = []
         for (const facetStatistic of facetStatistics) {
             newFacetStatistics.push(
@@ -124,7 +124,7 @@ export class ExtraResultConverter {
                 )
             )
         }
-        return Immutable.List(newFacetStatistics)
+        return ImmutableList(newFacetStatistics)
     }
 
     convertEntityReference(
@@ -164,7 +164,7 @@ export class ExtraResultConverter {
 
     convertHierarchy(hierarchy: {
         [key: string]: GrpcHierarchy
-    }): Immutable.Map<string, Hierarchy> | undefined {
+    }): ImmutableMap<string, Hierarchy> | undefined {
         const newHierarchy: Map<string, Hierarchy> = new Map<
             string,
             Hierarchy
@@ -175,11 +175,11 @@ export class ExtraResultConverter {
             )
             newHierarchy.set(hierarchyName, newHierarchyData)
         }
-        return newHierarchy.size === 0 ? undefined : Immutable.Map(newHierarchy)
+        return newHierarchy.size === 0 ? undefined : ImmutableMap(newHierarchy)
     }
 
     convertHierarchyAttribute(hierarchy: GrpcHierarchy): Hierarchy {
-        const levelInfos: Map<string, List<LevelInfo>> = new Map()
+        const levelInfos: Map<string, ImmutableList<LevelInfo>> = new Map()
         const hierarchyData = hierarchy.hierarchy
         for (const levelInfoName in hierarchyData) {
             levelInfos.set(
@@ -187,10 +187,10 @@ export class ExtraResultConverter {
                 this.convertLevelInfos(hierarchyData[levelInfoName])
             )
         }
-        return new Hierarchy(Immutable.Map(levelInfos))
+        return new Hierarchy(ImmutableMap(levelInfos))
     }
 
-    convertLevelInfos(levelInfos: GrpcLevelInfos): List<LevelInfo> {
+    convertLevelInfos(levelInfos: GrpcLevelInfos): ImmutableList<LevelInfo> {
         const newLevelInfos: LevelInfo[] = []
         for (const levelInfo of levelInfos.levelInfos) {
             newLevelInfos.push(
@@ -206,10 +206,10 @@ export class ExtraResultConverter {
                 )
             )
         }
-        return Immutable.List(newLevelInfos)
+        return ImmutableList(newLevelInfos)
     }
 
-    convertLevelInfo(levelInfo: GrpcLevelInfo[]): Immutable.List<LevelInfo> {
+    convertLevelInfo(levelInfo: GrpcLevelInfo[]): ImmutableList<LevelInfo> {
         const levelInfos: LevelInfo[] = []
         for (const info of levelInfo) {
             levelInfos.push(
@@ -225,7 +225,7 @@ export class ExtraResultConverter {
                 )
             )
         }
-        return Immutable.List(levelInfos)
+        return ImmutableList(levelInfos)
     }
 
     convertHistogram(histogram: GrpcHistogram | undefined): Histogram | undefined {

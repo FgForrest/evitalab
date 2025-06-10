@@ -1,4 +1,4 @@
-import { Schema } from '@/modules/database-driver/request-response/schema/Schema'
+import type { Schema } from '@/modules/database-driver/request-response/schema/Schema'
 
 /**
  * Schema for data that can be sorted

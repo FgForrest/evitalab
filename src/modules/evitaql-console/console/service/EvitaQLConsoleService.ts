@@ -1,5 +1,5 @@
 import { EvitaQLConsoleDataPointer } from '@/modules/evitaql-console/console/model/EvitaQLConsoleDataPointer'
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'

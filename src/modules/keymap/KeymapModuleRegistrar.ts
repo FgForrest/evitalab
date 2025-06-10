@@ -1,9 +1,5 @@
-import { ModuleRegistrar } from '@/ModuleRegistrar'
+import type { ModuleRegistrar } from '@/ModuleRegistrar'
 import { Keymap, keymapInjectionKey } from '@/modules/keymap/service/Keymap'
-import {
-    KeymapViewerTabFactory,
-    keymapViewerTabFactoryInjectionKey
-} from '@/modules/keymap/viewer/workspace/service/KeymapViewerTabFactory'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 
 export class KeymapModuleRegistrar implements ModuleRegistrar {

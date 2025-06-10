@@ -160,7 +160,7 @@ const chartOptions = {
 </template>
 
 <style lang="scss" scoped>
-@import "@/styles/colors.scss";
+@use "@/styles/colors.scss" as *;
 
 .histogram-chart {
     margin-bottom: 0.5rem;

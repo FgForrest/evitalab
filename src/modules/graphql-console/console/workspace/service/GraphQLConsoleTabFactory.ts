@@ -2,18 +2,18 @@ import { GraphQLConsoleTabParams } from '@/modules/graphql-console/console/works
 import { Connection } from '@/modules/connection/model/Connection'
 import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
 import { GraphQLConsoleTabData } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabData'
-import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
-import { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
+import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
+import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
 import {
     GraphQLConsoleTabDefinition
 } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { GraphQLConsoleDataPointer } from '@/modules/graphql-console/console/model/GraphQLConsoleDataPointer'
-import {
+import type {
     GraphQLConsoleTabParamsDto
 } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabParamsDto'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
-import { GraphQLConsoleTabDataDto } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDataDto'
+import type { GraphQLConsoleTabDataDto } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDataDto'
 import { mandatoryInject } from '@/utils/reactivity'
 
 export const graphQLConsoleTabFactoryInjectionKey: InjectionKey<GraphQLConsoleTabFactory> = Symbol('graphQLConsoleTabFactory')

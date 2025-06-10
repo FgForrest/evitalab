@@ -1,6 +1,8 @@
+@use "colors";
+
 .v-chip--variant-outlined {
-  border: 0.0625rem solid $gray-light !important;
-  color: $gray-light !important;
+  border: 0.0625rem solid colors.$gray-light !important;
+  color: colors.$gray-light !important;
   transition: all .2s linear;
 
   .v-chip__overlay,
@@ -9,21 +11,21 @@
   }
 
   &:hover {
-    border: 0.0625rem solid rgba($primary-lightest, .5) !important;
-    color: rgba($primary-lightest, .5) !important;
+    border: 0.0625rem solid rgba(colors.$primary-lightest, .5) !important;
+    color: rgba(colors.$primary-lightest, .5) !important;
   }
 
   &.v-chip--selected {
-    border: 0.0625rem solid $primary-lightest !important;
-    color: $primary-lightest !important;
+    border: 0.0625rem solid colors.$primary-lightest !important;
+    color: colors.$primary-lightest !important;
   }
 }
 
 .v-chip--variant-plain {
   cursor: default;
   opacity: 1;
-  color: $gray-light;
-  background-color: $gray-dark; // todo lho overrides custom prop-defined color of chip
+  color: colors.$gray-light;
+  background-color: colors.$gray-dark; // todo lho overrides custom prop-defined color of chip
 }
 
 .v-chip--variant-flat {

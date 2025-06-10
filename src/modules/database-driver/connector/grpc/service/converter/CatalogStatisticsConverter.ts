@@ -1,10 +1,10 @@
 import { GrpcCatalogState } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
-import {
+import type {
     GrpcCatalogStatistics,
     GrpcEntityCollectionStatistics
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState'
 import { EntityCollectionStatistics } from '@/modules/database-driver/request-response/EntityCollectionStatistics'
@@ -12,15 +12,15 @@ import { EntityCollectionStatistics } from '@/modules/database-driver/request-re
 export class CatalogStatisticsConverter {
     convert(catalog: GrpcCatalogStatistics): CatalogStatistics {
         return new CatalogStatistics(
-            catalog.catalogId?.toJsonString(),
-            catalog.catalogVersion,
+            JSON.stringify(catalog.catalogId),
+            BigInt(catalog.catalogVersion),
             catalog.catalogName,
             this.convertEntityTypes(catalog.entityCollectionStatistics),
             catalog.corrupted,
             this.convertCatalogState(catalog.catalogState),
-            catalog.totalRecords,
-            catalog.indexCount,
-            catalog.sizeOnDiskInBytes
+            BigInt(catalog.totalRecords),
+            BigInt(catalog.indexCount),
+            BigInt(catalog.sizeOnDiskInBytes)
         )
     }
 
@@ -41,7 +41,7 @@ export class CatalogStatisticsConverter {
 
     private convertEntityTypes(
         entityTypes: GrpcEntityCollectionStatistics[]
-    ): Immutable.List<EntityCollectionStatistics> {
+    ): ImmutableList<EntityCollectionStatistics> {
         const newEntityTypes: EntityCollectionStatistics[] = []
         for (const entityType of entityTypes) {
             newEntityTypes.push(
@@ -49,10 +49,10 @@ export class CatalogStatisticsConverter {
                     entityType.entityType,
                     entityType.totalRecords,
                     entityType.indexCount,
-                    entityType.sizeOnDiskInBytes
+                    BigInt(entityType.sizeOnDiskInBytes)
                 )
             )
         }
-        return Immutable.List<EntityCollectionStatistics>(newEntityTypes);
+        return ImmutableList<EntityCollectionStatistics>(newEntityTypes);
     }
 }

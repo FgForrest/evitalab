@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 
 const props = defineProps<{
-    title: Immutable.List<string>
+    title: ImmutableList<string>
 }>()
 </script>
 

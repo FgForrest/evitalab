@@ -7,7 +7,7 @@ import { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEv
 import { ErrorViewerTabParams } from '@/modules/error-viewer/viewer/workspace/model/ErrorViewerTabParams'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import VPreviewEditor from '@/modules/code-editor/component/VPreviewEditor.vue'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import { SystemSubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SystemSubjectPath'
@@ -29,7 +29,7 @@ defineExpose<TabComponentExpose>({
     }
 })
 
-const title: Immutable.List<string> = Immutable.List.of(
+const title: ImmutableList<string> = ImmutableList.of(
     t('errorViewer.title', { name: props.params.error.name })
 )
 

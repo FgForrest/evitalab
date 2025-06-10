@@ -51,7 +51,7 @@ import VSideTabs from '@/modules/base/component/VSideTabs.vue'
 import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import {
     ConnectionSubjectPath
 } from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
@@ -94,13 +94,13 @@ defineExpose<TabComponentExpose>({
     }
 })
 
-const title: Immutable.List<string> = (() => {
+const title: ImmutableList<string> = (() => {
     const title: string[] = []
     if (props.params.dataPointer.instanceType !== GraphQLInstanceType.System) {
         title.push(props.params.dataPointer.catalogName)
     }
     title.push(t(`graphQLConsole.instanceType.${props.params.dataPointer.instanceType}`))
-    return Immutable.List(title)
+    return ImmutableList(title)
 })()
 
 const editorTab = ref<EditorTabType>(EditorTabType.Query)

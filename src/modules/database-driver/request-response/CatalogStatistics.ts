@@ -1,5 +1,5 @@
 import { EntityCollectionStatistics } from './EntityCollectionStatistics'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState'
 
 /**
@@ -14,7 +14,7 @@ export class CatalogStatistics {
     /**
      * Catalog header version that is incremented with each update. Version is not stored on the disk, it serves only to distinguish whether there is any change made in the header and whether it needs to be persisted on disk.
      */
-    readonly version: BigInt
+    readonly version: bigint
     /**
      * Name of the catalog. Name must be unique across all catalogs inside same evitaDB instance.
      * This is a mandatory value, it cannot be omitted.
@@ -23,7 +23,7 @@ export class CatalogStatistics {
     /**
      * Set of all maintained entity collections - i.e. entity types.
      */
-    readonly entityCollectionStatistics: Immutable.List<EntityCollectionStatistics>
+    readonly entityCollectionStatistics: ImmutableList<EntityCollectionStatistics>
     /**
      * Whether this catalog is corrupted or can be freely used.
      */
@@ -44,9 +44,9 @@ export class CatalogStatistics {
 
     constructor(
         catalogId: string | undefined,
-        version: BigInt,
+        version: bigint,
         name: string,
-        entityCollectionStatistics: Immutable.List<EntityCollectionStatistics>,
+        entityCollectionStatistics: ImmutableList<EntityCollectionStatistics>,
         corrupted: boolean,
         catalogState: CatalogState,
         totalRecords: bigint,

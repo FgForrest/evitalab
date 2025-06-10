@@ -1,5 +1,5 @@
-import { GraphQLConsoleTabDataDto } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDataDto'
-import { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { GraphQLConsoleTabDataDto } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDataDto'
+import type { TabData } from '@/modules/workspace/tab/model/TabData'
 
 /**
  * Represents injectable/storable user data of the LabEditorConsoleGraphQL component.

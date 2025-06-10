@@ -1,5 +1,5 @@
 import { Duration } from 'luxon'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { Label } from '@/modules/database-driver/request-response/traffic-recording/Label'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
@@ -27,11 +27,11 @@ export class QueryContainer extends TrafficRecord {
      * The primary keys of the records returned by the query (in returned data chunk). I.e. number of records actually
      * returned by the pagination requirement of the query.
      */
-    readonly primaryKeys: Immutable.List<number>
+    readonly primaryKeys: ImmutableList<number>
     /**
      * The client labels associated with the query.
      */
-    readonly labels: Immutable.List<Label>
+    readonly labels: ImmutableList<Label>
 
     constructor(sessionSequenceOrder: bigint,
                 sessionId: Uuid,
@@ -46,8 +46,8 @@ export class QueryContainer extends TrafficRecord {
                 queryDescription: string,
                 query: string,
                 totalRecordCount: number,
-                primaryKeys: Immutable.List<number>,
-                labels: Immutable.List<Label>) {
+                primaryKeys: ImmutableList<number>,
+                labels: ImmutableList<Label>) {
         super(
             sessionSequenceOrder,
             sessionId,

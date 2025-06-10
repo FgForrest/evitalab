@@ -1,6 +1,6 @@
 import { EntityConverter } from "./EntityConverter";
 import { ExtraResultConverter } from "./ExtraResultConverter";
-import {
+import type {
     GrpcDataChunk,
     GrpcPaginatedList,
     GrpcQueryResponse
@@ -22,7 +22,9 @@ export class EvitaResponseConverter {
         return new EvitaResponse(
             this.convertDataChunk(grpcResponse.recordPage),
             this.extraResultConverter.convert(grpcResponse.extraResults),
-            grpcResponse.toJsonString()
+            // Important FIX: Prevent number overflow when bigint is bigger number (Crashing in price's datetime)
+            JSON.stringify(grpcResponse, (_, v) => typeof v === 'bigint' ? v.toString() : v)
+            //Source: https://stackoverflow.com/questions/65152373/serialize-bigint-in-json
         )
     }
 
@@ -34,18 +36,24 @@ export class EvitaResponseConverter {
         const grpcRecordPage = driverDataChunk
         if (grpcRecordPage.chunk.case === 'paginatedList') {
             const page :GrpcPaginatedList = driverDataChunk.chunk.value as GrpcPaginatedList;
-            return new PaginatedList(
-                grpcRecordPage.sealedEntities.map(it => this.entityConverter.convert(it)),
-                grpcRecordPage.totalRecordCount,
-                grpcRecordPage.isFirst,
-                grpcRecordPage.isLast,
-                grpcRecordPage.hasPrevious,
-                grpcRecordPage.hasNext,
-                grpcRecordPage.isSinglePage,
-                grpcRecordPage.isEmpty,
-                page.pageSize,
-                page.pageNumber
-            )
+            try {
+                return new PaginatedList(
+                    grpcRecordPage.sealedEntities.map(it => this.entityConverter.convert(it)),
+                    grpcRecordPage.totalRecordCount,
+                    grpcRecordPage.isFirst,
+                    grpcRecordPage.isLast,
+                    grpcRecordPage.hasPrevious,
+                    grpcRecordPage.hasNext,
+                    grpcRecordPage.isSinglePage,
+                    grpcRecordPage.isEmpty,
+                    page.pageSize,
+                    page.pageNumber
+                )
+            } catch (e) {
+                console.log(e)
+                return null as any
+            }
+
         } else if(grpcRecordPage.chunk.case === 'stripList'){
             return PaginatedList.empty();
         } else {

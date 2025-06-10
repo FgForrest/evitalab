@@ -31,7 +31,7 @@ const emit = defineEmits<{
 </template>
 
 <style lang="scss" scoped>
-@import "@/styles/colors.scss";
+@use "@/styles/colors.scss" as *;
 .side-tabs {
     background: $primary-dark;
     width: 3rem;
