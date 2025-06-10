@@ -3,13 +3,11 @@
  * Query history listing for EvitaQL console.
  */
 
-import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-import {
+import { computed } from 'vue'
+import type {
     EvitaQLConsoleHistoryRecord
 } from '@/modules/evitaql-console/console/history/model/EvitaQLConsoleHistoryRecord'
-
-const { t } = useI18n()
+import HistoryComponent from '@/modules/history-component/HistoryComponent.vue';
 
 const props = defineProps<{
     items: EvitaQLConsoleHistoryRecord[]
@@ -19,7 +17,6 @@ const emit = defineEmits<{
     (e: 'update:clearHistory'): void
 }>()
 
-const historyListRef = ref<HTMLElement | undefined>()
 const historyListItems = computed<any[]>(() => {
     return props.items.map((record: EvitaQLConsoleHistoryRecord) => {
         return {
@@ -29,58 +26,13 @@ const historyListItems = computed<any[]>(() => {
         }
     })
 })
-
-/**
- * Focuses the first item in the history list.
- */
-function focus() {
-    // @ts-ignore
-    let firstItem = historyListRef.value?.$el?.querySelector('.v-list-item');
-    if (firstItem) {
-        firstItem.focus();
-    }
-}
-
-defineExpose<{
-    focus: () => void
-}>({
-    focus
-})
 </script>
 
 <template>
-    <div class="evitaql-editor-history">
-        <p v-if="historyListItems.length === 0" class="text-disabled evitaql-editor-history__empty-item">
-            {{ t('evitaQLConsole.placeholder.emptyHistory') }}
-        </p>
-        <template v-else>
-            <VBtn
-                prepend-icon="mdi-playlist-remove"
-                variant="outlined"
-                rounded="xl"
-                class="evitaql-editor-history__clear-button"
-                @click="emit('update:clearHistory')"
-            >
-                {{ t('evitaQLConsole.button.clearHistory') }}
-            </VBtn>
-
-            <VList ref="historyListRef" class="evitaql-editor-history__list">
-                <VListItem
-                    v-for="item in historyListItems"
-                    :key="item.key"
-                    variant="tonal"
-                    rounded
-                    @click="emit('selectHistoryRecord', item.value)"
-                >
-                    <VCardText>
-                        <template v-for="(line, index) in item.preview" :key="index">
-                            {{ line }}<br/>
-                        </template>
-                    </VCardText>
-                </VListItem>
-            </VList>
-        </template>
-    </div>
+    <HistoryComponent :items="historyListItems" 
+        @select-history-record="(value: EvitaQLConsoleHistoryRecord) => emit('selectHistoryRecord', value)"
+        @update:clear-history="emit('update:clearHistory')">
+    </HistoryComponent>
 </template>
 
 <style lang="scss" scoped>
@@ -117,5 +69,10 @@ defineExpose<{
     padding: 0;
     padding-inline-start: 0 !important;
     padding-inline-end: 0 !important;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
 }
 </style>
