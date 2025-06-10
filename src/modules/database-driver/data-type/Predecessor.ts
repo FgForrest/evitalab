@@ -14,7 +14,7 @@ export class Predecessor {
 
     toString():string{
         if(this.predecessorId === -1)
-            return ''
+            return 'Head'
 
         return String(this.predecessorId)
     }

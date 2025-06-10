@@ -34,16 +34,10 @@ const openableInNewTab = computed<boolean>(() => {
         return true
     } else if(props.propertyDescriptor?.schema != undefined &&
         isTypedSchema(props.propertyDescriptor.schema) &&
-        props.propertyDescriptor.schema.type === Scalar.Predecessor &&
-        ((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
-        return false
-    }
-    else if (props.propertyDescriptor?.schema != undefined &&
-        isTypedSchema(props.propertyDescriptor.schema) &&
-        props.propertyDescriptor.schema.type === Scalar.Predecessor &&
-        ((props.propertyValue as NativeValue).value() as Predecessor).predecessorId !== -1) {
+        props.propertyDescriptor.schema.type === Scalar.Predecessor) {
         return true
-    } else
+    }
+    else
         return false
 })
 const showDetailOnHover = computed<boolean>(() => printablePropertyValue.value.length <= 100)
@@ -96,23 +90,25 @@ function getIcon(): string {
     if(props.propertyDescriptor?.schema != undefined &&
         isTypedSchema(props.propertyDescriptor.schema) &&
         props.propertyDescriptor.schema.type === Scalar.Predecessor) {
-        return openableInNewTab.value ? "mdi-refresh" : "mdi-arrow-right" //TODO: Change to correct icon
+        return openableInNewTab.value ? "mdi-ray-end-arrow" : "mdi-ray-start"
     } else {
         return "mdi-open-in-new"
     }
 }
 
-function haveIcon(): boolean {
-    if(openableInNewTab.value) {
-        return true
-    }
-    else if(props.propertyDescriptor?.schema != undefined &&
+function getTooltip(): string | undefined {
+    if (props.propertyDescriptor?.schema != undefined &&
         isTypedSchema(props.propertyDescriptor.schema) &&
-        props.propertyDescriptor.schema.type === Scalar.Predecessor) {
-        return true
-    }
-    else {
-        return false
+        props.propertyDescriptor.schema.type === Scalar.Predecessor
+    ) {
+        //Head
+        if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
+            return "Head"
+        } else {
+            return "Other"
+        }
+    } else {
+        return undefined
     }
 }
 </script>
@@ -134,11 +130,11 @@ function haveIcon(): boolean {
                 <span class="text-disabled">{{ t('common.placeholder.null') }}</span>
             </template>
             <template v-else>
-                <VIcon v-if="haveIcon()" class="mr-1">{{ getIcon() }}</VIcon>
+                <VIcon v-if="openableInNewTab" class="mr-1">{{ getIcon() }}</VIcon>
                 <span>
                     {{ printablePropertyValue }}
                     <VTooltip v-if="showDetailOnHover" activator="parent">
-                        {{ printablePropertyValue }}
+                        {{ getTooltip() }}
                     </VTooltip>
                 </span>
             </template>

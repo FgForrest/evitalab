@@ -100,7 +100,7 @@ function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string,
         ))
     } else if (propertyDescriptor &&
         ((propertyDescriptor.type === EntityPropertyType.Attributes && (propertyDescriptor.schema as AttributeSchema).type === Scalar.Predecessor) ||
-        (propertyDescriptor.type === EntityPropertyType.AssociatedData && (propertyDescriptor.schema as AttributeSchema).type === Scalar.Predecessor))) {
+            (propertyDescriptor.type === EntityPropertyType.AssociatedData && (propertyDescriptor.schema as AttributeSchema).type === Scalar.Predecessor))) {
         // we want references to open referenced entities in appropriate new grid for referenced collection
         workspaceService.createTab(entityViewerTabFactory.createNew(
             tabProps.params.dataPointer.catalogName,
