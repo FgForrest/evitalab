@@ -36,43 +36,4 @@ const historyListItems = computed<any[]>(() => {
 </template>
 
 <style lang="scss" scoped>
-.evitaql-editor-history {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    overflow-y: auto;
-
-    &__list {
-        padding: 0 1.5rem 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    &__empty-item {
-        text-align: center;
-    }
-
-    &__clear-button {
-        align-self: center;
-        margin-top: 1.5rem;
-    }
-}
-
-:deep(.v-list-item) {
-    padding: 0;
-    padding-inline-start: 0 !important;
-    padding-inline-end: 0 !important;
-}
-
-.center {
-    display: flex;
-    justify-content: center;
-}
 </style>
