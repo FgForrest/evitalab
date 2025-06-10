@@ -32,7 +32,6 @@ loadFonts()
             .use(router)
             .use(luxonExtensions)
             .component('apexcharts', VueApexCharts)
-            //.use(VueApexCharts(app)) -> Bad
 
         // register evitaLab modules
         const moduleContextBuilder: ModuleContextBuilder = new ModuleContextBuilder(app)

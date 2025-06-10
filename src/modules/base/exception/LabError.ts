@@ -2,8 +2,6 @@ export abstract class LabError extends Error {
 
     protected readonly _detail?: string | undefined
 
-    readonly onClick: () => boolean
-
     protected constructor(name: string,
                           title: string,
                           detail?: string,
@@ -11,7 +9,6 @@ export abstract class LabError extends Error {
         super(title)
         this.name = name
         this._detail = detail
-        this.onClick = onClick != undefined ? onClick : () => false
     }
 
     get detail(): string {
