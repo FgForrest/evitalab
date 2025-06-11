@@ -14,6 +14,7 @@ import { isTypedSchema } from '@/modules/database-driver/request-response/schema
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue.ts'
 import type { Predecessor } from '@/modules/database-driver/data-type/Predecessor.ts'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema.ts'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -29,16 +30,22 @@ const dataLocale = useDataLocale()
 const priceType = usePriceType()
 
 const printablePropertyValue = computed<string>(() => toPrintablePropertyValue(props.propertyValue))
-const openableInNewTab = computed<boolean>(() => {
+const prependIcon = computed<string | undefined>(() => {
     if (props.propertyDescriptor?.type === EntityPropertyType.Entity && props.propertyDescriptor?.key.name === StaticEntityProperties.ParentPrimaryKey) {
-        return true
+        return "mdi-open-in-new"
     } else if(props.propertyDescriptor?.schema != undefined &&
         isTypedSchema(props.propertyDescriptor.schema) &&
         props.propertyDescriptor.schema.type === Scalar.Predecessor) {
-        return true
+        if(((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
+            return "mdi-ray-end-arrow"
+        } else {
+            return "mdi-ray-start"
+        }
+    } else if (props.propertyDescriptor?.type === EntityPropertyType.References && props.propertyDescriptor.schema instanceof ReferenceSchema) {
+        return "mdi-open-in-new"
     }
     else
-        return false
+        return undefined
 })
 const showDetailOnHover = computed<boolean>(() => printablePropertyValue.value.length <= 100)
 
@@ -86,17 +93,7 @@ function copyValue(): void {
     }
 }
 
-function getIcon(): string {
-    if(props.propertyDescriptor?.schema != undefined &&
-        isTypedSchema(props.propertyDescriptor.schema) &&
-        props.propertyDescriptor.schema.type === Scalar.Predecessor) {
-        return openableInNewTab.value ? "mdi-ray-end-arrow" : "mdi-ray-start"
-    } else {
-        return "mdi-open-in-new"
-    }
-}
-
-function getTooltip(): string | undefined {
+const tooltip = computed<string>(() => {
     if (props.propertyDescriptor?.schema != undefined &&
         isTypedSchema(props.propertyDescriptor.schema) &&
         props.propertyDescriptor.schema.type === Scalar.Predecessor
@@ -108,9 +105,9 @@ function getTooltip(): string | undefined {
             return "Pointer to a previous entity in the list."
         }
     } else {
-        return undefined
+        return printablePropertyValue.value
     }
-}
+})
 </script>
 
 <template>
@@ -130,11 +127,11 @@ function getTooltip(): string | undefined {
                 <span class="text-disabled">{{ t('common.placeholder.null') }}</span>
             </template>
             <template v-else>
-                <VIcon v-if="openableInNewTab" class="mr-1">{{ getIcon() }}</VIcon>
+                <VIcon v-if="prependIcon !== undefined" class="mr-1">{{ prependIcon }}</VIcon>
                 <span>
                     {{ printablePropertyValue }}
                     <VTooltip v-if="showDetailOnHover" activator="parent">
-                        {{ getTooltip() }}
+                        {{ tooltip }}
                     </VTooltip>
                 </span>
             </template>
