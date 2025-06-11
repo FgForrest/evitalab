@@ -21,6 +21,10 @@ export class EntityReferenceValue extends EntityPropertyValue {
         return false
     }
 
+    toRawString(): string {
+        return JSON.stringify(this.representativeAttributes)
+    }
+
     toPreviewString(): string {
         const flattenedRepresentativeAttributes: string[] = []
         for (const representativeAttribute of this.representativeAttributes) {

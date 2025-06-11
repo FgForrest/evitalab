@@ -85,8 +85,18 @@ function toPrintablePropertyValue(value: EntityPropertyValue | EntityPropertyVal
 
 function copyValue(raw: boolean): void {
     if(raw) {
-        const value = (props.propertyValue as NativeValue).value()?.toString()
-        if(value) {
+        const entityValue: EntityPropertyValue | EntityPropertyValue[] | undefined = props.propertyValue
+        if(entityValue) {
+            let value : string = ''
+
+            if(entityValue instanceof Array) {
+                if(entityValue.length !== 0) {
+                    value = `[${entityValue.map(it => it.toRawString()).join(', ')}]`
+                }
+            } else if(entityValue instanceof EntityPropertyValue) {
+                value = entityValue.toRawString()
+            }
+
             navigator.clipboard.writeText(value).then(() => {
                 toaster.info(t('common.notification.copiedToClipboard')).then()
             }).catch(() => {
@@ -127,9 +137,9 @@ function handleClick(e: MouseEvent):void {
         copyValue(true)
     } else if(e.button === 1) {
         copyValue(false)
+    } else if(e.button === 0) {
+        emit('click')
     }
-
-    emit('click')
 }
 </script>
 

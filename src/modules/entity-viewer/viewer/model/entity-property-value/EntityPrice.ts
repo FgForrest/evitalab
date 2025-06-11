@@ -78,6 +78,10 @@ export class EntityPrice extends EntityPropertyValue {
         return false
     }
 
+    toRawString(): string {
+        return JSON.stringify(this)
+    }
+
     toPreviewString(context: EntityPropertyValuePreviewStringContext): string {
         const priceFormatter = new Intl.NumberFormat(
             navigator.language,
