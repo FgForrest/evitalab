@@ -83,13 +83,24 @@ function toPrintablePropertyValue(value: EntityPropertyValue | EntityPropertyVal
     }
 }
 
-function copyValue(): void {
-    if (printablePropertyValue.value) {
-        navigator.clipboard.writeText(printablePropertyValue.value).then(() => {
-            toaster.info(t('common.notification.copiedToClipboard')).then()
-        }).catch(() => {
-            toaster.error(t('common.notification.failedToCopyToClipboard')).then()
-        })
+function copyValue(raw: boolean): void {
+    if(raw) {
+        const value = (props.propertyValue as NativeValue).value()?.toString()
+        if(value) {
+            navigator.clipboard.writeText(value).then(() => {
+                toaster.info(t('common.notification.copiedToClipboard')).then()
+            }).catch(() => {
+                toaster.error(t('common.notification.failedToCopyToClipboard')).then()
+            })
+        }
+    } else {
+        if (printablePropertyValue.value) {
+            navigator.clipboard.writeText(printablePropertyValue.value).then(() => {
+                toaster.info(t('common.notification.copiedToClipboard')).then()
+            }).catch(() => {
+                toaster.error(t('common.notification.failedToCopyToClipboard')).then()
+            })
+        }
     }
 }
 
@@ -108,13 +119,24 @@ const tooltip = computed<string>(() => {
         return printablePropertyValue.value
     }
 })
+
+function handleClick(e: MouseEvent) {
+    e.preventDefault()
+
+    if(e.shiftKey && e.button === 1) {
+        copyValue(true)
+    } else if(e.button === 1) {
+        copyValue(false)
+    }
+
+    emit('click')
+}
 </script>
 
 <template>
     <td
         :class="{'data-grid-cell--clickable': printablePropertyValue}"
-        @click="emit('click')"
-        @click.middle="copyValue"
+        @click="handleClick"
     >
         <span class="data-grid-cell__body">
             <template v-if="noLocaleSelected">
