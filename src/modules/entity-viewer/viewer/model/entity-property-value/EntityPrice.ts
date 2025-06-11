@@ -50,7 +50,7 @@ export class EntityPrice extends EntityPropertyValue {
             price.priceList,
             price.currency,
             price.innerRecordId,
-            price.sellable,
+            price.indexed,
             price.validity,
             price.priceWithoutTax,
             price.priceWithTax,
