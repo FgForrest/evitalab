@@ -103,9 +103,9 @@ function getTooltip(): string | undefined {
     ) {
         //Head
         if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
-            return "Head"
+            return "Head of the list."
         } else {
-            return "Other"
+            return "Pointer to a previous entity in the list."
         }
     } else {
         return undefined
