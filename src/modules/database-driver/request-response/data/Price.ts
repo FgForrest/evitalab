@@ -15,7 +15,7 @@ export class Price {
     readonly taxRate: BigDecimal
     readonly priceWithTax: BigDecimal
     readonly validity: DateTimeRange | undefined
-    readonly sellable: boolean
+    readonly indexed: boolean
     readonly version: number
     readonly currency: Currency
 
@@ -26,7 +26,7 @@ export class Price {
                 taxRate: BigDecimal,
                 priceWithTax: BigDecimal,
                 validity: DateTimeRange | undefined,
-                sellable: boolean,
+                indexed: boolean,
                 version: number,
                 currency: Currency) {
         this.priceId = priceId;
@@ -36,7 +36,7 @@ export class Price {
         this.taxRate = taxRate;
         this.priceWithTax = priceWithTax;
         this.validity = validity;
-        this.sellable = sellable;
+        this.indexed = indexed;
         this.version = version;
         this.currency = currency
     }
