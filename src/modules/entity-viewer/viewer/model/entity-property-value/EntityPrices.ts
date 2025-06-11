@@ -32,7 +32,7 @@ export class EntityPrices extends EntityPropertyValue {
     }
 
     toRawString(): string {
-        return JSON.stringify(this)
+        return JSON.stringify({ priceForSale: this.priceForSale, prices: this.prices })
     }
 
     toPreviewString(context?: EntityPropertyValuePreviewStringContext): string {
