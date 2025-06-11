@@ -27,7 +27,7 @@ export class EntityPrice extends EntityPropertyValue {
                 priceList: string,
                 currency: Currency,
                 innerRecordId: number | undefined,
-                sellable: boolean | undefined,
+                indexed: boolean | undefined,
                 validity: DateTimeRange | undefined,
                 priceWithoutTax: BigDecimal,
                 priceWithTax: BigDecimal,
@@ -37,7 +37,7 @@ export class EntityPrice extends EntityPropertyValue {
         this.priceList = priceList
         this.currency = currency
         this.innerRecordId = innerRecordId
-        this.indexed = sellable
+        this.indexed = indexed
         this.validity = validity
         this.priceWithoutTax = priceWithoutTax
         this.priceWithTax = priceWithTax
