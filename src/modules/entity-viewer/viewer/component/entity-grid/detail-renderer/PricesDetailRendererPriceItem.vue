@@ -38,10 +38,10 @@ const priceType = usePriceType()
 
             <VTooltip>
                 <template #activator="{ props }">
-                    <VIcon class="mr-3" v-bind="props">{{ price.sellable ? 'mdi-cash' : 'mdi-cash-off' }}</VIcon>
+                    <VIcon class="mr-3" v-bind="props">{{ price.indexed ? 'mdi-cash' : 'mdi-cash-off' }}</VIcon>
                 </template>
 
-                <template v-if="price.sellable">
+                <template v-if="price.indexed">
                     {{ t('entityViewer.grid.priceRenderer.price.tooltip.sellablePrice') }}
                 </template>
                 <template v-else>
