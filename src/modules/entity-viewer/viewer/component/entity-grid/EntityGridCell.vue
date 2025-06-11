@@ -120,7 +120,7 @@ const tooltip = computed<string>(() => {
     }
 })
 
-function handleClick(e: MouseEvent) {
+function handleClick(e: MouseEvent):void {
     e.preventDefault()
 
     if(e.shiftKey && e.button === 1) {
@@ -136,7 +136,7 @@ function handleClick(e: MouseEvent) {
 <template>
     <td
         :class="{'data-grid-cell--clickable': printablePropertyValue}"
-        @click="handleClick"
+        @mousedown="(e) => handleClick(e)"
     >
         <span class="data-grid-cell__body">
             <template v-if="noLocaleSelected">
