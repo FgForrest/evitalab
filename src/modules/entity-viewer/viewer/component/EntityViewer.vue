@@ -283,7 +283,7 @@ function preselectEntityProperties(): void {
 }
 
 async function gridUpdated({ page, itemsPerPage, sortBy }: { page: number, itemsPerPage: number, sortBy: any[] }): Promise<void> {
-    if(sortBy.length === 0 && lastSortBy.value != undefined){
+    if(sortBy.length === 0 && lastSortBy.value != undefined && lastSortBy.value instanceof Array && lastSortBy.value.length > 0) {
         sortBy = lastSortBy.value
         sortBy[0].order = `None`
     }
