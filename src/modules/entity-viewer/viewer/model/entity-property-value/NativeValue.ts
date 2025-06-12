@@ -86,6 +86,10 @@ export class NativeValue extends EntityPropertyValue {
         return this.toPreviewString()
     }
 
+    toRawRepresentation(): any {
+        return this.delegate
+    }
+
     isPrettyPrintable(obj: any): obj is PrettyPrintable {
         return 'getPrettyPrintableString' in obj
     }

@@ -32,7 +32,14 @@ export class EntityPrices extends EntityPropertyValue {
     }
 
     toRawString(): string {
-        return JSON.stringify({ priceForSale: this.priceForSale, prices: this.prices })
+        return JSON.stringify(this.toRawRepresentation(), (_, value) => typeof value === `bigint` ? value.toString() : value)
+    }
+
+    toRawRepresentation(): any {
+        return {
+            priceForSale: this.priceForSale?.toRawRepresentation(),
+            prices: this.prices.map(x => x.toRawRepresentation()),
+        }
     }
 
     toPreviewString(context?: EntityPropertyValuePreviewStringContext): string {

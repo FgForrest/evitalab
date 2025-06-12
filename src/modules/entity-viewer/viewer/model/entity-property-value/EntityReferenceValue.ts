@@ -22,7 +22,14 @@ export class EntityReferenceValue extends EntityPropertyValue {
     }
 
     toRawString(): string {
-        return JSON.stringify(this)
+        return JSON.stringify({ primaryKey: this.primaryKey, representativeAttributes: this.representativeAttributes })
+    }
+
+    toRawRepresentation(): any {
+        return {
+            primaryKey: this.primaryKey,
+            representativeAttributes: this.representativeAttributes.map(x => x.toRawRepresentation())
+        }
     }
 
     toPreviewString(): string {
