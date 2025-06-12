@@ -79,17 +79,7 @@ export class EntityPrice extends EntityPropertyValue {
     }
 
     toRawString(): string {
-        return JSON.stringify({
-            priceId: this.priceId,
-            priceList: this.priceList,
-            currency: this.currency,
-            innerRecordId: this.innerRecordId,
-            indexed: this.indexed,
-            validity: this.validity,
-            priceWithoutTax: this.priceWithTax,
-            priceWithTax: this.priceWithTax,
-            taxRate: this.taxRate
-        })
+        return JSON.stringify(this.toRawRepresentation())
     }
 
     toRawRepresentation(): any {
