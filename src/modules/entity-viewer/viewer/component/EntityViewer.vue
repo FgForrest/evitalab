@@ -124,6 +124,7 @@ watch(displayedEntityProperties, (newValue, oldValue) => {
 const displayedGridHeaders = ref<any[]>([])
 const resultEntities = ref<FlatEntity[]>([])
 const totalResultCount = ref<number>(0)
+const lastSortBy = ref<any>()
 
 const initialized = ref<boolean>(false)
 const queryExecutedManually = ref<boolean>(false)
@@ -282,6 +283,12 @@ function preselectEntityProperties(): void {
 }
 
 async function gridUpdated({ page, itemsPerPage, sortBy }: { page: number, itemsPerPage: number, sortBy: any[] }): Promise<void> {
+    if(sortBy.length === 0 && lastSortBy.value != undefined){
+        sortBy = lastSortBy.value
+        sortBy[0].order = `None`
+    }
+    lastSortBy.value = sortBy;
+
     pageNumber.value = page
     pageSize.value = itemsPerPage
     if (sortBy.length > 0) {
