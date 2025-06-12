@@ -110,7 +110,7 @@ const componentDataType = computed<Scalar | ExtraEntityObjectType | undefined>((
                     icon
                     variant="flat"
                     density="compact"
-                    @click="emit('update:modelValue', false)"
+                    @click.stop="emit('update:modelValue', false)"
                 >
                     <VIcon>mdi-close</VIcon>
                     <VTooltip activator="parent">

@@ -83,13 +83,34 @@ function toPrintablePropertyValue(value: EntityPropertyValue | EntityPropertyVal
     }
 }
 
-function copyValue(): void {
-    if (printablePropertyValue.value) {
-        navigator.clipboard.writeText(printablePropertyValue.value).then(() => {
-            toaster.info(t('common.notification.copiedToClipboard')).then()
-        }).catch(() => {
-            toaster.error(t('common.notification.failedToCopyToClipboard')).then()
-        })
+function copyValue(raw: boolean): void {
+    if(raw) {
+        const entityValue: EntityPropertyValue | EntityPropertyValue[] | undefined = props.propertyValue
+        if(entityValue) {
+            let value : string = ''
+
+            if(entityValue instanceof Array) {
+                if(entityValue.length !== 0) {
+                    value = `[${entityValue.map(it => it.toRawString()).join(', ')}]`
+                }
+            } else if(entityValue instanceof EntityPropertyValue) {
+                value = entityValue.toRawString()
+            }
+
+            navigator.clipboard.writeText(value).then(() => {
+                toaster.info(t('common.notification.copiedToClipboard')).then()
+            }).catch(() => {
+                toaster.error(t('common.notification.failedToCopyToClipboard')).then()
+            })
+        }
+    } else {
+        if (printablePropertyValue.value) {
+            navigator.clipboard.writeText(printablePropertyValue.value).then(() => {
+                toaster.info(t('common.notification.copiedToClipboard')).then()
+            }).catch(() => {
+                toaster.error(t('common.notification.failedToCopyToClipboard')).then()
+            })
+        }
     }
 }
 
@@ -108,13 +129,24 @@ const tooltip = computed<string>(() => {
         return printablePropertyValue.value
     }
 })
+
+function handleClick(e: MouseEvent):void {
+    e.preventDefault()
+
+    if(e.shiftKey && e.button === 1) {
+        copyValue(true)
+    } else if(e.button === 1) {
+        copyValue(false)
+    } else if(e.button === 0) {
+        emit('click')
+    }
+}
 </script>
 
 <template>
     <td
         :class="{'data-grid-cell--clickable': printablePropertyValue}"
-        @click="emit('click')"
-        @click.middle="copyValue"
+        @mousedown="(e) => handleClick(e)"
     >
         <span class="data-grid-cell__body">
             <template v-if="noLocaleSelected">
