@@ -9,7 +9,8 @@ import {
 } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { computed, ComputedRef, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import type { ComputedRef } from 'vue'
 import { List } from 'immutable'
 import { EntityAttributeSchemaPointer } from '@/modules/schema-viewer/viewer/model/EntityAttributeSchemaPointer'
 import PropertySectionItem

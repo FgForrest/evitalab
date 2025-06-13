@@ -12,7 +12,8 @@ import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/E
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
 import { ReferenceAttributeSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceAttributeSchemaPointer'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
-import { computed, ComputedRef } from 'vue'
+import { computed } from 'vue'
+import type { ComputedRef } from 'vue'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import PropertySectionItem

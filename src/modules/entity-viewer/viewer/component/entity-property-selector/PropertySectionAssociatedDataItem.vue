@@ -13,7 +13,8 @@ import PropertySectionItem
     from '@/modules/entity-viewer/viewer/component/entity-property-selector/PropertySectionItem.vue'
 import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { computed, ComputedRef } from 'vue'
+import { computed } from 'vue'
+import type { ComputedRef } from 'vue'
 import { useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
 
 const workspaceService: WorkspaceService = useWorkspaceService()

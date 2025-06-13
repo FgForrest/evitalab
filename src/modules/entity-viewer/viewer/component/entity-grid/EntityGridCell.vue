@@ -149,6 +149,7 @@ function handleClick(e: MouseEvent):void {
 
 <template>
     <td
+        class="data-grid-cell"
         :class="{'data-grid-cell--clickable': printablePropertyValue}"
         @mousedown="(e) => handleClick(e)"
     >
@@ -175,26 +176,31 @@ function handleClick(e: MouseEvent):void {
     </td>
 </template>
 
-<style lang="scss" scoped>
-.data-grid-cell {
-    &--clickable {
-        cursor: pointer;
+<style scoped lang="scss">
+td.data-grid-cell {
+  height: 2.25rem;
+  line-height: 2.25rem;
+  padding: 0 .75rem;
+}
 
-        &:hover {
-            background: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
-        }
-    }
+.data-grid-cell--clickable {
+  cursor: pointer;
 
-    &__body {
-        line-height: 2.25rem;
-        overflow-x: hidden;
-        overflow-y: hidden;
-        display: block;
-        min-width: 5rem;
-        max-width: 15rem;
-        height: 2.25rem;
-        text-overflow: clip;
-        text-wrap: nowrap;
-    }
+  &:hover {
+    background: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
+  }
+}
+
+.data-grid-cell__body {
+  display: inline-flex;
+  align-items: center;
+
+  min-width: 5rem;
+  max-width: 100%;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 </style>
+
