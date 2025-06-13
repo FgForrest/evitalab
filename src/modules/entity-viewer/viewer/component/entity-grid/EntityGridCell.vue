@@ -36,6 +36,8 @@ const prependIcon = computed<string | undefined>(() => {
     } else if(props.propertyDescriptor?.schema != undefined &&
         isTypedSchema(props.propertyDescriptor.schema) &&
         props.propertyDescriptor.schema.type === Scalar.Predecessor) {
+        if(props.propertyValue instanceof Array)
+            return undefined
         if(((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
             return "mdi-ray-end-arrow"
         } else {
@@ -119,6 +121,8 @@ const tooltip = computed<string>(() => {
         isTypedSchema(props.propertyDescriptor.schema) &&
         props.propertyDescriptor.schema.type === Scalar.Predecessor
     ) {
+        if(props.propertyValue instanceof Array)
+            return ""
         //Head
         if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
             return "Head of the list."
