@@ -5,7 +5,7 @@
 
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
+import type { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'

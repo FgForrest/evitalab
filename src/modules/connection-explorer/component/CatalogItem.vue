@@ -3,13 +3,14 @@
  * Explorer tree item representing a single catalog in evitaDB.
  */
 
-import { computed, ref, Ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import type { Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { MenuAction } from '@/modules/base/model/menu/MenuAction'
 import VTreeViewItem from '@/modules/base/component/VTreeViewItem.vue'
 import VTreeViewEmptyItem from '@/modules/base/component/VTreeViewEmptyItem.vue'
 import CollectionItem from '@/modules/connection-explorer/component/CollectionItem.vue'
-import { MenuItem } from '@/modules/base/model/menu/MenuItem'
+import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
 import RenameCatalogDialog from '@/modules/connection-explorer/component/RenameCatalogDialog.vue'
 import DeleteCatalogDialog from '@/modules/connection-explorer/component/DeleteCatalogDialog.vue'
 import ReplaceCatalogDialog from '@/modules/connection-explorer/component/ReplaceCatalogDialog.vue'
@@ -18,7 +19,8 @@ import SwitchCatalogToAliveStateDialog
     from '@/modules/connection-explorer/component/SwitchCatalogToAliveStateDialog.vue'
 import { ItemFlag } from '@/modules/base/model/tree-view/ItemFlag'
 import { List as ImmutableList } from 'immutable'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 import { provideCatalog, useServerStatus } from '@/modules/connection-explorer/component/dependecies'

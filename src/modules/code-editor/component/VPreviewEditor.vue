@@ -4,7 +4,8 @@
  */
 
 import { Codemirror } from 'vue-codemirror'
-import { EditorState, Extension } from '@codemirror/state'
+import { EditorState } from '@codemirror/state'
+import type { Extension } from '@codemirror/state'
 import { basicSetup, EditorView } from 'codemirror'
 import { dracula } from '@ddietr/codemirror-themes/dracula'
 import { computed, ref, watch } from 'vue'

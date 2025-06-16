@@ -21,7 +21,8 @@ import {
 import VLabelSelect from '@/modules/traffic-viewer/components/VLabelSelect.vue'
 import { parseHumanDurationToMs } from '@/utils/duration'
 import { parseHumanByteSizeToNumber } from '@/utils/number'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { Label } from '@/modules/database-driver/request-response/traffic-recording/Label'
 
 const trafficViewerService: TrafficViewerService = useTrafficViewerService()

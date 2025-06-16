@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
+import type { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
 import { List } from 'immutable'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
+import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import { BackupViewerTabParams } from '@/modules/backup-viewer/model/BackupViewerTabParams'
 import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
@@ -14,7 +14,7 @@ import TaskList from '@/modules/task-viewer/components/TaskList.vue'
 import BackupList from '@/modules/backup-viewer/components/BackupList.vue'
 import BackupCatalogButton from '@/modules/backup-viewer/components/BackupCatalogButton.vue'
 import RestoreLocalBackupFileButton from '@/modules/backup-viewer/components/RestoreLocalBackupFileButton.vue'
-import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import type { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import {
     ConnectionSubjectPath

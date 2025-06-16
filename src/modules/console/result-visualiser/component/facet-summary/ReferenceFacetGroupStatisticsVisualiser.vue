@@ -3,9 +3,10 @@
  * Visualises raw JSON facet group statistics of a single reference
  */
 import { computed, ref } from 'vue'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
-import { Result } from '@/modules/console/result-visualiser/model/Result'
+import type { Result } from '@/modules/console/result-visualiser/model/Result'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import VListItemLazyIterator from '@/modules/base/component/VListItemLazyIterator.vue'
 import FacetGroupStatisticsVisualiser

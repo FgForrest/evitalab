@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { Extension } from '@codemirror/state'
+import type { Extension } from '@codemirror/state'
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
 import VPreviewEditor from '@/modules/code-editor/component/VPreviewEditor.vue'
 

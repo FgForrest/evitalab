@@ -2,13 +2,13 @@
 import { List } from 'immutable'
 import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
-import { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
-import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
+import type { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
+import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
 import TaskList from '@/modules/task-viewer/components/TaskList.vue'
-import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import type { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import {
     ConnectionSubjectPath

@@ -11,7 +11,7 @@ import ManageMenu from '@/modules/workspace/panel/component/ManageMenu.vue'
 import ConnectionAvatar from '@/modules/workspace/panel/component/ConnectionAvatar.vue'
 import { ConnectionService, useConnectionService } from '@/modules/connection/service/ConnectionService'
 import { Connection } from '@/modules/connection/model/Connection'
-import { ConnectionId } from '@/modules/connection/model/ConnectionId'
+import type { ConnectionId } from '@/modules/connection/model/ConnectionId'
 
 const connectionService: ConnectionService = useConnectionService()
 const keymap: Keymap = useKeymap()

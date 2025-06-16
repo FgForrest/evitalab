@@ -2,13 +2,14 @@
 
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { useI18n } from 'vue-i18n'
-import { ConnectionId } from '@/modules/connection/model/ConnectionId'
+import type { ConnectionId } from '@/modules/connection/model/ConnectionId'
 import { computed, ref, watch } from 'vue'
 import { ConnectionService, useConnectionService } from '@/modules/connection/service/ConnectionService'
 import { Connection } from '@/modules/connection/model/Connection'
-import { SharedTabTroubleshooterCallback } from '@/modules/workspace/tab/service/SharedTabTroubleshooterCallback'
+import type { SharedTabTroubleshooterCallback } from '@/modules/workspace/tab/service/SharedTabTroubleshooterCallback'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 
 const connectionService: ConnectionService = useConnectionService()
 const toaster: Toaster = useToaster()

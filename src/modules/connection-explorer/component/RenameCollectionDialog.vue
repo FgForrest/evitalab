@@ -6,7 +6,8 @@ import {
     CollectionItemService,
     useCollectionItemService
 } from '@/modules/connection-explorer/service/CollectionItemService'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 
 const collectionItemService: CollectionItemService = useCollectionItemService()

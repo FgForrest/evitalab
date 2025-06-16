@@ -5,7 +5,8 @@ import { BackupViewerService, useBackupViewerService } from '@/modules/backup-vi
 import { useI18n } from 'vue-i18n'
 import { computed, ref } from 'vue'
 import { ClassifierValidationErrorType } from '@/modules/database-driver/data-type/ClassifierValidationErrorType'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 
 const backupViewerService: BackupViewerService = useBackupViewerService()
 const toaster: Toaster = useToaster()

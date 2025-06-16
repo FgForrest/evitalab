@@ -6,7 +6,8 @@ import { computed, onUnmounted, ref, watch } from 'vue'
 import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { JfrViewerService, useJfrViewerService } from '@/modules/jfr-viewer/service/JfrViewerService'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import ServerFileList from '@/modules/server-file-viewer/component/ServerFileList.vue'
 
 const jfrViewerService: JfrViewerService = useJfrViewerService()

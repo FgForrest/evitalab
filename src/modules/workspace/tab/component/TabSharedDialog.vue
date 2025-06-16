@@ -11,9 +11,10 @@ import VConfirmDialogButton from '@/modules/base/component/VConfirmDialogButton.
 import { SharedTabResolver, useSharedTabResolver } from '@/modules/workspace/tab/service/SharedTabResolver'
 import { computed, ref, watch } from 'vue'
 import { ShareTabObject } from '@/modules/workspace/tab/model/ShareTabObject'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { InvalidConnectionInSharedTabError } from '@/modules/workspace/tab/error/InvalidConnectionInSharedTabError'
-import { SharedTabTroubleshooterCallback } from '@/modules/workspace/tab/service/SharedTabTroubleshooterCallback'
+import type { SharedTabTroubleshooterCallback } from '@/modules/workspace/tab/service/SharedTabTroubleshooterCallback'
 import TabSharedTroubleshooterDialog from '@/modules/workspace/tab/component/TabSharedTroubleshooterDialog.vue'
 
 const workspaceService: WorkspaceService = useWorkspaceService()

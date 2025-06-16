@@ -6,7 +6,7 @@
 import { Pane, Splitpanes } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 
-import { Extension } from '@codemirror/state'
+import type { Extension } from '@codemirror/state'
 import { json } from '@codemirror/lang-json'
 
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
@@ -22,9 +22,10 @@ import { ResultVisualiserService } from '@/modules/console/result-visualiser/ser
 import {
     useEvitaQLResultVisualiserService
 } from '@/modules/evitaql-console/console/result-visualiser/service/EvitaQLResultVisualiserService'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
-import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
-import { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
+import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
+import type { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
 import { EvitaQLConsoleTabParams } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabParams'
 import { EvitaQLConsoleTabData } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabData'
 import ShareTabButton from '@/modules/workspace/tab/component/ShareTabButton.vue'
@@ -32,13 +33,13 @@ import VQueryEditor from '@/modules/code-editor/component/VQueryEditor.vue'
 import { evitaQL } from '@lukashornych/codemirror-lang-evitaql'
 import EvitaQLConsoleHistory from '@/modules/evitaql-console/console/history/component/EvitaQLConsoleHistory.vue'
 import {
-    createEvitaQLConsoleHistoryKey,
-    EvitaQLConsoleHistoryKey
+    createEvitaQLConsoleHistoryKey
 } from '@/modules/evitaql-console/console/history/model/EvitaQLConsoleHistoryKey'
+import type { EvitaQLConsoleHistoryKey } from '@/modules/evitaql-console/console/history/model/EvitaQLConsoleHistoryKey'
 import {
-    createEvitaQLConsoleHistoryRecord,
-    EvitaQLConsoleHistoryRecord
+    createEvitaQLConsoleHistoryRecord
 } from '@/modules/evitaql-console/console/history/model/EvitaQLConsoleHistoryRecord'
+import type { EvitaQLConsoleHistoryRecord } from '@/modules/evitaql-console/console/history/model/EvitaQLConsoleHistoryRecord'
 import VPreviewEditor from '@/modules/code-editor/component/VPreviewEditor.vue'
 import ResultVisualiser from '@/modules/console/result-visualiser/component/ResultVisualiser.vue'
 import { Command } from '@/modules/keymap/model/Command'
@@ -48,7 +49,7 @@ import VExecuteQueryButton from '@/modules/base/component/VExecuteQueryButton.vu
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import VSideTabs from '@/modules/base/component/VSideTabs.vue'
 import { List } from 'immutable'
-import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import type { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import {
     ConnectionSubjectPath

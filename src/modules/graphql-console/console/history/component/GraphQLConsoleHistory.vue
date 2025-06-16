@@ -5,7 +5,7 @@
 
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import {
+import type {
     GraphQLConsoleHistoryRecord
 } from '@/modules/graphql-console/console/history/model/GraphQLConsoleHistoryRecord'
 
