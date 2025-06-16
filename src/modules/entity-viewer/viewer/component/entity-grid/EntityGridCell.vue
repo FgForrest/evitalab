@@ -197,7 +197,6 @@ td.data-grid-cell {
     position: absolute;
     inset: 0;
     width: 100%;
-
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
