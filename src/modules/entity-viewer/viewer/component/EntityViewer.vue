@@ -124,7 +124,6 @@ watch(displayedEntityProperties, (newValue, oldValue) => {
 const displayedGridHeaders = ref<any[]>([])
 const resultEntities = ref<FlatEntity[]>([])
 const totalResultCount = ref<number>(0)
-const lastSortBy = ref<any>()
 
 const initialized = ref<boolean>(false)
 const queryExecutedManually = ref<boolean>(false)
