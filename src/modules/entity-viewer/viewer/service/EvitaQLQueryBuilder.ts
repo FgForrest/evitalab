@@ -263,17 +263,11 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
     }
 
     buildPrimaryKeyOrderBy(orderDirection: OrderDirection): string {
-        if(orderDirection.toLowerCase() === "none")
-            return ''
-        else
-            return `entityPrimaryKeyNatural(${orderDirection})`
+        return `entityPrimaryKeyNatural(${orderDirection})`
     }
 
     buildAttributeOrderBy(attributeSchema: AttributeSchema, orderDirection: OrderDirection): string {
-        if(orderDirection.toLowerCase() === "none")
-            return ''
-        else
-            return `attributeNatural("${attributeSchema.name}", ${orderDirection})`
+        return `attributeNatural("${attributeSchema.name}", ${orderDirection})`
     }
 
     buildReferenceAttributeOrderBy(referenceSchema: ReferenceSchema, attributeSchema: AttributeSchema, orderDirection: OrderDirection): string {

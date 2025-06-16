@@ -124,7 +124,6 @@ watch(displayedEntityProperties, (newValue, oldValue) => {
 const displayedGridHeaders = ref<any[]>([])
 const resultEntities = ref<FlatEntity[]>([])
 const totalResultCount = ref<number>(0)
-const lastSortBy = ref<any>()
 
 const initialized = ref<boolean>(false)
 const queryExecutedManually = ref<boolean>(false)
@@ -282,21 +281,17 @@ function preselectEntityProperties(): void {
 
 }
 
-async function gridUpdated({ page, itemsPerPage, sortBy }: { page: number, itemsPerPage: number, sortBy: any[] }): Promise<void> {
-    if(sortBy.length === 0 && lastSortBy.value != undefined && lastSortBy.value instanceof Array && lastSortBy.value.length > 0) {
-        sortBy = lastSortBy.value
-        sortBy[0].order = `None`
-    }
-    lastSortBy.value = sortBy;
-
+async function gridUpdated({ page, itemsPerPage, sortBy }: {
+    page: number,
+    itemsPerPage: number,
+    sortBy: any[]
+}): Promise<void> {
     pageNumber.value = page
     pageSize.value = itemsPerPage
-    if (sortBy.length > 0) {
-        try {
-            orderByCode.value = await entityViewerService.buildOrderByFromGridColumns(props.params.dataPointer, selectedQueryLanguage.value, sortBy)
-        } catch (error: any) {
-            await toaster.error('Could not build orderBy', error) // todo lho i18n
-        }
+    try {
+        orderByCode.value = await entityViewerService.buildOrderByFromGridColumns(props.params.dataPointer, selectedQueryLanguage.value, sortBy)
+    } catch (error: any) {
+        await toaster.error('Could not build orderBy', error) // todo lho i18n
     }
 
     await executeQueryAutomatically()
