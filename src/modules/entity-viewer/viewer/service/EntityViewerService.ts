@@ -46,7 +46,6 @@ export const entityViewerServiceInjectionKey: InjectionKey<EntityViewerService> 
  * Service for running the entity viewer component.
  */
 export class EntityViewerService {
-    private lastSorted: any
     private readonly evitaClient: EvitaClient
 
     private readonly queryBuilders: Map<QueryLanguage, QueryBuilder> = new Map<QueryLanguage, QueryBuilder>()
