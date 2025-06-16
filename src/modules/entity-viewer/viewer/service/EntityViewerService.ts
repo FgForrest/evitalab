@@ -46,6 +46,7 @@ export const entityViewerServiceInjectionKey: InjectionKey<EntityViewerService> 
  * Service for running the entity viewer component.
  */
 export class EntityViewerService {
+    private lastSorted: any
     private readonly evitaClient: EvitaClient
 
     private readonly queryBuilders: Map<QueryLanguage, QueryBuilder> = new Map<QueryLanguage, QueryBuilder>()
@@ -173,6 +174,10 @@ export class EntityViewerService {
     async buildOrderByFromGridColumns(dataPointer: EntityViewerDataPointer,
                                       language: QueryLanguage,
                                       columns: any[]): Promise<string> {
+        if(columns.length === 0 && this.lastSorted != undefined && this.lastSorted instanceof Array && this.lastSorted.length > 0) {
+            return ``
+        }
+
         const entitySchema: EntitySchema  = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
             async session => await session.getEntitySchemaOrThrowException(dataPointer.entityType)

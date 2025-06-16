@@ -3,6 +3,5 @@
  */
 export enum OrderDirection {
     Asc = 'asc',
-    Desc = 'desc',
-    None = 'none',
+    Desc = 'desc'
 }
