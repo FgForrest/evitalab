@@ -677,11 +677,7 @@
   "evitaQLConsole": {
     "placeholder": {
       "writeQuery": "// Write your EvitaQL query for catalog {catalogName} here.\n",
-      "results": "Results will be displayed here...",
-      "emptyHistory": "Empty history"
-    },
-    "button": {
-      "clearHistory": "Clear history"
+      "results": "Results will be displayed here..."
     },
     "notification": {
       "failedToSaveQueryToHistory": "Failed to save query to history."
@@ -695,15 +691,21 @@
     },
     "placeholder": {
       "writeQuery": "# Write your GraphQL query for catalog {catalogName} here.\n",
-      "results": "Results will be displayed here...",
-      "emptyHistory": "Empty history"
+      "results": "Results will be displayed here..."
     },
     "button": {
-      "instanceDetails": "GraphQL API instance details",
-      "clearHistory": "Clear history"
+      "instanceDetails": "GraphQL API instance details"
     },
     "notification": {
       "failedToSaveQueryToHistory": "Failed to save query to history."
+    }
+  },
+  "historyComponent": {
+    "button": {
+      "clearHistory": "Clear history"
+    },
+    "placeholder": {
+      "emptyHistory": "Empty history"
     }
   },
   "resultVisualizer": {

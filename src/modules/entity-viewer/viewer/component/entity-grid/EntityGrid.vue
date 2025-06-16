@@ -1,3 +1,4 @@
+
 <script setup lang="ts">
 /**
  * Grid with actual data for the LabEditorDataGrid component.

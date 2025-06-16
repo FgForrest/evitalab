@@ -282,15 +282,17 @@ function preselectEntityProperties(): void {
 
 }
 
-async function gridUpdated({ page, itemsPerPage, sortBy }: { page: number, itemsPerPage: number, sortBy: any[] }): Promise<void> {
+async function gridUpdated({ page, itemsPerPage, sortBy }: {
+    page: number,
+    itemsPerPage: number,
+    sortBy: any[]
+}): Promise<void> {
     pageNumber.value = page
     pageSize.value = itemsPerPage
-    if (sortBy.length > 0) {
-        try {
-            orderByCode.value = await entityViewerService.buildOrderByFromGridColumns(props.params.dataPointer, selectedQueryLanguage.value, sortBy)
-        } catch (error: any) {
-            await toaster.error('Could not build orderBy', error) // todo lho i18n
-        }
+    try {
+        orderByCode.value = await entityViewerService.buildOrderByFromGridColumns(props.params.dataPointer, selectedQueryLanguage.value, sortBy)
+    } catch (error: any) {
+        await toaster.error('Could not build orderBy', error) // todo lho i18n
     }
 
     await executeQueryAutomatically()

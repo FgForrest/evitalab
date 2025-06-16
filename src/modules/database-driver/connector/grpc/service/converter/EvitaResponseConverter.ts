@@ -8,6 +8,7 @@ import type {
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
 import { DataChunk } from '@/modules/database-driver/request-response/data/DataChunk'
 import { PaginatedList } from '@/modules/database-driver/request-response/data/PaginatedList'
+import { serializeJsonWithBigInt } from '@/utils/JsonUtil.ts'
 
 export class EvitaResponseConverter {
     private readonly entityConverter: EntityConverter;
@@ -23,8 +24,7 @@ export class EvitaResponseConverter {
             this.convertDataChunk(grpcResponse.recordPage),
             this.extraResultConverter.convert(grpcResponse.extraResults),
             // Important FIX: Prevent number overflow when bigint is bigger number (Crashing in price's datetime)
-            JSON.stringify(grpcResponse, (_, v) => typeof v === 'bigint' ? v.toString() : v)
-            //Source: https://stackoverflow.com/questions/65152373/serialize-bigint-in-json
+            serializeJsonWithBigInt(grpcResponse)
         )
     }
 

@@ -9,10 +9,12 @@ import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityP
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { useDataLocale, usePriceType } from '@/modules/entity-viewer/viewer/component/dependencies'
-import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { isLocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
 import { isTypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
+import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue.ts'
+import type { Predecessor } from '@/modules/database-driver/data-type/Predecessor.ts'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema.ts'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -28,18 +30,22 @@ const dataLocale = useDataLocale()
 const priceType = usePriceType()
 
 const printablePropertyValue = computed<string>(() => toPrintablePropertyValue(props.propertyValue))
-const openableInNewTab = computed<boolean>(() => {
+const prependIcon = computed<string | undefined>(() => {
     if (props.propertyDescriptor?.type === EntityPropertyType.Entity && props.propertyDescriptor?.key.name === StaticEntityProperties.ParentPrimaryKey) {
-        return true
-    } else if (props.propertyDescriptor?.schema != undefined &&
+        return "mdi-open-in-new"
+    } else if(props.propertyDescriptor?.schema != undefined &&
         isTypedSchema(props.propertyDescriptor.schema) &&
         props.propertyDescriptor.schema.type === Scalar.Predecessor) {
-        return true
+        if(((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
+            return "mdi-ray-end-arrow"
+        } else {
+            return "mdi-ray-start"
+        }
     } else if (props.propertyDescriptor?.type === EntityPropertyType.References && props.propertyDescriptor.schema instanceof ReferenceSchema) {
-        return true
-    } else {
-        return false
+        return "mdi-open-in-new"
     }
+    else
+        return undefined
 })
 const showDetailOnHover = computed<boolean>(() => printablePropertyValue.value.length <= 100)
 
@@ -77,13 +83,62 @@ function toPrintablePropertyValue(value: EntityPropertyValue | EntityPropertyVal
     }
 }
 
-function copyValue(): void {
-    if (printablePropertyValue.value) {
-        navigator.clipboard.writeText(printablePropertyValue.value).then(() => {
-            toaster.info(t('common.notification.copiedToClipboard')).then()
-        }).catch(() => {
-            toaster.error(t('common.notification.failedToCopyToClipboard')).then()
-        })
+function copyValue(raw: boolean): void {
+    if(raw) {
+        const entityValue: EntityPropertyValue | EntityPropertyValue[] | undefined = props.propertyValue
+        if(entityValue) {
+            let value : string = ''
+
+            if(entityValue instanceof Array) {
+                if(entityValue.length !== 0) {
+                    value = `[${entityValue.map(it => it.toRawString()).join(', ')}]`
+                }
+            } else if(entityValue instanceof EntityPropertyValue) {
+                value = entityValue.toRawString()
+            }
+
+            navigator.clipboard.writeText(value).then(() => {
+                toaster.info(t('common.notification.copiedToClipboard')).then()
+            }).catch(() => {
+                toaster.error(t('common.notification.failedToCopyToClipboard')).then()
+            })
+        }
+    } else {
+        if (printablePropertyValue.value) {
+            navigator.clipboard.writeText(printablePropertyValue.value).then(() => {
+                toaster.info(t('common.notification.copiedToClipboard')).then()
+            }).catch(() => {
+                toaster.error(t('common.notification.failedToCopyToClipboard')).then()
+            })
+        }
+    }
+}
+
+const tooltip = computed<string>(() => {
+    if (props.propertyDescriptor?.schema != undefined &&
+        isTypedSchema(props.propertyDescriptor.schema) &&
+        props.propertyDescriptor.schema.type === Scalar.Predecessor
+    ) {
+        //Head
+        if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
+            return "Head of the list."
+        } else {
+            return "Pointer to a previous entity in the list."
+        }
+    } else {
+        return printablePropertyValue.value
+    }
+})
+
+function handleClick(e: MouseEvent):void {
+    e.preventDefault()
+
+    if(e.shiftKey && e.button === 1) {
+        copyValue(true)
+    } else if(e.button === 1) {
+        copyValue(false)
+    } else if(e.button === 0) {
+        emit('click')
     }
 }
 </script>
@@ -91,8 +146,7 @@ function copyValue(): void {
 <template>
     <td
         :class="{'data-grid-cell--clickable': printablePropertyValue}"
-        @click="emit('click')"
-        @click.middle="copyValue"
+        @mousedown="(e) => handleClick(e)"
     >
         <span class="data-grid-cell__body">
             <template v-if="noLocaleSelected">
@@ -105,11 +159,11 @@ function copyValue(): void {
                 <span class="text-disabled">{{ t('common.placeholder.null') }}</span>
             </template>
             <template v-else>
-                <VIcon v-if="openableInNewTab" class="mr-1">mdi-open-in-new</VIcon>
+                <VIcon v-if="prependIcon !== undefined" class="mr-1">{{ prependIcon }}</VIcon>
                 <span>
                     {{ printablePropertyValue }}
                     <VTooltip v-if="showDetailOnHover" activator="parent">
-                        {{ printablePropertyValue }}
+                        {{ tooltip }}
                     </VTooltip>
                 </span>
             </template>

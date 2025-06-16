@@ -272,7 +272,7 @@ export class EntityConverter {
             grpcPrice.validity != undefined
                 ? DateTimeUtil.convertToDateTimeRange(grpcPrice.validity)
                 : undefined,
-            grpcPrice.sellable,
+            grpcPrice.indexed,
             grpcPrice.version,
             new Currency(grpcPrice.currency?.code!)
         )

@@ -8,8 +8,7 @@ import { useI18n } from 'vue-i18n'
 import type {
     GraphQLConsoleHistoryRecord
 } from '@/modules/graphql-console/console/history/model/GraphQLConsoleHistoryRecord'
-
-const { t } = useI18n()
+import HistoryComponent from '@/modules/history-component/HistoryComponent.vue';
 
 const props = defineProps<{
     items: GraphQLConsoleHistoryRecord[]
@@ -19,7 +18,6 @@ const emit = defineEmits<{
     (e: 'update:clearHistory'): void
 }>()
 
-const historyListRef = ref<HTMLElement | undefined>()
 const historyListItems = computed<any[]>(() => {
     return props.items.map((record: GraphQLConsoleHistoryRecord) => {
         return {
@@ -29,58 +27,13 @@ const historyListItems = computed<any[]>(() => {
         }
     })
 })
-
-/**
- * Focuses the first item in the history list.
- */
-function focus() {
-    // @ts-ignore
-    let firstItem = historyListRef.value?.$el?.querySelector('.v-list-item');
-    if (firstItem) {
-        firstItem.focus();
-    }
-}
-
-defineExpose<{
-    focus: () => void
-}>({
-    focus
-})
 </script>
 
 <template>
-    <div class="graphql-editor-history">
-        <p v-if="historyListItems.length === 0" class="text-disabled graphql-editor-history__empty-item">
-            {{ t('graphQLConsole.placeholder.emptyHistory') }}
-        </p>
-        <template v-else>
-            <VBtn
-                prepend-icon="mdi-playlist-remove"
-                variant="outlined"
-                rounded="xl"
-                class="graphql-editor-history__clear-button"
-                @click="emit('update:clearHistory')"
-            >
-                {{ t('graphQLConsole.button.clearHistory') }}
-            </VBtn>
-
-            <VList ref="historyListRef" class="graphql-editor-history__list">
-                <VListItem
-                    v-for="item in historyListItems"
-                    :key="item.key"
-                    variant="tonal"
-                    rounded
-                    @click="emit('selectHistoryRecord', item.value)"
-                >
-                    <VCardText>
-                        <template v-for="(line, index) in item.preview" :key="index">
-                            {{ line }}<br/>
-                        </template>
-                    </VCardText>
-                </VListItem>
-            </VList>
-        </template>
-    </div>
+    <HistoryComponent :items="historyListItems"
+        @select-history-record="(value) => emit('selectHistoryRecord', value)"
+        @update:clear-history="emit('update:clearHistory')">
+    </HistoryComponent>
 </template>
 
 <style lang="scss" scoped>

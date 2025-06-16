@@ -5,6 +5,7 @@ import type {
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValuePreviewStringContext'
 import { QueryPriceMode } from '../QueryPriceMode'
 import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
+import { serializeJsonWithBigInt } from '@/utils/JsonUtil.ts'
 
 /**
  * Holder for entity prices displayable data grid.
@@ -29,6 +30,17 @@ export class EntityPrices extends EntityPropertyValue {
 
     isEmpty(): boolean {
         return false
+    }
+
+    toRawString(): string {
+        return serializeJsonWithBigInt(this.toRawRepresentation())
+    }
+
+    toRawRepresentation(): any {
+        return {
+            priceForSale: this.priceForSale?.toRawRepresentation(),
+            prices: this.prices.map(x => x.toRawRepresentation()),
+        }
     }
 
     toPreviewString(context?: EntityPropertyValuePreviewStringContext): string {
