@@ -174,10 +174,6 @@ export class EntityViewerService {
     async buildOrderByFromGridColumns(dataPointer: EntityViewerDataPointer,
                                       language: QueryLanguage,
                                       columns: any[]): Promise<string> {
-        if(columns.length === 0 && this.lastSorted != undefined && this.lastSorted instanceof Array && this.lastSorted.length > 0) {
-            return ``
-        }
-
         const entitySchema: EntitySchema  = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
             async session => await session.getEntitySchemaOrThrowException(dataPointer.entityType)
