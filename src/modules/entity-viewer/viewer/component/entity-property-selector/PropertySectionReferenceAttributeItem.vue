@@ -30,7 +30,8 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{
     (e: 'toggle', value: { key: EntityPropertyKey, selected: boolean }): void
-    (e: 'schemaOpen'): void
+    (e: 'schemaOpen'): void,
+    (e: 'changeState', key: EntityPropertyKey, isSelected: boolean): void,
 }>()
 const tabProps = useTabProps()
 

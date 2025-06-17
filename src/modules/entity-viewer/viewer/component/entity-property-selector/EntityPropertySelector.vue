@@ -232,6 +232,14 @@ function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescr
     }
 }
 
+function changeSelectedState(key: EntityPropertyKey, isSelected: boolean): void {
+    if(isSelected) {
+        emit('update:selected', props.selected.filter(x => x.toString() !== key.toString()))
+    }
+    else
+        emit('update:selected', [...props.selected, key])
+}
+
 onMounted(() => {
     // register keyboard shortcuts for property selector
     keymap.bindWithinScope(Command.EntityViewer_PropertySelector_FindProperty, tabProps.id, propertySelectorScope, () => filterInput?.value?.select())
@@ -299,6 +307,7 @@ onUnmounted(() => {
                         <PropertySectionEntityItem
                             :property-descriptor="property"
                             @schema-open="emit('schemaOpen')"
+                            @change-state="(key, isSelected) => changeSelectedState(key, isSelected)"
                         />
                     </template>
                 </PropertySection>
@@ -315,6 +324,7 @@ onUnmounted(() => {
                         <PropertySectionAttributeItem
                             :property-descriptor="property"
                             @schema-open="emit('schemaOpen')"
+                            @change-state="(key, isSelected) => changeSelectedState(key, isSelected)"
                         />
                     </template>
                 </PropertySection>
@@ -331,6 +341,7 @@ onUnmounted(() => {
                         <PropertySectionAssociatedDataItem
                             :property-descriptor="property"
                             @schema-open="emit('schemaOpen')"
+                            @change-state="(key, isSelected) => changeSelectedState(key, isSelected)"
                         />
                     </template>
                 </PropertySection>
@@ -338,6 +349,7 @@ onUnmounted(() => {
                     <VListItemDivider />
                     <PropertySectionPricesItem
                         :property-descriptor="sectionedPropertyDescriptors.get(EntityPropertyType.Prices)![0]"
+                        @change-state="(key, isSelected) => changeSelectedState(key, isSelected)"
                     />
                 </template>
                 <VListItemDivider />
@@ -354,6 +366,7 @@ onUnmounted(() => {
                             v-if="property.children.size === 0"
                             :property-descriptor="property"
                             @schema-open="emit('schemaOpen')"
+                            @toggle="value => changeSelectedState(value.key, value.selected)"
                         />
 
                         <PropertySectionItemGroup
