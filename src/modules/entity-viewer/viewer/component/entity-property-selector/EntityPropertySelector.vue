@@ -379,7 +379,10 @@ onUnmounted(() => {
                                     :property-descriptor="property"
                                     v-bind="props"
                                     group-parent
-                                    @toggle="togglePropertySelection(property.key)"
+                                    @toggle="(e) => {
+                                        changeSelectedState(e.key, e.selected)
+                                        togglePropertySelection(property.key)
+                                    }"
                                     @schema-open="emit('schemaOpen')"
                                 />
                             </template>
