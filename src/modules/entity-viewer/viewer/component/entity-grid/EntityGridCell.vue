@@ -32,19 +32,20 @@ const priceType = usePriceType()
 const printablePropertyValue = computed<string>(() => toPrintablePropertyValue(props.propertyValue))
 const prependIcon = computed<string | undefined>(() => {
     if (props.propertyDescriptor?.type === EntityPropertyType.Entity && props.propertyDescriptor?.key.name === StaticEntityProperties.ParentPrimaryKey) {
-        return "mdi-open-in-new"
-    } else if(props.propertyDescriptor?.schema != undefined &&
+        return 'mdi-open-in-new'
+    } else if (props.propertyDescriptor?.schema != undefined &&
         isTypedSchema(props.propertyDescriptor.schema) &&
         props.propertyDescriptor.schema.type === Scalar.Predecessor) {
-        if(((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
-            return "mdi-ray-end-arrow"
+        if (props.propertyValue instanceof Array)
+            return undefined
+        if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
+            return 'mdi-ray-end-arrow'
         } else {
-            return "mdi-ray-start"
+            return 'mdi-ray-start'
         }
     } else if (props.propertyDescriptor?.type === EntityPropertyType.References && props.propertyDescriptor.schema instanceof ReferenceSchema) {
-        return "mdi-open-in-new"
-    }
-    else
+        return 'mdi-open-in-new'
+    } else
         return undefined
 })
 const showDetailOnHover = computed<boolean>(() => printablePropertyValue.value.length <= 100)
@@ -84,16 +85,16 @@ function toPrintablePropertyValue(value: EntityPropertyValue | EntityPropertyVal
 }
 
 function copyValue(raw: boolean): void {
-    if(raw) {
+    if (raw) {
         const entityValue: EntityPropertyValue | EntityPropertyValue[] | undefined = props.propertyValue
-        if(entityValue) {
-            let value : string = ''
+        if (entityValue) {
+            let value: string = ''
 
-            if(entityValue instanceof Array) {
-                if(entityValue.length !== 0) {
+            if (entityValue instanceof Array) {
+                if (entityValue.length !== 0) {
                     value = `[${entityValue.map(it => it.toRawString()).join(', ')}]`
                 }
-            } else if(entityValue instanceof EntityPropertyValue) {
+            } else if (entityValue instanceof EntityPropertyValue) {
                 value = entityValue.toRawString()
             }
 
@@ -119,25 +120,27 @@ const tooltip = computed<string>(() => {
         isTypedSchema(props.propertyDescriptor.schema) &&
         props.propertyDescriptor.schema.type === Scalar.Predecessor
     ) {
+        if (props.propertyValue instanceof Array)
+            return ''
         //Head
         if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
-            return "Head of the list."
+            return 'Head of the list.'
         } else {
-            return "Pointer to a previous entity in the list."
+            return 'Pointer to a previous entity in the list.'
         }
     } else {
         return printablePropertyValue.value
     }
 })
 
-function handleClick(e: MouseEvent):void {
+function handleClick(e: MouseEvent): void {
     e.preventDefault()
 
-    if(e.shiftKey && e.button === 1) {
+    if (e.shiftKey && e.button === 1) {
         copyValue(true)
-    } else if(e.button === 1) {
+    } else if (e.button === 1) {
         copyValue(false)
-    } else if(e.button === 0) {
+    } else if (e.button === 0) {
         emit('click')
     }
 }
@@ -145,6 +148,7 @@ function handleClick(e: MouseEvent):void {
 
 <template>
     <td
+        class="data-grid-cell"
         :class="{'data-grid-cell--clickable': printablePropertyValue}"
         @mousedown="(e) => handleClick(e)"
     >
@@ -171,26 +175,34 @@ function handleClick(e: MouseEvent):void {
     </td>
 </template>
 
-<style lang="scss" scoped>
-.data-grid-cell {
-    &--clickable {
-        cursor: pointer;
+<style scoped lang="scss">
+td.data-grid-cell {
+    height: 2.25rem;
+    line-height: 2.25rem;
+    padding: 0 .75rem;
+    position: relative;
+    overflow-x: clip;
+}
 
-        &:hover {
-            background: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
-        }
-    }
+.data-grid-cell--clickable {
+    cursor: pointer;
 
-    &__body {
-        line-height: 2.25rem;
-        overflow-x: hidden;
-        overflow-y: hidden;
-        display: block;
-        min-width: 5rem;
-        max-width: 15rem;
-        height: 2.25rem;
-        text-overflow: clip;
-        text-wrap: nowrap;
+    &:hover {
+        background: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
     }
 }
+
+.data-grid-cell__body {
+    display: inline-flex;
+    align-items: center;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-left: 16px;
+    margin-right: 16px;
+}
 </style>
+

@@ -241,7 +241,6 @@ function closePropertyDetail(): void {
     overflow-y: hidden;
     display: block;
     min-width: 5rem;
-    max-width: 15rem;
     height: 2.25rem;
     text-overflow: clip;
     text-wrap: nowrap;
