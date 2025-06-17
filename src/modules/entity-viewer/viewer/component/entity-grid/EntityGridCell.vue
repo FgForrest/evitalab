@@ -181,6 +181,7 @@ td.data-grid-cell {
     line-height: 2.25rem;
     padding: 0 .75rem;
     position: relative;
+    overflow-x: clip;
 }
 
 .data-grid-cell--clickable {
@@ -200,6 +201,8 @@ td.data-grid-cell {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    margin-left: 16px;
+    margin-right: 16px;
 }
 </style>
 
