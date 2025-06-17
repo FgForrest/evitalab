@@ -36,10 +36,12 @@ const prependIcon = computed<string | undefined>(() => {
     } else if(props.propertyDescriptor?.schema != undefined &&
         isTypedSchema(props.propertyDescriptor.schema) &&
         props.propertyDescriptor.schema.type === Scalar.Predecessor) {
-        if(((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
-            return "mdi-ray-end-arrow"
-        } else {
-            return "mdi-ray-start"
+        if(props.propertyValue instanceof NativeValue) {
+            if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
+                return "mdi-ray-end-arrow"
+            } else {
+                return "mdi-ray-start"
+            }
         }
     } else if (props.propertyDescriptor?.type === EntityPropertyType.References && props.propertyDescriptor.schema instanceof ReferenceSchema) {
         return "mdi-open-in-new"
@@ -119,11 +121,15 @@ const tooltip = computed<string>(() => {
         isTypedSchema(props.propertyDescriptor.schema) &&
         props.propertyDescriptor.schema.type === Scalar.Predecessor
     ) {
-        //Head
-        if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
-            return "Head of the list."
+        if(props.propertyValue instanceof NativeValue) {
+            //Head
+            if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
+                return "Head of the list."
+            } else {
+                return "Pointer to a previous entity in the list."
+            }
         } else {
-            return "Pointer to a previous entity in the list."
+            return printablePropertyValue.value
         }
     } else {
         return printablePropertyValue.value
