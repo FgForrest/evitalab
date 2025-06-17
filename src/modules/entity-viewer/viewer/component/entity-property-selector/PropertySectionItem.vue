@@ -43,7 +43,6 @@ const emit = defineEmits<{
                 <VCheckboxBtn
                     :model-value="isSelected"
                     @update:model-value="emit('toggle', { key: value, selected: isSelected })"
-
                 />
             </VListItemAction>
         </template>
@@ -56,7 +55,6 @@ const emit = defineEmits<{
                     <VChip
                         v-for="flag in flags"
                         :key="flag"
-                        @change="() => console.log(`EE`)"
                     >
                         {{ flag.startsWith('_') ? t(`schemaViewer.section.flag.${flag.substring(1)}`) : flag }}
                     </VChip>

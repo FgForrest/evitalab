@@ -388,7 +388,10 @@ onUnmounted(() => {
                                 <PropertySectionReferenceAttributeItem
                                     :reference-property-descriptor="property"
                                     :attribute-property-descriptor="childProperty"
-                                    @toggle="toggleReferenceAttributeProperty(property, $event.selected)"
+                                    @toggle="(e) => {
+                                        toggleReferenceAttributeProperty(property, e.selected)
+                                        changeSelectedState(e.key, e.selected)
+                                    }"
                                 />
                             </template>
                         </PropertySectionItemGroup>
