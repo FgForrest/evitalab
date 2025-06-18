@@ -233,12 +233,32 @@ function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescr
 }
 
 function changeSelectedState(key: EntityPropertyKey, isSelected: boolean): void {
-    if(isSelected) {
+    if (isSelected) {
         emit('update:selected', props.selected.filter(x => x.toString() !== key.toString()))
+    } else {
+        const newSelected: EntityPropertyKey[] = [...props.selected, key]
+
+        let parentKey: EntityPropertyKey | undefined
+
+        for (const descriptors of sectionedPropertyDescriptors.value.values()) {
+            for (const parentDescriptor of descriptors) {
+                const isChild = parentDescriptor.children.find(c => c.key.toString() === key.toString())
+                if (isChild) {
+                    parentKey = parentDescriptor.key
+                    break
+                }
+            }
+            if (parentKey) break
+        }
+
+        if (parentKey && !newSelected.find(x => x.toString() === parentKey!.toString())) {
+            newSelected.push(parentKey)
+        }
+
+        emit('update:selected', newSelected)
     }
-    else
-        emit('update:selected', [...props.selected, key])
 }
+
 
 onMounted(() => {
     // register keyboard shortcuts for property selector
@@ -373,6 +393,7 @@ onUnmounted(() => {
                             v-else
                             :filtered-property-descriptors="property.children"
                             :property-descriptors="property.children"
+                            :property="property"
                         >
                             <template #activator="{ props }">
                                 <PropertySectionReferenceItem
@@ -381,7 +402,8 @@ onUnmounted(() => {
                                     group-parent
                                     @toggle="(e) => {
                                         changeSelectedState(e.key, e.selected)
-                                        togglePropertySelection(property.key)
+                                        //toggleReferenceAttributeProperty(property, e.selected)
+                                        //togglePropertySelection(property.key)
                                     }"
                                     @schema-open="emit('schemaOpen')"
                                 />
@@ -392,7 +414,8 @@ onUnmounted(() => {
                                     :reference-property-descriptor="property"
                                     :attribute-property-descriptor="childProperty"
                                     @toggle="(e) => {
-                                        toggleReferenceAttributeProperty(property, e.selected)
+                                        //togglePropertySelection(property.key)
+                                        //toggleReferenceAttributeProperty(property, e.selected)
                                         changeSelectedState(e.key, e.selected)
                                     }"
                                 />
