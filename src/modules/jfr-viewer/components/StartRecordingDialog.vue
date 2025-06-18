@@ -2,7 +2,8 @@
 import { JfrViewerService, useJfrViewerService } from '../service/JfrViewerService'
 import { useI18n } from 'vue-i18n'
 import { computed, ref } from 'vue'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { EventType } from '@/modules/database-driver/request-response/jfr/EventType'
 

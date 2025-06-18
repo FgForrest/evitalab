@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
+import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 import { TaskViewerTabParams } from '@/modules/task-viewer/model/TaskViewerTabParams'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import { List } from 'immutable'
-import { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
+import type { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import TaskList from '@/modules/task-viewer/components/TaskList.vue'
 import { ref } from 'vue'
-import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import type { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import {
     ConnectionSubjectPath

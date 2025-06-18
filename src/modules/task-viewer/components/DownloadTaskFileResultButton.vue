@@ -1,7 +1,8 @@
 <script setup lang="ts">
 
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useI18n } from 'vue-i18n'
 import { FileTaskResult } from '@/modules/database-driver/request-response/task/FileTaskResult'
 import VDownloadServerFileButton from '@/modules/viewer-support/component/VDownloadServerFileButton.vue'

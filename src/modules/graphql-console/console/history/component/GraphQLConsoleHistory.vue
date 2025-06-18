@@ -3,7 +3,7 @@
  * Query history listing for GraphQL console.
  */
 
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type {
     GraphQLConsoleHistoryRecord
 } from '@/modules/graphql-console/console/history/model/GraphQLConsoleHistoryRecord'

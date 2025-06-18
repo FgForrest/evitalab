@@ -4,7 +4,8 @@
  */
 
 import { Codemirror } from 'vue-codemirror'
-import { EditorState, Extension } from '@codemirror/state'
+import { EditorState } from '@codemirror/state'
+import type { Extension } from 'node_modules/@codemirror/state/dist/index.d.cts'
 import { keymap, ViewUpdate } from '@codemirror/view'
 import { basicSetup, EditorView } from 'codemirror'
 import { dracula } from '@ddietr/codemirror-themes/dracula'

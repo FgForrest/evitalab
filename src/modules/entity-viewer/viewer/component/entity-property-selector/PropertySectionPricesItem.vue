@@ -13,6 +13,7 @@ import { EntitySchemaPointer } from '@/modules/schema-viewer/viewer/model/Entity
 import PropertySectionItem
     from '@/modules/entity-viewer/viewer/component/entity-property-selector/PropertySectionItem.vue'
 import { useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
+import type { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
@@ -21,7 +22,8 @@ const props = defineProps<{
     propertyDescriptor: EntityPropertyDescriptor
 }>()
 const emit = defineEmits<{
-    (e: 'schemaOpen'): void
+    (e: 'schemaOpen'): void,
+    (e: 'changeState', key: EntityPropertyKey, isSelected: boolean): void
 }>()
 const tabProps = useTabProps()
 
@@ -44,6 +46,7 @@ function openSchema(): void {
         :title="propertyDescriptor.title"
         openable
         @schema-open="openSchema"
+        @toggle="value => emit(`changeState`, value.key, value.selected)"
     />
 </template>
 

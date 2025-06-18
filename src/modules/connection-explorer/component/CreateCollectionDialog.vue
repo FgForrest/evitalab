@@ -7,7 +7,8 @@ import {
 } from '@/modules/connection-explorer/service/CollectionItemService'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { ClassifierValidationErrorType } from '@/modules/database-driver/data-type/ClassifierValidationErrorType'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 
 const collectionItemService: CollectionItemService = useCollectionItemService()
 const toaster: Toaster = useToaster()

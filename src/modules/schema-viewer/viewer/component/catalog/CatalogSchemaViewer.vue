@@ -14,7 +14,8 @@ import NameVariants from '@/modules/schema-viewer/viewer/component/NameVariants.
 import AttributeSchemaList from '@/modules/schema-viewer/viewer/component/attribute/AttributeSchemaList.vue'
 import EntitySchemaList from '@/modules/schema-viewer/viewer/component/entity/EntitySchemaList.vue'
 import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 
 const { t } = useI18n()

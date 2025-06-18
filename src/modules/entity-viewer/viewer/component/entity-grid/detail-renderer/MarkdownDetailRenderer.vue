@@ -3,9 +3,11 @@
  * Entity property value renderer that tries to render the value as Markdown.
  */
 
-import { computed, ComputedRef, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import type { ComputedRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { ExtraEntityObjectType } from '@/modules/entity-viewer/viewer/model/ExtraEntityObjectType'
 import ValueDetailRenderer from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/ValueDetailRenderer.vue'
@@ -13,7 +15,7 @@ import VMarkdown from '@/modules/base/component/VMarkdown.vue'
 import { MarkdownDetailRendererMenuItemType } from '@/modules/entity-viewer/viewer/model/entity-grid/detail-renderer/MarkdownDetailRendererMenuItemType'
 import { MenuAction } from '@/modules/base/model/menu/MenuAction'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
-import { MenuItem } from '@/modules/base/model/menu/MenuItem'
+import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
 import {
     MarkdownDetailRendererMenuFactory,
     useMarkdownDetailRendererMenuFactory

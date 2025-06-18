@@ -9,8 +9,8 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { EntityViewerService, useEntityViewerService } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
-import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import type { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
 import { QueryLanguage } from '@/modules/entity-viewer/viewer/model/QueryLanguage'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
@@ -77,7 +77,7 @@ function getPropertyDescriptor(key: string): EntityPropertyDescriptor | undefine
 }
 
 function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string, value: EntityPropertyValue | EntityPropertyValue[]): void {
-    if (value == undefined || (value instanceof EntityPropertyValue && value.value() == undefined) || (value instanceof EntityPropertyValue && (value.value() as Predecessor).predecessorId === -1)) {
+    if (value == undefined || (value instanceof EntityPropertyValue && value.value() == undefined)  || (value instanceof EntityPropertyValue && (value.value() as Predecessor).predecessorId === -1)) {
         return
     }
     const propertyDescriptor: EntityPropertyDescriptor | undefined = getPropertyDescriptor(propertyKey)
@@ -101,7 +101,7 @@ function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string,
         ))
     } else if (propertyDescriptor &&
         ((propertyDescriptor.type === EntityPropertyType.Attributes && (propertyDescriptor.schema as AttributeSchema).type === Scalar.Predecessor) ||
-            (propertyDescriptor.type === EntityPropertyType.AssociatedData && (propertyDescriptor.schema as AttributeSchema).type === Scalar.Predecessor))) {
+        (propertyDescriptor.type === EntityPropertyType.AssociatedData && (propertyDescriptor.schema as AttributeSchema).type === Scalar.Predecessor))) {
         // we want references to open referenced entities in appropriate new grid for referenced collection
         workspaceService.createTab(entityViewerTabFactory.createNew(
             tabProps.params.dataPointer.catalogName,

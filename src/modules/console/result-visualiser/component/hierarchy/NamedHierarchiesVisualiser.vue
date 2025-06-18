@@ -2,10 +2,12 @@
 /**
  * Visualises raw JSON hierarchies of a single reference
  */
-import { Ref, ref } from 'vue'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { ref } from 'vue'
+import type { Ref } from 'vue'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
-import { Result } from '@/modules/console/result-visualiser/model/Result'
+import type { Result } from '@/modules/console/result-visualiser/model/Result'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import NamedHierarchyVisualiser

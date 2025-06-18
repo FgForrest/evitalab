@@ -1,13 +1,14 @@
 <script setup lang="ts">
 
-import { Extension } from '@codemirror/state'
+import type { Extension } from '@codemirror/state'
 import { yaml } from '@codemirror/lang-yaml'
 import { useI18n } from 'vue-i18n'
 import VPreviewEditorDialog from '@/modules/code-editor/component/VPreviewEditorDialog.vue'
 import { ref } from 'vue'
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
 import { ServerViewerService, useServerViewerService } from '@/modules/server-viewer/service/ServerViewerService'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 
 const serverViewerService: ServerViewerService = useServerViewerService()

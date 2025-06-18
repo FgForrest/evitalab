@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
@@ -120,13 +120,15 @@ const tooltip = computed<string>(() => {
         isTypedSchema(props.propertyDescriptor.schema) &&
         props.propertyDescriptor.schema.type === Scalar.Predecessor
     ) {
-        if (props.propertyValue instanceof Array)
-            return ''
-        //Head
-        if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
-            return 'Head of the list.'
+        if(props.propertyValue instanceof NativeValue) {
+            //Head
+            if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
+                return "Head of the list."
+            } else {
+                return "Pointer to a previous entity in the list."
+            }
         } else {
-            return 'Pointer to a previous entity in the list.'
+            return printablePropertyValue.value
         }
     } else {
         return printablePropertyValue.value

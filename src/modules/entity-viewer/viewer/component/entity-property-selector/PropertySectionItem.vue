@@ -42,7 +42,7 @@ const emit = defineEmits<{
             <VListItemAction start>
                 <VCheckboxBtn
                     :model-value="isSelected"
-                    @click.passive="emit('toggle', { key: value, selected: isSelected })"
+                    @update:model-value="emit('toggle', { key: value, selected: isSelected })"
                 />
             </VListItemAction>
         </template>
