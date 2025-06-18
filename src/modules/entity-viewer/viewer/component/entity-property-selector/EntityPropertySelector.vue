@@ -402,8 +402,6 @@ onUnmounted(() => {
                                     group-parent
                                     @toggle="(e) => {
                                         changeSelectedState(e.key, e.selected)
-                                        //toggleReferenceAttributeProperty(property, e.selected)
-                                        //togglePropertySelection(property.key)
                                     }"
                                     @schema-open="emit('schemaOpen')"
                                 />
@@ -414,8 +412,6 @@ onUnmounted(() => {
                                     :reference-property-descriptor="property"
                                     :attribute-property-descriptor="childProperty"
                                     @toggle="(e) => {
-                                        //togglePropertySelection(property.key)
-                                        //toggleReferenceAttributeProperty(property, e.selected)
                                         changeSelectedState(e.key, e.selected)
                                     }"
                                 />
