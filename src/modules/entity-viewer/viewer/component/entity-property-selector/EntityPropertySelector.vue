@@ -198,7 +198,8 @@ function togglePropertySectionSelection(sectionType: EntityPropertyType, newSele
 function changeSelectedState(key: EntityPropertyKey, isSelected: boolean): void {
     const newSelected = [...props.selected]
 
-    const alreadySelected = (k: EntityPropertyKey) => newSelected.some(x => x.toString() === k.toString())
+    const alreadySelected = (k: EntityPropertyKey) =>
+        newSelected.some(x => x.toString() === k.toString())
 
     const addKey = (k: EntityPropertyKey) => {
         if (!alreadySelected(k)) {
@@ -215,34 +216,8 @@ function changeSelectedState(key: EntityPropertyKey, isSelected: boolean): void 
 
     if (isSelected) {
         removeKey(key)
-
-        const descriptor = entityPropertyDescriptorIndex.value.get(key.toString())
-        if (descriptor && descriptor.children.size > 0) {
-            descriptor.children.forEach(child => removeKey(child.key))
-        }
-
-        for (const descriptors of sectionedPropertyDescriptors.value.values()) {
-            for (const parentDescriptor of descriptors) {
-                const isChild = parentDescriptor.children.find(c => c.key.toString() === key.toString())
-                if (isChild) {
-                    const hasAnyChildSelected = parentDescriptor.children.some(child =>
-                        newSelected.some(x => x.toString() === child.key.toString())
-                    )
-                    if (!hasAnyChildSelected) {
-                        removeKey(parentDescriptor.key)
-                    }
-                    break
-                }
-            }
-        }
-
     } else {
         addKey(key)
-
-        const descriptor = entityPropertyDescriptorIndex.value.get(key.toString())
-        if (descriptor && descriptor.children.size > 0) {
-            descriptor.children.forEach(child => addKey(child.key))
-        }
 
         for (const descriptors of sectionedPropertyDescriptors.value.values()) {
             for (const parentDescriptor of descriptors) {
@@ -256,6 +231,7 @@ function changeSelectedState(key: EntityPropertyKey, isSelected: boolean): void 
 
     emit('update:selected', newSelected)
 }
+
 
 
 onMounted(() => {
