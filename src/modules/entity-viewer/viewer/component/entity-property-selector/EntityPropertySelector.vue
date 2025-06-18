@@ -216,23 +216,29 @@ function changeSelectedState(key: EntityPropertyKey, isSelected: boolean): void 
 
     if (isSelected) {
         removeKey(key)
+
+        const descriptor = entityPropertyDescriptorIndex.value.get(key.toString())
+        if (descriptor && descriptor.children.size > 0) {
+            descriptor.children.forEach(child => removeKey(child.key))
+        }
+
     } else {
         addKey(key)
 
         for (const descriptors of sectionedPropertyDescriptors.value.values()) {
             for (const parentDescriptor of descriptors) {
-                if (parentDescriptor.children.find(c => c.key.toString() === key.toString())) {
+                const isChild = parentDescriptor.children.find(c => c.key.toString() === key.toString())
+                if (isChild) {
                     addKey(parentDescriptor.key)
                     break
                 }
             }
         }
+
     }
 
     emit('update:selected', newSelected)
 }
-
-
 
 onMounted(() => {
     // register keyboard shortcuts for property selector
