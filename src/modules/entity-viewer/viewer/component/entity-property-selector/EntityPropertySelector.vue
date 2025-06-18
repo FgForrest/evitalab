@@ -195,68 +195,66 @@ function togglePropertySectionSelection(sectionType: EntityPropertyType, newSele
     }
 }
 
-function togglePropertySelection(propertyKey: EntityPropertyKey): void {
-    if (props.selected.find(key => key.toString() === propertyKey.toString())) {
-        // remove property from selection
-        const newSelected: EntityPropertyKey[] = props.selected.filter(key => {
-            if (key.toString() === propertyKey.toString()) {
-                return false
-            }
-            const propertyDescriptor: EntityPropertyDescriptor = entityPropertyDescriptorIndex.value.get(propertyKey.toString())!
-            if (propertyDescriptor.children.find(child => key.toString() === child.key.toString()) != undefined) {
-                return false
-            }
-            return true
-        })
-        emit('update:selected', newSelected)
-    } else {
-        // add property to selection
-        const newSelected: EntityPropertyKey[] = [...props.selected]
-        newSelected.push(propertyKey)
-        emit('update:selected', newSelected)
-    }
-}
-
-function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescriptor, selected: boolean): void {
-    // we are interested only in the parent reference property, because the actual reference attribute properties are
-    // toggled automatically by the list item components
-    if (!selected) {
-        if (props.selected.find(key => key.toString() === referenceProperty.key.toString())) {
-            // already selected
-            return
-        }
-        // add reference property to selection because we cannot fetch reference attributes alone without references
-        const newSelected: EntityPropertyKey[] = [...props.selected]
-        newSelected.push(referenceProperty.key)
-        emit('update:selected', newSelected)
-    }
-}
-
 function changeSelectedState(key: EntityPropertyKey, isSelected: boolean): void {
-    if (isSelected) {
-        emit('update:selected', props.selected.filter(x => x.toString() !== key.toString()))
-    } else {
-        const newSelected: EntityPropertyKey[] = [...props.selected, key]
+    const newSelected = [...props.selected]
 
-        let parentKey: EntityPropertyKey | undefined
+    const alreadySelected = (k: EntityPropertyKey) => newSelected.some(x => x.toString() === k.toString())
+
+    const addKey = (k: EntityPropertyKey) => {
+        if (!alreadySelected(k)) {
+            newSelected.push(k)
+        }
+    }
+
+    const removeKey = (k: EntityPropertyKey) => {
+        const index = newSelected.findIndex(x => x.toString() === k.toString())
+        if (index !== -1) {
+            newSelected.splice(index, 1)
+        }
+    }
+
+    if (isSelected) {
+        removeKey(key)
+
+        const descriptor = entityPropertyDescriptorIndex.value.get(key.toString())
+        if (descriptor && descriptor.children.size > 0) {
+            descriptor.children.forEach(child => removeKey(child.key))
+        }
 
         for (const descriptors of sectionedPropertyDescriptors.value.values()) {
             for (const parentDescriptor of descriptors) {
                 const isChild = parentDescriptor.children.find(c => c.key.toString() === key.toString())
                 if (isChild) {
-                    parentKey = parentDescriptor.key
+                    const hasAnyChildSelected = parentDescriptor.children.some(child =>
+                        newSelected.some(x => x.toString() === child.key.toString())
+                    )
+                    if (!hasAnyChildSelected) {
+                        removeKey(parentDescriptor.key)
+                    }
                     break
                 }
             }
-            if (parentKey) break
         }
 
-        if (parentKey && !newSelected.find(x => x.toString() === parentKey!.toString())) {
-            newSelected.push(parentKey)
+    } else {
+        addKey(key)
+
+        const descriptor = entityPropertyDescriptorIndex.value.get(key.toString())
+        if (descriptor && descriptor.children.size > 0) {
+            descriptor.children.forEach(child => addKey(child.key))
         }
 
-        emit('update:selected', newSelected)
+        for (const descriptors of sectionedPropertyDescriptors.value.values()) {
+            for (const parentDescriptor of descriptors) {
+                if (parentDescriptor.children.find(c => c.key.toString() === key.toString())) {
+                    addKey(parentDescriptor.key)
+                    break
+                }
+            }
+        }
     }
+
+    emit('update:selected', newSelected)
 }
 
 
@@ -394,6 +392,7 @@ onUnmounted(() => {
                             :filtered-property-descriptors="property.children"
                             :property-descriptors="property.children"
                             :property="property"
+                            @toggle="value => changeSelectedState(value.key, value.selected)"
                         >
                             <template #activator="{ props }">
                                 <PropertySectionReferenceItem
