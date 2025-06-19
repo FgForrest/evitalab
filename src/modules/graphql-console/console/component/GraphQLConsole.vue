@@ -59,6 +59,7 @@ import {
 import {
     GraphQLConsoleTabDefinition
 } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
+import { command } from 'keymaster'
 
 enum EditorTabType {
     Query = 'query',
@@ -306,9 +307,10 @@ function focusResultVisualiser(): void {
 <!--                    </VTooltip>-->
 <!--                </VBtn>-->
 
-                <VExecuteQueryButton :loading="loading" @click="executeQuery">
-<!--                    todo lho doesn't work, doesnt show command shortcut-->
-                    <VActionTooltip :command="Command.GraphQLConsole_ExecuteQuery" />
+                <VExecuteQueryButton 
+                    :loading="loading" 
+                    @click="executeQuery"
+                    :command="Command.GraphQLConsole_ExecuteQuery">
                     {{ t('common.button.run') }}
                 </VExecuteQueryButton>
             </template>

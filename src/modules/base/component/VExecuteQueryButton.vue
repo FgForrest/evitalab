@@ -11,7 +11,8 @@ const { t } = useI18n()
  * Pre-defined button to execute queries.
  */
 const props = withDefaults(defineProps<{
-    loading?: boolean
+    loading?: boolean,
+    command: Command
 }>(), {
     loading: false
 })
@@ -26,7 +27,7 @@ const emit = defineEmits<{
         prepend-icon="mdi-play-outline"
         @click="emit('click')"
     >
-        <VActionTooltip :command="Command.EntityViewer_ExecuteQuery">
+        <VActionTooltip :command="command">
             {{ t('common.button.executeQuery') }}
         </VActionTooltip>
 

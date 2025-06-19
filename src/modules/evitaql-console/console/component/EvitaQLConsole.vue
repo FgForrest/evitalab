@@ -276,10 +276,11 @@ if (props.params.executeOnOpen) {
                     :command="Command.EvitaQLConsole_ShareTab"
                 />
 
-                <VExecuteQueryButton :loading="loading" @click="executeQuery">
-                    <VActionTooltip
-                        :command="Command.EvitaQLConsole_ExecuteQuery"
-                    />
+                <VExecuteQueryButton 
+                    :command="Command.EvitaQLConsole_ExecuteQuery" 
+                    :loading="loading"
+                    @click="executeQuery"
+                    >
                     {{ t('common.button.run') }}
                 </VExecuteQueryButton>
             </template>
