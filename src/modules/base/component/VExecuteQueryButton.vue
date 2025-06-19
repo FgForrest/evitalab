@@ -29,6 +29,7 @@ const emit = defineEmits<{
         <VActionTooltip :command="Command.EntityViewer_ExecuteQuery">
             {{ t('common.button.executeQuery') }}
         </VActionTooltip>
+
         {{ t('common.button.run') }}
     </VTabMainActionButton>
 </template>
