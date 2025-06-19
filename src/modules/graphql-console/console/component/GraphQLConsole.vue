@@ -307,11 +307,11 @@ function focusResultVisualiser(): void {
 <!--                    </VTooltip>-->
 <!--                </VBtn>-->
 
-                <VExecuteQueryButton 
-                    :loading="loading" 
+                <VExecuteQueryButton
+                    :loading="loading"
                     @click="executeQuery"
+                    title="common.button.run"
                     :command="Command.GraphQLConsole_ExecuteQuery">
-                    {{ t('common.button.run') }}
                 </VExecuteQueryButton>
             </template>
         </VTabToolbar>

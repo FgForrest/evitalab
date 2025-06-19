@@ -12,7 +12,8 @@ const { t } = useI18n()
  */
 const props = withDefaults(defineProps<{
     loading?: boolean,
-    command: Command
+    command: Command,
+    title: string
 }>(), {
     loading: false
 })
@@ -31,7 +32,7 @@ const emit = defineEmits<{
             {{ t('common.button.executeQuery') }}
         </VActionTooltip>
 
-        {{ t('common.button.run') }}
+        {{ t(title) }}
     </VTabMainActionButton>
 </template>
 
