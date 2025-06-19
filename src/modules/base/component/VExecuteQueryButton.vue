@@ -2,6 +2,8 @@
 
 import { useI18n } from 'vue-i18n'
 import VTabMainActionButton from '@/modules/base/component/VTabMainActionButton.vue'
+import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
+import { Command } from '@/modules/keymap/model/Command.ts'
 
 const { t } = useI18n()
 
@@ -24,9 +26,9 @@ const emit = defineEmits<{
         prepend-icon="mdi-play-outline"
         @click="emit('click')"
     >
-        <VTooltip activator="parent">
+        <VActionTooltip :command="Command.EntityViewer_ExecuteQuery">
             {{ t('common.button.executeQuery') }}
-        </VTooltip>
+        </VActionTooltip>
         {{ t('common.button.run') }}
     </VTabMainActionButton>
 </template>
