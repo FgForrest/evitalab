@@ -122,7 +122,7 @@ async function createMenuItems(): Promise<Map<CollectionMenuItemType, MenuItem<C
 .tree-view-item-data__content {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 .chip {
     align-self: center;
