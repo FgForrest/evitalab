@@ -370,7 +370,6 @@ onUnmounted(() => {
             :current-data="currentData"
             :title="title"
             :loading="loading"
-            :command="Command.EntityViewer_ExecuteQuery"
             @execute-query="executeQueryManually"
         >
             <template #query>
