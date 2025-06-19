@@ -64,3 +64,17 @@ export function formatCount(count: number): string {
         return `${sizeFormatter.format(count)}`;
     }
 }
+
+export function formatCountTruncated(count: number): string {
+    const truncate = (num: number) => Math.floor(num * 10) / 10;
+
+    if (count >= 1_000_000_000) {
+        return `${truncate(count / 1_000_000_000)}G`;
+    } else if (count >= 1_000_000) {
+        return `${truncate(count / 1_000_000)}M`;
+    } else if (count >= 1_000) {
+        return `${truncate(count / 1_000)}k`;
+    } else {
+        return count.toString();
+    }
+}
