@@ -97,7 +97,9 @@ async function createMenuItems(): Promise<Map<CollectionMenuItemType, MenuItem<C
         >
             <div class="tree-view-item-data__content">
                 <span>{{ entityCollection.entityType }}</span>
-                <VChip size="x-small" color="info" label class="chip ml-2">{{ formatCount(entityCollection.totalRecords) }}</VChip>
+                <VChip size="x-small" label class="chip ml-2" variant="plain">
+                    {{ formatCount(entityCollection.totalRecords) }}
+                </VChip>
             </div>
         </VTreeViewItem>
 
@@ -124,5 +126,7 @@ async function createMenuItems(): Promise<Map<CollectionMenuItemType, MenuItem<C
 }
 .chip {
     align-self: center;
+    padding: 8px;
+    font-weight: bold;
 }
 </style>
