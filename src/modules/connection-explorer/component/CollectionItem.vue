@@ -23,7 +23,7 @@ import {
     CollectionItemMenuFactory,
     useCollectionItemMenuFactory
 } from '@/modules/connection-explorer/service/CollectionItemMenuFactory'
-import { parseHumanCountToNumber } from '@/utils/number.ts'
+import { formatCount } from '@/utils/string.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const entityViewerTabFactory: EntityViewerTabFactory = useEntityViewerTabFactory()
@@ -97,7 +97,7 @@ async function createMenuItems(): Promise<Map<CollectionMenuItemType, MenuItem<C
         >
             <div class="tree-view-item-data__content">
                 <span>{{ entityCollection.entityType }}</span>
-                <VChip size="x-small" color="info" label class="chip ml-2">{{ parseHumanCountToNumber(entityCollection.totalRecords.toString()) }}</VChip>
+                <VChip size="x-small" color="info" label class="chip ml-2">{{ formatCount(entityCollection.totalRecords) }}</VChip>
             </div>
         </VTreeViewItem>
 
