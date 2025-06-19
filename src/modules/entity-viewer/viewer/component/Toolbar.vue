@@ -22,7 +22,8 @@ const props = defineProps<{
     icon: string,
     currentData: EntityViewerTabData,
     title: List<string>,
-    loading: boolean
+    loading: boolean,
+    command: Command,
 }>()
 const emit = defineEmits<{
     (e: 'executeQuery'): void
@@ -69,7 +70,7 @@ onUnmounted(() => {
             />
 
             <VExecuteQueryButton :loading="loading" @click="emit('executeQuery')">
-                <VActionTooltip :command="Command.EntityViewer_ExecuteQuery" />
+                <VActionTooltip :command="command" />
                 {{ t('common.button.run') }}
             </VExecuteQueryButton>
         </template>
