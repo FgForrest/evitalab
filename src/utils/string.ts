@@ -53,14 +53,19 @@ export function formatByteSize(sizeInBytes: number): string {
     }
 }
 
-export function formatCount(count: number): string {
-    if (Math.floor(count / 1_000_000_000) > 0) {
-        return `${sizeFormatter.format(count / 1_000_000_000)}G`
-    } else if (Math.floor(count / 100_000) > 0) {
-        return `${sizeFormatter.format(count / 100_000)}M`
-    } else if (Math.floor(count / 1_000) > 0) {
-        return `${sizeFormatter.format(count / 1_000)}k`
+export function formatCount(count: number, decimals: number = 2): string {
+    const truncate = (num: number, d: number) => {
+        const factor = Math.pow(10, d);
+        return Math.floor(num * factor) / factor;
+    };
+
+    if (count >= 1_000_000_000) {
+        return `${truncate(count / 1_000_000_000, decimals)}G`;
+    } else if (count >= 1_000_000) {
+        return `${truncate(count / 1_000_000, decimals)}M`;
+    } else if (count >= 1_000) {
+        return `${truncate(count / 1_000, decimals)}k`;
     } else {
-        return `${sizeFormatter.format(count)}`;
+        return truncate(count, decimals).toString();
     }
 }

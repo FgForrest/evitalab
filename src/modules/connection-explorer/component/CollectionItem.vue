@@ -23,6 +23,7 @@ import {
     CollectionItemMenuFactory,
     useCollectionItemMenuFactory
 } from '@/modules/connection-explorer/service/CollectionItemMenuFactory'
+import { formatCount } from '@/utils/string.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const entityViewerTabFactory: EntityViewerTabFactory = useEntityViewerTabFactory()
@@ -94,7 +95,12 @@ async function createMenuItems(): Promise<Map<CollectionMenuItemType, MenuItem<C
             @click:action="handleAction"
             class="text-gray-light"
         >
-            {{ entityCollection.entityType }}
+            <div class="tree-view-item-data__content">
+                <span>{{ entityCollection.entityType }}</span>
+                <VChip size="x-small" label class="chip ml-2" variant="plain">
+                    {{ formatCount(entityCollection.totalRecords, 1) }}
+                </VChip>
+            </div>
         </VTreeViewItem>
 
         <RenameCollectionDialog
@@ -112,4 +118,15 @@ async function createMenuItems(): Promise<Map<CollectionMenuItemType, MenuItem<C
     </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.tree-view-item-data__content {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+.chip {
+    align-self: center;
+    padding: 8px;
+    font-weight: bold;
+}
+</style>
