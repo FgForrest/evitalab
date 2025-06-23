@@ -15,8 +15,6 @@ import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue.ts'
 import type { Predecessor } from '@/modules/database-driver/data-type/Predecessor.ts'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema.ts'
-import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
-import { Command } from '@/modules/keymap/model/Command.ts'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -122,12 +120,12 @@ const tooltip = computed<string>(() => {
         isTypedSchema(props.propertyDescriptor.schema) &&
         props.propertyDescriptor.schema.type === Scalar.Predecessor
     ) {
-        if(props.propertyValue instanceof NativeValue) {
+        if (props.propertyValue instanceof NativeValue) {
             //Head
             if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
-                return "Head of the list."
+                return 'Head of the list.'
             } else {
-                return "Pointer to a previous entity in the list."
+                return 'Pointer to a previous entity in the list.'
             }
         } else {
             return printablePropertyValue.value
@@ -151,11 +149,8 @@ function handleClick(e: MouseEvent): void {
 </script>
 
 <template>
-    <td
-        class="data-grid-cell"
-        :class="{'data-grid-cell--clickable': printablePropertyValue}"
-        @mousedown="(e) => handleClick(e)"
-    >
+    <td class="data-grid-cell" :class="{ 'data-grid-cell--clickable': printablePropertyValue }"
+        @mousedown="(e) => handleClick(e)">
         <span class="data-grid-cell__body">
             <template v-if="noLocaleSelected">
                 <span class="text-disabled">{{ t('entityViewer.grid.cell.placeholder.noLocaleSelected') }}</span>
@@ -168,10 +163,37 @@ function handleClick(e: MouseEvent): void {
             </template>
             <template v-else>
                 <VIcon v-if="prependIcon !== undefined" class="mr-1">{{ prependIcon }}</VIcon>
-                <span>
+                <span class="inline-flex items-center">
                     {{ printablePropertyValue }}
-                    <VTooltip v-if="showDetailOnHover" activator="parent">
-                        <VChip>Shift+MiddleMouseButton</VChip> {{ tooltip }}
+
+                    <VTooltip v-if="showDetailOnHover" activator="parent" location="bottom" :interactive="true">
+                        <div class="tooltip-base">
+                            <div class="tooltip-content">
+                                <div class="tooltip-item">
+                                    <VChip size="small">
+                                        {{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTip') }}
+                                    </VChip>
+                                    <span class="text-caption text-grey-darken-1">
+                                        {{
+                                            t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTipDescription')
+                                        }}
+                                    </span>
+                                </div>
+                                <div class="tooltip-item">
+                                    <VChip size="small">
+                                        {{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTip') }}
+                                    </VChip>
+
+                                    <span class="text-caption text-grey-darken-1">
+                                        {{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTipDescription')
+                                        }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-1 text-body-2 font-mono">
+                            {{ printablePropertyValue }}
+                        </div>
                     </VTooltip>
                 </span>
             </template>
@@ -208,5 +230,27 @@ td.data-grid-cell {
     margin-left: 16px;
     margin-right: 16px;
 }
-</style>
 
+.tooltip-base {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tooltip-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start
+}
+
+.tooltip-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 2px;
+}
+
+.tooltip-item span {
+    align-self: center;
+}
+</style>

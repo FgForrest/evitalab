@@ -264,6 +264,14 @@
       "propertySelector": {
         "_title": "Property selector",
         "findProperty": "Find property"
+      },
+      "entityGrid": {
+        "entityGridCell": {
+          "rawCopyToolTip": "Shift + Middle mouse button",
+          "rawCopyToolTipDescription": "Copy raw value from cell",
+          "copyValueToolTip": "Middle mouse button",
+          "copyValueToolTipDescription": "Copy value from cell"
+        }
       }
     },
     "evitaQLConsole": {
