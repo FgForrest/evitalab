@@ -279,7 +279,7 @@ if (props.params.executeOnOpen) {
                 <VExecuteQueryButton
                     :command="Command.EvitaQLConsole_ExecuteQuery"
                     :loading="loading"
-                    title="common.button.run"
+                    :title="t('common.button.run')"
                     @click="executeQuery"
                     >
                 </VExecuteQueryButton>

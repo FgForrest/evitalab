@@ -32,7 +32,7 @@ const emit = defineEmits<{
             {{ t('common.button.executeQuery') }}
         </VActionTooltip>
 
-        {{ t(title) }}
+        {{ title }}
     </VTabMainActionButton>
 </template>
 

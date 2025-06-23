@@ -68,7 +68,7 @@ onUnmounted(() => {
                 :command="Command.EntityViewer_ShareTab"
             />
 
-            <VExecuteQueryButton :command="Command.EntityViewer_ExecuteQuery" :loading="loading" title="common.button.run" @click="emit('executeQuery')">
+            <VExecuteQueryButton :command="Command.EntityViewer_ExecuteQuery" :loading="loading" :title="t('common.button.run')" @click="emit('executeQuery')">
             </VExecuteQueryButton>
         </template>
 

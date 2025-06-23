@@ -310,7 +310,7 @@ function focusResultVisualiser(): void {
                 <VExecuteQueryButton
                     :loading="loading"
                     @click="executeQuery"
-                    title="common.button.run"
+                    :title="t('common.button.run')"
                     :command="Command.GraphQLConsole_ExecuteQuery">
                 </VExecuteQueryButton>
             </template>
