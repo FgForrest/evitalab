@@ -66,7 +66,8 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         replaceCatalogCallback?: () => void,
         switchCatalogToAliveStateCallback?: () => void,
         deleteCatalogCallback?: () => void,
-        createCollectionCallback?: () => void
+        createCollectionCallback?: () => void,
+        backupCatalogCallback?: () => void,
     ): Promise<Map<CatalogMenuItemType, MenuItem<CatalogMenuItemType>>> {
         if (catalog == undefined) throw new Error('catalog is not defined!')
         if (closeSharedSessionCallback == undefined) throw new Error('Missing closeSharedSessionCallback')
@@ -75,6 +76,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         if (switchCatalogToAliveStateCallback == undefined) throw new Error('Missing switchCatalogToAliveStateCallback')
         if (deleteCatalogCallback == undefined) throw new Error('Missing deleteCatalogCallback')
         if (createCollectionCallback == undefined) throw new Error('Missing createCollectionCallback')
+        if(backupCatalogCallback == undefined) throw new Error('Missing backupCatalogCallback')
 
         const graphQlEnabled: boolean = serverStatus != undefined && serverStatus.apiEnabled(ApiType.GraphQL)
         const catalogNotCorrupted: boolean = !catalog.corrupted
@@ -137,6 +139,14 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
             },
             catalogNotCorrupted
         )
+        this.createMenuAction(items,
+            CatalogMenuItemType.Backup,
+            "mdi-cloud-download-outline",
+            this.getItemTitle,
+            () => backupCatalogCallback(),
+            catalogNotCorrupted && serverWritable
+            )
+
 
         this.createMenuSubheader(
             items,

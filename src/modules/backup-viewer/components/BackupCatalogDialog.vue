@@ -17,7 +17,8 @@ const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    modelValue: boolean
+    modelValue: boolean,
+    catalog?: string
 }>()
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void,
@@ -44,7 +45,7 @@ const maxDateLoaded = ref<boolean>(false)
 const defaultTimeOffset = ref<string>()
 const defaultTimeOffsetLoaded = ref<boolean>(false)
 
-const catalogName = ref<string | undefined>(undefined)
+const catalogName = ref<string | undefined>(props.catalog)
 watch(catalogName, async () => {
     minDateLoaded.value = false
     pastMoment.value = undefined
@@ -145,6 +146,13 @@ async function backup(): Promise<boolean> {
 
 onUnmounted(() => {
     backupViewerService.unregisterAvailableCatalogsChangeCallback(availableCatalogsChangeCallbackId)
+})
+
+onMounted(async() => {
+    if(props.catalog) {
+        catalogName.value = props.catalog
+        await loadMinimalDate()
+    }
 })
 </script>
 

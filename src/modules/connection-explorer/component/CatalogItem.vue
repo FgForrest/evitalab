@@ -31,6 +31,7 @@ import {
     CatalogItemMenuFactory,
     useCatalogItemMenuFactory
 } from '@/modules/connection-explorer/service/CatalogItemMenuFactory'
+import BackupCatalogDialog from '@/modules/backup-viewer/components/BackupCatalogDialog.vue'
 
 const catalogItemService: CatalogItemService = useCatalogItemService()
 const catalogItemMenuFactory: CatalogItemMenuFactory = useCatalogItemMenuFactory()
@@ -47,6 +48,7 @@ const showReplaceCatalogDialog = ref<boolean>(false)
 const showSwitchCatalogToAliveStateDialog = ref<boolean>(false)
 const showDeleteCatalogDialog = ref<boolean>(false)
 const showCreateCollectionDialog = ref<boolean>(false)
+const showBackupCatalogDialog = ref<boolean>(false)
 
 const flags = computed<ItemFlag[]>(() => {
     const flags: ItemFlag[] = []
@@ -117,7 +119,8 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
         () => showReplaceCatalogDialog.value = true,
         () => showSwitchCatalogToAliveStateDialog.value = true,
         () => showDeleteCatalogDialog.value = true,
-        () => showCreateCollectionDialog.value = true
+        () => showCreateCollectionDialog.value = true,
+        () => showBackupCatalogDialog.value = true,
     )
 }
 </script>
@@ -153,6 +156,12 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
             </template>
         </div>
 
+        <BackupCatalogDialog
+            v-if="showBackupCatalogDialog"
+            :model-value="showBackupCatalogDialog"
+            :catalog="catalog.name"
+            @backup="() => showBackupCatalogDialog = false"
+        />
         <RenameCatalogDialog
             v-if="showRenameCatalogDialog"
             v-model="showRenameCatalogDialog"
