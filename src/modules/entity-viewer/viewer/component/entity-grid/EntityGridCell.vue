@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
@@ -15,6 +15,8 @@ import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue.ts'
 import type { Predecessor } from '@/modules/database-driver/data-type/Predecessor.ts'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema.ts'
+import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
+import { Command } from '@/modules/keymap/model/Command.ts'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -169,7 +171,7 @@ function handleClick(e: MouseEvent): void {
                 <span>
                     {{ printablePropertyValue }}
                     <VTooltip v-if="showDetailOnHover" activator="parent">
-                        {{ tooltip }}
+                        <VChip>Shift+MiddleMouseButton</VChip> {{ tooltip }}
                     </VTooltip>
                 </span>
             </template>
