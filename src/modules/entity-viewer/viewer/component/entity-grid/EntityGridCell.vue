@@ -166,34 +166,27 @@ function handleClick(e: MouseEvent): void {
                 <span class="inline-flex items-center">
                     {{ printablePropertyValue }}
 
-                    <VTooltip v-if="showDetailOnHover" activator="parent" location="bottom" :interactive="true">
-                        <div class="tooltip-base">
-                            <div class="tooltip-content">
-                                <div class="tooltip-item">
-                                    <VChip size="small">
-                                        {{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTip') }}
-                                    </VChip>
-                                    <span class="text-caption text-grey-darken-1">
-                                        {{
-                                            t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTipDescription')
-                                        }}
-                                    </span>
-                                </div>
-                                <div class="tooltip-item">
-                                    <VChip size="small">
-                                        {{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTip') }}
-                                    </VChip>
-
-                                    <span class="text-caption text-grey-darken-1">
-                                        {{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTipDescription')
-                                        }}
-                                    </span>
-                                </div>
-                            </div>
+                    <VTooltip
+                        v-if="showDetailOnHover"
+                        activator="parent"
+                        location="bottom"
+                        :interactive="true">
+                        <div>
+                            <VChip class="chip">
+                                <span>{{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTip') }}</span>
+                                <span class="text-disabled ml-1">
+                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTipDescription') }})
+                                </span>
+                            </VChip>
+                            <VChip class="chip">
+                                <span>{{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTip') }}</span>
+                                <span class="text-disabled ml-1">
+                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTipDescription') }})
+                                </span>
+                            </VChip>
                         </div>
-                        <div class="mt-1 text-body-2 font-mono">
-                            {{ printablePropertyValue }}
-                        </div>
+                        <hr />
+                        <p>{{ printablePropertyValue }}</p>
                     </VTooltip>
                 </span>
             </template>
@@ -231,26 +224,21 @@ td.data-grid-cell {
     margin-right: 16px;
 }
 
-.tooltip-base {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.chip {
+    margin: 5px;
 }
 
-.tooltip-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start
-}
+hr {
+    margin: 5px;
+    border: none;
+    height: 1px;
+    max-height: 1.5px;
 
-.tooltip-item {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin: 2px;
-}
+    background-color: rgba(255, 255, 255, 0.3);
 
-.tooltip-item span {
-    align-self: center;
+    border-radius: 9999px;
 }
+ p{
+     margin: 10px;
+ }
 </style>
