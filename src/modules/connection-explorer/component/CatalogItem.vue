@@ -32,9 +32,16 @@ import {
     useCatalogItemMenuFactory
 } from '@/modules/connection-explorer/service/CatalogItemMenuFactory'
 import BackupCatalogDialog from '@/modules/backup-viewer/components/BackupCatalogDialog.vue'
+import {
+    type BackupViewerTabFactory,
+    useBackupsTabFactory
+} from '@/modules/backup-viewer/service/BackupViewerTabFactory.ts'
+import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
 
 const catalogItemService: CatalogItemService = useCatalogItemService()
 const catalogItemMenuFactory: CatalogItemMenuFactory = useCatalogItemMenuFactory()
+const backupViewerTabFactory: BackupViewerTabFactory = useBackupsTabFactory()
+const workspaceService: WorkspaceService = useWorkspaceService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
@@ -160,7 +167,12 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
             v-if="showBackupCatalogDialog"
             :model-value="showBackupCatalogDialog"
             :catalog="catalog.name"
-            @backup="() => showBackupCatalogDialog = false"
+            @backup="() => {
+                showBackupCatalogDialog = false
+                workspaceService.createTab(
+                    backupViewerTabFactory.createNew()
+                )
+            }"
         />
         <RenameCatalogDialog
             v-if="showRenameCatalogDialog"
