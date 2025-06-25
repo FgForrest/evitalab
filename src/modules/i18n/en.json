@@ -866,7 +866,8 @@
       "label": {
         "catalogId": "Catalog ID",
         "version": "Version",
-        "description": "Description"
+        "description": "Description",
+        "locales": "Locales"
       }
     },
     "entities": {
