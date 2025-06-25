@@ -16,10 +16,10 @@ export class ErrorTransformer {
         this.connection = connection
     }
 
-    transformError(e: any): LabError {
+    transformError(e: any): Error {
         // todo lho rework
         if (e instanceof ConnectError) {
-            return new UnexpectedError(`${e.code}: ${e.message}`)
+            return e
         } else if (e.name === 'HTTPError') {
             const statusCode: number = e.response.status
             if (statusCode >= 500) {
