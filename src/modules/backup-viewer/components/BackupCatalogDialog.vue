@@ -45,7 +45,7 @@ const maxDateLoaded = ref<boolean>(false)
 const defaultTimeOffset = ref<string>()
 const defaultTimeOffsetLoaded = ref<boolean>(false)
 
-const catalogName = ref<string | undefined>(props.catalog)
+const catalogName = ref<string | undefined>()
 watch(catalogName, async () => {
     minDateLoaded.value = false
     pastMoment.value = undefined
