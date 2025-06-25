@@ -365,6 +365,7 @@
           "graphQLDataApiConsole": "GraphQL Data API console",
           "graphQLSchemaApiConsole": "GraphQL Schema API console",
           "viewSchema": "Schema",
+          "backup": "Backup",
           "closeSharedSession": "Close shared session",
           "deleteCatalog": "Delete catalog",
           "renameCatalog": "Rename catalog",

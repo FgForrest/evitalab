@@ -6,6 +6,7 @@ export enum CatalogMenuItemType {
     GraphQLDataAPIConsole = 'graphQLDataApiConsole',
     GraphQLSchemaAPIConsole = 'graphQLSchemaApiConsole',
     ViewSchema = 'viewSchema',
+    Backup = 'backup',
 
     TrafficSubheader = 'trafficSubheader',
     ActiveTrafficRecording = 'activeTrafficRecording',
