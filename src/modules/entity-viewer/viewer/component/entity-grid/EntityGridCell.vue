@@ -172,13 +172,13 @@ function handleClick(e: MouseEvent): void {
                         location="bottom"
                         :interactive="true">
                         <div>
-                            <VChip class="chip">
+                            <VChip class="chip" size="small">
                                 <span>{{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTip') }}</span>
                                 <span class="text-disabled ml-1">
                                     ({{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTipDescription') }})
                                 </span>
                             </VChip>
-                            <VChip class="chip">
+                            <VChip class="chip" size="small">
                                 <span>{{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTip') }}</span>
                                 <span class="text-disabled ml-1">
                                     ({{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTipDescription') }})
