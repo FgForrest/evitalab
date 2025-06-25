@@ -76,6 +76,7 @@ const rawDataType = computed<Scalar | ExtraEntityObjectType | undefined>(() => {
     }
 })
 const isArray = computed<boolean>(() => rawDataType?.value?.endsWith('Array') || false)
+const isPrice = computed<boolean>(() => props.propertyDescriptor?.type === EntityPropertyType.Prices || false)
 const componentDataType = computed<Scalar | ExtraEntityObjectType | undefined>(() => {
     if (!rawDataType.value) {
         return undefined
@@ -103,7 +104,7 @@ const componentDataType = computed<Scalar | ExtraEntityObjectType | undefined>((
             </template>
             <template #actions>
                 <DetailOutputFormatSelector
-                    v-if="!isArray"
+                    v-if="!isArray && !isPrice"
                     v-model="globalOutputFormat"
                 />
                 <VBtn
