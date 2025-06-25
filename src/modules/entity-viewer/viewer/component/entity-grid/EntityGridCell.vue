@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
@@ -120,12 +120,12 @@ const tooltip = computed<string>(() => {
         isTypedSchema(props.propertyDescriptor.schema) &&
         props.propertyDescriptor.schema.type === Scalar.Predecessor
     ) {
-        if(props.propertyValue instanceof NativeValue) {
+        if (props.propertyValue instanceof NativeValue) {
             //Head
             if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
-                return "Head of the list."
+                return 'Head of the list.'
             } else {
-                return "Pointer to a previous entity in the list."
+                return 'Pointer to a previous entity in the list.'
             }
         } else {
             return printablePropertyValue.value
@@ -149,11 +149,8 @@ function handleClick(e: MouseEvent): void {
 </script>
 
 <template>
-    <td
-        class="data-grid-cell"
-        :class="{'data-grid-cell--clickable': printablePropertyValue}"
-        @mousedown="(e) => handleClick(e)"
-    >
+    <td class="data-grid-cell" :class="{ 'data-grid-cell--clickable': printablePropertyValue }"
+        @mousedown="(e) => handleClick(e)">
         <span class="data-grid-cell__body">
             <template v-if="noLocaleSelected">
                 <span class="text-disabled">{{ t('entityViewer.grid.cell.placeholder.noLocaleSelected') }}</span>
@@ -166,10 +163,30 @@ function handleClick(e: MouseEvent): void {
             </template>
             <template v-else>
                 <VIcon v-if="prependIcon !== undefined" class="mr-1">{{ prependIcon }}</VIcon>
-                <span>
+                <span class="inline-flex items-center">
                     {{ printablePropertyValue }}
-                    <VTooltip v-if="showDetailOnHover" activator="parent">
-                        {{ tooltip }}
+
+                    <VTooltip
+                        v-if="showDetailOnHover"
+                        activator="parent"
+                        location="bottom"
+                        :interactive="true">
+                        <div>
+                            <VChip class="chip" size="small">
+                                <span>{{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTip') }}</span>
+                                <span class="text-disabled ml-1">
+                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTipDescription') }})
+                                </span>
+                            </VChip>
+                            <VChip class="chip" size="small">
+                                <span>{{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTip') }}</span>
+                                <span class="text-disabled ml-1">
+                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTipDescription') }})
+                                </span>
+                            </VChip>
+                        </div>
+                        <hr />
+                        <p>{{ printablePropertyValue }}</p>
                     </VTooltip>
                 </span>
             </template>
@@ -206,5 +223,22 @@ td.data-grid-cell {
     margin-left: 16px;
     margin-right: 16px;
 }
-</style>
 
+.chip {
+    margin: 5px;
+}
+
+hr {
+    margin: 5px;
+    border: none;
+    height: 1px;
+    max-height: 1.5px;
+
+    background-color: rgba(255, 255, 255, 0.3);
+
+    border-radius: 9999px;
+}
+ p{
+     margin: 10px;
+ }
+</style>
