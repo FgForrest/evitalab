@@ -8,8 +8,9 @@ import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/se
 import type {
     GrpcQueryLabel,
     GrpcTrafficRecord,
-    GrpcTrafficRecordingCaptureCriteria, GrpcTrafficRecordingContent, GrpcTrafficRecordingType
+    GrpcTrafficRecordingCaptureCriteria
 } from '@/modules/database-driver/connector/grpc/gen/GrpcTrafficRecording_pb'
+import { GrpcTrafficRecordingContent, GrpcTrafficRecordingType } from '@/modules/database-driver/connector/grpc/gen/GrpcTrafficRecording_pb'
 import { MutationContainer } from '@/modules/database-driver/request-response/traffic-recording/MutationContainer'
 import { QueryContainer } from '@/modules/database-driver/request-response/traffic-recording/QueryContainer'
 import {
