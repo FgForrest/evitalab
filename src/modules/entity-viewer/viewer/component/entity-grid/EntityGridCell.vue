@@ -48,7 +48,6 @@ const prependIcon = computed<string | undefined>(() => {
     } else
         return undefined
 })
-const showDetailOnHover = computed<boolean>(() => printablePropertyValue.value.length <= 100)
 
 const noLocaleSelected = computed<boolean>(() => {
     return props.propertyDescriptor?.schema != undefined &&
@@ -167,7 +166,6 @@ function handleClick(e: MouseEvent): void {
                     {{ printablePropertyValue }}
 
                     <VTooltip
-                        v-if="showDetailOnHover"
                         activator="parent"
                         location="bottom"
                         :interactive="true">
