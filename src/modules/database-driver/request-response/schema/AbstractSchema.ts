@@ -8,7 +8,6 @@ export abstract class AbstractSchema implements Schema {
 
     protected formatDataTypeForFlag(dataType: string): string {
         return dataType
-            .replace('ComplexDataObject', 'Object')
             .replace('Array', '[]')
     }
 }
