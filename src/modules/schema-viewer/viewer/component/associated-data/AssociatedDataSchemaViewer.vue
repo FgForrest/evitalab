@@ -18,7 +18,7 @@ const props = defineProps<{
 }>()
 
 const properties = computed<Property[]>(() => [
-    new Property(t('schemaViewer.associatedDatum.label.type'), new PropertyValue(new KeywordValue(props.schema.type.replace(Scalar.ComplexDataObject, 'Object')))),
+    new Property(t('schemaViewer.associatedDatum.label.type'), new PropertyValue(new KeywordValue(Scalar.ComplexDataObject))),
     new Property(t('schemaViewer.associatedDatum.label.description'), new PropertyValue(props.schema.description)),
     new Property(t('schemaViewer.associatedDatum.label.deprecationNotice'), new PropertyValue(props.schema.deprecationNotice)),
     new Property(t('schemaViewer.associatedDatum.label.localized'), new PropertyValue(props.schema.localized)),
