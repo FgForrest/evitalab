@@ -45,5 +45,16 @@ const formattedValue = computed<string>(() => {
     top: 0;
     bottom: 0;
     overflow: auto;
+    line-height: 1.6rem;
+
+    :deep(ul) {
+        margin-left: 10px;
+    }
+
+    :deep(:is(h1, h2, h3, h4, h5, h6)) {
+        line-height: 2.4rem;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
 }
 </style>
