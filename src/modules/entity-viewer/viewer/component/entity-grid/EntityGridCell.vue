@@ -186,7 +186,7 @@ function handleClick(e: MouseEvent): void {
                             </VChip>
                         </div>
                         <hr />
-                        <p>{{ printablePropertyValue }}</p>
+                        <p>{{ tooltip }}</p>
                     </VTooltip>
                 </span>
             </template>
