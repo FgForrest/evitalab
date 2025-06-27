@@ -19,6 +19,12 @@ import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
+import { SortableCompoundSchemaPointer } from '@/modules/schema-viewer/viewer/model/SortableCompoundSchemaPointer.ts'
+import {
+    SortableAttributeCompoundSchema
+} from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema.ts'
+import { List } from 'immutable'
+import { da } from 'vuetify/locale'
 
 export const schemaViewerServiceInjectionKey: InjectionKey<SchemaViewerService> = Symbol('schemaViewerService')
 
@@ -32,7 +38,7 @@ export class SchemaViewerService {
         this.evitaClient = evitaClient
     }
 
-    async getSchema(dataPointer: SchemaViewerDataPointer): Promise<CatalogSchema | EntitySchema | AttributeSchema | AssociatedDataSchema | ReferenceSchema> {
+    async getSchema(dataPointer: SchemaViewerDataPointer): Promise<CatalogSchema | EntitySchema | AttributeSchema | AssociatedDataSchema | ReferenceSchema | SortableAttributeCompoundSchema> {
         const schemaPointer: SchemaPointer = dataPointer.schemaPointer
 
         if (schemaPointer instanceof CatalogSchemaPointer) {
@@ -49,6 +55,8 @@ export class SchemaViewerService {
             return this.getAssociatedDataSchemaPointer(schemaPointer)
         } else if (schemaPointer instanceof ReferenceSchemaPointer) {
             return this.getReferenceSchemaPointer(schemaPointer)
+        } else if(schemaPointer instanceof SortableCompoundSchemaPointer) {
+            return this.getSortableCompoundSchemaFromPointer(schemaPointer)
         } else {
             throw new UnexpectedError(`Unsupported type of schema ${schemaPointer}`)
         }
@@ -69,7 +77,8 @@ export class SchemaViewerService {
             schemaPointer instanceof EntityAttributeSchemaPointer ||
             schemaPointer instanceof AssociatedDataSchemaPointer ||
             schemaPointer instanceof ReferenceSchemaPointer ||
-            schemaPointer instanceof ReferenceAttributeSchemaPointer
+            schemaPointer instanceof ReferenceAttributeSchemaPointer ||
+            schemaPointer instanceof SortableCompoundSchemaPointer
         ) {
             return this.evitaClient.registerEntitySchemaChangedCallback(
                 schemaPointer.catalogName,
@@ -96,7 +105,8 @@ export class SchemaViewerService {
             schemaPointer instanceof EntityAttributeSchemaPointer ||
             schemaPointer instanceof AssociatedDataSchemaPointer ||
             schemaPointer instanceof ReferenceSchemaPointer ||
-            schemaPointer instanceof ReferenceAttributeSchemaPointer
+            schemaPointer instanceof ReferenceAttributeSchemaPointer ||
+            schemaPointer instanceof SortableCompoundSchemaPointer
         ) {
             this.evitaClient.unregisterEntitySchemaChangedCallback(
                 schemaPointer.catalogName,
@@ -120,7 +130,8 @@ export class SchemaViewerService {
             schemaPointer instanceof EntityAttributeSchemaPointer ||
             schemaPointer instanceof AssociatedDataSchemaPointer ||
             schemaPointer instanceof ReferenceSchemaPointer ||
-            schemaPointer instanceof ReferenceAttributeSchemaPointer
+            schemaPointer instanceof ReferenceAttributeSchemaPointer ||
+            schemaPointer instanceof SortableCompoundSchemaPointer
         ) {
             await this.evitaClient.clearSchemaCache(schemaPointer.catalogName, schemaPointer.entityType)
         } else {
@@ -144,6 +155,12 @@ export class SchemaViewerService {
             schemaPointer.catalogName,
             session => session.getCatalogSchema()
         )
+    }
+
+    private async getSortableCompoundSchemaFromPointer(schemaPointer: SortableCompoundSchemaPointer): Promise<SortableAttributeCompoundSchema> {
+        const data = (await this.getEntitySchemaFromPointer(schemaPointer)).sortableAttributeCompounds.values()
+        const dataList = List(data)
+        return dataList.toArray()[0] //TODO: Fix not only first
     }
 
     private async getEntitySchemaFromPointer(schemaPointer: EntitySchemaPointer): Promise<EntitySchema> {

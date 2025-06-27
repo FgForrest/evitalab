@@ -11,6 +11,7 @@ import { AssociatedDataSchemaPointer } from '@/modules/schema-viewer/viewer/mode
 import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer'
+import { SortableCompoundSchemaPointer } from '@/modules/schema-viewer/viewer/model/SortableCompoundSchemaPointer.ts'
 
 /**
  * Represents props of the schema viewer component.
@@ -71,6 +72,12 @@ export class SchemaViewerTabParams implements TabParams<SchemaViewerTabParamsDto
                 catalogName: schemaPointer.catalogName,
                 entityType: schemaPointer.entityType,
                 referenceName: schemaPointer.referenceName
+            }
+        } else if(schemaPointer instanceof SortableCompoundSchemaPointer) {
+            schemaPointerType = SchemaPointerType.SortableCompoundSchema
+            schemaPointerParams = {
+                catalogName: schemaPointer.catalogName,
+                entityType: schemaPointer.entityType
             }
         } else {
             throw new UnexpectedError('Unknown schema pointer type.')

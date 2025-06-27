@@ -14,6 +14,8 @@ import AssociatedDataSchemaList
     from '@/modules/schema-viewer/viewer/component/associated-data/AssociatedDataSchemaList.vue'
 import ReferenceSchemaList from '@/modules/schema-viewer/viewer/component/reference/ReferenceSchemaList.vue'
 import { i18n } from '@/vue-plugins/i18n'
+import SortableCompoundSchemaList
+    from '@/modules/schema-viewer/viewer/component/sortable-compound/SortableCompoundSchemaList.vue'
 
 const { t } = useI18n()
 
@@ -41,6 +43,10 @@ const properties = computed<Property[]>(() => [
         })
     )
 ])
+
+onMounted(() => {
+    console.log(props.schema.sortableAttributeCompounds)
+})
 </script>
 
 <template>
@@ -64,6 +70,12 @@ const properties = computed<Property[]>(() => [
                 v-if="schema.references && schema.references.size > 0"
                 :data-pointer="dataPointer"
                 :references="List(schema.references.values())"
+            />
+
+            <SortableCompoundSchemaList
+                v-if="schema.sortableAttributeCompounds && schema.sortableAttributeCompounds.size > 0"
+                :data-pointer="dataPointer"
+                :sortable-attribute-compounds="List(schema.sortableAttributeCompounds.values())"
             />
         </template>
     </SchemaContainer>

@@ -882,6 +882,9 @@
     "entities": {
       "title": "Entities"
     },
+    "sortableCompounds": {
+      "title": "Sortable compounds"
+    },
     "entity": {
       "label": {
         "version": "Version",
@@ -893,7 +896,8 @@
         "hierarchical": "Hierarchical",
         "prices": "Prices",
         "indexedDecimalPlaces": "Indexed decimal places",
-        "evolutionModes": "Evolution modes"
+        "evolutionModes": "Evolution modes",
+        "sortableAttributeCompounds": "Sortable attribute compounds"
       },
       "evolutionMode": {
         "adaptPrimaryKeyGeneration": "Adapt Primary Key Generation",

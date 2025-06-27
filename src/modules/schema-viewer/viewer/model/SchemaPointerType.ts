@@ -9,4 +9,5 @@ export enum SchemaPointerType {
     ReferenceAttributeSchema = 'referenceAttributeSchema',
     AssociatedDataSchema = 'associatedDataSchema',
     ReferenceSchema = 'referenceSchema',
+    SortableCompoundSchema = 'sortableCompoundSchema',
 }
