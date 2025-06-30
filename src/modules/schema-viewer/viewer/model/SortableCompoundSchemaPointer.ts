@@ -7,10 +7,12 @@ import SortableCompoundSchemaViewer
 export class SortableCompoundSchemaPointer implements SchemaPointer {
     readonly catalogName: string
     readonly entityType: string
+    readonly sortableCompoundName: string
 
-    constructor(catalogName: string, entityName: string) {
+    constructor(catalogName: string, entityName: string, sortableCompoundName: string) {
         this.catalogName = catalogName
         this.entityType = entityName
+        this.sortableCompoundName = sortableCompoundName
     }
 
     get component(): Raw<DefineComponent<any, any, any>> {
@@ -18,7 +20,7 @@ export class SortableCompoundSchemaPointer implements SchemaPointer {
     }
 
     get schemaName(): string {
-        return this.entityType
+        return this.sortableCompoundName
     }
 
     get schemaType(): SchemaType {

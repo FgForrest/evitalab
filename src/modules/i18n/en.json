@@ -827,7 +827,8 @@
         "entity": "Entities",
         "attribute": "Attributes",
         "associatedData": "Associated data",
-        "reference": "References"
+        "reference": "References",
+        "sortableCompound": "Sortable compound"
       }
     },
     "path": {
@@ -981,6 +982,17 @@
         "faceted": "Faceted",
         "referencedEntityNameVariants": "Referenced entity",
         "referencedGroupNameVariants": "Referenced group"
+      }
+    },
+    "sortableCompound": {
+      "name": "Sortable compound",
+      "label": {
+        "name": "Name",
+        "deprecationNotice": "Deprecation notice",
+        "description": "Description"
+      },
+      "attributeElement": {
+        "title": "Attribute elements"
       }
     }
   },

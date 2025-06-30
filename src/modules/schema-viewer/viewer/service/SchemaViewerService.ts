@@ -23,8 +23,6 @@ import { SortableCompoundSchemaPointer } from '@/modules/schema-viewer/viewer/mo
 import {
     SortableAttributeCompoundSchema
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema.ts'
-import { List } from 'immutable'
-import { da } from 'vuetify/locale'
 
 export const schemaViewerServiceInjectionKey: InjectionKey<SchemaViewerService> = Symbol('schemaViewerService')
 
@@ -158,9 +156,14 @@ export class SchemaViewerService {
     }
 
     private async getSortableCompoundSchemaFromPointer(schemaPointer: SortableCompoundSchemaPointer): Promise<SortableAttributeCompoundSchema> {
-        const data = (await this.getEntitySchemaFromPointer(schemaPointer)).sortableAttributeCompounds.values()
-        const dataList = List(data)
-        return dataList.toArray()[0] //TODO: Fix not only first
+        const data = (await this.getEntitySchemaFromPointer(schemaPointer
+        )).sortableAttributeCompounds
+        const item = data.get(schemaPointer.sortableCompoundName)
+
+        if(item == undefined) {
+            throw new UnexpectedError(`Compound schema ${schemaPointer.sortableCompoundName} not found in catalog ${schemaPointer.catalogName}.`)
+        }
+        return item
     }
 
     private async getEntitySchemaFromPointer(schemaPointer: EntitySchemaPointer): Promise<EntitySchema> {

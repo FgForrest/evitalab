@@ -31,7 +31,7 @@ function openSortableSchema(): void {
     }
     workspaceService.createTab(schemaViewerTabFactory.createNew(
         new SortableCompoundSchemaPointer(props.dataPointer.schemaPointer.catalogName,
-            props.dataPointer.schemaPointer.entityType)))
+            props.dataPointer.schemaPointer.entityType, props.schema.name)))
 }
 </script>
 

@@ -77,7 +77,8 @@ export class SchemaViewerTabParams implements TabParams<SchemaViewerTabParamsDto
             schemaPointerType = SchemaPointerType.SortableCompoundSchema
             schemaPointerParams = {
                 catalogName: schemaPointer.catalogName,
-                entityType: schemaPointer.entityType
+                entityType: schemaPointer.entityType,
+                attributeName: schemaPointer.sortableCompoundName
             }
         } else {
             throw new UnexpectedError('Unknown schema pointer type.')

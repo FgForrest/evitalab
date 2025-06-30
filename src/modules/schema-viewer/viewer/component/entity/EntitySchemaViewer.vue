@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
@@ -43,10 +43,6 @@ const properties = computed<Property[]>(() => [
         })
     )
 ])
-
-onMounted(() => {
-    console.log(props.schema.sortableAttributeCompounds)
-})
 </script>
 
 <template>
