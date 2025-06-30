@@ -8,11 +8,18 @@ import { List as ImmutableList } from 'immutable'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState'
 import { EntityCollectionStatistics } from '@/modules/database-driver/request-response/EntityCollectionStatistics'
+import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
 
 export class CatalogStatisticsConverter {
+    private readonly evitaValueConverter
+
+    constructor(evitaValueConverter: EvitaValueConverter) {
+        this.evitaValueConverter = evitaValueConverter
+    }
+
     convert(catalog: GrpcCatalogStatistics): CatalogStatistics {
         return new CatalogStatistics(
-            JSON.stringify(catalog.catalogId),
+            this.evitaValueConverter.convertGrpcUuid(catalog.catalogId).toString(),
             BigInt(catalog.catalogVersion),
             catalog.catalogName,
             this.convertEntityTypes(catalog.entityCollectionStatistics),
