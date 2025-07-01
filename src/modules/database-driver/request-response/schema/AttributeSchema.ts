@@ -119,5 +119,9 @@ export enum AttributeSchemaFlag {
     Filterable = '_attributeSchema.filterable',
     Sortable = '_attributeSchema.sortable',
     Localized = '_attributeSchema.localized',
-    Nullable = '_attributeSchema.nullable'
+    Nullable = '_attributeSchema.nullable',
+    NullsFirst = '_attributeElement.nullsFirst',
+    NullsLast = '_attributeElement.nullsLast',
+    Asc = '_attributeElement.asc',
+    Desc = '_attributeElement.desc'
 }

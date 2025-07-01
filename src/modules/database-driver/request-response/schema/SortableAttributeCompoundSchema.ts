@@ -3,6 +3,7 @@ import { NamingConvention } from '../NamingConvetion'
 import { AbstractSchema } from '@/modules/database-driver/request-response/schema/AbstractSchema'
 import { OrderBehaviour } from '@/modules/database-driver/request-response/schema/OrderBehaviour'
 import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
+import { AttributeSchemaFlag } from '@/modules/database-driver/request-response/schema/AttributeSchema.ts'
 
 /**
  * evitaLab's representation of a single evitaDB sortable attribute compound schema schema independent of specific evitaDB version
@@ -52,7 +53,7 @@ export class SortableAttributeCompoundSchema extends AbstractSchema {
  * Attribute element is a part of the sortable compound. It defines the attribute name, the direction of the
  * sorting and the behaviour of the null values. The attribute name refers to the existing attribute.
  */
-export class AttributeElement {
+export class AttributeElement extends AbstractSchema {
 
     /**
      * Name of the existing attribute in the same schema.
@@ -64,8 +65,24 @@ export class AttributeElement {
     constructor(attributeName: string,
                 behaviour: OrderBehaviour,
                 direction: OrderDirection) {
+        super()
         this.attributeName = attributeName
         this.behaviour = behaviour
         this.direction = direction
+    }
+
+    get representativeFlags(): List<string> {
+        const flags: string[] = []
+
+        if(this.direction === OrderDirection.Asc)
+            flags.push(AttributeSchemaFlag.Asc)
+        else if(this.direction === OrderDirection.Desc)
+            flags.push(AttributeSchemaFlag.Desc)
+        if(this.behaviour === OrderBehaviour.NullsLast)
+            flags.push(AttributeSchemaFlag.NullsLast)
+        else if(this.behaviour === OrderBehaviour.NullsFirst)
+            flags.push(AttributeSchemaFlag.NullsFirst)
+
+        return List(flags)
     }
 }

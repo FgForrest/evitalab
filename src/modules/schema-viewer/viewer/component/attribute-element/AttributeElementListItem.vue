@@ -5,7 +5,6 @@ import type { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/mod
 import type {
     AttributeElement
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema.ts'
-import { List as ImmutableList } from 'immutable'
 import { EntityAttributeSchemaPointer } from '@/modules/schema-viewer/viewer/model/EntityAttributeSchemaPointer.ts'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
 import {
@@ -24,14 +23,6 @@ const props = defineProps<{
     schema: AttributeElement
 }>()
 
-const flags = computed(() => {
-    return ImmutableList([getFlagPath(props.schema.behaviour), getFlagPath(props.schema.direction)])
-})
-
-function getFlagPath(flag: string):string {
-    return `_attributeElement.${flag}`
-}
-
 function openAttributeSchema(): void {
     const parentSchemaPointer = props.dataPointer.schemaPointer
     if(parentSchemaPointer instanceof SortableAttributeCompoundSchemaPointer) {
@@ -47,7 +38,7 @@ function openAttributeSchema(): void {
 </script>
 
 <template>
-    <SchemaContainerSectionListItem :name="schema.attributeName" :flags="flags" @open="() => openAttributeSchema()" />
+    <SchemaContainerSectionListItem :name="schema.attributeName" @open="() => openAttributeSchema()" :flags="schema.representativeFlags" />
 </template>
 
 <style scoped lang="scss">
