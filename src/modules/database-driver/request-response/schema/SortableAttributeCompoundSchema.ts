@@ -3,7 +3,6 @@ import { NamingConvention } from '../NamingConvetion'
 import { AbstractSchema } from '@/modules/database-driver/request-response/schema/AbstractSchema'
 import { OrderBehaviour } from '@/modules/database-driver/request-response/schema/OrderBehaviour'
 import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
-import { AttributeSchemaFlag } from '@/modules/database-driver/request-response/schema/AttributeSchema.ts'
 
 /**
  * evitaLab's representation of a single evitaDB sortable attribute compound schema schema independent of specific evitaDB version
@@ -61,6 +60,7 @@ export class AttributeElement extends AbstractSchema {
     readonly attributeName: string
     readonly behaviour: OrderBehaviour
     readonly direction: OrderDirection
+    private _representativeFlags?: List<string>
 
     constructor(attributeName: string,
                 behaviour: OrderBehaviour,
@@ -72,17 +72,27 @@ export class AttributeElement extends AbstractSchema {
     }
 
     get representativeFlags(): List<string> {
-        const flags: string[] = []
+        if(this._representativeFlags == undefined) {
+            const flags: string[] = []
 
-        if(this.direction === OrderDirection.Asc)
-            flags.push(AttributeSchemaFlag.Asc)
-        else if(this.direction === OrderDirection.Desc)
-            flags.push(AttributeSchemaFlag.Desc)
-        if(this.behaviour === OrderBehaviour.NullsLast)
-            flags.push(AttributeSchemaFlag.NullsLast)
-        else if(this.behaviour === OrderBehaviour.NullsFirst)
-            flags.push(AttributeSchemaFlag.NullsFirst)
+            if (this.direction === OrderDirection.Asc)
+                flags.push(AttributeElementFlag.Asc)
+            else if (this.direction === OrderDirection.Desc)
+                flags.push(AttributeElementFlag.Desc)
+            if (this.behaviour === OrderBehaviour.NullsLast)
+                flags.push(AttributeElementFlag.NullsLast)
+            else if (this.behaviour === OrderBehaviour.NullsFirst)
+                flags.push(AttributeElementFlag.NullsFirst)
 
-        return List(flags)
+            this._representativeFlags = List(flags)
+        }
+        return this._representativeFlags
     }
+}
+
+export enum AttributeElementFlag {
+    NullsFirst = '_attributeElement.nullsFirst',
+    NullsLast = '_attributeElement.nullsLast',
+    Asc = '_attributeElement.asc',
+    Desc = '_attributeElement.desc'
 }
