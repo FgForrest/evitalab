@@ -8,7 +8,7 @@ import { Property } from '@/modules/base/model/properties-table/Property.ts'
 import NameVariants from '@/modules/schema-viewer/viewer/component/NameVariants.vue'
 import { PropertyValue } from '@/modules/base/model/properties-table/PropertyValue.ts'
 import { useI18n } from 'vue-i18n'
-import AttributeElementList from '@/modules/schema-viewer/viewer/component/sortable-compound/AttributeElementList.vue'
+import AttributeElementList from '@/modules/schema-viewer/viewer/component/attribute-element/AttributeElementList.vue'
 
 const { t } = useI18n()
 

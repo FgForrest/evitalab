@@ -6,7 +6,7 @@ import type {
 import SchemaContainerSection from '@/modules/schema-viewer/viewer/component/SchemaContainerSection.vue'
 import SchemaContainerSectionList from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionList.vue'
 import AttributeElementListItem
-    from '@/modules/schema-viewer/viewer/component/sortable-compound/AttributeElementListItem.vue'
+    from '@/modules/schema-viewer/viewer/component/attribute-element/AttributeElementListItem.vue'
 import type { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer.ts'
 import { useI18n } from 'vue-i18n'
 

@@ -5,7 +5,6 @@ import { DateTimeRange } from '@/modules/database-driver/data-type/DateTimeRange
 import { IntegerRange } from '@/modules/database-driver/data-type/IntegerRange'
 import { LocalDate } from '@/modules/database-driver/data-type/LocalDate'
 import { LocalDateTime } from '@/modules/database-driver/data-type/LocalDateTime'
-import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import { LocalTime } from '@/modules/database-driver/data-type/LocalTime'
 import { OffsetDateTime, Timestamp } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { Predecessor } from '@/modules/database-driver/data-type/Predecessor'
@@ -284,7 +283,7 @@ export class EvitaValueConverter {
 
     convertGrpcUuid(grpcUuid: GrpcUuid | undefined): Uuid {
         if(grpcUuid == undefined)
-            return Uuid.fromBits(BigInt(0), BigInt(0))
+            throw new UnexpectedError(`GrpcUuid can not be undefined.`)
 
         return Uuid.fromBits(BigInt(grpcUuid.mostSignificantBits), BigInt(grpcUuid.leastSignificantBits))
     }

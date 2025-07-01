@@ -7,8 +7,8 @@ import { List } from 'immutable'
 import type {
     SortableAttributeCompoundSchema
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema.ts'
-import SortableCompoundSchemaListItem
-    from '@/modules/schema-viewer/viewer/component/sortable-compound/SortableCompoundSchemaListItem.vue'
+import SortableAttributeCompoundSchemaListItem
+    from '@/modules/schema-viewer/viewer/component/sortable-compound/SortableAttributeCompoundSchemaListItem.vue'
 
 const { t } = useI18n()
 
@@ -20,12 +20,12 @@ const props = defineProps<{
 </script>
 
 <template>
-    <SchemaContainerSection :name="t('schemaViewer.sortableCompounds.title')">
+    <SchemaContainerSection :name="t('schemaViewer.sortableAttributeCompounds.title')">
         <SchemaContainerSectionList
             :items="sortableAttributeCompounds"
             :name-supplier="item => item.name"
             v-slot="{ item }">
-                <SortableCompoundSchemaListItem
+                <SortableAttributeCompoundSchemaListItem
                     :data-pointer="dataPointer"
                     :schema="item"
                 />

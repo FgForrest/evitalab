@@ -17,7 +17,7 @@ import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/Ref
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
-import { SortableCompoundSchemaPointer } from '@/modules/schema-viewer/viewer/model/SortableCompoundSchemaPointer.ts'
+import { SortableAttributeCompoundSchemaPointer } from '@/modules/schema-viewer/viewer/model/SortableAttributeCompoundSchemaPointer.ts'
 
 export const schemaViewerTabFactoryInjectionKey: InjectionKey<SchemaViewerTabFactory> = Symbol('schemaViewerTabFactory')
 
@@ -77,7 +77,7 @@ export class SchemaViewerTabFactory {
                 schemaPointer = new ReferenceSchemaPointer(schemaPointerParams.catalogName, schemaPointerParams.entityType, schemaPointerParams.referenceName)
                 break
             case SchemaPointerType.SortableCompoundSchema:
-                schemaPointer = new SortableCompoundSchemaPointer(schemaPointerParams.catalogName, schemaPointerParams.entityType, schemaPointerParams.attributeName)
+                schemaPointer = new SortableAttributeCompoundSchemaPointer(schemaPointerParams.catalogName, schemaPointerParams.entityType, schemaPointerParams.attributeName)
                 break
             default:
                 throw new UnexpectedError('Unknown schema pointer type.')
