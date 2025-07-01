@@ -281,10 +281,7 @@ export class EvitaValueConverter {
         return new Currency(value.code)
     }
 
-    convertGrpcUuid(grpcUuid: GrpcUuid | undefined): Uuid {
-        if(grpcUuid == undefined)
-            throw new UnexpectedError(`GrpcUuid can not be undefined.`)
-
+    convertGrpcUuid(grpcUuid: GrpcUuid): Uuid {
         return Uuid.fromBits(BigInt(grpcUuid.mostSignificantBits), BigInt(grpcUuid.leastSignificantBits))
     }
 

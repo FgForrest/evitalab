@@ -7,5 +7,5 @@ export enum SchemaType {
     Attribute = 'attribute',
     AssociatedData = 'associatedData',
     Reference = 'reference',
-    SortableAttributeCompound = 'sortableAttributeCompound',
+    SortableAttributeCompounds = 'sortableAttributeCompounds',
 }

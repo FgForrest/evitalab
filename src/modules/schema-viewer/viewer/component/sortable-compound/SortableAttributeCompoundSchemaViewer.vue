@@ -18,9 +18,9 @@ const props = defineProps<{
 }>()
 
 const properties = computed<Property[]>(() => [
-    new Property(t("schemaViewer.sortableCompound.label.name"), new PropertyValue(props.schema.name)),
-    new Property(t("schemaViewer.sortableCompound.label.deprecationNotice"), new PropertyValue(props.schema.deprecationNotice)),
-    new Property(t("schemaViewer.sortableCompound.label.description"), new PropertyValue(props.schema.description))
+    new Property(t("schemaViewer.sortableAttributeCompound.label.name"), new PropertyValue(props.schema.name)),
+    new Property(t("schemaViewer.sortableAttributeCompound.label.deprecationNotice"), new PropertyValue(props.schema.deprecationNotice)),
+    new Property(t("schemaViewer.sortableAttributeCompound.label.description"), new PropertyValue(props.schema.description))
 ])
 
 </script>

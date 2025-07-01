@@ -74,7 +74,7 @@ export class SchemaViewerTabParams implements TabParams<SchemaViewerTabParamsDto
                 referenceName: schemaPointer.referenceName
             }
         } else if(schemaPointer instanceof SortableAttributeCompoundSchemaPointer) {
-            schemaPointerType = SchemaPointerType.SortableCompoundSchema
+            schemaPointerType = SchemaPointerType.SortableAttributeCompoundSchema
             schemaPointerParams = {
                 catalogName: schemaPointer.catalogName,
                 entityType: schemaPointer.entityType,

@@ -19,7 +19,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-    <SchemaContainerSection :name="t('schemaViewer.sortableCompound.attributeElement.title')">
+    <SchemaContainerSection :name="t('schemaViewer.sortableAttributeCompound.attributeElement.title')">
         <SchemaContainerSectionList :items="attributes" :name-supplier="item => item.attributeName" v-slot="{ item }">
             <AttributeElementListItem :data-pointer="dataPointer" :schema="item" />
         </SchemaContainerSectionList>

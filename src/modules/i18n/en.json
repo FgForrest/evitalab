@@ -828,7 +828,7 @@
         "attribute": "Attributes",
         "associatedData": "Associated data",
         "reference": "References",
-        "sortableAttributeCompound": "Sortable attribute compound"
+        "sortableAttributeCompounds": "Sortable attribute compounds"
       }
     },
     "path": {
@@ -989,8 +989,8 @@
         "referencedGroupNameVariants": "Referenced group"
       }
     },
-    "sortableCompound": {
-      "name": "Sortable compound",
+    "sortableAttributeCompound": {
+      "name": "Sortable attribute compound",
       "label": {
         "name": "Name",
         "deprecationNotice": "Deprecation notice",

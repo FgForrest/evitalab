@@ -24,7 +24,7 @@ export class SortableAttributeCompoundSchemaPointer implements SchemaPointer {
     }
 
     get schemaType(): SchemaType {
-        return SchemaType.SortableAttributeCompound
+        return SchemaType.SortableAttributeCompounds
     }
 
 }

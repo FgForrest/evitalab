@@ -76,7 +76,7 @@ export class SchemaViewerTabFactory {
             case SchemaPointerType.ReferenceSchema:
                 schemaPointer = new ReferenceSchemaPointer(schemaPointerParams.catalogName, schemaPointerParams.entityType, schemaPointerParams.referenceName)
                 break
-            case SchemaPointerType.SortableCompoundSchema:
+            case SchemaPointerType.SortableAttributeCompoundSchema:
                 schemaPointer = new SortableAttributeCompoundSchemaPointer(schemaPointerParams.catalogName, schemaPointerParams.entityType, schemaPointerParams.attributeName)
                 break
             default:
