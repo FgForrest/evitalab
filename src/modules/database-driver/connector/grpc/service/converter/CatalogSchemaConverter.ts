@@ -1,22 +1,25 @@
 import type {
     GrpcCatalogSchema,
-    GrpcGlobalAttributeSchema,
+    GrpcGlobalAttributeSchema
 } from '@/modules/database-driver/connector/grpc/gen/GrpcCatalogSchema_pb'
 import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { GlobalAttributeSchema } from '@/modules/database-driver/request-response/schema/GlobalAttributeSchema'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import {
+    GrpcAttributeInheritanceBehavior,
     GrpcAttributeSchemaType,
     GrpcAttributeUniquenessType,
     GrpcCardinality,
     GrpcEvolutionMode,
     GrpcGlobalAttributeUniquenessType,
     GrpcOrderBehaviour,
-    GrpcOrderDirection,
+    GrpcOrderDirection
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { GlobalAttributeUniquenessType } from '@/modules/database-driver/request-response/schema/GlobalAttributeUniquenessType'
+import {
+    GlobalAttributeUniquenessType
+} from '@/modules/database-driver/request-response/schema/GlobalAttributeUniquenessType'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
 import { EvolutionMode } from '@/modules/database-driver/request-response/schema/EvolutionMode'
 import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType'
@@ -29,16 +32,13 @@ import type {
     GrpcAttributeSchema,
     GrpcEntitySchema,
     GrpcReferenceSchema,
-    GrpcSortableAttributeCompoundSchema,
+    GrpcSortableAttributeCompoundSchema
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchema_pb'
-import type {
-    GrpcCurrency,
-    GrpcLocale,
-} from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
+import type { GrpcCurrency, GrpcLocale } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import {
     AttributeElement,
-    SortableAttributeCompoundSchema,
+    SortableAttributeCompoundSchema
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema'
 import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
 import { ScalarConverter } from './ScalarConverter'
@@ -47,6 +47,10 @@ import type { EntitySchemaAccessor } from '@/modules/database-driver/request-res
 import { MapUtil } from '@/modules/database-driver/connector/grpc/utils/MapUtil'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { Currency } from '@/modules/database-driver/data-type/Currency'
+import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedRefenceSchema.ts'
+import {
+    AttributeInheritanceBehavior
+} from '@/modules/database-driver/request-response/schema/AttributeInheritanceBehavior.ts'
 
 export class CatalogSchemaConverter {
     private readonly evitaValueConverter: EvitaValueConverter
@@ -274,7 +278,7 @@ export class CatalogSchemaConverter {
     private convertReferenceSchemas(referenceSchemas: {
         [key: string]: GrpcReferenceSchema
     }): ReferenceSchema[] {
-        const newReferenceSchemas: ReferenceSchema[] = []
+        const newReferenceSchemas: any = [] //TODO: Fix
         for (const referenceName in referenceSchemas) {
             const driverReferenceSchema: GrpcReferenceSchema =
                 referenceSchemas[referenceName]
@@ -301,28 +305,49 @@ export class CatalogSchemaConverter {
         return entityAttributesSchemas
     }
 
+    private convertAttributeInheritanceBehavior(attributeInheritanceBehavior: GrpcAttributeInheritanceBehavior) {
+        if(attributeInheritanceBehavior === GrpcAttributeInheritanceBehavior.INHERIT_ALL_EXCEPT)
+            return AttributeInheritanceBehavior.InheritAllExcept
+        else if(attributeInheritanceBehavior === GrpcAttributeInheritanceBehavior.INHERIT_ONLY_SPECIFIED)
+            return AttributeInheritanceBehavior.InheritAllExcept
+        else
+            throw new UnexpectedError('Unavailable attribute inheritance behavior')
+    }
+
     private convertReferenceSchema(
         referenceSchema: GrpcReferenceSchema
-    ): ReferenceSchema {
-        return new ReferenceSchema(
-            referenceSchema.name,
-            MapUtil.getNamingMap(referenceSchema.nameVariant),
-            referenceSchema.description,
-            referenceSchema.deprecationNotice,
-            referenceSchema.entityType,
-            referenceSchema.referencedEntityTypeManaged,
-            MapUtil.getNamingMap(referenceSchema.entityTypeNameVariant),
-            referenceSchema.groupType,
-            referenceSchema.referencedGroupTypeManaged,
-            MapUtil.getNamingMap(referenceSchema.groupTypeNameVariant),
-            referenceSchema.indexed,
-            referenceSchema.faceted,
-            this.convertCardinality(referenceSchema.cardinality),
-            this.convertAttributeSchemas(referenceSchema.attributes),
-            this.convertSortableAttributeCompoundSchemas(
-                referenceSchema.sortableAttributeCompounds
+    ): ReferenceSchema | ReflectedRefenceSchema {
+        if(referenceSchema.reflectedReferenceName != undefined) {
+            return new ReflectedRefenceSchema(
+                referenceSchema.reflectedReferenceName,
+                referenceSchema.descriptionInherited,
+                referenceSchema.deprecationNoticeInherited,
+                referenceSchema.cardinalityInherited,
+                referenceSchema.facetedInherited,
+                referenceSchema.indexedInherited,
+                this.convertAttributeInheritanceBehavior(referenceSchema.attributeInheritanceBehavior)
             )
-        )
+        } else {
+            return new ReferenceSchema(
+                referenceSchema.name,
+                MapUtil.getNamingMap(referenceSchema.nameVariant),
+                referenceSchema.description,
+                referenceSchema.deprecationNotice,
+                referenceSchema.entityType,
+                referenceSchema.referencedEntityTypeManaged,
+                MapUtil.getNamingMap(referenceSchema.entityTypeNameVariant),
+                referenceSchema.groupType,
+                referenceSchema.referencedGroupTypeManaged,
+                MapUtil.getNamingMap(referenceSchema.groupTypeNameVariant),
+                referenceSchema.indexed,
+                referenceSchema.faceted,
+                this.convertCardinality(referenceSchema.cardinality),
+                this.convertAttributeSchemas(referenceSchema.attributes),
+                this.convertSortableAttributeCompoundSchemas(
+                    referenceSchema.sortableAttributeCompounds
+                )
+            )
+        }
     }
 
     private convertAttributeSchemas(attributeSchemas: {
