@@ -827,7 +827,8 @@
         "entity": "Entities",
         "attribute": "Attributes",
         "associatedData": "Associated data",
-        "reference": "References"
+        "reference": "References",
+        "sortableAttributeCompounds": "Sortable attribute compounds"
       }
     },
     "path": {
@@ -846,6 +847,12 @@
         "filter": "Filter"
       },
       "flag": {
+        "attributeElement": {
+          "nullsFirst": "nulls first",
+          "nullsLast": "nulls last",
+          "asc": "ascending",
+          "desc": "descending"
+        },
         "entitySchema": {
           "hierarchical": "hierarchical"
         },
@@ -881,6 +888,9 @@
     },
     "entities": {
       "title": "Entities"
+    },
+    "sortableAttributeCompounds": {
+      "title": "Sortable attribute compounds"
     },
     "entity": {
       "label": {
@@ -977,6 +987,17 @@
         "faceted": "Faceted",
         "referencedEntityNameVariants": "Referenced entity",
         "referencedGroupNameVariants": "Referenced group"
+      }
+    },
+    "sortableAttributeCompound": {
+      "name": "Sortable attribute compound",
+      "label": {
+        "name": "Name",
+        "deprecationNotice": "Deprecation notice",
+        "description": "Description"
+      },
+      "attributeElement": {
+        "title": "Attribute elements"
       }
     }
   },

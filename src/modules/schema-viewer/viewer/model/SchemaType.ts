@@ -6,5 +6,6 @@ export enum SchemaType {
     Entity = 'entity',
     Attribute = 'attribute',
     AssociatedData = 'associatedData',
-    Reference = 'reference'
+    Reference = 'reference',
+    SortableAttributeCompounds = 'sortableAttributeCompounds',
 }
