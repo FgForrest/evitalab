@@ -9,6 +9,7 @@ import { CatalogStatistics } from '@/modules/database-driver/request-response/Ca
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState'
 import { EntityCollectionStatistics } from '@/modules/database-driver/request-response/EntityCollectionStatistics'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
+import { ca } from 'vuetify/locale'
 
 export class CatalogStatisticsConverter {
     private readonly evitaValueConverter
@@ -18,6 +19,9 @@ export class CatalogStatisticsConverter {
     }
 
     convert(catalog: GrpcCatalogStatistics): CatalogStatistics {
+        if(catalog.catalogId == undefined) {
+            throw new UnexpectedError('Missing catalogId in GrpcCatalogStatistics')
+        }
         return new CatalogStatistics(
             this.evitaValueConverter.convertGrpcUuid(catalog.catalogId).toString(),
             BigInt(catalog.catalogVersion),

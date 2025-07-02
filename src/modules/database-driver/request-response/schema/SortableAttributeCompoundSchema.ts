@@ -52,7 +52,7 @@ export class SortableAttributeCompoundSchema extends AbstractSchema {
  * Attribute element is a part of the sortable compound. It defines the attribute name, the direction of the
  * sorting and the behaviour of the null values. The attribute name refers to the existing attribute.
  */
-export class AttributeElement {
+export class AttributeElement extends AbstractSchema {
 
     /**
      * Name of the existing attribute in the same schema.
@@ -60,12 +60,39 @@ export class AttributeElement {
     readonly attributeName: string
     readonly behaviour: OrderBehaviour
     readonly direction: OrderDirection
+    private _representativeFlags?: List<string>
 
     constructor(attributeName: string,
                 behaviour: OrderBehaviour,
                 direction: OrderDirection) {
+        super()
         this.attributeName = attributeName
         this.behaviour = behaviour
         this.direction = direction
     }
+
+    get representativeFlags(): List<string> {
+        if(this._representativeFlags == undefined) {
+            const flags: string[] = []
+
+            if (this.direction === OrderDirection.Asc)
+                flags.push(AttributeElementFlag.Asc)
+            else if (this.direction === OrderDirection.Desc)
+                flags.push(AttributeElementFlag.Desc)
+            if (this.behaviour === OrderBehaviour.NullsLast)
+                flags.push(AttributeElementFlag.NullsLast)
+            else if (this.behaviour === OrderBehaviour.NullsFirst)
+                flags.push(AttributeElementFlag.NullsFirst)
+
+            this._representativeFlags = List(flags)
+        }
+        return this._representativeFlags
+    }
+}
+
+export enum AttributeElementFlag {
+    NullsFirst = '_attributeElement.nullsFirst',
+    NullsLast = '_attributeElement.nullsLast',
+    Asc = '_attributeElement.asc',
+    Desc = '_attributeElement.desc'
 }

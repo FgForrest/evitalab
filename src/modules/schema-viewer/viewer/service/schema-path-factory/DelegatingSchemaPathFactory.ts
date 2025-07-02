@@ -31,8 +31,8 @@ import {
     ReferenceSchemaPathFactory
 } from '@/modules/schema-viewer/viewer/service/schema-path-factory/ReferenceSchemaPathFactory'
 import {
-    SortableCompoundSchemaPathFactory
-} from '@/modules/schema-viewer/viewer/service/schema-path-factory/SortableCompoundSchemaPathFactory.ts'
+    SortableAttributeCompoundSchemaPathFactory
+} from '@/modules/schema-viewer/viewer/service/schema-path-factory/SortableAttributeCompoundSchemaPathFactory.ts'
 
 export const delegatingSchemaPathFactoryInjectionKey: InjectionKey<DelegatingSchemaPathFactory> = Symbol('DelegatingSchemaPathFactory')
 
@@ -52,7 +52,7 @@ export class DelegatingSchemaPathFactory implements SchemaPathFactory<any> {
             new EntitySchemaPathFactory(workspaceService, schemaViewerTabFactory),
             new ReferenceAttributeSchemaPathFactory(workspaceService, schemaViewerTabFactory),
             new ReferenceSchemaPathFactory(workspaceService, schemaViewerTabFactory),
-            new SortableCompoundSchemaPathFactory(workspaceService, schemaViewerTabFactory)
+            new SortableAttributeCompoundSchemaPathFactory(workspaceService, schemaViewerTabFactory)
         ]
     }
 

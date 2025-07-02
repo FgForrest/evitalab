@@ -13,7 +13,7 @@ import {
     SchemaViewerTabFactory,
     useSchemaViewerTabFactory
 } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory.ts'
-import { SortableCompoundSchemaPointer } from '@/modules/schema-viewer/viewer/model/SortableCompoundSchemaPointer.ts'
+import { SortableAttributeCompoundSchemaPointer } from '@/modules/schema-viewer/viewer/model/SortableAttributeCompoundSchemaPointer.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
@@ -30,7 +30,7 @@ function openSortableSchema(): void {
         throw new UnexpectedError('Unsupported parent schema for entities.')
     }
     workspaceService.createTab(schemaViewerTabFactory.createNew(
-        new SortableCompoundSchemaPointer(props.dataPointer.schemaPointer.catalogName,
+        new SortableAttributeCompoundSchemaPointer(props.dataPointer.schemaPointer.catalogName,
             props.dataPointer.schemaPointer.entityType, props.schema.name)))
 }
 </script>
