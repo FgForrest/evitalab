@@ -278,10 +278,11 @@ export class CatalogSchemaConverter {
     private convertReferenceSchemas(referenceSchemas: {
         [key: string]: GrpcReferenceSchema
     }): ReferenceSchema[] {
-        const newReferenceSchemas: any = [] //TODO: Fix
+        const newReferenceSchemas: ReferenceSchema[] = []
         for (const referenceName in referenceSchemas) {
             const driverReferenceSchema: GrpcReferenceSchema =
                 referenceSchemas[referenceName]
+
             newReferenceSchemas.push(
                 this.convertReferenceSchema(driverReferenceSchema)
             )
@@ -317,8 +318,26 @@ export class CatalogSchemaConverter {
     private convertReferenceSchema(
         referenceSchema: GrpcReferenceSchema
     ): ReferenceSchema | ReflectedRefenceSchema {
+        console.log(referenceSchema)
         if(referenceSchema.reflectedReferenceName != undefined) {
             return new ReflectedRefenceSchema(
+                referenceSchema.name,
+                MapUtil.getNamingMap(referenceSchema.nameVariant),
+                referenceSchema.description,
+                referenceSchema.deprecationNotice,
+                referenceSchema.entityType,
+                referenceSchema.referencedEntityTypeManaged,
+                MapUtil.getNamingMap(referenceSchema.entityTypeNameVariant),
+                referenceSchema.groupType,
+                referenceSchema.referencedGroupTypeManaged,
+                MapUtil.getNamingMap(referenceSchema.groupTypeNameVariant),
+                referenceSchema.indexed,
+                referenceSchema.faceted,
+                this.convertCardinality(referenceSchema.cardinality),
+                this.convertAttributeSchemas(referenceSchema.attributes),
+                this.convertSortableAttributeCompoundSchemas(
+                    referenceSchema.sortableAttributeCompounds
+                ),
                 referenceSchema.reflectedReferenceName,
                 referenceSchema.descriptionInherited,
                 referenceSchema.deprecationNoticeInherited,
