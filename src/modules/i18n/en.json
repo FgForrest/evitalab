@@ -966,6 +966,7 @@
     },
     "reference": {
       "label": {
+        "reflected": "Reflected",
         "description": "Description",
         "deprecationNotice": "Deprecation notice",
         "cardinality": "Cardinality",

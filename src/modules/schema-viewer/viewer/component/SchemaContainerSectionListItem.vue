@@ -9,10 +9,12 @@ const props = withDefaults(defineProps<{
     deprecated?: boolean,
     flags?: List<string>,
     openable?: boolean
+    reflected?: boolean
 }>(), {
     deprecated: false,
     flags: () => List(),
-    openable: true
+    openable: true,
+    reflected: false,
 })
 
 const emit = defineEmits<{
@@ -24,6 +26,13 @@ function open() {
         return
     }
     emit('open')
+}
+
+function navigateToReflected(e: MouseEvent):void {
+    e.preventDefault()
+    e.stopPropagation()
+
+    console.info('navigateToReflected')
 }
 </script>
 
@@ -43,6 +52,9 @@ function open() {
                 <VChip v-for="flag in flags" :key="flag">
                     {{ flag.startsWith('_') ? t(`schemaViewer.section.flag.${flag.substring(1)}`) : flag }}
                 </VChip>
+                <VChip v-if="reflected" class="clickable" @click="e => navigateToReflected(e)">
+                    {{ t('schemaViewer.reference.label.reflected') }}
+                </VChip>
             </VChipGroup>
         </div>
 
@@ -59,5 +71,9 @@ function open() {
 .item-body {
     display: flex;
     align-items: center;
+}
+
+.clickable:hover {
+    cursor: pointer;
 }
 </style>
