@@ -16,18 +16,36 @@ import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/Ref
 import { ReferenceAttributeSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceAttributeSchemaPointer'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import SchemaContainerSectionListItem from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionListItem.vue'
-import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
+import { computed } from 'vue'
+import {
+    AttributeInheritanceBehavior
+} from '@/modules/database-driver/request-response/schema/AttributeInheritanceBehavior.ts'
+import { useI18n } from 'vue-i18n'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
+const { t } = useI18n()
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
-    schema: AttributeSchema
+    schema: AttributeSchema,
+    inheritedAttributesFilter?: string[]
+    attributeInheritanceBehavior?: AttributeInheritanceBehavior
 }>()
 
-const flags: ComputedRef<List<string>> = computed(() => props.schema.representativeFlags)
+const flags: ComputedRef<List<string>> = computed(() => {
+    const flags: string[] = props.schema.representativeFlags.toArray()
+    //Important fix != undefined because when it is 0 it fails
+    if(props.attributeInheritanceBehavior != undefined && props.inheritedAttributesFilter) {
+        if (props.inheritedAttributesFilter?.includes(props.schema.name) && props.attributeInheritanceBehavior === AttributeInheritanceBehavior.InheritOnlySpecified) {
+            flags.push(t('schemaViewer.reference.label.inherited'))
+        } else if(!props.inheritedAttributesFilter?.includes(props.schema.name) && props.attributeInheritanceBehavior === AttributeInheritanceBehavior.InheritAllExcept) {
+            flags.push(t('schemaViewer.reference.label.inherited'))
+        }
+    }
+    return List(props.schema.representativeFlags)
+})
 
 function openAttributeSchema(): void {
     const parentSchemaPointer = props.dataPointer.schemaPointer

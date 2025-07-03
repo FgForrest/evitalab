@@ -27,13 +27,6 @@ function open() {
     }
     emit('open')
 }
-
-function navigateToReflected(e: MouseEvent):void {
-    e.preventDefault()
-    e.stopPropagation()
-
-    console.info('navigateToReflected')
-}
 </script>
 
 <template>
@@ -52,7 +45,7 @@ function navigateToReflected(e: MouseEvent):void {
                 <VChip v-for="flag in flags" :key="flag">
                     {{ flag.startsWith('_') ? t(`schemaViewer.section.flag.${flag.substring(1)}`) : flag }}
                 </VChip>
-                <VChip v-if="reflected" class="clickable" @click="e => navigateToReflected(e)">
+                <VChip v-if="reflected" class="clickable">
                     {{ t('schemaViewer.reference.label.reflected') }}
                 </VChip>
             </VChipGroup>

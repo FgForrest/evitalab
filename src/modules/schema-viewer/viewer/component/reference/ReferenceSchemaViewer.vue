@@ -18,6 +18,10 @@ import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { computed, ref } from 'vue'
 import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
 import { SchemaViewerService, useSchemaViewerService } from '@/modules/schema-viewer/viewer/service/SchemaViewerService'
+import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedRefenceSchema.ts'
+import ReflectedReferenceList
+    from '@/modules/schema-viewer/viewer/component/reference/reflected/ReflectedReferenceList.vue'
+import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
@@ -34,6 +38,8 @@ const entityNameVariants = ref<ImmutableMap<NamingConvention, string>>()
 
 const loadedReferencedGroupType = ref<boolean>()
 const groupTypeNameVariants = ref<ImmutableMap<NamingConvention, string> | undefined>()
+const loadedReflectedReferences = ref<boolean>()
+const reflectedReferences = ref<ImmutableList<ReflectedRefenceSchema>>()
 
 const properties = computed<Property[]>(() => {
     const properties: Property[] = []
@@ -115,6 +121,21 @@ const properties = computed<Property[]>(() => {
         t('schemaViewer.reference.label.faceted'),
         new PropertyValue(props.schema.faceted)
     ))
+    if (props.schema instanceof ReflectedRefenceSchema && props.schema.reflectedReferenceName) {
+        const reflectedRefenceSchema = props.schema as ReflectedRefenceSchema
+        properties.push(new Property(
+            t('schemaViewer.reference.label.reflectedReference'),
+                new PropertyValue(new KeywordValue(t(props.schema.reflectedReferenceName)), undefined, () => {
+                    workspaceService.createTab(schemaViewerTabFactory.createNew(
+                        new ReferenceSchemaPointer(
+                            props.dataPointer.schemaPointer.catalogName,
+                            props.schema.entityType,
+                            reflectedRefenceSchema.reflectedReferenceName!
+                        )
+                    ))
+            })
+        ))
+    }
 
     return properties
 })
@@ -156,6 +177,27 @@ async function getGroupTypeNameVariants() {
 function isGroupType(): boolean {
     return props.schema.referencedGroupType != undefined
 }
+
+async function loadAllReflectedSchemas(): Promise<void> {
+    reflectedReferences.value = ImmutableList(await schemaViewerService.getReflectedSchema(props.dataPointer.schemaPointer.catalogName, props.schema.name))
+    loadedReflectedReferences.value = true
+}
+
+const attributeInheritanceBehavior = computed(() => {
+    if(props.schema instanceof ReflectedRefenceSchema) {
+        return props.schema.attributeInheritanceBehavior
+    }
+    return undefined
+})
+
+const inheritedAttributes = computed(() => {
+    if(props.schema instanceof ReflectedRefenceSchema) {
+        return props.schema.attributeInheritanceFilter
+    }
+    return undefined
+})
+
+onMounted(loadAllReflectedSchemas)
 </script>
 
 <template>
@@ -178,12 +220,25 @@ function isGroupType(): boolean {
             <AttributeSchemaList
                 v-if="schema.attributes && schema.attributes.size > 0"
                 :data-pointer="dataPointer"
+                :attribute-inheritance-behavior="loadedReflectedReferences ? attributeInheritanceBehavior : undefined"
+                :inherited-attributes-filter="loadedReflectedReferences ? inheritedAttributes : undefined"
                 :attributes="ImmutableList(schema.attributes.values())"
             />
+
+            <ReflectedReferenceList
+                :loading="!loadedReflectedReferences"
+                v-if="!loadedReflectedReferences || (loadedReflectedReferences && reflectedReferences && reflectedReferences.size > 0)"
+                :data-pointer="props.dataPointer"
+                :schemas="reflectedReferences ?? ImmutableList([])"
+                :disabled="!loadedReflectedReferences"
+            >
+            </ReflectedReferenceList>
         </template>
     </SchemaContainer>
 </template>
 
 <style lang="scss" scoped>
-
+.lazy-loading {
+    position: relative;
+}
 </style>

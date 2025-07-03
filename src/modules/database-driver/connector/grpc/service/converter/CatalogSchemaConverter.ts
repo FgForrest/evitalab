@@ -318,7 +318,6 @@ export class CatalogSchemaConverter {
     private convertReferenceSchema(
         referenceSchema: GrpcReferenceSchema
     ): ReferenceSchema | ReflectedRefenceSchema {
-        console.log(referenceSchema)
         if(referenceSchema.reflectedReferenceName != undefined) {
             return new ReflectedRefenceSchema(
                 referenceSchema.name,
@@ -344,7 +343,8 @@ export class CatalogSchemaConverter {
                 referenceSchema.cardinalityInherited,
                 referenceSchema.facetedInherited,
                 referenceSchema.indexedInherited,
-                this.convertAttributeInheritanceBehavior(referenceSchema.attributeInheritanceBehavior)
+                this.convertAttributeInheritanceBehavior(referenceSchema.attributeInheritanceBehavior),
+                referenceSchema.attributeInheritanceFilter
             )
         } else {
             return new ReferenceSchema(

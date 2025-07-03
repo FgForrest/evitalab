@@ -18,6 +18,7 @@ export class ReflectedRefenceSchema extends ReferenceSchema {
     readonly facetedInherited: boolean;
     readonly indexedInherited: boolean;
     readonly attributeInheritanceBehavior: AttributeInheritanceBehavior
+    readonly attributeInheritanceFilter: string[]
 
 
     constructor(name: string,
@@ -41,7 +42,8 @@ export class ReflectedRefenceSchema extends ReferenceSchema {
                 cardinalityInherited: boolean,
                 facetedInherited: boolean,
                 indexedInherited: boolean,
-                attributeInheritanceBehavior: AttributeInheritanceBehavior) {
+                attributeInheritanceBehavior: AttributeInheritanceBehavior,
+                attributeInheritanceFilter: string[]) {
         super(name, nameVariants, description, deprecationNotice, entityType, referencedEntityTypeManaged,
             entityTypeNameVariants, referencedGroupType, referencedGroupTypeManaged, groupTypeNameVariants, indexed,
             faceted, cardinality, attributes, sortableAttributeCompounds)
@@ -52,5 +54,6 @@ export class ReflectedRefenceSchema extends ReferenceSchema {
         this.facetedInherited = facetedInherited
         this.indexedInherited = indexedInherited
         this.attributeInheritanceBehavior = attributeInheritanceBehavior
+        this.attributeInheritanceFilter = attributeInheritanceFilter
     }
 }

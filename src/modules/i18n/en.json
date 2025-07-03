@@ -966,7 +966,7 @@
     },
     "reference": {
       "label": {
-        "reflected": "Reflected",
+        "reflected": "reflected",
         "description": "Description",
         "deprecationNotice": "Deprecation notice",
         "cardinality": "Cardinality",
@@ -977,7 +977,12 @@
         "indexed": "Indexed",
         "faceted": "Faceted",
         "referencedEntityNameVariants": "Referenced entity",
-        "referencedGroupNameVariants": "Referenced group"
+        "referencedGroupNameVariants": "Referenced group",
+        "reflectedReference": "Reflected reference",
+        "inherited": "inherited"
+      },
+      "reflected": {
+        "reflectedReferences": "Reflected references"
       }
     }
   },

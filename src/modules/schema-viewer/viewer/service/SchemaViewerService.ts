@@ -19,6 +19,7 @@ import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
+import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedRefenceSchema.ts'
 
 export const schemaViewerServiceInjectionKey: InjectionKey<SchemaViewerService> = Symbol('schemaViewerService')
 
@@ -137,6 +138,25 @@ export class SchemaViewerService {
             catalogName,
             session => session.getEntitySchemaOrThrowException(entityType)
         )
+    }
+
+    async getReflectedSchema(catalogName: string, name: string): Promise<ReflectedRefenceSchema[]> {
+        const reflectedReferenceSchemas: ReflectedRefenceSchema[] = []
+        const catalogSchema = await this.evitaClient.queryCatalog(catalogName, session => session.getCatalogSchema())
+        const entitySchemas = await catalogSchema.entitySchemas()
+
+
+        for (const entity of entitySchemas) {
+            for (const reference of entity[1].references) {
+                if (reference[1] instanceof ReflectedRefenceSchema) {
+                    if (reference[1].reflectedReferenceName === name) {
+                        reflectedReferenceSchemas.push(reference[1])
+                    }
+                }
+            }
+        }
+
+        return reflectedReferenceSchemas
     }
 
     private async getCatalogSchemaFromPointer(schemaPointer: CatalogSchemaPointer): Promise<CatalogSchema> {
