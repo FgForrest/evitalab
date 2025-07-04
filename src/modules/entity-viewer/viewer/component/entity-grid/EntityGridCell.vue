@@ -28,7 +28,7 @@ const emit = defineEmits<{
 }>()
 const dataLocale = useDataLocale()
 const priceType = usePriceType()
-const parent = ref(null)
+const parent = ref()
 
 const printablePropertyValue = computed<string>(() => toPrintablePropertyValue(props.propertyValue))
 const prependIcon = computed<string | undefined>(() => {
