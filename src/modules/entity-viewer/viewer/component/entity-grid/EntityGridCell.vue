@@ -28,6 +28,7 @@ const emit = defineEmits<{
 }>()
 const dataLocale = useDataLocale()
 const priceType = usePriceType()
+const parent = ref(null)
 
 const printablePropertyValue = computed<string>(() => toPrintablePropertyValue(props.propertyValue))
 const prependIcon = computed<string | undefined>(() => {
@@ -148,7 +149,7 @@ function handleClick(e: MouseEvent): void {
 </script>
 
 <template>
-    <td class="data-grid-cell" :class="{ 'data-grid-cell--clickable': printablePropertyValue }"
+    <td ref="parent" class="data-grid-cell" :class="{ 'data-grid-cell--clickable': printablePropertyValue }"
         @mousedown="(e) => handleClick(e)">
         <span class="data-grid-cell__body">
             <template v-if="noLocaleSelected">
@@ -166,7 +167,7 @@ function handleClick(e: MouseEvent): void {
                     {{ printablePropertyValue }}
 
                     <VTooltip
-                        activator="parent"
+                        :activator="parent"
                         location="bottom"
                         :interactive="true">
                         <div>
