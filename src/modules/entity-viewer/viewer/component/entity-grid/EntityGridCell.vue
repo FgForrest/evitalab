@@ -40,9 +40,9 @@ const prependIcon = computed<string | undefined>(() => {
         if (props.propertyValue instanceof Array)
             return undefined
         if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
-            return 'mdi-ray-end-arrow'
-        } else {
             return 'mdi-ray-start'
+        } else {
+            return 'mdi-ray-end-arrow'
         }
     } else if (props.propertyDescriptor?.type === EntityPropertyType.References && props.propertyDescriptor.schema instanceof ReferenceSchema) {
         return 'mdi-open-in-new'
