@@ -2,8 +2,8 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import { SchemaViewerService, useSchemaViewerService } from '@/modules/schema-viewer/viewer/service/SchemaViewerService'
-import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
 import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 import type { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
 import { SchemaViewerTabParams } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabParams'
@@ -25,6 +25,7 @@ import {
     useSchemaPathFactory
 } from '@/modules/schema-viewer/viewer/service/schema-path-factory/DelegatingSchemaPathFactory'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
+import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedRefenceSchema.ts'
 
 const keymap: Keymap = useKeymap()
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
@@ -49,24 +50,30 @@ const schemaChangeCallbackId = schemaViewerService.registerSchemaChangeCallback(
     async () => await loadSchema()
 )
 
-const title: ImmutableList<string> = (() => {
-    const schemaPointer: SchemaPointer = props.params.dataPointer.schemaPointer
-
-    if (schemaPointer.schemaType === SchemaType.Catalog) {
-        return ImmutableList.of(schemaPointer.schemaName)
-    } else {
-        return ImmutableList.of(
-            t(`schemaViewer.title.schema.${schemaPointer.schemaType}`),
-            schemaPointer.schemaName
-        )
-    }
-})()
-
 const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | null>(null)
 
 const schemaLoaded = ref<boolean>(false)
 const schema = ref<any>()
 const reloadingSchema = ref<boolean>(false)
+const title = ref<ImmutableList<string>>()
+
+async function loadTitle(): Promise<void> {
+    await loadSchema()
+    const schemaPointer: SchemaPointer = props.params.dataPointer.schemaPointer
+
+    if (schemaPointer.schemaType === SchemaType.Catalog) {
+        title.value = ImmutableList.of(schemaPointer.schemaName)
+    } else if(schemaPointer.schemaType === SchemaType.Reference && schema.value instanceof ReflectedRefenceSchema && schema.value.reflectedReferenceName) {
+        title.value = ImmutableList.of(t(`schemaViewer.title.schema.${schemaPointer.schemaType}`),
+            schema.value.reflectedReferenceName,
+            schemaPointer.schemaName)
+    } else {
+        title.value = ImmutableList.of(
+            t(`schemaViewer.title.schema.${schemaPointer.schemaType}`),
+            schemaPointer.schemaName
+        )
+    }
+}
 
 async function loadSchema(): Promise<void> {
     try {
@@ -83,7 +90,8 @@ async function reloadSchema(): Promise<void> {
     reloadingSchema.value = false
 }
 
-onMounted(() => {
+onMounted(async () => {
+    await loadTitle()
     // register schema viewer specific keyboard shortcuts
     keymap.bind(Command.SchemaViewer_ShareTab, props.id, () => shareTabButtonRef.value?.share())
 })
@@ -105,7 +113,7 @@ loadSchema().then(() => {
 
 <template>
     <div
-        v-if="schemaLoaded"
+        v-if="schemaLoaded && title"
         class="schema-viewer"
     >
         <VTabToolbar

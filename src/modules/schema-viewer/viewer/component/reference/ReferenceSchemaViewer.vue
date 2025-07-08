@@ -22,6 +22,8 @@ import { ReflectedRefenceSchema } from '@/modules/database-driver/request-respon
 import ReflectedReferenceList
     from '@/modules/schema-viewer/viewer/component/reference/reflected/ReflectedReferenceList.vue'
 import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer.ts'
+import RelationViewer from '@/modules/relation-viewer/RelationViewer.vue'
+import { RelationType } from '@/modules/relation-viewer/RelationType.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
@@ -48,10 +50,12 @@ const properties = computed<Property[]>(() => {
         t('schemaViewer.reference.label.description'),
         new PropertyValue(props.schema.description)
     ))
-    properties.push(new Property(
-        t('schemaViewer.reference.label.deprecationNotice'),
-        new PropertyValue(props.schema.deprecationNotice)
-    ))
+    if (props.schema.deprecationNotice) {
+        properties.push(new Property(
+            t('schemaViewer.reference.label.deprecationNotice'),
+            new PropertyValue(props.schema.deprecationNotice)
+        ))
+    }
     properties.push(new Property(
         t('schemaViewer.reference.label.cardinality'),
         new PropertyValue(new KeywordValue(props.schema.cardinality))
@@ -78,10 +82,6 @@ const properties = computed<Property[]>(() => {
             new PropertyValue(new KeywordValue(props.schema.entityType))
         ))
     }
-    properties.push(new Property(
-        t('schemaViewer.reference.label.referencedEntityManaged'),
-        new PropertyValue(props.schema.referencedEntityTypeManaged)
-    ))
     if (props.schema.referencedGroupType == undefined) {
         properties.push(new Property(
             t('schemaViewer.reference.label.referencedGroup'),
@@ -110,10 +110,6 @@ const properties = computed<Property[]>(() => {
         ))
     }
     properties.push(new Property(
-        t('schemaViewer.reference.label.referencedGroupManaged'),
-        new PropertyValue(props.schema.referencedGroupTypeManaged || false)
-    ))
-    properties.push(new Property(
         t('schemaViewer.reference.label.indexed'),
         new PropertyValue(props.schema.indexed)
     ))
@@ -125,14 +121,14 @@ const properties = computed<Property[]>(() => {
         const reflectedRefenceSchema = props.schema as ReflectedRefenceSchema
         properties.push(new Property(
             t('schemaViewer.reference.label.reflectedReference'),
-                new PropertyValue(new KeywordValue(t(props.schema.reflectedReferenceName)), undefined, () => {
-                    workspaceService.createTab(schemaViewerTabFactory.createNew(
-                        new ReferenceSchemaPointer(
-                            props.dataPointer.schemaPointer.catalogName,
-                            props.schema.entityType,
-                            reflectedRefenceSchema.reflectedReferenceName!
-                        )
-                    ))
+            new PropertyValue(new KeywordValue(t(props.schema.reflectedReferenceName)), undefined, () => {
+                workspaceService.createTab(schemaViewerTabFactory.createNew(
+                    new ReferenceSchemaPointer(
+                        props.dataPointer.schemaPointer.catalogName,
+                        props.schema.entityType,
+                        reflectedRefenceSchema.reflectedReferenceName!
+                    )
+                ))
             })
         ))
     }
@@ -184,57 +180,68 @@ async function loadAllReflectedSchemas(): Promise<void> {
 }
 
 const attributeInheritanceBehavior = computed(() => {
-    if(props.schema instanceof ReflectedRefenceSchema) {
+    if (props.schema instanceof ReflectedRefenceSchema) {
         return props.schema.attributeInheritanceBehavior
     }
     return undefined
 })
 
 const inheritedAttributes = computed(() => {
-    if(props.schema instanceof ReflectedRefenceSchema) {
+    if (props.schema instanceof ReflectedRefenceSchema) {
         return props.schema.attributeInheritanceFilter
     }
     return undefined
 })
 
 onMounted(loadAllReflectedSchemas)
+
+const reflectedSchemaName = computed(() => {
+    if(props.schema instanceof ReflectedRefenceSchema && props.schema.reflectedReferenceName){
+        return props.schema.reflectedReferenceName
+    }
+})
 </script>
 
 <template>
-    <SchemaContainer :properties="properties">
-        <template #nested-details>
-            <NameVariants :name-variants="schema.nameVariants" />
+    <div>
+        <SchemaContainer :properties="properties">
+            <template #relation>
+                <RelationViewer v-if="reflectedSchemaName" :cardinality="props.schema.cardinality" :from="reflectedSchemaName" :to="props.schema.entityType" />
+            </template>
+            <template #nested-details>
+                <NameVariants :name-variants="schema.nameVariants" />
 
-            <NameVariants
-                :prefix="t('schemaViewer.reference.label.referencedEntityNameVariants')"
-                v-if="loadedEntityNameVariants && entityNameVariants"
-                :name-variants="entityNameVariants"
-            />
+                <NameVariants
+                    :prefix="t('schemaViewer.reference.label.referencedEntityNameVariants')"
+                    v-if="loadedEntityNameVariants && entityNameVariants"
+                    :name-variants="entityNameVariants"
+                />
 
-            <NameVariants
-                v-if="isGroupType() && loadedReferencedGroupType && groupTypeNameVariants"
-                :prefix="t('schemaViewer.reference.label.referencedGroupNameVariants')"
-                :name-variants="groupTypeNameVariants"
-            />
+                <NameVariants
+                    v-if="isGroupType() && loadedReferencedGroupType && groupTypeNameVariants"
+                    :prefix="t('schemaViewer.reference.label.referencedGroupNameVariants')"
+                    :name-variants="groupTypeNameVariants"
+                />
 
-            <AttributeSchemaList
-                v-if="schema.attributes && schema.attributes.size > 0"
-                :data-pointer="dataPointer"
-                :attribute-inheritance-behavior="loadedReflectedReferences ? attributeInheritanceBehavior : undefined"
-                :inherited-attributes-filter="loadedReflectedReferences ? inheritedAttributes : undefined"
-                :attributes="ImmutableList(schema.attributes.values())"
-            />
+                <AttributeSchemaList
+                    v-if="schema.attributes && schema.attributes.size > 0"
+                    :data-pointer="dataPointer"
+                    :attribute-inheritance-behavior="loadedReflectedReferences ? attributeInheritanceBehavior : undefined"
+                    :inherited-attributes-filter="loadedReflectedReferences ? inheritedAttributes : undefined"
+                    :attributes="ImmutableList(schema.attributes.values())"
+                />
 
-            <ReflectedReferenceList
-                :loading="!loadedReflectedReferences"
-                v-if="!loadedReflectedReferences || (loadedReflectedReferences && reflectedReferences && reflectedReferences.size > 0)"
-                :data-pointer="props.dataPointer"
-                :schemas="reflectedReferences ?? ImmutableList([])"
-                :disabled="!loadedReflectedReferences"
-            >
-            </ReflectedReferenceList>
-        </template>
-    </SchemaContainer>
+                <ReflectedReferenceList
+                    :loading="!loadedReflectedReferences"
+                    v-if="!loadedReflectedReferences || (loadedReflectedReferences && reflectedReferences && reflectedReferences.size > 0)"
+                    :data-pointer="props.dataPointer"
+                    :schemas="reflectedReferences ?? ImmutableList([])"
+                    :disabled="!loadedReflectedReferences"
+                >
+                </ReflectedReferenceList>
+            </template>
+        </SchemaContainer>
+    </div>
 </template>
 
 <style lang="scss" scoped>

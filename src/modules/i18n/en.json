@@ -1007,6 +1007,9 @@
       }
     }
   },
+  "relationViewer": {
+    "title": "Relation"
+  },
   "serverViewer": {
     "definition": {
       "title": "Server"
