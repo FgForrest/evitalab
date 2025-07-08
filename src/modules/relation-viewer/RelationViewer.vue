@@ -5,7 +5,11 @@ import { useI18n } from 'vue-i18n'
 const props = defineProps<{
     cardinality: Cardinality,
     from: string,
-    to: string
+    to: string,
+}>()
+
+const emit = defineEmits<{
+    (e: 'openFrom'): void
 }>()
 
 const { t } = useI18n()
@@ -22,6 +26,11 @@ const icon = computed(() => {
             return "mdi-relation-one-to-zero-or-many"
     }
 })
+
+
+function openFrom(): void {
+    emit('openFrom')
+}
 </script>
 
 <template>
@@ -29,7 +38,7 @@ const icon = computed(() => {
         <tr class="properties-table__row">
             <td>{{ t('relationViewer.title') }}</td>
             <td>
-                <VChip>{{ props.from }}</VChip>
+                <VChip @click="openFrom" class="clickable">{{ props.from }}</VChip>
                 <VIcon :icon="icon" />
                 <VChip>{{ props.to }}</VChip>
             </td>
@@ -55,5 +64,9 @@ const icon = computed(() => {
     &__row--dense {
         grid-template-columns: 8rem 15rem;
     }
+}
+
+.clickable:hover {
+    cursor: pointer;
 }
 </style>

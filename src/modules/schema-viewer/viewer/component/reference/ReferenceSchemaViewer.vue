@@ -23,7 +23,6 @@ import ReflectedReferenceList
     from '@/modules/schema-viewer/viewer/component/reference/reflected/ReflectedReferenceList.vue'
 import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer.ts'
 import RelationViewer from '@/modules/relation-viewer/RelationViewer.vue'
-import { RelationType } from '@/modules/relation-viewer/RelationType.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
@@ -200,13 +199,25 @@ const reflectedSchemaName = computed(() => {
         return props.schema.reflectedReferenceName
     }
 })
+
+function openFrom(): void {
+    if(props.schema instanceof ReflectedRefenceSchema && props.schema.reflectedReferenceName) {
+        workspaceService.createTab(schemaViewerTabFactory.createNew(
+            new ReferenceSchemaPointer(
+                props.dataPointer.schemaPointer.catalogName,
+                props.schema.entityType,
+                props.schema.reflectedReferenceName!
+            )
+        ))
+    }
+}
 </script>
 
 <template>
     <div>
         <SchemaContainer :properties="properties">
             <template #relation>
-                <RelationViewer v-if="reflectedSchemaName" :cardinality="props.schema.cardinality" :from="reflectedSchemaName" :to="props.schema.entityType" />
+                <RelationViewer v-if="reflectedSchemaName" @open-from="openFrom" :cardinality="props.schema.cardinality" :from="reflectedSchemaName" :to="props.schema.entityType" />
             </template>
             <template #nested-details>
                 <NameVariants :name-variants="schema.nameVariants" />
