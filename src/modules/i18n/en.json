@@ -542,6 +542,10 @@
         "failedToSaveQueryToHistory": "Failed to save query to history."
       }
     },
+    "layerSelector": {
+      "live": "The default scope is where all new entities are created.",
+      "archive": "The archive scope is where outdated entities that are no longer actively used are stored. The archive is usually covered by fewer indexes than the live scope and is not searched unless explicitly requested in a query."
+    },
     "propertySelector": {
       "title": "Displayed properties",
       "label": {
@@ -830,6 +834,11 @@
         "reference": "References"
       }
     },
+    "scopesVisualizer": {
+      "live": "Live",
+      "archive": "Archive",
+      "label": "Scopes visualizer"
+    },
     "path": {
       "item": {
         "entities": "entities",
@@ -858,7 +867,12 @@
           "filterable": "filterable",
           "sortable": "sortable",
           "localized": "localized",
-          "nullable": "nullable"
+          "nullable": "nullable",
+          "attributeTooltip": "The attribute can be filtered/sorted within the live/archive scope.",
+          "hierarchyTooltip": "The hierarchy is (not) indexed within the live/archive scope.",
+          "pricesTooltip": "The prices are (not) indexed within the live/archive scope.",
+          "referenceTooltipIndexed": "The reference is (not) indexed within the live/archive scope.",
+          "referenceTooltipFaceted": "The reference (doesn't) provide facets within the live/archive scope."
         },
         "associatedDataSchema": {
           "localized": "localized",
@@ -939,7 +953,8 @@
         "localized": "Localized",
         "nullable": "Nullable",
         "defaultValue": "Default value",
-        "indexedDecimalPlaces": "Indexed decimal places"
+        "indexedDecimalPlaces": "Indexed decimal places",
+        "attributes": "Attributes"
       },
       "help": {
         "uniqueWithinCollection": "The attribute value must be unique among all the entities of the same collection.",

@@ -33,6 +33,7 @@ import EntityPropertySelector
 import { useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { List } from 'immutable'
 import { EntityViewerService, useEntityViewerService } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
+import LayerSelector from '@/modules/entity-viewer/viewer/component/LayerSelector.vue'
 
 const keymap: Keymap = useKeymap()
 const workspaceService: WorkspaceService = useWorkspaceService()
@@ -199,6 +200,9 @@ onUnmounted(() => {
                 ref="priceTypeSelectorRef"
                 :selected="selectedPriceType"
                 @update:selected="emit('update:selectedPriceType', $event)"
+            />
+            <LayerSelector
+
             />
 
             <EntityPropertySelector

@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { List } from 'immutable'
+import type { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 
 const { t } = useI18n()
 
 const props = withDefaults(defineProps<{
     name: string,
     deprecated?: boolean,
-    flags?: List<string>,
+    flags?: List<Flag>,
     openable?: boolean
 }>(), {
     deprecated: false,
@@ -40,8 +41,17 @@ function open() {
                 </span>
             </VListItemTitle>
             <VChipGroup>
-                <VChip v-for="flag in flags" :key="flag">
-                    {{ flag.startsWith('_') ? t(`schemaViewer.section.flag.${flag.substring(1)}`) : flag }}
+                <VChip v-for="flag in flags" :key="flag.flag">
+                    {{ flag.flag.startsWith('_') ? t(`schemaViewer.section.flag.${flag.flag.substring(1)}`) : flag.flag
+                    }}
+                    <template #prepend>
+                        <VIcon v-for="(item, index) in flag.icons"
+                               :class="flag.icons.length - 1 === index ? 'last-chip-icon' : 'chip-icon'"
+                               :key="index" :icon="item" />
+                    </template>
+                    <VTooltip activator="parent" v-if="flag.tooltip">
+                        {{ flag.tooltip }}
+                    </VTooltip>
                 </VChip>
             </VChipGroup>
         </div>
@@ -59,5 +69,14 @@ function open() {
 .item-body {
     display: flex;
     align-items: center;
+}
+
+.chip-icon {
+    margin-left: 2px;
+    margin-right: 3px;
+}
+
+.last-chip-icon {
+    margin-right: 8px;
 }
 </style>

@@ -1,4 +1,4 @@
-import { List, Map} from 'immutable'
+import { List, Map } from 'immutable'
 import { NamingConvention } from '../NamingConvetion'
 import { AbstractSchema } from '@/modules/database-driver/request-response/schema/AbstractSchema'
 import type { TypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
@@ -6,6 +6,7 @@ import type { LocalizedSchema } from '@/modules/database-driver/request-response
 import type { SortableSchema } from '@/modules/database-driver/request-response/schema/SortableSchema'
 import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
+import type { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 /**
  * evitaLab's representation of a single evitaDB attribute schema independent of specific evitaDB version
@@ -34,7 +35,7 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Sort
      * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity having certain value of this attribute among other entities in the same collection.  As an example of unique attribute can be EAN - there is no sense in having two entities with same EAN, and it's better to have this ensured by the database engine.
      */
     readonly uniquenessType: AttributeUniquenessType
-     /**
+    /**
      * When attribute is filterable, it is possible to filter entities by this attribute. Do not mark attribute as filterable unless you know that you'll search entities by this attribute. Each filterable attribute occupies (memory/disk) space in the form of index.  When attribute is filterable, extra result `attributeHistogram` can be requested for this attribute.
      */
     readonly filterable: boolean
@@ -59,6 +60,11 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Sort
      */
     readonly indexedDecimalPlaces: number
 
+    readonly sortableInScopes: List<EntityScope>
+    readonly filteredInScopes: List<EntityScope>
+    readonly uniqueGloballyInScopes: List<EntityScope>
+    readonly uniqueInScopes: List<EntityScope>
+
     protected _representativeFlags?: List<string>
 
     constructor(name: string,
@@ -72,7 +78,11 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Sort
                 nullable: boolean,
                 defaultValue: any | any[] | undefined,
                 localized: boolean,
-                indexedDecimalPlaces: number) {
+                indexedDecimalPlaces: number,
+                sortableInScopes: List<EntityScope>,
+                filteredInScopes: List<EntityScope>,
+                uniqueGloballyInScopes: List<EntityScope>,
+                uniqueInScopes: List<EntityScope>) {
         super()
         this.name = name
         this.nameVariants = nameVariants
@@ -86,6 +96,10 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Sort
         this.defaultValue = defaultValue
         this.localized = localized
         this.indexedDecimalPlaces = indexedDecimalPlaces
+        this.sortableInScopes = sortableInScopes
+        this.filteredInScopes = filteredInScopes
+        this.uniqueGloballyInScopes = uniqueGloballyInScopes
+        this.uniqueInScopes = uniqueInScopes
     }
 
     get representativeFlags(): List<string> {

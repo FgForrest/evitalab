@@ -6,6 +6,7 @@ import { AttributeSchema } from '@/modules/database-driver/request-response/sche
 import {
     SortableAttributeCompoundSchema
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema'
+import type { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 /**
  * evitaLab's representation of a single evitaDB reference schema independent of specific evitaDB version
@@ -65,6 +66,8 @@ export class ReferenceSchema extends AbstractSchema {
      * Contains definitions of all sortable attribute compounds defined in this schema.
      */
     readonly sortableAttributeCompounds: Map<string, SortableAttributeCompoundSchema>
+    readonly indexedInScopes: List<EntityScope>
+    readonly facetedInScopes: List<EntityScope>
 
     private _representativeFlags?: List<string>
 
@@ -82,7 +85,9 @@ export class ReferenceSchema extends AbstractSchema {
                 faceted: boolean,
                 cardinality: Cardinality,
                 attributes: AttributeSchema[],
-                sortableAttributeCompounds: SortableAttributeCompoundSchema[]) {
+                sortableAttributeCompounds: SortableAttributeCompoundSchema[],
+                indexedInScopes: List<EntityScope>,
+                facetedInScopes: List<EntityScope>) {
         super()
         this.name = name
         this.nameVariants = nameVariants
@@ -99,6 +104,8 @@ export class ReferenceSchema extends AbstractSchema {
         this.cardinality = cardinality
         this.attributes = Map(attributes.map(attribute => [attribute.name, attribute]))
         this.sortableAttributeCompounds = Map(sortableAttributeCompounds.map(sac => [sac.name, sac]))
+        this.indexedInScopes = indexedInScopes
+        this.facetedInScopes = facetedInScopes
     }
 
     get representativeFlags(): List<string> {

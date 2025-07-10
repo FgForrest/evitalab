@@ -10,6 +10,7 @@ import {
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema'
 import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
+import type { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 /**
  * evitaLab's representation of a single evitaDB entity schema independent of specific evitaDB version
@@ -68,7 +69,6 @@ export class EntitySchema extends AbstractSchema {
     readonly sortableAttributeCompounds: Map<string, SortableAttributeCompoundSchema>
     readonly associatedData: Map<string, AssociatedDataSchema>
     readonly references: Map<string, ReferenceSchema>
-
     private _representativeFlags?: List<string>
 
     constructor(version: number,

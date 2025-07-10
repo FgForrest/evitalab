@@ -1,8 +1,9 @@
-import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
+import { List, List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { NamingConvention } from '../NamingConvetion'
 import { AttributeSchema, AttributeSchemaFlag } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType'
+import type { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 /**
  * evitaLab's representation of a single evitaDB entity attribute schema independent of specific evitaDB version
@@ -26,8 +27,13 @@ export class EntityAttributeSchema extends AttributeSchema {
                 defaultValue: any | any[] | undefined,
                 localized: boolean,
                 indexedDecimalPlaces: number,
-                representative: boolean) {
-        super(name, nameVariants, description, deprecationNotice, type, uniquenessType, filterable, sortable, nullable, defaultValue, localized, indexedDecimalPlaces)
+                representative: boolean,
+                sortableInScopes: ImmutableList<EntityScope>,
+                filteredInScopes: ImmutableList<EntityScope>,
+                uniqueGloballyInScopes: List<EntityScope>,
+                uniqueInScopes: ImmutableList<EntityScope>
+                ) {
+        super(name, nameVariants, description, deprecationNotice, type, uniquenessType, filterable, sortable, nullable, defaultValue, localized, indexedDecimalPlaces, sortableInScopes, filteredInScopes, uniqueGloballyInScopes, uniqueInScopes)
         this.representative = representative
     }
 

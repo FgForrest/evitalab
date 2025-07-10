@@ -15,6 +15,7 @@ import { NotApplicableValue } from '@/modules/base/model/properties-table/NotApp
 import SchemaContainer from '@/modules/schema-viewer/viewer/component/SchemaContainer.vue'
 import NameVariants from '@/modules/schema-viewer/viewer/component/NameVariants.vue'
 import { computed } from 'vue'
+import { List, List as ImmutableList } from 'immutable'
 
 const { t } = useI18n()
 
@@ -33,6 +34,9 @@ const properties = computed<Property[]>(() => {
     properties.push(new Property(t('schemaViewer.attribute.label.description'), new PropertyValue(props.schema.description)))
     properties.push(new Property(t('schemaViewer.attribute.label.deprecationNotice'), new PropertyValue(props.schema.deprecationNotice)))
     if (entityAttribute) properties.push(new Property(t('schemaViewer.attribute.label.representative'), new PropertyValue((props.schema as EntityAttributeSchema).representative )))
+
+    //TODO: Add special attributes
+
     switch (props.schema.uniquenessType) {
         case AttributeUniquenessType.NotUnique:
             properties.push(new Property(
@@ -103,11 +107,26 @@ const properties = computed<Property[]>(() => {
     } else {
         properties.push(new Property(t('schemaViewer.attribute.label.filterable'), new PropertyValue(false) ))
     }
+    const chips: PropertyValue[] = []
+    if(props.schema.sortable)
+        chips.push(new PropertyValue(new KeywordValue(t('schemaViewer.attribute.label.sortable'))))
+    if(props.schema.localized)
+        chips.push(new PropertyValue(new KeywordValue(t('schemaViewer.attribute.label.localized'))))
+    if(props.schema.nullable)
+        chips.push(new PropertyValue(new KeywordValue(t('schemaViewer.attribute.label.nullable'))))
+    if(props.schema.defaultValue)
+        chips.push(new PropertyValue(new KeywordValue(t('schemaViewer.attribute.label.defaultValue'))))
+    if(props.schema.indexedDecimalPlaces)
+        chips.push(new PropertyValue(new KeywordValue(t('schemaViewer.attribute.label.indexedDecimalPlaces'))))
+
+    properties.push(new Property(t('schemaViewer.attribute.label.attributes'), List(chips)))
+    /*
     properties.push(new Property(t('schemaViewer.attribute.label.sortable'), new PropertyValue(props.schema.sortable) ))
     properties.push(new Property(t('schemaViewer.attribute.label.localized'), new PropertyValue(props.schema.localized) ))
     properties.push(new Property(t('schemaViewer.attribute.label.nullable'), new PropertyValue(props.schema.nullable) ))
     properties.push(new Property(t('schemaViewer.attribute.label.defaultValue'), new PropertyValue(props.schema.defaultValue) ))
     properties.push(new Property(t('schemaViewer.attribute.label.indexedDecimalPlaces'), new PropertyValue(props.schema.indexedDecimalPlaces) ))
+     */
 
     return properties
 })
