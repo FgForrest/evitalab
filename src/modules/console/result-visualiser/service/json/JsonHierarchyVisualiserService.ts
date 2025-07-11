@@ -8,7 +8,6 @@ import { ReferenceSchema } from '@/modules/database-driver/request-response/sche
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { VisualisedNamedHierarchy } from '@/modules/console/result-visualiser/model/hierarchy/VisualisedNamedHierarchy'
 import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
-import { Map as ImmutableMap } from 'immutable'
 
 /**
  * Common abstract for all JSON-based hierarchy visualiser services.
@@ -29,10 +28,10 @@ export abstract class JsonHierarchyVisualiserService<VS extends JsonResultVisual
         for (const referenceName of Object.keys(hierarchyResult)) {
             const namedHierarchiesResult: Result = hierarchyResult[referenceName]
 
-            let convertedNamedHierarchiesResult: ImmutableMap<string, Result> = ImmutableMap()
+            let convertedNamedHierarchiesResult: Map<string, Result> = new Map()
             for (const name of Object.keys(namedHierarchiesResult)) {
                 const hierarchy: Result = namedHierarchiesResult[name]
-                convertedNamedHierarchiesResult = convertedNamedHierarchiesResult.set(name, hierarchy)
+                convertedNamedHierarchiesResult.set(name, hierarchy)
             }
 
             if (referenceName === 'self') {
