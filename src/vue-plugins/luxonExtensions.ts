@@ -1,5 +1,6 @@
-import { Duration, DurationLikeObject, DurationUnit, ToHumanDurationOptions } from 'luxon'
-import { App, Plugin } from 'vue'
+import { Duration } from 'luxon'
+import type { DurationLikeObject, DurationUnit, ToHumanDurationOptions } from 'luxon'
+import type { App, Plugin } from 'vue'
 import { round } from '@/utils/number'
 
 interface LuxonExtensionsOptions {}

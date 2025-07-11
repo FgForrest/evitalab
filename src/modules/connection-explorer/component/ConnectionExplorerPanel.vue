@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import CreateCatalogDialog from '@/modules/connection-explorer/component/CreateCatalogDialog.vue'
 import CatalogItem from '@/modules/connection-explorer/component/CatalogItem.vue'
 import VTreeViewEmptyItem from '@/modules/base/component/VTreeViewEmptyItem.vue'
 import { provideServerStatus } from '@/modules/connection-explorer/component/dependecies'
-import { MenuItem } from '@/modules/base/model/menu/MenuItem'
+import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
 import { MenuAction } from '@/modules/base/model/menu/MenuAction'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 import { ConnectionMenuItemType } from '@/modules/connection-explorer/model/ConnectionMenuItemType'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
@@ -34,7 +35,7 @@ const serverStatusChangeCallbackId: string = connectionExplorerService.registerS
 })
 provideServerStatus(serverStatus)
 
-const catalogs = ref<Immutable.List<CatalogStatistics> | undefined>()
+const catalogs = ref<ImmutableList<CatalogStatistics> | undefined>()
 const catalogChangeCallbackId: string = connectionExplorerService.registerCatalogChangeCallback(async () => {
     await loadCatalogs()
 })

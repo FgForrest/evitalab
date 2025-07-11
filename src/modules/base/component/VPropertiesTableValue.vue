@@ -10,11 +10,15 @@ const props = defineProps<{
     property: Property,
     propertyValue: PropertyValue | List<PropertyValue>
 }>()
+
+const isList = computed(() => {
+    return List.isList(props.propertyValue)
+})
 </script>
 
 <template>
     <VPropertiesTableValueList
-        v-if="propertyValue instanceof List"
+        v-if="isList"
         :property="property"
         :property-value="propertyValue as List<PropertyValue>"
     />

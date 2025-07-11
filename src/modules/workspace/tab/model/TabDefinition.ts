@@ -1,8 +1,8 @@
-import { DefineComponent, Raw } from 'vue'
+import type { DefineComponent, Raw } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
-import { TabParams } from '@/modules/workspace/tab/model/TabParams'
-import { TabData } from '@/modules/workspace/tab/model/TabData'
-import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
+import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
+import type { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 
 /**
  * Definition to instantiate a new workspace tab from.

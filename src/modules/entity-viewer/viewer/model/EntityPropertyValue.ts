@@ -1,4 +1,4 @@
-import {
+import type {
     EntityPropertyValuePreviewStringContext
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValuePreviewStringContext'
 
@@ -26,6 +26,9 @@ export abstract class EntityPropertyValue {
      * that can be used to influence the output.
      */
     abstract toPreviewString(context?: EntityPropertyValuePreviewStringContext): string
+
+    abstract toRawString(): string
+    abstract toRawRepresentation(): any
 
     /** Add documentation */
     toPrettyPrintString(context?: EntityPropertyValuePreviewStringContext): string {

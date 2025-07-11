@@ -1,4 +1,4 @@
-import { ModuleRegistrar } from '@/ModuleRegistrar'
+import type { ModuleRegistrar } from '@/ModuleRegistrar'
 import { WorkspaceService, workspaceServiceInjectionKey } from '@/modules/workspace/service/WorkspaceService'
 import { toasterInjectionKey } from '@/modules/notification/service/Toaster'
 import {

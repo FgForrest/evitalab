@@ -11,7 +11,6 @@ import 'vuetify/styles'
 // Composables
 import { VDateInput } from 'vuetify/labs/VDateInput'
 import { VTimePicker } from 'vuetify/labs/VTimePicker'
-import { VNumberInput } from 'vuetify/labs/VNumberInput'
 import { VPicker } from 'vuetify/labs/VPicker'
 import { createVuetify } from 'vuetify'
 
@@ -20,7 +19,6 @@ export default createVuetify({
     components: {
         VDateInput,
         VTimePicker,
-        VNumberInput,
         VPicker
     },
     theme: {

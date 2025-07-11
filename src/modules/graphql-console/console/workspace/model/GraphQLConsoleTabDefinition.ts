@@ -1,5 +1,6 @@
 import GraphQLConsole from '@/modules/graphql-console/console/component/GraphQLConsole.vue'
-import { DefineComponent, markRaw } from 'vue'
+import { markRaw } from 'vue'
+import type { DefineComponent } from 'vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { GraphQLConsoleTabParams } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabParams'
 import { GraphQLConsoleTabData } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabData'

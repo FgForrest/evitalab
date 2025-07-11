@@ -1,4 +1,4 @@
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { EditorSelection } from '@/modules/workspace/status-bar/model/editor-status/EditorSelection'
 
 /**
@@ -7,12 +7,12 @@ import { EditorSelection } from '@/modules/workspace/status-bar/model/editor-sta
 export class EditorInfo {
     readonly language: string
     readonly tabSize: number
-    selections: Immutable.List<EditorSelection>
+    selections: ImmutableList<EditorSelection>
 
     constructor(language: string, tabSize: number) {
         this.language = language
         this.tabSize = tabSize
-        this.selections = Immutable.List()
+        this.selections = ImmutableList()
     }
 }
 

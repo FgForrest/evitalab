@@ -44,7 +44,7 @@ const properties = computed<Property[]>(() => {
         ),
         new Property(
             t('entityViewer.grid.priceRenderer.price.label.sellable'),
-            new PropertyValue(props.price.sellable)
+            new PropertyValue(props.price.indexed)
         ),
         new Property(
             t('entityViewer.grid.priceRenderer.price.label.validity'),

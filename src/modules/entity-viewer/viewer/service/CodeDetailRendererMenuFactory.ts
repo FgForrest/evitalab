@@ -2,13 +2,13 @@ import { MenuFactory } from '@/modules/base/service/menu/MenuFactory'
 import {
     CodeDetailRendererMenuItemType
 } from '@/modules/entity-viewer/viewer/model/entity-grid/detail-renderer/CodeDetailRendererMenuItemType'
-import { MenuItem } from '@/modules/base/model/menu/MenuItem'
+import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
 import { MenuAction } from '@/modules/base/model/menu/MenuAction'
 import {
     EntityPropertyValueSupportedCodeLanguage
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValueSupportedCodeLanguage'
 import { i18n } from '@/vue-plugins/i18n'
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 
 export const codeDetailRendererMenuFactoryInjectionKey: InjectionKey<CodeDetailRendererMenuFactory> = Symbol('codeDetailRendererMenuFactoryInjectionKey')

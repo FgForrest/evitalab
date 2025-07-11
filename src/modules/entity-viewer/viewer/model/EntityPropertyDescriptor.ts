@@ -1,7 +1,7 @@
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
 import { List as ImmutableList } from 'immutable'
-import { Schema } from '@/modules/database-driver/request-response/schema/Schema'
+import type { Schema } from '@/modules/database-driver/request-response/schema/Schema'
 import { isSortableSchema } from '@/modules/database-driver/request-response/schema/SortableSchema'
 import { isLocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
 import { sortableStaticEntityProperties } from '@/modules/entity-viewer/viewer/component/dependencies'

@@ -11,7 +11,7 @@ import {
 import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { i18n } from '@/vue-plugins/i18n'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { EvitaQLConsoleTabData } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabData'
 import { TrafficRecordMetadataItemContext } from '@/modules/traffic-viewer/model/TrafficRecordMetadataItemContext'
 import { formatCount } from '@/utils/string'
@@ -149,7 +149,7 @@ export class QueryContainerVisualiser extends TrafficRecordVisualiser<QueryConta
     }
 
     private constructActions(ctx: TrafficRecordVisualisationContext,
-                             trafficRecord: QueryContainer): Immutable.List<Action> {
+                             trafficRecord: QueryContainer): ImmutableList<Action> {
         const actions: Action[] = []
 
         actions.push(new Action(
@@ -163,7 +163,7 @@ export class QueryContainerVisualiser extends TrafficRecordVisualiser<QueryConta
             )
         ))
 
-        return Immutable.List(actions)
+        return ImmutableList(actions)
     }
 
     private resolveSourceQueryId(trafficRecord: QueryContainer): string | undefined {

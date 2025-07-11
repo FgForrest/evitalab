@@ -4,11 +4,11 @@
  */
 
 import { useI18n } from 'vue-i18n'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import {
     VisualisedHierarchyTreeNode
 } from '@/modules/console/result-visualiser/model/hierarchy/VisualisedHierarchyTreeNode'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import VMarkdown from '@/modules/base/component/VMarkdown.vue'
 
 const toaster: Toaster = useToaster()
@@ -101,7 +101,7 @@ async function copyParentPrimaryKey(): Promise<void> {
 </template>
 
 <style lang="scss" scoped>
-@import "@/styles/colors.scss";
+@use "@/styles/colors.scss" as *;
 // todo lho better handling for small widths
 .node-title {
     display: flex;

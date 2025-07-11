@@ -1,4 +1,4 @@
-import { EntityPropertyValueFormatter } from '@/modules/entity-viewer/viewer/service/EntityPropertyValueFormatter'
+import type { EntityPropertyValueFormatter } from '@/modules/entity-viewer/viewer/service/EntityPropertyValueFormatter'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 
 /**

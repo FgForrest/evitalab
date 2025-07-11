@@ -1,6 +1,8 @@
-import store, { StoreBase } from 'store2'
-import XXH, { HashObject } from 'xxhashjs'
-import { InjectionKey } from 'vue'
+import store from 'store2'
+import type { StoreBase } from 'store2'
+import XXH from 'xxhashjs'
+import type { HashObject } from 'xxhashjs'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 
 const hasher: HashObject = XXH.h64()

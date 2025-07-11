@@ -7,13 +7,13 @@ import { onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { Command } from '@/modules/keymap/model/Command'
 import {
     KeymapViewerTabFactory,
     useKeymapViewerTabFactory
 } from '@/modules/keymap/viewer/workspace/service/KeymapViewerTabFactory'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import { ManageOptionType } from '@/modules/workspace/panel/model/ManageOptionType'
 

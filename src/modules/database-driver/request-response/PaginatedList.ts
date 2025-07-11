@@ -1,4 +1,4 @@
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 
 /**
  * Universal immutable simple paginated list implementation. Contains information about
@@ -6,12 +6,12 @@ import Immutable from 'immutable'
  */
 export class PaginatedList<T> implements Iterable<T> {
 
-    readonly data: Immutable.List<T>
+    readonly data: ImmutableList<T>
     readonly pageNumber: number
     readonly pageSize: number
     readonly totalNumberOfRecords: number
 
-    constructor(data: Immutable.List<T>,
+    constructor(data: ImmutableList<T>,
                 pageNumber: number,
                 pageSize: number,
                 totalNumberOfRecords: number) {

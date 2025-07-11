@@ -1,5 +1,5 @@
 import { TabHistoryKey } from '@/modules/workspace/tab/model/TabHistoryKey'
-import {
+import type {
     EvitaQLConsoleHistoryRecord
 } from '@/modules/evitaql-console/console/history/model/EvitaQLConsoleHistoryRecord'
 import { EvitaQLConsoleDataPointer } from '@/modules/evitaql-console/console/model/EvitaQLConsoleDataPointer'

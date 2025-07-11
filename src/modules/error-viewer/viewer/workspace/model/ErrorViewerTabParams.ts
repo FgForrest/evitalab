@@ -1,4 +1,4 @@
-import { TabParams } from '@/modules/workspace/tab/model/TabParams'
+import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
 import { LabError } from '@/modules/base/exception/LabError'
 import { ErrorViewerTabParamsDto } from '@/modules/error-viewer/viewer/workspace/model/ErrorViewerTabParamsDto'
 

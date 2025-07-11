@@ -3,12 +3,14 @@
  * Entity property value renderer that tries to render the value in a code editor.
  */
 
-import { computed, ComputedRef, ref, watch } from 'vue'
-import { Extension } from '@codemirror/state'
+import { computed, ref, watch } from 'vue'
+import type { ComputedRef } from 'vue'
+import type { Extension } from '@codemirror/state'
 import { json } from '@codemirror/lang-json'
 import { xml } from '@codemirror/lang-xml'
 import { useI18n } from 'vue-i18n'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { EntityViewerService, useEntityViewerService } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import {
@@ -25,7 +27,7 @@ import {
     CodeDetailRendererMenuFactory,
     useCodeDetailRendererMenuFactory
 } from '@/modules/entity-viewer/viewer/service/CodeDetailRendererMenuFactory'
-import { MenuItem } from '@/modules/base/model/menu/MenuItem'
+import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
 
 const toaster: Toaster = useToaster()
 const entityViewerService: EntityViewerService = useEntityViewerService()

@@ -5,9 +5,10 @@
 
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
-import { Result } from '@/modules/console/result-visualiser/model/Result'
+import type { Result } from '@/modules/console/result-visualiser/model/Result'
 import { VisualisedNamedHierarchy } from '@/modules/console/result-visualiser/model/hierarchy/VisualisedNamedHierarchy'
 import VMarkdown from '@/modules/base/component/VMarkdown.vue'
 import VListItemLazyIterator from '@/modules/base/component/VListItemLazyIterator.vue'

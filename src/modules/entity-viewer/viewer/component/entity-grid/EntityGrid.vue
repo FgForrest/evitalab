@@ -1,3 +1,4 @@
+
 <script setup lang="ts">
 /**
  * Grid with actual data for the LabEditorDataGrid component.
@@ -8,8 +9,9 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { EntityViewerService, useEntityViewerService } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
-import { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
+import type { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
 import { QueryLanguage } from '@/modules/entity-viewer/viewer/model/QueryLanguage'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
@@ -34,6 +36,7 @@ import {
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
+import type { Predecessor } from '@/modules/database-driver/data-type/Predecessor.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const entityViewerService: EntityViewerService = useEntityViewerService()
@@ -74,7 +77,7 @@ function getPropertyDescriptor(key: string): EntityPropertyDescriptor | undefine
 }
 
 function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string, value: EntityPropertyValue | EntityPropertyValue[]): void {
-    if (value == undefined || (value instanceof EntityPropertyValue && value.value() == undefined)) {
+    if (value == undefined || (value instanceof EntityPropertyValue && value.value() == undefined)  || (value instanceof EntityPropertyValue && (value.value() as Predecessor).predecessorId === -1)) {
         return
     }
     const propertyDescriptor: EntityPropertyDescriptor | undefined = getPropertyDescriptor(propertyKey)
@@ -238,7 +241,6 @@ function closePropertyDetail(): void {
     overflow-y: hidden;
     display: block;
     min-width: 5rem;
-    max-width: 15rem;
     height: 2.25rem;
     text-overflow: clip;
     text-wrap: nowrap;

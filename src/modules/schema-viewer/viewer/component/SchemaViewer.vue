@@ -2,24 +2,25 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import { SchemaViewerService, useSchemaViewerService } from '@/modules/schema-viewer/viewer/service/SchemaViewerService'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
-import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
-import { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
+import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
+import type { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
 import { SchemaViewerTabParams } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabParams'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import ShareTabButton from '@/modules/workspace/tab/component/ShareTabButton.vue'
 import { Command } from '@/modules/keymap/model/Command'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
-import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import type { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { SchemaViewerTabDefinition } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabDefinition'
-import { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
+import type { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 import { useI18n } from 'vue-i18n'
 import { SchemaType } from '@/modules/schema-viewer/viewer/model/SchemaType'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { SchemaPathFactory } from '@/modules/schema-viewer/viewer/service/schema-path-factory/SchemaPathFactory'
+import type { SchemaPathFactory } from '@/modules/schema-viewer/viewer/service/schema-path-factory/SchemaPathFactory'
 import {
     useSchemaPathFactory
 } from '@/modules/schema-viewer/viewer/service/schema-path-factory/DelegatingSchemaPathFactory'
@@ -48,13 +49,13 @@ const schemaChangeCallbackId = schemaViewerService.registerSchemaChangeCallback(
     async () => await loadSchema()
 )
 
-const title: Immutable.List<string> = (() => {
+const title: ImmutableList<string> = (() => {
     const schemaPointer: SchemaPointer = props.params.dataPointer.schemaPointer
 
     if (schemaPointer.schemaType === SchemaType.Catalog) {
-        return Immutable.List.of(schemaPointer.schemaName)
+        return ImmutableList.of(schemaPointer.schemaName)
     } else {
-        return Immutable.List.of(
+        return ImmutableList.of(
             t(`schemaViewer.title.schema.${schemaPointer.schemaType}`),
             schemaPointer.schemaName
         )

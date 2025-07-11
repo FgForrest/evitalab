@@ -4,9 +4,11 @@ import {
     MetadataGroup
 } from '@/modules/traffic-viewer/model/TrafficRecordVisualisationDefinition'
 import RecordMetadataItem from '@/modules/traffic-viewer/components/RecordMetadataItem.vue'
-import { computed, Ref } from 'vue'
+import { computed } from 'vue'
+import type { Ref } from 'vue'
 import { TrafficRecordMetadataItemContext } from '@/modules/traffic-viewer/model/TrafficRecordMetadataItemContext'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useHistoryCriteria } from '@/modules/traffic-viewer/components/dependencies'
 import { TrafficRecordHistoryCriteria } from '@/modules/traffic-viewer/model/TrafficRecordHistoryCriteria'
 

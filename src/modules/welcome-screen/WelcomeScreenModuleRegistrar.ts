@@ -1,9 +1,10 @@
-import { ModuleRegistrar } from '@/ModuleRegistrar'
+import type { ModuleRegistrar } from '@/ModuleRegistrar'
 import {
     WelcomeScreenService,
     welcomeScreenServiceInjectionKey
 } from '@/modules/welcome-screen/service/WelcomeScreenService'
-import { useWelcomeScreenStore, WelcomeScreenStore } from '@/modules/welcome-screen/store/welcomeScreenStore'
+import { useWelcomeScreenStore } from '@/modules/welcome-screen/store/welcomeScreenStore'
+import type { WelcomeScreenStore } from '@/modules/welcome-screen/store/welcomeScreenStore'
 import { EvitaLabConfig, evitaLabConfigInjectionKey } from '@/modules/config/EvitaLabConfig'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 import { EvitaDBDocsClient } from '@/modules/welcome-screen/service/EvitaDBDocsClient'

@@ -1,4 +1,4 @@
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { Duration } from 'luxon'
 import { TrafficRecordContent } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordContent'
 import { TrafficRecordType } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordType'
@@ -15,21 +15,21 @@ export class TrafficRecordingCaptureRequest {
     readonly since?: OffsetDateTime
     readonly sinceSessionSequenceId?: bigint
     readonly sinceRecordSessionOffset?: number
-    readonly types?: Immutable.List<TrafficRecordType>
-    readonly sessionIds?: Immutable.List<Uuid>
+    readonly types?: ImmutableList<TrafficRecordType>
+    readonly sessionIds?: ImmutableList<Uuid>
     readonly longerThan?: Duration
     readonly fetchingMoreBytesThan?: number
-    readonly labels?: Immutable.List<Label>
+    readonly labels?: ImmutableList<Label>
 
     constructor(content: TrafficRecordContent,
                 since: OffsetDateTime | undefined,
                 sinceSessionSequenceId: bigint | undefined,
                 sinceRecordSessionOffset: number | undefined,
-                types: Immutable.List<TrafficRecordType> | undefined,
-                sessionIds: Immutable.List<Uuid> | undefined,
+                types: ImmutableList<TrafficRecordType> | undefined,
+                sessionIds: ImmutableList<Uuid> | undefined,
                 longerThan: Duration | undefined,
                 fetchingMoreBytesThan: number | undefined,
-                labels: Immutable.List<Label> | undefined) {
+                labels: ImmutableList<Label> | undefined) {
         this.content = content
         this.since = since
         this.sinceSessionSequenceId = sinceSessionSequenceId

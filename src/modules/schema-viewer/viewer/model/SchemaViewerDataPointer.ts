@@ -1,5 +1,5 @@
 import { Connection } from '@/modules/connection/model/Connection'
-import { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
+import type { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 
 /**
  * Points to concrete evitaDB schema (catalog, entity, attributes, ...)

@@ -1,5 +1,5 @@
-import { TabData } from '@/modules/workspace/tab/model/TabData'
-import { EvitaQLConsoleTabDataDto } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabDataDto'
+import type { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { EvitaQLConsoleTabDataDto } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabDataDto'
 
 /**
  * Represents injectable/storable user data of the LabEditorConsoleEvitaQL component.

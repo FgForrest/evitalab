@@ -1,10 +1,10 @@
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { trafficRecorderTaskName } from '@/modules/traffic-viewer/model/TrafficRecorderTask'
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import {
     TrafficRecordHistoryVisualisationProcessor
 } from '@/modules/traffic-viewer/service/TrafficRecordHistoryVisualisationProcessor'
@@ -34,7 +34,7 @@ export class TrafficViewerService {
         this.visualisationProcessor = visualisationProcessor
     }
 
-    async getAvailableCatalogs(): Promise<Immutable.List<CatalogStatistics>> {
+    async getAvailableCatalogs(): Promise<ImmutableList<CatalogStatistics>> {
         // todo lho force reload? it was there before
         return await this.evitaClient.management.getCatalogStatistics()
     }
@@ -79,7 +79,7 @@ export class TrafficViewerService {
     async getRecordHistoryList(catalogName: string,
                                captureRequest: TrafficRecordingCaptureRequest,
                                limit: number,
-                               reverse: boolean = false): Promise<Immutable.List<TrafficRecord>> {
+                               reverse: boolean = false): Promise<ImmutableList<TrafficRecord>> {
         return await this.evitaClient.queryCatalog(
             catalogName,
             session => session.getRecordings(
@@ -92,13 +92,13 @@ export class TrafficViewerService {
 
     async processRecords(catalogName: string,
                          historyCriteria: TrafficRecordHistoryCriteria,
-                         records: TrafficRecord[]): Promise<Immutable.List<TrafficRecordVisualisationDefinition>> {
+                         records: TrafficRecord[]): Promise<ImmutableList<TrafficRecordVisualisationDefinition>> {
         return await this.visualisationProcessor.process(catalogName, historyCriteria, records)
     }
 
     async getLabelNames(catalogName: string,
                         nameStartsWith: string,
-                        limit: number): Promise<Immutable.List<string>> {
+                        limit: number): Promise<ImmutableList<string>> {
         return await this.evitaClient.queryCatalog(
             catalogName,
             session => session.getLabelNamesOrderedByCardinality(
@@ -111,7 +111,7 @@ export class TrafficViewerService {
     async getLabelValues(catalogName: string,
                          labelName: string,
                          valueStartsWith: string,
-                         limit: number): Promise<Immutable.List<string>> {
+                         limit: number): Promise<ImmutableList<string>> {
         return await this.evitaClient.queryCatalog(
             catalogName,
             session => session.getLabelValuesOrderedByCardinality(

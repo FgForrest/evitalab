@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { TabData } from '@/modules/workspace/tab/model/TabData'
 import TabLoadingScreen from '@/modules/workspace/tab/component/TabLoadingScreen.vue'
-import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
+import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 

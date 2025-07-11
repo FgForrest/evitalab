@@ -13,9 +13,12 @@ import SchemaContainer from '@/modules/schema-viewer/viewer/component/SchemaCont
 import NameVariants from '@/modules/schema-viewer/viewer/component/NameVariants.vue'
 import AttributeSchemaList from '@/modules/schema-viewer/viewer/component/attribute/AttributeSchemaList.vue'
 import EntitySchemaList from '@/modules/schema-viewer/viewer/component/entity/EntitySchemaList.vue'
-import Immutable, { List } from 'immutable'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
+import type { Locale } from '@/modules/database-driver/data-type/Locale.ts'
+import { KeywordValue } from '@/modules/base/model/properties-table/KeywordValue.ts'
 
 const { t } = useI18n()
 
@@ -27,7 +30,26 @@ const props = defineProps<{
 const catalogId = ref<string>()
 const loaded = ref<boolean>(false)
 const loadedSchemas = ref<boolean>(false)
-const entitySchemas = ref<Immutable.Map<string, EntitySchema>>(Immutable.Map())
+const entitySchemas = ref<ImmutableMap<string, EntitySchema>>(ImmutableMap())
+
+const locales = ref<PropertyValue[]>([])
+
+onMounted(async () => {
+    const uniqueLocales: Locale[] = []
+    const schemas = await props.schema.entitySchemas()
+
+    for (const schema of schemas) {
+        for (const locale of schema[1].locales) {
+            if (!uniqueLocales.some(x => x.languageTag === locale.languageTag)) {
+                uniqueLocales.push(locale)
+            }
+        }
+    }
+
+    locales.value = uniqueLocales.map(x => {
+        return new PropertyValue(new KeywordValue(x.languageTag))
+    })
+})
 
 const toaster: Toaster = useToaster()
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
@@ -59,8 +81,12 @@ const properties = computed<Property[]>(() => [
     ),
     new Property(
         t('schemaViewer.catalog.label.description'),
-        new PropertyValue(props.schema.description || ''),
+        new PropertyValue(props.schema.description),
     ),
+    new Property(
+        t('schemaViewer.catalog.label.locales'),
+        ImmutableList(locales.value)
+    )
 ])
 </script>
 
@@ -75,13 +101,13 @@ const properties = computed<Property[]>(() => [
                 <AttributeSchemaList
                     v-if="schema.attributes && schema.attributes.size > 0"
                     :data-pointer="dataPointer"
-                    :attributes="List(schema.attributes.values())"
+                    :attributes="ImmutableList(schema.attributes.values())"
                 />
 
                 <EntitySchemaList
                     v-if="loadedSchemas && entitySchemas.size > 0"
                     :data-pointer="dataPointer"
-                    :entities="List(entitySchemas.values())"
+                    :entities="ImmutableList(entitySchemas.values())"
                 />
             </template>
         </SchemaContainer>

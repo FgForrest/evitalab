@@ -9,12 +9,14 @@ import {
 } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { computed, ComputedRef, ref, watch } from 'vue'
+import { computed } from 'vue'
+import type { ComputedRef } from 'vue'
 import { List } from 'immutable'
 import { EntityAttributeSchemaPointer } from '@/modules/schema-viewer/viewer/model/EntityAttributeSchemaPointer'
 import PropertySectionItem
     from '@/modules/entity-viewer/viewer/component/entity-property-selector/PropertySectionItem.vue'
 import { useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
+import type { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
@@ -23,7 +25,8 @@ const props = defineProps<{
     propertyDescriptor: EntityPropertyDescriptor
 }>()
 const emit = defineEmits<{
-    (e: 'schemaOpen'): void
+    (e: 'schemaOpen'): void,
+    (e: 'changeState', key: EntityPropertyKey, isSelected: boolean): void,
 }>()
 const tabProps = useTabProps()
 
@@ -58,6 +61,7 @@ function openSchema(): void {
         :flags="flags"
         openable
         @schema-open="openSchema"
+        @toggle="value => emit(`changeState`, value.key, value.selected)"
     />
 </template>
 

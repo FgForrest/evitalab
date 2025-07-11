@@ -1,6 +1,6 @@
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { List } from 'immutable'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'

@@ -1,4 +1,4 @@
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { Duration } from 'luxon'
 import { i18n } from '@/vue-plugins/i18n'
@@ -17,14 +17,14 @@ export class TrafficRecordVisualisationDefinition {
     readonly title: string
     readonly details?: string
     metadata: MetadataGroup[]
-    readonly actions: Immutable.List<Action>
+    readonly actions: ImmutableList<Action>
     private readonly _children: TrafficRecordVisualisationDefinition[] = []
 
     constructor(source: TrafficRecord,
                 title: string,
                 details: string | undefined,
                 metadata: MetadataGroup[],
-                actions: Immutable.List<Action>) {
+                actions: ImmutableList<Action>) {
         this.source = source
         this.title = title
         this.details = details
@@ -36,8 +36,8 @@ export class TrafficRecordVisualisationDefinition {
         this._children.push(childRecord)
     }
 
-    get children(): Immutable.List<TrafficRecordVisualisationDefinition> {
-        return Immutable.List(this._children)
+    get children(): ImmutableList<TrafficRecordVisualisationDefinition> {
+        return ImmutableList(this._children)
     }
 
     get defaultMetadata(): MetadataGroup | undefined {

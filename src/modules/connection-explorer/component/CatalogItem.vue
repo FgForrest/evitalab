@@ -3,13 +3,14 @@
  * Explorer tree item representing a single catalog in evitaDB.
  */
 
-import { computed, ref, Ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import type { Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { MenuAction } from '@/modules/base/model/menu/MenuAction'
 import VTreeViewItem from '@/modules/base/component/VTreeViewItem.vue'
 import VTreeViewEmptyItem from '@/modules/base/component/VTreeViewEmptyItem.vue'
 import CollectionItem from '@/modules/connection-explorer/component/CollectionItem.vue'
-import { MenuItem } from '@/modules/base/model/menu/MenuItem'
+import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
 import RenameCatalogDialog from '@/modules/connection-explorer/component/RenameCatalogDialog.vue'
 import DeleteCatalogDialog from '@/modules/connection-explorer/component/DeleteCatalogDialog.vue'
 import ReplaceCatalogDialog from '@/modules/connection-explorer/component/ReplaceCatalogDialog.vue'
@@ -17,8 +18,9 @@ import CreateCollectionDialog from '@/modules/connection-explorer/component/Crea
 import SwitchCatalogToAliveStateDialog
     from '@/modules/connection-explorer/component/SwitchCatalogToAliveStateDialog.vue'
 import { ItemFlag } from '@/modules/base/model/tree-view/ItemFlag'
-import Immutable from 'immutable'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { List as ImmutableList } from 'immutable'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 import { provideCatalog, useServerStatus } from '@/modules/connection-explorer/component/dependecies'
@@ -29,9 +31,17 @@ import {
     CatalogItemMenuFactory,
     useCatalogItemMenuFactory
 } from '@/modules/connection-explorer/service/CatalogItemMenuFactory'
+import BackupCatalogDialog from '@/modules/backup-viewer/components/BackupCatalogDialog.vue'
+import {
+    type BackupViewerTabFactory,
+    useBackupsTabFactory
+} from '@/modules/backup-viewer/service/BackupViewerTabFactory.ts'
+import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
 
 const catalogItemService: CatalogItemService = useCatalogItemService()
 const catalogItemMenuFactory: CatalogItemMenuFactory = useCatalogItemMenuFactory()
+const backupViewerTabFactory: BackupViewerTabFactory = useBackupsTabFactory()
+const workspaceService: WorkspaceService = useWorkspaceService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
@@ -45,6 +55,7 @@ const showReplaceCatalogDialog = ref<boolean>(false)
 const showSwitchCatalogToAliveStateDialog = ref<boolean>(false)
 const showDeleteCatalogDialog = ref<boolean>(false)
 const showCreateCollectionDialog = ref<boolean>(false)
+const showBackupCatalogDialog = ref<boolean>(false)
 
 const flags = computed<ItemFlag[]>(() => {
     const flags: ItemFlag[] = []
@@ -69,8 +80,8 @@ const menuItemList = computed<MenuItem<CatalogMenuItemType>[]>(() => {
     return Array.from(menuItems.value.values())
 })
 
-const entityCollections = computed<Immutable.List<EntityCollectionStatistics>>(() => {
-    return Immutable.List<EntityCollectionStatistics>(props.catalog.entityCollectionStatistics)
+const entityCollections = computed<ImmutableList<EntityCollectionStatistics>>(() => {
+    return ImmutableList<EntityCollectionStatistics>(props.catalog.entityCollectionStatistics)
         .sort((a: EntityCollectionStatistics, b: EntityCollectionStatistics) => {
             return a.entityType.localeCompare(b.entityType)
         })
@@ -115,7 +126,8 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
         () => showReplaceCatalogDialog.value = true,
         () => showSwitchCatalogToAliveStateDialog.value = true,
         () => showDeleteCatalogDialog.value = true,
-        () => showCreateCollectionDialog.value = true
+        () => showCreateCollectionDialog.value = true,
+        () => showBackupCatalogDialog.value = true,
     )
 }
 </script>
@@ -151,6 +163,17 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
             </template>
         </div>
 
+        <BackupCatalogDialog
+            v-if="showBackupCatalogDialog"
+            :model-value="showBackupCatalogDialog"
+            :catalog="catalog.name"
+            @backup="() => {
+                showBackupCatalogDialog = false
+                workspaceService.createTab(
+                    backupViewerTabFactory.createNew()
+                )
+            }"
+        />
         <RenameCatalogDialog
             v-if="showRenameCatalogDialog"
             v-model="showRenameCatalogDialog"

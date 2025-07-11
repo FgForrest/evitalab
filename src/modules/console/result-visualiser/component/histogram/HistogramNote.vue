@@ -16,7 +16,7 @@ const props = defineProps<{
 </template>
 
 <style lang="scss" scoped>
-@import "@/styles/colors.scss";
+@use "@/styles/colors.scss" as *;
 
 .histogram-note {
     display: inline-grid;

@@ -8,24 +8,25 @@ import 'splitpanes/dist/splitpanes.css'
 import { computed, onBeforeMount, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { EntityViewerService, useEntityViewerService } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
-import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
-import { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
+import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
+import type { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
 import { EntityViewerTabParams } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabParams'
 import { EntityViewerTabData } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabData'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
 import { QueryLanguage } from '@/modules/entity-viewer/viewer/model/QueryLanguage'
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
-import { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
+import type { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
-import { QueryResult } from '@/modules/entity-viewer/viewer/model/QueryResult'
+import type { QueryResult } from '@/modules/entity-viewer/viewer/model/QueryResult'
 import { Command } from '@/modules/keymap/model/Command'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import EntityGrid from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGrid.vue'
 import Toolbar from '@/modules/entity-viewer/viewer/component/Toolbar.vue'
 import QueryInput from '@/modules/entity-viewer/viewer/component/QueryInput.vue'
-import Immutable from 'immutable'
+import { Map as ImmutableMap, List as ImmutableList } from 'immutable'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
 import {
     provideDataLocale,
@@ -35,7 +36,7 @@ import {
     provideQueryLanguage,
     provideTabProps
 } from '@/modules/entity-viewer/viewer/component/dependencies'
-import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import type { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
 import {
@@ -65,11 +66,11 @@ defineExpose<TabComponentExpose>({
 })
 
 // static data
-const title = Immutable.List.of(props.params.dataPointer.entityType)
+const title = ImmutableList.of(props.params.dataPointer.entityType)
 
 let sortedEntityPropertyKeys: string[] = []
 let entityPropertyDescriptors: EntityPropertyDescriptor[] = []
-const entityPropertyDescriptorIndex = ref<Immutable.Map<string, EntityPropertyDescriptor>>(Immutable.Map<string, EntityPropertyDescriptor>())
+const entityPropertyDescriptorIndex = ref<ImmutableMap<string, EntityPropertyDescriptor>>(ImmutableMap<string, EntityPropertyDescriptor>())
 provideEntityPropertyDescriptorIndex(entityPropertyDescriptorIndex)
 const entitySchemaChangedCallbackId: string = entityViewerService.registerEntitySchemaChangeCallback(
     props.params.dataPointer,
@@ -77,7 +78,7 @@ const entitySchemaChangedCallbackId: string = entityViewerService.registerEntity
 )
 
 let gridHeaders: Map<string, any> = new Map<string, any>()
-let dataLocales: Immutable.List<string> = Immutable.List()
+let dataLocales: ImmutableList<string> = ImmutableList()
 
 // dynamic user data
 const selectedQueryLanguage = ref<QueryLanguage>(props.data.queryLanguage ? props.data.queryLanguage : QueryLanguage.EvitaQL)
@@ -189,7 +190,7 @@ async function reloadEntityPropertyDescriptors(): Promise<void> {
     displayedEntityProperties.value = displayedEntityProperties.value.filter(it => !removeDisplayProperties.includes(it.toString()))
 }
 
-function constructEntityPropertyDescriptorIndex(entityPropertyDescriptors: EntityPropertyDescriptor[]): Immutable.Map<string, EntityPropertyDescriptor> {
+function constructEntityPropertyDescriptorIndex(entityPropertyDescriptors: EntityPropertyDescriptor[]): ImmutableMap<string, EntityPropertyDescriptor> {
     const entityPropertyDescriptorIndexBuilder: Map<string, EntityPropertyDescriptor> = new Map()
     for (const entityPropertyDescriptor of entityPropertyDescriptors) {
         entityPropertyDescriptorIndexBuilder.set(entityPropertyDescriptor.key.toString(), entityPropertyDescriptor)
@@ -202,7 +203,7 @@ function constructEntityPropertyDescriptorIndex(entityPropertyDescriptors: Entit
             sortedEntityPropertyKeys.push(childEntityPropertyDescriptor.key.toString())
         }
     }
-    return Immutable.Map(entityPropertyDescriptorIndexBuilder)
+    return ImmutableMap(entityPropertyDescriptorIndexBuilder)
 }
 
 async function initializeGridHeaders(entityPropertyDescriptors: EntityPropertyDescriptor[]): Promise<Map<string, any>> {
@@ -281,15 +282,17 @@ function preselectEntityProperties(): void {
 
 }
 
-async function gridUpdated({ page, itemsPerPage, sortBy }: { page: number, itemsPerPage: number, sortBy: any[] }): Promise<void> {
+async function gridUpdated({ page, itemsPerPage, sortBy }: {
+    page: number,
+    itemsPerPage: number,
+    sortBy: any[]
+}): Promise<void> {
     pageNumber.value = page
     pageSize.value = itemsPerPage
-    if (sortBy.length > 0) {
-        try {
-            orderByCode.value = await entityViewerService.buildOrderByFromGridColumns(props.params.dataPointer, selectedQueryLanguage.value, sortBy)
-        } catch (error: any) {
-            await toaster.error('Could not build orderBy', error) // todo lho i18n
-        }
+    try {
+        orderByCode.value = await entityViewerService.buildOrderByFromGridColumns(props.params.dataPointer, selectedQueryLanguage.value, sortBy)
+    } catch (error: any) {
+        await toaster.error('Could not build orderBy', error) // todo lho i18n
     }
 
     await executeQueryAutomatically()

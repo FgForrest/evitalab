@@ -1,5 +1,5 @@
 import { ModuleContextBuilder } from "@/ModuleContextBuilder";
-import { ModuleRegistrar } from "@/ModuleRegistrar";
+import type { ModuleRegistrar } from "@/ModuleRegistrar";
 import { TaskViewerService, taskViewerServiceInjectionKey } from "./services/TaskViewerService";
 import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
 

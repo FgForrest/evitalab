@@ -6,11 +6,11 @@ import {
 } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabDefinition'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import ShareTabButton from '@/modules/workspace/tab/component/ShareTabButton.vue'
-import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
+import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 import { TrafficRecordHistoryViewerTabParams } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabParams'
 import { TrafficRecordHistoryViewerTabData } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabData'
-import { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
-import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import type { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
+import type { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import {
     ConnectionSubjectPath

@@ -1,5 +1,5 @@
 import { TabHistoryKey } from '@/modules/workspace/tab/model/TabHistoryKey'
-import { FilterByHistoryRecord } from '@/modules/entity-viewer/viewer/history/FilterByHistoryRecord'
+import type { FilterByHistoryRecord } from '@/modules/entity-viewer/viewer/history/FilterByHistoryRecord'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 

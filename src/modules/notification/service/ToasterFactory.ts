@@ -1,12 +1,12 @@
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
-import { Toaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { LabRunMode } from '@/LabRunMode'
 import { RemoteToaster } from '@/modules/notification/service/RemoteToaster'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { ErrorViewerTabFactory } from '@/modules/error-viewer/viewer/workspace/service/ErrorViewerTabFactory'
 import { LocalToaster } from '@/modules/notification/service/LocalToaster'
-import { ToastInterface } from 'vue-toastification/src/ts/interface'
+import type { ToastInterface } from 'vue-toastification/src/ts/interface'
 import { useToast as baseUseToast } from 'vue-toastification'
 
 /**

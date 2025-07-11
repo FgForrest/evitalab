@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import VLoadingCircular from '@/modules/base/component/VLoadingCircular.vue'
-import { MenuItem } from '@/modules/base/model/menu/MenuItem'
+import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
 import { ItemFlag } from '@/modules/base/model/tree-view/ItemFlag'
 
 export interface Props {
@@ -132,7 +132,7 @@ function openActions(): void {
 </template>
 
 <style lang="scss" scoped>
-@import "@/styles/colors.scss";
+@use "@/styles/colors.scss" as *;
 
 .tree-view-item {
     &__content {

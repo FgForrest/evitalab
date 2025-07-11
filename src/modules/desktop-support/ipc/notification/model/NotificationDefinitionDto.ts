@@ -1,5 +1,5 @@
 import { NotificationSeverity } from '@/modules/desktop-support/ipc/notification/model/NotificationSeverity'
-import { NotificationSourceDto } from '@/modules/desktop-support/ipc/notification/model/NotificationSourceDto'
+import type { NotificationSourceDto } from '@/modules/desktop-support/ipc/notification/model/NotificationSourceDto'
 
 /**
  * IPC DTO for NotificationDefinition

@@ -1,4 +1,4 @@
-import { ModuleRegistrar } from '@/ModuleRegistrar'
+import type { ModuleRegistrar } from '@/ModuleRegistrar'
 import { WorkspaceModuleRegistrar } from '@/modules/workspace/WorkspaceModuleRegistrar'
 import { ConnectionModuleRegistrar } from '@/modules/connection/ConnectionModuleRegistrar'
 import { EntityViewerModuleRegistrar } from '@/modules/entity-viewer/EntityViewerModuleRegistrar'

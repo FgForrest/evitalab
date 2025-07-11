@@ -1,4 +1,5 @@
-import { DefineComponent, markRaw } from 'vue'
+import { markRaw } from 'vue'
+import type { DefineComponent } from 'vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import { ErrorViewerTabParams } from '@/modules/error-viewer/viewer/workspace/model/ErrorViewerTabParams'

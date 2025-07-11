@@ -1,7 +1,7 @@
-import { TabParams } from '@/modules/workspace/tab/model/TabParams'
-import { SchemaViewerTabParamsDto } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabParamsDto'
+import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
+import type { SchemaViewerTabParamsDto } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabParamsDto'
 import { SchemaPointerType } from '@/modules/schema-viewer/viewer/model/SchemaPointerType'
-import { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
+import type { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 import { CatalogSchemaPointer } from '@/modules/schema-viewer/viewer/model/CatalogSchemaPointer'
 import { EntitySchemaPointer } from '@/modules/schema-viewer/viewer/model/EntitySchemaPointer'
 import { CatalogAttributeSchemaPointer } from '@/modules/schema-viewer/viewer/model/CatalogAttributeSchemaPointer'
@@ -11,6 +11,7 @@ import { AssociatedDataSchemaPointer } from '@/modules/schema-viewer/viewer/mode
 import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer'
+import { SortableAttributeCompoundSchemaPointer } from '@/modules/schema-viewer/viewer/model/SortableAttributeCompoundSchemaPointer.ts'
 
 /**
  * Represents props of the schema viewer component.
@@ -71,6 +72,13 @@ export class SchemaViewerTabParams implements TabParams<SchemaViewerTabParamsDto
                 catalogName: schemaPointer.catalogName,
                 entityType: schemaPointer.entityType,
                 referenceName: schemaPointer.referenceName
+            }
+        } else if(schemaPointer instanceof SortableAttributeCompoundSchemaPointer) {
+            schemaPointerType = SchemaPointerType.SortableAttributeCompoundSchema
+            schemaPointerParams = {
+                catalogName: schemaPointer.catalogName,
+                entityType: schemaPointer.entityType,
+                attributeName: schemaPointer.sortableAttributeCompoundName
             }
         } else {
             throw new UnexpectedError('Unknown schema pointer type.')

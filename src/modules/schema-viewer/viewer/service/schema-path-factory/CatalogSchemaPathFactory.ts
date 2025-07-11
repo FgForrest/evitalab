@@ -4,7 +4,7 @@ import {
 import { CatalogSchemaPointer } from '@/modules/schema-viewer/viewer/model/CatalogSchemaPointer'
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { SchemaViewerTabFactory } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
-import { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
+import type { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
 
 /**

@@ -21,12 +21,23 @@ export class EntityReferenceValue extends EntityPropertyValue {
         return false
     }
 
+    toRawString(): string {
+        return JSON.stringify(this.toRawRepresentation())
+    }
+
+    toRawRepresentation(): any {
+        return {
+            primaryKey: this.primaryKey,
+            representativeAttributes: this.representativeAttributes.map(x => x.toRawRepresentation())
+        }
+    }
+
     toPreviewString(): string {
         const flattenedRepresentativeAttributes: string[] = []
         for (const representativeAttribute of this.representativeAttributes) {
             const representativeAttributeValue = representativeAttribute.value()
             if (representativeAttributeValue == undefined) {
-                return super.emptyEntityPropertyValuePlaceholder
+                return this.emptyEntityPropertyValuePlaceholder
             } else {
                 flattenedRepresentativeAttributes.push(representativeAttributeValue.toString())
             }

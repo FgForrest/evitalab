@@ -1,4 +1,4 @@
-import { QueryBuilder } from '@/modules/entity-viewer/viewer/service/QueryBuilder'
+import type { QueryBuilder } from '@/modules/entity-viewer/viewer/service/QueryBuilder'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'

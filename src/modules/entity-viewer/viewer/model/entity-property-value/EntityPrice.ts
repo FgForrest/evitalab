@@ -1,5 +1,5 @@
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
-import {
+import type {
     EntityPropertyValuePreviewStringContext
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValuePreviewStringContext'
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
@@ -17,7 +17,7 @@ export class EntityPrice extends EntityPropertyValue {
     readonly priceList: string
     readonly currency: Currency
     readonly innerRecordId?: number | undefined
-    readonly sellable: boolean | undefined
+    readonly indexed: boolean | undefined
     readonly validity?: DateTimeRange | undefined
     readonly priceWithoutTax: BigDecimal
     readonly priceWithTax: BigDecimal
@@ -27,7 +27,7 @@ export class EntityPrice extends EntityPropertyValue {
                 priceList: string,
                 currency: Currency,
                 innerRecordId: number | undefined,
-                sellable: boolean | undefined,
+                indexed: boolean | undefined,
                 validity: DateTimeRange | undefined,
                 priceWithoutTax: BigDecimal,
                 priceWithTax: BigDecimal,
@@ -37,7 +37,7 @@ export class EntityPrice extends EntityPropertyValue {
         this.priceList = priceList
         this.currency = currency
         this.innerRecordId = innerRecordId
-        this.sellable = sellable
+        this.indexed = indexed
         this.validity = validity
         this.priceWithoutTax = priceWithoutTax
         this.priceWithTax = priceWithTax
@@ -50,7 +50,7 @@ export class EntityPrice extends EntityPropertyValue {
             price.priceList,
             price.currency,
             price.innerRecordId,
-            price.sellable,
+            price.indexed,
             price.validity,
             price.priceWithoutTax,
             price.priceWithTax,
@@ -76,6 +76,24 @@ export class EntityPrice extends EntityPropertyValue {
 
     isEmpty(): boolean {
         return false
+    }
+
+    toRawString(): string {
+        return JSON.stringify(this.toRawRepresentation())
+    }
+
+    toRawRepresentation(): any {
+        return {
+            priceId: this.priceId,
+            priceList: this.priceList,
+            currency: this.currency,
+            innerRecordId: this.innerRecordId,
+            indexed: this.indexed,
+            validity: this.validity,
+            priceWithoutTax: this.priceWithTax,
+            priceWithTax: this.priceWithTax,
+            taxRate: this.taxRate
+        }
     }
 
     toPreviewString(context: EntityPropertyValuePreviewStringContext): string {

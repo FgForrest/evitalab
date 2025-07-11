@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
@@ -14,6 +14,8 @@ import AssociatedDataSchemaList
     from '@/modules/schema-viewer/viewer/component/associated-data/AssociatedDataSchemaList.vue'
 import ReferenceSchemaList from '@/modules/schema-viewer/viewer/component/reference/ReferenceSchemaList.vue'
 import { i18n } from '@/vue-plugins/i18n'
+import SortableAttributeCompoundSchemaList
+    from '@/modules/schema-viewer/viewer/component/sortable-compound/SortableAttributeCompoundSchemaList.vue'
 
 const { t } = useI18n()
 
@@ -64,6 +66,12 @@ const properties = computed<Property[]>(() => [
                 v-if="schema.references && schema.references.size > 0"
                 :data-pointer="dataPointer"
                 :references="List(schema.references.values())"
+            />
+
+            <SortableAttributeCompoundSchemaList
+                v-if="schema.sortableAttributeCompounds && schema.sortableAttributeCompounds.size > 0"
+                :data-pointer="dataPointer"
+                :sortable-attribute-compounds="List(schema.sortableAttributeCompounds.values())"
             />
         </template>
     </SchemaContainer>

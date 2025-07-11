@@ -5,7 +5,7 @@
 
 import { useI18n } from 'vue-i18n'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
-import { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
+import  type { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
 import { Property } from '@/modules/base/model/properties-table/Property'
 import { Command } from '@/modules/keymap/model/Command'
 import { PropertyValue } from '@/modules/base/model/properties-table/PropertyValue'
@@ -13,8 +13,8 @@ import { KeywordValue } from '@/modules/base/model/properties-table/KeywordValue
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import VPropertiesTable from '@/modules/base/component/VPropertiesTable.vue'
-import Immutable from 'immutable'
-import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import { List as ImmutableList } from 'immutable'
+import type { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import { SystemSubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SystemSubjectPath'
 import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
@@ -35,7 +35,7 @@ defineExpose<TabComponentExpose>({
     }
 })
 
-const title: Immutable.List<string> = Immutable.List.of(t('keymapViewer.title'))
+const title: ImmutableList<string> = ImmutableList.of(t('keymapViewer.title'))
 
 type Section = string
 type Subsection = string

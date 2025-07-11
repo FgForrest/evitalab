@@ -1,7 +1,8 @@
 <script setup lang="ts">
 
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useI18n } from 'vue-i18n'
 import VDownloadServerFileButton from '@/modules/viewer-support/component/VDownloadServerFileButton.vue'
 

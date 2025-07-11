@@ -1,4 +1,4 @@
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 
 const stringWithCaseWordSplittingPattern: RegExp = /([^\s\-_A-Z]+)|([A-Z]+[^\s\-_A-Z]*)/g
 const unsupportedCharactersForWordSplittingPattern: RegExp = /[.:+\-@/\\|`~]/g
@@ -25,9 +25,9 @@ const sizeFormatter: Intl.NumberFormat = new Intl.NumberFormat(
  * Splits string into words.
  * @param s input string to split
  */
-export function splitStringWithCaseIntoWords(s?: string): Immutable.List<string> {
+export function splitStringWithCaseIntoWords(s?: string): ImmutableList<string> {
     if (s == undefined || s.trim().length === 0) {
-        return Immutable.List()
+        return ImmutableList()
     }
 
     // remove unsupported characters in concrete cases (not base case)
@@ -38,7 +38,7 @@ export function splitStringWithCaseIntoWords(s?: string): Immutable.List<string>
     for (const result of results) {
         words.push(result[0])
     }
-    return Immutable.List(words)
+    return ImmutableList(words)
 }
 
 export function formatByteSize(sizeInBytes: number): string {
@@ -53,14 +53,19 @@ export function formatByteSize(sizeInBytes: number): string {
     }
 }
 
-export function formatCount(count: number): string {
-    if (Math.floor(count / 1_000_000_000) > 0) {
-        return `${sizeFormatter.format(count / 1_000_000_000)}G`
-    } else if (Math.floor(count / 100_000) > 0) {
-        return `${sizeFormatter.format(count / 100_000)}M`
-    } else if (Math.floor(count / 1_000) > 0) {
-        return `${sizeFormatter.format(count / 1_000)}k`
+export function formatCount(count: number, decimals: number = 2): string {
+    const truncate = (num: number, d: number) => {
+        const factor = Math.pow(10, d);
+        return Math.floor(num * factor) / factor;
+    };
+
+    if (count >= 1_000_000_000) {
+        return `${truncate(count / 1_000_000_000, decimals)}G`;
+    } else if (count >= 1_000_000) {
+        return `${truncate(count / 1_000_000, decimals)}M`;
+    } else if (count >= 1_000) {
+        return `${truncate(count / 1_000, decimals)}k`;
     } else {
-        return `${sizeFormatter.format(count)}`;
+        return truncate(count, decimals).toString();
     }
 }

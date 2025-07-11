@@ -4,7 +4,7 @@ import {
 import {
     JsonHierarchyVisualiserService
 } from '@/modules/console/result-visualiser/service/json/JsonHierarchyVisualiserService'
-import { Result } from '@/modules/console/result-visualiser/model/Result'
+import type { Result } from '@/modules/console/result-visualiser/model/Result'
 import { VisualisedNamedHierarchy } from '@/modules/console/result-visualiser/model/hierarchy/VisualisedNamedHierarchy'
 import {
     VisualisedHierarchyTreeNode

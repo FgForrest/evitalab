@@ -1,7 +1,7 @@
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
-import Immutable from 'immutable'
-import { Router } from 'vue-router'
+import { Map as ImmutableMap } from 'immutable'
+import type { Router } from 'vue-router'
 import { LabRunMode } from '@/LabRunMode'
 
 const systemPropertiesControlParamName: string = 'evitalab'
@@ -27,11 +27,11 @@ export class EvitaLabConfig {
 
     private readonly _runMode: LabRunMode
     private readonly _playgroundMode: boolean
-    private readonly systemProperties: Immutable.Map<string, string>
+    private readonly systemProperties: ImmutableMap<string, string>
 
     private constructor(runMode: LabRunMode,
                         playgroundMode: boolean,
-                        systemProperties: Immutable.Map<string, string>) {
+                        systemProperties: ImmutableMap<string, string>) {
         this._runMode = runMode
         this._playgroundMode = playgroundMode
         this.systemProperties = systemProperties
@@ -76,7 +76,7 @@ export class EvitaLabConfig {
         const playgroundMode: boolean = newQueryParams.has('demoSnippetRequest') ||
             newQueryParams.has('sharedTab')
 
-        return new EvitaLabConfig(runMode, playgroundMode, Immutable.Map(systemProperties));
+        return new EvitaLabConfig(runMode, playgroundMode, ImmutableMap(systemProperties));
     }
 
     get runMode(): LabRunMode {

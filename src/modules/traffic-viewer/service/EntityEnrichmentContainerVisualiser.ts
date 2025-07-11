@@ -8,7 +8,7 @@ import {
     TrafficRecordVisualisationDefinition
 } from '../model/TrafficRecordVisualisationDefinition'
 import { i18n } from '@/vue-plugins/i18n'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { EvitaQLConsoleTabData } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabData'
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
@@ -69,7 +69,7 @@ export class EntityEnrichmentContainerVisualiser extends TrafficRecordVisualiser
     }
 
     private constructActions(ctx: TrafficRecordVisualisationContext,
-                             trafficRecord: EntityEnrichmentContainer): Immutable.List<Action> {
+                             trafficRecord: EntityEnrichmentContainer): ImmutableList<Action> {
         const actions: Action[] = []
 
         actions.push(new Action(
@@ -83,6 +83,6 @@ export class EntityEnrichmentContainerVisualiser extends TrafficRecordVisualiser
             )
         ))
 
-        return Immutable.List(actions)
+        return ImmutableList(actions)
     }
 }

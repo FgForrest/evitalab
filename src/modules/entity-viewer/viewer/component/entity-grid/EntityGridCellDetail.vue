@@ -5,7 +5,7 @@
 
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
+import type { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
@@ -76,6 +76,7 @@ const rawDataType = computed<Scalar | ExtraEntityObjectType | undefined>(() => {
     }
 })
 const isArray = computed<boolean>(() => rawDataType?.value?.endsWith('Array') || false)
+const isPrice = computed<boolean>(() => props.propertyDescriptor?.type === EntityPropertyType.Prices || false)
 const componentDataType = computed<Scalar | ExtraEntityObjectType | undefined>(() => {
     if (!rawDataType.value) {
         return undefined
@@ -103,14 +104,14 @@ const componentDataType = computed<Scalar | ExtraEntityObjectType | undefined>((
             </template>
             <template #actions>
                 <DetailOutputFormatSelector
-                    v-if="!isArray"
+                    v-if="!isArray && !isPrice"
                     v-model="globalOutputFormat"
                 />
                 <VBtn
                     icon
                     variant="flat"
                     density="compact"
-                    @click="emit('update:modelValue', false)"
+                    @click.stop="emit('update:modelValue', false)"
                 >
                     <VIcon>mdi-close</VIcon>
                     <VTooltip activator="parent">

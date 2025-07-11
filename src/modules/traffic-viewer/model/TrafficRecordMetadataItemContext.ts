@@ -1,5 +1,5 @@
-import { Toaster } from '@/modules/notification/service/Toaster'
-import { Ref } from 'vue'
+import type { Toaster } from '@/modules/notification/service/Toaster'
+import type { Ref } from 'vue'
 import { TrafficRecordHistoryCriteria } from '@/modules/traffic-viewer/model/TrafficRecordHistoryCriteria'
 
 /**

@@ -1,5 +1,5 @@
-import { TabData } from '@/modules/workspace/tab/model/TabData'
-import {
+import type { TabData } from '@/modules/workspace/tab/model/TabData'
+import type {
     TrafficRecordHistoryViewerTabDataDto
 } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabDataDto'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
