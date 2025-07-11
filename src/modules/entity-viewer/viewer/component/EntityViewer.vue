@@ -44,6 +44,7 @@ import {
 } from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import { EntityViewerTabDefinition } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabDefinition'
+import { LayerSelector } from '@/modules/entity-viewer/viewer/model/LayerSelector.ts'
 
 const entityViewerService: EntityViewerService = useEntityViewerService()
 const toaster: Toaster = useToaster()
@@ -102,6 +103,7 @@ const filterByCode = ref<string>(props.data.filterBy ? props.data.filterBy : '')
 const lastAppliedFilterByCode = ref<string>('')
 provideQueryFilter(lastAppliedFilterByCode)
 const orderByCode = ref<string>(props.data.orderBy ? props.data.orderBy : '')
+const selectedLayer = ref<LayerSelector[]>()
 
 const selectedDataLocale = ref<string | undefined>(props.data.dataLocale ? props.data.dataLocale : undefined)
 provideDataLocale(selectedDataLocale)
@@ -381,6 +383,7 @@ onUnmounted(() => {
                     v-model:selected-data-locale="selectedDataLocale"
                     v-model:selected-price-type="selectedPriceType"
                     v-model:displayed-entity-properties="displayedEntityProperties"
+                    v-model:selected-layer="selectedLayer"
                     @execute-query="executeQueryManually"
                 />
             </template>

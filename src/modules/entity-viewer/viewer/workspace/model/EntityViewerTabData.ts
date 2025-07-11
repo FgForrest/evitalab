@@ -3,6 +3,7 @@ import type { EntityViewerTabDataDto } from '@/modules/entity-viewer/viewer/work
 import { QueryLanguage } from '@/modules/entity-viewer/viewer/model/QueryLanguage'
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
+import type { LayerSelector } from '@/modules/entity-viewer/viewer/model/LayerSelector.ts'
 
 /**
  * Represents injectable/storable user data of the LabEditorConsoleDataGrid component.
@@ -11,6 +12,7 @@ export class EntityViewerTabData implements TabData<EntityViewerTabDataDto> {
     readonly queryLanguage?: QueryLanguage
     readonly filterBy?: string
     readonly orderBy?: string
+    readonly selectedLayers?: LayerSelector[]
     readonly dataLocale?: string
     readonly priceType?: QueryPriceMode
     readonly displayedProperties?: EntityPropertyKey[]
@@ -23,7 +25,8 @@ export class EntityViewerTabData implements TabData<EntityViewerTabDataDto> {
                 dataLocale?: string,
                 displayedProperties?: EntityPropertyKey[],
                 pageSize?: number,
-                pageNumber?: number) {
+                pageNumber?: number,
+                selectedLayers?: LayerSelector[]) {
         this.queryLanguage = queryLanguage
         this.filterBy = filterBy
         this.orderBy = orderBy
@@ -31,6 +34,7 @@ export class EntityViewerTabData implements TabData<EntityViewerTabDataDto> {
         this.displayedProperties = displayedProperties
         this.pageSize = pageSize
         this.pageNumber = pageNumber
+        this.selectedLayers = selectedLayers
     }
 
     toSerializable(): EntityViewerTabDataDto {

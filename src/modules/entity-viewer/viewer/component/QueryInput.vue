@@ -33,7 +33,7 @@ import EntityPropertySelector
 import { useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { List } from 'immutable'
 import { EntityViewerService, useEntityViewerService } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
-import LayerSelector from '@/modules/entity-viewer/viewer/component/LayerSelector.vue'
+import type { LayerSelector } from '@/modules/entity-viewer/viewer/model/LayerSelector.ts'
 
 const keymap: Keymap = useKeymap()
 const workspaceService: WorkspaceService = useWorkspaceService()
@@ -58,6 +58,7 @@ const emit = defineEmits<{
     (e: 'update:selectedDataLocale', value: string | undefined): void
     (e: 'update:selectedPriceType', value: QueryPriceMode): void
     (e: 'update:displayedEntityProperties', value: EntityPropertyKey[]): void
+    (e: 'update:selectedLayer', value: LayerSelector[]): void
 }>()
 const tabProps = useTabProps()
 
@@ -202,7 +203,7 @@ onUnmounted(() => {
                 @update:selected="emit('update:selectedPriceType', $event)"
             />
             <LayerSelector
-
+                @update:selected="emit('update:selectedLayer', $event)"
             />
 
             <EntityPropertySelector

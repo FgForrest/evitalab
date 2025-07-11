@@ -2,14 +2,12 @@
 
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import { useI18n } from 'vue-i18n'
+import type { LayerSelector } from '@/modules/entity-viewer/viewer/model/LayerSelector.ts'
 
 const { t } = useI18n()
 
 const emit = defineEmits<{
-    (e: 'update:selected', value: Array<{
-        name: string,
-        value: boolean
-    }>): void
+    (e: 'update:selected', value: LayerSelector[]): void
 }>()
 
 const liveSelection = ref<boolean>(true)
