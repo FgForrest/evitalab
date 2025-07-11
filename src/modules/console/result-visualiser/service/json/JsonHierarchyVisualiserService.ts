@@ -8,6 +8,7 @@ import { ReferenceSchema } from '@/modules/database-driver/request-response/sche
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { VisualisedNamedHierarchy } from '@/modules/console/result-visualiser/model/hierarchy/VisualisedNamedHierarchy'
 import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
+import { Map as ImmutableMap } from 'immutable'
 
 /**
  * Common abstract for all JSON-based hierarchy visualiser services.
@@ -28,14 +29,14 @@ export abstract class JsonHierarchyVisualiserService<VS extends JsonResultVisual
         for (const referenceName of Object.keys(hierarchyResult)) {
             const namedHierarchiesResult: Result = hierarchyResult[referenceName]
 
-            let convertedNamedHierarchiesResult: Map<string, Result> = new Map()
+            const convertedNamedHierarchiesResult: Map<string, Result> = new Map()
             for (const name of Object.keys(namedHierarchiesResult)) {
                 const hierarchy: Result = namedHierarchiesResult[name]
                 convertedNamedHierarchiesResult.set(name, hierarchy)
             }
 
             if (referenceName === 'self') {
-                referencesWithHierarchies.push([undefined, convertedNamedHierarchiesResult])
+                referencesWithHierarchies.push([undefined, ImmutableMap(convertedNamedHierarchiesResult)])
             } else {
                 const referenceSchema: ReferenceSchema | undefined = entitySchema.references
                     .find(reference => reference.nameVariants.get(NamingConvention.CamelCase) === referenceName)
@@ -44,7 +45,7 @@ export abstract class JsonHierarchyVisualiserService<VS extends JsonResultVisual
                     throw new UnexpectedError(`Reference '${referenceName}' not found in entity '${entitySchema.name}'.`)
                 }
 
-                referencesWithHierarchies.push([referenceSchema, convertedNamedHierarchiesResult])
+                referencesWithHierarchies.push([referenceSchema, ImmutableMap(convertedNamedHierarchiesResult)])
             }
         }
         return referencesWithHierarchies

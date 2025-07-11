@@ -7,7 +7,6 @@ import Vue from '@vitejs/plugin-vue'
 import VueRouter from 'unplugin-vue-router/vite'
 import { VueRouterAutoImports } from 'unplugin-vue-router'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
-import type { ComponentResolver } from 'unplugin-vue-components'
 
 // Utilities
 import { defineConfig, loadEnv } from 'vite'
@@ -55,20 +54,7 @@ export default defineConfig(({ mode }) => {
                 vueTemplate: true,
             }),
             Components({
-                dts: 'src/components.d.ts',
-                resolvers: [
-                    {
-                        type: 'component',
-                        resolve: (name: string) => {
-                            if (name === 'apexchart') {
-                                return {
-                                    name: 'default',
-                                    from: 'vue3-apexcharts',
-                                }
-                            }
-                        },
-                    } as ComponentResolver,
-                ],
+                dts: 'src/components.d.ts'
             }),
             Vue({
                 template: { transformAssetUrls },
