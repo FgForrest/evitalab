@@ -45,7 +45,7 @@ const test = localStorage.getItem('test')
 </template>
 
 <style lang="scss" scoped>
-@import "@/styles/colors.scss";
+@use "@/styles/colors.scss" as *;
 
 .editor-welcome-screen {
     position: absolute;

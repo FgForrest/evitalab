@@ -14,7 +14,7 @@ import { EntitySchemaPointer } from '@/modules/schema-viewer/viewer/model/Entity
 import SchemaContainer from '@/modules/schema-viewer/viewer/component/SchemaContainer.vue'
 import NameVariants from '@/modules/schema-viewer/viewer/component/NameVariants.vue'
 import AttributeSchemaList from '@/modules/schema-viewer/viewer/component/attribute/AttributeSchemaList.vue'
-import { List } from 'immutable'
+import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { computed, ref } from 'vue'
 import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
 import { SchemaViewerService, useSchemaViewerService } from '@/modules/schema-viewer/viewer/service/SchemaViewerService'
@@ -30,10 +30,10 @@ const props = defineProps<{
 }>()
 
 const loadedEntityNameVariants = ref<boolean>()
-const entityNameVariants = ref<Immutable.Map<NamingConvention, string>>()
+const entityNameVariants = ref<ImmutableMap<NamingConvention, string>>()
 
 const loadedReferencedGroupType = ref<boolean>()
-const groupTypeNameVariants = ref<Immutable.Map<NamingConvention, string> | undefined>()
+const groupTypeNameVariants = ref<ImmutableMap<NamingConvention, string> | undefined>()
 
 const properties = computed<Property[]>(() => {
     const properties: Property[] = []
@@ -178,7 +178,7 @@ function isGroupType(): boolean {
             <AttributeSchemaList
                 v-if="schema.attributes && schema.attributes.size > 0"
                 :data-pointer="dataPointer"
-                :attributes="List(schema.attributes.values())"
+                :attributes="ImmutableList(schema.attributes.values())"
             />
         </template>
     </SchemaContainer>

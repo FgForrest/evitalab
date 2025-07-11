@@ -1,4 +1,4 @@
-import { Result } from '@/modules/console/result-visualiser/model/Result'
+import type { Result } from '@/modules/console/result-visualiser/model/Result'
 import { VisualisedHistogram } from '@/modules/console/result-visualiser/model/histogram/VisualisedHistogram'
 
 /**

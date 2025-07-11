@@ -1,4 +1,4 @@
-import { MenuItem } from "./MenuItem";
+import type { MenuItem } from "./MenuItem";
 
 export class MenuSubheader<AT> implements MenuItem<AT> {
     readonly title: string;

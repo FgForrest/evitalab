@@ -1,5 +1,5 @@
 import { GrpcNamingConvention } from "../gen/GrpcEnums_pb";
-import { GrpcNameVariant } from "../gen/GrpcEvitaDataTypes_pb";
+import type { GrpcNameVariant } from "../gen/GrpcEvitaDataTypes_pb";
 import { Map } from "immutable";
 import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
 

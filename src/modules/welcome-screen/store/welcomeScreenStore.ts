@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
-import { EvitaDBBlogPost } from '@/modules/welcome-screen/model/EvitaDBBlogPost'
-import { Ref, ref, shallowReadonly } from 'vue'
+import type { EvitaDBBlogPost } from '@/modules/welcome-screen/model/EvitaDBBlogPost'
+import { ref, shallowReadonly } from 'vue'
+import type { Ref } from 'vue'
 
 /**
  * Defines Pinia store for welcome screen

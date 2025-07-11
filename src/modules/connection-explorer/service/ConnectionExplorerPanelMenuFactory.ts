@@ -1,5 +1,5 @@
 import { ConnectionMenuItemType } from '@/modules/connection-explorer/model/ConnectionMenuItemType'
-import { MenuItem } from '@/modules/base/model/menu/MenuItem'
+import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
 import { i18n } from '@/vue-plugins/i18n'
 import {
     GraphQLConsoleTabDefinition
@@ -21,7 +21,7 @@ import { BackupViewerTabFactory } from '@/modules/backup-viewer/service/BackupVi
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 import { ApiType } from '@/modules/database-driver/request-response/status/ApiType'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { JfrViewerTabFactory } from '@/modules/jfr-viewer/service/JfrViewerTabFactory'
 import { MenuFactory } from '@/modules/base/service/menu/MenuFactory'
@@ -82,11 +82,12 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
         const serverReady: boolean = serverStatus != undefined
         const serverWritable: boolean = serverReady && !serverStatus!.readOnly
 
-        const actions: Map<ConnectionMenuItemType, MenuItem<ConnectionMenuItemType>> = new Map()
+        const items: Map<ConnectionMenuItemType, MenuItem<ConnectionMenuItemType>> = new Map()
         this.createMenuAction(
-            actions,
+            items,
             ConnectionMenuItemType.Server,
             ServerViewerTabDefinition.icon(),
+            this.getItemTitle,
             () =>
                 this.workspaceService.createTab(
                     this.serverViewerTabFactory.createNew()
@@ -94,9 +95,10 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
             serverReady
         )
         this.createMenuAction(
-            actions,
+            items,
             ConnectionMenuItemType.Tasks,
             TaskViewerTabDefinition.icon(),
+            this.getItemTitle,
             () => {
                 this.workspaceService.createTab(
                     this.taskViewerTabFactory.createNew()
@@ -105,9 +107,10 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
             serverWritable
         )
         this.createMenuAction(
-            actions,
+            items,
             ConnectionMenuItemType.TrafficRecordings,
             TrafficRecordingsViewerTabDefinition.icon(),
+            this.getItemTitle,
             () => {
                 this.workspaceService.createTab(
                     this.trafficRecordingsViewerTabFactory.createNew()
@@ -116,9 +119,10 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
             serverWritable
         )
         this.createMenuAction(
-            actions,
+            items,
             ConnectionMenuItemType.JfrRecordings,
             JfrViewerTabDefinition.icon(),
+            this.getItemTitle,
             () => {
                 this.workspaceService.createTab(
                     this.jfrViewerTabFactory.createNew()
@@ -127,9 +131,10 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
             serverWritable && observabilityEnabled
         )
         this.createMenuAction(
-            actions,
+            items,
             ConnectionMenuItemType.GraphQLSystemAPIConsole,
             GraphQLConsoleTabDefinition.icon(),
+            this.getItemTitle,
             () =>
                 this.workspaceService.createTab(
                     this.graphQLConsoleTabFactory.createNew(
@@ -141,13 +146,15 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
         )
 
         this.createMenuSubheader(
-            actions,
-            ConnectionMenuItemType.ManageSubheader
+            items,
+            ConnectionMenuItemType.ManageSubheader,
+            this.getItemTitle
         )
         this.createMenuAction(
-            actions,
+            items,
             ConnectionMenuItemType.Reload,
             'mdi-refresh',
+            this.getItemTitle,
             () => {
                 if (reloadStartedCallback != undefined) {
                     reloadStartedCallback()
@@ -162,20 +169,23 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
         )
 
         this.createMenuSubheader(
-            actions,
-            ConnectionMenuItemType.CatalogsSubheader
+            items,
+            ConnectionMenuItemType.CatalogsSubheader,
+            this.getItemTitle
         )
         this.createMenuAction(
-            actions,
+            items,
             ConnectionMenuItemType.CreateCatalog,
             'mdi-plus',
-            createCatalogCallback,
+            this.getItemTitle,
+            () => createCatalogCallback(),
             serverWritable
         )
         this.createMenuAction(
-            actions,
+            items,
             ConnectionMenuItemType.CatalogBackups,
             BackupViewerTabDefinition.icon(),
+            this.getItemTitle,
             () => {
                 this.workspaceService.createTab(
                     this.backupViewerTabFactory.createNew()
@@ -183,7 +193,7 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
             },
             serverWritable
         )
-        return actions
+        return items
     }
 
     protected getItemTitle(itemType: ConnectionMenuItemType): string {

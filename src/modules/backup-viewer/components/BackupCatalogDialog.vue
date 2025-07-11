@@ -5,9 +5,10 @@ import { useI18n } from 'vue-i18n'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { DateTime } from 'luxon'
 import { BackupViewerService, useBackupViewerService } from '@/modules/backup-viewer/service/BackupViewerService'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { CatalogVersionAtResponse } from '@/modules/database-driver/request-response/CatalogVersionAtResponse'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import VDateTimeInput from '@/modules/base/component/VDateTimeInput.vue'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 
@@ -16,7 +17,8 @@ const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    modelValue: boolean
+    modelValue: boolean,
+    catalog?: string
 }>()
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void,
@@ -43,7 +45,7 @@ const maxDateLoaded = ref<boolean>(false)
 const defaultTimeOffset = ref<string>()
 const defaultTimeOffsetLoaded = ref<boolean>(false)
 
-const catalogName = ref<string | undefined>(undefined)
+const catalogName = ref<string | undefined>()
 watch(catalogName, async () => {
     minDateLoaded.value = false
     pastMoment.value = undefined
@@ -73,7 +75,7 @@ const catalogNameRules = [
 
 async function loadAvailableCatalogs(): Promise<void> {
     try {
-        const fetchedAvailableCatalogs: Immutable.List<CatalogStatistics> = await backupViewerService.getAvailableCatalogs()
+        const fetchedAvailableCatalogs: ImmutableList<CatalogStatistics> = await backupViewerService.getAvailableCatalogs()
         availableCatalogs.value = fetchedAvailableCatalogs
             .filter(it => !it.corrupted)
             .map(it => it.name)
@@ -144,6 +146,13 @@ async function backup(): Promise<boolean> {
 
 onUnmounted(() => {
     backupViewerService.unregisterAvailableCatalogsChangeCallback(availableCatalogsChangeCallbackId)
+})
+
+onMounted(async() => {
+    if(props.catalog) {
+        catalogName.value = props.catalog
+        await loadMinimalDate()
+    }
 })
 </script>
 

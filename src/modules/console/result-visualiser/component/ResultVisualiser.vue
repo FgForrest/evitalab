@@ -4,9 +4,10 @@
  */
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
-import { Result } from '@/modules/console/result-visualiser/model/Result'
+import type { Result } from '@/modules/console/result-visualiser/model/Result'
 import { VAutocomplete } from 'vuetify/components'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { VisualiserType } from '@/modules/console/result-visualiser/model/VisualiserType'

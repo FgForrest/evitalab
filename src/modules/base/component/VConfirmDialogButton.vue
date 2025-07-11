@@ -74,7 +74,7 @@ function tryConfirm(): void {
 </template>
 
 <style lang="scss" scoped>
-@import "@/styles/colors.scss";
+@use "@/styles/colors.scss" as *;
 .confirm-button--dangerous {
     border-color: rgba($error, .5) !important;
 

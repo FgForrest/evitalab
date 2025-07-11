@@ -1,4 +1,4 @@
-import { ModuleRegistrar } from '@/ModuleRegistrar'
+import type { ModuleRegistrar } from '@/ModuleRegistrar'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 import { EvitaLabConfig, evitaLabConfigInjectionKey } from '@/modules/config/EvitaLabConfig'
 import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'

@@ -2,6 +2,8 @@
 
 import { useI18n } from 'vue-i18n'
 import VTabMainActionButton from '@/modules/base/component/VTabMainActionButton.vue'
+import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
+import { Command } from '@/modules/keymap/model/Command.ts'
 
 const { t } = useI18n()
 
@@ -9,7 +11,9 @@ const { t } = useI18n()
  * Pre-defined button to execute queries.
  */
 const props = withDefaults(defineProps<{
-    loading?: boolean
+    loading?: boolean,
+    command: Command,
+    title: string
 }>(), {
     loading: false
 })
@@ -24,10 +28,11 @@ const emit = defineEmits<{
         prepend-icon="mdi-play-outline"
         @click="emit('click')"
     >
-        <VTooltip activator="parent">
+        <VActionTooltip :command="command">
             {{ t('common.button.executeQuery') }}
-        </VTooltip>
-        {{ t('common.button.run') }}
+        </VActionTooltip>
+
+        {{ title }}
     </VTabMainActionButton>
 </template>
 

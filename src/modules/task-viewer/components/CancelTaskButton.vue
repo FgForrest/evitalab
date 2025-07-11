@@ -3,7 +3,8 @@
 import { computed, ref } from 'vue'
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { TaskViewerService, useTaskViewerService } from '@/modules/task-viewer/services/TaskViewerService'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useI18n } from 'vue-i18n'
 import { TaskTrait } from '@/modules/database-driver/request-response/task/TaskTrait'
 

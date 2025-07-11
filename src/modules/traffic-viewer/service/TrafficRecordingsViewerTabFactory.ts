@@ -5,9 +5,9 @@ import {
     TrafficRecordingsViewerTabDefinition
 } from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabDefinition'
 import { TrafficRecordingsViewerTabParams } from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabParams'
-import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
-import { TrafficRecordingsViewerTabParamsDto } from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabParamsDto'
-import { InjectionKey } from 'vue'
+import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
+import type { TrafficRecordingsViewerTabParamsDto } from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabParamsDto'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 
 export const trafficRecordingsViewerTabFactoryInjectionKey: InjectionKey<TrafficRecordingsViewerTabFactory> = Symbol('trafficViewerTabFactory')

@@ -7,11 +7,11 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
 import { EntityPropertySectionSelection } from '@/modules/entity-viewer/viewer/model/EntityPropertySectionSelection'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { Command } from '@/modules/keymap/model/Command'
 import { propertySelectorScope } from '@/modules/entity-viewer/viewer/keymap/scopes'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
@@ -195,41 +195,49 @@ function togglePropertySectionSelection(sectionType: EntityPropertyType, newSele
     }
 }
 
-function togglePropertySelection(propertyKey: EntityPropertyKey): void {
-    if (props.selected.find(key => key.toString() === propertyKey.toString())) {
-        // remove property from selection
-        const newSelected: EntityPropertyKey[] = props.selected.filter(key => {
-            if (key.toString() === propertyKey.toString()) {
-                return false
-            }
-            const propertyDescriptor: EntityPropertyDescriptor = entityPropertyDescriptorIndex.value.get(propertyKey.toString())!
-            if (propertyDescriptor.children.find(child => key.toString() === child.key.toString()) != undefined) {
-                return false
-            }
-            return true
-        })
-        emit('update:selected', newSelected)
-    } else {
-        // add property to selection
-        const newSelected: EntityPropertyKey[] = [...props.selected]
-        newSelected.push(propertyKey)
-        emit('update:selected', newSelected)
-    }
-}
+function changeSelectedState(key: EntityPropertyKey, isSelected: boolean): void {
+    const newSelected = [...props.selected]
 
-function toggleReferenceAttributeProperty(referenceProperty: EntityPropertyDescriptor, selected: boolean): void {
-    // we are interested only in the parent reference property, because the actual reference attribute properties are
-    // toggled automatically by the list item components
-    if (!selected) {
-        if (props.selected.find(key => key.toString() === referenceProperty.key.toString())) {
-            // already selected
-            return
+    const alreadySelected = (k: EntityPropertyKey) =>
+        newSelected.some(x => x.toString() === k.toString())
+
+    const addKey = (k: EntityPropertyKey) => {
+        if (!alreadySelected(k)) {
+            newSelected.push(k)
         }
-        // add reference property to selection because we cannot fetch reference attributes alone without references
-        const newSelected: EntityPropertyKey[] = [...props.selected]
-        newSelected.push(referenceProperty.key)
-        emit('update:selected', newSelected)
     }
+
+    const removeKey = (k: EntityPropertyKey) => {
+        const index = newSelected.findIndex(x => x.toString() === k.toString())
+        if (index !== -1) {
+            newSelected.splice(index, 1)
+        }
+    }
+
+    if (isSelected) {
+        removeKey(key)
+
+        const descriptor = entityPropertyDescriptorIndex.value.get(key.toString())
+        if (descriptor && descriptor.children.size > 0) {
+            descriptor.children.forEach(child => removeKey(child.key))
+        }
+
+    } else {
+        addKey(key)
+
+        for (const descriptors of sectionedPropertyDescriptors.value.values()) {
+            for (const parentDescriptor of descriptors) {
+                const isChild = parentDescriptor.children.find(c => c.key.toString() === key.toString())
+                if (isChild) {
+                    addKey(parentDescriptor.key)
+                    break
+                }
+            }
+        }
+
+    }
+
+    emit('update:selected', newSelected)
 }
 
 onMounted(() => {
@@ -299,6 +307,7 @@ onUnmounted(() => {
                         <PropertySectionEntityItem
                             :property-descriptor="property"
                             @schema-open="emit('schemaOpen')"
+                            @change-state="(key, isSelected) => changeSelectedState(key, isSelected)"
                         />
                     </template>
                 </PropertySection>
@@ -315,6 +324,7 @@ onUnmounted(() => {
                         <PropertySectionAttributeItem
                             :property-descriptor="property"
                             @schema-open="emit('schemaOpen')"
+                            @change-state="(key, isSelected) => changeSelectedState(key, isSelected)"
                         />
                     </template>
                 </PropertySection>
@@ -331,6 +341,7 @@ onUnmounted(() => {
                         <PropertySectionAssociatedDataItem
                             :property-descriptor="property"
                             @schema-open="emit('schemaOpen')"
+                            @change-state="(key, isSelected) => changeSelectedState(key, isSelected)"
                         />
                     </template>
                 </PropertySection>
@@ -338,6 +349,7 @@ onUnmounted(() => {
                     <VListItemDivider />
                     <PropertySectionPricesItem
                         :property-descriptor="sectionedPropertyDescriptors.get(EntityPropertyType.Prices)![0]"
+                        @change-state="(key, isSelected) => changeSelectedState(key, isSelected)"
                     />
                 </template>
                 <VListItemDivider />
@@ -354,19 +366,24 @@ onUnmounted(() => {
                             v-if="property.children.size === 0"
                             :property-descriptor="property"
                             @schema-open="emit('schemaOpen')"
+                            @toggle="value => changeSelectedState(value.key, value.selected)"
                         />
 
                         <PropertySectionItemGroup
                             v-else
                             :filtered-property-descriptors="property.children"
                             :property-descriptors="property.children"
+                            :property="property"
+                            @toggle="value => changeSelectedState(value.key, value.selected)"
                         >
                             <template #activator="{ props }">
                                 <PropertySectionReferenceItem
                                     :property-descriptor="property"
                                     v-bind="props"
                                     group-parent
-                                    @toggle="togglePropertySelection(property.key)"
+                                    @toggle="(e) => {
+                                        changeSelectedState(e.key, e.selected)
+                                    }"
                                     @schema-open="emit('schemaOpen')"
                                 />
                             </template>
@@ -375,7 +392,9 @@ onUnmounted(() => {
                                 <PropertySectionReferenceAttributeItem
                                     :reference-property-descriptor="property"
                                     :attribute-property-descriptor="childProperty"
-                                    @toggle="toggleReferenceAttributeProperty(property, $event.selected)"
+                                    @toggle="(e) => {
+                                        changeSelectedState(e.key, e.selected)
+                                    }"
                                 />
                             </template>
                         </PropertySectionItemGroup>

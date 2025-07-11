@@ -1,26 +1,37 @@
 import { GrpcCatalogState } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
-import {
+import type {
     GrpcCatalogStatistics,
     GrpcEntityCollectionStatistics
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState'
 import { EntityCollectionStatistics } from '@/modules/database-driver/request-response/EntityCollectionStatistics'
+import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
+import { ca } from 'vuetify/locale'
 
 export class CatalogStatisticsConverter {
+    private readonly evitaValueConverter
+
+    constructor(evitaValueConverter: EvitaValueConverter) {
+        this.evitaValueConverter = evitaValueConverter
+    }
+
     convert(catalog: GrpcCatalogStatistics): CatalogStatistics {
+        if(catalog.catalogId == undefined) {
+            throw new UnexpectedError('Missing catalogId in GrpcCatalogStatistics')
+        }
         return new CatalogStatistics(
-            catalog.catalogId?.toJsonString(),
-            catalog.catalogVersion,
+            this.evitaValueConverter.convertGrpcUuid(catalog.catalogId).toString(),
+            BigInt(catalog.catalogVersion),
             catalog.catalogName,
             this.convertEntityTypes(catalog.entityCollectionStatistics),
             catalog.corrupted,
             this.convertCatalogState(catalog.catalogState),
-            catalog.totalRecords,
-            catalog.indexCount,
-            catalog.sizeOnDiskInBytes
+            BigInt(catalog.totalRecords),
+            BigInt(catalog.indexCount),
+            BigInt(catalog.sizeOnDiskInBytes)
         )
     }
 
@@ -41,7 +52,7 @@ export class CatalogStatisticsConverter {
 
     private convertEntityTypes(
         entityTypes: GrpcEntityCollectionStatistics[]
-    ): Immutable.List<EntityCollectionStatistics> {
+    ): ImmutableList<EntityCollectionStatistics> {
         const newEntityTypes: EntityCollectionStatistics[] = []
         for (const entityType of entityTypes) {
             newEntityTypes.push(
@@ -49,10 +60,10 @@ export class CatalogStatisticsConverter {
                     entityType.entityType,
                     entityType.totalRecords,
                     entityType.indexCount,
-                    entityType.sizeOnDiskInBytes
+                    BigInt(entityType.sizeOnDiskInBytes)
                 )
             )
         }
-        return Immutable.List<EntityCollectionStatistics>(newEntityTypes);
+        return ImmutableList<EntityCollectionStatistics>(newEntityTypes);
     }
 }

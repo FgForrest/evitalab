@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
+import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
-import { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
+import type { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
 import { ErrorViewerTabParams } from '@/modules/error-viewer/viewer/workspace/model/ErrorViewerTabParams'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import VPreviewEditor from '@/modules/code-editor/component/VPreviewEditor.vue'
-import Immutable from 'immutable'
-import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import { List as ImmutableList } from 'immutable'
+import type { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import { SystemSubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SystemSubjectPath'
 import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
@@ -29,7 +29,7 @@ defineExpose<TabComponentExpose>({
     }
 })
 
-const title: Immutable.List<string> = Immutable.List.of(
+const title: ImmutableList<string> = ImmutableList.of(
     t('errorViewer.title', { name: props.params.error.name })
 )
 

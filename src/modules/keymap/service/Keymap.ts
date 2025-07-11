@@ -1,5 +1,5 @@
-import { InjectionKey } from 'vue'
-import { KeyBinding } from '@codemirror/view'
+import type { InjectionKey } from 'vue'
+import type { KeyBinding } from '@codemirror/view'
 import keymaster from 'keymaster'
 import { SystemType } from '@/modules/keymap/model/SystemType'
 import { Command } from '@/modules/keymap/model/Command'

@@ -3,28 +3,35 @@
  * Entity property value renderer that tries to render the value in a code editor.
  */
 
-import { computed, ComputedRef, ref } from 'vue'
-import { Extension } from '@codemirror/state'
+import { computed, ref, watch } from 'vue'
+import type { ComputedRef } from 'vue'
+import type { Extension } from '@codemirror/state'
 import { json } from '@codemirror/lang-json'
 import { xml } from '@codemirror/lang-xml'
 import { useI18n } from 'vue-i18n'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { EntityViewerService, useEntityViewerService } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import {
     EntityPropertyValueSupportedCodeLanguage
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValueSupportedCodeLanguage'
 import {
-    CodeDetailRendererActionType
-} from '@/modules/entity-viewer/viewer/model/entity-grid/detail-renderer/CodeDetailRendererActionType'
+    CodeDetailRendererMenuItemType
+} from '@/modules/entity-viewer/viewer/model/entity-grid/detail-renderer/CodeDetailRendererMenuItemType'
 import { MenuAction } from '@/modules/base/model/menu/MenuAction'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import ValueDetailRenderer
     from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/ValueDetailRenderer.vue'
 import VPreviewEditor from '@/modules/code-editor/component/VPreviewEditor.vue'
+import {
+    CodeDetailRendererMenuFactory,
+    useCodeDetailRendererMenuFactory
+} from '@/modules/entity-viewer/viewer/service/CodeDetailRendererMenuFactory'
+import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
 
 const toaster: Toaster = useToaster()
 const entityViewerService: EntityViewerService = useEntityViewerService()
+const codeDetailRendererMenuFactory: CodeDetailRendererMenuFactory = useCodeDetailRendererMenuFactory()
 const { t } = useI18n()
 
 const props = withDefaults(defineProps<{
@@ -38,8 +45,18 @@ const props = withDefaults(defineProps<{
 
 const prettyPrint = ref<boolean>(true)
 
-const actions: ComputedRef<Map<CodeDetailRendererActionType, MenuAction<CodeDetailRendererActionType>>> = computed(() => createActions())
-const actionList: ComputedRef<MenuAction<CodeDetailRendererActionType>[]> = computed(() => Array.from(actions.value.values()))
+const menuItems = ref<Map<CodeDetailRendererMenuItemType, MenuItem<CodeDetailRendererMenuItemType>>>()
+const menuItemList: ComputedRef<MenuItem<CodeDetailRendererMenuItemType>[]> = computed(() => {
+    if (menuItems.value == undefined) {
+        return []
+    }
+    return Array.from(menuItems.value.values())
+})
+watch(
+    [() => props.codeLanguage, prettyPrint],
+    async () => menuItems.value = await createMenuItems(),
+    { immediate: true }
+)
 
 const formattedValue = computed<string>(() => {
     try {
@@ -74,7 +91,10 @@ const codeBlockExtensions = computed<Extension[]>(() => {
 })
 
 function handleActionClick(action: any) {
-    actions.value.get(action as CodeDetailRendererActionType)?.execute()
+    const foundedAction = menuItems.value?.get(action as CodeDetailRendererMenuItemType)
+    if (foundedAction && foundedAction instanceof MenuAction) {
+        (foundedAction as MenuAction<CodeDetailRendererMenuItemType>).execute()
+    }
 }
 
 function copyRenderedValue() {
@@ -85,36 +105,20 @@ function copyRenderedValue() {
     })
 }
 
-function createActions(): Map<CodeDetailRendererActionType, MenuAction<CodeDetailRendererActionType>> {
-    const actions: Map<CodeDetailRendererActionType, MenuAction<CodeDetailRendererActionType>> = new Map()
-    actions.set(
-        CodeDetailRendererActionType.Copy,
-        new MenuAction<CodeDetailRendererActionType>(
-            CodeDetailRendererActionType.Copy,
-            t('common.button.copy'),
-            'mdi-content-copy',
-            () => copyRenderedValue()
-        )
+async function createMenuItems(): Promise<Map<CodeDetailRendererMenuItemType, MenuItem<CodeDetailRendererMenuItemType>>> {
+    return await codeDetailRendererMenuFactory.createItems(
+        props.codeLanguage,
+        prettyPrint.value,
+        () => copyRenderedValue(),
+        () => prettyPrint.value = !prettyPrint.value
     )
-    if (props.codeLanguage !== EntityPropertyValueSupportedCodeLanguage.Raw) {
-        actions.set(
-            CodeDetailRendererActionType.PrettyPrint,
-            new MenuAction<CodeDetailRendererActionType>(
-                CodeDetailRendererActionType.PrettyPrint,
-                prettyPrint.value ? t('entityViewer.grid.renderer.button.displayRawValue') : t('entityViewer.grid.renderer.button.prettyPrintValue'),
-                prettyPrint.value ? 'mdi-raw' : 'mdi-auto-fix',
-                () => prettyPrint.value = !prettyPrint.value
-            )
-        )
-    }
-    return actions
 }
 </script>
 
 <template>
     <ValueDetailRenderer
         :fill-space="fillSpace"
-        :actions="actionList"
+        :actions="menuItemList"
         @click:action="handleActionClick"
     >
         <VPreviewEditor

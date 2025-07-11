@@ -1,4 +1,4 @@
-import { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { TabData } from '@/modules/workspace/tab/model/TabData'
 
 /**
  * Represents basic events every tab component should emit.

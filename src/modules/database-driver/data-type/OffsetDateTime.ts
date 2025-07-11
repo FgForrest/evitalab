@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { PrettyPrintable } from './PrettyPrintable'
+import type { PrettyPrintable } from './PrettyPrintable'
 import { timeOffsetFrom } from '@/utils/dateTime'
 
 const offsetDateTimeFormatter = new Intl.DateTimeFormat([], {

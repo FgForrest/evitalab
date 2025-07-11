@@ -6,7 +6,7 @@
 import { Pane, Splitpanes } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 
-import { Extension } from '@codemirror/state'
+import type { Extension } from '@codemirror/state'
 import { graphql } from 'cm6-graphql'
 import { json } from '@codemirror/lang-json'
 
@@ -22,11 +22,12 @@ import { ResultVisualiserService } from '@/modules/console/result-visualiser/ser
 import {
     useGraphQLResultVisualiserService
 } from '@/modules/graphql-console/console/result-visualiser/service/GraphQLResultVisualiserService'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
-import { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
+import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 import { GraphQLConsoleTabData } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabData'
 import { GraphQLConsoleTabParams } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabParams'
-import { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
+import type { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
 import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
 import ShareTabButton from '@/modules/workspace/tab/component/ShareTabButton.vue'
 import { GraphQLSchema, printSchema } from 'graphql'
@@ -34,12 +35,12 @@ import VQueryEditor from '@/modules/code-editor/component/VQueryEditor.vue'
 import GraphQLConsoleHistory from '@/modules/graphql-console/console/history/component/GraphQLConsoleHistory.vue'
 import {
     createGraphQLConsoleHistoryKey,
-    GraphQLConsoleHistoryKey
 } from '@/modules/graphql-console/console/history/model/GraphQLConsoleHistoryKey'
+import type { GraphQLConsoleHistoryKey } from '@/modules/graphql-console/console/history/model/GraphQLConsoleHistoryKey'
 import {
-    createGraphQLConsoleHistoryRecord,
-    GraphQLConsoleHistoryRecord
+    createGraphQLConsoleHistoryRecord
 } from '@/modules/graphql-console/console/history/model/GraphQLConsoleHistoryRecord'
+import type { GraphQLConsoleHistoryRecord } from '@/modules/graphql-console/console/history/model/GraphQLConsoleHistoryRecord'
 import VPreviewEditor from '@/modules/code-editor/component/VPreviewEditor.vue'
 import ResultVisualiser from '@/modules/console/result-visualiser/component/ResultVisualiser.vue'
 import { Command } from '@/modules/keymap/model/Command'
@@ -48,16 +49,17 @@ import { TabType } from '@/modules/workspace/tab/model/TabType'
 import VExecuteQueryButton from '@/modules/base/component/VExecuteQueryButton.vue'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import VSideTabs from '@/modules/base/component/VSideTabs.vue'
-import { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
+import type { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import {
     ConnectionSubjectPath
 } from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
 import {
     GraphQLConsoleTabDefinition
 } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
+import { command } from 'keymaster'
 
 enum EditorTabType {
     Query = 'query',
@@ -94,13 +96,13 @@ defineExpose<TabComponentExpose>({
     }
 })
 
-const title: Immutable.List<string> = (() => {
+const title: ImmutableList<string> = (() => {
     const title: string[] = []
     if (props.params.dataPointer.instanceType !== GraphQLInstanceType.System) {
         title.push(props.params.dataPointer.catalogName)
     }
     title.push(t(`graphQLConsole.instanceType.${props.params.dataPointer.instanceType}`))
-    return Immutable.List(title)
+    return ImmutableList(title)
 })()
 
 const editorTab = ref<EditorTabType>(EditorTabType.Query)
@@ -305,10 +307,11 @@ function focusResultVisualiser(): void {
 <!--                    </VTooltip>-->
 <!--                </VBtn>-->
 
-                <VExecuteQueryButton :loading="loading" @click="executeQuery">
-<!--                    todo lho doesn't work, doesnt show command shortcut-->
-                    <VActionTooltip :command="Command.GraphQLConsole_ExecuteQuery" />
-                    {{ t('common.button.run') }}
+                <VExecuteQueryButton
+                    :loading="loading"
+                    @click="executeQuery"
+                    :title="t('common.button.run')"
+                    :command="Command.GraphQLConsole_ExecuteQuery">
                 </VExecuteQueryButton>
             </template>
         </VTabToolbar>

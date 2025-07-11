@@ -1,6 +1,6 @@
 import { TrafficRecordVisualiser } from '@/modules/traffic-viewer/service/TrafficRecordVisualiser'
 import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import {
     Action,
     MetadataGroup,
@@ -140,7 +140,7 @@ export class SourceQueryContainerVisualiser extends TrafficRecordVisualiser<Sour
 
     private constructActions(ctx: TrafficRecordVisualisationContext,
                              trafficRecord: SourceQueryContainer,
-                             queryType: QueryType | undefined): Immutable.List<Action> {
+                             queryType: QueryType | undefined): ImmutableList<Action> {
         const actions: Action[] = []
 
         let queryActionCallback: (() => void) | undefined = undefined
@@ -172,7 +172,7 @@ export class SourceQueryContainerVisualiser extends TrafficRecordVisualiser<Sour
             ))
         }
 
-        return Immutable.List(actions)
+        return ImmutableList(actions)
     }
 }
 

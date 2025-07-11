@@ -1,8 +1,8 @@
-import { AttributeHistogramsVisualiserService } from '@/modules/console/result-visualiser/service/AttributeHistogramsVisualiserService'
+import type { AttributeHistogramsVisualiserService } from '@/modules/console/result-visualiser/service/AttributeHistogramsVisualiserService'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { VisualisedHistogram } from '@/modules/console/result-visualiser/model/histogram/VisualisedHistogram'
-import Immutable from 'immutable'
+import { Map as ImmutableMap } from 'immutable'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { Histogram } from '@/modules/database-driver/request-response/data/Histogram'
 
@@ -15,7 +15,7 @@ export class EvitaQLAttributeHistogramsVisualiserService
     constructor() {}
 
     resolveAttributeHistogramsByAttributes(
-        attributeHistogramsResult: Immutable.Map<string, Histogram>,
+        attributeHistogramsResult: ImmutableMap<string, Histogram>,
         entitySchema: EntitySchema
     ): [AttributeSchema, VisualisedHistogram][] {
         const newHistograms: [AttributeSchema, VisualisedHistogram][] = []

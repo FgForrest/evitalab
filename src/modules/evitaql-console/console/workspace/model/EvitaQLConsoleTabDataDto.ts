@@ -1,4 +1,4 @@
-import { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
+import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
 
 /**
  * Serializable DTO for storing {@link EvitaQLConsoleTabDataDto} in a storage or link.

@@ -1,4 +1,4 @@
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { Endpoint } from '@/modules/database-driver/request-response/status/Endpoint'
 
 /**
@@ -7,13 +7,13 @@ import { Endpoint } from '@/modules/database-driver/request-response/status/Endp
 export class ApiStatus {
     readonly enabled: boolean
     readonly ready: boolean
-    readonly baseUrls: Immutable.List<string>
-    readonly endpoints: Immutable.List<Endpoint>
+    readonly baseUrls: ImmutableList<string>
+    readonly endpoints: ImmutableList<Endpoint>
 
     constructor(enabled: boolean,
                 ready: boolean,
-                baseUrls: Immutable.List<string>,
-                endpoints: Immutable.List<Endpoint>) {
+                baseUrls: ImmutableList<string>,
+                endpoints: ImmutableList<Endpoint>) {
         this.enabled = enabled
         this.ready = ready
         this.baseUrls = baseUrls

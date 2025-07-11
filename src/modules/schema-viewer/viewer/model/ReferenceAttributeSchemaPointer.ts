@@ -1,7 +1,8 @@
-import { DefineComponent, markRaw, Raw } from 'vue'
+import { markRaw } from 'vue'
+import type { DefineComponent, Raw } from 'vue'
 import AttributeSchemaViewer from '@/modules/schema-viewer/viewer/component/attribute/AttributeSchemaViewer.vue'
 import { SchemaType } from '@/modules/schema-viewer/viewer/model/SchemaType'
-import { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
+import type { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 
 /**
  * Points to evitaDB attribute schema nested inside a reference schema.

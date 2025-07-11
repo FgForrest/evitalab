@@ -2,7 +2,8 @@
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { JfrViewerService, useJfrViewerService } from '@/modules/jfr-viewer/service/JfrViewerService'
 import { useI18n } from 'vue-i18n'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 
 const jfrViewerService: JfrViewerService = useJfrViewerService()
 const toaster: Toaster = useToaster()

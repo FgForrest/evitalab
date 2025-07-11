@@ -1,8 +1,8 @@
-import { GrpcFile } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
+import type { GrpcFile } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
-import { GrpcFilesToFetchResponse } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_pb'
+import type { GrpcFilesToFetchResponse } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_pb'
 import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
 
 /**
@@ -23,7 +23,7 @@ export class ServerFileConverter {
             files.push(this.convert(grpcFile))
         }
         return new PaginatedList(
-            Immutable.List(files),
+            ImmutableList(files),
             grpcFiles.pageNumber,
             grpcFiles.pageSize,
             grpcFiles.totalNumberOfRecords
@@ -36,7 +36,7 @@ export class ServerFileConverter {
             grpcFile.name,
             grpcFile.description!,
             grpcFile.contentType,
-            grpcFile.totalSizeInBytes,
+            BigInt(grpcFile.totalSizeInBytes),
             this.evitaValueConverter.convertGrpcOffsetDateTime(grpcFile.created!),
             grpcFile.origin!
         )

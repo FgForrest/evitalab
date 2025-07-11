@@ -1,4 +1,4 @@
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { Connection } from '@/modules/connection/model/Connection'
@@ -6,14 +6,14 @@ import { TrafficRecordHistoryViewerTabData } from '@/modules/traffic-viewer/mode
 import {
     TrafficRecordHistoryViewerTabDefinition
 } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabDefinition'
-import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
-import { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
+import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
+import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
 import { TrafficRecordHistoryViewerTabParams } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabParams'
-import {
+import type {
     TrafficRecordHistoryViewerTabParamsDto
 } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabParamsDto'
 import { TrafficRecordHistoryDataPointer } from '@/modules/traffic-viewer/model/TrafficRecordHistoryDataPointer'
-import {
+import type {
     TrafficRecordHistoryViewerTabDataDto
 } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabDataDto'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'

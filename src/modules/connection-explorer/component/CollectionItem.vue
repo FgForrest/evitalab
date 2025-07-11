@@ -2,36 +2,32 @@
 /**
  * Explorer tree item representing a single collection in evitaDB within a catalog.
  */
-import { useI18n } from 'vue-i18n'
 import { MenuAction } from '@/modules/base/model/menu/MenuAction'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
-import {
-    SchemaViewerTabFactory,
-    useSchemaViewerTabFactory
-} from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
-import { EntitySchemaPointer } from '@/modules/schema-viewer/viewer/model/EntitySchemaPointer'
 import {
     EntityViewerTabFactory,
     useEntityViewerTabFactory
 } from '@/modules/entity-viewer/viewer/workspace/service/EntityViewerTabFactory'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import VTreeViewItem from '@/modules/base/component/VTreeViewItem.vue'
-import { computed, Ref, ref } from 'vue'
-import { MenuSubheader } from '@/modules/base/model/menu/MenuSubheader'
-import { MenuItem } from '@/modules/base/model/menu/MenuItem'
+import { computed, ref, watch } from 'vue'
+import type { Ref } from 'vue'
+import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
 import DeleteCollectionDialog from '@/modules/connection-explorer/component/DeleteCollectionDialog.vue'
 import RenameCollectionDialog from '@/modules/connection-explorer/component/RenameCollectionDialog.vue'
-import { EntityViewerTabDefinition } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabDefinition'
-import { SchemaViewerTabDefinition } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabDefinition'
 import { EntityCollectionStatistics } from '@/modules/database-driver/request-response/EntityCollectionStatistics'
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 import { useCatalog, useServerStatus } from '@/modules/connection-explorer/component/dependecies'
-import { CollectionActionType } from '@/modules/connection-explorer/model/CollectionActionType'
+import { CollectionMenuItemType } from '@/modules/connection-explorer/model/CollectionMenuItemType'
+import {
+    CollectionItemMenuFactory,
+    useCollectionItemMenuFactory
+} from '@/modules/connection-explorer/service/CollectionItemMenuFactory'
+import { formatCount } from '@/utils/string.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const entityViewerTabFactory: EntityViewerTabFactory = useEntityViewerTabFactory()
-const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
-const { t } = useI18n()
+const collectionItemMenuFactory: CollectionItemMenuFactory = useCollectionItemMenuFactory()
 
 const props = defineProps<{
     entityCollection: EntityCollectionStatistics
@@ -42,18 +38,26 @@ const showDeleteCollectionDialog = ref<boolean>(false)
 const showRenameCollectionDialog = ref<boolean>(false)
 
 const catalog = useCatalog()
-const actions = computed<Map<CollectionActionType, MenuItem<CollectionActionType>>>(() =>
-    createActions())
-const actionList = computed<MenuItem<CollectionActionType>[]>(() => Array.from(
-    actions.value.values()))
+const menuItems = ref<Map<CollectionMenuItemType, MenuItem<CollectionMenuItemType>>>()
+const menuItemList = computed<MenuItem<CollectionMenuItemType>[]>(() => {
+    if (menuItems.value == undefined) {
+        return []
+    }
+    return Array.from(menuItems.value.values())
+})
+watch(
+    [serverStatus, catalog, () => props.entityCollection],
+    async () => menuItems.value = await createMenuItems(),
+    { immediate: true }
+)
 
 if (catalog.value == undefined) {
     throw new UnexpectedError(
-        `Catalog schema is not loaded yet, but collection item is already rendered!`
+        `Catalog is not loaded yet, but collection item is already rendered!`
     )
 }
 
-function openDataGrid() {
+function openEntityViewer() {
     workspaceService.createTab(
         entityViewerTabFactory.createNew(
             catalog.value.name,
@@ -65,79 +69,19 @@ function openDataGrid() {
 }
 
 function handleAction(action: string) {
-    const item: MenuItem<CollectionActionType> | undefined = actions.value.get(action as CollectionActionType)
+    const item: MenuItem<CollectionMenuItemType> | undefined = menuItems.value?.get(action as CollectionMenuItemType)
     if (item instanceof MenuAction) {
         item.execute()
     }
 }
 
-function createActions(): Map<CollectionActionType, MenuItem<CollectionActionType>> {
-    const serverWritable: boolean = serverStatus.value != undefined && !serverStatus.value.readOnly
-
-    const actions: Map<CollectionActionType, MenuItem<CollectionActionType>> = new Map()
-    actions.set(
-        CollectionActionType.ViewEntities,
-        createMenuAction(
-            CollectionActionType.ViewEntities,
-            EntityViewerTabDefinition.icon(),
-            openDataGrid
-        )
-    )
-    actions.set(
-        CollectionActionType.ViewSchema,
-        createMenuAction(
-            CollectionActionType.ViewSchema,
-            SchemaViewerTabDefinition.icon(),
-            () =>
-                workspaceService.createTab(
-                    schemaViewerTabFactory.createNew(
-                        new EntitySchemaPointer(
-                            catalog.value.name,
-                            props.entityCollection.entityType
-                        )
-                    )
-                )
-        )
-    )
-
-    actions.set(
-        CollectionActionType.ModifySubheader,
-        new MenuSubheader(t('explorer.collection.subheader.modify'))
-    )
-    actions.set(
-        CollectionActionType.RenameCollection,
-        createMenuAction(
-            CollectionActionType.RenameCollection,
-            'mdi-pencil-outline',
-            () => showRenameCollectionDialog.value = true,
-            serverWritable
-        )
-    )
-    actions.set(
-        CollectionActionType.DeleteCollection,
-        createMenuAction(
-            CollectionActionType.DeleteCollection,
-            'mdi-delete-outline',
-            () => showDeleteCollectionDialog.value = true,
-            serverWritable
-        )
-    )
-    return actions
-}
-
-function createMenuAction(
-    actionType: CollectionActionType,
-    prependIcon: string,
-    execute: () => void,
-    enabled: boolean = true
-): MenuAction<CollectionActionType> {
-    return new MenuAction(
-        actionType,
-        t(`explorer.collection.actions.${actionType}`),
-        prependIcon,
-        execute,
-        undefined,
-        !enabled
+async function createMenuItems(): Promise<Map<CollectionMenuItemType, MenuItem<CollectionMenuItemType>>> {
+    return await collectionItemMenuFactory.createItems(
+        serverStatus.value,
+        catalog.value,
+        props.entityCollection,
+        () => showRenameCollectionDialog.value = true,
+        () => showDeleteCollectionDialog.value = true
     )
 }
 </script>
@@ -146,12 +90,17 @@ function createMenuAction(
     <div>
         <VTreeViewItem
             prepend-icon="mdi-list-box-outline"
-            :actions="actionList"
-            @click="openDataGrid"
+            :actions="menuItemList"
+            @click="openEntityViewer"
             @click:action="handleAction"
             class="text-gray-light"
         >
-            {{ entityCollection.entityType }}
+            <div class="tree-view-item-data__content">
+                <span>{{ entityCollection.entityType }}</span>
+                <VChip size="x-small" label class="chip ml-2" variant="plain">
+                    {{ formatCount(entityCollection.totalRecords, 1) }}
+                </VChip>
+            </div>
         </VTreeViewItem>
 
         <RenameCollectionDialog
@@ -169,4 +118,15 @@ function createMenuAction(
     </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.tree-view-item-data__content {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+.chip {
+    align-self: center;
+    padding: 8px;
+    font-weight: bold;
+}
+</style>

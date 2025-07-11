@@ -1,5 +1,5 @@
 import { AbstractEvitaClient } from '@/modules/database-driver/AbstractEvitaClient'
-import {
+import type {
     GrpcCatalogNamesResponse,
     GrpcDefineCatalogResponse,
     GrpcEvitaSessionResponse,
@@ -11,12 +11,11 @@ import { CatalogState } from '@/modules/database-driver/request-response/Catalog
 import { EvitaClientManagement } from '@/modules/database-driver/EvitaClientManagement'
 import { EvitaSchemaCache } from '@/modules/database-driver/EvitaSchemaCache'
 import { Set } from 'immutable'
-import { Empty } from '@bufbuild/protobuf'
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { GraphQLResponse } from '@/modules/database-driver/connector/gql/model/GraphQLResponse'
+import type { GraphQLResponse } from '@/modules/database-driver/connector/gql/model/GraphQLResponse'
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
@@ -57,7 +56,7 @@ export class EvitaClient extends AbstractEvitaClient {
      */
     async getCatalogNames(): Promise<Set<string>> {
         try {
-            const response: GrpcCatalogNamesResponse = await this.evitaClient.getCatalogNames(Empty)
+            const response: GrpcCatalogNamesResponse = await this.evitaClient.getCatalogNames({})
             return Set(response.catalogNames)
         } catch (e) {
             throw this.errorTransformer.transformError(e)
@@ -157,7 +156,7 @@ export class EvitaClient extends AbstractEvitaClient {
         try {
             const catalog: CatalogStatistics = await this.management.getCatalogStatisticsForCatalog(catalogName)
 
-            return await this.executeInSharedSession(
+            return (await this.executeInSharedSession<T>(
                 catalogName,
                 queryLogic,
                 catalog.isInWarmup,
@@ -165,7 +164,7 @@ export class EvitaClient extends AbstractEvitaClient {
                 // are visible everywhere, because there is only one shared session
                 catalog.isInWarmup ? false : forceNewSession,
                 true
-            )
+            )) as T
         } catch (e) {
             throw this.errorTransformer.transformError(e)
         }
@@ -434,7 +433,7 @@ export class EvitaClient extends AbstractEvitaClient {
         let sharedSession: EvitaClientSession | undefined = this.sharedSessions.get(catalogName)
 
         if (sharedSession != undefined && !sharedSession.isActive) {
-            console.error(`Session ${sharedSession.id} has been already closed but is still in the cache, that should not happen!. `)
+            console.warn(`Session ${sharedSession.id} has been already closed but is still in the cache, that should not happen!. `)
             this.sharedSessions.delete(catalogName)
             sharedSession = undefined
         }

@@ -1,11 +1,9 @@
-import {
+import type {
     GrpcCatalogSchema,
-    GrpcGlobalAttributeSchema
+    GrpcGlobalAttributeSchema,
 } from '@/modules/database-driver/connector/grpc/gen/GrpcCatalogSchema_pb'
 import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
-import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
-import { Map, List } from 'immutable'
 import { GlobalAttributeSchema } from '@/modules/database-driver/request-response/schema/GlobalAttributeSchema'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import {
@@ -15,7 +13,7 @@ import {
     GrpcEvolutionMode,
     GrpcGlobalAttributeUniquenessType,
     GrpcOrderBehaviour,
-    GrpcOrderDirection
+    GrpcOrderDirection,
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { GlobalAttributeUniquenessType } from '@/modules/database-driver/request-response/schema/GlobalAttributeUniquenessType'
@@ -25,36 +23,35 @@ import { AttributeUniquenessType } from '@/modules/database-driver/request-respo
 import { OrderBehaviour } from '@/modules/database-driver/request-response/schema/OrderBehaviour'
 import { Cardinality } from '@/modules/database-driver/request-response/schema/Cardinality'
 import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
-import { Scalar } from '@/modules/database-driver/data-type/Scalar'
-import {
+import type {
     GrpcAssociatedDataSchema,
     GrpcAttributeElement,
     GrpcAttributeSchema,
     GrpcEntitySchema,
     GrpcReferenceSchema,
-    GrpcSortableAttributeCompoundSchema
+    GrpcSortableAttributeCompoundSchema,
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchema_pb'
-import {
+import type {
     GrpcCurrency,
-    GrpcLocale
+    GrpcLocale,
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import {
     AttributeElement,
-    SortableAttributeCompoundSchema
+    SortableAttributeCompoundSchema,
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema'
 import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
 import { ScalarConverter } from './ScalarConverter'
 import { EvitaValueConverter } from './EvitaValueConverter'
-import { EntitySchemaAccessor } from '@/modules/database-driver/request-response/schema/EntitySchemaAccessor'
+import type { EntitySchemaAccessor } from '@/modules/database-driver/request-response/schema/EntitySchemaAccessor'
 import { MapUtil } from '@/modules/database-driver/connector/grpc/utils/MapUtil'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { Currency } from '@/modules/database-driver/data-type/Currency'
 
 export class CatalogSchemaConverter {
-    private readonly evitaValueConverter:EvitaValueConverter
+    private readonly evitaValueConverter: EvitaValueConverter
 
-    constructor(evitaValueConverter: EvitaValueConverter){
+    constructor(evitaValueConverter: EvitaValueConverter) {
         this.evitaValueConverter = evitaValueConverter
     }
 
@@ -94,7 +91,9 @@ export class CatalogSchemaConverter {
     ): AttributeSchema {
         const scalar = ScalarConverter.convertScalar(attribute.type)
         const nameVariants = MapUtil.getNamingMap(attribute.nameVariant)
-        const uniquenessType = this.convertAttributeUniquenessType(attribute.unique)
+        const uniquenessType = this.convertAttributeUniquenessType(
+            attribute.unique
+        )
         if (attribute.schemaType === GrpcAttributeSchemaType.ENTITY) {
             return new AttributeSchema(
                 attribute.name,
@@ -106,7 +105,10 @@ export class CatalogSchemaConverter {
                 attribute.filterable,
                 attribute.sortable,
                 attribute.nullable,
-                this.evitaValueConverter.convertGrpcValue(attribute.defaultValue),
+                this.evitaValueConverter.convertGrpcValue(
+                    attribute.defaultValue,
+                    attribute.defaultValue?.value.case
+                ),
                 attribute.localized,
                 attribute.indexedDecimalPlaces
             )
@@ -121,10 +123,35 @@ export class CatalogSchemaConverter {
                 attribute.filterable,
                 attribute.sortable,
                 attribute.nullable,
-                this.evitaValueConverter.convertGrpcValue(attribute.defaultValue),
+                this.evitaValueConverter.convertGrpcValue(
+                    attribute.defaultValue,
+                    attribute.defaultValue?.value.case
+                ),
                 attribute.localized,
                 attribute.indexedDecimalPlaces,
                 attribute.representative
+            )
+        } else if (attribute.schemaType === GrpcAttributeSchemaType.GLOBAL) {
+            return new GlobalAttributeSchema(
+                attribute.name,
+                MapUtil.getNamingMap(attribute.nameVariant),
+                attribute.description,
+                attribute.deprecationNotice,
+                ScalarConverter.convertScalar(attribute.type),
+                this.convertAttributeUniquenessType(attribute.unique),
+                attribute.filterable,
+                attribute.sortable,
+                attribute.nullable,
+                this.evitaValueConverter.convertGrpcValue(
+                    attribute.defaultValue,
+                    attribute.defaultValue?.value.case
+                ),
+                attribute.localized,
+                attribute.indexedDecimalPlaces,
+                attribute.representative,
+                this.convertGlobalAttributeUniquenessType(
+                    attribute.uniqueGlobally
+                )
             )
         } else {
             throw new UnexpectedError('Unaccepted type')
@@ -144,11 +171,16 @@ export class CatalogSchemaConverter {
             globalAttributeSchema.filterable,
             globalAttributeSchema.sortable,
             globalAttributeSchema.nullable,
-            this.evitaValueConverter.convertGrpcValue(globalAttributeSchema.defaultValue),
+            this.evitaValueConverter.convertGrpcValue(
+                globalAttributeSchema.defaultValue,
+                globalAttributeSchema.defaultValue?.value.case
+            ),
             globalAttributeSchema.localized,
             globalAttributeSchema.indexedDecimalPlaces,
             globalAttributeSchema.representative,
-            this.convertGlobalAttributeUniquenessType(globalAttributeSchema.uniqueGlobally)
+            this.convertGlobalAttributeUniquenessType(
+                globalAttributeSchema.uniqueGlobally
+            )
         )
     }
 
@@ -261,7 +293,7 @@ export class CatalogSchemaConverter {
             const driverEntityAttributeSchema: GrpcAttributeSchema =
                 entityAttributeSchemas[attributeName]
             entityAttributesSchemas.push(
-                this.convertGlobalAttributeSchema(
+                this.convertAttributeSchema(
                     driverEntityAttributeSchema
                 ) as EntityAttributeSchema
             )
@@ -329,7 +361,9 @@ export class CatalogSchemaConverter {
             MapUtil.getNamingMap(associatedDataSchema.nameVariant),
             associatedDataSchema.description,
             associatedDataSchema.deprecationNotice,
-            ScalarConverter.convertAssociatedDataScalar(associatedDataSchema.type),
+            ScalarConverter.convertAssociatedDataScalar(
+                associatedDataSchema.type
+            ),
             associatedDataSchema.nullable,
             associatedDataSchema.localized
         )

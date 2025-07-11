@@ -1,4 +1,4 @@
-import { Schema } from '@/modules/database-driver/request-response/schema/Schema'
+import type { Schema } from '@/modules/database-driver/request-response/schema/Schema'
 
 /**
  * {@link Schema} with associated locale

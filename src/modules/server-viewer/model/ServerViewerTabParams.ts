@@ -1,5 +1,5 @@
-import { TabParams } from '@/modules/workspace/tab/model/TabParams'
-import { ServerViewerTabParamsDto } from './ServerViewerTabParamsDto'
+import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
+import type { ServerViewerTabParamsDto } from './ServerViewerTabParamsDto'
 import { Connection } from '@/modules/connection/model/Connection'
 
 export class ServerViewerTabParams implements TabParams<ServerViewerTabParamsDto> {

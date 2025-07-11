@@ -1,4 +1,4 @@
-import { ModuleRegistrar } from '@/ModuleRegistrar'
+import type { ModuleRegistrar } from '@/ModuleRegistrar'
 import { DemoSnippetResolver, demoSnippetResolverInjectionKey } from '@/modules/workspace/service/DemoSnippetResolver'
 import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
 import {
@@ -22,7 +22,8 @@ import {
     KeymapViewerTabFactory,
     keymapViewerTabFactoryInjectionKey
 } from '@/modules/keymap/viewer/workspace/service/KeymapViewerTabFactory'
-import { useWorkspaceStore, WorkspaceStore } from '@/modules/workspace/store/workspaceStore'
+import { useWorkspaceStore } from '@/modules/workspace/store/workspaceStore'
+import type { WorkspaceStore } from '@/modules/workspace/store/workspaceStore'
 import { LabStorage, labStorageInjectionKey } from '@/modules/storage/LabStorage'
 import { SharedTabResolver, sharedTabResolverInjectionKey } from '@/modules/workspace/tab/service/SharedTabResolver'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'

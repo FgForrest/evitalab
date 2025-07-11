@@ -1,8 +1,7 @@
 <script setup lang="ts">
-
 import VMarkdown from '@/modules/base/component/VMarkdown.vue'
 import { ref } from 'vue'
-import { EvitaDBBlogPost } from '@/modules/welcome-screen/model/EvitaDBBlogPost'
+import type { EvitaDBBlogPost } from '@/modules/welcome-screen/model/EvitaDBBlogPost'
 import { useWelcomeScreenManager, WelcomeScreenService } from '@/modules/welcome-screen/service/WelcomeScreenService'
 import { useI18n } from 'vue-i18n'
 
@@ -97,7 +96,7 @@ welcomeScreenManager.getBlogPosts().then((posts) => {
 </template>
 
 <style lang="scss" scoped>
-@import "@/styles/colors.scss";
+@use "@/styles/colors.scss" as *;
 
 .editor-welcome-screen {
     position: absolute;

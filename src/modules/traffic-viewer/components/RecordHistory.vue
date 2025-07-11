@@ -7,10 +7,11 @@
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
 import { useI18n } from 'vue-i18n'
 import { computed, ref, watch } from 'vue'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { TrafficViewerService, useTrafficViewerService } from '@/modules/traffic-viewer/service/TrafficViewerService'
 import { TrafficRecordHistoryDataPointer } from '@/modules/traffic-viewer/model/TrafficRecordHistoryDataPointer'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import VListItemDivider from '@/modules/base/component/VListItemDivider.vue'
 import { TrafficRecordHistoryCriteria } from '@/modules/traffic-viewer/model/TrafficRecordHistoryCriteria'
@@ -95,11 +96,11 @@ const limit = ref<number>(pageSize)
 
 const fetchingNewRecordsWhenThereArentAny = ref<boolean>(false)
 
-const selectedSystemRecordTypes = computed<Immutable.List<TrafficRecordType> | undefined>(() => {
+const selectedSystemRecordTypes = computed<ImmutableList<TrafficRecordType> | undefined>(() => {
     if (props.criteria.types == undefined) {
         return undefined
     }
-    return Immutable.List([
+    return ImmutableList([
         ...(props.criteria.types.flatMap(userType => convertUserToSystemRecordType(userType)!))
     ])
 })
@@ -111,7 +112,7 @@ const nextPageRequest = computed<TrafficRecordingCaptureRequest>(() => {
         nextPagePointer.value.sinceRecordSessionOffset,
         selectedSystemRecordTypes.value,
         props.criteria.sessionId != undefined
-            ? Immutable.List([])
+            ? ImmutableList([])
             : undefined,
         props.criteria.longerThanInHumanFormat != undefined
             ? Duration.fromMillis(Number(parseHumanDurationToMs(props.criteria.longerThanInHumanFormat)))
@@ -119,7 +120,7 @@ const nextPageRequest = computed<TrafficRecordingCaptureRequest>(() => {
         props.criteria.fetchingMoreBytesThanInHumanFormat != undefined
             ? parseHumanByteSizeToNumber(props.criteria.fetchingMoreBytesThanInHumanFormat)[0]
             : undefined,
-        Immutable.List(props.criteria.labels)
+        ImmutableList(props.criteria.labels)
     )
 })
 const lastRecordRequest = computed<TrafficRecordingCaptureRequest>(() => {
@@ -130,7 +131,7 @@ const lastRecordRequest = computed<TrafficRecordingCaptureRequest>(() => {
         undefined,
         selectedSystemRecordTypes.value,
         props.criteria.sessionId != undefined
-            ? Immutable.List([])
+            ? ImmutableList([])
             : undefined,
         props.criteria.longerThanInHumanFormat != undefined
             ? Duration.fromMillis(Number(parseHumanDurationToMs(props.criteria.longerThanInHumanFormat)))
@@ -138,13 +139,13 @@ const lastRecordRequest = computed<TrafficRecordingCaptureRequest>(() => {
         props.criteria.fetchingMoreBytesThanInHumanFormat != undefined
             ? parseHumanByteSizeToNumber(props.criteria.fetchingMoreBytesThanInHumanFormat)[0]
             : undefined,
-        Immutable.List(props.criteria.labels)
+        ImmutableList(props.criteria.labels)
     )
 })
 
 async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) => void }): Promise<void> {
     try {
-        const fetchedRecords: Immutable.List<TrafficRecord> = await fetchRecords()
+        const fetchedRecords: ImmutableList<TrafficRecord> = await fetchRecords()
         fetchError.value = undefined
 
         if (fetchedRecords.size === 0) {
@@ -170,7 +171,7 @@ async function reloadHistory(): Promise<void> {
     fetchError.value = undefined
 
     try {
-        const fetchedRecords: Immutable.List<TrafficRecord> = await fetchRecords()
+        const fetchedRecords: ImmutableList<TrafficRecord> = await fetchRecords()
         if (fetchedRecords.size === 0) {
             return
         }
@@ -193,7 +194,7 @@ async function tryReloadHistoryForPossibleNewRecords(): Promise<void> {
     }
 }
 
-async function fetchRecords(): Promise<Immutable.List<TrafficRecord>> {
+async function fetchRecords(): Promise<ImmutableList<TrafficRecord>> {
     return await trafficViewerService.getRecordHistoryList(
         props.dataPointer.catalogName,
         nextPageRequest.value,
@@ -201,8 +202,8 @@ async function fetchRecords(): Promise<Immutable.List<TrafficRecord>> {
     )
 }
 
-function moveNextPagePointer(fetchedRecords: Immutable.List<TrafficRecord>): void {
-    const lastFetchedRecord: TrafficRecord = fetchedRecords.last()
+function moveNextPagePointer(fetchedRecords: ImmutableList<TrafficRecord>): void {
+    const lastFetchedRecord: TrafficRecord = fetchedRecords.last()!
     if (lastFetchedRecord.recordSessionOffset < (lastFetchedRecord.sessionRecordsCount - 1)) {
         nextPagePointer.value.move(lastFetchedRecord.sessionSequenceOrder, lastFetchedRecord.recordSessionOffset + 1)
     } else {
@@ -210,7 +211,7 @@ function moveNextPagePointer(fetchedRecords: Immutable.List<TrafficRecord>): voi
     }
 }
 
-function pushNewRecords(newRecords: Immutable.List<TrafficRecord>): void {
+function pushNewRecords(newRecords: ImmutableList<TrafficRecord>): void {
     for (const newRecord of newRecords) {
         records.push(newRecord)
     }
@@ -241,7 +242,7 @@ function handleRecordFetchError(e: any): void {
 
 async function moveStartPointerToNewest(): Promise<void> {
     try {
-        const latestRecords: Immutable.List<TrafficRecord> = await trafficViewerService.getRecordHistoryList(
+        const latestRecords: ImmutableList<TrafficRecord> = await trafficViewerService.getRecordHistoryList(
             props.dataPointer.catalogName,
             lastRecordRequest.value,
             1,

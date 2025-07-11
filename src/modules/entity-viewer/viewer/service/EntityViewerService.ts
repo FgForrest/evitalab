@@ -1,4 +1,4 @@
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import { QueryLanguage } from '@/modules/entity-viewer/viewer/model/QueryLanguage'
 import { EvitaQLQueryBuilder } from '@/modules/entity-viewer/viewer/service/EvitaQLQueryBuilder'
@@ -17,11 +17,11 @@ import {
 import {
     EntityPropertyValueXmlFormatter
 } from '@/modules/entity-viewer/viewer/service/entity-property-value-formatter/EntityPropertyValueXmlFormatter'
-import { QueryBuilder } from '@/modules/entity-viewer/viewer/service/QueryBuilder'
+import type { QueryBuilder } from '@/modules/entity-viewer/viewer/service/QueryBuilder'
 import { QueryExecutor } from '@/modules/entity-viewer/viewer/service/QueryExecutor'
-import { EntityPropertyValueFormatter } from '@/modules/entity-viewer/viewer/service/EntityPropertyValueFormatter'
+import type { EntityPropertyValueFormatter } from '@/modules/entity-viewer/viewer/service/EntityPropertyValueFormatter'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
-import { QueryResult } from '@/modules/entity-viewer/viewer/model/QueryResult'
+import type { QueryResult } from '@/modules/entity-viewer/viewer/model/QueryResult'
 import { EntityPrice } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrice'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EntityPrices } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrices'

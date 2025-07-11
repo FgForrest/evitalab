@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
-import { ref, Ref } from 'vue'
+import { ref } from 'vue'
+import type { Ref } from 'vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
-import { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { TabData } from '@/modules/workspace/tab/model/TabData'
 import { SubjectPathStatus } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathStatus'
 import { EditorStatus } from '@/modules/workspace/status-bar/model/editor-status/EditorStatus'
 

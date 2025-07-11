@@ -1,7 +1,7 @@
 // todo docs
 import { Connection } from '@/modules/connection/model/Connection'
-import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
-import { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
+import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
+import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
 import {
     EvitaQLConsoleTabDefinition
 } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabDefinition'
@@ -9,11 +9,11 @@ import { EvitaQLConsoleTabData } from '@/modules/evitaql-console/console/workspa
 import { EvitaQLConsoleTabParams } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabParams'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { EvitaQLConsoleDataPointer } from '@/modules/evitaql-console/console/model/EvitaQLConsoleDataPointer'
-import { EvitaQLConsoleTabDataDto } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabDataDto'
-import {
+import type { EvitaQLConsoleTabDataDto } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabDataDto'
+import type {
     EvitaQLConsoleTabParamsDto
 } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabParamsDto'
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 
 export const evitaQLConsoleTabFactoryInjectionKey: InjectionKey<EvitaQLConsoleTabFactory> = Symbol('evitaQLConsoleTabFactory')

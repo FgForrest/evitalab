@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { CatalogItemService, useCatalogItemService } from '@/modules/connection-explorer/service/CatalogItemService'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 
 const catalogItemService: CatalogItemService = useCatalogItemService()

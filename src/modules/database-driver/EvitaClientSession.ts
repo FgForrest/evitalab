@@ -1,10 +1,9 @@
-import Immutable, { List } from 'immutable'
-import { Empty } from '@bufbuild/protobuf'
+import { List as ImmutableList } from 'immutable'
 import { Code, ConnectError } from '@connectrpc/connect'
-import { EvitaSessionServiceClient, EvitaTrafficRecordingServiceClient } from '@/modules/database-driver/AbstractEvitaClient'
+import type { EvitaSessionServiceClient, EvitaTrafficRecordingServiceClient } from '@/modules/database-driver/AbstractEvitaClient'
 import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
 import { InstanceTerminatedError } from '@/modules/database-driver/exception/InstanceTerminatedError'
-import {
+import type {
     GrpcBackupCatalogResponse,
     GrpcCatalogSchemaResponse,
     GrpcCatalogVersionAtResponse, GrpcDefineEntitySchemaResponse,
@@ -22,12 +21,12 @@ import { CatalogState } from '@/modules/database-driver/request-response/Catalog
 import { CatalogVersionAtResponse } from '@/modules/database-driver/request-response/CatalogVersionAtResponse'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
 import { ErrorTransformer } from '@/modules/database-driver/exception/ErrorTransformer'
-import { GrpcEntitySchema } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchema_pb'
+import type { GrpcEntitySchema } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchema_pb'
 import { EvitaResponseConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaResponseConverter'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { TaskStatusConverter } from '@/modules/database-driver/connector/grpc/service/converter/TaskStatusConverter'
-import {
+import type {
     GetTrafficHistoryListRequest,
     GetTrafficHistoryListResponse,
     GetTrafficRecordingLabelNamesResponse,
@@ -42,7 +41,7 @@ import {
     TrafficRecordingConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/TrafficRecordingConverter'
 import { EvitaSchemaCache } from '@/modules/database-driver/EvitaSchemaCache'
-import { EntitySchemaAccessor } from '@/modules/database-driver/request-response/schema/EntitySchemaAccessor'
+import type { EntitySchemaAccessor } from '@/modules/database-driver/request-response/schema/EntitySchemaAccessor'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
@@ -158,11 +157,11 @@ export class EvitaClientSession {
     /**
      * Returns list of all entity types available in this catalog.
      */
-    async getAllEntityTypes(): Promise<List<string>> {
+    async getAllEntityTypes(): Promise<ImmutableList<string>> {
         this.assertActive()
         try {
-            const response: GrpcEntityTypesResponse = await this.evitaSessionClientProvider().getAllEntityTypes(Empty, this._callMetadata)
-            return List(response.entityTypes)
+            const response: GrpcEntityTypesResponse = await this.evitaSessionClientProvider().getAllEntityTypes({}, this._callMetadata)
+            return ImmutableList(response.entityTypes)
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
         }
@@ -201,7 +200,7 @@ export class EvitaClientSession {
         this.assertActive()
         try {
             const response: GrpcGoLiveAndCloseResponse = await this.evitaSessionClientProvider()
-                .goLiveAndClose(Empty, this._callMetadata)
+                .goLiveAndClose({}, this._callMetadata)
 
             if (response.success) {
                 this._active = false
@@ -323,7 +322,7 @@ export class EvitaClientSession {
                 .getCatalogVersionAt({}, this._callMetadata)
 
             return new CatalogVersionAtResponse(
-                result.version,
+                BigInt(result.version),
                 this.evitaValueConverterProvider().convertGrpcOffsetDateTime(result.introducedAt!)
             )
         } catch (e) {
@@ -356,7 +355,7 @@ export class EvitaClientSession {
     /**
      * Returns a stream of all unique labels names ordered by cardinality of their values present in the traffic recording.
      */
-    async getLabelNamesOrderedByCardinality(nameStartsWith: string, limit: number): Promise<Immutable.List<string>> {
+    async getLabelNamesOrderedByCardinality(nameStartsWith: string, limit: number): Promise<ImmutableList<string>> {
         this.assertActive()
         try {
             const response: GetTrafficRecordingLabelNamesResponse = await this.evitaTrafficRecordingClientProvider()
@@ -367,7 +366,7 @@ export class EvitaClientSession {
                     },
                     this._callMetadata
                 )
-            return Immutable.List(response.labelName || [])
+            return ImmutableList(response.labelName || [])
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
         }
@@ -380,7 +379,7 @@ export class EvitaClientSession {
         labelName: string,
         valueStartsWith: string,
         limit: number
-    ): Promise<Immutable.List<string>> {
+    ): Promise<ImmutableList<string>> {
         this.assertActive()
         try {
             const response: GetTrafficRecordingValuesNamesResponse = await this.evitaTrafficRecordingClientProvider()
@@ -392,7 +391,7 @@ export class EvitaClientSession {
                     },
                     this._callMetadata
                 )
-            return Immutable.List(response.labelValue || [])
+            return ImmutableList(response.labelValue || [])
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
         }
@@ -435,8 +434,8 @@ export class EvitaClientSession {
                 .stopTrafficRecording(
                     {
                         taskStatusId: {
-                            mostSignificantBits: taskId.mostSignificantBits,
-                            leastSignificantBits: taskId.leastSignificantBits
+                            mostSignificantBits: taskId.mostSignificantBits.toString(),
+                            leastSignificantBits: taskId.leastSignificantBits.toString()
                         }
                     },
                     this._callMetadata
@@ -457,14 +456,14 @@ export class EvitaClientSession {
         captureRequest: TrafficRecordingCaptureRequest,
         limit: number,
         reverse: boolean = false
-    ): Promise<Immutable.List<TrafficRecord>> {
+    ): Promise<ImmutableList<TrafficRecord>> {
         this.assertActive()
         try {
-            const request: GetTrafficHistoryListRequest = new GetTrafficHistoryListRequest({
+            const request: GetTrafficHistoryListRequest = {
                 limit,
                 criteria: this.trafficRecordingConverterProvider()
                     .convertTrafficRecordingCaptureRequest(captureRequest)
-            })
+            } as GetTrafficHistoryListRequest
 
             let response: GetTrafficHistoryListResponse
             if (!reverse) {
@@ -553,10 +552,10 @@ export class EvitaClientSession {
         }
     }
 
-    private async loadEntitySchemas(): Promise<List<EntitySchema>> {
+    private async loadEntitySchemas(): Promise<ImmutableList<EntitySchema>> {
         try {
             const entityTypesResponse: GrpcEntityTypesResponse =
-                await this.evitaSessionClientProvider().getAllEntityTypes(Empty, this._callMetadata)
+                await this.evitaSessionClientProvider().getAllEntityTypes({}, this._callMetadata)
 
             const entitySchemas: EntitySchema[] = []
             const entityTypes: string[] = entityTypesResponse.entityTypes
@@ -579,7 +578,7 @@ export class EvitaClientSession {
                 }
             }
 
-            return List(entitySchemas)
+            return ImmutableList(entitySchemas)
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
         }
@@ -607,8 +606,8 @@ class ClientEntitySchemaAccessor implements EntitySchemaAccessor {
         }
     }
 
-    async getEntitySchemas(): Promise<List<EntitySchema>> {
-        let allEntityTypes: Immutable.List<string>
+    async getEntitySchemas(): Promise<ImmutableList<EntitySchema>> {
+        let allEntityTypes: ImmutableList<string>
         if (this.session.isActive) {
             allEntityTypes = await this.session.getAllEntityTypes()
         } else {
@@ -627,7 +626,7 @@ class ClientEntitySchemaAccessor implements EntitySchemaAccessor {
                 entitySchemas.push(entitySchema)
             }
         }
-        return List(entitySchemas)
+        return ImmutableList(entitySchemas)
     }
 
 }

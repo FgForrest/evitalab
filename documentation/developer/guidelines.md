@@ -7,13 +7,31 @@ these practices.
 
 ## Code architecture
 
-### SFC structure
+### Component structure
 
-TODO script, template, style
+We use the [Single-File Components](https://vuejs.org/guide/scaling-up/sfc.html) and
+[Composition API](https://vuejs.org/api/composition-api-setup.html#composition-api-setup) with the following order for
+better orientation:
+
+- `script`
+- `template`
+- `style`
 
 ### Component setup structure
 
-TODO import, const, services, props, emits, refs, functions
+Each `setup` portion of a component should follow ordering:
+
+- imports
+- component constants
+- injection of services
+- props/emit definition
+- refs/computed/functions
+
+Complex components that access data should adhere to the [Model-View-ViewModel architecture](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel),
+preferably in conjunction with the [mediator pattern](https://en.wikipedia.org/wiki/Mediator_pattern) in the form of
+custom service for the component to abstract access to generic services.
+
+![Component-service hierarchy](assets/component-service-hierarchy.svg)
 
 ### Dependency injection
 
@@ -34,70 +52,78 @@ export function useService(): Service {
 For component tree dependency injection a `dependecies.ts` file should be created where the components for a feature are
 places with proper injection keys and `provideX` and `injectX` methods so that the keys are not spread across components.
 
-### UI
+## UI
 
-Complex components that access data should adhere to the [Model-View-ViewModel architecture](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel),
-preferably in conjunction with the [mediator pattern](https://en.wikipedia.org/wiki/Mediator_pattern) in form of
-custom service for the component to abstract access to generic services.
+### Base UI components
 
-![Component-service hierarchy](assets/component-service-hierarchy.svg)
+#### Dialogs
 
-#### Base UI components
+Use `VLabDialog` for each new dialog that you are creating. Alternatively, use `VFormDialog` for form dialogs 
 
-##### Dialogs
+There are also helper components for dialogs:
 
-Use `VLabDialog` for each new dialog that you are creating.
+- VAlternativeActionDialogButton
+- VCancelDialogButton
+- VConfirmDialogButton
 
-For texts within dialogs, use `VCardText`.
+#### Tab windows
 
-VAlternativeActionDialogButton
-VCancelDialogButton
-VConfirmDialogButton
-
-##### Tab windows
-
-TODO document approach to creating new tab window types and available tooling
+All tab windows must fill all available space.
 
 Use `VTabToolbar` for toolbars within tab window content.
 
-##### Lists
+#### Lists
 
 Use `VListItemDivider` for delimiting list items in **each** non-menu lists.
 
 Use `VListItemLazyIterator` if you need client-side with "load next" pagination for lists. Usually useful for
 optimizing GUI rendering for lots of components.
 
-##### Expansion panels
+#### Expansion panels
 
 Use `VExpansionPanelLazyIterator` if you need client-side with "load next" pagination for expansion panels. Usually useful for
 optimizing GUI rendering for lots of components.
 
-##### Markdown
+#### Markdown
 
 Use `VMarkdown` for rendering markdown texts.
 
-##### Properties
+#### Properties
 
 Use `VPropertiesTable` for displaying properties of object etc.
 
-##### Trees
+#### Trees
 
 Use `VTreeViewItem` and `VTreeViewEmptyItem` for constructing tree menu structures.
 
-##### Code editor
+#### Code editor
 
 Use `VQueryEditor`, `VInlineQueryEditor` or `VPreviewEditor` for code/text editor behaviour.
 
 Use `VExecuteQueryButton` as special button for executing queries in conjunction with query editor.
 
-### Toast notifications and handling errors
+#### Date and time
 
-TODO
+Primarily use Vuetify date and time components. For datetime component, use the custom `VDateTimeInput`.
+
+## Toast notifications
+
+For toast notifications, inject `useToaster()`. It provides methods for different types of notifications.
+
+### Error handling
+
+All service/EvitaClient calls in a component must be wrapped in a try-catch clause so that the component can react 
+accordingly to any errors. Usually it means calling `toaster.error(...)` and providing some default values or fallback
+logic for the component.
 
 ### Forms
 
+We use the built-in Vuetify [forms](https://vuetifyjs.com/en/components/forms/). For forms in dialogs, check `VFormDialog`.
+
 #### Validations
-TODO
+
+We use the built-in Vuetify [validation rules](https://vuetifyjs.com/en/components/forms/#rules). In the `VFormDialog`,
+there is already built-in logic for proper validation.
 
 ## Git
 

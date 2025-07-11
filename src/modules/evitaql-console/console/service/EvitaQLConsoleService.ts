@@ -1,5 +1,5 @@
 import { EvitaQLConsoleDataPointer } from '@/modules/evitaql-console/console/model/EvitaQLConsoleDataPointer'
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
@@ -27,6 +27,8 @@ export class EvitaQLConsoleService {
                session => session.query(query),
                true // we want to always fetch fresh data
            )
+            const cleanedString = result.rawResponse.replace(/"?\$typeName"?\s*:\s*".*?",?\s*/g, '');
+           result = new EvitaResponse(result.recordPage, result.extraResults, cleanedString);
         } catch (e: any) {
             if (e.name === 'QueryError') {
                 result = e.error

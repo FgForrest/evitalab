@@ -1,4 +1,4 @@
-import Immutable from 'immutable'
+import { Set as ImmutableSet, Map as ImmutableMap } from 'immutable'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { Readiness } from '@/modules/database-driver/request-response/status/Readiness'
 import { HealthProblem } from '@/modules/database-driver/request-response/status/HealthProblem'
@@ -17,9 +17,9 @@ export class ServerStatus {
     readonly catalogsCorrupted: number
     readonly catalogsOk: number
     readonly readOnly: boolean
-    readonly healthProblems: Immutable.Set<HealthProblem>
+    readonly healthProblems: ImmutableSet<HealthProblem>
     readonly readiness: Readiness
-    readonly apis: Immutable.Map<ApiType, ApiStatus>
+    readonly apis: ImmutableMap<ApiType, ApiStatus>
 
     constructor(version: string,
                 started: OffsetDateTime,
@@ -28,9 +28,9 @@ export class ServerStatus {
                 catalogsCorrupted: number,
                 catalogsOk: number,
                 readOnly: boolean,
-                healthProblems: Immutable.Set<HealthProblem>,
+                healthProblems: ImmutableSet<HealthProblem>,
                 readiness: Readiness,
-                apis: Immutable.Map<ApiType, ApiStatus>) {
+                apis: ImmutableMap<ApiType, ApiStatus>) {
         this.version = version
         this.started = started
         this.uptime = uptime

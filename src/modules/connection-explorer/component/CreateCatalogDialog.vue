@@ -3,7 +3,8 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { CatalogItemService, useCatalogItemService } from '@/modules/connection-explorer/service/CatalogItemService'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { ClassifierValidationErrorType } from '@/modules/database-driver/data-type/ClassifierValidationErrorType'
 
 const catalogItemService: CatalogItemService = useCatalogItemService()

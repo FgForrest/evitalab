@@ -5,7 +5,7 @@
 
 import MarkdownIt from 'markdown-it'
 import MarkdownItHighlightJs from 'markdown-it-highlightjs'
-import MarkdownItEmoji from 'markdown-it-emoji'
+import { full as MarkdownItEmoji } from 'markdown-it-emoji'
 import { computed } from 'vue'
 
 const markdown: MarkdownIt = new MarkdownIt()

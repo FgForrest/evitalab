@@ -1,4 +1,5 @@
-import { InjectionKey, provide, Ref } from 'vue'
+import { provide } from 'vue'
+import type { InjectionKey, Ref } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { TrafficRecordHistoryCriteria } from '@/modules/traffic-viewer/model/TrafficRecordHistoryCriteria'
 

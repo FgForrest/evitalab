@@ -1,4 +1,6 @@
-import { createRouter, createWebHashHistory, createWebHistory, Router, RouteRecordRaw, RouterHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, createWebHistory} from 'vue-router'
+import type { Router, RouterHistory } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
 import { LabRunMode } from '@/LabRunMode'
 
 const runMode: LabRunMode = resolveLabRunMode()

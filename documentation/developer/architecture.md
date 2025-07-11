@@ -7,7 +7,7 @@ put together.
 
 ## Modules
 
-The entire codebase is structure into modules that communicate between each other. In this case, modules are not JS
+The entire codebase is structured into modules that communicate between each other. In this case, modules are not JS
 modules, they are more of semantic separation of domains into standalone directories.
 
 There are three types of modules (again just a semantic separation):

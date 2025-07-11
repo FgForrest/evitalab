@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { useDataLocale, usePriceType } from '@/modules/entity-viewer/viewer/component/dependencies'
-import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { isLocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
 import { isTypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
+import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue.ts'
+import type { Predecessor } from '@/modules/database-driver/data-type/Predecessor.ts'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema.ts'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -25,22 +28,27 @@ const emit = defineEmits<{
 }>()
 const dataLocale = useDataLocale()
 const priceType = usePriceType()
+const parent = ref()
 
 const printablePropertyValue = computed<string>(() => toPrintablePropertyValue(props.propertyValue))
-const openableInNewTab = computed<boolean>(() => {
+const prependIcon = computed<string | undefined>(() => {
     if (props.propertyDescriptor?.type === EntityPropertyType.Entity && props.propertyDescriptor?.key.name === StaticEntityProperties.ParentPrimaryKey) {
-        return true
+        return 'mdi-open-in-new'
     } else if (props.propertyDescriptor?.schema != undefined &&
         isTypedSchema(props.propertyDescriptor.schema) &&
         props.propertyDescriptor.schema.type === Scalar.Predecessor) {
-        return true
+        if (props.propertyValue instanceof Array)
+            return undefined
+        if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
+            return 'mdi-ray-start'
+        } else {
+            return 'mdi-ray-end-arrow'
+        }
     } else if (props.propertyDescriptor?.type === EntityPropertyType.References && props.propertyDescriptor.schema instanceof ReferenceSchema) {
-        return true
-    } else {
-        return false
-    }
+        return 'mdi-open-in-new'
+    } else
+        return undefined
 })
-const showDetailOnHover = computed<boolean>(() => printablePropertyValue.value.length <= 100)
 
 const noLocaleSelected = computed<boolean>(() => {
     return props.propertyDescriptor?.schema != undefined &&
@@ -76,23 +84,73 @@ function toPrintablePropertyValue(value: EntityPropertyValue | EntityPropertyVal
     }
 }
 
-function copyValue(): void {
-    if (printablePropertyValue.value) {
-        navigator.clipboard.writeText(printablePropertyValue.value).then(() => {
-            toaster.info(t('common.notification.copiedToClipboard')).then()
-        }).catch(() => {
-            toaster.error(t('common.notification.failedToCopyToClipboard')).then()
-        })
+function copyValue(raw: boolean): void {
+    if (raw) {
+        const entityValue: EntityPropertyValue | EntityPropertyValue[] | undefined = props.propertyValue
+        if (entityValue) {
+            let value: string = ''
+
+            if (entityValue instanceof Array) {
+                if (entityValue.length !== 0) {
+                    value = `[${entityValue.map(it => it.toRawString()).join(', ')}]`
+                }
+            } else if (entityValue instanceof EntityPropertyValue) {
+                value = entityValue.toRawString()
+            }
+
+            navigator.clipboard.writeText(value).then(() => {
+                toaster.info(t('common.notification.copiedToClipboard')).then()
+            }).catch(() => {
+                toaster.error(t('common.notification.failedToCopyToClipboard')).then()
+            })
+        }
+    } else {
+        if (printablePropertyValue.value) {
+            navigator.clipboard.writeText(printablePropertyValue.value).then(() => {
+                toaster.info(t('common.notification.copiedToClipboard')).then()
+            }).catch(() => {
+                toaster.error(t('common.notification.failedToCopyToClipboard')).then()
+            })
+        }
+    }
+}
+
+const tooltip = computed<string>(() => {
+    if (props.propertyDescriptor?.schema != undefined &&
+        isTypedSchema(props.propertyDescriptor.schema) &&
+        props.propertyDescriptor.schema.type === Scalar.Predecessor
+    ) {
+        if (props.propertyValue instanceof NativeValue) {
+            //Head
+            if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
+                return 'Head of the list.'
+            } else {
+                return 'Pointer to a previous entity in the list.'
+            }
+        } else {
+            return printablePropertyValue.value
+        }
+    } else {
+        return printablePropertyValue.value
+    }
+})
+
+function handleClick(e: MouseEvent): void {
+    e.preventDefault()
+
+    if (e.shiftKey && e.button === 1) {
+        copyValue(true)
+    } else if (e.button === 1) {
+        copyValue(false)
+    } else if (e.button === 0) {
+        emit('click')
     }
 }
 </script>
 
 <template>
-    <td
-        :class="{'data-grid-cell--clickable': printablePropertyValue}"
-        @click="emit('click')"
-        @click.middle="copyValue"
-    >
+    <td ref="parent" class="data-grid-cell" :class="{ 'data-grid-cell--clickable': printablePropertyValue }"
+        @mousedown="(e) => handleClick(e)">
         <span class="data-grid-cell__body">
             <template v-if="noLocaleSelected">
                 <span class="text-disabled">{{ t('entityViewer.grid.cell.placeholder.noLocaleSelected') }}</span>
@@ -104,11 +162,30 @@ function copyValue(): void {
                 <span class="text-disabled">{{ t('common.placeholder.null') }}</span>
             </template>
             <template v-else>
-                <VIcon v-if="openableInNewTab" class="mr-1">mdi-open-in-new</VIcon>
-                <span>
+                <VIcon v-if="prependIcon !== undefined" class="mr-1">{{ prependIcon }}</VIcon>
+                <span class="inline-flex items-center">
                     {{ printablePropertyValue }}
-                    <VTooltip v-if="showDetailOnHover" activator="parent">
-                        {{ printablePropertyValue }}
+
+                    <VTooltip
+                        :activator="parent"
+                        location="bottom"
+                        :interactive="true">
+                        <div>
+                            <VChip class="chip" size="small">
+                                <span>{{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTip') }}</span>
+                                <span class="text-disabled ml-1">
+                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTipDescription') }})
+                                </span>
+                            </VChip>
+                            <VChip class="chip" size="small">
+                                <span>{{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTip') }}</span>
+                                <span class="text-disabled ml-1">
+                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTipDescription') }})
+                                </span>
+                            </VChip>
+                        </div>
+                        <hr />
+                        <p>{{ tooltip }}</p>
                     </VTooltip>
                 </span>
             </template>
@@ -116,26 +193,51 @@ function copyValue(): void {
     </td>
 </template>
 
-<style lang="scss" scoped>
-.data-grid-cell {
-    &--clickable {
-        cursor: pointer;
+<style scoped lang="scss">
+td.data-grid-cell {
+    height: 2.25rem;
+    line-height: 2.25rem;
+    padding: 0 .75rem;
+    position: relative;
+    overflow-x: clip;
+}
 
-        &:hover {
-            background: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
-        }
-    }
+.data-grid-cell--clickable {
+    cursor: pointer;
 
-    &__body {
-        line-height: 2.25rem;
-        overflow-x: hidden;
-        overflow-y: hidden;
-        display: block;
-        min-width: 5rem;
-        max-width: 15rem;
-        height: 2.25rem;
-        text-overflow: clip;
-        text-wrap: nowrap;
+    &:hover {
+        background: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
     }
 }
+
+.data-grid-cell__body {
+    display: inline-flex;
+    align-items: center;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-left: 16px;
+    margin-right: 16px;
+}
+
+.chip {
+    margin: 5px;
+}
+
+hr {
+    margin: 5px;
+    border: none;
+    height: 1px;
+    max-height: 1.5px;
+
+    background-color: rgba(255, 255, 255, 0.3);
+
+    border-radius: 9999px;
+}
+ p{
+     margin: 10px;
+ }
 </style>

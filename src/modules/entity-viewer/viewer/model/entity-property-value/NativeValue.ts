@@ -8,7 +8,7 @@ import { LocalDate } from '@/modules/database-driver/data-type/LocalDate'
 import { LocalTime } from '@/modules/database-driver/data-type/LocalTime'
 import { Predecessor } from '@/modules/database-driver/data-type/Predecessor'
 import { DateTimeRange } from '@/modules/database-driver/data-type/DateTimeRange'
-import { PrettyPrintable } from '@/modules/database-driver/data-type/PrettyPrintable'
+import type { PrettyPrintable } from '@/modules/database-driver/data-type/PrettyPrintable'
 import { Currency } from '@/modules/database-driver/data-type/Currency'
 import { Attributes } from '@/modules/database-driver/request-response/data/Attributes'
 
@@ -80,6 +80,14 @@ export class NativeValue extends EntityPropertyValue {
         } else {
             return this.delegate.toString()
         }
+    }
+
+    toRawString(): string {
+        return this.toPreviewString()
+    }
+
+    toRawRepresentation(): any {
+        return this.delegate
     }
 
     isPrettyPrintable(obj: any): obj is PrettyPrintable {

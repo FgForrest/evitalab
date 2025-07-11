@@ -3,11 +3,13 @@
  * Visualises raw JSON facet summary.
  */
 
-import { computed, Ref } from 'vue'
+import { computed } from 'vue'
+import type { Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
-import { Result } from '@/modules/console/result-visualiser/model/Result'
+import type { Result } from '@/modules/console/result-visualiser/model/Result'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import ReferenceFacetGroupStatisticsVisualiser
@@ -16,6 +18,7 @@ import { List } from 'immutable'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
 import { useRootEntitySchema, useVisualiserService } from '@/modules/console/result-visualiser/component/dependencies'
+import { VExpansionPanels, VExpansionPanel, VExpansionPanelTitle, VExpansionPanelText } from 'vuetify/components'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()

@@ -220,7 +220,7 @@
       "keymap": "Keymap",
       "panels": {
         "_title": "Panels",
-        "connectionsExplorer": "Explorer"
+        "connection": "Connection"
       },
       "editor": {
         "_title": "Editor",
@@ -264,6 +264,14 @@
       "propertySelector": {
         "_title": "Property selector",
         "findProperty": "Find property"
+      },
+      "entityGrid": {
+        "entityGridCell": {
+          "rawCopyToolTip": "Shift + Middle mouse button",
+          "rawCopyToolTipDescription": "Copy raw value from cell",
+          "copyValueToolTip": "Middle mouse button",
+          "copyValueToolTipDescription": "Copy value from cell"
+        }
       }
     },
     "evitaQLConsole": {
@@ -347,24 +355,25 @@
         "corrupted": "corrupted",
         "warmingUp": "warming up"
       },
-      "subheader": {
-        "manage": "Manage",
-        "modify": "Modify",
-        "collections": "Collections",
-        "traffic": "Traffic"
-      },
-      "actions": {
-        "evitaQLConsole": "evitaQL console",
-        "graphQLDataApiConsole": "GraphQL Data API console",
-        "graphQLSchemaApiConsole": "GraphQL Schema API console",
-        "viewSchema": "Schema",
-        "closeSharedSession": "Close shared session",
-        "deleteCatalog": "Delete catalog",
-        "renameCatalog": "Rename catalog",
-        "replaceCatalog": "Replace catalog",
-        "createCollection": "Create collection",
-        "switchCatalogToAliveState": "Switch catalog to alive state",
-        "activeTrafficRecording": "Active traffic recording"
+      "menu": {
+        "item": {
+          "manageSubheader": "Manage",
+          "modifySubheader": "Modify",
+          "collectionsSubheader": "Collections",
+          "trafficSubheader": "Traffic",
+          "evitaQLConsole": "evitaQL console",
+          "graphQLDataApiConsole": "GraphQL Data API console",
+          "graphQLSchemaApiConsole": "GraphQL Schema API console",
+          "viewSchema": "Schema",
+          "backup": "Backup",
+          "closeSharedSession": "Close shared session",
+          "deleteCatalog": "Delete catalog",
+          "renameCatalog": "Rename catalog",
+          "replaceCatalog": "Replace catalog",
+          "createCollection": "Create collection",
+          "switchCatalogToAliveState": "Switch catalog to alive state",
+          "activeTrafficRecording": "Active traffic recording"
+        }
       },
       "notification": {
         "closedSharedSession": "Shared session of catalog {catalogName} was closed.",
@@ -450,14 +459,14 @@
       }
     },
     "collection": {
-      "subheader": {
-        "modify": "Modify"
-      },
-      "actions": {
-        "viewEntities": "Entities",
-        "viewSchema": "Schema",
-        "deleteCollection": "Delete collection",
-        "renameCollection": "Rename collection"
+      "menu": {
+        "item": {
+          "modifySubheader": "Modify",
+          "entities": "Entities",
+          "schema": "Schema",
+          "deleteCollection": "Delete collection",
+          "renameCollection": "Rename collection"
+        }
       },
       "create": {
         "title": "Create collection in {catalogName} catalog",
@@ -677,11 +686,7 @@
   "evitaQLConsole": {
     "placeholder": {
       "writeQuery": "// Write your EvitaQL query for catalog {catalogName} here.\n",
-      "results": "Results will be displayed here...",
-      "emptyHistory": "Empty history"
-    },
-    "button": {
-      "clearHistory": "Clear history"
+      "results": "Results will be displayed here..."
     },
     "notification": {
       "failedToSaveQueryToHistory": "Failed to save query to history."
@@ -695,15 +700,21 @@
     },
     "placeholder": {
       "writeQuery": "# Write your GraphQL query for catalog {catalogName} here.\n",
-      "results": "Results will be displayed here...",
-      "emptyHistory": "Empty history"
+      "results": "Results will be displayed here..."
     },
     "button": {
-      "instanceDetails": "GraphQL API instance details",
-      "clearHistory": "Clear history"
+      "instanceDetails": "GraphQL API instance details"
     },
     "notification": {
       "failedToSaveQueryToHistory": "Failed to save query to history."
+    }
+  },
+  "historyComponent": {
+    "button": {
+      "clearHistory": "Clear history"
+    },
+    "placeholder": {
+      "emptyHistory": "Empty history"
     }
   },
   "resultVisualizer": {
@@ -816,7 +827,8 @@
         "entity": "Entities",
         "attribute": "Attributes",
         "associatedData": "Associated data",
-        "reference": "References"
+        "reference": "References",
+        "sortableAttributeCompounds": "Sortable attribute compounds"
       }
     },
     "path": {
@@ -835,6 +847,12 @@
         "filter": "Filter"
       },
       "flag": {
+        "attributeElement": {
+          "nullsFirst": "nulls first",
+          "nullsLast": "nulls last",
+          "asc": "ascending",
+          "desc": "descending"
+        },
         "entitySchema": {
           "hierarchical": "hierarchical"
         },
@@ -864,11 +882,15 @@
       "label": {
         "catalogId": "Catalog ID",
         "version": "Version",
-        "description": "Description"
+        "description": "Description",
+        "locales": "Locales"
       }
     },
     "entities": {
       "title": "Entities"
+    },
+    "sortableAttributeCompounds": {
+      "title": "Sortable attribute compounds"
     },
     "entity": {
       "label": {
@@ -965,6 +987,17 @@
         "faceted": "Faceted",
         "referencedEntityNameVariants": "Referenced entity",
         "referencedGroupNameVariants": "Referenced group"
+      }
+    },
+    "sortableAttributeCompound": {
+      "name": "Sortable attribute compound",
+      "label": {
+        "name": "Name",
+        "deprecationNotice": "Deprecation notice",
+        "description": "Description"
+      },
+      "attributeElement": {
+        "title": "Attribute elements"
       }
     }
   },

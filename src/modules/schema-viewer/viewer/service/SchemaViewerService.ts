@@ -1,5 +1,5 @@
 import { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer'
-import { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
+import type { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 import { CatalogSchemaPointer } from '@/modules/schema-viewer/viewer/model/CatalogSchemaPointer'
 import { EntitySchemaPointer } from '@/modules/schema-viewer/viewer/model/EntitySchemaPointer'
 import { CatalogAttributeSchemaPointer } from '@/modules/schema-viewer/viewer/model/CatalogAttributeSchemaPointer'
@@ -15,10 +15,14 @@ import { ReferenceSchema } from '@/modules/database-driver/request-response/sche
 import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
 import { GlobalAttributeSchema } from '@/modules/database-driver/request-response/schema/GlobalAttributeSchema'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
-import { InjectionKey } from 'vue'
+import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
+import { SortableAttributeCompoundSchemaPointer } from '@/modules/schema-viewer/viewer/model/SortableAttributeCompoundSchemaPointer.ts'
+import {
+    SortableAttributeCompoundSchema
+} from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema.ts'
 
 export const schemaViewerServiceInjectionKey: InjectionKey<SchemaViewerService> = Symbol('schemaViewerService')
 
@@ -32,7 +36,7 @@ export class SchemaViewerService {
         this.evitaClient = evitaClient
     }
 
-    async getSchema(dataPointer: SchemaViewerDataPointer): Promise<CatalogSchema | EntitySchema | AttributeSchema | AssociatedDataSchema | ReferenceSchema> {
+    async getSchema(dataPointer: SchemaViewerDataPointer): Promise<CatalogSchema | EntitySchema | AttributeSchema | AssociatedDataSchema | ReferenceSchema | SortableAttributeCompoundSchema> {
         const schemaPointer: SchemaPointer = dataPointer.schemaPointer
 
         if (schemaPointer instanceof CatalogSchemaPointer) {
@@ -49,6 +53,8 @@ export class SchemaViewerService {
             return this.getAssociatedDataSchemaPointer(schemaPointer)
         } else if (schemaPointer instanceof ReferenceSchemaPointer) {
             return this.getReferenceSchemaPointer(schemaPointer)
+        } else if(schemaPointer instanceof SortableAttributeCompoundSchemaPointer) {
+            return this.getSortableCompoundSchemaFromPointer(schemaPointer)
         } else {
             throw new UnexpectedError(`Unsupported type of schema ${schemaPointer}`)
         }
@@ -69,7 +75,8 @@ export class SchemaViewerService {
             schemaPointer instanceof EntityAttributeSchemaPointer ||
             schemaPointer instanceof AssociatedDataSchemaPointer ||
             schemaPointer instanceof ReferenceSchemaPointer ||
-            schemaPointer instanceof ReferenceAttributeSchemaPointer
+            schemaPointer instanceof ReferenceAttributeSchemaPointer ||
+            schemaPointer instanceof SortableAttributeCompoundSchemaPointer
         ) {
             return this.evitaClient.registerEntitySchemaChangedCallback(
                 schemaPointer.catalogName,
@@ -96,7 +103,8 @@ export class SchemaViewerService {
             schemaPointer instanceof EntityAttributeSchemaPointer ||
             schemaPointer instanceof AssociatedDataSchemaPointer ||
             schemaPointer instanceof ReferenceSchemaPointer ||
-            schemaPointer instanceof ReferenceAttributeSchemaPointer
+            schemaPointer instanceof ReferenceAttributeSchemaPointer ||
+            schemaPointer instanceof SortableAttributeCompoundSchemaPointer
         ) {
             this.evitaClient.unregisterEntitySchemaChangedCallback(
                 schemaPointer.catalogName,
@@ -120,7 +128,8 @@ export class SchemaViewerService {
             schemaPointer instanceof EntityAttributeSchemaPointer ||
             schemaPointer instanceof AssociatedDataSchemaPointer ||
             schemaPointer instanceof ReferenceSchemaPointer ||
-            schemaPointer instanceof ReferenceAttributeSchemaPointer
+            schemaPointer instanceof ReferenceAttributeSchemaPointer ||
+            schemaPointer instanceof SortableAttributeCompoundSchemaPointer
         ) {
             await this.evitaClient.clearSchemaCache(schemaPointer.catalogName, schemaPointer.entityType)
         } else {
@@ -144,6 +153,17 @@ export class SchemaViewerService {
             schemaPointer.catalogName,
             session => session.getCatalogSchema()
         )
+    }
+
+    private async getSortableCompoundSchemaFromPointer(schemaPointer: SortableAttributeCompoundSchemaPointer): Promise<SortableAttributeCompoundSchema> {
+        const data = (await this.getEntitySchemaFromPointer(schemaPointer
+        )).sortableAttributeCompounds
+        const item = data.get(schemaPointer.sortableAttributeCompoundName)
+
+        if(item == undefined) {
+            throw new UnexpectedError(`Compound schema ${schemaPointer.sortableAttributeCompoundName} not found in catalog ${schemaPointer.catalogName}.`)
+        }
+        return item
     }
 
     private async getEntitySchemaFromPointer(schemaPointer: EntitySchemaPointer): Promise<EntitySchema> {

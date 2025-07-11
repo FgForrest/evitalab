@@ -1,4 +1,4 @@
-import { ModuleRegistrar } from '@/ModuleRegistrar'
+import type { ModuleRegistrar } from '@/ModuleRegistrar'
 import { LabStorage, labStorageInjectionKey } from '@/modules/storage/LabStorage'
 import { EvitaLabConfig, evitaLabConfigInjectionKey } from '@/modules/config/EvitaLabConfig'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'

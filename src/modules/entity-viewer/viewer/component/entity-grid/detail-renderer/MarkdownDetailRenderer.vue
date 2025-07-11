@@ -3,17 +3,25 @@
  * Entity property value renderer that tries to render the value as Markdown.
  */
 
-import { computed, ComputedRef, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import type { ComputedRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { ExtraEntityObjectType } from '@/modules/entity-viewer/viewer/model/ExtraEntityObjectType'
 import ValueDetailRenderer from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/ValueDetailRenderer.vue'
 import VMarkdown from '@/modules/base/component/VMarkdown.vue'
-import { MarkdownDetailRendererActionType } from '@/modules/entity-viewer/viewer/model/entity-grid/detail-renderer/MarkdownDetailRendererActionType'
+import { MarkdownDetailRendererMenuItemType } from '@/modules/entity-viewer/viewer/model/entity-grid/detail-renderer/MarkdownDetailRendererMenuItemType'
 import { MenuAction } from '@/modules/base/model/menu/MenuAction'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
+import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
+import {
+    MarkdownDetailRendererMenuFactory,
+    useMarkdownDetailRendererMenuFactory
+} from '@/modules/entity-viewer/viewer/service/MarkdownDetailRendererMenuFactory'
 
+const markdownDetailRendererMenuFactory: MarkdownDetailRendererMenuFactory = useMarkdownDetailRendererMenuFactory()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
@@ -43,14 +51,19 @@ const props = withDefaults(
 
 const prettyPrint = ref<boolean>(true)
 
-const actions: ComputedRef<
-    Map<
-        MarkdownDetailRendererActionType,
-        MenuAction<MarkdownDetailRendererActionType>
-    >
-> = computed(() => createActions())
-const actionList: ComputedRef<MenuAction<MarkdownDetailRendererActionType>[]> =
-    computed(() => Array.from(actions.value.values()))
+const menuItems = ref<Map<MarkdownDetailRendererMenuItemType, MenuItem<MarkdownDetailRendererMenuItemType>>>()
+const menuItemList: ComputedRef<MenuItem<MarkdownDetailRendererMenuItemType>[]> =
+    computed(() => {
+        if (menuItems.value == undefined) {
+            return []
+        }
+        return Array.from(menuItems.value.values())
+    })
+watch(
+    prettyPrint,
+    async () => menuItems.value = await createMenuItems(),
+    { immediate: true }
+)
 
 const formattedValue = computed<string>(() => {
     if (
@@ -216,7 +229,10 @@ function prettyPrintRangeValue(
 }
 
 function handleActionClick(action: any) {
-    actions.value.get(action as MarkdownDetailRendererActionType)?.execute()
+    const foundedAction = menuItems.value?.get(action as MarkdownDetailRendererMenuItemType)
+    if (foundedAction && foundedAction instanceof MenuAction) {
+        (foundedAction as MenuAction<MarkdownDetailRendererMenuItemType>).execute()
+    }
 }
 
 function copyRenderedValue() {
@@ -230,42 +246,20 @@ function copyRenderedValue() {
         })
 }
 
-function createActions(): Map<
-    MarkdownDetailRendererActionType,
-    MenuAction<MarkdownDetailRendererActionType>
-> {
-    const actions: Map<
-        MarkdownDetailRendererActionType,
-        MenuAction<MarkdownDetailRendererActionType>
-    > = new Map()
-    actions.set(
-        MarkdownDetailRendererActionType.Copy,
-        new MenuAction<MarkdownDetailRendererActionType>(
-            MarkdownDetailRendererActionType.Copy,
-            t('common.button.copy'),
-            'mdi-content-copy',
-            () => copyRenderedValue()
-        )
+async function createMenuItems(): Promise<Map<MarkdownDetailRendererMenuItemType, MenuItem<MarkdownDetailRendererMenuItemType>>> {
+    return await markdownDetailRendererMenuFactory.createItems(
+        prettyPrint.value,
+        () => copyRenderedValue(),
+        () => prettyPrint.value = !prettyPrint.value,
     )
-    actions.set(
-        MarkdownDetailRendererActionType.PrettyPrint,
-        new MenuAction<MarkdownDetailRendererActionType>(
-            MarkdownDetailRendererActionType.PrettyPrint,
-            prettyPrint.value
-                ? t('entityViewer.grid.renderer.button.displayRawValue')
-                : t('entityViewer.grid.renderer.button.prettyPrintValue'),
-            prettyPrint.value ? 'mdi-raw' : 'mdi-auto-fix',
-            () => (prettyPrint.value = !prettyPrint.value)
-        )
-    )
-    return actions
+
 }
 </script>
 
 <template>
     <ValueDetailRenderer
         :fill-space="fillSpace"
-        :actions="actionList"
+        :actions="menuItemList"
         @click:action="handleActionClick"
     >
         <div class="markdown-renderer">

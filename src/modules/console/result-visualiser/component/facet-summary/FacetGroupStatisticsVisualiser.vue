@@ -5,10 +5,11 @@
 
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
-import { Result } from '@/modules/console/result-visualiser/model/Result'
+import type { Result } from '@/modules/console/result-visualiser/model/Result'
 import {
     VisualisedFacetGroupStatistics
 } from '@/modules/console/result-visualiser/model/facet-summary/VisualisedFacetGroupStatistics'

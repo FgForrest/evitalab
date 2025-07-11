@@ -1,16 +1,11 @@
-import { createPromiseClient, PromiseClient, Transport } from '@connectrpc/connect'
+import { createClient } from '@connectrpc/connect'
+import type { Client, Transport } from '@connectrpc/connect'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
 import {
     CatalogSchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter'
 import { Connection } from '@/modules/connection/model/Connection'
 import { createGrpcWebTransport } from '@connectrpc/connect-web'
-import { EvitaService } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaAPI_connect'
-import { EvitaManagementService } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_connect'
-import { EvitaSessionService } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaSessionAPI_connect'
-import {
-    GrpcEvitaTrafficRecordingService
-} from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaTrafficRecordingAPI_connect'
 import { CatalogStatisticsConverter } from '@/modules/database-driver/connector/grpc/service/converter/CatalogStatisticsConverter'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter'
 import { ExtraResultConverter } from '@/modules/database-driver/connector/grpc/service/converter/ExtraResultConverter'
@@ -28,13 +23,17 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/TrafficRecordingConverter'
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
-import { KyInstance } from 'ky/distribution/types/ky'
 import ky from 'ky'
+import { EvitaService } from './connector/grpc/gen/GrpcEvitaAPI_pb'
+import { EvitaSessionService } from './connector/grpc/gen/GrpcEvitaSessionAPI_pb'
+import { EvitaManagementService } from './connector/grpc/gen/GrpcEvitaManagementAPI_pb'
+import { GrpcEvitaTrafficRecordingService } from './connector/grpc/gen/GrpcEvitaTrafficRecordingAPI_pb'
+import type { KyInstance } from 'ky/distribution/types/ky'
 
-export type EvitaServiceClient = PromiseClient<typeof EvitaService>
-export type EvitaSessionServiceClient = PromiseClient<typeof EvitaSessionService>
-export type EvitaManagementServiceClient = PromiseClient<typeof EvitaManagementService>
-export type EvitaTrafficRecordingServiceClient = PromiseClient<typeof GrpcEvitaTrafficRecordingService>
+export type EvitaServiceClient = Client<typeof EvitaService>
+export type EvitaSessionServiceClient = Client<typeof EvitaSessionService>
+export type EvitaManagementServiceClient = Client<typeof EvitaManagementService>
+export type EvitaTrafficRecordingServiceClient = Client<typeof GrpcEvitaTrafficRecordingService>
 
 /**
  * Ancestor for {@link EvitaServiceClient}. Contains all sorts of initializations that
@@ -93,7 +92,7 @@ export abstract class AbstractEvitaClient {
      */
     protected get evitaClient(): EvitaServiceClient {
         if (this._evitaClient == undefined) {
-            this._evitaClient = createPromiseClient(EvitaService, this.transport)
+            this._evitaClient = createClient(EvitaService, this.transport)
         }
         return this._evitaClient
     }
@@ -103,7 +102,7 @@ export abstract class AbstractEvitaClient {
      */
     protected get evitaManagementClient(): EvitaManagementServiceClient {
         if (this._evitaManagementClient == undefined) {
-            this._evitaManagementClient = createPromiseClient(EvitaManagementService, this.transport)
+            this._evitaManagementClient = createClient(EvitaManagementService, this.transport)
         }
         return this._evitaManagementClient
     }
@@ -113,7 +112,7 @@ export abstract class AbstractEvitaClient {
      */
     protected get evitaSessionClient(): EvitaSessionServiceClient {
         if (this._evitaSessionClient == undefined) {
-            this._evitaSessionClient = createPromiseClient(EvitaSessionService, this.transport)
+            this._evitaSessionClient = createClient(EvitaSessionService, this.transport)
         }
         return this._evitaSessionClient
     }
@@ -123,7 +122,7 @@ export abstract class AbstractEvitaClient {
      */
     protected get evitaTrafficRecordingClient(): EvitaTrafficRecordingServiceClient {
         if (this._evitaTrafficRecordingClient == undefined) {
-            this._evitaTrafficRecordingClient = createPromiseClient(GrpcEvitaTrafficRecordingService, this.transport)
+            this._evitaTrafficRecordingClient = createClient(GrpcEvitaTrafficRecordingService, this.transport)
         }
         return this._evitaTrafficRecordingClient
     }
@@ -137,7 +136,7 @@ export abstract class AbstractEvitaClient {
 
     protected get catalogStatisticsConverter(): CatalogStatisticsConverter {
         if (this._catalogStatisticsConverter == undefined) {
-            this._catalogStatisticsConverter = new CatalogStatisticsConverter()
+            this._catalogStatisticsConverter = new CatalogStatisticsConverter(this.evitaValueConverter)
         }
         return this._catalogStatisticsConverter
     }
