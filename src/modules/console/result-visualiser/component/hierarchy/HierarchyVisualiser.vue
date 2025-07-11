@@ -29,8 +29,7 @@ const entitySchema: Ref<EntitySchema | undefined> = useRootEntitySchema()
 
 const referencesWithNamedHierarchiesResults = computed<[ReferenceSchema | undefined, Result][]>(() => {
     try {
-        return visualiserService
-            .getHierarchyService()
+        return  visualiserService.getHierarchyService()
             .findNamedHierarchiesByReferencesResults(props.hierarchyResult, entitySchema.value!)
     } catch (e: any) {
         toaster.error('', e).then()

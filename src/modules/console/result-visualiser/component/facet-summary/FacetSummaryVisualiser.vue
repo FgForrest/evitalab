@@ -18,6 +18,7 @@ import { List } from 'immutable'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
 import { useRootEntitySchema, useVisualiserService } from '@/modules/console/result-visualiser/component/dependencies'
+import { VExpansionPanels, VExpansionPanel, VExpansionPanelTitle, VExpansionPanelText } from 'vuetify/components'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
