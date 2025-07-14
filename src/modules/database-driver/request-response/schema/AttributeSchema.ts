@@ -7,6 +7,12 @@ import type { SortableSchema } from '@/modules/database-driver/request-response/
 import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import type { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import type {
+    ScopedAttributeUniquenessType
+} from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
+import type {
+    ScopedGlobalAttributeUniquenessType
+} from '@/modules/database-driver/request-response/schema/ScopedGlobalAttributeUniquenessType.ts'
 
 /**
  * evitaLab's representation of a single evitaDB attribute schema independent of specific evitaDB version
@@ -62,8 +68,8 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Sort
 
     readonly sortableInScopes: List<EntityScope>
     readonly filteredInScopes: List<EntityScope>
-    readonly uniqueGloballyInScopes: List<EntityScope>
-    readonly uniqueInScopes: List<EntityScope>
+    readonly uniqueGloballyInScopes: List<ScopedGlobalAttributeUniquenessType>
+    readonly uniqueInScopes: List<ScopedAttributeUniquenessType>
 
     protected _representativeFlags?: List<string>
 
@@ -81,8 +87,8 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Sort
                 indexedDecimalPlaces: number,
                 sortableInScopes: List<EntityScope>,
                 filteredInScopes: List<EntityScope>,
-                uniqueGloballyInScopes: List<EntityScope>,
-                uniqueInScopes: List<EntityScope>) {
+                uniqueGloballyInScopes: List<ScopedGlobalAttributeUniquenessType>,
+                uniqueInScopes: List<ScopedAttributeUniquenessType>) {
         super()
         this.name = name
         this.nameVariants = nameVariants

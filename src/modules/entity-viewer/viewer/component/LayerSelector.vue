@@ -2,12 +2,13 @@
 
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import { useI18n } from 'vue-i18n'
-import type { LayerSelector } from '@/modules/entity-viewer/viewer/model/LayerSelector.ts'
+import { SelectedLayer } from '@/modules/entity-viewer/viewer/model/SelectedLayer.ts'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 const { t } = useI18n()
 
 const emit = defineEmits<{
-    (e: 'update:selected', value: LayerSelector[]): void
+    (e: 'update:selected', value: SelectedLayer[]): void
 }>()
 
 const liveSelection = ref<boolean>(true)
@@ -16,11 +17,11 @@ const archiveSelection = ref<boolean>(false)
 function updatedSelection():void {
     emit('update:selected', [
         {
-            name: 'Live',
+            scope: EntityScope.Live,
             value: liveSelection.value,
         },
         {
-            name: 'Archive',
+            scope: EntityScope.Archive,
             value: archiveSelection.value,
         }
     ])

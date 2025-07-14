@@ -4,7 +4,6 @@ import { NotApplicableValue } from '@/modules/base/model/properties-table/NotApp
 import { RangeValue } from '@/modules/base/model/properties-table/RangeValue'
 import { ProgressValue } from '@/modules/base/model/properties-table/ProgressValue'
 import { PlaceholderValue } from '@/modules/base/model/properties-table/PlaceholderValue'
-import type { ExtendedValue } from '@/modules/base/model/properties-table/ExtendedValue.ts'
 
 /**
  * Holder of a single value of a property
@@ -44,4 +43,3 @@ type PropertyValueValue =
     | RangeValue
     | ProgressValue
     | PlaceholderValue
-    | ExtendedValue

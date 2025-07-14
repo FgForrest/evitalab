@@ -10,12 +10,14 @@ import { PropertyValue } from '@/modules/base/model/properties-table/PropertyVal
 import { KeywordValue } from '@/modules/base/model/properties-table/KeywordValue'
 import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType'
 import { MultiValueFlagValue } from '@/modules/base/model/properties-table/MultiValueFlagValue'
-import { GlobalAttributeUniquenessType } from '@/modules/database-driver/request-response/schema/GlobalAttributeUniquenessType'
-import { NotApplicableValue } from '@/modules/base/model/properties-table/NotApplicableValue'
+import {
+    GlobalAttributeUniquenessType
+} from '@/modules/database-driver/request-response/schema/GlobalAttributeUniquenessType'
 import SchemaContainer from '@/modules/schema-viewer/viewer/component/SchemaContainer.vue'
 import NameVariants from '@/modules/schema-viewer/viewer/component/NameVariants.vue'
 import { computed } from 'vue'
-import { List, List as ImmutableList } from 'immutable'
+import { List as ImmutableList } from 'immutable'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 const { t } = useI18n()
 
@@ -33,7 +35,7 @@ const properties = computed<Property[]>(() => {
     properties.push(new Property(t('schemaViewer.attribute.label.type'), new PropertyValue(new KeywordValue(props.schema.type))))
     properties.push(new Property(t('schemaViewer.attribute.label.description'), new PropertyValue(props.schema.description)))
     properties.push(new Property(t('schemaViewer.attribute.label.deprecationNotice'), new PropertyValue(props.schema.deprecationNotice)))
-    if (entityAttribute) properties.push(new Property(t('schemaViewer.attribute.label.representative'), new PropertyValue((props.schema as EntityAttributeSchema).representative )))
+    if (entityAttribute) properties.push(new Property(t('schemaViewer.attribute.label.representative'), new PropertyValue((props.schema as EntityAttributeSchema).representative)))
 
     //TODO: Add special attributes
 
@@ -96,40 +98,36 @@ const properties = computed<Property[]>(() => {
         }
     }
     if (props.schema.filterable) {
-        properties.push(new Property(t('schemaViewer.attribute.label.filterable'), new PropertyValue(true)))
+        properties.push(new Property(t('schemaViewer.attribute.label.filterable'), ImmutableList(props.schema.filteredInScopes.map(x => new PropertyValue(new KeywordValue(getEnumKeyByValue(EntityScope, x)))))))
     } else if ((globalAttribute && (props.schema as GlobalAttributeSchema).globalUniquenessType != GlobalAttributeUniquenessType.NotUnique) ||
         props.schema.uniquenessType != AttributeUniquenessType.NotUnique) {
         // implicitly filterable because of unique index
         properties.push(new Property(
             t('schemaViewer.attribute.label.filterable'),
-            new PropertyValue(new NotApplicableValue(t('schemaViewer.attribute.help.implicitlyFilterable')))
+            ImmutableList(props.schema.filteredInScopes.map(x => new PropertyValue(new KeywordValue(getEnumKeyByValue(EntityScope, x), undefined, t('schemaViewer.attribute.help.implicitlyFilterable')))))
         ))
     } else {
-        properties.push(new Property(t('schemaViewer.attribute.label.filterable'), new PropertyValue(false) ))
+        properties.push(new Property(t('schemaViewer.attribute.label.filterable'), new PropertyValue(false)))
     }
-    const chips: PropertyValue[] = []
-    if(props.schema.sortable)
-        chips.push(new PropertyValue(new KeywordValue(t('schemaViewer.attribute.label.sortable'))))
-    if(props.schema.localized)
-        chips.push(new PropertyValue(new KeywordValue(t('schemaViewer.attribute.label.localized'))))
-    if(props.schema.nullable)
-        chips.push(new PropertyValue(new KeywordValue(t('schemaViewer.attribute.label.nullable'))))
-    if(props.schema.defaultValue)
-        chips.push(new PropertyValue(new KeywordValue(t('schemaViewer.attribute.label.defaultValue'))))
-    if(props.schema.indexedDecimalPlaces)
-        chips.push(new PropertyValue(new KeywordValue(t('schemaViewer.attribute.label.indexedDecimalPlaces'))))
 
-    properties.push(new Property(t('schemaViewer.attribute.label.attributes'), List(chips)))
-    /*
-    properties.push(new Property(t('schemaViewer.attribute.label.sortable'), new PropertyValue(props.schema.sortable) ))
-    properties.push(new Property(t('schemaViewer.attribute.label.localized'), new PropertyValue(props.schema.localized) ))
-    properties.push(new Property(t('schemaViewer.attribute.label.nullable'), new PropertyValue(props.schema.nullable) ))
-    properties.push(new Property(t('schemaViewer.attribute.label.defaultValue'), new PropertyValue(props.schema.defaultValue) ))
-    properties.push(new Property(t('schemaViewer.attribute.label.indexedDecimalPlaces'), new PropertyValue(props.schema.indexedDecimalPlaces) ))
-     */
+    if (props.schema.sortable)
+        properties.push(new Property(t('schemaViewer.attribute.label.sortable'), ImmutableList(props.schema.sortableInScopes.map(x => new PropertyValue(new KeywordValue(getEnumKeyByValue(EntityScope, x)))))))
+
+    properties.push(new Property(t('schemaViewer.attribute.label.localized'), new PropertyValue(props.schema.localized)))
+    properties.push(new Property(t('schemaViewer.attribute.label.nullable'), new PropertyValue(props.schema.nullable)))
+    properties.push(new Property(t('schemaViewer.attribute.label.defaultValue'), new PropertyValue(props.schema.defaultValue)))
+    properties.push(new Property(t('schemaViewer.attribute.label.indexedDecimalPlaces'), new PropertyValue(props.schema.indexedDecimalPlaces)))
 
     return properties
 })
+
+function getEnumKeyByValue<T extends Record<string, string>>(
+    enumObj: T,
+    value: string
+): string {
+    const stringValue = Object.keys(enumObj).find(key => enumObj[key] === value)
+    return stringValue ? stringValue : ''
+}
 </script>
 
 <template>

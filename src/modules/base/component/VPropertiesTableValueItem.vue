@@ -13,7 +13,6 @@ import { PropertyValue } from '@/modules/base/model/properties-table/PropertyVal
 import VMarkdown from '@/modules/base/component/VMarkdown.vue'
 import { ProgressValue } from '@/modules/base/model/properties-table/ProgressValue'
 import { PlaceholderValue } from '@/modules/base/model/properties-table/PlaceholderValue'
-import { ExtendedValue } from '@/modules/base/model/properties-table/ExtendedValue.ts'
 
 const { t } = useI18n()
 
@@ -57,15 +56,6 @@ const props = defineProps<{
         @click="propertyValue.action?.(propertyValue.value!.value)"
     >
         {{ propertyValue.value.value }}
-    </VChip>
-
-    <VChip v-else-if="propertyValue.value instanceof ExtendedValue"
-           dense
-    >
-        {{ propertyValue.value.value }}
-        <template #prepend>
-            <VIcon v-for="(item, index) in propertyValue.value.icon" :key="index" :icon="item"></VIcon>
-        </template>
     </VChip>
 
     <!-- actual value is multi-value flag -->

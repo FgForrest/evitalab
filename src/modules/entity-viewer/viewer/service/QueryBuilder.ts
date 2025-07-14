@@ -4,6 +4,7 @@ import { OrderDirection } from '@/modules/database-driver/request-response/schem
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
+import type { SelectedLayer } from '@/modules/entity-viewer/viewer/model/SelectedLayer.ts'
 
 /**
  * Builds query from arguments based on language of implementation.
@@ -25,6 +26,7 @@ export interface QueryBuilder {
     buildQuery(dataPointer: EntityViewerDataPointer,
                filterBy: string,
                orderBy: string,
+               layersSelected: SelectedLayer[],
                dataLocale: string | undefined,
                priceType: QueryPriceMode | undefined,
                requiredData: EntityPropertyKey[],

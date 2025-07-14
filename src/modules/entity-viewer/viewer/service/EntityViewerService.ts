@@ -39,6 +39,8 @@ import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceM
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
+import { SelectedLayer } from '@/modules/entity-viewer/viewer/model/SelectedLayer.ts'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 export const entityViewerServiceInjectionKey: InjectionKey<EntityViewerService> = Symbol('entityViewerService')
 
@@ -106,6 +108,7 @@ export class EntityViewerService {
                        language: QueryLanguage,
                        filterBy: string,
                        orderBy: string,
+                       layersSelected: SelectedLayer[],
                        dataLocale: string | undefined,
                        priceType: QueryPriceMode | undefined,
                        requiredData: EntityPropertyKey[],
@@ -118,6 +121,7 @@ export class EntityViewerService {
             dataPointer,
             filterBy,
             orderBy,
+            layersSelected,
             dataLocale,
             priceType,
             requiredData,
@@ -148,6 +152,7 @@ export class EntityViewerService {
             dataPointer,
             queryBuilder.buildPriceForSaleFilterBy(entityPrimaryKey, priceLists, currency),
             '',
+            [new SelectedLayer(EntityScope.Live, true), new SelectedLayer(EntityScope.Archive, false)],
             undefined,
             undefined,
             [EntityPropertyKey.prices()],

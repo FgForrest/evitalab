@@ -4,6 +4,12 @@ import { AttributeSchema, AttributeSchemaFlag } from '@/modules/database-driver/
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType'
 import type { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import type {
+    ScopedAttributeUniquenessType
+} from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
+import type {
+    ScopedGlobalAttributeUniquenessType
+} from '@/modules/database-driver/request-response/schema/ScopedGlobalAttributeUniquenessType.ts'
 
 /**
  * evitaLab's representation of a single evitaDB entity attribute schema independent of specific evitaDB version
@@ -30,8 +36,8 @@ export class EntityAttributeSchema extends AttributeSchema {
                 representative: boolean,
                 sortableInScopes: ImmutableList<EntityScope>,
                 filteredInScopes: ImmutableList<EntityScope>,
-                uniqueGloballyInScopes: List<EntityScope>,
-                uniqueInScopes: ImmutableList<EntityScope>
+                uniqueGloballyInScopes: List<ScopedGlobalAttributeUniquenessType>,
+                uniqueInScopes: ImmutableList<ScopedAttributeUniquenessType>
                 ) {
         super(name, nameVariants, description, deprecationNotice, type, uniquenessType, filterable, sortable, nullable, defaultValue, localized, indexedDecimalPlaces, sortableInScopes, filteredInScopes, uniqueGloballyInScopes, uniqueInScopes)
         this.representative = representative

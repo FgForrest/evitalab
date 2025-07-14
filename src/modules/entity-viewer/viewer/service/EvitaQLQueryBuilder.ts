@@ -11,6 +11,8 @@ import { ReferenceSchema } from '@/modules/database-driver/request-response/sche
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
 import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import type { SelectedLayer } from '@/modules/entity-viewer/viewer/model/SelectedLayer.ts'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 /**
  * Query builder for EvitaQL language.
@@ -31,6 +33,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
     async buildQuery(dataPointer: EntityViewerDataPointer,
                      filterBy: string,
                      orderBy: string,
+                     layersSelected: SelectedLayer[],
                      dataLocale: string | undefined,
                      priceType: QueryPriceMode | undefined,
                      requiredData: EntityPropertyKey[],
@@ -53,6 +56,15 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
         if (dataLocale) {
             filterByContainer.push(`entityLocaleEquals("${dataLocale}")`)
         }
+
+        let allSelected: boolean = layersSelected.length > 1
+        for(const item of layersSelected){
+            if(!item.value) {
+                allSelected = false
+            }
+        }
+
+        filterByContainer.push(`scope(${ layersSelected.some(x => x.scope === EntityScope.Live && x.value) ? 'LIVE' : ''} ${allSelected ? ',' : ''} ${layersSelected.some(x => x.scope === EntityScope.Archive && x.value) ? 'ARCHIVED' : ''})`)
         if (filterByContainer.length > 0) {
             constraints.push(`filterBy(${filterByContainer.join(',')})`)
         }
@@ -60,6 +72,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
         if (orderBy) {
             constraints.push(`orderBy(${orderBy})`)
         }
+
 
         const requireConstraints: string[] = []
         requireConstraints.push(`page(${pageNumber}, ${pageSize})`)

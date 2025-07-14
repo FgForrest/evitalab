@@ -53,6 +53,12 @@ import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { Currency } from '@/modules/database-driver/data-type/Currency'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { List as ImmutableList } from 'immutable'
+import {
+    ScopedAttributeUniquenessType
+} from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
+import {
+    ScopedGlobalAttributeUniquenessType
+} from '@/modules/database-driver/request-response/schema/ScopedGlobalAttributeUniquenessType.ts'
 
 export class CatalogSchemaConverter {
     private readonly evitaValueConverter: EvitaValueConverter
@@ -119,7 +125,8 @@ export class CatalogSchemaConverter {
                 attribute.indexedDecimalPlaces,
                 this.convertEntityScopes(attribute.sortableInScopes),
                 this.convertEntityScopes(attribute.filterableInScopes),
-                this.convertUniqueGloballyInScopes(attribute.uniqueGloballyInScopes)
+                this.convertUniqueGloballyInScopes(attribute.uniqueGloballyInScopes),
+                this.convertUniqueInScopes(attribute.uniqueInScopes)
             )
         } else if (attribute.schemaType === GrpcAttributeSchemaType.REFERENCE) {
             return new EntityAttributeSchema(
@@ -140,7 +147,9 @@ export class CatalogSchemaConverter {
                 attribute.indexedDecimalPlaces,
                 attribute.representative,
                 this.convertEntityScopes(attribute.sortableInScopes),
-                this.convertEntityScopes(attribute.filterableInScopes)
+                this.convertEntityScopes(attribute.filterableInScopes),
+                this.convertUniqueGloballyInScopes(attribute.uniqueGloballyInScopes),
+                this.convertUniqueInScopes(attribute.uniqueInScopes)
             )
         } else if (attribute.schemaType === GrpcAttributeSchemaType.GLOBAL) {
             return new GlobalAttributeSchema(
@@ -186,25 +195,25 @@ export class CatalogSchemaConverter {
     private convertEntityScope(entityScope: GrpcEntityScope): EntityScope {
         switch (entityScope) {
             case GrpcEntityScope.SCOPE_ARCHIVED:
-                return EntityScope.ScopeArchive
+                return EntityScope.Archive
             case GrpcEntityScope.SCOPE_LIVE:
-                return EntityScope.ScopeLive
+                return EntityScope.Live
         }
     }
 
-    private convertUniqueInScopes(uniqueGloballyInScopes: GrpcScopedAttributeUniquenessType[]):ImmutableList<EntityScope>{
-        const scopes: EntityScope[] = []
+    private convertUniqueInScopes(uniqueGloballyInScopes: GrpcScopedAttributeUniquenessType[]):ImmutableList<ScopedAttributeUniquenessType>{
+        const scopes: ScopedAttributeUniquenessType[] = []
         for (const uniqueGloballyInScope of uniqueGloballyInScopes) {
-            scopes.push(this.convertEntityScope(uniqueGloballyInScope.scope))
+            scopes.push(new ScopedAttributeUniquenessType(this.convertEntityScope(uniqueGloballyInScope.scope), this.convertAttributeUniquenessType(uniqueGloballyInScope.uniquenessType)))
         }
 
         return ImmutableList(scopes)
     }
 
-    private convertUniqueGloballyInScopes(uniqueGloballyInScopes: GrpcScopedGlobalAttributeUniquenessType[]):ImmutableList<EntityScope>{
-        const scopes: EntityScope[] = []
+    private convertUniqueGloballyInScopes(uniqueGloballyInScopes: GrpcScopedGlobalAttributeUniquenessType[]):ImmutableList<ScopedGlobalAttributeUniquenessType>{
+        const scopes: ScopedGlobalAttributeUniquenessType[] = []
         for (const uniqueGloballyInScope of uniqueGloballyInScopes) {
-            scopes.push(this.convertEntityScope(uniqueGloballyInScope.scope))
+            scopes.push(new ScopedGlobalAttributeUniquenessType(this.convertEntityScope(uniqueGloballyInScope.scope), this.convertGlobalAttributeUniquenessType(uniqueGloballyInScope.uniquenessType)))
         }
 
         return ImmutableList(scopes)

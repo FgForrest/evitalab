@@ -8,6 +8,12 @@ import { AttributeUniquenessType } from '@/modules/database-driver/request-respo
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import { AttributeSchemaFlag } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import type { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import type {
+    ScopedAttributeUniquenessType
+} from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
+import type {
+    ScopedGlobalAttributeUniquenessType
+} from '@/modules/database-driver/request-response/schema/ScopedGlobalAttributeUniquenessType.ts'
 
 /**
  * evitaLab's representation of a single evitaDB global attribute schema independent of specific evitaDB version
@@ -18,8 +24,8 @@ export class GlobalAttributeSchema extends EntityAttributeSchema {
      * When attribute is unique globally it is automatically filterable, and it is ensured there is exactly one single          entity having certain value of this attribute in entire catalog.           As an example of unique attribute can be URL - there is no sense in having two entities with same URL, and it's          better to have this ensured by the database engine.
      */
     readonly globalUniquenessType: GlobalAttributeUniquenessType
-    readonly uniqueGloballyInScopes: List<EntityScope>
-    readonly uniqueInScopes: List<EntityScope>
+    readonly uniqueGloballyInScopes: List<ScopedGlobalAttributeUniquenessType>
+    readonly uniqueInScopes: List<ScopedAttributeUniquenessType>
 
     constructor(name: string,
                 nameVariants: Map<NamingConvention, string>,
@@ -37,8 +43,8 @@ export class GlobalAttributeSchema extends EntityAttributeSchema {
                 globalUniquenessType: GlobalAttributeUniquenessType,
                 sortableInScopes: List<EntityScope>,
                 filterableInScopes: List<EntityScope>,
-                uniqueGloballyInScopes: List<EntityScope>,
-                uniqueInScopes: List<EntityScope>) {
+                uniqueGloballyInScopes: List<ScopedGlobalAttributeUniquenessType>,
+                uniqueInScopes: List<ScopedAttributeUniquenessType>) {
         super(name, nameVariants, description, deprecationNotice, type, uniquenessType, filterable, sortable, nullable, defaultValue, localized, indexedDecimalPlaces, representative, sortableInScopes, filterableInScopes, uniqueGloballyInScopes, uniqueInScopes)
         this.globalUniquenessType = globalUniquenessType
         this.uniqueGloballyInScopes = uniqueGloballyInScopes
