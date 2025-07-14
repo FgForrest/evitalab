@@ -57,14 +57,22 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
             filterByContainer.push(`entityLocaleEquals("${dataLocale}")`)
         }
 
-        let allSelected: boolean = layersSelected.length > 1
-        for(const item of layersSelected){
-            if(!item.value) {
-                allSelected = false
+        if(layersSelected.length > 0) {
+            let allSelected: boolean = layersSelected.length > 1
+            let nothingSelected: boolean = true
+            for (const item of layersSelected) {
+                if (!item.value) {
+                    allSelected = false
+                } else {
+                    nothingSelected = false
+                }
+            }
+
+            if(!nothingSelected) {
+                filterByContainer.push(`scope(${layersSelected.some(x => x.scope === EntityScope.Live && x.value) ? 'LIVE' : ''} ${allSelected ? ',' : ''} ${layersSelected.some(x => x.scope === EntityScope.Archive && x.value) ? 'ARCHIVED' : ''})`)
             }
         }
 
-        filterByContainer.push(`scope(${ layersSelected.some(x => x.scope === EntityScope.Live && x.value) ? 'LIVE' : ''} ${allSelected ? ',' : ''} ${layersSelected.some(x => x.scope === EntityScope.Archive && x.value) ? 'ARCHIVED' : ''})`)
         if (filterByContainer.length > 0) {
             constraints.push(`filterBy(${filterByContainer.join(',')})`)
         }

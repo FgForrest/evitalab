@@ -7,7 +7,7 @@ export class MultiValueFlagValue {
      * Boolean representation of the actual value represented by this flag. May hide the actual value, if there are multiple
      * value associated with the flag value (yes/no).
      */
-    readonly value: boolean
+    readonly value: boolean | string
     /**
      * String representation of the actual value represented by this flag.
      */
@@ -17,7 +17,7 @@ export class MultiValueFlagValue {
      */
     readonly description?: string
 
-    constructor(value: boolean, valueSpecification: string, description?: string) {
+    constructor(value: boolean | string, valueSpecification: string, description?: string) {
         this.value = value
         this.valueSpecification = valueSpecification
         this.description = description

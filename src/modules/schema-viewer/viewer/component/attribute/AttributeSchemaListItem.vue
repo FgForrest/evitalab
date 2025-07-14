@@ -44,10 +44,10 @@ const flags: ComputedRef<List<Flag>> = computed(() => {
             flags.push(new Flag(flag, Object.values(props.schema.filteredInScopes.toArray()), t('schemaViewer.section.flag.attributeSchema.attributeTooltip')))
         } else if (flag.includes(FlagType.Unique) && props.schema.uniqueInScopes) {
             showTooltip.value = true
-            flags.push(new Flag(flag, Object.values(props.schema.uniqueInScopes.toArray()), t('schemaViewer.section.flag.attributeSchema.attributeTooltip')))
+            flags.push(new Flag(flag, Object.values(props.schema.uniqueInScopes.map(x => x.scope).toArray()), t('schemaViewer.section.flag.attributeSchema.attributeTooltip')))
         } else if (flag.includes(FlagType.GloballyUnique) && props.schema.uniqueGloballyInScopes) {
             showTooltip.value = true
-            flags.push(new Flag(flag, Object.values(props.schema.uniqueGloballyInScopes.toArray()), t('schemaViewer.section.flag.attributeSchema.attributeTooltip')))
+            flags.push(new Flag(flag, Object.values(props.schema.uniqueGloballyInScopes.map(x => x.scope).toArray()), t('schemaViewer.section.flag.attributeSchema.attributeTooltip')))
         } else
             flags.push(new Flag(flag))
     }

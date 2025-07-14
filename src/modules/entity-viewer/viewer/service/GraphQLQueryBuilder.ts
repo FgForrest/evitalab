@@ -61,14 +61,21 @@ export class GraphQLQueryBuilder implements QueryBuilder {
 
         const filterByContainer: string[] = []
 
-        let allSelected: boolean = true
-        for(const item of layersSelected){
-            if(!item.value) {
-                allSelected = false
+        if(layersSelected.length > 0) {
+            let allSelected: boolean = layersSelected.length > 1
+            let notSelected: boolean = true
+            for (const item of layersSelected) {
+                if (!item.value) {
+                    allSelected = false
+                } else {
+                    notSelected = false
+                }
+            }
+
+            if(!notSelected) {
+                filterByContainer.push(`scope: [${layersSelected.some(x => x.scope === EntityScope.Live && x.value) ? 'LIVE' : ''} ${allSelected ? ',' : ''} ${layersSelected.some(x => x.scope === EntityScope.Archive && x.value) ? 'ARCHIVED' : ''}]`)
             }
         }
-
-        filterByContainer.push(`scope: [${ layersSelected.some(x => x.scope === EntityScope.Live && x.value) ? 'LIVE' : ''} ${allSelected ? ',' : ''} ${layersSelected.some(x => x.scope === EntityScope.Archive && x.value) ? 'ARCHIVED' : ''}]`)
 
         if (filterBy.length > 0) {
             filterByContainer.push(filterBy)
