@@ -47,7 +47,9 @@ function open() {
                     <template #prepend>
                         <VIcon v-for="(item, index) in flag.icons"
                                :class="flag.icons.length - 1 === index ? 'last-chip-icon' : 'chip-icon'"
-                               :key="index" :icon="item" />
+                               :key="index">
+                            {{ item }}
+                        </VIcon>
                     </template>
                     <VTooltip activator="parent" v-if="flag.tooltip">
                         {{ flag.tooltip }}
