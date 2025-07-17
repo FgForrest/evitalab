@@ -54,6 +54,7 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         flattenedProperties.push(this.flattenParent(dataPointer, entity))
         flattenedProperties.push([EntityPropertyKey.entity(StaticEntityProperties.Locales), this.wrapRawValueIntoNativeValue(entity[StaticEntityProperties.Locales])])
         flattenedProperties.push([EntityPropertyKey.entity(StaticEntityProperties.PriceInnerRecordHandling), this.wrapRawValueIntoNativeValue(entity[StaticEntityProperties.PriceInnerRecordHandling])])
+        flattenedProperties.push([EntityPropertyKey.scopes(), this.wrapRawValueIntoNativeValue(entity[StaticEntityProperties.Scope])])
 
         flattenedProperties.push(...this.flattenAttributes(entity))
         flattenedProperties.push(...this.flattenAssociatedData(entity))

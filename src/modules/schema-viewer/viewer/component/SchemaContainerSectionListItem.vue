@@ -44,9 +44,9 @@ function open() {
                 <VChip v-for="flag in flags" :key="flag.flag">
                     {{ flag.flag.startsWith('_') ? t(`schemaViewer.section.flag.${flag.flag.substring(1)}`) : flag.flag
                     }}
-                    <template #prepend>
+                    <template #append>
                         <VIcon v-for="(item, index) in flag.icons"
-                               :class="flag.icons.length - 1 === index ? 'last-chip-icon' : 'chip-icon'"
+                               :class="flag.icons.length - 1 === index && flag.icons.length !== 1 ? 'last-chip-icon' : 'chip-icon'"
                                :key="index">
                             {{ item }}
                         </VIcon>
@@ -74,7 +74,7 @@ function open() {
 }
 
 .chip-icon {
-    margin-left: 2px;
+    margin-left: 4px;
     margin-right: 3px;
 }
 

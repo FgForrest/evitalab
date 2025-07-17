@@ -178,7 +178,7 @@ export class EntityViewerService {
     async buildOrderByFromGridColumns(dataPointer: EntityViewerDataPointer,
                                       language: QueryLanguage,
                                       columns: any[]): Promise<string> {
-        const entitySchema: EntitySchema  = await this.evitaClient.queryCatalog(
+        const entitySchema: EntitySchema = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
             async session => await session.getEntitySchemaOrThrowException(dataPointer.entityType)
         )
@@ -255,7 +255,7 @@ export class EntityViewerService {
      * Returns a list of locales in which data are stored in given collection.
      */
     async getDataLocales(dataPointer: EntityViewerDataPointer): Promise<ImmutableList<Locale>> {
-        const entitySchema: EntitySchema  = await this.evitaClient.queryCatalog(
+        const entitySchema: EntitySchema = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
             async session => await session.getEntitySchemaOrThrowException(dataPointer.entityType)
         )
@@ -263,7 +263,7 @@ export class EntityViewerService {
     }
 
     async supportsPrices(dataPointer: EntityViewerDataPointer): Promise<boolean> {
-        const entitySchema: EntitySchema  = await this.evitaClient.queryCatalog(
+        const entitySchema: EntitySchema = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
             async session => await session.getEntitySchemaOrThrowException(dataPointer.entityType)
         )
@@ -364,6 +364,16 @@ export class EntityViewerService {
                 ImmutableList()
             ))
         }
+
+        descriptors.push(new EntityPropertyDescriptor(
+            EntityPropertyType.Scope,
+            EntityPropertyKey.entity(StaticEntityProperties.Scope),
+            'Scope',
+            'Scope',
+            undefined,
+            undefined,
+            ImmutableList()
+        ))
 
         for (const referenceSchema of entitySchema.references.values()) {
             descriptors.push(new EntityPropertyDescriptor(

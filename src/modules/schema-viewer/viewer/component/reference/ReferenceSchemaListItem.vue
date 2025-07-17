@@ -13,31 +13,17 @@ import { List } from 'immutable'
 import SchemaContainerSectionListItem from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionListItem.vue'
 import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
-import { Flag, FlagType } from '@/modules/schema-viewer/viewer/model/Flag.ts'
-import { useI18n } from 'vue-i18n'
+import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
-const { t } = useI18n()
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
     schema: ReferenceSchema
 }>()
 
-const flags: ComputedRef<List<Flag>> = computed(() => {
-    const flags: Flag[] = []
-    for(const flag of props.schema.representativeFlags){
-        if(flag.includes(FlagType.Faceted) && props.schema.facetedInScopes)
-            flags.push(new Flag(flag, Object.values(props.schema.facetedInScopes.toArray()), t('schemaViewer.section.flag.attributeSchema.referenceTooltipFaceted')))
-        else if(flag.includes(FlagType.Indexed) && props.schema.indexedInScopes)
-            flags.push(new Flag(flag, Object.values(props.schema.indexedInScopes.toArray()), t('schemaViewer.section.flag.attributeSchema.referenceTooltipIndexed')))
-        else
-            flags.push(new Flag(flag))
-    }
-
-    return List(flags)
-})
+const flags: ComputedRef<List<Flag>> = computed(() => props.schema.representativeFlags)
 
 function openReferenceSchema(): void {
     if (!(props.dataPointer.schemaPointer instanceof EntitySchemaPointer)) {
@@ -59,7 +45,6 @@ function openReferenceSchema(): void {
         :name="schema.name"
         :deprecated="!!schema.deprecationNotice"
         :flags="flags"
-        :tooltip="t('')"
         @open="openReferenceSchema"
     />
 </template>

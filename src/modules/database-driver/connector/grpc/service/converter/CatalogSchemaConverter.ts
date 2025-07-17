@@ -103,9 +103,6 @@ export class CatalogSchemaConverter {
     ): AttributeSchema {
         const scalar = ScalarConverter.convertScalar(attribute.type)
         const nameVariants = MapUtil.getNamingMap(attribute.nameVariant)
-        const uniquenessType = this.convertAttributeUniquenessType(
-            attribute.unique
-        )
         if (attribute.schemaType === GrpcAttributeSchemaType.ENTITY) {
             return new AttributeSchema(
                 attribute.name,
@@ -113,9 +110,6 @@ export class CatalogSchemaConverter {
                 attribute.description ?? undefined,
                 attribute.deprecationNotice ?? undefined,
                 scalar,
-                uniquenessType,
-                attribute.filterable,
-                attribute.sortable,
                 attribute.nullable,
                 this.evitaValueConverter.convertGrpcValue(
                     attribute.defaultValue,
@@ -135,9 +129,6 @@ export class CatalogSchemaConverter {
                 attribute.description,
                 attribute.deprecationNotice,
                 scalar,
-                uniquenessType,
-                attribute.filterable,
-                attribute.sortable,
                 attribute.nullable,
                 this.evitaValueConverter.convertGrpcValue(
                     attribute.defaultValue,
@@ -158,9 +149,6 @@ export class CatalogSchemaConverter {
                 attribute.description,
                 attribute.deprecationNotice,
                 ScalarConverter.convertScalar(attribute.type),
-                this.convertAttributeUniquenessType(attribute.unique),
-                attribute.filterable,
-                attribute.sortable,
                 attribute.nullable,
                 this.evitaValueConverter.convertGrpcValue(
                     attribute.defaultValue,
@@ -169,9 +157,6 @@ export class CatalogSchemaConverter {
                 attribute.localized,
                 attribute.indexedDecimalPlaces,
                 attribute.representative,
-                this.convertGlobalAttributeUniquenessType(
-                    attribute.uniqueGlobally
-                ),
                 this.convertEntityScopes(attribute.sortableInScopes),
                 this.convertEntityScopes(attribute.filterableInScopes),
                 this.convertUniqueGloballyInScopes(attribute.uniqueGloballyInScopes),
@@ -228,9 +213,6 @@ export class CatalogSchemaConverter {
             globalAttributeSchema.description,
             globalAttributeSchema.deprecationNotice,
             ScalarConverter.convertScalar(globalAttributeSchema.type),
-            this.convertAttributeUniquenessType(globalAttributeSchema.unique),
-            globalAttributeSchema.filterable,
-            globalAttributeSchema.sortable,
             globalAttributeSchema.nullable,
             this.evitaValueConverter.convertGrpcValue(
                 globalAttributeSchema.defaultValue,
@@ -239,9 +221,6 @@ export class CatalogSchemaConverter {
             globalAttributeSchema.localized,
             globalAttributeSchema.indexedDecimalPlaces,
             globalAttributeSchema.representative,
-            this.convertGlobalAttributeUniquenessType(
-                globalAttributeSchema.uniqueGlobally
-            ),
             this.convertEntityScopes(globalAttributeSchema.sortableInScopes),
             this.convertEntityScopes(globalAttributeSchema.filterableInScopes),
             this.convertUniqueGloballyInScopes(globalAttributeSchema.uniqueGloballyInScopes),

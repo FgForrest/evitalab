@@ -6,5 +6,6 @@ export enum StaticEntityProperties {
     Version = 'version',
     ParentPrimaryKey = 'parentPrimaryKey',
     Locales = 'locales',
-    PriceInnerRecordHandling = 'priceInnerRecordHandling'
+    PriceInnerRecordHandling = 'priceInnerRecordHandling',
+    Scope = 'scope',
 }

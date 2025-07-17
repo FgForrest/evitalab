@@ -18,7 +18,7 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import SchemaContainerSectionListItem from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionListItem.vue'
 import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
-import { Flag, FlagType } from '@/modules/schema-viewer/viewer/model/Flag.ts'
+import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 import { useI18n } from 'vue-i18n'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
@@ -33,26 +33,7 @@ const props = defineProps<{
 }>()
 
 const flags: ComputedRef<List<Flag>> = computed(() => {
-    const flags: Flag[] = []
-
-    for (const flag of props.schema.representativeFlags) {
-        if (flag.includes(FlagType.Sortable) && props.schema.sortableInScopes) {
-            showTooltip.value = true
-            flags.push(new Flag(flag, Object.values(props.schema.sortableInScopes.toArray()), t('schemaViewer.section.flag.attributeSchema.attributeTooltip')))
-        } else if (flag.includes(FlagType.Filterable) && props.schema.filteredInScopes) {
-            showTooltip.value = true
-            flags.push(new Flag(flag, Object.values(props.schema.filteredInScopes.toArray()), t('schemaViewer.section.flag.attributeSchema.attributeTooltip')))
-        } else if (flag.includes(FlagType.Unique) && props.schema.uniqueInScopes) {
-            showTooltip.value = true
-            flags.push(new Flag(flag, Object.values(props.schema.uniqueInScopes.map(x => x.scope).toArray()), t('schemaViewer.section.flag.attributeSchema.attributeTooltip')))
-        } else if (flag.includes(FlagType.GloballyUnique) && props.schema.uniqueGloballyInScopes) {
-            showTooltip.value = true
-            flags.push(new Flag(flag, Object.values(props.schema.uniqueGloballyInScopes.map(x => x.scope).toArray()), t('schemaViewer.section.flag.attributeSchema.attributeTooltip')))
-        } else
-            flags.push(new Flag(flag))
-    }
-
-    return List(flags)
+    return props.schema.representativeFlags
 })
 
 function openAttributeSchema(): void {

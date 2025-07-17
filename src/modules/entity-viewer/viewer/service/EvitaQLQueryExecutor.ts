@@ -66,7 +66,6 @@ export class EvitaQLQueryExecutor extends QueryExecutor {
             EntityPropertyKey.entity(StaticEntityProperties.Version),
             this.wrapRawValueIntoNativeValue(entity.version)
         ])
-        flattenedProperties.push(this.flattenParent(entity))
 
         const newLocales: Locale[] = []
         const locales = entity.locales

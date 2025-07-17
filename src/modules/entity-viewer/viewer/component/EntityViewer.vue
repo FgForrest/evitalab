@@ -30,7 +30,7 @@ import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
 import {
     provideDataLocale,
-    provideEntityPropertyDescriptorIndex,
+    provideEntityPropertyDescriptorIndex, provideLayer,
     providePriceType,
     provideQueryFilter,
     provideQueryLanguage,
@@ -105,6 +105,7 @@ const lastAppliedFilterByCode = ref<string>('')
 provideQueryFilter(lastAppliedFilterByCode)
 const orderByCode = ref<string>(props.data.orderBy ? props.data.orderBy : '')
 const selectedLayer = ref<SelectedLayer[]>(props.data.selectedLayers ? props.data.selectedLayers : [new SelectedLayer(EntityScope.Live, true)])
+provideLayer(selectedLayer)
 watch(selectedLayer, () => executeQueryManually())
 
 const selectedDataLocale = ref<string | undefined>(props.data.dataLocale ? props.data.dataLocale : undefined)

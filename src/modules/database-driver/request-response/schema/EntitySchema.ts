@@ -10,7 +10,7 @@ import {
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema'
 import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
-import type { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 
 /**
  * evitaLab's representation of a single evitaDB entity schema independent of specific evitaDB version
@@ -69,7 +69,7 @@ export class EntitySchema extends AbstractSchema {
     readonly sortableAttributeCompounds: Map<string, SortableAttributeCompoundSchema>
     readonly associatedData: Map<string, AssociatedDataSchema>
     readonly references: Map<string, ReferenceSchema>
-    private _representativeFlags?: List<string>
+    private _representativeFlags?: List<Flag>
 
     constructor(version: number,
                 name: string,
@@ -106,10 +106,10 @@ export class EntitySchema extends AbstractSchema {
         this.references = Map(references.map(reference => [reference.name, reference]))
     }
 
-    get representativeFlags(): List<string> {
+    get representativeFlags(): List<Flag> {
         if (this._representativeFlags == undefined) {
-            const representativeFlags: string[] = []
-            if (this.withHierarchy) representativeFlags.push(EntitySchemaFlag.Hierarchical)
+            const representativeFlags: Flag[] = []
+            if (this.withHierarchy) representativeFlags.push(new Flag(EntitySchemaFlag.Hierarchical))
             this._representativeFlags = List(representativeFlags)
         }
         return this._representativeFlags

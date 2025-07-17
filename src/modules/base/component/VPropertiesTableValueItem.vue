@@ -16,7 +16,8 @@ import { PlaceholderValue } from '@/modules/base/model/properties-table/Placehol
 
 const { t } = useI18n()
 
-const props = defineProps<{
+const props =
+    defineProps<{
     property: Property,
     propertyValue: PropertyValue
 }>()
@@ -38,7 +39,7 @@ const props = defineProps<{
 
     <!-- actual value is boolean -->
     <VCheckbox
-        v-else-if="typeof propertyValue.value === 'boolean'"
+        v-else-if="!(propertyValue.value  instanceof MultiValueFlagValue) && typeof propertyValue.value === 'boolean'"
         :model-value="propertyValue.value"
         disabled
         density="compact"

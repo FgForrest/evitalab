@@ -6,7 +6,10 @@ import { AttributeSchema } from '@/modules/database-driver/request-response/sche
 import {
     SortableAttributeCompoundSchema
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema'
-import type { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
+import { useI18n } from 'vue-i18n'
+import { getEnumKeyByValue } from '@/utils/enum.ts'
 
 /**
  * evitaLab's representation of a single evitaDB reference schema independent of specific evitaDB version
@@ -69,7 +72,7 @@ export class ReferenceSchema extends AbstractSchema {
     readonly indexedInScopes: List<EntityScope>
     readonly facetedInScopes: List<EntityScope>
 
-    private _representativeFlags?: List<string>
+    private _representativeFlags?: List<Flag>
 
     constructor(name: string,
                 nameVariants: Map<NamingConvention, string>,
@@ -108,13 +111,14 @@ export class ReferenceSchema extends AbstractSchema {
         this.facetedInScopes = facetedInScopes
     }
 
-    get representativeFlags(): List<string> {
+    get representativeFlags(): List<Flag> {
         if (this._representativeFlags == null) {
-            const representativeFlags: string[] = []
+            const { t } = useI18n()
+            const representativeFlags: Flag[] = []
 
-            if (!this.referencedEntityTypeManaged) representativeFlags.push(ReferenceSchemaFlag.External)
-            if (this.indexed) representativeFlags.push(ReferenceSchemaFlag.Indexed)
-            if (this.faceted) representativeFlags.push(ReferenceSchemaFlag.Faceted)
+            if (!this.referencedEntityTypeManaged) representativeFlags.push(new Flag(ReferenceSchemaFlag.External))
+            if (this.indexed) representativeFlags.push(new Flag(ReferenceSchemaFlag.Indexed, this.indexedInScopes.map(x => x).toArray(), t('schemaViewer.reference.tooltip.content', ['', this.indexedInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
+            if (this.faceted) representativeFlags.push(new Flag(ReferenceSchemaFlag.Faceted, this.facetedInScopes.map(x => x).toArray(), t('schemaViewer.reference.tooltip.facetedContent', ['', this.facetedInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
 
             this._representativeFlags = List(representativeFlags)
         }

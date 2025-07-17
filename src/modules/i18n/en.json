@@ -942,6 +942,8 @@
         "globallyUniqueWithinLocaleOfCatalog": "Within locale of catalog"
       },
       "label": {
+        "live": "Live",
+        "archive": "Archive",
         "type": "Type",
         "description": "Description",
         "deprecationNotice": "Deprecation notice",
@@ -955,6 +957,9 @@
         "defaultValue": "Default value",
         "indexedDecimalPlaces": "Indexed decimal places",
         "attributes": "Attributes"
+      },
+      "tooltip": {
+        "content": "The attribute can be {0} within the {1} scope."
       },
       "help": {
         "uniqueWithinCollection": "The attribute value must be unique among all the entities of the same collection.",
@@ -992,7 +997,21 @@
         "faceted": "Faceted",
         "referencedEntityNameVariants": "Referenced entity",
         "referencedGroupNameVariants": "Referenced group"
+      },
+      "tooltip": {
+        "content": "The reference is {0} indexed within the {1} scope.",
+        "facetedContent": "The reference {0} provide facets within the {1} scope."
       }
+    },
+    "tooltip": {
+      "live": "live",
+      "archive": "archive",
+      "filtered": "filtered",
+      "sorted": "sorted",
+      "doesNot": "doesn't",
+      "not": "not",
+      "liveContent": "The default scope is where all new entities are created.",
+      "archiveContent": "The archive scope is where outdated entities that are no longer actively used are stored. The archive is usually covered by fewer indexes than the live scope and is not searched unless explicitly requested in a query."
     }
   },
   "serverViewer": {

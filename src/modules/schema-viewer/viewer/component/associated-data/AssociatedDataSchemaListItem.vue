@@ -24,14 +24,7 @@ const props = defineProps<{
     schema: AssociatedDataSchema
 }>()
 
-const flags: ComputedRef<List<Flag>> = computed(() => {
-    const flags: Flag[] = []
-    for(const flag of props.schema.representativeFlags){
-        flags.push(new Flag(flag))
-    }
-
-    return List(flags)
-})
+const flags: ComputedRef<List<Flag>> = computed(() => props.schema.representativeFlags)
 
 function openAssociatedDataSchema(): void {
     if (!(props.dataPointer.schemaPointer instanceof EntitySchemaPointer)) {

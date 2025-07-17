@@ -11,9 +11,10 @@ import { Command } from '@/modules/keymap/model/Command'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import VExecuteQueryButton from '@/modules/base/component/VExecuteQueryButton.vue'
-import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
-import { useDataLocale, useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
+import { useDataLocale, useTabProps, useLayer } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { List } from 'immutable'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { getEnumKeyByValue } from '@/utils/enum.ts'
 
 const keymap: Keymap = useKeymap()
 const { t } = useI18n()
@@ -29,6 +30,7 @@ const emit = defineEmits<{
 }>()
 const tabProps = useTabProps()
 const dataLocale = useDataLocale()
+const layers = useLayer()
 
 const flags = computed<any>(() => {
     const flags: any[] = []
@@ -37,6 +39,16 @@ const flags = computed<any>(() => {
             title: dataLocale.value,
             prependIcon: 'mdi-translate',
         })
+    }
+    if(layers.value != undefined) {
+        for (const val of layers.value) {
+            if(val.value) {
+                flags.push({
+                    title: getEnumKeyByValue(EntityScope, val.scope),
+                    prependIcon: val.scope
+                })
+            }
+        }
     }
     return flags
 })

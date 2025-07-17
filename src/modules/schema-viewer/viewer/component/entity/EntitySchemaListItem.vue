@@ -24,7 +24,7 @@ const props = defineProps<{
     schema: EntitySchema
 }>()
 
-const flags: ComputedRef<List<Flag>> = computed(() => props.schema.representativeFlags.map(x => new Flag(x)))
+const flags: ComputedRef<List<Flag>> = computed(() => props.schema.representativeFlags)
 
 function openEntitySchema(): void {
     if (!(props.dataPointer.schemaPointer instanceof CatalogSchemaPointer)) {

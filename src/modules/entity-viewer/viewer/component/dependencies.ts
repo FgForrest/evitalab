@@ -11,6 +11,7 @@ import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityP
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import { mandatoryInject } from '@/utils/reactivity'
 import { Map as ImmutableMap, List as ImmutableList } from 'immutable'
+import type { SelectedLayer } from '@/modules/entity-viewer/viewer/model/SelectedLayer.ts'
 
 /**
  * Dependency injection key for data grid props
@@ -43,6 +44,15 @@ export const provideQueryLanguage = (queryLanguage: Ref<QueryLanguage>): void =>
 }
 export const useQueryLanguage = (): Ref<QueryLanguage> => {
     return mandatoryInject(queryLanguageInjectionKey)
+}
+
+const layerInjectionKey: InjectionKey<Ref<SelectedLayer[]>> = Symbol('layer')
+export const provideLayer = (layer: Ref<SelectedLayer[]>): void => {
+    provide(layerInjectionKey, shallowReadonly(layer))
+}
+
+export const useLayer = (): Ref<SelectedLayer[]> => {
+    return mandatoryInject(layerInjectionKey)
 }
 
 /**
