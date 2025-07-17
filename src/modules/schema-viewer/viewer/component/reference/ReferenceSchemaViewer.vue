@@ -248,8 +248,7 @@ function openFrom(): void {
                     :data-pointer="props.dataPointer"
                     :schemas="reflectedReferences ?? ImmutableList([])"
                     :disabled="!loadedReflectedReferences"
-                >
-                </ReflectedReferenceList>
+                />
             </template>
         </SchemaContainer>
     </div>

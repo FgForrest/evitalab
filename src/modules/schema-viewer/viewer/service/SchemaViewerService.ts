@@ -159,6 +159,7 @@ export class SchemaViewerService {
             for (const reference of entity[1].references) {
                 if (reference[1] instanceof ReflectedRefenceSchema) {
                     if (reference[1].reflectedReferenceName === name) {
+                        reference[1].reflectedType = entity[1].name
                         reflectedReferenceSchemas.push(reference[1])
                     }
                 }

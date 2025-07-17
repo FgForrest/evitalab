@@ -28,8 +28,8 @@ function openReferenceSchema(): void {
     workspaceService.createTab(schemaViewerTabFactory.createNew(
         new ReferenceSchemaPointer(
             props.dataPointer.schemaPointer.catalogName,
-            props.dataPointer.schemaPointer.entityType,
-            props.schema.name
+            props.schema.reflectedType!,
+            props.schema.name!
         )
     ))
 }

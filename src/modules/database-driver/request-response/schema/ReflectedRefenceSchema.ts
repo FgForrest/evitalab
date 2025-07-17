@@ -19,7 +19,7 @@ export class ReflectedRefenceSchema extends ReferenceSchema {
     readonly indexedInherited: boolean;
     readonly attributeInheritanceBehavior: AttributeInheritanceBehavior
     readonly attributeInheritanceFilter: string[]
-
+    private _reflectedType?: string
 
     constructor(name: string,
                 nameVariants: Map<NamingConvention, string>,
@@ -55,5 +55,14 @@ export class ReflectedRefenceSchema extends ReferenceSchema {
         this.indexedInherited = indexedInherited
         this.attributeInheritanceBehavior = attributeInheritanceBehavior
         this.attributeInheritanceFilter = attributeInheritanceFilter
+    }
+
+
+    get reflectedType(): string | undefined {
+        return this._reflectedType
+    }
+
+    set reflectedType(value: string) {
+        this._reflectedType = value
     }
 }
