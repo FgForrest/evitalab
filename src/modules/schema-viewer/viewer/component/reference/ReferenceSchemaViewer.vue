@@ -191,7 +191,6 @@ const inheritedAttributes = computed(() => {
 
 onMounted(async () => {
     await loadAllReflectedSchemas()
-    await loadEntitySchemaName()
 })
 
 const reflectedSchemaName = computed(() => {
