@@ -37,7 +37,7 @@ function openFrom(): void {
     <table class="properties-table">
         <tr class="properties-table__row">
             <td>{{ t('relationViewer.title') }}</td>
-            <td>
+            <td class="content-row">
                 <VChip @click="openFrom" class="clickable">{{ props.from }}</VChip>
                 <VIcon :icon="icon" />
                 <VChip>{{ props.to }}</VChip>
@@ -53,6 +53,7 @@ function openFrom(): void {
     flex-direction: column;
     gap: 0.5rem;
     padding: 0.5rem;
+    color: #FFFFFFB3;
 
     &__row {
         display: inline-grid;
@@ -63,6 +64,13 @@ function openFrom(): void {
 
     &__row--dense {
         grid-template-columns: 8rem 15rem;
+    }
+
+    .content-row{
+        width: 50%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
     }
 }
 

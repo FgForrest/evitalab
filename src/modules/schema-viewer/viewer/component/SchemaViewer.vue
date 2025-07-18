@@ -65,7 +65,6 @@ async function loadTitle(): Promise<void> {
         title.value = ImmutableList.of(schemaPointer.schemaName)
     } else if(schemaPointer.schemaType === SchemaType.Reference && schema.value instanceof ReflectedRefenceSchema && schema.value.reflectedReferenceName) {
         title.value = ImmutableList.of(t(`schemaViewer.title.schema.${schemaPointer.schemaType}`),
-            schema.value.reflectedReferenceName,
             schemaPointer.schemaName)
     } else {
         title.value = ImmutableList.of(

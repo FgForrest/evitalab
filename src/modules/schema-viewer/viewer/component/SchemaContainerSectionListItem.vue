@@ -5,6 +5,7 @@ import { List } from 'immutable'
 const { t } = useI18n()
 
 const props = withDefaults(defineProps<{
+    entitySchema?: string,
     name: string,
     deprecated?: boolean,
     flags?: List<string>,
@@ -37,6 +38,9 @@ function open() {
     >
         <div class="item-body">
             <VListItemTitle>
+                <span v-if="entitySchema">
+                    {{ entitySchema }} >
+                </span>
                 <span :class="['mr-5', { 'text-decoration-line-through': deprecated }]">
                     {{ name }}
                 </span>

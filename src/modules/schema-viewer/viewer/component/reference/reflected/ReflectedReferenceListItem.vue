@@ -38,6 +38,7 @@ function openReferenceSchema(): void {
 <template>
     <SchemaContainerSectionListItem
         :name="schema.name"
+        :entity-schema="schema.reflectedType!"
         :flags="schema.representativeFlags"
         :reflected="true"
         @open="openReferenceSchema"

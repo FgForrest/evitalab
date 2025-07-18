@@ -41,6 +41,7 @@ const loadedReferencedGroupType = ref<boolean>()
 const groupTypeNameVariants = ref<ImmutableMap<NamingConvention, string> | undefined>()
 const loadedReflectedReferences = ref<boolean>()
 const reflectedReferences = ref<ImmutableList<ReflectedRefenceSchema>>()
+const entitySchemaName = ref<string>('')
 
 const properties = computed<Property[]>(() => {
     const properties: Property[] = []
@@ -55,10 +56,6 @@ const properties = computed<Property[]>(() => {
             new PropertyValue(props.schema.deprecationNotice)
         ))
     }
-    properties.push(new Property(
-        t('schemaViewer.reference.label.cardinality'),
-        new PropertyValue(new KeywordValue(props.schema.cardinality))
-    ))
     if (props.schema.referencedEntityTypeManaged) {
         properties.push(new Property(
             t('schemaViewer.reference.label.referencedEntity'),
@@ -192,7 +189,10 @@ const inheritedAttributes = computed(() => {
     return undefined
 })
 
-onMounted(loadAllReflectedSchemas)
+onMounted(async () => {
+    await loadAllReflectedSchemas()
+    await loadEntitySchemaName()
+})
 
 const reflectedSchemaName = computed(() => {
     if(props.schema instanceof ReflectedRefenceSchema && props.schema.reflectedReferenceName){
@@ -217,7 +217,7 @@ function openFrom(): void {
     <div>
         <SchemaContainer :properties="properties">
             <template #relation>
-                <RelationViewer v-if="reflectedSchemaName" @open-from="openFrom" :cardinality="props.schema.cardinality" :from="reflectedSchemaName" :to="props.schema.entityType" />
+                <RelationViewer v-if="reflectedSchemaName" @open-from="openFrom" :cardinality="props.schema.cardinality" :from="props.schema.entityType" :to="props.schema.entityType" />
             </template>
             <template #nested-details>
                 <NameVariants :name-variants="schema.nameVariants" />
