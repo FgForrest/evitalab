@@ -295,6 +295,16 @@ export class EntityViewerService {
             undefined,
             ImmutableList()
         ))
+
+        descriptors.push(new EntityPropertyDescriptor(
+            EntityPropertyType.Entity,
+            EntityPropertyKey.entity(StaticEntityProperties.Scope),
+            'Scope',
+            'Scope',
+            undefined,
+            undefined,
+            ImmutableList()
+        ))
         if (entitySchema.withHierarchy) {
             descriptors.push(new EntityPropertyDescriptor(
                 EntityPropertyType.Entity,
@@ -364,16 +374,6 @@ export class EntityViewerService {
                 ImmutableList()
             ))
         }
-
-        descriptors.push(new EntityPropertyDescriptor(
-            EntityPropertyType.Scope,
-            EntityPropertyKey.entity(StaticEntityProperties.Scope),
-            'Scope',
-            'Scope',
-            undefined,
-            undefined,
-            ImmutableList()
-        ))
 
         for (const referenceSchema of entitySchema.references.values()) {
             descriptors.push(new EntityPropertyDescriptor(

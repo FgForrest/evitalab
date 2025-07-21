@@ -7,6 +7,5 @@ export enum EntityPropertyType {
     AssociatedData = 'associatedData',
     References = 'references',
     ReferenceAttributes = 'referenceAttributes',
-    Prices = 'prices',
-    Scope = 'scope',
+    Prices = 'prices'
 }
