@@ -831,7 +831,8 @@
         "entity": "Entities",
         "attribute": "Attributes",
         "associatedData": "Associated data",
-        "reference": "References"
+        "reference": "References",
+        "sortableAttributeCompounds": "Sortable attribute compounds"
       }
     },
     "scopesVisualizer": {
@@ -855,6 +856,12 @@
         "filter": "Filter"
       },
       "flag": {
+        "attributeElement": {
+          "nullsFirst": "nulls first",
+          "nullsLast": "nulls last",
+          "asc": "ascending",
+          "desc": "descending"
+        },
         "entitySchema": {
           "hierarchical": "hierarchical"
         },
@@ -895,6 +902,9 @@
     },
     "entities": {
       "title": "Entities"
+    },
+    "sortableAttributeCompounds": {
+      "title": "Sortable attribute compounds"
     },
     "entity": {
       "label": {
@@ -1001,6 +1011,17 @@
       "tooltip": {
         "content": "The reference is {0} indexed within the {1} scope.",
         "facetedContent": "The reference {0} provide facets within the {1} scope."
+      }
+    },
+    "sortableAttributeCompound": {
+      "name": "Sortable attribute compound",
+      "label": {
+        "name": "Name",
+        "deprecationNotice": "Deprecation notice",
+        "description": "Description"
+      },
+      "attributeElement": {
+        "title": "Attribute elements"
       }
     },
     "tooltip": {

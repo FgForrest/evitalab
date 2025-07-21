@@ -136,7 +136,7 @@ export abstract class AbstractEvitaClient {
 
     protected get catalogStatisticsConverter(): CatalogStatisticsConverter {
         if (this._catalogStatisticsConverter == undefined) {
-            this._catalogStatisticsConverter = new CatalogStatisticsConverter()
+            this._catalogStatisticsConverter = new CatalogStatisticsConverter(this.evitaValueConverter)
         }
         return this._catalogStatisticsConverter
     }
