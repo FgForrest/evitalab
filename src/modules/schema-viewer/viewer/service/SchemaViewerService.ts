@@ -20,7 +20,9 @@ import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedRefenceSchema.ts'
-import { SortableAttributeCompoundSchemaPointer } from '@/modules/schema-viewer/viewer/model/SortableAttributeCompoundSchemaPointer.ts'
+import {
+    SortableAttributeCompoundSchemaPointer
+} from '@/modules/schema-viewer/viewer/model/SortableAttributeCompoundSchemaPointer.ts'
 import {
     SortableAttributeCompoundSchema
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema.ts'
@@ -54,7 +56,7 @@ export class SchemaViewerService {
             return this.getAssociatedDataSchemaPointer(schemaPointer)
         } else if (schemaPointer instanceof ReferenceSchemaPointer) {
             return this.getReferenceSchemaPointer(schemaPointer)
-        } else if(schemaPointer instanceof SortableAttributeCompoundSchemaPointer) {
+        } else if (schemaPointer instanceof SortableAttributeCompoundSchemaPointer) {
             return this.getSortableCompoundSchemaFromPointer(schemaPointer)
         } else {
             throw new UnexpectedError(`Unsupported type of schema ${schemaPointer}`)
@@ -181,7 +183,7 @@ export class SchemaViewerService {
         )).sortableAttributeCompounds
         const item = data.get(schemaPointer.sortableAttributeCompoundName)
 
-        if(item == undefined) {
+        if (item == undefined) {
             throw new UnexpectedError(`Compound schema ${schemaPointer.sortableAttributeCompoundName} not found in catalog ${schemaPointer.catalogName}.`)
         }
         return item

@@ -26,6 +26,7 @@ import {
 } from '@/modules/schema-viewer/viewer/service/schema-path-factory/DelegatingSchemaPathFactory'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedRefenceSchema.ts'
+import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer.ts'
 
 const keymap: Keymap = useKeymap()
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
@@ -34,6 +35,7 @@ const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<TabComponentProps<SchemaViewerTabParams, VoidTabData>>()
+const referenceSchemaPointer = ref<ReferenceSchemaPointer>(props.params.dataPointer.schemaPointer as ReferenceSchemaPointer)
 const emit = defineEmits<TabComponentEvents>()
 defineExpose<TabComponentExpose>({
     path(): SubjectPath | undefined {
@@ -65,6 +67,7 @@ async function loadTitle(): Promise<void> {
         title.value = ImmutableList.of(schemaPointer.schemaName)
     } else if(schemaPointer.schemaType === SchemaType.Reference && schema.value instanceof ReflectedRefenceSchema && schema.value.reflectedReferenceName) {
         title.value = ImmutableList.of(t(`schemaViewer.title.schema.${schemaPointer.schemaType}`),
+            referenceSchemaPointer.value.entityType,
             schemaPointer.schemaName)
     } else {
         title.value = ImmutableList.of(

@@ -35,13 +35,13 @@ const props = defineProps<{
 }>()
 
 const loadedEntityNameVariants = ref<boolean>()
+const referenceSchemaPointer = ref<ReferenceSchemaPointer>(props.dataPointer.schemaPointer as ReferenceSchemaPointer)
 const entityNameVariants = ref<ImmutableMap<NamingConvention, string>>()
 
 const loadedReferencedGroupType = ref<boolean>()
 const groupTypeNameVariants = ref<ImmutableMap<NamingConvention, string> | undefined>()
 const loadedReflectedReferences = ref<boolean>()
 const reflectedReferences = ref<ImmutableList<ReflectedRefenceSchema>>()
-const entitySchemaName = ref<string>('')
 
 const properties = computed<Property[]>(() => {
     const properties: Property[] = []
@@ -205,7 +205,7 @@ function openFrom(): void {
             new ReferenceSchemaPointer(
                 props.dataPointer.schemaPointer.catalogName,
                 props.schema.entityType,
-                props.schema.reflectedReferenceName!
+                props.schema.reflectedReferenceName!,
             )
         ))
     }
@@ -216,7 +216,7 @@ function openFrom(): void {
     <div>
         <SchemaContainer :properties="properties">
             <template #relation>
-                <RelationViewer v-if="reflectedSchemaName" @open-from="openFrom" :cardinality="props.schema.cardinality" :from="props.schema.entityType" :to="props.schema.entityType" />
+                <RelationViewer @open-from="openFrom" :cardinality="props.schema.cardinality" :from="referenceSchemaPointer.entityType" :to="props.schema.entityType" />
             </template>
             <template #nested-details>
                 <NameVariants :name-variants="schema.nameVariants" />
