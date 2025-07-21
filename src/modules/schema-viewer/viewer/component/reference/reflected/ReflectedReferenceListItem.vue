@@ -29,8 +29,7 @@ function openReferenceSchema(): void {
         new ReferenceSchemaPointer(
             props.dataPointer.schemaPointer.catalogName,
             props.schema.reflectedType!,
-            props.schema.name!,
-            ``
+            props.schema.name!
         )
     ))
 }
