@@ -1085,7 +1085,8 @@
     "backupSelector": {
       "currentSnapshot": "Current snapshot",
       "pointInTime": "Point in time",
-      "fullBackup": "Full"
+      "fullBackup": "Full",
+      "selectSubTitle": "Choose backup type"
     },
     "definition": {
       "title": "Catalog backups"

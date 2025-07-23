@@ -115,6 +115,7 @@ const backupActualDataModelValue = ref<boolean>(false)
             </template>
             <template #default>
                 <VAutocomplete v-model="catalogName" :items="availableCatalogs" :disabled="!availableCatalogsLoaded" />
+                <h4 class="subtitle">{{ t('backupViewer.backupSelector.selectSubTitle') }}</h4>
                 <div class="buttons-container">
                     <div class="box-item">
                         <VIcon class="icon" :size="100" :disabled="!catalogName"
@@ -172,8 +173,6 @@ const backupActualDataModelValue = ref<boolean>(false)
 }
 
 .buttons-container div:not(:last-child):not(:first-child) {
-    border-left: 1px solid white;
-    border-right: 1px solid white;
     padding-left: 15px;
     padding-right: 15px;
 }
@@ -199,5 +198,10 @@ hr {
 
 .btn-select {
     min-width: 187px;
+}
+
+.subtitle{
+    margin-bottom: 1rem;
+    text-align: center;
 }
 </style>
