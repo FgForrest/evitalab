@@ -1143,7 +1143,7 @@
         "description": "A point in time backup contains only data valid at the point in time (version) of the catalog that is selected when the backup is created. When going back in time, it is only possible to select a point in time for which the database still has historical data. In order to protect against running out of disk capacity, historical data is deleted after some time / reaching a limit size. A catalog restored from this backup will not allow point in time recovery, or will only allow it over other write operations performed over the restored catalog."
       },
       "snapshot": {
-        "title": "Snapshot backup",
+        "title": "Current snapshot backup",
         "description": "The current snapshot contains only currently valid data. It is the smallest possible functional backup, which also makes it the fastest backup option. A catalog restored from this backup will not allow point-in-time recovery, or will only allow recovery over other write operations performed on the restored catalog."
       },
       "button": {
