@@ -16,6 +16,7 @@ const showBackupCatalogDialog = ref<boolean>(false)
 <template>
     <BackupSelector
         v-model="showBackupCatalogDialog"
+        @backup="emit('backup')"
     >
         <template #activator="{ props }">
             <VTabMainActionButton

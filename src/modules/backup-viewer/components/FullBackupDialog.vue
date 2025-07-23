@@ -4,7 +4,6 @@ import { useI18n } from 'vue-i18n'
 import { BackupViewerService, useBackupViewerService } from '@/modules/backup-viewer/service/BackupViewerService.ts'
 import { useToaster } from '@/modules/notification/service/Toaster.ts'
 import type { Toaster } from '@/modules/notification/service/Toaster.ts'
-import { computed } from 'vue'
 
 const props = defineProps<{
     catalogName: string,
@@ -21,20 +20,6 @@ const { t } = useI18n()
 const backupViewerService: BackupViewerService = useBackupViewerService()
 const toaster: Toaster = useToaster()
 const catalogNameValue = ref<string | null>(props.catalogName)
-const changed = computed<boolean>(() =>
-    catalogNameValue.value != undefined && catalogNameValue.value.trim().length > 0)
-
-const catalogNameRules = [
-    (value: string): any => {
-        if (value != undefined && value.trim().length > 0) return true
-        return t('backupViewer.backup.form.catalogName.validations.required')
-    },
-    async (value: string): Promise<any> => {
-        const available: boolean = await backupViewerService.isCatalogExists(value)
-        if (available) return true
-        return t('backupViewer.backup.form.catalogName.validations.notExists')
-    }
-]
 
 async function backup(): Promise<boolean> {
     try {
@@ -54,7 +39,7 @@ async function backup(): Promise<boolean> {
 </script>
 
 <template>
-    <VFormDialog :model-value="modelValue" :confirm="backup" :changed="changed" @update:model-value="(e) => {  emit('update:modelValue', e)}">
+    <VFormDialog :model-value="modelValue" :confirm="backup" :changed="true" @update:model-value="(e) => {  emit('update:modelValue', e)}">
         <template #activator="{ props }">
             <slot name="activator" v-bind="{ props }" />
         </template>
@@ -73,7 +58,6 @@ async function backup(): Promise<boolean> {
             <VAutocomplete v-model="catalogNameValue"
                            :label="t('backupViewer.backup.form.catalogName.label')"
                            :items="availableCatalogs"
-                           :rules="catalogNameRules"
                            disabled
                            required
                            readonly />

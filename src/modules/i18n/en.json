@@ -1092,8 +1092,6 @@
       "title": "Catalog backups"
     },
     "title": "Catalog backups",
-    "backupsTitle": "Backups",
-    "fullBackupsTitle": "Full backups",
     "button": {
       "reloadBackups": "Reload backups",
       "restoreLocalBackup": "Import and restore catalog from backup file",

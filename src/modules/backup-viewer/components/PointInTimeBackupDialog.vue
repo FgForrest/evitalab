@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { DateTime } from 'luxon'
@@ -48,21 +48,6 @@ async function getMinimalDate(): Promise<void> {
 
 const pastMoment = ref<DateTime | undefined>(undefined)
 const includeWal = ref<boolean>(false)
-
-const changed = computed<boolean>(() =>
-    catalogNameValue.value != undefined && catalogNameValue.value.trim().length > 0)
-
-const catalogNameRules = [
-    (value: string): any => {
-        if (value != undefined && value.trim().length > 0) return true
-        return t('backupViewer.backup.form.catalogName.validations.required')
-    },
-    async (value: string): Promise<any> => {
-        const available: boolean = await backupViewerService.isCatalogExists(value)
-        if (available) return true
-        return t('backupViewer.backup.form.catalogName.validations.notExists')
-    }
-]
 
 async function loadMinimalDate(): Promise<void> {
     try {
@@ -129,7 +114,7 @@ onMounted(async () => {
 <template>
     <VFormDialog
         :model-value="modelValue"
-        :changed="changed"
+        :changed="true"
         confirm-button-icon="mdi-cloud-download-outline"
         :confirm="backup"
         :reset="reset"
@@ -149,7 +134,6 @@ onMounted(async () => {
                 v-model="catalogNameValue"
                 :label="t('backupViewer.backup.form.catalogName.label')"
                 :items="availableCatalogs"
-                :rules="catalogNameRules"
                 disabled
                 required
                 readonly
