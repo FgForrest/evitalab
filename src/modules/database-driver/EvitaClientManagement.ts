@@ -37,6 +37,7 @@ import { EventType } from '@/modules/database-driver/request-response/jfr/EventT
 import { EvitaCatalogStatisticsCache } from '@/modules/database-driver/EvitaCatalogStatisticsCache'
 import { EntityCollectionStatistics } from '@/modules/database-driver/request-response/EntityCollectionStatistics'
 import { EvitaServerMetadataCache } from '@/modules/database-driver/EvitaServerMetadataCache'
+import type { StringValue } from '@bufbuild/protobuf/wkt'
 
 /**
  * Chunk size for upload local backup files
@@ -383,11 +384,18 @@ export class EvitaClientManagement {
      * @param origin origin of the files (derived from task type), it filters the returned files to only those that are
      *              related to the specified origin
      */
-    async listFilesToFetch(pageNumber: number, pageSize: number, origin: string): Promise<PaginatedList<ServerFile>> {
+    async listFilesToFetch(pageNumber: number, pageSize: number, origin: string[]): Promise<PaginatedList<ServerFile>> {
         try {
+            const originValues:StringValue[] = []
+            origin.forEach(origin => {
+                originValues.push({
+                    value: origin
+                } as StringValue)
+            })
+
             const result = await this.evitaManagementClientProvider()
                 .listFilesToFetch({
-                    origin,
+                    origin: originValues,
                     pageNumber,
                     pageSize
                 })

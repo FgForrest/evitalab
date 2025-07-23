@@ -74,8 +74,9 @@ async function backup(): Promise<boolean> {
                            :label="t('backupViewer.backup.form.catalogName.label')"
                            :items="availableCatalogs"
                            :rules="catalogNameRules"
-                           :disabled="!availableCatalogs"
-                           required />
+                           disabled
+                           required
+                           readonly />
         </template>
         <template #confirm-button-body>
             {{ t('backupViewer.backup.button.backup') }}

@@ -68,17 +68,10 @@ export class BackupViewerService {
         return await this.evitaClient.management.listFilesToFetch(
             pageNumber,
             pageSize,
-            backupTaskName
+            [backupTaskName, fullBackupTaskName],
         )
     }
 
-    async getFullBackupFiles(pageNumber: number, pageSize: number): Promise<PaginatedList<ServerFile>> {
-        return await this.evitaClient.management.listFilesToFetch(
-            pageNumber,
-            pageSize,
-            fullBackupTaskName
-        )
-    }
 
     async restoreBackupFile(
         fileId: Uuid,

@@ -88,8 +88,10 @@ function reset(): void {
                            :label="t('backupViewer.backup.form.catalogName.label')"
                            :items="availableCatalogs"
                            :rules="catalogNameRules"
-                           :disabled="!availableCatalogs"
-                           required />
+                           required
+                           readonly
+                           disabled
+            />
             <VCheckbox
                 v-model="includeWal"
                 :label="t('backupViewer.backup.form.includeWal.label')"

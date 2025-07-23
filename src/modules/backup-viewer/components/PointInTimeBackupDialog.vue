@@ -150,8 +150,9 @@ onMounted(async () => {
                 :label="t('backupViewer.backup.form.catalogName.label')"
                 :items="availableCatalogs"
                 :rules="catalogNameRules"
-                :disabled="!availableCatalogs"
+                disabled
                 required
+                readonly
             />
             <VDateTimeInput
                 v-model="pastMoment"
