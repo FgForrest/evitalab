@@ -31,12 +31,12 @@ import {
     CatalogItemMenuFactory,
     useCatalogItemMenuFactory
 } from '@/modules/connection-explorer/service/CatalogItemMenuFactory'
-import BackupCatalogDialog from '@/modules/backup-viewer/components/BackupCatalogDialog.vue'
 import {
     type BackupViewerTabFactory,
     useBackupsTabFactory
 } from '@/modules/backup-viewer/service/BackupViewerTabFactory.ts'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
+import BackupSelector from '@/modules/backup-viewer/components/BackupSelector.vue'
 
 const catalogItemService: CatalogItemService = useCatalogItemService()
 const catalogItemMenuFactory: CatalogItemMenuFactory = useCatalogItemMenuFactory()
@@ -163,10 +163,10 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
             </template>
         </div>
 
-        <BackupCatalogDialog
-            v-if="showBackupCatalogDialog"
+        <BackupSelector
             :model-value="showBackupCatalogDialog"
-            :catalog="catalog.name"
+            :catalog-name="catalog.name"
+            @update:model-value="value => showBackupCatalogDialog = value"
             @backup="() => {
                 showBackupCatalogDialog = false
                 workspaceService.createTab(
