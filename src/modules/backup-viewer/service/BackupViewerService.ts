@@ -1,4 +1,3 @@
-import { Connection } from '@/modules/connection/model/Connection'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { mandatoryInject } from '@/utils/reactivity'
@@ -13,6 +12,7 @@ import { backupTaskName } from '@/modules/backup-viewer/model/BackupTask'
 import { List as ImmutableList } from 'immutable'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import { fullBackupTaskName } from '@/modules/backup-viewer/model/FullBackupTask.ts'
 
 export const backupViewerServiceInjectionKey: InjectionKey<BackupViewerService> = Symbol('backupViewerService')
 
@@ -57,6 +57,10 @@ export class BackupViewerService {
         )
     }
 
+    async fullBackupCatalog(catalogName: string): Promise<TaskStatus> {
+        return await this.evitaClient.management.fullBackupCatalog(catalogName)
+    }
+
     async getBackupFiles(
         pageNumber: number,
         pageSize: number
@@ -65,6 +69,14 @@ export class BackupViewerService {
             pageNumber,
             pageSize,
             backupTaskName
+        )
+    }
+
+    async getFullBackupFiles(pageNumber: number, pageSize: number): Promise<PaginatedList<ServerFile>> {
+        return await this.evitaClient.management.listFilesToFetch(
+            pageNumber,
+            pageSize,
+            fullBackupTaskName
         )
     }
 

@@ -37,8 +37,6 @@ import { EventType } from '@/modules/database-driver/request-response/jfr/EventT
 import { EvitaCatalogStatisticsCache } from '@/modules/database-driver/EvitaCatalogStatisticsCache'
 import { EntityCollectionStatistics } from '@/modules/database-driver/request-response/EntityCollectionStatistics'
 import { EvitaServerMetadataCache } from '@/modules/database-driver/EvitaServerMetadataCache'
-import type { StringValue } from '@bufbuild/protobuf/wkt'
-
 
 /**
  * Chunk size for upload local backup files
@@ -223,6 +221,15 @@ export class EvitaClientManagement {
             catalogName,
             session => {
                 return session.backupCatalog(pastMoment, includingWAL)
+            }
+        )
+    }
+
+    async fullBackupCatalog(catalogName: string): Promise<TaskStatus> {
+        return await this.evitaClientProvider().updateCatalog(
+            catalogName,
+            session => {
+                return session.fullBackupCatalog()
             }
         )
     }
