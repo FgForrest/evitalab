@@ -5,6 +5,9 @@ import { ClassifierType } from '@/modules/database-driver/data-type/ClassifierTy
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { List as ImmutableList } from 'immutable'
+import type {
+    ApplyMutationWithProgressResponse
+} from '@/modules/database-driver/request-response/schema/ApplyMutationWithProgressResponse.ts'
 
 export const catalogItemServiceInjectionKey: InjectionKey<CatalogItemService> = Symbol('catalogItemService')
 
@@ -87,6 +90,10 @@ export class CatalogItemService {
 
     async closeSharedSession(catalogName: string): Promise<void> {
         await this.evitaClient.closeSharedSession(catalogName)
+    }
+
+    duplicateCatalogWithProgress(catalogName: string, newCatalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
+        return this.evitaClient.duplicateCatalogWithProgress(catalogName, newCatalogName)
     }
 }
 

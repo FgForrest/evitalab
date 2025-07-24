@@ -30,7 +30,8 @@
       "replace": "Replace",
       "switch": "Switch",
       "accept": "Accept",
-      "reload": "Reload"
+      "reload": "Reload",
+      "duplicate": "Duplicate"
     },
     "notification": {
       "copiedToClipboard": "Copied to clipboard",
@@ -353,7 +354,8 @@
     "catalog": {
       "flag": {
         "corrupted": "corrupted",
-        "warmingUp": "warming up"
+        "warmingUp": "warming up",
+        "duplication": "Duplication - {0} %"
       },
       "menu": {
         "item": {
@@ -369,6 +371,7 @@
           "closeSharedSession": "Close shared session",
           "deleteCatalog": "Delete catalog",
           "renameCatalog": "Rename catalog",
+          "duplicateCatalog": "Duplicate catalog",
           "replaceCatalog": "Replace catalog",
           "createCollection": "Create collection",
           "switchCatalogToAliveState": "Switch catalog to alive state",
@@ -406,6 +409,22 @@
           "catalogDeleted": "The {catalogName} catalog has been successfully deleted.",
           "catalogNotDeleted": "The {catalogName} catalog has been already deleted.",
           "couldNotDeleteCatalog": "Could not delete the {catalogName} catalog: {reason}"
+        }
+      },
+      "duplication": {
+        "title": "Duplicate {catalogName} catalog",
+        "form": {
+          "duplicationName": {
+            "label": "New duplicated catalog name",
+            "validations": {
+              "required": "New name is required.",
+              "empty": "New name is required.",
+              "leadingTrailingWhiteSpace": "New name cannot have leading or trailing whitespace characters.",
+              "keyword": "New name is same as a reserved keyword.",
+              "format": "New name doesn't match supported format.",
+              "notAvailable": "Catalog with this new name already exists."
+            }
+          }
         }
       },
       "rename": {

@@ -94,7 +94,7 @@ export class CatalogSchemaConverter {
         const uniquenessType = this.convertAttributeUniquenessType(
             attribute.unique
         )
-        if (attribute.schemaType === GrpcAttributeSchemaType.ENTITY) {
+        if (attribute.schemaType === GrpcAttributeSchemaType.ENTITY_SCHEMA) {
             return new AttributeSchema(
                 attribute.name,
                 nameVariants,
@@ -112,7 +112,7 @@ export class CatalogSchemaConverter {
                 attribute.localized,
                 attribute.indexedDecimalPlaces
             )
-        } else if (attribute.schemaType === GrpcAttributeSchemaType.REFERENCE) {
+        } else if (attribute.schemaType === GrpcAttributeSchemaType.REFERENCE_SCHEMA) {
             return new EntityAttributeSchema(
                 attribute.name,
                 nameVariants,
@@ -131,7 +131,7 @@ export class CatalogSchemaConverter {
                 attribute.indexedDecimalPlaces,
                 attribute.representative
             )
-        } else if (attribute.schemaType === GrpcAttributeSchemaType.GLOBAL) {
+        } else if (attribute.schemaType === GrpcAttributeSchemaType.GLOBAL_SCHEMA) {
             return new GlobalAttributeSchema(
                 attribute.name,
                 MapUtil.getNamingMap(attribute.nameVariant),

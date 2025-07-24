@@ -17,6 +17,7 @@ export enum CatalogMenuItemType {
     ModifySubheader = 'modifySubheader',
     DeleteCatalog = 'deleteCatalog',
     RenameCatalog = 'renameCatalog',
+    DuplicateCatalog = 'duplicateCatalog',
     ReplaceCatalog = 'replaceCatalog',
     SwitchCatalogToAliveState = 'switchCatalogToAliveState',
 

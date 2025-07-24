@@ -2,12 +2,10 @@ import { AbstractEvitaClient } from '@/modules/database-driver/AbstractEvitaClie
 import type {
     GrpcCatalogNamesResponse,
     GrpcDefineCatalogResponse,
-    GrpcEvitaSessionResponse,
-    GrpcGetCatalogStateResponse
+    GrpcEvitaSessionResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaAPI_pb'
 import { EvitaClientSession } from '@/modules/database-driver/EvitaClientSession'
 import { Code, ConnectError } from '@connectrpc/connect'
-import { CatalogState } from '@/modules/database-driver/request-response/CatalogState'
 import { EvitaClientManagement } from '@/modules/database-driver/EvitaClientManagement'
 import { EvitaSchemaCache } from '@/modules/database-driver/EvitaSchemaCache'
 import { Set } from 'immutable'
@@ -19,6 +17,12 @@ import type { GraphQLResponse } from '@/modules/database-driver/connector/gql/mo
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
+import type {
+    ApplyMutationWithProgressResponse
+} from '@/modules/database-driver/request-response/schema/ApplyMutationWithProgressResponse.ts'
+import {
+    MutationProgressConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/MutationProgressConverter.ts'
 
 export const evitaClientInjectionKey: InjectionKey<EvitaClient> = Symbol('EvitaClient')
 
@@ -36,6 +40,8 @@ export function useEvitaClient(): EvitaClient {
  */
 export class EvitaClient extends AbstractEvitaClient {
 
+    private readonly mutationProgressConverter: MutationProgressConverter
+
     private readonly schemaCache: Map<string, EvitaSchemaCache> = new Map()
     private _management?: EvitaClientManagement
 
@@ -49,6 +55,7 @@ export class EvitaClient extends AbstractEvitaClient {
     constructor(evitaLabConfig: EvitaLabConfig,
                 connectionService: ConnectionService) {
         super(evitaLabConfig, connectionService)
+        this.mutationProgressConverter = new MutationProgressConverter()
     }
 
     /**
@@ -413,6 +420,14 @@ export class EvitaClient extends AbstractEvitaClient {
         const sharedSession: EvitaClientSession | undefined = this.sharedSessions.get(catalogName)
         if (sharedSession != undefined) {
             await this.closeSession(sharedSession)
+        }
+    }
+    async *duplicateCatalogWithProgress(catalogName: string, newCatalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
+        for await (const progress of this.evitaClient.duplicateCatalogWithProgress({
+            catalogName,
+            newCatalogName
+        })) {
+            yield this.mutationProgressConverter.convertMutationWithProgress(progress)
         }
     }
 

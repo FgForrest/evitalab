@@ -37,6 +37,11 @@ import {
 } from '@/modules/backup-viewer/service/BackupViewerTabFactory.ts'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
 import BackupSelector from '@/modules/backup-viewer/components/BackupSelector.vue'
+import DuplicateCatalogDialog from '@/modules/connection-explorer/component/DuplicateCatalogDialog.vue'
+import type { MutationProgressType } from '@/modules/connection-explorer/model/MutationProgressType.ts'
+import type {
+    ApplyMutationWithProgressResponse
+} from '@/modules/database-driver/request-response/schema/ApplyMutationWithProgressResponse.ts'
 
 const catalogItemService: CatalogItemService = useCatalogItemService()
 const catalogItemMenuFactory: CatalogItemMenuFactory = useCatalogItemMenuFactory()
@@ -56,17 +61,29 @@ const showSwitchCatalogToAliveStateDialog = ref<boolean>(false)
 const showDeleteCatalogDialog = ref<boolean>(false)
 const showCreateCollectionDialog = ref<boolean>(false)
 const showBackupCatalogDialog = ref<boolean>(false)
+const showDuplicationCatalogDialog = ref<boolean>(false)
 
-const flags = computed<ItemFlag[]>(() => {
-    const flags: ItemFlag[] = []
+const runningProgresses = ref<Map<MutationProgressType, number>>(new Map<MutationProgressType, number>())
+
+const flags = ref<ItemFlag[]>([])
+
+onMounted(changeFlags)
+
+function changeFlags() {
+    flags.value = []
+
     if (props.catalog.corrupted) {
-        flags.push(ItemFlag.error(t('explorer.catalog.flag.corrupted')))
+        flags.value.push(ItemFlag.error(t('explorer.catalog.flag.corrupted')))
     }
     if (props.catalog.isInWarmup) {
-        flags.push(ItemFlag.warning(t('explorer.catalog.flag.warmingUp')))
+        flags.value.push(ItemFlag.warning(t('explorer.catalog.flag.warmingUp')))
     }
-    return flags
-})
+
+    for(const runningProgress of runningProgresses.value) {
+        flags.value.push(ItemFlag.info(t(`explorer.catalog.flag.${runningProgress[0]}`, [runningProgress[1]])))
+    }
+}
+
 const menuItems = ref<Map<CatalogMenuItemType, MenuItem<CatalogMenuItemType>>>()
 watch(
     [serverStatus, () => props.catalog],
@@ -123,12 +140,31 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
         props.catalog,
         () => closeSharedSession().then(),
         () => showRenameCatalogDialog.value = true,
+        () => showDuplicationCatalogDialog.value = true,
         () => showReplaceCatalogDialog.value = true,
         () => showSwitchCatalogToAliveStateDialog.value = true,
         () => showDeleteCatalogDialog.value = true,
         () => showCreateCollectionDialog.value = true,
-        () => showBackupCatalogDialog.value = true,
+        () => showBackupCatalogDialog.value = true
     )
+}
+
+function mutationExecuted(process: AsyncIterable<ApplyMutationWithProgressResponse>, progressType: MutationProgressType) {
+    runningProgresses.value.set(progressType, 0)
+
+    handleProgress(process, progressType).then()
+    changeFlags()
+}
+
+async function handleProgress(process: AsyncIterable<ApplyMutationWithProgressResponse>, progressType: MutationProgressType): Promise<void> {
+    for await (const progress of process) {
+        if(progress.progressInPercent !== 100)
+            runningProgresses.value.set(progressType, progress.progressInPercent)
+        else
+            runningProgresses.value.delete(progressType)
+
+        changeFlags()
+    }
 }
 </script>
 
@@ -178,6 +214,12 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
             v-if="showRenameCatalogDialog"
             v-model="showRenameCatalogDialog"
             :catalog-name="catalog.name"
+        />
+        <DuplicateCatalogDialog
+            v-if="showDuplicationCatalogDialog"
+            v-model="showDuplicationCatalogDialog"
+            :catalog-name="catalog.name"
+            @mutation-executed="mutationExecuted"
         />
         <ReplaceCatalogDialog
             v-if="showReplaceCatalogDialog"

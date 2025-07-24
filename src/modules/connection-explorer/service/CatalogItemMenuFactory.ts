@@ -63,6 +63,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         catalog?: CatalogStatistics,
         closeSharedSessionCallback?: () => void,
         renameCatalogCallback?: () => void,
+        duplicateCatalogCallback?: () => void,
         replaceCatalogCallback?: () => void,
         switchCatalogToAliveStateCallback?: () => void,
         deleteCatalogCallback?: () => void,
@@ -72,6 +73,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         if (catalog == undefined) throw new Error('catalog is not defined!')
         if (closeSharedSessionCallback == undefined) throw new Error('Missing closeSharedSessionCallback')
         if (renameCatalogCallback == undefined) throw new Error('Missing renameCatalogCallback')
+        if (duplicateCatalogCallback == undefined) throw new Error('Missing duplicateCatalogCallback')
         if (replaceCatalogCallback == undefined) throw new Error('Missing replaceCatalogCallback')
         if (switchCatalogToAliveStateCallback == undefined) throw new Error('Missing switchCatalogToAliveStateCallback')
         if (deleteCatalogCallback == undefined) throw new Error('Missing deleteCatalogCallback')
@@ -190,6 +192,14 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
             'mdi-pencil-outline',
             this.getItemTitle,
             () => renameCatalogCallback(),
+            catalogNotCorrupted && serverWritable
+        )
+        this.createMenuAction(
+            items,
+            CatalogMenuItemType.DuplicateCatalog,
+            'mdi-content-duplicate',
+            this.getItemTitle,
+            () => duplicateCatalogCallback(),
             catalogNotCorrupted && serverWritable
         )
         this.createMenuAction(
