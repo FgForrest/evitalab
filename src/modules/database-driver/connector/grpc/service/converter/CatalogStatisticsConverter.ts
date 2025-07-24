@@ -19,11 +19,8 @@ export class CatalogStatisticsConverter {
     }
 
     convert(catalog: GrpcCatalogStatistics): CatalogStatistics {
-        if(catalog.catalogId == undefined) {
-            throw new UnexpectedError('Missing catalogId in GrpcCatalogStatistics')
-        }
         return new CatalogStatistics(
-            this.evitaValueConverter.convertGrpcUuid(catalog.catalogId).toString(),
+            catalog.catalogId ? this.evitaValueConverter.convertGrpcUuid(catalog.catalogId).toString() : undefined,
             BigInt(catalog.catalogVersion),
             catalog.catalogName,
             this.convertEntityTypes(catalog.entityCollectionStatistics),

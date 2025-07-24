@@ -12,7 +12,7 @@
   &nbsp;
   <a href="https://vuejs.org/" title="Platform"><img src="https://img.shields.io/badge/Built%20with-Vue-green?color=42b883"/></a>
   &nbsp;
-  <a href="https://nodejs.org/en" title="Node.js"><img src="https://img.shields.io/badge/Node.js%20-v18.16.1-green?color=026e00"/></a>
+  <a href="https://nodejs.org/en" title="Node.js"><img src="https://img.shields.io/badge/Node.js%20-v22.16.0-green?color=026e00"/></a>
   &nbsp;
   <a href="https://discord.gg/VsNBWxgmSw" title="Discord"><img src="https://img.shields.io/discord/999338870996992223?color=5865f2"/></a>
   &nbsp;

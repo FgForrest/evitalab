@@ -54,7 +54,7 @@ export default defineConfig(({ mode }) => {
                 vueTemplate: true,
             }),
             Components({
-                dts: 'src/components.d.ts',
+                dts: 'src/components.d.ts'
             }),
             Vue({
                 template: { transformAssetUrls },
