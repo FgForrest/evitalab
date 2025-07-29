@@ -4,6 +4,7 @@ import { CatalogItemService, useCatalogItemService } from '@/modules/connection-
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
+import type { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics.ts'
 
 const catalogItemService: CatalogItemService = useCatalogItemService()
 const toaster: Toaster = useToaster()
@@ -11,7 +12,7 @@ const { t } = useI18n()
 
 const props = defineProps<{
     modelValue: boolean
-    catalogName: string
+    catalog: CatalogStatistics
 }>()
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void,
@@ -19,24 +20,16 @@ const emit = defineEmits<{
 
 async function switchCatalog(): Promise<boolean> {
     try {
-        const switched: boolean = await catalogItemService.switchCatalogToAliveState(props.catalogName)
-        if (switched) {
-            await toaster.success(t(
-                'explorer.catalog.switchToAliveState.notification.catalogSwitched',
-                { catalogName: props.catalogName }
-            ))
-        } else {
-            await toaster.info(t(
-                'explorer.catalog.switchToAliveState.notification.catalogNotSwitched',
-                { catalogName: props.catalogName }
-            ))
-        }
+        await toaster.info(t('explorer.catalog.switchToAliveState.notification.catalogSwitchStarted', {
+            catalogName: props.catalog.name,
+        }))
+        catalogItemService.switchCatalogAliveWithProgress(props.catalog)
         return true
     } catch (e: any) {
         await toaster.error(t(
             'explorer.catalog.switchToAliveState.notification.couldNotSwitchCatalog',
             {
-                catalogName: props.catalogName,
+                catalogName: props.catalog.name,
                 reason: e.message
             }
         ))
@@ -57,7 +50,7 @@ async function switchCatalog(): Promise<boolean> {
         <template #title>
             <I18nT keypath="explorer.catalog.switchToAliveState.title">
                 <template #catalogName>
-                    <strong>{{ catalogName }}</strong>
+                    <strong>{{ catalog.name }}</strong>
                 </template>
             </I18nT>
         </template>

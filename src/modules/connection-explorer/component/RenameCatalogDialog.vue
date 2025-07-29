@@ -6,6 +6,7 @@ import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { ClassifierValidationErrorType } from '@/modules/database-driver/data-type/ClassifierValidationErrorType'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
+import type { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics.ts'
 
 const catalogItemService: CatalogItemService = useCatalogItemService()
 const toaster: Toaster = useToaster()
@@ -13,7 +14,7 @@ const { t } = useI18n()
 
 const props = defineProps<{
     modelValue: boolean
-    catalogName: string
+    catalog: CatalogStatistics
 }>()
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void
@@ -25,13 +26,13 @@ const newNameRules = [
         return t('explorer.catalog.rename.form.newName.validations.required')
     },
     async (value: string): Promise<any> => {
-        const classifierValidationResult : ClassifierValidationErrorType | undefined =
+        const classifierValidationResult: ClassifierValidationErrorType | undefined =
             await catalogItemService.isCatalogNameValid(value)
         if (classifierValidationResult == undefined) return true
         return t(`explorer.catalog.rename.form.newName.validations.${classifierValidationResult}`)
     },
     async (value: string): Promise<any> => {
-        if (value === props.catalogName) {
+        if (value === props.catalog.name) {
             return true
         }
         const available: boolean = await catalogItemService.isCatalogNameAvailable(value)
@@ -40,38 +41,25 @@ const newNameRules = [
     }
 ]
 
-const newCatalogName = ref<string>(props.catalogName)
-const changed = computed<boolean>(() => props.catalogName !== newCatalogName.value)
+const newCatalogName = ref<string>(props.catalog.name)
+const changed = computed<boolean>(() => props.catalog.name !== newCatalogName.value)
 
 function reset(): void {
-    newCatalogName.value = props.catalogName
+    newCatalogName.value = props.catalog.name
 }
 
 async function rename(): Promise<boolean> {
     try {
-        const renamed: boolean = await catalogItemService.renameCatalog(props.catalogName, newCatalogName.value)
-        if (renamed) {
-            await toaster.success(t(
-                'explorer.catalog.rename.notification.catalogRenamed',
-                {
-                    catalogName: props.catalogName,
-                    newName: newCatalogName.value
-                }
-            ))
-        } else {
-            await toaster.info(t(
-                'explorer.catalog.rename.notification.catalogNotRenamed',
-                {
-                    catalogName: props.catalogName
-                }
-            ))
-        }
+        await toaster.info(t('explorer.catalog.rename.notification.catalogRenameStarted', {
+            catalogName: props.catalog.name
+        }))
+        catalogItemService.renameCatalogWithProgress(props.catalog, newCatalogName.value)
         return true
     } catch (e: any) {
         await toaster.error(t(
             'explorer.catalog.rename.notification.couldNotRenameCatalog',
             {
-                catalogName: props.catalogName,
+                catalogName: props.catalog.name,
                 reason: e.message
             }
         ))
@@ -93,7 +81,7 @@ async function rename(): Promise<boolean> {
         <template #title>
             <I18nT keypath="explorer.catalog.rename.title">
                 <template #catalogName>
-                    <strong>{{ catalogName }}</strong>
+                    <strong>{{ catalog.name }}</strong>
                 </template>
             </I18nT>
         </template>

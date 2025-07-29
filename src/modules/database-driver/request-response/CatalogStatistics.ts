@@ -1,6 +1,7 @@
 import { EntityCollectionStatistics } from './EntityCollectionStatistics'
 import { List as ImmutableList } from 'immutable'
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState'
+import type { MutationProgressType } from '@/modules/connection-explorer/model/MutationProgressType.ts'
 
 /**
  * evitaLab's representation of a single evitaDB catalog instance independent of specific evitaDB version
@@ -41,7 +42,7 @@ export class CatalogStatistics {
     readonly indexCount: bigint
 
     readonly sizeOnDisk: bigint
-
+    readonly progresses: Map<MutationProgressType, number>
     constructor(
         catalogId: string | undefined,
         version: bigint,
@@ -62,9 +63,21 @@ export class CatalogStatistics {
         this.totalRecords = totalRecords
         this.indexCount = indexCount
         this.sizeOnDisk = sizeOnDisk
+        this.progresses = new Map<MutationProgressType, number>()
     }
 
     get isInWarmup(): boolean {
         return this.catalogState === CatalogState.WarmingUp
+    }
+
+    setProgress(type: MutationProgressType, value: number):void {
+        if(value !== 100)
+            this.progresses.set(type, value)
+        else
+            this.progresses.delete(type)
+    }
+
+    removeProgress(type: MutationProgressType):void {
+        this.progresses.delete(type)
     }
 }

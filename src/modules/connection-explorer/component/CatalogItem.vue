@@ -3,8 +3,8 @@
  * Explorer tree item representing a single catalog in evitaDB.
  */
 
-import { computed, ref, watch } from 'vue'
 import type { Ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { MenuAction } from '@/modules/base/model/menu/MenuAction'
 import VTreeViewItem from '@/modules/base/component/VTreeViewItem.vue'
@@ -19,8 +19,8 @@ import SwitchCatalogToAliveStateDialog
     from '@/modules/connection-explorer/component/SwitchCatalogToAliveStateDialog.vue'
 import { ItemFlag } from '@/modules/base/model/tree-view/ItemFlag'
 import { List as ImmutableList } from 'immutable'
-import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 import { provideCatalog, useServerStatus } from '@/modules/connection-explorer/component/dependecies'
@@ -39,9 +39,11 @@ import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/servi
 import BackupSelector from '@/modules/backup-viewer/components/BackupSelector.vue'
 import DuplicateCatalogDialog from '@/modules/connection-explorer/component/DuplicateCatalogDialog.vue'
 import type { MutationProgressType } from '@/modules/connection-explorer/model/MutationProgressType.ts'
-import type {
-    ApplyMutationWithProgressResponse
-} from '@/modules/database-driver/request-response/schema/ApplyMutationWithProgressResponse.ts'
+import ActivateCatalog from '@/modules/connection-explorer/component/ActivateCatalog.vue'
+import DeactivateCatalog from '@/modules/connection-explorer/component/DeactivateCatalog.vue'
+import MakeCatalogImmutable from '@/modules/connection-explorer/component/MakeCatalogImmutable.vue'
+import MakeCatalogMutable from '@/modules/connection-explorer/component/MakeCatalogMutable.vue'
+import { CatalogState } from '@/modules/database-driver/request-response/CatalogState.ts'
 
 const catalogItemService: CatalogItemService = useCatalogItemService()
 const catalogItemMenuFactory: CatalogItemMenuFactory = useCatalogItemMenuFactory()
@@ -62,29 +64,40 @@ const showDeleteCatalogDialog = ref<boolean>(false)
 const showCreateCollectionDialog = ref<boolean>(false)
 const showBackupCatalogDialog = ref<boolean>(false)
 const showDuplicationCatalogDialog = ref<boolean>(false)
-
-const runningProgresses = ref<Map<MutationProgressType, number>>(new Map<MutationProgressType, number>())
+const showMutableCatalogDialog = ref<boolean>(false)
+const showImmutableCatalogDialog = ref<boolean>(false)
+const showActivateCatalogDialog = ref<boolean>(false)
+const showDeactivateCatalogDialog = ref<boolean>(false)
 
 const flags = ref<ItemFlag[]>([])
 
-onMounted(changeFlags)
+onMounted(() => changeFlags())
 
-function changeFlags() {
+function changeFlags(runningProgresses?: Map<MutationProgressType, number>) {
     flags.value = []
 
-    if (props.catalog.corrupted) {
+    if(props.catalog.catalogState === CatalogState.Corrupted) {
         flags.value.push(ItemFlag.error(t('explorer.catalog.flag.corrupted')))
-    }
-    if (props.catalog.isInWarmup) {
+    } else if (props.catalog.catalogState === CatalogState.WarmingUp) {
         flags.value.push(ItemFlag.warning(t('explorer.catalog.flag.warmingUp')))
+    } else {
+        flags.value.push(ItemFlag.info(t(`explorer.catalog.flag.${props.catalog.catalogState.toString()}`)))
     }
 
-    for(const runningProgress of runningProgresses.value) {
-        flags.value.push(ItemFlag.info(t(`explorer.catalog.flag.${runningProgress[0]}`, [runningProgress[1]])))
+
+    if(runningProgresses) {
+        for (const runningProgress of runningProgresses) {
+            flags.value.push(ItemFlag.info(t(`explorer.catalog.flag.${runningProgress[0]}`, [runningProgress[1]])))
+        }
     }
 }
 
 const menuItems = ref<Map<CatalogMenuItemType, MenuItem<CatalogMenuItemType>>>()
+
+watch(props.catalog.progresses, (value) => {
+    changeFlags(value)
+})
+
 watch(
     [serverStatus, () => props.catalog],
     async () => menuItems.value = await createMenuItems(),
@@ -142,29 +155,16 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
         () => showRenameCatalogDialog.value = true,
         () => showDuplicationCatalogDialog.value = true,
         () => showReplaceCatalogDialog.value = true,
+        () => showMutableCatalogDialog.value = true,
+        () => showImmutableCatalogDialog.value = true,
+        () => showActivateCatalogDialog.value = true,
+        () => showDeactivateCatalogDialog.value = true,
         () => showSwitchCatalogToAliveStateDialog.value = true,
         () => showDeleteCatalogDialog.value = true,
         () => showCreateCollectionDialog.value = true,
-        () => showBackupCatalogDialog.value = true
+        () => showBackupCatalogDialog.value = true,
+        props.catalog.catalogState
     )
-}
-
-function mutationExecuted(process: AsyncIterable<ApplyMutationWithProgressResponse>, progressType: MutationProgressType) {
-    runningProgresses.value.set(progressType, 0)
-
-    handleProgress(process, progressType).then()
-    changeFlags()
-}
-
-async function handleProgress(process: AsyncIterable<ApplyMutationWithProgressResponse>, progressType: MutationProgressType): Promise<void> {
-    for await (const progress of process) {
-        if(progress.progressInPercent !== 100)
-            runningProgresses.value.set(progressType, progress.progressInPercent)
-        else
-            runningProgresses.value.delete(progressType)
-
-        changeFlags()
-    }
 }
 </script>
 
@@ -213,23 +213,42 @@ async function handleProgress(process: AsyncIterable<ApplyMutationWithProgressRe
         <RenameCatalogDialog
             v-if="showRenameCatalogDialog"
             v-model="showRenameCatalogDialog"
-            :catalog-name="catalog.name"
+            :catalog="catalog"
         />
         <DuplicateCatalogDialog
             v-if="showDuplicationCatalogDialog"
             v-model="showDuplicationCatalogDialog"
-            :catalog-name="catalog.name"
-            @mutation-executed="mutationExecuted"
+            :catalog="catalog"
         />
         <ReplaceCatalogDialog
             v-if="showReplaceCatalogDialog"
             v-model="showReplaceCatalogDialog"
-            :catalog-name="catalog.name"
+            :catalog="catalog"
+        />
+        <ActivateCatalog
+            v-if="showActivateCatalogDialog"
+            v-model="showActivateCatalogDialog"
+            :catalog="catalog"
+        />
+        <DeactivateCatalog
+            v-if="showDeactivateCatalogDialog"
+            v-model="showDeactivateCatalogDialog"
+            :catalog="catalog"
+        />
+        <MakeCatalogImmutable
+            v-if="showImmutableCatalogDialog"
+            v-model="showImmutableCatalogDialog"
+            :catalog="catalog"
+        />
+        <MakeCatalogMutable
+            v-if="showMutableCatalogDialog"
+            v-model="showMutableCatalogDialog"
+            :catalog="catalog"
         />
         <SwitchCatalogToAliveStateDialog
             v-if="showSwitchCatalogToAliveStateDialog"
             v-model="showSwitchCatalogToAliveStateDialog"
-            :catalog-name="catalog.name"
+            :catalog="catalog"
         />
         <DeleteCatalogDialog
             v-if="showDeleteCatalogDialog"

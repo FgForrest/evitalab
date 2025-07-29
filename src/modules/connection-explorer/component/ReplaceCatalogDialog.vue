@@ -3,8 +3,8 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { CatalogItemService, useCatalogItemService } from '@/modules/connection-explorer/service/CatalogItemService'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
-import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 
 const catalogItemService: CatalogItemService = useCatalogItemService()
@@ -13,7 +13,7 @@ const { t } = useI18n()
 
 const props = defineProps<{
     modelValue: boolean
-    catalogName: string
+    catalog: CatalogStatistics
 }>()
 
 const emit = defineEmits<{
@@ -27,7 +27,7 @@ const catalogNameToBeReplacedWithRules = [
         return t('explorer.catalog.replace.form.catalogNameToBeReplacedWith.validations.required')
     },
     async (value: string): Promise<any> => {
-        if (value === props.catalogName) {
+        if (value === props.catalog.name) {
             return true
         }
         const available: boolean = await catalogItemService.isCatalogExists(value)
@@ -52,7 +52,7 @@ const changed = computed<boolean>(() =>
 catalogItemService.getCatalogs()
     .then((fetchedCatalogs) => {
         catalogs.value = fetchedCatalogs
-            .filter(it => it.name !== props.catalogName)
+            .filter(it => it.name !== props.catalog.name)
             .toArray()
         loadedCatalogs.value = true
     })
@@ -65,30 +65,19 @@ function reset(): void {
 
 async function replace(): Promise<boolean> {
     try {
-        const replaced: boolean = await catalogItemService.replaceCatalog(
-            catalogNameToBeReplacedWith.value!,
-            props.catalogName
+        await toaster.info(t('explorer.catalog.replace.notification.catalogReplacementStarted', {
+            catalogName: props.catalog.name
+        }))
+        catalogItemService.replaceCatalogWithProgress(
+            props.catalog,
+            catalogNameToBeReplacedWith.value!
         )
-        if (replaced) {
-            await toaster.success(t(
-                'explorer.catalog.replace.notification.catalogReplaced',
-                {
-                    catalogNameToBeReplaced: props.catalogName,
-                    catalogNameToBeReplacedWith: catalogNameToBeReplacedWith.value
-                }
-            ))
-        } else {
-            await toaster.info(t(
-                'explorer.catalog.replace.notification.catalogNotReplaced',
-                { catalogNameToBeReplaced: props.catalogName }
-            ))
-        }
         return true
     } catch (e: any) {
         await toaster.error(t(
             'explorer.catalog.replace.notification.couldNotReplaceCatalog',
             {
-                catalogNameToBeReplaced: props.catalogName,
+                catalogNameToBeReplaced: props.catalog.name,
                 reason: e.message
             }
         ))
@@ -110,7 +99,7 @@ async function replace(): Promise<boolean> {
         <template #title>
             <I18nT keypath="explorer.catalog.replace.title">
                 <template #catalogNameToBeReplaced>
-                    <strong>{{ catalogName }}</strong>
+                    <strong>{{ catalog.name }}</strong>
                 </template>
             </I18nT>
         </template>
@@ -128,7 +117,7 @@ async function replace(): Promise<boolean> {
             <VAlert icon="mdi-information-outline" type="info">
                 <I18nT keypath="explorer.catalog.replace.info">
                     <template #catalogNameToBeReplaced>
-                        <strong>{{ catalogName }}</strong>
+                        <strong>{{ catalog.name }}</strong>
                     </template>
                     <template v-if="changed" #catalogNameToBeReplacedWith>
                         <strong>{{ catalogNameToBeReplacedWith }}</strong>

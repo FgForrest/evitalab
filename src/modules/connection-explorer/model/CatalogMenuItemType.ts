@@ -20,6 +20,10 @@ export enum CatalogMenuItemType {
     DuplicateCatalog = 'duplicateCatalog',
     ReplaceCatalog = 'replaceCatalog',
     SwitchCatalogToAliveState = 'switchCatalogToAliveState',
+    SwitchToMutable = 'switchToMutable',
+    SwitchToImmutable = 'switchToImmutable',
+    ActivateCatalog = 'activateCatalog',
+    DeactivateCatalog = 'deactivateCatalog',
 
     CollectionsSubheader = 'collectionsSubheader',
     CreateCollection = 'createCollection'

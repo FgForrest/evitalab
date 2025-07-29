@@ -6,10 +6,7 @@ import { ClassifierValidationErrorType } from '@/modules/database-driver/data-ty
 import { CatalogItemService, useCatalogItemService } from '@/modules/connection-explorer/service/CatalogItemService.ts'
 import { computed } from 'vue'
 import { type Toaster, useToaster } from '@/modules/notification/service/Toaster.ts'
-import { MutationProgressType } from '@/modules/connection-explorer/model/MutationProgressType.ts'
-import type {
-    ApplyMutationWithProgressResponse
-} from '@/modules/database-driver/request-response/schema/ApplyMutationWithProgressResponse.ts'
+import type { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics.ts'
 
 const { t } = useI18n()
 const catalogItemService: CatalogItemService = useCatalogItemService()
@@ -17,12 +14,11 @@ const toaster: Toaster = useToaster()
 
 const props = defineProps<{
     modelValue: boolean
-    catalogName: string
+    catalog: CatalogStatistics
 }>()
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: boolean): void,
-    (e: 'mutationExecuted', process: AsyncIterable<ApplyMutationWithProgressResponse>, progressType: MutationProgressType): void
+    (e: 'update:modelValue', value: boolean): void
 }>()
 
 const duplicationCatalogName = ref<string>()
@@ -39,7 +35,7 @@ const newNameRules = [
         return t(`explorer.catalog.duplication.form.duplicationName.validations.${classifierValidationResult}`)
     },
     async (value: string): Promise<any> => {
-        if (value === props.catalogName) {
+        if (value === props.catalog.name) {
             return true
         }
         const available: boolean = await catalogItemService.isCatalogNameAvailable(value)
@@ -47,17 +43,20 @@ const newNameRules = [
         return t('explorer.catalog.duplication.form.duplicationName.validations.notAvailable')
     }
 ]
-const changed = computed<boolean>(() => props.catalogName !== duplicationCatalogName.value)
+const changed = computed<boolean>(() => props.catalog.name !== duplicationCatalogName.value)
 
 async function duplicateCatalog():Promise<boolean> {
     try {
-        emit('mutationExecuted', catalogItemService.duplicateCatalogWithProgress(props.catalogName, duplicationCatalogName.value!), MutationProgressType.Duplication)
+        await toaster.info(t('explorer.catalog.duplication.notification.catalogDuplicationStarted', {
+            catalogName: props.catalog.name
+        }))
+        catalogItemService.duplicateCatalogWithProgress(props.catalog, duplicationCatalogName.value!)
         return true
     } catch (e: any) {
         await toaster.error(t(
-            'explorer.catalog.rename.notification.couldNotRenameCatalog',
+            'explorer.catalog.duplication.notification.couldNotDuplicateCatalog',
             {
-                catalogName: props.catalogName,
+                catalogName: props.catalog.name,
                 reason: e.message
             }
         ))
@@ -71,11 +70,11 @@ async function reset() {
 </script>
 
 <template>
-    <VFormDialog :model-value="modelValue" :confirm="duplicateCatalog" :changed="changed" :reset="reset" @update:model-value="emit('update:modelValue', $event)" dangerous>
+    <VFormDialog :model-value="modelValue" :confirm="duplicateCatalog" :changed="changed" :reset="reset" @update:model-value="emit('update:modelValue', $event)">
         <template #title>
             <I18nT keypath="explorer.catalog.duplication.title">
                 <template #catalogName>
-                    <strong>{{ catalogName }}</strong>
+                    <strong>{{ catalog.name }}</strong>
                 </template>
             </I18nT>
         </template>

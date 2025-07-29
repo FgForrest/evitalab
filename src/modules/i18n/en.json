@@ -355,7 +355,16 @@
       "flag": {
         "corrupted": "corrupted",
         "warmingUp": "warming up",
-        "duplication": "Duplication - {0} %"
+        "alive": "alive",
+        "beingActivated": "Being activated",
+        "beingCreated": "Being created",
+        "beingDeactivated": "Being deactivated",
+        "beingDeleted": "Being deleted",
+        "goingAlive": "Going alive",
+        "inactive": "Inactive",
+        "duplication": "Duplicating - {0}%",
+        "rename": "Renaming - {0}%",
+        "replace": "Replacing - {0}%"
       },
       "menu": {
         "item": {
@@ -375,7 +384,11 @@
           "replaceCatalog": "Replace catalog",
           "createCollection": "Create collection",
           "switchCatalogToAliveState": "Switch catalog to alive state",
-          "activeTrafficRecording": "Active traffic recording"
+          "activeTrafficRecording": "Active traffic recording",
+          "activateCatalog": "Activate catalog",
+          "deactivateCatalog": "Deactivate catalog",
+          "switchToMutable": "Switch to mutable",
+          "switchToImmutable": "Switch to immutable"
         }
       },
       "notification": {
@@ -425,6 +438,11 @@
               "notAvailable": "Catalog with this new name already exists."
             }
           }
+        },
+        "notification": {
+          "catalogDuplicationStarted": "Duplication of {catalogName} catalog has started.",
+          "catalogDuplicated": "The {catalogName} catalog has been successfully duplicated to {newCatalogName}.",
+          "couldNotDuplicateCatalog": "Could not duplicate the {catalogName} catalog: {reason}"
         }
       },
       "rename": {
@@ -443,8 +461,8 @@
           }
         },
         "notification": {
+          "catalogRenameStarted": "Renaming of {catalogName} catalog has started.",
           "catalogRenamed": "The {catalogName} catalog has been successfully renamed to {newName}.",
-          "catalogNotRenamed": "The {catalogName} catalog has not been renamed.",
           "couldNotRenameCatalog": "Could not rename catalog {catalogName}: {reason}"
         }
       },
@@ -461,6 +479,7 @@
           }
         },
         "notification": {
+          "catalogReplacementStarted": "Replacement of {catalogNameToBeReplaced} catalog with {catalogNameToBeReplacedWith} has started.",
           "catalogReplaced": "The {catalogNameToBeReplaced} catalog has been successfully replaced with {catalogToBeReplacedWith}.",
           "catalogNotReplaced": "The {catalogNameToBeReplaced} catalog has not been replaced.",
           "couldNotReplaceCatalog": "Could not replace the {catalogNameToBeReplaced} catalog: {reason}"
@@ -471,9 +490,45 @@
         "description": "Switch the catalog's state from the warm up to the alive.",
         "warning": "Catalog in the alive state will no longer support bulk indexing. Instead, the catalog will use incremental indexing. However, it will support transactions and multiple parallel sessions.",
         "notification": {
+          "catalogSwitchStarted": "Switching {catalogName} catalog from warm up to alive state has started.",
           "catalogSwitched": "The {catalogName} catalog has been switched from the warm up state to the alive state.",
-          "catalogNotSwitched": "The {catalogName} catalog has not been switched to alive state. Probably it already is in the alive state.",
           "couldNotSwitchCatalog": "Could not switch the {catalogName} catalog to the alive state: {reason}"
+        }
+      },
+      "makeCatalogImmutable": {
+        "title": "Switch {catalogName} catalog to immutable",
+        "description": "Switch the catalog to the immutable state. In this state, no data modifications are allowed, and the catalog is read-only.",
+        "notification": {
+          "catalogImmutableSwitchStarted": "Switching {catalogName} catalog to immutable state has started.",
+          "catalogMadeAsImmutable": "The {catalogName} catalog has been made as immutable",
+          "couldNotMakeCatalogImmutable": "Could not make immutable the {catalogName} catalog: {reason}"
+        }
+      },
+      "makeCatalogMutable": {
+        "title": "Switch {catalogName} catalog to mutable",
+        "description": "Switch the catalog to the mutable state. In this state, data modifications are allowed again.",
+        "notification": {
+          "catalogMutableSwitchStarted": "Switching {catalogName} catalog to mutable state has started.",
+          "catalogMadeAsMutable": "The {catalogName} catalog has been made as mutable",
+          "couldNotMakeCatalogMutable": "Could not make mutable the {catalogName} catalog: {reason}"
+        }
+      },
+      "deactivateCatalog": {
+        "title": "Deactivate {catalogName}",
+        "description": "Deactivate the catalog to temporarily prevent any operations on it. The catalog will remain in storage but won't be accessible.",
+        "notification": {
+          "catalogDeactivationStarted": "Deactivation of {catalogName} catalog has started.",
+          "catalogDeactivated": "The {catalogName} catalog has been deactivated",
+          "couldNotDeactivateCatalog": "Could not deactivate {catalogName} catalog: {reason}"
+        }
+      },
+      "activateCatalog": {
+        "title": "Activate {catalogName}",
+        "description": "Activate the catalog to make it accessible again after it was deactivated.",
+        "notification": {
+          "catalogActivationStarted": "Activation of {catalogName} catalog has started.",
+          "catalogActivated": "The {catalogName} catalog has been activated",
+          "couldNotActivateCatalog": "Could not activate {catalogName} catalog: {reason}"
         }
       }
     },
