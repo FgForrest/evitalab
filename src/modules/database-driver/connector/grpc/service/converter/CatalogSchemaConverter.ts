@@ -47,7 +47,7 @@ import type { EntitySchemaAccessor } from '@/modules/database-driver/request-res
 import { MapUtil } from '@/modules/database-driver/connector/grpc/utils/MapUtil'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { Currency } from '@/modules/database-driver/data-type/Currency'
-import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedRefenceSchema.ts'
+import { ReflectedReferenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 import {
     AttributeInheritanceBehavior
 } from '@/modules/database-driver/request-response/schema/AttributeInheritanceBehavior.ts'
@@ -310,16 +310,16 @@ export class CatalogSchemaConverter {
         if(attributeInheritanceBehavior === GrpcAttributeInheritanceBehavior.INHERIT_ALL_EXCEPT)
             return AttributeInheritanceBehavior.InheritAllExcept
         else if(attributeInheritanceBehavior === GrpcAttributeInheritanceBehavior.INHERIT_ONLY_SPECIFIED)
-            return AttributeInheritanceBehavior.InheritAllExcept
+            return AttributeInheritanceBehavior.InheritOnlySpecified
         else
             throw new UnexpectedError('Unavailable attribute inheritance behavior')
     }
 
     private convertReferenceSchema(
         referenceSchema: GrpcReferenceSchema
-    ): ReferenceSchema | ReflectedRefenceSchema {
+    ): ReferenceSchema | ReflectedReferenceSchema {
         if(referenceSchema.reflectedReferenceName != undefined) {
-            return new ReflectedRefenceSchema(
+            return new ReflectedReferenceSchema(
                 referenceSchema.name,
                 MapUtil.getNamingMap(referenceSchema.nameVariant),
                 referenceSchema.description,

@@ -13,7 +13,7 @@ import { List } from 'immutable'
 import SchemaContainerSectionListItem from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionListItem.vue'
 import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
-import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedRefenceSchema.ts'
+import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()

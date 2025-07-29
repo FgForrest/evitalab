@@ -1,4 +1,4 @@
-import  {
+import {
     type AttributeInheritanceBehavior
 } from '@/modules/database-driver/request-response/schema/AttributeInheritanceBehavior.ts'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema.ts'
@@ -10,7 +10,7 @@ import {
     SortableAttributeCompoundSchema
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema.ts'
 
-export class ReflectedRefenceSchema extends ReferenceSchema {
+export class ReflectedReferenceSchema extends ReferenceSchema {
     readonly reflectedReferenceName?: string;
     readonly descriptionInherited: boolean;
     readonly deprecationNoticeInherited: boolean;

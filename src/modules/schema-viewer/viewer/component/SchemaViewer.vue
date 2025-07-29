@@ -25,7 +25,7 @@ import {
     useSchemaPathFactory
 } from '@/modules/schema-viewer/viewer/service/schema-path-factory/DelegatingSchemaPathFactory'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
-import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedRefenceSchema.ts'
+import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer.ts'
 
 const keymap: Keymap = useKeymap()

@@ -5,7 +5,7 @@ import SchemaContainerSectionList from '@/modules/schema-viewer/viewer/component
 import type { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer.ts'
 import type {
     ReflectedRefenceSchema
-} from '@/modules/database-driver/request-response/schema/ReflectedRefenceSchema.ts'
+} from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 import { List as ImmutableList } from 'immutable'
 import ReflectedReferenceListItem
     from '@/modules/schema-viewer/viewer/component/reference/reflected/ReflectedReferenceListItem.vue'

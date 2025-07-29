@@ -44,7 +44,7 @@ const flags: ComputedRef<List<string>> = computed(() => {
             flags.push(t('schemaViewer.reference.label.inherited'))
         }
     }
-    return List(props.schema.representativeFlags)
+    return List(flags)
 })
 
 function openAttributeSchema(): void {

@@ -4,7 +4,7 @@ import SchemaContainerSectionListItem from '@/modules/schema-viewer/viewer/compo
 import type { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer.ts'
 import type {
     ReflectedRefenceSchema
-} from '@/modules/database-driver/request-response/schema/ReflectedRefenceSchema.ts'
+} from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer.ts'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'

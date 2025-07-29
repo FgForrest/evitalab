@@ -18,7 +18,7 @@ import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { computed, ref } from 'vue'
 import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
 import { SchemaViewerService, useSchemaViewerService } from '@/modules/schema-viewer/viewer/service/SchemaViewerService'
-import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedRefenceSchema.ts'
+import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 import ReflectedReferenceList
     from '@/modules/schema-viewer/viewer/component/reference/reflected/ReflectedReferenceList.vue'
 import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer.ts'

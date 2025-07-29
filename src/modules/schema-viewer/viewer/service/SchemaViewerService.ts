@@ -19,7 +19,7 @@ import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
-import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedRefenceSchema.ts'
+import { ReflectedReferenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 import {
     SortableAttributeCompoundSchemaPointer
 } from '@/modules/schema-viewer/viewer/model/SortableAttributeCompoundSchemaPointer.ts'
@@ -151,15 +151,15 @@ export class SchemaViewerService {
         )
     }
 
-    async getReflectedSchema(catalogName: string, name: string): Promise<ReflectedRefenceSchema[]> {
-        const reflectedReferenceSchemas: ReflectedRefenceSchema[] = []
+    async getReflectedSchema(catalogName: string, name: string): Promise<ReflectedReferenceSchema[]> {
+        const reflectedReferenceSchemas: ReflectedReferenceSchema[] = []
         const catalogSchema = await this.evitaClient.queryCatalog(catalogName, session => session.getCatalogSchema())
         const entitySchemas = await catalogSchema.entitySchemas()
 
 
         for (const entity of entitySchemas) {
             for (const reference of entity[1].references) {
-                if (reference[1] instanceof ReflectedRefenceSchema) {
+                if (reference[1] instanceof ReflectedReferenceSchema) {
                     if (reference[1].reflectedReferenceName === name) {
                         reference[1].reflectedType = entity[1].name
                         reflectedReferenceSchemas.push(reference[1])
