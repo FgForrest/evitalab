@@ -366,6 +366,9 @@
         "rename": "Renaming - {0}%",
         "replace": "Replacing - {0}%"
       },
+      "title": {
+        "readOnly": "catalog is read-only"
+      },
       "menu": {
         "item": {
           "manageSubheader": "Manage",

@@ -76,7 +76,7 @@ onMounted(() => changeFlags())
 function changeFlags(runningProgresses?: Map<MutationProgressType, number>) {
     flags.value = []
 
-    if(props.catalog.catalogState === CatalogState.Corrupted) {
+    if (props.catalog.catalogState === CatalogState.Corrupted) {
         flags.value.push(ItemFlag.error(t('explorer.catalog.flag.corrupted')))
     } else if (props.catalog.catalogState === CatalogState.WarmingUp) {
         flags.value.push(ItemFlag.warning(t('explorer.catalog.flag.warmingUp')))
@@ -85,7 +85,7 @@ function changeFlags(runningProgresses?: Map<MutationProgressType, number>) {
     }
 
 
-    if(runningProgresses) {
+    if (runningProgresses) {
         for (const runningProgress of runningProgresses) {
             flags.value.push(ItemFlag.info(t(`explorer.catalog.flag.${runningProgress[0]}`, [runningProgress[1]])))
         }
@@ -175,14 +175,20 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
                 v-bind="props"
                 :openable="!catalog.corrupted"
                 :is-open="isOpen"
-                prepend-icon="mdi-menu"
+                :prepend-icon="serverStatus?.readOnly ? 'mdi-database-eye-outline' : 'mdi-database-outline'"
                 :loading="loading"
                 :flags="flags"
                 :actions="menuItemList"
+                :is-read-only="serverStatus?.readOnly"
+                :catalog-name="catalog.name"
                 @click:action="handleAction"
                 class="text-gray-light"
             >
-                {{ catalog.name }}
+                <span>{{ catalog.name }}
+                    <VIcon v-if="serverStatus?.readOnly">
+                        mdi-eye-outline
+                    </VIcon>
+                </span>
             </VTreeViewItem>
         </template>
 
