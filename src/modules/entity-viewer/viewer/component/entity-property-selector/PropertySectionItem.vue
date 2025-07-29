@@ -59,7 +59,7 @@ const emit = defineEmits<{
                     >
                         {{ flag.flag.startsWith('_') ? t(`schemaViewer.section.flag.${flag.flag.substring(1)}`) : flag.flag }}
                         <template #append>
-                            <VIcon v-for="(item, index) in flag.icons" :key="index" :class="flag.icons.length - 1 === index && flag.icons.length !== 1 ? 'last-chip-icon' : 'chip-icon'">{{ item }}</VIcon>
+                            <VIcon v-for="(item, index) in flag.icons" :key="index" class="chip-icon">{{ item }}</VIcon>
                         </template>
                     </VChip>
                 </VChipGroup>
@@ -126,7 +126,7 @@ const emit = defineEmits<{
     margin-right: 3px;
 }
 
-.last-chip-icon {
+.chip-icon:last-child {
     margin-right: 8px;
 }
 </style>

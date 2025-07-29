@@ -34,7 +34,7 @@ import { useTabProps } from '@/modules/entity-viewer/viewer/component/dependenci
 import { List } from 'immutable'
 import { EntityViewerService, useEntityViewerService } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
 import type { SelectedLayer } from '@/modules/entity-viewer/viewer/model/SelectedLayer.ts'
-import LayerSelector from '@/modules/entity-viewer/viewer/component/LayerSelector.vue'
+import ScopeSelector from '@/modules/entity-viewer/viewer/component/ScopeSelector.vue'
 
 const keymap: Keymap = useKeymap()
 const workspaceService: WorkspaceService = useWorkspaceService()
@@ -203,7 +203,7 @@ onUnmounted(() => {
                 :selected="selectedPriceType"
                 @update:selected="emit('update:selectedPriceType', $event)"
             />
-            <LayerSelector
+            <ScopeSelector
                 @update:selected="emit('update:selectedLayer', $event)"
             />
 

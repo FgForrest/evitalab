@@ -360,8 +360,6 @@ export class CatalogSchemaConverter {
             referenceSchema.groupType,
             referenceSchema.referencedGroupTypeManaged,
             MapUtil.getNamingMap(referenceSchema.groupTypeNameVariant),
-            referenceSchema.indexed,
-            referenceSchema.faceted,
             this.convertCardinality(referenceSchema.cardinality),
             this.convertAttributeSchemas(referenceSchema.attributes),
             this.convertSortableAttributeCompoundSchemas(

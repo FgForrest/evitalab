@@ -46,7 +46,7 @@ function open() {
                     }}
                     <template #append>
                         <VIcon v-for="(item, index) in flag.icons"
-                               :class="flag.icons.length - 1 === index && flag.icons.length !== 1 ? 'last-chip-icon' : 'chip-icon'"
+                               class="chip-icon"
                                :key="index">
                             {{ item }}
                         </VIcon>
@@ -78,7 +78,7 @@ function open() {
     margin-right: 3px;
 }
 
-.last-chip-icon {
+.chip-icon:last-child {
     margin-right: 8px;
 }
 </style>

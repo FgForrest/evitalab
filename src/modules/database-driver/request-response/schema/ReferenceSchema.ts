@@ -51,14 +51,6 @@ export class ReferenceSchema extends AbstractSchema {
     readonly referencedGroupTypeManaged: boolean | undefined
     readonly groupTypeNameVariants: Map<NamingConvention, string> | undefined
 
-    /**
-     * Contains `true` if the index for this reference should be created and maintained allowing to filter by `reference_{reference name}_having` filtering constraints. Index is also required when reference is `faceted`.  Do not mark reference as faceted unless you know that you'll need to filter/sort entities by this reference. Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed, the entity cannot be looked up by reference attributes or relation existence itself, but the data can be fetched.
-     */
-    readonly indexed: boolean
-    /**
-     * Contains `true` if the statistics data for this reference should be maintained and this allowing to get `facetStatistics` for this reference or use `facet_{reference name}_inSet` filtering constraint.  Do not mark reference as faceted unless you want it among `facetStatistics`. Each faceted reference occupies (memory/disk) space in the form of index.  Reference that was marked as faceted is called Facet.
-     */
-    readonly faceted: boolean
     readonly cardinality: Cardinality
 
     /**
@@ -84,8 +76,6 @@ export class ReferenceSchema extends AbstractSchema {
                 referencedGroupType: string | undefined,
                 referencedGroupTypeManaged: boolean | undefined,
                 groupTypeNameVariants: Map<NamingConvention, string> | undefined,
-                indexed: boolean,
-                faceted: boolean,
                 cardinality: Cardinality,
                 attributes: AttributeSchema[],
                 sortableAttributeCompounds: SortableAttributeCompoundSchema[],
@@ -102,8 +92,6 @@ export class ReferenceSchema extends AbstractSchema {
         this.referencedGroupType = referencedGroupType
         this.referencedGroupTypeManaged = referencedGroupTypeManaged
         this.groupTypeNameVariants = groupTypeNameVariants
-        this.indexed = indexed
-        this.faceted = faceted
         this.cardinality = cardinality
         this.attributes = Map(attributes.map(attribute => [attribute.name, attribute]))
         this.sortableAttributeCompounds = Map(sortableAttributeCompounds.map(sac => [sac.name, sac]))
@@ -117,8 +105,8 @@ export class ReferenceSchema extends AbstractSchema {
             const representativeFlags: Flag[] = []
 
             if (!this.referencedEntityTypeManaged) representativeFlags.push(new Flag(ReferenceSchemaFlag.External))
-            if (this.indexed) representativeFlags.push(new Flag(ReferenceSchemaFlag.Indexed, this.indexedInScopes.map(x => x).toArray(), t('schemaViewer.reference.tooltip.content', ['', this.indexedInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
-            if (this.faceted) representativeFlags.push(new Flag(ReferenceSchemaFlag.Faceted, this.facetedInScopes.map(x => x).toArray(), t('schemaViewer.reference.tooltip.facetedContent', ['', this.facetedInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
+            if (this.indexedInScopes.size > 0) representativeFlags.push(new Flag(ReferenceSchemaFlag.Indexed, this.indexedInScopes.map(x => x).toArray(), t('schemaViewer.reference.tooltip.content', ['', this.indexedInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
+            if (this.facetedInScopes.size > 0) representativeFlags.push(new Flag(ReferenceSchemaFlag.Faceted, this.facetedInScopes.map(x => x).toArray(), t('schemaViewer.reference.tooltip.facetedContent', ['', this.facetedInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
 
             this._representativeFlags = List(representativeFlags)
         }
