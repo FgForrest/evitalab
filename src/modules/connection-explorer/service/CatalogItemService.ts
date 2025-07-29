@@ -104,10 +104,11 @@ export class CatalogItemService {
                 await this.toaster.success(i18n.global.t('explorer.catalog.duplicateCatalog.notification.catalogDuplicated'))
             } catch (e: any) {
                 catalog.removeProgress(MutationProgressType.Duplication)
-                await this.toaster.error(i18n.global.t('explorer.catalog.activateCatalog.notification.couldNotActivateCatalog', {
-                    catalogName: catalog.name,
-                    reason: e.message
-                }))
+                await this.toaster.error(i18n.global.t('explorer.catalog.duplication.notification.couldNotDuplicateCatalog',
+                    {
+                        catalogName: catalog.name,
+                        reason: e.message
+                    }))
             }
         }
 
@@ -124,7 +125,11 @@ export class CatalogItemService {
                 await this.toaster.success(i18n.global.t('explorer.collection.rename.notification.collectionRenamed'))
             } catch (e: any) {
                 catalog.removeProgress(MutationProgressType.Rename)
-                await this.toaster.error(i18n.global.t(''))
+                await this.toaster.error(i18n.global.t('explorer.catalog.rename.notification.couldNotRenameCatalog',
+                    {
+                        catalogName: catalog.name,
+                        reason: e.message
+                    }))
             }
         }
 
@@ -141,7 +146,10 @@ export class CatalogItemService {
                 await this.toaster.success(i18n.global.t('explorer.catalog.activateCatalog.notification.catalogActivated'))
             } catch (e: any) {
                 catalog.removeProgress(MutationProgressType.Activate)
-                await this.toaster.error(i18n.global.t(''))
+                await this.toaster.error(i18n.global.t('explorer.catalog.activateCatalog.notification.couldNotActivateCatalog', {
+                    catalogName: catalog.name,
+                    reason: e.message
+                }))
             }
         }
 
@@ -158,7 +166,10 @@ export class CatalogItemService {
                 await this.toaster.success(i18n.global.t('explorer.catalog.deactivateCatalog.notification.catalogDeactivated'))
             } catch (e: any) {
                 catalog.removeProgress(MutationProgressType.Deactivate)
-                await this.toaster.error(i18n.global.t(''))
+                await this.toaster.error(i18n.global.t('explorer.catalog.deactivateCatalog.notification.couldNotDeactivateCatalog', {
+                    catalogName: catalog.name,
+                    reason: e.message
+                }))
             }
         }
 
@@ -175,7 +186,11 @@ export class CatalogItemService {
                 await this.toaster.success(i18n.global.t('explorer.catalog.replace.notification.catalogReplaced'))
             } catch (e: any) {
                 catalog.removeProgress(MutationProgressType.Replace)
-                await this.toaster.error(i18n.global.t(''))
+                await this.toaster.error(i18n.global.t('explorer.catalog.replace.notification.couldNotReplaceCatalog',
+                    {
+                        catalogNameToBeReplaced: catalog.name,
+                        reason: e.message
+                    }))
             }
         }
 
@@ -192,7 +207,10 @@ export class CatalogItemService {
                 await this.toaster.success(i18n.global.t('explorer.catalog.makeCatalogMutable.notification.catalogMadeAsMutable'))
             } catch (e: any) {
                 catalog.removeProgress(MutationProgressType.Mutable)
-                await this.toaster.error(i18n.global.t(''))
+                await this.toaster.error(i18n.global.t('explorer.catalog.makeCatalogMutable.notification.couldNotMakeCatalogMutable', {
+                    catalogName: catalog.name,
+                    reason: e.message
+                }))
             }
         }
 
@@ -209,7 +227,10 @@ export class CatalogItemService {
                 await this.toaster.success(i18n.global.t('explorer.catalog.makeCatalogImmutable.notification.catalogMadeAsImmutable'))
             } catch (e: any) {
                 catalog.removeProgress(MutationProgressType.Immutable)
-                await this.toaster.error(i18n.global.t(''))
+                await this.toaster.error(i18n.global.t('explorer.catalog.makeCatalogImmutable.notification.couldNotMakeCatalogImmutable', {
+                    catalogName: catalog.name,
+                    reason: e.message
+                }))
             }
         }
 
@@ -226,7 +247,11 @@ export class CatalogItemService {
                 await this.toaster.success(i18n.global.t('explorer.catalog.switchToAliveState.notification.catalogSwitched'))
             } catch (e: any) {
                 catalog.removeProgress(MutationProgressType.Alive)
-                await this.toaster.error(i18n.global.t(''))
+                await this.toaster.error(i18n.global.t('explorer.catalog.switchToAliveState.notification.couldNotSwitchCatalog',
+                    {
+                        catalogName: catalog.name,
+                        reason: e.message
+                    }))
             }
         }
 
