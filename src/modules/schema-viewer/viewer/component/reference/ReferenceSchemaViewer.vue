@@ -46,6 +46,21 @@ const reflectedReferences = ref<ImmutableList<ReflectedReferenceSchema>>()
 const properties = computed<Property[]>(() => {
     const properties: Property[] = []
 
+    if (props.schema instanceof ReflectedReferenceSchema && props.schema.reflectedReferenceName) {
+        const reflectedRefenceSchema = props.schema as ReflectedReferenceSchema
+        properties.push(new Property(
+            t('schemaViewer.reference.label.reflectedReference'),
+            new PropertyValue(new KeywordValue(t(props.schema.reflectedReferenceName)), undefined, () => {
+                workspaceService.createTab(schemaViewerTabFactory.createNew(
+                    new ReferenceSchemaPointer(
+                        props.dataPointer.schemaPointer.catalogName,
+                        props.schema.entityType,
+                        reflectedRefenceSchema.reflectedReferenceName!
+                    )
+                ))
+            })
+        ))
+    }
     properties.push(new Property(
         t('schemaViewer.reference.label.description'),
         new PropertyValue(props.schema.description)
@@ -113,21 +128,6 @@ const properties = computed<Property[]>(() => {
         t('schemaViewer.reference.label.faceted'),
         new PropertyValue(props.schema.faceted)
     ))
-    if (props.schema instanceof ReflectedReferenceSchema && props.schema.reflectedReferenceName) {
-        const reflectedRefenceSchema = props.schema as ReflectedReferenceSchema
-        properties.push(new Property(
-            t('schemaViewer.reference.label.reflectedReference'),
-            new PropertyValue(new KeywordValue(t(props.schema.reflectedReferenceName)), undefined, () => {
-                workspaceService.createTab(schemaViewerTabFactory.createNew(
-                    new ReferenceSchemaPointer(
-                        props.dataPointer.schemaPointer.catalogName,
-                        props.schema.entityType,
-                        reflectedRefenceSchema.reflectedReferenceName!
-                    )
-                ))
-            })
-        ))
-    }
 
     return properties
 })

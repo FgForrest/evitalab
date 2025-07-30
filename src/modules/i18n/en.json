@@ -988,11 +988,11 @@
         "faceted": "Faceted",
         "referencedEntityNameVariants": "Referenced entity",
         "referencedGroupNameVariants": "Referenced group",
-        "reflectedReference": "Reflected reference",
+        "reflectedReference": "Reflects",
         "inherited": "inherited"
       },
       "reflected": {
-        "reflectedReferences": "Reflected references"
+        "reflectedReferences": "Reflected by"
       }
     },
     "sortableAttributeCompound": {
