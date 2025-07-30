@@ -25,7 +25,7 @@ import {
     useSchemaPathFactory
 } from '@/modules/schema-viewer/viewer/service/schema-path-factory/DelegatingSchemaPathFactory'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
-import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
+import { ReflectedReferenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer.ts'
 
 const keymap: Keymap = useKeymap()
@@ -65,7 +65,7 @@ async function loadTitle(): Promise<void> {
 
     if (schemaPointer.schemaType === SchemaType.Catalog) {
         title.value = ImmutableList.of(schemaPointer.schemaName)
-    } else if(schemaPointer.schemaType === SchemaType.Reference && schema.value instanceof ReflectedRefenceSchema && schema.value.reflectedReferenceName) {
+    } else if(schemaPointer.schemaType === SchemaType.Reference && schema.value instanceof ReflectedReferenceSchema && schema.value.reflectedReferenceName) {
         title.value = ImmutableList.of(t(`schemaViewer.title.schema.${schemaPointer.schemaType}`),
             referenceSchemaPointer.value.entityType,
             schemaPointer.schemaName)

@@ -18,7 +18,7 @@ import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { computed, ref } from 'vue'
 import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
 import { SchemaViewerService, useSchemaViewerService } from '@/modules/schema-viewer/viewer/service/SchemaViewerService'
-import { ReflectedRefenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
+import { ReflectedReferenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 import ReflectedReferenceList
     from '@/modules/schema-viewer/viewer/component/reference/reflected/ReflectedReferenceList.vue'
 import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer.ts'
@@ -41,7 +41,7 @@ const entityNameVariants = ref<ImmutableMap<NamingConvention, string>>()
 const loadedReferencedGroupType = ref<boolean>()
 const groupTypeNameVariants = ref<ImmutableMap<NamingConvention, string> | undefined>()
 const loadedReflectedReferences = ref<boolean>()
-const reflectedReferences = ref<ImmutableList<ReflectedRefenceSchema>>()
+const reflectedReferences = ref<ImmutableList<ReflectedReferenceSchema>>()
 
 const properties = computed<Property[]>(() => {
     const properties: Property[] = []
@@ -113,8 +113,8 @@ const properties = computed<Property[]>(() => {
         t('schemaViewer.reference.label.faceted'),
         new PropertyValue(props.schema.faceted)
     ))
-    if (props.schema instanceof ReflectedRefenceSchema && props.schema.reflectedReferenceName) {
-        const reflectedRefenceSchema = props.schema as ReflectedRefenceSchema
+    if (props.schema instanceof ReflectedReferenceSchema && props.schema.reflectedReferenceName) {
+        const reflectedRefenceSchema = props.schema as ReflectedReferenceSchema
         properties.push(new Property(
             t('schemaViewer.reference.label.reflectedReference'),
             new PropertyValue(new KeywordValue(t(props.schema.reflectedReferenceName)), undefined, () => {
@@ -176,14 +176,14 @@ async function loadAllReflectedSchemas(): Promise<void> {
 }
 
 const attributeInheritanceBehavior = computed(() => {
-    if (props.schema instanceof ReflectedRefenceSchema) {
+    if (props.schema instanceof ReflectedReferenceSchema) {
         return props.schema.attributeInheritanceBehavior
     }
     return undefined
 })
 
 const inheritedAttributes = computed(() => {
-    if (props.schema instanceof ReflectedRefenceSchema) {
+    if (props.schema instanceof ReflectedReferenceSchema) {
         return props.schema.attributeInheritanceFilter
     }
     return undefined
@@ -194,13 +194,13 @@ onMounted(async () => {
 })
 
 const reflectedSchemaName = computed(() => {
-    if(props.schema instanceof ReflectedRefenceSchema && props.schema.reflectedReferenceName){
+    if(props.schema instanceof ReflectedReferenceSchema && props.schema.reflectedReferenceName){
         return props.schema.reflectedReferenceName
     }
 })
 
 function openFrom(): void {
-    if(props.schema instanceof ReflectedRefenceSchema && props.schema.reflectedReferenceName) {
+    if(props.schema instanceof ReflectedReferenceSchema && props.schema.reflectedReferenceName) {
         workspaceService.createTab(schemaViewerTabFactory.createNew(
             new ReferenceSchemaPointer(
                 props.dataPointer.schemaPointer.catalogName,
