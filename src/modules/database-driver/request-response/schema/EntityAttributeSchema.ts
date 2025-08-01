@@ -2,13 +2,10 @@ import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { NamingConvention } from '../NamingConvetion'
 import { AttributeSchema, AttributeSchemaFlag } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
-import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { EntityScope, EntityScopeIcons } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import type {
     ScopedAttributeUniquenessType
 } from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
-import type {
-    ScopedGlobalAttributeUniquenessType
-} from '@/modules/database-driver/request-response/schema/ScopedGlobalAttributeUniquenessType.ts'
 import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType.ts'
 import { useI18n } from 'vue-i18n'
@@ -36,10 +33,9 @@ export class EntityAttributeSchema extends AttributeSchema {
                 representative: boolean,
                 sortableInScopes: ImmutableList<EntityScope>,
                 filteredInScopes: ImmutableList<EntityScope>,
-                uniqueGloballyInScopes: ImmutableList<ScopedGlobalAttributeUniquenessType>,
                 uniqueInScopes: ImmutableList<ScopedAttributeUniquenessType>
-                ) {
-        super(name, nameVariants, description, deprecationNotice, type, nullable, defaultValue, localized, indexedDecimalPlaces, sortableInScopes, filteredInScopes, uniqueGloballyInScopes, uniqueInScopes)
+    ) {
+        super(name, nameVariants, description, deprecationNotice, type, nullable, defaultValue, localized, indexedDecimalPlaces, sortableInScopes, filteredInScopes, uniqueInScopes)
         this.representative = representative
     }
 
@@ -50,20 +46,26 @@ export class EntityAttributeSchema extends AttributeSchema {
 
             representativeFlags.push(new Flag(this.formatDataTypeForFlag(this.type)))
 
-            if(this.representative) {
+            if (this.representative) {
                 representativeFlags.push(new Flag(EntityAttributeSchemaFlag.Representative))
             }
 
-            for(const uniqueness of this.uniqueInScopes) {
-                if(uniqueness.uniquenessType === AttributeUniquenessType.UniqueWithinCollection)
+            for (const uniqueness of this.uniqueInScopes) {
+                if (uniqueness.uniquenessType === AttributeUniquenessType.UniqueWithinCollection)
                     representativeFlags.push(new Flag(AttributeSchemaFlag.Unique, this.uniqueInScopes.map(x => x.scope).toArray()))
-                else if(uniqueness.uniquenessType === AttributeUniquenessType.UniqueWithinCollectionLocale)
+                else if (uniqueness.uniquenessType === AttributeUniquenessType.UniqueWithinCollectionLocale)
                     representativeFlags.push(new Flag(AttributeSchemaFlag.UniquePerLocale, this.uniqueInScopes.map(x => x.scope).toArray()))
             }
 
-            if(this.sortable) representativeFlags.push(new Flag(AttributeSchemaFlag.Sortable, this.sortableInScopes.map(x => x.toString()).toArray(), t('schemaViewer.attribute.tooltip.content', [t('schemaViewer.tooltip.sorted'), this.sortableInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
-            if(this.localized) representativeFlags.push(new Flag(AttributeSchemaFlag.Localized))
-            if(this.nullable) representativeFlags.push(new Flag(AttributeSchemaFlag.Nullable))
+            if (this.sortableInScopes.size > 0) {
+                representativeFlags.push(new Flag(AttributeSchemaFlag.Sortable, this.sortableInScopes.map(x => EntityScopeIcons[x]).toArray(), t('schemaViewer.attribute.tooltip.content', [t('schemaViewer.tooltip.sorted'), this.sortableInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
+            }
+            if (this.localized) {
+                representativeFlags.push(new Flag(AttributeSchemaFlag.Localized))
+            }
+            if (this.nullable) {
+                representativeFlags.push(new Flag(AttributeSchemaFlag.Nullable))
+            }
 
             this._representativeFlags = ImmutableList(representativeFlags)
         }

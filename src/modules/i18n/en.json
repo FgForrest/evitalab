@@ -261,6 +261,11 @@
       "changePriceType": "Change price type",
       "shareTab": "Share tab",
       "openPropertySelector": "Open property selector",
+      "scopeSelector": {
+        "title": "Select scope",
+        "live": "Live",
+        "archive": "Archive"
+      },
       "propertySelector": {
         "_title": "Property selector",
         "findProperty": "Find property"
@@ -835,11 +840,6 @@
         "sortableAttributeCompounds": "Sortable attribute compounds"
       }
     },
-    "scopesVisualizer": {
-      "live": "Live",
-      "archive": "Archive",
-      "label": "Scopes visualizer"
-    },
     "path": {
       "item": {
         "entities": "entities",
@@ -875,11 +875,7 @@
           "sortable": "sortable",
           "localized": "localized",
           "nullable": "nullable",
-          "attributeTooltip": "The attribute can be filtered/sorted within the live/archive scope.",
-          "hierarchyTooltip": "The hierarchy is (not) indexed within the live/archive scope.",
-          "pricesTooltip": "The prices are (not) indexed within the live/archive scope.",
-          "referenceTooltipIndexed": "The reference is (not) indexed within the live/archive scope.",
-          "referenceTooltipFaceted": "The reference (doesn't) provide facets within the live/archive scope."
+          "attributeTooltip": "The attribute can be filtered/sorted within the live/archive scope."
         },
         "associatedDataSchema": {
           "localized": "localized",
@@ -966,16 +962,19 @@
         "nullable": "Nullable",
         "defaultValue": "Default value",
         "indexedDecimalPlaces": "Indexed decimal places",
-        "attributes": "Attributes"
+        "attributes": "Attributes",
+        "uniqueWithinCollection": "within collection",
+        "uniqueWithinLocaleOfCollection": "within locale of collection"
       },
       "tooltip": {
-        "content": "The attribute can be {0} within the {1} scope."
+        "content": "The attribute can be {0} within the {1} scope.",
+        "uniqueContent": "The {0} attribute is present in scope {1}."
       },
       "help": {
-        "uniqueWithinCollection": "The attribute value must be unique among all the entities of the same collection.",
-        "uniqueWithinLocaleOfCollection": "The localized attribute value must be unique among all values of the same locale among all the entities.",
-        "globallyUniqueWithinCatalog": "The attribute value (either localized or non-localized) must be unique among all values among all the entities using this global attribute schema in the entire catalog.",
-        "globallyUniqueWithinLocaleOfCatalog": "The localized attribute value must be unique among all values of the same locale among all the entities using this global attribute schema in the entire catalog.",
+        "uniqueWithinCollection": "The attribute value must be unique among all the entities of the same collection. The {0} attribute is present in scope {1}.",
+        "uniqueWithinLocaleOfCollection": "The localized attribute value must be unique among all values of the same locale among all the entities. The {0} attribute is present in scope {1}.",
+        "globallyUniqueWithinCatalog": "The attribute value (either localized or non-localized) must be unique among all values among all the entities using this global attribute schema in the entire catalog. The {0} attribute is present in scope {1}.",
+        "globallyUniqueWithinLocaleOfCatalog": "The localized attribute value must be unique among all values of the same locale among all the entities using this global attribute schema in the entire catalog. The {0} attribute is present in scope {1}.",
         "implicitlyFilterable": "The attribute is implicitly filterable because it is unique."
       }
     },
@@ -1031,6 +1030,7 @@
       "sorted": "sorted",
       "doesNot": "doesn't",
       "not": "not",
+      "unique": "unique",
       "liveContent": "The default scope is where all new entities are created.",
       "archiveContent": "The archive scope is where outdated entities that are no longer actively used are stored. The archive is usually covered by fewer indexes than the live scope and is not searched unless explicitly requested in a query."
     }

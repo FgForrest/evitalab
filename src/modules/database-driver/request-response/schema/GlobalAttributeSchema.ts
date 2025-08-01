@@ -2,7 +2,7 @@ import { List, Map } from 'immutable'
 import { NamingConvention } from '../NamingConvetion'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
-import type { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import type {
     ScopedAttributeUniquenessType
 } from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
@@ -15,6 +15,8 @@ import {
 } from '@/modules/database-driver/request-response/schema/GlobalAttributeUniquenessType.ts'
 import { AttributeSchemaFlag } from '@/modules/database-driver/request-response/schema/AttributeSchema.ts'
 import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType.ts'
+import { i18n } from '@/vue-plugins/i18n.ts'
+import { getEnumKeyByValue } from '@/utils/enum.ts'
 
 /**
  * evitaLab's representation of a single evitaDB global attribute schema independent of specific evitaDB version
@@ -41,7 +43,7 @@ export class GlobalAttributeSchema extends EntityAttributeSchema {
                 filterableInScopes: List<EntityScope>,
                 uniqueGloballyInScopes: List<ScopedGlobalAttributeUniquenessType>,
                 uniqueInScopes: List<ScopedAttributeUniquenessType>) {
-        super(name, nameVariants, description, deprecationNotice, type, nullable, defaultValue, localized, indexedDecimalPlaces, representative, sortableInScopes, filterableInScopes, uniqueGloballyInScopes, uniqueInScopes)
+        super(name, nameVariants, description, deprecationNotice, type, nullable, defaultValue, localized, indexedDecimalPlaces, representative, sortableInScopes, filterableInScopes, uniqueInScopes)
         this.uniqueGloballyInScopes = uniqueGloballyInScopes
         this.uniqueInScopes = uniqueInScopes
     }
@@ -52,31 +54,39 @@ export class GlobalAttributeSchema extends EntityAttributeSchema {
 
             flags.push(new Flag(this.formatDataTypeForFlag(this.type)))
 
-            for(const flag of this.uniqueGloballyInScopes.groupBy(x => x.uniquenessType)){
-                if(flag[0] === GlobalAttributeUniquenessType.UniqueWithinCatalog) {
-                    flags.push(new Flag(GlobalAttributeSchemaFlag.GloballyUnique, flag[1].map(x => x.scope).toArray()))
-                } else if(flag[0] === GlobalAttributeUniquenessType.UniqueWithinCatalogLocale){
-                    flags.push(new Flag(GlobalAttributeSchemaFlag.GloballyUniquePerLocale, flag[1].map(x => x.scope).toArray()))
+            for (const flag of this.uniqueGloballyInScopes.groupBy(x => x.uniquenessType)) {
+                if (flag[0] === GlobalAttributeUniquenessType.UniqueWithinCatalog) {
+                    flags.push(new Flag(GlobalAttributeSchemaFlag.GloballyUnique, flag[1].map(x => x.scope).toArray(), i18n.global.t('schemaViewer.attribute.tooltip.uniqueContent', [
+                        i18n.global.t('schemaViewer.section.flag.attributeSchema.globallyUnique').toLowerCase(),
+                        this.uniqueGloballyInScopes.map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z.scope).toLowerCase()}`)).join('/')])))
+                } else if (flag[0] === GlobalAttributeUniquenessType.UniqueWithinCatalogLocale) {
+                    flags.push(new Flag(GlobalAttributeSchemaFlag.GloballyUniquePerLocale, flag[1].map(x => x.scope).toArray(), i18n.global.t('schemaViewer.attribute.tooltip.uniqueContent', [
+                        i18n.global.t('schemaViewer.section.flag.attributeSchema.globallyUniquePerLocale').toLowerCase(),
+                        this.uniqueGloballyInScopes.map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z.scope).toLowerCase()}`)).join('/')])))
                 }
             }
 
-            for(const flag of this.uniqueInScopes.groupBy(x => x.uniquenessType)){
-                if(flag[0] === AttributeUniquenessType.UniqueWithinCollection) {
-                    flags.push(new Flag(AttributeSchemaFlag.Unique, flag[1].map(x => x.scope).toArray()))
-                } else if(flag[0] === AttributeUniquenessType.UniqueWithinCollectionLocale){
-                    flags.push(new Flag(AttributeSchemaFlag.UniquePerLocale, flag[1].map(x => x.scope).toArray()))
+            for (const flag of this.uniqueInScopes.groupBy(x => x.uniquenessType)) {
+                if (flag[0] === AttributeUniquenessType.UniqueWithinCollection) {
+                    flags.push(new Flag(AttributeSchemaFlag.Unique, flag[1].map(x => x.scope).toArray(), i18n.global.t('schemaViewer.attribute.tooltip.uniqueContent', [
+                        i18n.global.t('schemaViewer.section.flag.attributeSchema.unique').toLowerCase(),
+                        this.uniqueGloballyInScopes.map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z.scope).toLowerCase()}`)).join('/')])))
+                } else if (flag[0] === AttributeUniquenessType.UniqueWithinCollectionLocale) {
+                    flags.push(new Flag(AttributeSchemaFlag.UniquePerLocale, flag[1].map(x => x.scope).toArray(), i18n.global.t('schemaViewer.attribute.tooltip.uniqueContent', [
+                        i18n.global.t('schemaViewer.section.flag.attributeSchema.uniquePerLocale').toLowerCase(),
+                        this.uniqueGloballyInScopes.map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z.scope).toLowerCase()}`)).join('/')])))
                 }
             }
 
-            if(this.localized)
+            if (this.localized)
                 flags.push(new Flag(AttributeSchemaFlag.Localized))
-            if(this.nullable)
+            if (this.nullable)
                 flags.push(new Flag(AttributeSchemaFlag.Nullable))
 
             this._representativeFlags = List(flags)
         }
 
-        return  this._representativeFlags
+        return this._representativeFlags
     }
 }
 

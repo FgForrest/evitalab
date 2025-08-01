@@ -11,7 +11,7 @@ import { ReferenceSchema } from '@/modules/database-driver/request-response/sche
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
 import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
-import type { SelectedLayer } from '@/modules/entity-viewer/viewer/model/SelectedLayer.ts'
+import type { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 /**
@@ -33,7 +33,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
     async buildQuery(dataPointer: EntityViewerDataPointer,
                      filterBy: string,
                      orderBy: string,
-                     layersSelected: SelectedLayer[],
+                     selectedScope: SelectedScope[],
                      dataLocale: string | undefined,
                      priceType: QueryPriceMode | undefined,
                      requiredData: EntityPropertyKey[],
@@ -57,10 +57,10 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
             filterByContainer.push(`entityLocaleEquals("${dataLocale}")`)
         }
 
-        if(layersSelected.length > 0) {
-            let allSelected: boolean = layersSelected.length > 1
+        if(selectedScope.length > 0) {
+            let allSelected: boolean = selectedScope.length > 1
             let nothingSelected: boolean = true
-            for (const item of layersSelected) {
+            for (const item of selectedScope) {
                 if (!item.value) {
                     allSelected = false
                 } else {
@@ -69,8 +69,12 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
             }
 
             if(!nothingSelected) {
-                filterByContainer.push(`scope(${layersSelected.some(x => x.scope === EntityScope.Live && x.value) ? 'LIVE' : ''} ${allSelected ? ',' : ''} ${layersSelected.some(x => x.scope === EntityScope.Archive && x.value) ? 'ARCHIVED' : ''})`)
+                filterByContainer.push(`scope(${selectedScope.some(x => x.scope === EntityScope.Live && x.value) ? 'LIVE' : ''} ${allSelected ? ',' : ''} ${selectedScope.some(x => x.scope === EntityScope.Archive && x.value) ? 'ARCHIVED' : ''})`)
+            } else {
+                return `query(collection("${dataPointer.entityType}"))`
             }
+        } else {
+            return `query(collection("${dataPointer.entityType}"))`
         }
 
         if (filterByContainer.length > 0) {

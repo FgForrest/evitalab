@@ -39,7 +39,7 @@ const props =
 
     <!-- actual value is boolean -->
     <VCheckbox
-        v-else-if="!(propertyValue.value  instanceof MultiValueFlagValue) && typeof propertyValue.value === 'boolean'"
+        v-else-if="typeof propertyValue.value === 'boolean'"
         :model-value="propertyValue.value"
         disabled
         density="compact"
@@ -62,7 +62,7 @@ const props =
     <!-- actual value is multi-value flag -->
     <VChip
         v-else-if="propertyValue.value instanceof MultiValueFlagValue"
-        :prepend-icon="propertyValue.value.value ? 'mdi-check' : 'mdi-checkbox-blank-outline'"
+        :prepend-icon="propertyValue.value.icon ? propertyValue.value.icon : ( propertyValue.value.value ? 'mdi-check' : 'mdi-close')"
         :variant="propertyValue.action ? 'outlined' : 'plain'"
         dense
         @click="propertyValue.action?.(propertyValue.value.valueSpecification)"

@@ -8,6 +8,7 @@ import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPr
 import VMarkdown from '@/modules/base/component/VMarkdown.vue'
 import { List } from 'immutable'
 import type { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
+import { EntityScope, EntityScopeIcons } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 const { t } = useI18n()
 
@@ -59,7 +60,7 @@ const emit = defineEmits<{
                     >
                         {{ flag.flag.startsWith('_') ? t(`schemaViewer.section.flag.${flag.flag.substring(1)}`) : flag.flag }}
                         <template #append>
-                            <VIcon v-for="(item, index) in flag.icons" :key="index" class="chip-icon">{{ item }}</VIcon>
+                            <VIcon v-for="(item, index) in flag.icons" :key="index" class="chip-icon">{{ EntityScopeIcons[item as EntityScope] }}</VIcon>
                         </template>
                     </VChip>
                 </VChipGroup>

@@ -11,7 +11,7 @@ import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityP
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import { mandatoryInject } from '@/utils/reactivity'
 import { Map as ImmutableMap, List as ImmutableList } from 'immutable'
-import type { SelectedLayer } from '@/modules/entity-viewer/viewer/model/SelectedLayer.ts'
+import type { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
 
 /**
  * Dependency injection key for data grid props
@@ -46,13 +46,13 @@ export const useQueryLanguage = (): Ref<QueryLanguage> => {
     return mandatoryInject(queryLanguageInjectionKey)
 }
 
-const layerInjectionKey: InjectionKey<Ref<SelectedLayer[]>> = Symbol('layer')
-export const provideLayer = (layer: Ref<SelectedLayer[]>): void => {
-    provide(layerInjectionKey, shallowReadonly(layer))
+const scopesInjectionKey: InjectionKey<Ref<SelectedScope[]>> = Symbol('scopes')
+export const provideScopes = (scopes: Ref<SelectedScope[]>): void => {
+    provide(scopesInjectionKey, shallowReadonly(scopes))
 }
 
-export const useLayer = (): Ref<SelectedLayer[]> => {
-    return mandatoryInject(layerInjectionKey)
+export const useLayer = (): Ref<SelectedScope[]> => {
+    return mandatoryInject(scopesInjectionKey)
 }
 
 /**

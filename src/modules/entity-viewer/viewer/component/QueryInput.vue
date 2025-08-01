@@ -33,7 +33,7 @@ import EntityPropertySelector
 import { useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { List } from 'immutable'
 import { EntityViewerService, useEntityViewerService } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
-import type { SelectedLayer } from '@/modules/entity-viewer/viewer/model/SelectedLayer.ts'
+import type { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
 import ScopeSelector from '@/modules/entity-viewer/viewer/component/ScopeSelector.vue'
 
 const keymap: Keymap = useKeymap()
@@ -47,6 +47,7 @@ const props = defineProps<{
     filterBy: string,
     orderBy: string,
     dataLocales: List<string>,
+    selectedScope: SelectedScope[],
     selectedDataLocale: string | undefined,
     selectedPriceType: QueryPriceMode,
     displayedEntityProperties: EntityPropertyKey[]
@@ -59,7 +60,7 @@ const emit = defineEmits<{
     (e: 'update:selectedDataLocale', value: string | undefined): void
     (e: 'update:selectedPriceType', value: QueryPriceMode): void
     (e: 'update:displayedEntityProperties', value: EntityPropertyKey[]): void
-    (e: 'update:selectedLayer', value: SelectedLayer[]): void
+    (e: 'update:selectedLayer', value: SelectedScope[]): void
 }>()
 const tabProps = useTabProps()
 
@@ -204,6 +205,7 @@ onUnmounted(() => {
                 @update:selected="emit('update:selectedPriceType', $event)"
             />
             <ScopeSelector
+                :selected-scope="selectedScope"
                 @update:selected="emit('update:selectedLayer', $event)"
             />
 

@@ -15,10 +15,8 @@ import { MultiValueFlagValue } from '@/modules/base/model/properties-table/Multi
 import { List } from 'immutable'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType.ts'
-import {
-    GlobalAttributeUniquenessType
-} from '@/modules/database-driver/request-response/schema/GlobalAttributeUniquenessType.ts'
 import { getEnumKeyByValue } from '@/utils/enum.ts'
+import { i18n } from '@/vue-plugins/i18n.ts'
 
 const { t } = useI18n()
 
@@ -27,7 +25,7 @@ const props = defineProps<{
     schema: AttributeSchema
 }>()
 
-const keys = ref<string[]>([getEnumKeyByValue(EntityScope, EntityScope.Live),  getEnumKeyByValue(EntityScope, EntityScope.Archive)])
+const keys = ref<string[]>([getEnumKeyByValue(EntityScope, EntityScope.Live), getEnumKeyByValue(EntityScope, EntityScope.Archive)])
 
 const globalAttribute = props.schema instanceof GlobalAttributeSchema
 const entityAttribute = props.schema instanceof EntityAttributeSchema
@@ -39,44 +37,25 @@ const properties = computed<Property[]>(() => {
     properties.push(new Property(t('schemaViewer.attribute.label.description'), new PropertyValue(props.schema.description)))
     properties.push(new Property(t('schemaViewer.attribute.label.deprecationNotice'), new PropertyValue(props.schema.deprecationNotice)))
     if (entityAttribute) properties.push(new Property(t('schemaViewer.attribute.label.representative'), new PropertyValue((props.schema as EntityAttributeSchema).representative)))
-
-    //TODO: Add special attributes
     properties.push(new Property(t('schemaViewer.attribute.label.sortable'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
-        props.schema.sortableInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x), x, t('schemaViewer.attribute.tooltip.content', [t('schemaViewer.tooltip.sorted'), props.schema.sortableInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')]), props.schema.sortableInScopes.toArray()))))))
+        props.schema.sortableInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x), x, t('schemaViewer.attribute.tooltip.content', [t('schemaViewer.tooltip.sorted'), props.schema.sortableInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')]), props.schema.sortableInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x) ? 'mdi-check' : 'mdi-close'))))))
 
     properties.push(new Property(t('schemaViewer.attribute.label.filterable'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
-        props.schema.filteredInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x), x, t('schemaViewer.attribute.tooltip.content', [t('schemaViewer.tooltip.filtered'), props.schema.filteredInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')]), props.schema.filteredInScopes.toArray()))))))
+        props.schema.filteredInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x), x, t('schemaViewer.attribute.tooltip.content', [t('schemaViewer.tooltip.filtered'), props.schema.filteredInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')]),props.schema.filteredInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x) ? 'mdi-check' : 'mdi-close'))))))
 
-    for(const group of props.schema.uniqueInScopes.groupBy(x => x.uniquenessType)) {
+    for (const group of props.schema.uniqueInScopes.groupBy(x => x.uniquenessType)) {
         switch (group[0]) {
             case AttributeUniquenessType.NotUnique:
                 properties.push(new Property(t('schemaViewer.attribute.label.unique'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
-                    group[1].some(y => getEnumKeyByValue(EntityScope, y.scope) === x), x, x, props.schema.uniqueInScopes.map(x => x.scope).toArray()))))))
+                    group[1].some(y => getEnumKeyByValue(EntityScope, y.scope) === x), x, group[1].map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z.scope).toLowerCase()}`)).join('/'), props.schema.uniqueInScopes.some(y => getEnumKeyByValue(EntityScope, y.scope) === x) ? 'mdi-check' : 'mdi-close'))))))
                 break
             case AttributeUniquenessType.UniqueWithinCollectionLocale:
                 properties.push(new Property(t('schemaViewer.attribute.label.unique'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
-                    group[1].some(y => getEnumKeyByValue(EntityScope, y.scope) === x), x + ` (${t('schemaViewer.attribute.help.uniqueWithinCollection')})`, t(`schemaViewer.attribute.tooltip.content`), props.schema.uniqueInScopes.map(x => x.scope).toArray()))))))
+                    group[1].some(y => getEnumKeyByValue(EntityScope, y.scope) === x), x + ` (${ t(`schemaViewer.attribute.label.uniqueWithinCollection`)})`, t('schemaViewer.attribute.help.uniqueWithinCollection', [t('schemaViewer.tooltip.unique'), group[1].map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z.scope).toLowerCase()}`)).join('/')]), props.schema.uniqueInScopes.some(y => getEnumKeyByValue(EntityScope, y.scope) === x) ? 'mdi-check' : 'mdi-close'))))))
                 break
             case AttributeUniquenessType.UniqueWithinCollection:
                 properties.push(new Property(t('schemaViewer.attribute.label.unique'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
-                    group[1].some(y => getEnumKeyByValue(EntityScope, y.scope) === x), x + ` (${ t('schemaViewer.attribute.help.uniqueWithinLocaleOfCollection')})`, t(`schemaViewer.attribute.tooltip.content`), props.schema.uniqueInScopes.map(x => x.scope).toArray()))))))
-                break
-        }
-    }
-
-    for (const group of props.schema.uniqueGloballyInScopes.groupBy(x => x.uniquenessType)) {
-        switch (group[0]) {
-            case GlobalAttributeUniquenessType.NotUnique:
-                properties.push(new Property(t('schemaViewer.attribute.label.globallyUnique'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
-                    group[1].some(y => getEnumKeyByValue(EntityScope, y.scope) === x), x, x, props.schema.uniqueInScopes.map(x => x.scope).toArray()))))))
-                break
-            case GlobalAttributeUniquenessType.UniqueWithinCatalog:
-                properties.push(new Property(t('schemaViewer.attribute.label.globallyUnique'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
-                    group[1].some(y => getEnumKeyByValue(EntityScope, y.scope) === x), x + ` (${t('schemaViewer.attribute.help.globallyUniqueWithinCatalog')})`, t(`schemaViewer.attribute.tooltip.content`), props.schema.uniqueInScopes.map(x => x.scope).toArray()))))))
-                break
-            case GlobalAttributeUniquenessType.UniqueWithinCatalogLocale:
-                properties.push(new Property(t('schemaViewer.attribute.label.globallyUnique'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
-                    group[1].some(y => getEnumKeyByValue(EntityScope, y.scope) === x), x+ ` (${t('schemaViewer.attribute.help.globallyUniqueWithinLocaleOfCatalog')})`, t(`schemaViewer.attribute.tooltip.content`), props.schema.uniqueInScopes.map(x => x.scope).toArray()))))))
+                    group[1].some(y => getEnumKeyByValue(EntityScope, y.scope) === x), x + ` (${t(`schemaViewer.attribute.label.uniqueWithinLocaleOfCollection`)})`, t('schemaViewer.attribute.help.uniqueWithinLocaleOfCollection', [t('schemaViewer.tooltip.unique'), group[1].map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z.scope).toLowerCase()}`)).join('/')]), props.schema.uniqueInScopes.some(y => getEnumKeyByValue(EntityScope, y.scope) === x) ? 'mdi-check' : 'mdi-close'))))))
                 break
         }
     }

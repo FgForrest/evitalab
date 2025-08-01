@@ -119,7 +119,6 @@ export class CatalogSchemaConverter {
                 attribute.indexedDecimalPlaces,
                 this.convertEntityScopes(attribute.sortableInScopes),
                 this.convertEntityScopes(attribute.filterableInScopes),
-                this.convertUniqueGloballyInScopes(attribute.uniqueGloballyInScopes),
                 this.convertUniqueInScopes(attribute.uniqueInScopes)
             )
         } else if (attribute.schemaType === GrpcAttributeSchemaType.REFERENCE) {
@@ -139,7 +138,6 @@ export class CatalogSchemaConverter {
                 attribute.representative,
                 this.convertEntityScopes(attribute.sortableInScopes),
                 this.convertEntityScopes(attribute.filterableInScopes),
-                this.convertUniqueGloballyInScopes(attribute.uniqueGloballyInScopes),
                 this.convertUniqueInScopes(attribute.uniqueInScopes)
             )
         } else if (attribute.schemaType === GrpcAttributeSchemaType.GLOBAL) {

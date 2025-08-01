@@ -30,7 +30,8 @@ import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
 import {
     provideDataLocale,
-    provideEntityPropertyDescriptorIndex, provideLayer,
+    provideEntityPropertyDescriptorIndex,
+    provideScopes,
     providePriceType,
     provideQueryFilter,
     provideQueryLanguage,
@@ -44,7 +45,7 @@ import {
 } from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import { EntityViewerTabDefinition } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabDefinition'
-import { SelectedLayer } from '@/modules/entity-viewer/viewer/model/SelectedLayer.ts'
+import { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 const entityViewerService: EntityViewerService = useEntityViewerService()
@@ -104,9 +105,9 @@ const filterByCode = ref<string>(props.data.filterBy ? props.data.filterBy : '')
 const lastAppliedFilterByCode = ref<string>('')
 provideQueryFilter(lastAppliedFilterByCode)
 const orderByCode = ref<string>(props.data.orderBy ? props.data.orderBy : '')
-const selectedLayer = ref<SelectedLayer[]>(props.data.selectedLayers ? props.data.selectedLayers : [new SelectedLayer(EntityScope.Live, true)])
-provideLayer(selectedLayer)
-watch(selectedLayer, () => executeQueryManually())
+const selectedScopes = ref<SelectedScope[]>(props.data.selectedScopes ? props.data.selectedScopes : [new SelectedScope(EntityScope.Live, true), new SelectedScope(EntityScope.Archive, false)])
+provideScopes(selectedScopes)
+watch(selectedScopes, () => executeQueryManually())
 
 const selectedDataLocale = ref<string | undefined>(props.data.dataLocale ? props.data.dataLocale : undefined)
 provideDataLocale(selectedDataLocale)
@@ -143,7 +144,8 @@ const currentData = computed<EntityViewerTabData>(() => {
         selectedDataLocale.value,
         displayedEntityProperties.value,
         pageSize.value,
-        pageNumber.value
+        pageNumber.value,
+        selectedScopes.value
     )
 })
 watch(currentData, (data) => {
@@ -339,7 +341,7 @@ async function executeQuery(): Promise<void> {
             selectedQueryLanguage.value,
             filterByCode.value,
             orderByCode.value,
-            selectedLayer.value,
+            selectedScopes.value,
             selectedDataLocale.value,
             selectedPriceType.value,
             displayedEntityProperties.value,
@@ -383,11 +385,12 @@ onUnmounted(() => {
                     v-model:selected-query-language="selectedQueryLanguage"
                     v-model:filter-by="filterByCode"
                     v-model:order-by="orderByCode"
+                    v-model:selected-scope="selectedScopes"
                     :data-locales="dataLocales"
                     v-model:selected-data-locale="selectedDataLocale"
                     v-model:selected-price-type="selectedPriceType"
                     v-model:displayed-entity-properties="displayedEntityProperties"
-                    v-model:selected-layer="selectedLayer"
+                    v-model:selected-layer="selectedScopes"
                     @execute-query="executeQueryManually"
                 />
             </template>

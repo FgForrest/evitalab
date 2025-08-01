@@ -2,6 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import { List } from 'immutable'
 import type { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
+import { EntityScope, EntityScopeIcons } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 const { t } = useI18n()
 
@@ -48,7 +49,7 @@ function open() {
                         <VIcon v-for="(item, index) in flag.icons"
                                class="chip-icon"
                                :key="index">
-                            {{ item }}
+                            {{ EntityScopeIcons[item as EntityScope] }}
                         </VIcon>
                     </template>
                     <VTooltip activator="parent" v-if="flag.tooltip">

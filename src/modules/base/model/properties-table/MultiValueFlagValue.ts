@@ -16,13 +16,13 @@ export class MultiValueFlagValue {
      * Description of the current state
      */
     readonly description?: string
-    readonly icons?: string[]
+    readonly icon?: string
 
-    constructor(value: boolean, valueSpecification: string, description?: string, icons: string[] | undefined = undefined) {
+    constructor(value: boolean, valueSpecification: string, description?: string, icon: string | undefined = undefined) {
         this.value = value
         this.valueSpecification = valueSpecification
         this.description = description
-        this.icons = icons
+        this.icon = icon
     }
 
     toString() {

@@ -3,23 +3,19 @@ import { NamingConvention } from '../NamingConvetion'
 import { AbstractSchema } from '@/modules/database-driver/request-response/schema/AbstractSchema'
 import type { TypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
 import type { LocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
-import type { SortableSchema } from '@/modules/database-driver/request-response/schema/SortableSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
-import  { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
-import  {
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import {
     type ScopedAttributeUniquenessType
 } from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
-import  {
-    type ScopedGlobalAttributeUniquenessType
-} from '@/modules/database-driver/request-response/schema/ScopedGlobalAttributeUniquenessType.ts'
 import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
-import { useI18n } from 'vue-i18n'
+import { i18n } from '@/vue-plugins/i18n.ts'
 import { getEnumKeyByValue } from '@/utils/enum.ts'
 
 /**
  * evitaLab's representation of a single evitaDB attribute schema independent of specific evitaDB version
  */
-export class AttributeSchema extends AbstractSchema implements TypedSchema, SortableSchema, LocalizedSchema {
+export class AttributeSchema extends AbstractSchema implements TypedSchema, LocalizedSchema {
 
     /**
      * Contains unique name of the model. Case-sensitive. Distinguishes one model item from another within single entity instance.
@@ -55,11 +51,8 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Sort
      * Determines how many fractional places are important when entities are compared during filtering or sorting. It is significant to know that all values of this attribute will be converted to `Int`, so the attribute number must not ever exceed maximum limits of `Int` type when scaling the number by the power of ten using `indexedDecimalPlaces` as exponent.
      */
     readonly indexedDecimalPlaces: number
-
-    readonly sortable: boolean
     readonly sortableInScopes: List<EntityScope>
     readonly filteredInScopes: List<EntityScope>
-    readonly uniqueGloballyInScopes: List<ScopedGlobalAttributeUniquenessType>
     readonly uniqueInScopes: List<ScopedAttributeUniquenessType>
 
     protected _representativeFlags?: List<Flag>
@@ -75,7 +68,6 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Sort
                 indexedDecimalPlaces: number,
                 sortableInScopes: List<EntityScope>,
                 filteredInScopes: List<EntityScope>,
-                uniqueGloballyInScopes: List<ScopedGlobalAttributeUniquenessType>,
                 uniqueInScopes: List<ScopedAttributeUniquenessType>) {
         super()
         this.name = name
@@ -89,31 +81,25 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Sort
         this.indexedDecimalPlaces = indexedDecimalPlaces
         this.sortableInScopes = sortableInScopes
         this.filteredInScopes = filteredInScopes
-        this.uniqueGloballyInScopes = uniqueGloballyInScopes
         this.uniqueInScopes = uniqueInScopes
-        this.sortable = sortableInScopes !== undefined && sortableInScopes.size > 0
     }
 
     get representativeFlags(): List<Flag> {
         if (this._representativeFlags == undefined) {
-            const { t } = useI18n()
             const flags: Flag[] = []
 
             flags.push(new Flag(this.formatDataTypeForFlag(this.type)))
 
-            if(this.sortableInScopes !== undefined && this.sortableInScopes.size > 0) {
-                flags.push(new Flag(AttributeSchemaFlag.Sortable, this.sortableInScopes.toArray(), t('schemaViewer.attribute.tooltip.content', [t('schemaViewer.tooltip.sorted'), this.sortableInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
+            if (this.sortableInScopes !== undefined && this.sortableInScopes.size > 0) {
+               flags.push(new Flag(AttributeSchemaFlag.Sortable, this.sortableInScopes.toArray(), i18n.global.t('schemaViewer.attribute.tooltip.content', [i18n.global.t('schemaViewer.tooltip.sorted'), this.sortableInScopes.map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
             }
-            if(this.uniqueGloballyInScopes !== undefined && this.uniqueGloballyInScopes.size > 0) {
-                flags.push(new Flag(AttributeSchemaFlag.Unique, this.uniqueGloballyInScopes.map(x => x.scope).toArray(), t(`schemaViewer.attribute.tooltip.content`)))
+            if (this.filteredInScopes !== undefined && this.filteredInScopes.size > 0) {
+                flags.push(new Flag(AttributeSchemaFlag.Filterable, this.filteredInScopes.toArray(), i18n.global.t('schemaViewer.attribute.tooltip.content', [i18n.global.t('schemaViewer.tooltip.filtered'), this.filteredInScopes.map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
             }
-            if(this.filteredInScopes !== undefined && this.filteredInScopes.size > 0) {
-                flags.push(new Flag(AttributeSchemaFlag.Filterable, this.filteredInScopes.toArray(), t('schemaViewer.attribute.tooltip.content', [t('schemaViewer.tooltip.filtered'), this.filteredInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
-            }
-            if(this.nullable){
+            if (this.nullable) {
                 flags.push(new Flag(AttributeSchemaFlag.Nullable))
             }
-            if(this.localized){
+            if (this.localized) {
                 flags.push(new Flag(AttributeSchemaFlag.Localized))
             }
 

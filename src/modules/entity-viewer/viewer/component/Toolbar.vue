@@ -13,7 +13,7 @@ import { TabType } from '@/modules/workspace/tab/model/TabType'
 import VExecuteQueryButton from '@/modules/base/component/VExecuteQueryButton.vue'
 import { useDataLocale, useTabProps, useLayer } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { List } from 'immutable'
-import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { EntityScope, EntityScopeIcons } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { getEnumKeyByValue } from '@/utils/enum.ts'
 
 const keymap: Keymap = useKeymap()
@@ -45,7 +45,7 @@ const flags = computed<any>(() => {
             if(val.value) {
                 flags.push({
                     title: getEnumKeyByValue(EntityScope, val.scope),
-                    prependIcon: val.scope
+                    prependIcon: EntityScopeIcons[val.scope]
                 })
             }
         }
