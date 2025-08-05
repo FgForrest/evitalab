@@ -37,14 +37,40 @@ const properties = computed<Property[]>(() => {
     properties.push(new Property(t('schemaViewer.attribute.label.deprecationNotice'), new PropertyValue(props.schema.deprecationNotice)))
     if (entityAttribute) properties.push(new Property(t('schemaViewer.attribute.label.representative'), new PropertyValue((props.schema as EntityAttributeSchema).representative)))
     properties.push(new Property(t('schemaViewer.attribute.label.sortable'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
-        props.schema.sortableInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x), t(`schemaViewer.attribute.label.${x.toLowerCase()}`), t('schemaViewer.attribute.tooltip.content', [t('schemaViewer.tooltip.sorted'), props.schema.sortableInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')]), props.schema.sortableInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x) ? 'mdi-check' : 'mdi-close'))))))
+        props.schema.sortableInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x), t(`schemaViewer.attribute.label.${x.toLowerCase()}`),
+        props.schema.sortableInScopes.some(q => getEnumKeyByValue(EntityScope, q) === x) ? t('schemaViewer.attribute.tooltip.content', [
+            t('schemaViewer.tooltip.sorted'),
+            t(`schemaViewer.tooltip.${x.toLowerCase()}`)
+        ]) : t('schemaViewer.attribute.tooltip.contentNegation', [
+            t('schemaViewer.tooltip.sorted'),
+            t(`schemaViewer.tooltip.${x.toLowerCase()}`)
+        ]), props.schema.sortableInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x) ? 'mdi-check' : 'mdi-close'))))))
 
     if (props.schema.uniqueInScopes.size > 0) {
         properties.push(new Property(t('schemaViewer.attribute.label.filterable'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
             props.schema.filteredInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x), t(`schemaViewer.attribute.label.${x.toLowerCase()}`) + ` (${t(`schemaViewer.attribute.label.unique`).toLowerCase()})`, t('schemaViewer.attribute.tooltip.filterableUnique', [t('schemaViewer.tooltip.filtered'), props.schema.filteredInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')]), getEnumKeyByValue(EntityScope, EntityScope.Live) === x ? 'mdi-check' : 'mdi-close'))))))
     } else {
-        properties.push(new Property(t('schemaViewer.attribute.label.filterable'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
-            props.schema.filteredInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x), t(`schemaViewer.attribute.label.${x.toLowerCase()}`), t('schemaViewer.attribute.tooltip.content', [t('schemaViewer.tooltip.filtered'), props.schema.filteredInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')]), props.schema.filteredInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x) ? 'mdi-check' : 'mdi-close'))))))
+        properties.push(new Property(
+            t('schemaViewer.attribute.label.filterable'),
+            List(
+                keys.value.map(x =>
+                    new PropertyValue(new MultiValueFlagValue(
+                        props.schema.filteredInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x),
+                        t(`schemaViewer.attribute.label.${x.toLowerCase()}`),
+                        props.schema.filteredInScopes.some(q => getEnumKeyByValue(EntityScope, q) === x) ? t('schemaViewer.attribute.tooltip.content', [
+                            t('schemaViewer.tooltip.filtered'),
+                            t(`schemaViewer.tooltip.${x.toLowerCase()}`)
+                        ]) : t('schemaViewer.attribute.tooltip.contentNegation', [
+                            t('schemaViewer.tooltip.filtered'),
+                            t(`schemaViewer.tooltip.${x.toLowerCase()}`)
+                        ]),
+                        props.schema.filteredInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x)
+                            ? 'mdi-check'
+                            : 'mdi-close'
+                    ))
+                )
+            )
+        ))
     }
 
     for (const group of props.schema.uniqueInScopes.groupBy(x => x.uniquenessType)) {

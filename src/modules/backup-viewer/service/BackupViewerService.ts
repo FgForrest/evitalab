@@ -1,4 +1,3 @@
-import { Connection } from '@/modules/connection/model/Connection'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { mandatoryInject } from '@/utils/reactivity'

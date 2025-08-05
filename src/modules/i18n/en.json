@@ -962,6 +962,8 @@
         "globallyUnique": "Globally unique",
         "filterable": "Filterable",
         "sortable": "Sortable",
+        "filtered": "filtered",
+        "sorted": "sorted",
         "localized": "Localized",
         "nullable": "Nullable",
         "defaultValue": "Default value",
@@ -972,6 +974,7 @@
       },
       "tooltip": {
         "content": "The attribute can be {0} within the {1} scope.",
+        "contentNegation": "The attribute cannot be {0} within the {1} scope.",
         "uniqueContent": "The {0} attribute is present in {1} scope.",
         "referenceAttributeContent": "Attribute {0} is present in {1} scope.",
         "filterableUnique": "In live scope (due to uniqueness)"
