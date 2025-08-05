@@ -321,6 +321,7 @@
   },
   "explorer": {
     "title": "Connection Explorer",
+    "readOnlyToolTip": "Server is read-only",
     "button": {
       "connect": "Connect"
     },

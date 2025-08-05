@@ -42,6 +42,14 @@ export class CatalogStatistics {
     readonly indexCount: bigint
 
     readonly sizeOnDisk: bigint
+    /**
+     * true if the catalog is read-only, false otherwise
+    */
+    readonly readOnly : boolean
+    /**
+     * true if the catalog is unusable, false otherwise
+     */
+    readonly unusable: boolean
     readonly progresses: Map<MutationProgressType, number>
     constructor(
         catalogId: string | undefined,
@@ -52,7 +60,9 @@ export class CatalogStatistics {
         catalogState: CatalogState,
         totalRecords: bigint,
         indexCount: bigint,
-        sizeOnDisk: bigint
+        sizeOnDisk: bigint,
+        readOnly: boolean,
+        unusable: boolean
     ) {
         this.catalogId = catalogId
         this.version = version
@@ -63,6 +73,8 @@ export class CatalogStatistics {
         this.totalRecords = totalRecords
         this.indexCount = indexCount
         this.sizeOnDisk = sizeOnDisk
+        this.readOnly = readOnly
+        this.unusable = unusable
         this.progresses = new Map<MutationProgressType, number>()
     }
 

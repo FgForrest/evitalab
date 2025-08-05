@@ -27,7 +27,9 @@ export class CatalogStatisticsConverter {
             this.convertCatalogState(catalog.catalogState),
             BigInt(catalog.totalRecords),
             BigInt(catalog.indexCount),
-            BigInt(catalog.sizeOnDiskInBytes)
+            BigInt(catalog.sizeOnDiskInBytes),
+            catalog.readOnly,
+            catalog.unusable
         )
     }
 

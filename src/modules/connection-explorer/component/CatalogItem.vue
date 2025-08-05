@@ -81,6 +81,9 @@ function changeFlags(runningProgresses?: Map<MutationProgressType, number>) {
     } else if (props.catalog.catalogState === CatalogState.WarmingUp) {
         flags.value.push(ItemFlag.warning(t('explorer.catalog.flag.warmingUp')))
     } else {
+        if(props.catalog.catalogState === CatalogState.Alive)
+            return
+
         flags.value.push(ItemFlag.info(t(`explorer.catalog.flag.${props.catalog.catalogState.toString()}`)))
     }
 
@@ -175,7 +178,7 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
                 v-bind="props"
                 :openable="!catalog.corrupted"
                 :is-open="isOpen"
-                :prepend-icon="serverStatus?.readOnly ? 'mdi-database-eye-outline' : 'mdi-database-outline'"
+                :prepend-icon="catalog.readOnly ? 'mdi-database-eye-outline' : 'mdi-database-outline'"
                 :loading="loading"
                 :flags="flags"
                 :actions="menuItemList"
@@ -184,11 +187,7 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
                 @click:action="handleAction"
                 class="text-gray-light"
             >
-                <span>{{ catalog.name }}
-                    <VIcon v-if="serverStatus?.readOnly">
-                        mdi-eye-outline
-                    </VIcon>
-                </span>
+                {{ catalog.name }}
             </VTreeViewItem>
         </template>
 

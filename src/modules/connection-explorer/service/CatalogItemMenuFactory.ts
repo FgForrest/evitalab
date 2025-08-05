@@ -157,7 +157,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
             'mdi-cloud-download-outline',
             this.getItemTitle,
             () => backupCatalogCallback(),
-            baseEnabledFunctions && serverWritable
+            baseEnabledFunctions
         )
 
 
@@ -221,37 +221,45 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
             () => replaceCatalogCallback(),
             baseEnabledFunctions && serverWritable
         )
-        this.createMenuAction(
-            items,
-            CatalogMenuItemType.DeactivateCatalog,
-            'mdi-close-circle-outline',
-            this.getItemTitle,
-            () => deactivateCatalogCallback(),
-            baseEnabledFunctions
-        )
-        this.createMenuAction(
-            items,
-            CatalogMenuItemType.ActivateCatalog,
-            'mdi-check-circle-outline',
-            this.getItemTitle,
-            () => activateCatalogCallback(),
-            deactivated
-        )
-        this.createMenuAction(
-            items,
-            CatalogMenuItemType.SwitchToMutable,
-            'mdi-lock-open-variant-outline',
-            this.getItemTitle,
-            () => mutateCatalogCallback(),
-            baseEnabledFunctions && !serverWritable)
-        this.createMenuAction(
-            items,
-            CatalogMenuItemType.SwitchToImmutable,
-            'mdi-lock-outline',
-            this.getItemTitle,
-            () => immutableCatalogCallback(),
-            baseEnabledFunctions && serverWritable
-        )
+        if(baseEnabledFunctions) {
+            this.createMenuAction(
+                items,
+                CatalogMenuItemType.DeactivateCatalog,
+                'mdi-close-circle-outline',
+                this.getItemTitle,
+                () => deactivateCatalogCallback(),
+                baseEnabledFunctions
+            )
+        }
+        if(deactivated) {
+            this.createMenuAction(
+                items,
+                CatalogMenuItemType.ActivateCatalog,
+                'mdi-check-circle-outline',
+                this.getItemTitle,
+                () => activateCatalogCallback(),
+                deactivated
+            )
+        }
+        if(catalog.readOnly) {
+            this.createMenuAction(
+                items,
+                CatalogMenuItemType.SwitchToMutable,
+                'mdi-lock-open-variant-outline',
+                this.getItemTitle,
+                () => mutateCatalogCallback(),
+                baseEnabledFunctions)
+        }
+        if(!catalog.readOnly) {
+            this.createMenuAction(
+                items,
+                CatalogMenuItemType.SwitchToImmutable,
+                'mdi-lock-outline',
+                this.getItemTitle,
+                () => immutableCatalogCallback(),
+                baseEnabledFunctions && serverWritable
+            )
+        }
 
         if (catalog.isInWarmup) {
             this.createMenuAction(
