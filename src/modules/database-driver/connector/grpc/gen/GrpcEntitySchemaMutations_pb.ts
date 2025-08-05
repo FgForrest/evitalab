@@ -15,7 +15,84 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file GrpcEntitySchemaMutations.proto.
  */
 export const file_GrpcEntitySchemaMutations: GenFile = /*@__PURE__*/
-  fileDesc("Ch9HcnBjRW50aXR5U2NoZW1hTXV0YXRpb25zLnByb3RvEiVpby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkInIKJ0dycGNBbGxvd0N1cnJlbmN5SW5FbnRpdHlTY2hlbWFNdXRhdGlvbhJHCgpjdXJyZW5jaWVzGAEgAygLMjMuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ3VycmVuY3kigAEKLEdycGNBbGxvd0V2b2x1dGlvbk1vZGVJbkVudGl0eVNjaGVtYU11dGF0aW9uElAKDmV2b2x1dGlvbk1vZGVzGAEgAygOMjguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZvbHV0aW9uTW9kZSJrCiVHcnBjQWxsb3dMb2NhbGVJbkVudGl0eVNjaGVtYU11dGF0aW9uEkIKB2xvY2FsZXMYASADKAsyMS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNMb2NhbGUidQoqR3JwY0Rpc2FsbG93Q3VycmVuY3lJbkVudGl0eVNjaGVtYU11dGF0aW9uEkcKCmN1cnJlbmNpZXMYASADKAsyMy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDdXJyZW5jeSKDAQovR3JwY0Rpc2FsbG93RXZvbHV0aW9uTW9kZUluRW50aXR5U2NoZW1hTXV0YXRpb24SUAoOZXZvbHV0aW9uTW9kZXMYASADKA4yOC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFdm9sdXRpb25Nb2RlIm4KKEdycGNEaXNhbGxvd0xvY2FsZUluRW50aXR5U2NoZW1hTXV0YXRpb24SQgoHbG9jYWxlcxgBIAMoCzIxLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0xvY2FsZSJqCi9HcnBjTW9kaWZ5RW50aXR5U2NoZW1hRGVwcmVjYXRpb25Ob3RpY2VNdXRhdGlvbhI3ChFkZXByZWNhdGlvbk5vdGljZRgBIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZSJeCilHcnBjTW9kaWZ5RW50aXR5U2NoZW1hRGVzY3JpcHRpb25NdXRhdGlvbhIxCgtkZXNjcmlwdGlvbhgBIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZSJVCjJHcnBjU2V0RW50aXR5U2NoZW1hV2l0aEdlbmVyYXRlZFByaW1hcnlLZXlNdXRhdGlvbhIfChd3aXRoR2VuZXJhdGVkUHJpbWFyeUtleRgBIAEoCCKSAQooR3JwY1NldEVudGl0eVNjaGVtYVdpdGhIaWVyYXJjaHlNdXRhdGlvbhIVCg13aXRoSGllcmFyY2h5GAEgASgIEk8KD2luZGV4ZWRJblNjb3BlcxgCIAMoDjI2LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjb3BlIqYBCiRHcnBjU2V0RW50aXR5U2NoZW1hV2l0aFByaWNlTXV0YXRpb24SEQoJd2l0aFByaWNlGAEgASgIEhoKEmluZGV4ZWRQcmljZVBsYWNlcxgCIAEoBRJPCg9pbmRleGVkSW5TY29wZXMYAyADKA4yNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlTY29wZUKFAgopY29tLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWRCHkdycGNFbnRpdHlTY2hlbWFNdXRhdGlvbnNQcm90b1ABogIFSUVFR0eqAiVJby5Fdml0YWRiLkV4dGVybmFsQXBpLkdycGMuR2VuZXJhdGVkygIlSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZOICMUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWRcR1BCTWV0YWRhdGHqAilJbzo6RXZpdGFkYjo6RXh0ZXJuYWxBcGk6OkdycGM6OkdlbmVyYXRlZGIGcHJvdG8z", [file_GrpcEvitaDataTypes, file_GrpcEnums, file_google_protobuf_wrappers]);
+  fileDesc("Ch9HcnBjRW50aXR5U2NoZW1hTXV0YXRpb25zLnByb3RvEiVpby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkIjQKHkdycGNDcmVhdGVFbnRpdHlTY2hlbWFNdXRhdGlvbhISCgplbnRpdHlUeXBlGAEgASgJIlwKIkdycGNNb2RpZnlFbnRpdHlTY2hlbWFOYW1lTXV0YXRpb24SDAoEbmFtZRgBIAEoCRIPCgduZXdOYW1lGAIgASgJEhcKD292ZXJ3cml0ZVRhcmdldBgDIAEoCCIuCh5HcnBjUmVtb3ZlRW50aXR5U2NoZW1hTXV0YXRpb24SDAoEbmFtZRgBIAEoCSJyCidHcnBjQWxsb3dDdXJyZW5jeUluRW50aXR5U2NoZW1hTXV0YXRpb24SRwoKY3VycmVuY2llcxgBIAMoCzIzLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0N1cnJlbmN5IoABCixHcnBjQWxsb3dFdm9sdXRpb25Nb2RlSW5FbnRpdHlTY2hlbWFNdXRhdGlvbhJQCg5ldm9sdXRpb25Nb2RlcxgBIAMoDjI4LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2b2x1dGlvbk1vZGUiawolR3JwY0FsbG93TG9jYWxlSW5FbnRpdHlTY2hlbWFNdXRhdGlvbhJCCgdsb2NhbGVzGAEgAygLMjEuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTG9jYWxlInUKKkdycGNEaXNhbGxvd0N1cnJlbmN5SW5FbnRpdHlTY2hlbWFNdXRhdGlvbhJHCgpjdXJyZW5jaWVzGAEgAygLMjMuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ3VycmVuY3kigwEKL0dycGNEaXNhbGxvd0V2b2x1dGlvbk1vZGVJbkVudGl0eVNjaGVtYU11dGF0aW9uElAKDmV2b2x1dGlvbk1vZGVzGAEgAygOMjguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZvbHV0aW9uTW9kZSJuCihHcnBjRGlzYWxsb3dMb2NhbGVJbkVudGl0eVNjaGVtYU11dGF0aW9uEkIKB2xvY2FsZXMYASADKAsyMS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNMb2NhbGUiagovR3JwY01vZGlmeUVudGl0eVNjaGVtYURlcHJlY2F0aW9uTm90aWNlTXV0YXRpb24SNwoRZGVwcmVjYXRpb25Ob3RpY2UYASABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUiXgopR3JwY01vZGlmeUVudGl0eVNjaGVtYURlc2NyaXB0aW9uTXV0YXRpb24SMQoLZGVzY3JpcHRpb24YASABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUiVQoyR3JwY1NldEVudGl0eVNjaGVtYVdpdGhHZW5lcmF0ZWRQcmltYXJ5S2V5TXV0YXRpb24SHwoXd2l0aEdlbmVyYXRlZFByaW1hcnlLZXkYASABKAgikgEKKEdycGNTZXRFbnRpdHlTY2hlbWFXaXRoSGllcmFyY2h5TXV0YXRpb24SFQoNd2l0aEhpZXJhcmNoeRgBIAEoCBJPCg9pbmRleGVkSW5TY29wZXMYAiADKA4yNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlTY29wZSKmAQokR3JwY1NldEVudGl0eVNjaGVtYVdpdGhQcmljZU11dGF0aW9uEhEKCXdpdGhQcmljZRgBIAEoCBIaChJpbmRleGVkUHJpY2VQbGFjZXMYAiABKAUSTwoPaW5kZXhlZEluU2NvcGVzGAMgAygOMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5U2NvcGVChQIKKWNvbS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkQh5HcnBjRW50aXR5U2NoZW1hTXV0YXRpb25zUHJvdG9QAaICBUlFRUdHqgIlSW8uRXZpdGFkYi5FeHRlcm5hbEFwaS5HcnBjLkdlbmVyYXRlZMoCJUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWTiAjFJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVkXEdQQk1ldGFkYXRh6gIpSW86OkV2aXRhZGI6OkV4dGVybmFsQXBpOjpHcnBjOjpHZW5lcmF0ZWRiBnByb3RvMw", [file_GrpcEvitaDataTypes, file_GrpcEnums, file_google_protobuf_wrappers]);
+
+/**
+ * Mutation is responsible for setting up a new `EntitySchema` - or more precisely the collection within catalog.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcCreateEntitySchemaMutation
+ */
+export type GrpcCreateEntitySchemaMutation = Message<"io.evitadb.externalApi.grpc.generated.GrpcCreateEntitySchemaMutation"> & {
+  /**
+   * Name of newly created entity schema.
+   *
+   * @generated from field: string entityType = 1;
+   */
+  entityType: string;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcCreateEntitySchemaMutation.
+ * Use `create(GrpcCreateEntitySchemaMutationSchema)` to create a new message.
+ */
+export const GrpcCreateEntitySchemaMutationSchema: GenMessage<GrpcCreateEntitySchemaMutation> = /*@__PURE__*/
+  messageDesc(file_GrpcEntitySchemaMutations, 0);
+
+/**
+ * Mutation is responsible for renaming an existing `EntitySchema`.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcModifyEntitySchemaNameMutation
+ */
+export type GrpcModifyEntitySchemaNameMutation = Message<"io.evitadb.externalApi.grpc.generated.GrpcModifyEntitySchemaNameMutation"> & {
+  /**
+   * Name of the entity schema the mutation is targeting.
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+
+  /**
+   * New name of the entity schema the mutation is targeting.
+   *
+   * @generated from field: string newName = 2;
+   */
+  newName: string;
+
+  /**
+   * Whether to overwrite entity collection with same name as the `newName` if found.
+   *
+   * @generated from field: bool overwriteTarget = 3;
+   */
+  overwriteTarget: boolean;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcModifyEntitySchemaNameMutation.
+ * Use `create(GrpcModifyEntitySchemaNameMutationSchema)` to create a new message.
+ */
+export const GrpcModifyEntitySchemaNameMutationSchema: GenMessage<GrpcModifyEntitySchemaNameMutation> = /*@__PURE__*/
+  messageDesc(file_GrpcEntitySchemaMutations, 1);
+
+/**
+ * Mutation is responsible for removing an existing `EntitySchema`.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcRemoveEntitySchemaMutation
+ */
+export type GrpcRemoveEntitySchemaMutation = Message<"io.evitadb.externalApi.grpc.generated.GrpcRemoveEntitySchemaMutation"> & {
+  /**
+   * Name of entity schema to remove.
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcRemoveEntitySchemaMutation.
+ * Use `create(GrpcRemoveEntitySchemaMutationSchema)` to create a new message.
+ */
+export const GrpcRemoveEntitySchemaMutationSchema: GenMessage<GrpcRemoveEntitySchemaMutation> = /*@__PURE__*/
+  messageDesc(file_GrpcEntitySchemaMutations, 2);
 
 /**
  * Mutation is responsible for adding one or more currencies to a `EntitySchema.currencies` in `EntitySchema`.
@@ -36,7 +113,7 @@ export type GrpcAllowCurrencyInEntitySchemaMutation = Message<"io.evitadb.extern
  * Use `create(GrpcAllowCurrencyInEntitySchemaMutationSchema)` to create a new message.
  */
 export const GrpcAllowCurrencyInEntitySchemaMutationSchema: GenMessage<GrpcAllowCurrencyInEntitySchemaMutation> = /*@__PURE__*/
-  messageDesc(file_GrpcEntitySchemaMutations, 0);
+  messageDesc(file_GrpcEntitySchemaMutations, 3);
 
 /**
  * Mutation is responsible for adding one or more modes to a `EntitySchema.evolutionMode` in `EntitySchema`.
@@ -59,7 +136,7 @@ export type GrpcAllowEvolutionModeInEntitySchemaMutation = Message<"io.evitadb.e
  * Use `create(GrpcAllowEvolutionModeInEntitySchemaMutationSchema)` to create a new message.
  */
 export const GrpcAllowEvolutionModeInEntitySchemaMutationSchema: GenMessage<GrpcAllowEvolutionModeInEntitySchemaMutation> = /*@__PURE__*/
-  messageDesc(file_GrpcEntitySchemaMutations, 1);
+  messageDesc(file_GrpcEntitySchemaMutations, 4);
 
 /**
  * Mutation is responsible for adding one or more locales to a `EntitySchema.locales` in `EntitySchema`.
@@ -80,7 +157,7 @@ export type GrpcAllowLocaleInEntitySchemaMutation = Message<"io.evitadb.external
  * Use `create(GrpcAllowLocaleInEntitySchemaMutationSchema)` to create a new message.
  */
 export const GrpcAllowLocaleInEntitySchemaMutationSchema: GenMessage<GrpcAllowLocaleInEntitySchemaMutation> = /*@__PURE__*/
-  messageDesc(file_GrpcEntitySchemaMutations, 2);
+  messageDesc(file_GrpcEntitySchemaMutations, 5);
 
 /**
  * Mutation is responsible for removing one or more currencies from a `EntitySchema.currencies` in `EntitySchema`.
@@ -101,7 +178,7 @@ export type GrpcDisallowCurrencyInEntitySchemaMutation = Message<"io.evitadb.ext
  * Use `create(GrpcDisallowCurrencyInEntitySchemaMutationSchema)` to create a new message.
  */
 export const GrpcDisallowCurrencyInEntitySchemaMutationSchema: GenMessage<GrpcDisallowCurrencyInEntitySchemaMutation> = /*@__PURE__*/
-  messageDesc(file_GrpcEntitySchemaMutations, 3);
+  messageDesc(file_GrpcEntitySchemaMutations, 6);
 
 /**
  * Mutation is responsible for removing one or more modes from a `EntitySchema.evolutionMode` in `EntitySchema`.
@@ -124,7 +201,7 @@ export type GrpcDisallowEvolutionModeInEntitySchemaMutation = Message<"io.evitad
  * Use `create(GrpcDisallowEvolutionModeInEntitySchemaMutationSchema)` to create a new message.
  */
 export const GrpcDisallowEvolutionModeInEntitySchemaMutationSchema: GenMessage<GrpcDisallowEvolutionModeInEntitySchemaMutation> = /*@__PURE__*/
-  messageDesc(file_GrpcEntitySchemaMutations, 4);
+  messageDesc(file_GrpcEntitySchemaMutations, 7);
 
 /**
  * Mutation is responsible for removing one or more locales from a `EntitySchema.locales` in `EntitySchema`.
@@ -145,7 +222,7 @@ export type GrpcDisallowLocaleInEntitySchemaMutation = Message<"io.evitadb.exter
  * Use `create(GrpcDisallowLocaleInEntitySchemaMutationSchema)` to create a new message.
  */
 export const GrpcDisallowLocaleInEntitySchemaMutationSchema: GenMessage<GrpcDisallowLocaleInEntitySchemaMutation> = /*@__PURE__*/
-  messageDesc(file_GrpcEntitySchemaMutations, 5);
+  messageDesc(file_GrpcEntitySchemaMutations, 8);
 
 /**
  * Mutation is responsible for setting a `EntitySchema.deprecationNotice` in `EntitySchema`.
@@ -167,7 +244,7 @@ export type GrpcModifyEntitySchemaDeprecationNoticeMutation = Message<"io.evitad
  * Use `create(GrpcModifyEntitySchemaDeprecationNoticeMutationSchema)` to create a new message.
  */
 export const GrpcModifyEntitySchemaDeprecationNoticeMutationSchema: GenMessage<GrpcModifyEntitySchemaDeprecationNoticeMutation> = /*@__PURE__*/
-  messageDesc(file_GrpcEntitySchemaMutations, 6);
+  messageDesc(file_GrpcEntitySchemaMutations, 9);
 
 /**
  * Mutation is responsible for setting a `EntitySchema.description` in `EntitySchema`.
@@ -189,7 +266,7 @@ export type GrpcModifyEntitySchemaDescriptionMutation = Message<"io.evitadb.exte
  * Use `create(GrpcModifyEntitySchemaDescriptionMutationSchema)` to create a new message.
  */
 export const GrpcModifyEntitySchemaDescriptionMutationSchema: GenMessage<GrpcModifyEntitySchemaDescriptionMutation> = /*@__PURE__*/
-  messageDesc(file_GrpcEntitySchemaMutations, 7);
+  messageDesc(file_GrpcEntitySchemaMutations, 10);
 
 /**
  * Mutation is responsible for setting a `EntitySchema.withGeneratedPrimaryKey` in `EntitySchema`.
@@ -214,7 +291,7 @@ export type GrpcSetEntitySchemaWithGeneratedPrimaryKeyMutation = Message<"io.evi
  * Use `create(GrpcSetEntitySchemaWithGeneratedPrimaryKeyMutationSchema)` to create a new message.
  */
 export const GrpcSetEntitySchemaWithGeneratedPrimaryKeyMutationSchema: GenMessage<GrpcSetEntitySchemaWithGeneratedPrimaryKeyMutation> = /*@__PURE__*/
-  messageDesc(file_GrpcEntitySchemaMutations, 8);
+  messageDesc(file_GrpcEntitySchemaMutations, 11);
 
 /**
  * Mutation is responsible for setting a `EntitySchema.withHierarchy` in `EntitySchema`.
@@ -253,7 +330,7 @@ export type GrpcSetEntitySchemaWithHierarchyMutation = Message<"io.evitadb.exter
  * Use `create(GrpcSetEntitySchemaWithHierarchyMutationSchema)` to create a new message.
  */
 export const GrpcSetEntitySchemaWithHierarchyMutationSchema: GenMessage<GrpcSetEntitySchemaWithHierarchyMutation> = /*@__PURE__*/
-  messageDesc(file_GrpcEntitySchemaMutations, 9);
+  messageDesc(file_GrpcEntitySchemaMutations, 12);
 
 /**
  * Mutation is responsible for setting a `EntitySchema.withPrice` in `EntitySchema`.
@@ -306,5 +383,5 @@ export type GrpcSetEntitySchemaWithPriceMutation = Message<"io.evitadb.externalA
  * Use `create(GrpcSetEntitySchemaWithPriceMutationSchema)` to create a new message.
  */
 export const GrpcSetEntitySchemaWithPriceMutationSchema: GenMessage<GrpcSetEntitySchemaWithPriceMutation> = /*@__PURE__*/
-  messageDesc(file_GrpcEntitySchemaMutations, 10);
+  messageDesc(file_GrpcEntitySchemaMutations, 13);
 

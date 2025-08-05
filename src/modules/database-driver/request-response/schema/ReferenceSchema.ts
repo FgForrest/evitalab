@@ -10,6 +10,9 @@ import { EntityScope } from '@/modules/database-driver/request-response/schema/E
 import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 import { useI18n } from 'vue-i18n'
 import { getEnumKeyByValue } from '@/utils/enum.ts'
+import type {
+    ScopedReferenceIndexType
+} from '@/modules/database-driver/request-response/schema/ScopedReferenceIndexType.ts'
 
 /**
  * evitaLab's representation of a single evitaDB reference schema independent of specific evitaDB version
@@ -61,7 +64,7 @@ export class ReferenceSchema extends AbstractSchema {
      * Contains definitions of all sortable attribute compounds defined in this schema.
      */
     readonly sortableAttributeCompounds: Map<string, SortableAttributeCompoundSchema>
-    readonly indexedInScopes: List<EntityScope>
+    readonly scopedIndexTypes: List<ScopedReferenceIndexType>
     readonly facetedInScopes: List<EntityScope>
 
     private _representativeFlags?: List<Flag>
@@ -79,7 +82,7 @@ export class ReferenceSchema extends AbstractSchema {
                 cardinality: Cardinality,
                 attributes: AttributeSchema[],
                 sortableAttributeCompounds: SortableAttributeCompoundSchema[],
-                indexedInScopes: List<EntityScope>,
+                scopedIndexTypes: List<ScopedReferenceIndexType>,
                 facetedInScopes: List<EntityScope>) {
         super()
         this.name = name
@@ -95,7 +98,7 @@ export class ReferenceSchema extends AbstractSchema {
         this.cardinality = cardinality
         this.attributes = Map(attributes.map(attribute => [attribute.name, attribute]))
         this.sortableAttributeCompounds = Map(sortableAttributeCompounds.map(sac => [sac.name, sac]))
-        this.indexedInScopes = indexedInScopes
+        this.scopedIndexTypes = scopedIndexTypes
         this.facetedInScopes = facetedInScopes
     }
 
@@ -105,7 +108,7 @@ export class ReferenceSchema extends AbstractSchema {
             const representativeFlags: Flag[] = []
 
             if (!this.referencedEntityTypeManaged) representativeFlags.push(new Flag(ReferenceSchemaFlag.External))
-            if (this.indexedInScopes.size > 0) representativeFlags.push(new Flag(ReferenceSchemaFlag.Indexed, this.indexedInScopes.map(x => x).toArray(), t('schemaViewer.reference.tooltip.content', ['', this.indexedInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
+            if (this.scopedIndexTypes.size > 0) representativeFlags.push(new Flag(ReferenceSchemaFlag.Indexed, this.scopedIndexTypes.map(x => x.scope).toArray(), t('schemaViewer.reference.tooltip.content', ['', this.scopedIndexTypes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z.scope).toLowerCase()}`)).join('/')])))
             if (this.facetedInScopes.size > 0) representativeFlags.push(new Flag(ReferenceSchemaFlag.Faceted, this.facetedInScopes.map(x => x).toArray(), t('schemaViewer.reference.tooltip.facetedContent', ['', this.facetedInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
 
             this._representativeFlags = List(representativeFlags)

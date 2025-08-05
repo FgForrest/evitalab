@@ -14,7 +14,8 @@ import {
     GrpcEvolutionMode,
     GrpcGlobalAttributeUniquenessType,
     GrpcOrderBehaviour,
-    GrpcOrderDirection
+    GrpcOrderDirection,
+    GrpcReferenceIndexType
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import {
@@ -36,8 +37,10 @@ import type {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchema_pb'
 import type {
     GrpcCurrency,
-    GrpcLocale, GrpcScopedAttributeUniquenessType,
-    GrpcScopedGlobalAttributeUniquenessType
+    GrpcLocale,
+    GrpcScopedAttributeUniquenessType,
+    GrpcScopedGlobalAttributeUniquenessType,
+    GrpcScopedReferenceIndexType
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import {
@@ -59,6 +62,10 @@ import {
 import {
     ScopedGlobalAttributeUniquenessType
 } from '@/modules/database-driver/request-response/schema/ScopedGlobalAttributeUniquenessType.ts'
+import {
+    ScopedReferenceIndexType
+} from '@/modules/database-driver/request-response/schema/ScopedReferenceIndexType.ts'
+import { ReferenceIndexType } from '@/modules/database-driver/request-response/schema/ReferenceIndexType.ts'
 
 export class CatalogSchemaConverter {
     private readonly evitaValueConverter: EvitaValueConverter
@@ -103,7 +110,7 @@ export class CatalogSchemaConverter {
     ): AttributeSchema {
         const scalar = ScalarConverter.convertScalar(attribute.type)
         const nameVariants = MapUtil.getNamingMap(attribute.nameVariant)
-        if (attribute.schemaType === GrpcAttributeSchemaType.ENTITY) {
+        if (attribute.schemaType === GrpcAttributeSchemaType.ENTITY_SCHEMA) {
             return new AttributeSchema(
                 attribute.name,
                 nameVariants,
@@ -121,7 +128,7 @@ export class CatalogSchemaConverter {
                 this.convertEntityScopes(attribute.filterableInScopes),
                 this.convertUniqueInScopes(attribute.uniqueInScopes)
             )
-        } else if (attribute.schemaType === GrpcAttributeSchemaType.REFERENCE) {
+        } else if (attribute.schemaType === GrpcAttributeSchemaType.REFERENCE_SCHEMA) {
             return new EntityAttributeSchema(
                 attribute.name,
                 nameVariants,
@@ -140,7 +147,7 @@ export class CatalogSchemaConverter {
                 this.convertEntityScopes(attribute.filterableInScopes),
                 this.convertUniqueInScopes(attribute.uniqueInScopes)
             )
-        } else if (attribute.schemaType === GrpcAttributeSchemaType.GLOBAL) {
+        } else if (attribute.schemaType === GrpcAttributeSchemaType.GLOBAL_SCHEMA) {
             return new GlobalAttributeSchema(
                 attribute.name,
                 MapUtil.getNamingMap(attribute.nameVariant),
@@ -363,9 +370,36 @@ export class CatalogSchemaConverter {
             this.convertSortableAttributeCompoundSchemas(
                 referenceSchema.sortableAttributeCompounds
             ),
-            this.convertEntityScopes(referenceSchema.indexedInScopes),
+            this.convertScopedIndexTypes(referenceSchema.scopedIndexTypes),
             this.convertEntityScopes(referenceSchema.facetedInScopes)
         )
+    }
+
+    private convertScopedIndexTypes(scopeType: GrpcScopedReferenceIndexType[]): ImmutableList<ScopedReferenceIndexType> {
+        const items:ScopedReferenceIndexType[] = []
+        for (const index of scopeType) {
+            items.push(this.convertScopedIndexType(index))
+        }
+
+        return ImmutableList(items)
+    }
+
+    private convertScopedIndexType(scopedIndexType: GrpcScopedReferenceIndexType): ScopedReferenceIndexType {
+        return new ScopedReferenceIndexType(
+            this.convertEntityScope(scopedIndexType.scope),
+            this.convertReferenceIndexType(scopedIndexType.indexType)
+        )
+    }
+
+    private convertReferenceIndexType(indexType: GrpcReferenceIndexType): ReferenceIndexType {
+        switch (indexType) {
+            case GrpcReferenceIndexType.REFERENCE_INDEX_TYPE_NONE:
+                return ReferenceIndexType.ReferenceIndexTypeNone
+            case GrpcReferenceIndexType.REFERENCE_INDEX_TYPE_FOR_FILTERING:
+                return ReferenceIndexType.ReferenceIndexTypeForFiltering
+            case GrpcReferenceIndexType.REFERENCE_INDEX_TYPE_FOR_FILTERING_AND_PARTITIONING:
+                return ReferenceIndexType.ReferenceIndexTypeForFilteringAndPartitioning
+        }
     }
 
     private convertAttributeSchemas(attributeSchemas: {

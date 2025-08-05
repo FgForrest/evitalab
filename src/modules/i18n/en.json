@@ -263,8 +263,12 @@
       "openPropertySelector": "Open property selector",
       "scopeSelector": {
         "title": "Select scope",
-        "live": "Live",
-        "archive": "Archive"
+        "live": "In Live scope",
+        "archive": "In Archive scope"
+      },
+      "toolbar": {
+        "live": "In Live scope",
+        "archive": "In Archive scope"
       },
       "propertySelector": {
         "_title": "Property selector",
@@ -948,8 +952,8 @@
         "globallyUniqueWithinLocaleOfCatalog": "Within locale of catalog"
       },
       "label": {
-        "live": "Live",
-        "archive": "Archive",
+        "live": "In Live scope",
+        "archive": "In Archive scope",
         "type": "Type",
         "description": "Description",
         "deprecationNotice": "Deprecation notice",
@@ -968,7 +972,9 @@
       },
       "tooltip": {
         "content": "The attribute can be {0} within the {1} scope.",
-        "uniqueContent": "The {0} attribute is present in scope {1}."
+        "uniqueContent": "The {0} attribute is present in {1} scope.",
+        "referenceAttributeContent": "Attribute {0} is present in {1} scope.",
+        "filterableUnique": "In live scope (due to uniqueness)"
       },
       "help": {
         "uniqueWithinCollection": "The attribute value must be unique among all the entities of the same collection. The {0} attribute is present in scope {1}.",
@@ -995,6 +1001,8 @@
     },
     "reference": {
       "label": {
+        "live": "In Live scope",
+        "archive": "In Archive scope",
         "description": "Description",
         "deprecationNotice": "Deprecation notice",
         "cardinality": "Cardinality",
@@ -1002,14 +1010,25 @@
         "referencedEntityManaged": "Referenced entity managed",
         "referencedGroup": "Referenced group",
         "referencedGroupManaged": "Referenced group managed",
-        "indexed": "Indexed",
         "faceted": "Faceted",
         "referencedEntityNameVariants": "Referenced entity",
-        "referencedGroupNameVariants": "Referenced group"
+        "referencedGroupNameVariants": "Referenced group",
+        "indexed": {
+          "title": "Indexed",
+          "none": "None",
+          "forFiltering": "For filtering",
+          "forFilteringAndPartitioning": "For filtering and partitioning"
+        }
       },
       "tooltip": {
         "content": "The reference is {0} indexed within the {1} scope.",
-        "facetedContent": "The reference {0} provide facets within the {1} scope."
+        "facetedContent": "The reference {0} provide facets within the {1} scope.",
+        "indexedTooltip": {
+          "none": "Reference has no index available.",
+          "forFiltering": "Reference has only basic index available that is necessary for ReferenceHaving constraint interpretation.",
+          "forFilteringAndPartitioning": "Reference has basic index available and also partitioning indexes for the main entity type."
+        },
+        "faceted": "Special facet index is maintained for this reference allowing interpretation of FacetHaving filtering and FacetSummary requirement constraints."
       }
     },
     "sortableAttributeCompound": {

@@ -14,15 +14,19 @@ import { EntitySchemaPointer } from '@/modules/schema-viewer/viewer/model/Entity
 import SchemaContainer from '@/modules/schema-viewer/viewer/component/SchemaContainer.vue'
 import NameVariants from '@/modules/schema-viewer/viewer/component/NameVariants.vue'
 import AttributeSchemaList from '@/modules/schema-viewer/viewer/component/attribute/AttributeSchemaList.vue'
-import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
+import { List, List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { computed, ref } from 'vue'
 import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
 import { SchemaViewerService, useSchemaViewerService } from '@/modules/schema-viewer/viewer/service/SchemaViewerService'
+import { MultiValueFlagValue } from '@/modules/base/model/properties-table/MultiValueFlagValue.ts'
+import { getEnumKeyByValue } from '@/utils/enum.ts'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
 const { t } = useI18n()
+const keys = ref<string[]>([getEnumKeyByValue(EntityScope, EntityScope.Live), getEnumKeyByValue(EntityScope, EntityScope.Archive)])
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
@@ -107,14 +111,20 @@ const properties = computed<Property[]>(() => {
         t('schemaViewer.reference.label.referencedGroupManaged'),
         new PropertyValue(props.schema.referencedGroupTypeManaged || false)
     ))
-    properties.push(new Property(
-        t('schemaViewer.reference.label.indexed'),
-        new PropertyValue(props.schema.indexed)
-    ))
-    properties.push(new Property(
-        t('schemaViewer.reference.label.faceted'),
-        new PropertyValue(props.schema.faceted)
-    ))
+
+    properties.push(new Property(t('schemaViewer.reference.label.indexed.title'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
+        props.schema.scopedIndexTypes.some(y => getEnumKeyByValue(EntityScope, y.scope) === x), t(`schemaViewer.reference.label.${x.toLowerCase()}`) + (() => {
+        const list = props.schema.scopedIndexTypes
+            .filter(q => getEnumKeyByValue(EntityScope, q.scope) == x)
+            .map(z => t(`schemaViewer.reference.label.indexed.${z.indexType}`))
+            .join(' ')
+        return list ? ` (${list})` : ''
+    })(), props.schema.scopedIndexTypes
+            .filter(q => getEnumKeyByValue(EntityScope, q.scope) == x)
+            .map(z => t(`schemaViewer.reference.tooltip.indexedTooltip.${z.indexType}`))
+            .join(' ')))))))
+    properties.push(new Property(t('schemaViewer.reference.label.faceted'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
+        props.schema.facetedInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x), t(`schemaViewer.reference.label.${x.toLowerCase()}`), t('schemaViewer.reference.tooltip.faceted'), props.schema.facetedInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x) ? 'mdi-check' : 'mdi-close'))))))
 
     return properties
 })

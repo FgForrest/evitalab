@@ -44,7 +44,7 @@ const flags = computed<any>(() => {
         for (const val of layers.value) {
             if(val.value) {
                 flags.push({
-                    title: getEnumKeyByValue(EntityScope, val.scope),
+                    title: t(`command.entityViewer.toolbar.${getEnumKeyByValue(EntityScope, val.scope).toLowerCase()}`),
                     prependIcon: EntityScopeIcons[val.scope]
                 })
             }
