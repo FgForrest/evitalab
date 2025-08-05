@@ -3,7 +3,7 @@
 import SchemaContainerSectionListItem from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionListItem.vue'
 import type { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer.ts'
 import type {
-    ReflectedRefenceSchema
+    ReflectedReferenceSchema
 } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer.ts'
@@ -18,7 +18,7 @@ const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
-    schema: ReflectedRefenceSchema
+    schema: ReflectedReferenceSchema
 }>()
 
 function openReferenceSchema(): void {
@@ -40,7 +40,6 @@ function openReferenceSchema(): void {
         :name="schema.name"
         :entity-schema="schema.reflectedType!"
         :flags="schema.representativeFlags"
-        :reflected="true"
         @open="openReferenceSchema"
     />
 </template>

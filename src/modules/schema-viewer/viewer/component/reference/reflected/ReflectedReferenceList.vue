@@ -4,7 +4,7 @@ import SchemaContainerSection from '@/modules/schema-viewer/viewer/component/Sch
 import SchemaContainerSectionList from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionList.vue'
 import type { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer.ts'
 import type {
-    ReflectedRefenceSchema
+    ReflectedReferenceSchema
 } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 import { List as ImmutableList } from 'immutable'
 import ReflectedReferenceListItem
@@ -15,7 +15,7 @@ const { t } = useI18n()
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
-    schemas: ImmutableList<ReflectedRefenceSchema>
+    schemas: ImmutableList<ReflectedReferenceSchema>
     loading: boolean
 }>()
 

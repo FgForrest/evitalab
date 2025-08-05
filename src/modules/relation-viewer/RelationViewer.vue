@@ -9,7 +9,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-    (e: 'openFrom'): void
+    (e: 'openFrom'): void,
+    (e: 'openTo'): void,
 }>()
 
 const { t } = useI18n()
@@ -31,6 +32,10 @@ const icon = computed(() => {
 function openFrom(): void {
     emit('openFrom')
 }
+
+function openTo(): void {
+    emit('openTo')
+}
 </script>
 
 <template>
@@ -38,9 +43,14 @@ function openFrom(): void {
         <tr class="properties-table__row">
             <td>{{ t('relationViewer.title') }}</td>
             <td class="content-row">
-                <VChip @click="openFrom" class="clickable">{{ props.from }}</VChip>
-                <VIcon :icon="icon" />
-                <VChip>{{ props.to }}</VChip>
+                <VChip @click="openFrom" variant="outlined" class="clickable">{{ props.from }}</VChip>
+                <div>
+                    <VIcon class="icon" :icon="icon" />
+                    <VTooltip activator="parent">
+                        {{ t(`relationViewer.cardinality.${cardinality}`) }}
+                    </VTooltip>
+                </div>
+                <VChip @click="openTo" variant="outlined" class="clickable">{{ props.to }}</VChip>
             </td>
         </tr>
     </table>
@@ -70,8 +80,11 @@ function openFrom(): void {
         width: 50%;
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
     }
+}
+
+.icon {
+    padding: 1rem;
 }
 
 .clickable:hover {

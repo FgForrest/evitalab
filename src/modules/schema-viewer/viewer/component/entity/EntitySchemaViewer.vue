@@ -44,7 +44,7 @@ const properties = computed<Property[]>(() => {
         )
     ]
     if (props.schema.deprecationNotice)
-        propertiesArr.push(
+        propertiesArr.splice(2, 0,
             new Property(t('schemaViewer.entity.label.deprecationNotice'), new PropertyValue(props.schema.deprecationNotice)))
     return propertiesArr
 })

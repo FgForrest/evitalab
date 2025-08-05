@@ -56,6 +56,9 @@ const props = defineProps<{
         @click="propertyValue.action?.(propertyValue.value!.value)"
     >
         {{ propertyValue.value.value }}
+        <VTooltip v-if="propertyValue.value.tooltip" activator="parent">
+            {{ propertyValue.value.tooltip }}
+        </VTooltip>
     </VChip>
 
     <!-- actual value is multi-value flag -->

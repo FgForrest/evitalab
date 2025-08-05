@@ -7,17 +7,12 @@ import SchemaContainerSection from '@/modules/schema-viewer/viewer/component/Sch
 import SchemaContainerSectionList from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionList.vue'
 import AttributeSchemaListItem from '@/modules/schema-viewer/viewer/component/attribute/AttributeSchemaListItem.vue'
 import { List } from 'immutable'
-import type {
-    AttributeInheritanceBehavior
-} from '@/modules/database-driver/request-response/schema/AttributeInheritanceBehavior.ts'
 
 const { t } = useI18n()
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
     attributes: List<AttributeSchema>
-    inheritedAttributesFilter?: string[]
-    attributeInheritanceBehavior?: AttributeInheritanceBehavior
 }>()
 </script>
 
@@ -31,8 +26,6 @@ const props = defineProps<{
             <AttributeSchemaListItem
                 :data-pointer="dataPointer"
                 :schema="item"
-                :inherited-attributes-filter="inheritedAttributesFilter"
-                :attribute-inheritance-behavior="attributeInheritanceBehavior"
             />
         </SchemaContainerSectionList>
     </SchemaContainerSection>

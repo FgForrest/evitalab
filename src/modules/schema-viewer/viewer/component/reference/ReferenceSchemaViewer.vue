@@ -75,7 +75,7 @@ const properties = computed<Property[]>(() => {
         properties.push(new Property(
             t('schemaViewer.reference.label.referencedEntity'),
             new PropertyValue(
-                new KeywordValue(props.schema.entityType),
+                new KeywordValue(props.schema.entityType, undefined, t('schemaViewer.reference.label.managedExternal')),
                 undefined,
                 item => {
                     workspaceService.createTab(schemaViewerTabFactory.createNew(
@@ -90,7 +90,7 @@ const properties = computed<Property[]>(() => {
     } else {
         properties.push(new Property(
             t('schemaViewer.reference.label.referencedEntity'),
-            new PropertyValue(new KeywordValue(props.schema.entityType))
+            new PropertyValue(new KeywordValue(props.schema.entityType, undefined, t('schemaViewer.reference.label.managedByEvita')))
         ))
     }
     if (props.schema.referencedGroupType == undefined) {
@@ -175,40 +175,30 @@ async function loadAllReflectedSchemas(): Promise<void> {
     loadedReflectedReferences.value = true
 }
 
-const attributeInheritanceBehavior = computed(() => {
-    if (props.schema instanceof ReflectedReferenceSchema) {
-        return props.schema.attributeInheritanceBehavior
-    }
-    return undefined
-})
-
-const inheritedAttributes = computed(() => {
-    if (props.schema instanceof ReflectedReferenceSchema) {
-        return props.schema.attributeInheritanceFilter
-    }
-    return undefined
-})
-
 onMounted(async () => {
     await loadAllReflectedSchemas()
 })
 
-const reflectedSchemaName = computed(() => {
-    if(props.schema instanceof ReflectedReferenceSchema && props.schema.reflectedReferenceName){
-        return props.schema.reflectedReferenceName
-    }
-})
 
 function openFrom(): void {
-    if(props.schema instanceof ReflectedReferenceSchema && props.schema.reflectedReferenceName) {
+    if (props.schema instanceof ReflectedReferenceSchema && props.schema.reflectedReferenceName) {
         workspaceService.createTab(schemaViewerTabFactory.createNew(
             new ReferenceSchemaPointer(
                 props.dataPointer.schemaPointer.catalogName,
                 props.schema.entityType,
-                props.schema.reflectedReferenceName!,
+                props.schema.reflectedReferenceName!
             )
         ))
     }
+}
+
+function openTo(): void {
+    workspaceService.createTab(schemaViewerTabFactory.createNew(
+        new EntitySchemaPointer(
+            props.dataPointer.schemaPointer.catalogName,
+            props.schema.entityType
+        )
+    ))
 }
 </script>
 
@@ -216,7 +206,8 @@ function openFrom(): void {
     <div>
         <SchemaContainer :properties="properties">
             <template #relation>
-                <RelationViewer @open-from="openFrom" :cardinality="props.schema.cardinality" :from="referenceSchemaPointer.entityType" :to="props.schema.entityType" />
+                <RelationViewer @open-from="openFrom" @open-to="openTo" :cardinality="props.schema.cardinality"
+                                :from="referenceSchemaPointer.entityType" :to="props.schema.entityType" />
             </template>
             <template #nested-details>
                 <NameVariants :name-variants="schema.nameVariants" />
@@ -236,8 +227,6 @@ function openFrom(): void {
                 <AttributeSchemaList
                     v-if="schema.attributes && schema.attributes.size > 0"
                     :data-pointer="dataPointer"
-                    :attribute-inheritance-behavior="loadedReflectedReferences ? attributeInheritanceBehavior : undefined"
-                    :inherited-attributes-filter="loadedReflectedReferences ? inheritedAttributes : undefined"
                     :attributes="ImmutableList(schema.attributes.values())"
                 />
 

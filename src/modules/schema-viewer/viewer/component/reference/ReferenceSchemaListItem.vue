@@ -13,7 +13,6 @@ import { List } from 'immutable'
 import SchemaContainerSectionListItem from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionListItem.vue'
 import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
-import { ReflectedReferenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
@@ -44,7 +43,6 @@ function openReferenceSchema(): void {
         :name="schema.name"
         :deprecated="!!schema.deprecationNotice"
         :flags="flags"
-        :reflected="schema instanceof ReflectedReferenceSchema"
         @open="openReferenceSchema"
     />
 </template>

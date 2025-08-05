@@ -317,7 +317,7 @@ export class CatalogSchemaConverter {
 
     private convertReferenceSchema(
         referenceSchema: GrpcReferenceSchema
-    ): ReferenceSchema | ReflectedReferenceSchema {
+    ): ReferenceSchema {
         if(referenceSchema.reflectedReferenceName != undefined) {
             return new ReflectedReferenceSchema(
                 referenceSchema.name,

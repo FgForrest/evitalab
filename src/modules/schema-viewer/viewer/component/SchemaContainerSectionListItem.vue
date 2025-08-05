@@ -10,12 +10,10 @@ const props = withDefaults(defineProps<{
     deprecated?: boolean,
     flags?: List<string>,
     openable?: boolean
-    reflected?: boolean
 }>(), {
     deprecated: false,
     flags: () => List(),
-    openable: true,
-    reflected: false,
+    openable: true
 })
 
 const emit = defineEmits<{
@@ -48,9 +46,6 @@ function open() {
             <VChipGroup>
                 <VChip v-for="flag in flags" :key="flag">
                     {{ flag.startsWith('_') ? t(`schemaViewer.section.flag.${flag.substring(1)}`) : flag }}
-                </VChip>
-                <VChip v-if="reflected" class="clickable">
-                    {{ t('schemaViewer.reference.label.reflected') }}
                 </VChip>
             </VChipGroup>
         </div>

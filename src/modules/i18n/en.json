@@ -851,7 +851,8 @@
           "nullsFirst": "nulls first",
           "nullsLast": "nulls last",
           "asc": "ascending",
-          "desc": "descending"
+          "desc": "descending",
+          "reflected": "reflected"
         },
         "entitySchema": {
           "hierarchical": "hierarchical"
@@ -875,6 +876,9 @@
           "external": "external",
           "indexed": "indexed",
           "faceted": "faceted"
+        },
+        "reflectedReferenceSchema": {
+          "reflectedReference": "reflected"
         }
       }
     },
@@ -976,7 +980,6 @@
     },
     "reference": {
       "label": {
-        "reflected": "reflected",
         "description": "Description",
         "deprecationNotice": "Deprecation notice",
         "cardinality": "Cardinality",
@@ -989,7 +992,9 @@
         "referencedEntityNameVariants": "Referenced entity",
         "referencedGroupNameVariants": "Referenced group",
         "reflectedReference": "Reflects",
-        "inherited": "inherited"
+        "inherited": "inherited",
+        "managedByEvita": "This reference is managed by EvitaDB.",
+        "managedExternal": "This link is managed externally."
       },
       "reflected": {
         "reflectedReferences": "Reflected by"
@@ -1008,7 +1013,13 @@
     }
   },
   "relationViewer": {
-    "title": "Relation"
+    "title": "Relation",
+    "cardinality": {
+      "exactlyOne": "1:1",
+      "oneOrMore": "1:1…*",
+      "zeroOrOne": "1:0…1",
+      "zeroOrMore": "1:0…*"
+    }
   },
   "serverViewer": {
     "definition": {
