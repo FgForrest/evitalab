@@ -70,11 +70,11 @@ export class GlobalAttributeSchema extends EntityAttributeSchema {
                 if (flag[0] === AttributeUniquenessType.UniqueWithinCollection) {
                     flags.push(new Flag(AttributeSchemaFlag.Unique, flag[1].map(x => x.scope).toArray(), i18n.global.t('schemaViewer.attribute.tooltip.uniqueContent', [
                         i18n.global.t('schemaViewer.section.flag.attributeSchema.unique').toLowerCase(),
-                        this.uniqueGloballyInScopes.map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z.scope).toLowerCase()}`)).join('/')])))
+                        this.uniqueInScopes.map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z.scope).toLowerCase()}`)).join('/')])))
                 } else if (flag[0] === AttributeUniquenessType.UniqueWithinCollectionLocale) {
                     flags.push(new Flag(AttributeSchemaFlag.UniquePerLocale, flag[1].map(x => x.scope).toArray(), i18n.global.t('schemaViewer.attribute.tooltip.uniqueContent', [
                         i18n.global.t('schemaViewer.section.flag.attributeSchema.uniquePerLocale').toLowerCase(),
-                        this.uniqueGloballyInScopes.map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z.scope).toLowerCase()}`)).join('/')])))
+                        this.uniqueInScopes.map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z.scope).toLowerCase()}`)).join('/')])))
                 }
             }
 

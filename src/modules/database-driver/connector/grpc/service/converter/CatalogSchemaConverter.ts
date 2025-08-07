@@ -188,6 +188,8 @@ export class CatalogSchemaConverter {
                 return EntityScope.Archive
             case GrpcEntityScope.SCOPE_LIVE:
                 return EntityScope.Live
+            default:
+                throw new UnexpectedError('Unexpected entity scope')
         }
     }
 

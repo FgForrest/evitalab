@@ -67,6 +67,8 @@ export class EntityConverter {
                 return EntityScope.Archive
             case GrpcEntityScope.SCOPE_LIVE:
                 return EntityScope.Live
+            default:
+                throw new UnexpectedError('Unexpected entity scope')
         }
     }
     private convertEntityReference(grpcEntityReference: GrpcEntityReference): EntityReference {

@@ -48,7 +48,7 @@ const properties = computed<Property[]>(() => {
 
     if (props.schema.uniqueInScopes.size > 0) {
         properties.push(new Property(t('schemaViewer.attribute.label.filterable'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
-            props.schema.filteredInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x), t(`schemaViewer.attribute.label.${x.toLowerCase()}`) + ` (${t(`schemaViewer.attribute.label.unique`).toLowerCase()})`, t('schemaViewer.attribute.tooltip.filterableUnique', [t('schemaViewer.tooltip.filtered'), props.schema.filteredInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')]), getEnumKeyByValue(EntityScope, EntityScope.Live) === x ? 'mdi-check' : 'mdi-close'))))))
+            props.schema.filteredInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x), t(`schemaViewer.attribute.label.${x.toLowerCase()}`) + ` (${t(`schemaViewer.attribute.label.filteredDueToUnique`).toLowerCase()})`, t('schemaViewer.attribute.tooltip.filterableUnique', [t('schemaViewer.tooltip.filtered'), props.schema.filteredInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')]), getEnumKeyByValue(EntityScope, EntityScope.Live) === x ? 'mdi-check' : 'mdi-close'))))))
     } else {
         properties.push(new Property(
             t('schemaViewer.attribute.label.filterable'),
