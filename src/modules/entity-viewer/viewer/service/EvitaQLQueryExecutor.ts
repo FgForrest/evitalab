@@ -20,6 +20,8 @@ import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { EntityReferenceWithParent } from '@/modules/database-driver/request-response/data/EntityReferenceWithParent'
 import { Price } from '@/modules/database-driver/request-response/data/Price'
 import { Reference } from '@/modules/database-driver/request-response/data/Reference'
+import { getEnumKeyByValue } from '@/utils/enum.ts'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 /**
  * Query executor for EvitaQL language.
@@ -66,7 +68,6 @@ export class EvitaQLQueryExecutor extends QueryExecutor {
             EntityPropertyKey.entity(StaticEntityProperties.Version),
             this.wrapRawValueIntoNativeValue(entity.version)
         ])
-        flattenedProperties.push(this.flattenParent(entity))
 
         const newLocales: Locale[] = []
         const locales = entity.locales
@@ -85,6 +86,13 @@ export class EvitaQLQueryExecutor extends QueryExecutor {
                 StaticEntityProperties.PriceInnerRecordHandling
             ),
             new NativeValue(entity.priceInnerRecordHandling),
+        ])
+
+        flattenedProperties.push([
+            EntityPropertyKey.entity(
+                StaticEntityProperties.Scope
+            ),
+            new NativeValue(getEnumKeyByValue(EntityScope, entity.scope)),
         ])
 
         flattenedProperties.push(...this.flattenAttributes(entity))

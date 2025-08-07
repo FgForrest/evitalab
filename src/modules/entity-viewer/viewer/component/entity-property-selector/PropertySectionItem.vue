@@ -7,6 +7,8 @@ import { useI18n } from 'vue-i18n'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
 import VMarkdown from '@/modules/base/component/VMarkdown.vue'
 import { List } from 'immutable'
+import type { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
+import { EntityScope, EntityScopeIcons } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 const { t } = useI18n()
 
@@ -14,7 +16,7 @@ const props = withDefaults(defineProps<{
     value: EntityPropertyKey,
     title: string,
     description?: string,
-    flags?: List<string>,
+    flags?: List<Flag>,
     /**
      * Whether this item has openable detail.
      */
@@ -54,9 +56,12 @@ const emit = defineEmits<{
                 <VChipGroup v-if="flags">
                     <VChip
                         v-for="flag in flags"
-                        :key="flag"
+                        :key="flag.flag"
                     >
-                        {{ flag.startsWith('_') ? t(`schemaViewer.section.flag.${flag.substring(1)}`) : flag }}
+                        {{ flag.flag.startsWith('_') ? t(`schemaViewer.section.flag.${flag.flag.substring(1)}`) : flag.flag }}
+                        <template #append>
+                            <VIcon v-for="(item, index) in flag.icons" :key="index" class="chip-icon">{{ EntityScopeIcons[item as EntityScope] }}</VIcon>
+                        </template>
                     </VChip>
                 </VChipGroup>
             </div>
@@ -115,5 +120,14 @@ const emit = defineEmits<{
 
 .item-group-parent-chevron--with-actions {
     margin-inline-start: 0.5rem
+}
+
+.chip-icon {
+    margin-left: 2px;
+    margin-right: 3px;
+}
+
+.chip-icon:last-child {
+    margin-right: 8px;
 }
 </style>

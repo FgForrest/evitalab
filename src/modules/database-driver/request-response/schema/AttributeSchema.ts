@@ -1,16 +1,21 @@
-import { List, Map} from 'immutable'
+import { List, Map } from 'immutable'
 import { NamingConvention } from '../NamingConvetion'
 import { AbstractSchema } from '@/modules/database-driver/request-response/schema/AbstractSchema'
 import type { TypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
 import type { LocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
-import type { SortableSchema } from '@/modules/database-driver/request-response/schema/SortableSchema'
-import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import {
+    type ScopedAttributeUniquenessType
+} from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
+import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
+import { i18n } from '@/vue-plugins/i18n.ts'
+import { getEnumKeyByValue } from '@/utils/enum.ts'
 
 /**
  * evitaLab's representation of a single evitaDB attribute schema independent of specific evitaDB version
  */
-export class AttributeSchema extends AbstractSchema implements TypedSchema, SortableSchema, LocalizedSchema {
+export class AttributeSchema extends AbstractSchema implements TypedSchema, LocalizedSchema {
 
     /**
      * Contains unique name of the model. Case-sensitive. Distinguishes one model item from another within single entity instance.
@@ -31,18 +36,6 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Sort
      */
     readonly type: Scalar
     /**
-     * When attribute is unique it is automatically filterable, and it is ensured there is exactly one single entity having certain value of this attribute among other entities in the same collection.  As an example of unique attribute can be EAN - there is no sense in having two entities with same EAN, and it's better to have this ensured by the database engine.
-     */
-    readonly uniquenessType: AttributeUniquenessType
-     /**
-     * When attribute is filterable, it is possible to filter entities by this attribute. Do not mark attribute as filterable unless you know that you'll search entities by this attribute. Each filterable attribute occupies (memory/disk) space in the form of index.  When attribute is filterable, extra result `attributeHistogram` can be requested for this attribute.
-     */
-    readonly filterable: boolean
-    /**
-     * When attribute is sortable, it is possible to sort entities by this attribute. Do not mark attribute as sortable unless you know that you'll sort entities along this attribute. Each sortable attribute occupies (memory/disk) space in the form of index..
-     */
-    readonly sortable: boolean
-    /**
      * When attribute is nullable, its values may be missing in the entities. Otherwise, the system will enforce non-null checks upon upserting of the entity.
      */
     readonly nullable: boolean
@@ -58,53 +51,59 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Sort
      * Determines how many fractional places are important when entities are compared during filtering or sorting. It is significant to know that all values of this attribute will be converted to `Int`, so the attribute number must not ever exceed maximum limits of `Int` type when scaling the number by the power of ten using `indexedDecimalPlaces` as exponent.
      */
     readonly indexedDecimalPlaces: number
+    readonly sortableInScopes: List<EntityScope>
+    readonly filteredInScopes: List<EntityScope>
+    readonly uniqueInScopes: List<ScopedAttributeUniquenessType>
 
-    protected _representativeFlags?: List<string>
+    protected _representativeFlags?: List<Flag>
 
     constructor(name: string,
                 nameVariants: Map<NamingConvention, string>,
                 description: string | undefined,
                 deprecationNotice: string | undefined,
                 type: Scalar,
-                uniquenessType: AttributeUniquenessType,
-                filterable: boolean,
-                sortable: boolean,
                 nullable: boolean,
                 defaultValue: any | any[] | undefined,
                 localized: boolean,
-                indexedDecimalPlaces: number) {
+                indexedDecimalPlaces: number,
+                sortableInScopes: List<EntityScope>,
+                filteredInScopes: List<EntityScope>,
+                uniqueInScopes: List<ScopedAttributeUniquenessType>) {
         super()
         this.name = name
         this.nameVariants = nameVariants
         this.description = description
         this.deprecationNotice = deprecationNotice
         this.type = type
-        this.uniquenessType = uniquenessType
-        this.filterable = filterable
-        this.sortable = sortable
         this.nullable = nullable
         this.defaultValue = defaultValue
         this.localized = localized
         this.indexedDecimalPlaces = indexedDecimalPlaces
+        this.sortableInScopes = sortableInScopes
+        this.filteredInScopes = filteredInScopes
+        this.uniqueInScopes = uniqueInScopes
     }
 
-    get representativeFlags(): List<string> {
+    get representativeFlags(): List<Flag> {
         if (this._representativeFlags == undefined) {
-            const representativeFlags: string[] = []
+            const flags: Flag[] = []
 
-            representativeFlags.push(this.formatDataTypeForFlag(this.type))
+            flags.push(new Flag(this.formatDataTypeForFlag(this.type)))
 
-            if (this.uniquenessType === AttributeUniquenessType.UniqueWithinCollection) {
-                representativeFlags.push(AttributeSchemaFlag.Unique)
-            } else if (this.uniquenessType === AttributeUniquenessType.UniqueWithinCollectionLocale) {
-                representativeFlags.push(AttributeSchemaFlag.UniquePerLocale)
+            if (this.sortableInScopes !== undefined && this.sortableInScopes.size > 0) {
+               flags.push(new Flag(AttributeSchemaFlag.Sortable, this.sortableInScopes.toArray(), i18n.global.t('schemaViewer.attribute.tooltip.content', [i18n.global.t('schemaViewer.tooltip.sorted'), this.sortableInScopes.map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
+            }
+            if (this.filteredInScopes !== undefined && this.filteredInScopes.size > 0) {
+                flags.push(new Flag(AttributeSchemaFlag.Filterable, this.filteredInScopes.toArray(), i18n.global.t('schemaViewer.attribute.tooltip.content', [i18n.global.t('schemaViewer.tooltip.filtered'), this.filteredInScopes.map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
+            }
+            if (this.nullable) {
+                flags.push(new Flag(AttributeSchemaFlag.Nullable))
+            }
+            if (this.localized) {
+                flags.push(new Flag(AttributeSchemaFlag.Localized))
             }
 
-            if (this.sortable) representativeFlags.push(AttributeSchemaFlag.Sortable)
-            if (this.localized) representativeFlags.push(AttributeSchemaFlag.Localized)
-            if (this.nullable) representativeFlags.push(AttributeSchemaFlag.Nullable)
-
-            this._representativeFlags = List(representativeFlags)
+            this._representativeFlags = List(flags)
         }
         return this._representativeFlags
     }

@@ -12,6 +12,8 @@ import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceM
 import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
 import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import type { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 const priceInPriceListsConstraintPattern = /priceInPriceLists\s*:\s*\[?\s*"[A-Za-z0-9_.\-~]+"/
 const priceInCurrencyConstraintPattern = /priceInCurrency\s*:\s*[A-Z_]+/
@@ -43,6 +45,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
     async buildQuery(dataPointer: EntityViewerDataPointer,
                      filterBy: string,
                      orderBy: string,
+                     layersSelected: SelectedScope[],
                      dataLocale: string | undefined,
                      priceType: QueryPriceMode | undefined,
                      requiredData: EntityPropertyKey[],
@@ -57,6 +60,27 @@ export class GraphQLQueryBuilder implements QueryBuilder {
         const headerArguments: string[] = []
 
         const filterByContainer: string[] = []
+
+        if(layersSelected.length > 0) {
+            let allSelected: boolean = layersSelected.length > 1
+            let notSelected: boolean = true
+            for (const item of layersSelected) {
+                if (!item.value) {
+                    allSelected = false
+                } else {
+                    notSelected = false
+                }
+            }
+
+            if(!notSelected) {
+                filterByContainer.push(`scope: [${layersSelected.some(x => x.scope === EntityScope.Live && x.value) ? 'LIVE' : ''} ${allSelected ? ',' : ''} ${layersSelected.some(x => x.scope === EntityScope.Archive && x.value) ? 'ARCHIVED' : ''}]`)
+            } else {
+                return ''
+            }
+        } else {
+            return ''
+        }
+
         if (filterBy.length > 0) {
             filterByContainer.push(filterBy)
         }

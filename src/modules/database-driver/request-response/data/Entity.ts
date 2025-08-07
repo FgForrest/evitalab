@@ -8,6 +8,7 @@ import { PriceInnerRecordHandling } from '@/modules/database-driver/data-type/Pr
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { AttributeValue } from '@/modules/database-driver/request-response/data/AttributeValue'
 import { AssociatedDataValue } from '@/modules/database-driver/request-response/data/AssociatedDataValue'
+import type { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 /**
  * evitaLab's representation of a single evitaDB entity independent of specific evitaDB version
@@ -29,6 +30,7 @@ export class Entity extends EntityReferenceWithParent {
     readonly priceForSale: Price | undefined
 
     readonly locales: List<Locale>
+    readonly scope: EntityScope
 
     constructor(
         entityType: string,
@@ -42,7 +44,8 @@ export class Entity extends EntityReferenceWithParent {
         priceInnerRecordHandling: PriceInnerRecordHandling,
         prices: List<Price>,
         priceForSale: Price | undefined,
-        locales: List<Locale>
+        locales: List<Locale>,
+        scope: EntityScope
     ) {
         super(entityType, primaryKey, version, parentEntity)
         this.schemaVersion = schemaVersion
@@ -53,6 +56,7 @@ export class Entity extends EntityReferenceWithParent {
         this.prices = prices
         this.priceForSale = priceForSale
         this.locales = locales
+        this.scope = scope
     }
 
     attribute(attributeName: string): any | undefined

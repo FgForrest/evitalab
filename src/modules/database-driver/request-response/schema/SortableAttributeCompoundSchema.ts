@@ -3,6 +3,7 @@ import { NamingConvention } from '../NamingConvetion'
 import { AbstractSchema } from '@/modules/database-driver/request-response/schema/AbstractSchema'
 import { OrderBehaviour } from '@/modules/database-driver/request-response/schema/OrderBehaviour'
 import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
+import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 
 /**
  * evitaLab's representation of a single evitaDB sortable attribute compound schema schema independent of specific evitaDB version
@@ -28,7 +29,7 @@ export class SortableAttributeCompoundSchema extends AbstractSchema {
      */
     readonly attributeElements: List<AttributeElement>
 
-    private readonly _representativeFlags: List<string> = List()
+    private readonly _representativeFlags: List<Flag> = List()
 
     constructor(name: string,
                 nameVariants: Map<NamingConvention, string>,
@@ -43,7 +44,7 @@ export class SortableAttributeCompoundSchema extends AbstractSchema {
         this.attributeElements = List(attributeElements)
     }
 
-    get representativeFlags(): List<string> {
+    get representativeFlags(): List<Flag> {
         return this._representativeFlags
     }
 }
