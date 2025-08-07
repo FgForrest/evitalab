@@ -16,7 +16,8 @@ import { PlaceholderValue } from '@/modules/base/model/properties-table/Placehol
 
 const { t } = useI18n()
 
-const props = defineProps<{
+const props =
+    defineProps<{
     property: Property,
     propertyValue: PropertyValue
 }>()
@@ -51,7 +52,7 @@ const props = defineProps<{
     <VChip
         v-else-if="propertyValue.value instanceof KeywordValue"
         :variant="propertyValue.action ? 'outlined' : 'plain'"
-        :color="propertyValue.value.color"
+        :color="propertyValue.value?.color"
         dense
         @click="propertyValue.action?.(propertyValue.value!.value)"
     >
@@ -64,7 +65,7 @@ const props = defineProps<{
     <!-- actual value is multi-value flag -->
     <VChip
         v-else-if="propertyValue.value instanceof MultiValueFlagValue"
-        :prepend-icon="propertyValue.value.value ? 'mdi-check' : 'mdi-checkbox-blank-outline'"
+        :prepend-icon="propertyValue.value.icon ? propertyValue.value.icon : ( propertyValue.value.value ? 'mdi-check' : 'mdi-close')"
         :variant="propertyValue.action ? 'outlined' : 'plain'"
         dense
         @click="propertyValue.action?.(propertyValue.value.valueSpecification)"
