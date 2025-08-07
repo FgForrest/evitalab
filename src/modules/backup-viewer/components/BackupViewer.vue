@@ -21,9 +21,10 @@ import {
 } from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
 import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
 import { BackupViewerTabDefinition } from '@/modules/backup-viewer/model/BackupViewerTabDefinition'
+import { fullBackupTaskName } from '@/modules/backup-viewer/model/FullBackupTask.ts'
 
 const shownTaskStates: TaskState[] = [TaskState.WaitingForPrecondition, TaskState.Running, TaskState.Queued, TaskState.Failed]
-const shownTaskTypes: string[] = [backupTaskName, restoreTaskName]
+const shownTaskTypes: string[] = [backupTaskName, restoreTaskName, fullBackupTaskName]
 
 const { t } = useI18n()
 

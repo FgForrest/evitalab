@@ -9,7 +9,7 @@ import type {
     GrpcCatalogVersionAtResponse, GrpcDefineEntitySchemaResponse,
     GrpcDeleteCollectionResponse,
     GrpcEntitySchemaResponse,
-    GrpcEntityTypesResponse,
+    GrpcEntityTypesResponse, GrpcFullBackupCatalogResponse,
     GrpcGoLiveAndCloseResponse, GrpcQueryResponse,
     GrpcRenameCollectionResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaSessionAPI_pb'
@@ -346,6 +346,16 @@ export class EvitaClientSession {
                 this._callMetadata
             )
             // todo lho send to management task tracker
+            return this.taskStatusConverterProvider().convert(response.taskStatus!)
+        } catch (e) {
+            throw this.errorTransformerProvider().transformError(e)
+        }
+    }
+
+    async fullBackupCatalog(): Promise<TaskStatus> {
+        this.assertActive()
+        try {
+            const response:GrpcFullBackupCatalogResponse = await this.evitaSessionClientProvider().fullBackupCatalog({}, this._callMetadata)
             return this.taskStatusConverterProvider().convert(response.taskStatus!)
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)

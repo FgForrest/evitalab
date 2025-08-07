@@ -81,7 +81,7 @@ const properties = computed<Property[]>(() => [
     ),
     new Property(
         t('schemaViewer.catalog.label.description'),
-        new PropertyValue(props.schema.description || ''),
+        new PropertyValue(props.schema.description),
     ),
     new Property(
         t('schemaViewer.catalog.label.locales'),
