@@ -14,7 +14,7 @@ import { EntitySchemaPointer } from '@/modules/schema-viewer/viewer/model/Entity
 import SchemaContainer from '@/modules/schema-viewer/viewer/component/SchemaContainer.vue'
 import NameVariants from '@/modules/schema-viewer/viewer/component/NameVariants.vue'
 import AttributeSchemaList from '@/modules/schema-viewer/viewer/component/attribute/AttributeSchemaList.vue'
-import { List, List as ImmutableList, Map as ImmutableMap } from 'immutable'
+import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { computed, ref } from 'vue'
 import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
 import { SchemaViewerService, useSchemaViewerService } from '@/modules/schema-viewer/viewer/service/SchemaViewerService'
@@ -22,7 +22,7 @@ import { ReflectedReferenceSchema } from '@/modules/database-driver/request-resp
 import ReflectedReferenceList
     from '@/modules/schema-viewer/viewer/component/reference/reflected/ReflectedReferenceList.vue'
 import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer.ts'
-import RelationViewer from '@/modules/relation-viewer/RelationViewer.vue'
+import RelationViewer from '@/modules/schema-viewer/viewer/component/reference/relation-viewer/RelationViewer.vue'
 import { MultiValueFlagValue } from '@/modules/base/model/properties-table/MultiValueFlagValue.ts'
 import { getEnumKeyByValue } from '@/utils/enum.ts'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
@@ -75,28 +75,6 @@ const properties = computed<Property[]>(() => {
             new PropertyValue(props.schema.deprecationNotice)
         ))
     }
-    if (props.schema.referencedEntityTypeManaged) {
-        properties.push(new Property(
-            t('schemaViewer.reference.label.referencedEntity'),
-            new PropertyValue(
-                new KeywordValue(props.schema.entityType, undefined, t('schemaViewer.reference.label.managedExternal')),
-                undefined,
-                item => {
-                    workspaceService.createTab(schemaViewerTabFactory.createNew(
-                        new EntitySchemaPointer(
-                            props.dataPointer.schemaPointer.catalogName,
-                            props.schema.entityType
-                        )
-                    ))
-                }
-            )
-        ))
-    } else {
-        properties.push(new Property(
-            t('schemaViewer.reference.label.referencedEntity'),
-            new PropertyValue(new KeywordValue(props.schema.entityType, undefined, t('schemaViewer.reference.label.managedByEvita')))
-        ))
-    }
     if (props.schema.referencedGroupType == undefined) {
         properties.push(new Property(
             t('schemaViewer.reference.label.referencedGroup'),
@@ -106,7 +84,7 @@ const properties = computed<Property[]>(() => {
         properties.push(new Property(
             t('schemaViewer.reference.label.referencedGroup'),
             new PropertyValue(
-                props.schema.referencedGroupType ? new KeywordValue(props.schema.referencedGroupType) : undefined,
+                props.schema.referencedGroupType ? new KeywordValue(props.schema.referencedGroupType, undefined, t('schemaViewer.reference.label.groupManagedByEvita')) : undefined,
                 undefined,
                 item => {
                     workspaceService.createTab(schemaViewerTabFactory.createNew(
@@ -121,23 +99,15 @@ const properties = computed<Property[]>(() => {
     } else {
         properties.push(new Property(
             t('schemaViewer.reference.label.referencedGroup'),
-            new PropertyValue(props.schema.referencedGroupType ? new KeywordValue(props.schema.referencedGroupType) : undefined)
+            new PropertyValue(new KeywordValue(props.schema.referencedGroupType, t('schemaViewer.reference.label.groupManagedExternal')) ? new KeywordValue(props.schema.referencedGroupType, undefined, t('schemaViewer.reference.label.groupManagedExternal')) : undefined)
         ))
     }
-    properties.push(new Property(
-        t('schemaViewer.reference.label.indexed'),
-        new PropertyValue(props.schema.indexed)
-    ))
-    properties.push(new Property(
-        t('schemaViewer.reference.label.faceted'),
-        new PropertyValue(props.schema.faceted)
-    ))
     properties.push(new Property(
         t('schemaViewer.reference.label.referencedGroupManaged'),
         new PropertyValue(props.schema.referencedGroupTypeManaged || false)
     ))
 
-    properties.push(new Property(t('schemaViewer.reference.label.indexed.title'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
+    properties.push(new Property(t('schemaViewer.reference.label.indexed.title'), ImmutableList(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
         props.schema.scopedIndexTypes.some(y => getEnumKeyByValue(EntityScope, y.scope) === x), t(`schemaViewer.reference.label.${x.toLowerCase()}`) + (() => {
         const list = props.schema.scopedIndexTypes
             .filter(q => getEnumKeyByValue(EntityScope, q.scope) == x)
@@ -148,7 +118,7 @@ const properties = computed<Property[]>(() => {
             .filter(q => getEnumKeyByValue(EntityScope, q.scope) == x)
             .map(z => t(`schemaViewer.reference.tooltip.indexedTooltip.${z.indexType}`))
             .join(' ')))))))
-    properties.push(new Property(t('schemaViewer.reference.label.faceted'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
+    properties.push(new Property(t('schemaViewer.reference.label.faceted'), ImmutableList(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
         props.schema.facetedInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x), t(`schemaViewer.reference.label.${x.toLowerCase()}`), t('schemaViewer.reference.tooltip.faceted'), props.schema.facetedInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x) ? 'mdi-check' : 'mdi-close'))))))
 
     return properties
@@ -203,15 +173,12 @@ onMounted(async () => {
 
 
 function openFrom(): void {
-    if (props.schema instanceof ReflectedReferenceSchema && props.schema.reflectedReferenceName) {
-        workspaceService.createTab(schemaViewerTabFactory.createNew(
-            new ReferenceSchemaPointer(
-                props.dataPointer.schemaPointer.catalogName,
-                props.schema.entityType,
-                props.schema.reflectedReferenceName!
-            )
-        ))
-    }
+    workspaceService.createTab(schemaViewerTabFactory.createNew(
+        new EntitySchemaPointer(
+            props.dataPointer.schemaPointer.catalogName,
+            referenceSchemaPointer.value.entityType
+        )
+    ))
 }
 
 function openTo(): void {
@@ -228,8 +195,10 @@ function openTo(): void {
     <div>
         <SchemaContainer :properties="properties">
             <template #relation>
-                <RelationViewer @open-from="openFrom" @open-to="openTo" :cardinality="props.schema.cardinality"
-                                :from="referenceSchemaPointer.entityType" :to="props.schema.entityType" />
+                <RelationViewer @open-from="openFrom" @open-to="openTo"
+                                :is-from-managed="!schema.referencedEntityTypeManaged"
+                                :cardinality="schema.cardinality"
+                                :from="referenceSchemaPointer.entityType" :to="schema.entityType" />
             </template>
             <template #nested-details>
                 <NameVariants :name-variants="schema.nameVariants" />

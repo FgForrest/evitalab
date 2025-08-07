@@ -6,6 +6,7 @@ const props = defineProps<{
     cardinality: Cardinality,
     from: string,
     to: string,
+    isFromExternalManaged: boolean,
 }>()
 
 const emit = defineEmits<{
@@ -18,13 +19,13 @@ const { t } = useI18n()
 const icon = computed(() => {
     switch (props.cardinality) {
         case Cardinality.ExactlyOne:
-            return "mdi-relation-one-to-one"
+            return 'mdi-relation-one-to-one'
         case Cardinality.OneOrMore:
-            return "mdi-relation-one-to-one-or-many"
+            return 'mdi-relation-one-to-one-or-many'
         case Cardinality.ZeroOrOne:
-            return "mdi-relation-one-to-zero-or-one"
+            return 'mdi-relation-one-to-zero-or-one'
         case Cardinality.ZeroOrMore:
-            return "mdi-relation-one-to-zero-or-many"
+            return 'mdi-relation-one-to-zero-or-many'
     }
 })
 
@@ -43,7 +44,17 @@ function openTo(): void {
         <tr class="properties-table__row">
             <td>{{ t('relationViewer.title') }}</td>
             <td class="content-row">
-                <VChip @click="openFrom" variant="outlined" class="clickable">{{ props.from }}</VChip>
+                <VChip @click="!isFromExternalManaged ? openFrom() : null"
+                       :variant="!isFromExternalManaged ? 'outlined' : 'plain'"
+                       :class="!isFromExternalManaged ? 'clickable' : ''" dense>
+                    {{ props.from }}
+                    <VTooltip activator="parent" v-if="isFromExternalManaged">
+                        {{ t('relationViewer.managedExternal') }}
+                    </VTooltip>
+                    <VTooltip activator="parent" v-else>
+                        {{ t('relationViewer.managedByEvita') }}
+                    </VTooltip>
+                </VChip>
                 <div>
                     <VIcon class="icon" :icon="icon" />
                     <VTooltip activator="parent">
@@ -76,7 +87,7 @@ function openTo(): void {
         grid-template-columns: 8rem 15rem;
     }
 
-    .content-row{
+    .content-row {
         width: 50%;
         display: flex;
         flex-direction: row;

@@ -4,7 +4,7 @@ import {
 import {
     ReferenceSchema
 } from '@/modules/database-driver/request-response/schema/ReferenceSchema.ts'
-import { Map, List as ImmutableList } from 'immutable'
+import { Map, List as ImmutableList, List } from 'immutable'
 import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion.ts'
 import { Cardinality } from '@/modules/database-driver/request-response/schema/Cardinality.ts'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema.ts'
@@ -12,6 +12,11 @@ import {
     SortableAttributeCompoundSchema
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema.ts'
 import { i18n } from '@/vue-plugins/i18n.ts'
+import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
+import type {
+    ScopedReferenceIndexType
+} from '@/modules/database-driver/request-response/schema/ScopedReferenceIndexType.ts'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 export class ReflectedReferenceSchema extends ReferenceSchema {
     /**
@@ -59,11 +64,11 @@ export class ReflectedReferenceSchema extends ReferenceSchema {
                 referencedGroupType: string | undefined,
                 referencedGroupTypeManaged: boolean | undefined,
                 groupTypeNameVariants: Map<NamingConvention, string> | undefined,
-                indexed: boolean,
-                faceted: boolean,
                 cardinality: Cardinality,
                 attributes: AttributeSchema[],
                 sortableAttributeCompounds: SortableAttributeCompoundSchema[],
+                scopedIndexTypes: List<ScopedReferenceIndexType>,
+                facetedInScopes: List<EntityScope>,
                 reflectedReferenceName: string,
                 descriptionInherited: boolean,
                 deprecationNoticeInherited: boolean,
@@ -73,8 +78,7 @@ export class ReflectedReferenceSchema extends ReferenceSchema {
                 attributeInheritanceBehavior: AttributeInheritanceBehavior,
                 attributeInheritanceFilter: string[]) {
         super(name, nameVariants, description, deprecationNotice, entityType, referencedEntityTypeManaged,
-            entityTypeNameVariants, referencedGroupType, referencedGroupTypeManaged, groupTypeNameVariants, indexed,
-            faceted, cardinality, attributes, sortableAttributeCompounds)
+            entityTypeNameVariants, referencedGroupType, referencedGroupTypeManaged, groupTypeNameVariants, cardinality, attributes, sortableAttributeCompounds, scopedIndexTypes, facetedInScopes)
         this.reflectedReferenceName = reflectedReferenceName
         this.descriptionInherited = descriptionInherited
         this.deprecationNoticeInherited = deprecationNoticeInherited
@@ -95,17 +99,17 @@ export class ReflectedReferenceSchema extends ReferenceSchema {
     }
 
 
-    get representativeFlags(): ImmutableList<string> {
-        const flags = super.representativeFlags.toArray()
-        flags.push(ReflectedReferenceSchemaFlag.ReflectedReference)
+    get representativeFlags(): ImmutableList<Flag> {
+        const flags: Flag[] = super.representativeFlags.toArray()
+        flags.push(new Flag(ReflectedReferenceSchemaFlag.ReflectedReference))
         if(this.attributeInheritanceBehavior != undefined && this.attributeInheritanceFilter) {
             if (this.attributeInheritanceFilter?.includes(this.name) && this.attributeInheritanceBehavior === AttributeInheritanceBehavior.InheritOnlySpecified) {
-                flags.push(i18n.global.t('schemaViewer.reference.label.inherited'))
+                flags.push(new Flag(i18n.global.t('schemaViewer.reference.label.inherited')))
             } else if(!this.attributeInheritanceFilter?.includes(this.name) && this.attributeInheritanceBehavior === AttributeInheritanceBehavior.InheritAllExcept) {
-                flags.push(i18n.global.t('schemaViewer.reference.label.inherited'))
+                flags.push(new Flag(i18n.global.t('schemaViewer.reference.label.inherited')))
             }
         }
-        return ImmutableList<string>(flags)
+        return ImmutableList<Flag>(flags)
     }
 }
  export enum ReflectedReferenceSchemaFlag {

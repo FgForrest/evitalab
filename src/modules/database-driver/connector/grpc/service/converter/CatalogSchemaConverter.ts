@@ -10,11 +10,11 @@ import {
     GrpcAttributeInheritanceBehavior,
     GrpcAttributeSchemaType,
     GrpcAttributeUniquenessType,
-    GrpcCardinality,
+    GrpcCardinality, GrpcEntityScope,
     GrpcEvolutionMode,
     GrpcGlobalAttributeUniquenessType,
     GrpcOrderBehaviour,
-    GrpcOrderDirection
+    GrpcOrderDirection, GrpcReferenceIndexType
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import {
@@ -34,7 +34,6 @@ import type {
     GrpcReferenceSchema,
     GrpcSortableAttributeCompoundSchema
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchema_pb'
-import type { GrpcCurrency, GrpcLocale } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import type {
     GrpcCurrency,
     GrpcLocale,
@@ -380,13 +379,13 @@ export class CatalogSchemaConverter {
                 referenceSchema.groupType,
                 referenceSchema.referencedGroupTypeManaged,
                 MapUtil.getNamingMap(referenceSchema.groupTypeNameVariant),
-                referenceSchema.indexed,
-                referenceSchema.faceted,
                 this.convertCardinality(referenceSchema.cardinality),
                 this.convertAttributeSchemas(referenceSchema.attributes),
                 this.convertSortableAttributeCompoundSchemas(
                     referenceSchema.sortableAttributeCompounds
                 ),
+                this.convertScopedIndexTypes(referenceSchema.scopedIndexTypes),
+                this.convertEntityScopes(referenceSchema.facetedInScopes),
                 referenceSchema.reflectedReferenceName,
                 referenceSchema.descriptionInherited,
                 referenceSchema.deprecationNoticeInherited,
@@ -408,34 +407,15 @@ export class CatalogSchemaConverter {
                 referenceSchema.groupType,
                 referenceSchema.referencedGroupTypeManaged,
                 MapUtil.getNamingMap(referenceSchema.groupTypeNameVariant),
-                referenceSchema.indexed,
-                referenceSchema.faceted,
                 this.convertCardinality(referenceSchema.cardinality),
                 this.convertAttributeSchemas(referenceSchema.attributes),
                 this.convertSortableAttributeCompoundSchemas(
                     referenceSchema.sortableAttributeCompounds
-                )
+                ),
+                this.convertScopedIndexTypes(referenceSchema.scopedIndexTypes),
+                this.convertEntityScopes(referenceSchema.facetedInScopes)
             )
         }
-        return new ReferenceSchema(
-            referenceSchema.name,
-            MapUtil.getNamingMap(referenceSchema.nameVariant),
-            referenceSchema.description,
-            referenceSchema.deprecationNotice,
-            referenceSchema.entityType,
-            referenceSchema.referencedEntityTypeManaged,
-            MapUtil.getNamingMap(referenceSchema.entityTypeNameVariant),
-            referenceSchema.groupType,
-            referenceSchema.referencedGroupTypeManaged,
-            MapUtil.getNamingMap(referenceSchema.groupTypeNameVariant),
-            this.convertCardinality(referenceSchema.cardinality),
-            this.convertAttributeSchemas(referenceSchema.attributes),
-            this.convertSortableAttributeCompoundSchemas(
-                referenceSchema.sortableAttributeCompounds
-            ),
-            this.convertScopedIndexTypes(referenceSchema.scopedIndexTypes),
-            this.convertEntityScopes(referenceSchema.facetedInScopes)
-        )
     }
 
     private convertScopedIndexTypes(scopeType: GrpcScopedReferenceIndexType[]): ImmutableList<ScopedReferenceIndexType> {
