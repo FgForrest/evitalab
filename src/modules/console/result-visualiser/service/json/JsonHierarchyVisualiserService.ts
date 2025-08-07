@@ -20,12 +20,16 @@ export abstract class JsonHierarchyVisualiserService<VS extends JsonResultVisual
         this.visualiserService = visualiserService
     }
 
-    findNamedHierarchiesByReferencesResults(hierarchyResult: Result,
-                                            entitySchema: EntitySchema): [(ReferenceSchema | undefined), Result][] {
+    findNamedHierarchiesByReferencesResults(
+        hierarchyResult: Result,
+        entitySchema: EntitySchema
+    ): [(ReferenceSchema | undefined), Result][] {
         const referencesWithHierarchies: [ReferenceSchema | undefined, Result][] = []
+
         for (const referenceName of Object.keys(hierarchyResult)) {
             const namedHierarchiesResult: Result = hierarchyResult[referenceName]
-            const convertedNamedHierarchiesResult: ImmutableMap<string, Result> = ImmutableMap()
+
+            const convertedNamedHierarchiesResult: Map<string, Result> = new Map()
             for (const name of Object.keys(namedHierarchiesResult)) {
                 const hierarchy: Result = namedHierarchiesResult[name]
                 convertedNamedHierarchiesResult.set(name, hierarchy)
@@ -35,16 +39,18 @@ export abstract class JsonHierarchyVisualiserService<VS extends JsonResultVisual
                 referencesWithHierarchies.push([undefined, ImmutableMap(convertedNamedHierarchiesResult)])
             } else {
                 const referenceSchema: ReferenceSchema | undefined = entitySchema.references
-                    .find(reference => reference.nameVariants
-                        .get(NamingConvention.CamelCase) === referenceName)
-                if (referenceSchema == undefined) {
+                    .find(reference => reference.nameVariants.get(NamingConvention.CamelCase) === referenceName)
+
+                if (referenceSchema === undefined) {
                     throw new UnexpectedError(`Reference '${referenceName}' not found in entity '${entitySchema.name}'.`)
                 }
+
                 referencesWithHierarchies.push([referenceSchema, ImmutableMap(convertedNamedHierarchiesResult)])
             }
         }
         return referencesWithHierarchies
     }
+
 
     abstract resolveNamedHierarchy(namedHierarchyResult: Result[], entityRepresentativeAttributes: string[]): VisualisedNamedHierarchy
 }

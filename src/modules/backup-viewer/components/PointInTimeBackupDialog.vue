@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
-import { computed, onUnmounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { DateTime } from 'luxon'
@@ -8,9 +8,7 @@ import { BackupViewerService, useBackupViewerService } from '@/modules/backup-vi
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { CatalogVersionAtResponse } from '@/modules/database-driver/request-response/CatalogVersionAtResponse'
-import { List as ImmutableList } from 'immutable'
 import VDateTimeInput from '@/modules/base/component/VDateTimeInput.vue'
-import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 
 const backupViewerService: BackupViewerService = useBackupViewerService()
 const toaster: Toaster = useToaster()
@@ -18,26 +16,14 @@ const { t } = useI18n()
 
 const props = defineProps<{
     modelValue: boolean,
-    catalog?: string
+    catalogName: string,
+    availableCatalogs: string[]
 }>()
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void,
     (e: 'backup'): void
 }>()
 
-watch(
-    () => props.modelValue,
-    (newValue) => {
-        if (newValue && availableCatalogsLoaded.value == false) {
-            loadAvailableCatalogs().then()
-        }
-    }
-)
-
-const availableCatalogs = ref<string[]>([])
-const availableCatalogsChangeCallbackId = backupViewerService.registerAvailableCatalogsChangeCallback(async () =>
-    await loadAvailableCatalogs())
-const availableCatalogsLoaded = ref<boolean>(false)
 const minDate = ref<DateTime | undefined>()
 const minDateLoaded = ref<boolean>(false)
 const maxDate = ref<DateTime | undefined>()
@@ -45,54 +31,28 @@ const maxDateLoaded = ref<boolean>(false)
 const defaultTimeOffset = ref<string>()
 const defaultTimeOffsetLoaded = ref<boolean>(false)
 
-const catalogName = ref<string | undefined>()
-watch(catalogName, async () => {
+const catalogNameValue = ref<string | undefined>(props.catalogName)
+watch(catalogNameValue, async () => {
+    await getMinimalDate()
+})
+
+async function getMinimalDate(): Promise<void> {
     minDateLoaded.value = false
     pastMoment.value = undefined
-    if (catalogName.value != undefined && catalogName.value.trim().length > 0) {
+    if (catalogNameValue.value != undefined && catalogNameValue.value.trim().length > 0) {
         await loadMinimalDate()
     } else {
         minDate.value = undefined
     }
-})
+}
+
 const pastMoment = ref<DateTime | undefined>(undefined)
 const includeWal = ref<boolean>(false)
-
-const changed = computed<boolean>(() =>
-    catalogName.value != undefined && catalogName.value.trim().length > 0)
-
-const catalogNameRules = [
-    (value: string): any => {
-        if (value != undefined && value.trim().length > 0) return true
-        return t('backupViewer.backup.form.catalogName.validations.required')
-    },
-    async (value: string): Promise<any> => {
-        const available: boolean = await backupViewerService.isCatalogExists(value)
-        if (available) return true
-        return t('backupViewer.backup.form.catalogName.validations.notExists')
-    }
-]
-
-async function loadAvailableCatalogs(): Promise<void> {
-    try {
-        const fetchedAvailableCatalogs: ImmutableList<CatalogStatistics> = await backupViewerService.getAvailableCatalogs()
-        availableCatalogs.value = fetchedAvailableCatalogs
-            .filter(it => !it.corrupted)
-            .map(it => it.name)
-            .toArray()
-        availableCatalogsLoaded.value = true
-    } catch (e: any) {
-        await toaster.error(t(
-            'backupViewer.backup.notification.couldNotLoadAvailableCatalogs',
-            { reason: e.message }
-        ))
-    }
-}
 
 async function loadMinimalDate(): Promise<void> {
     try {
         const minimalBackupDate: CatalogVersionAtResponse = await backupViewerService.getMinimalBackupDate(
-            catalogName.value!
+            catalogNameValue.value!
         )
 
         minDate.value = minimalBackupDate.introducedAt.toDateTime()
@@ -112,7 +72,7 @@ async function loadMinimalDate(): Promise<void> {
 }
 
 function reset(): void {
-    catalogName.value = undefined
+    catalogNameValue.value = undefined
     pastMoment.value = undefined
     includeWal.value = false
 }
@@ -120,7 +80,7 @@ function reset(): void {
 async function backup(): Promise<boolean> {
     try {
         await backupViewerService.backupCatalog(
-            catalogName.value!,
+            catalogNameValue.value!,
             pastMoment.value != undefined
                 ? OffsetDateTime.fromDateTime(pastMoment.value)
                 : undefined,
@@ -128,7 +88,7 @@ async function backup(): Promise<boolean> {
         )
         await toaster.success(t(
             'backupViewer.backup.notification.backupRequested',
-            { catalogName: catalogName.value }
+            { catalogName: catalogNameValue.value }
         ))
         emit('backup')
         return true
@@ -136,7 +96,7 @@ async function backup(): Promise<boolean> {
         await toaster.error(t(
             'backupViewer.backup.notification.couldNotRequestBackup',
             {
-                catalogName: catalogName.value,
+                catalogName: catalogNameValue.value,
                 reason: e.message
             }
         ))
@@ -144,13 +104,8 @@ async function backup(): Promise<boolean> {
     }
 }
 
-onUnmounted(() => {
-    backupViewerService.unregisterAvailableCatalogsChangeCallback(availableCatalogsChangeCallbackId)
-})
-
-onMounted(async() => {
-    if(props.catalog) {
-        catalogName.value = props.catalog
+onMounted(async () => {
+    if(props.catalogName) {
         await loadMinimalDate()
     }
 })
@@ -159,7 +114,7 @@ onMounted(async() => {
 <template>
     <VFormDialog
         :model-value="modelValue"
-        :changed="changed"
+        :changed="true"
         confirm-button-icon="mdi-cloud-download-outline"
         :confirm="backup"
         :reset="reset"
@@ -170,21 +125,18 @@ onMounted(async() => {
         </template>
 
         <template #title>
-            {{ t('backupViewer.backup.title') }}
-        </template>
-
-        <template #prepend-form>
-            {{ t('backupViewer.backup.description') }}
+            {{ t('backupViewer.backup.pointInTime.title') }}
         </template>
 
         <template #default>
+            <p class="description">{{t('backupViewer.backup.pointInTime.description')}}</p>
             <VAutocomplete
-                v-model="catalogName"
+                v-model="catalogNameValue"
                 :label="t('backupViewer.backup.form.catalogName.label')"
                 :items="availableCatalogs"
-                :rules="catalogNameRules"
-                :disabled="!availableCatalogsLoaded"
+                disabled
                 required
+                readonly
             />
             <VDateTimeInput
                 v-model="pastMoment"
@@ -213,6 +165,8 @@ onMounted(async() => {
     </VFormDialog>
 </template>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.description {
+    margin-bottom: 10px;
+}
 </style>

@@ -1140,6 +1140,12 @@
     }
   },
   "backupViewer": {
+    "backupSelector": {
+      "currentSnapshot": "Current snapshot",
+      "pointInTime": "Point in time",
+      "fullBackup": "Full",
+      "selectSubTitle": "Choose backup type"
+    },
     "definition": {
       "title": "Catalog backups"
     },
@@ -1167,7 +1173,6 @@
     },
     "backup": {
       "title": "Backup catalog",
-      "description": "Request a new backup for the catalog:",
       "info": "The back up process may take a while. Therefore it will be started asynchronously. You can find it’s progress and backup file to download in task listing.",
       "form": {
         "catalogName": {
@@ -1184,6 +1189,18 @@
           "label": "Include WAL",
           "description": "Will apply all mutations from WAL during restoration resulting in the latest version of catalog"
         }
+      },
+      "full": {
+        "title": "Full backup",
+        "description": "A full backup will contain a binary copy of all catalog files at the current time. After restoring the catalog from this backup, it will also be possible to perform additional \"point-in-time\" backups from this restored copy for all moments for which historical data is available. This full backup is the largest backup of the catalog in size.\n"
+      },
+      "pointInTime": {
+        "title": "Point in time backup",
+        "description": "A point in time backup contains only data valid at the point in time (version) of the catalog that is selected when the backup is created. When going back in time, it is only possible to select a point in time for which the database still has historical data. In order to protect against running out of disk capacity, historical data is deleted after some time / reaching a limit size. A catalog restored from this backup will not allow point in time recovery, or will only allow it over other write operations performed over the restored catalog."
+      },
+      "snapshot": {
+        "title": "Current snapshot backup",
+        "description": "The current snapshot contains only currently valid data. It is the smallest possible functional backup, which also makes it the fastest backup option. A catalog restored from this backup will not allow point-in-time recovery, or will only allow recovery over other write operations performed on the restored catalog."
       },
       "button": {
         "backup": "Backup"

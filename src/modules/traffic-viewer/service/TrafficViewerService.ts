@@ -47,7 +47,7 @@ export class TrafficViewerService {
         return await this.evitaClient.management.listFilesToFetch(
             pageNumber,
             pageSize,
-            trafficRecorderTaskName
+            [trafficRecorderTaskName]
         )
     }
 
