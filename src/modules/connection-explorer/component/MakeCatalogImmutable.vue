@@ -41,6 +41,7 @@ async function makeCatalogImmutable(): Promise<boolean> {
         :model-value="modelValue"
         :confirm="makeCatalogImmutable"
         :changed="changed"
+        confirm-button-icon="mdi-lock-outline"
         @update:model-value="emit('update:modelValue', $event)"
     >
         <template #title>

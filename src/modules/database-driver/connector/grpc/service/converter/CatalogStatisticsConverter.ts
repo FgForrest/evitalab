@@ -23,7 +23,6 @@ export class CatalogStatisticsConverter {
             BigInt(catalog.catalogVersion),
             catalog.catalogName,
             this.convertEntityTypes(catalog.entityCollectionStatistics),
-            catalog.corrupted,
             this.convertCatalogState(catalog.catalogState),
             BigInt(catalog.totalRecords),
             BigInt(catalog.indexCount),

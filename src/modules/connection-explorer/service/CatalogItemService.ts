@@ -101,7 +101,7 @@ export class CatalogItemService {
                     catalog.setProgress(MutationProgressType.Duplication, progress.progressInPercent)
                 }
 
-                await this.toaster.success(i18n.global.t('explorer.catalog.duplicateCatalog.notification.catalogDuplicated'))
+                await this.toaster.success(i18n.global.t('explorer.catalog.duplication.notification.catalogDuplicated'))
             } catch (e: any) {
                 catalog.removeProgress(MutationProgressType.Duplication)
                 await this.toaster.error(i18n.global.t('explorer.catalog.duplication.notification.couldNotDuplicateCatalog',
@@ -112,7 +112,7 @@ export class CatalogItemService {
             }
         }
 
-        interval().then()
+        interval().then(async () => await this.evitaClient.clearCache())
     }
 
     renameCatalogWithProgress(catalog: CatalogStatistics, newCatalogName: string): void {
@@ -133,7 +133,7 @@ export class CatalogItemService {
             }
         }
 
-        internal().then()
+        internal().then(async () => await this.evitaClient.clearCache())
     }
 
     activateCatalogWithProgress(catalog: CatalogStatistics): void {
@@ -153,7 +153,7 @@ export class CatalogItemService {
             }
         }
 
-        internal().then()
+        internal().then(async () => await this.evitaClient.clearCache())
     }
 
     deactivateCatalogWithProgress(catalog: CatalogStatistics): void {
@@ -173,7 +173,7 @@ export class CatalogItemService {
             }
         }
 
-        internal().then()
+        internal().then(async () => await this.evitaClient.clearCache())
     }
 
     replaceCatalogWithProgress(catalog: CatalogStatistics, newCatalogName: string): void {
@@ -194,7 +194,7 @@ export class CatalogItemService {
             }
         }
 
-        internal().then()
+        internal().then(async () => await this.evitaClient.clearCache())
     }
 
     makeCatalogMutableWithProgress(catalog: CatalogStatistics): void {
@@ -214,7 +214,7 @@ export class CatalogItemService {
             }
         }
 
-        internal().then()
+        internal().then(async () => await this.evitaClient.clearCache())
     }
 
     makeCatalogImmutableWithProgress(catalog: CatalogStatistics): void {
@@ -234,7 +234,7 @@ export class CatalogItemService {
             }
         }
 
-        internal().then()
+        internal().then(async () => await this.evitaClient.clearCache())
     }
 
     switchCatalogAliveWithProgress(catalog: CatalogStatistics): void {
@@ -255,7 +255,7 @@ export class CatalogItemService {
             }
         }
 
-        internal().then()
+        internal().then(async () => await this.evitaClient.clearCache())
     }
 }
 

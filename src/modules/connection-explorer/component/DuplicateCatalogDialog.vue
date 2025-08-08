@@ -70,7 +70,7 @@ async function reset() {
 </script>
 
 <template>
-    <VFormDialog :model-value="modelValue" :confirm="duplicateCatalog" :changed="changed" :reset="reset" @update:model-value="emit('update:modelValue', $event)">
+    <VFormDialog :model-value="modelValue" :confirm="duplicateCatalog" confirm-button-icon="mdi-content-duplicate" :changed="changed" :reset="reset" @update:model-value="emit('update:modelValue', $event)">
         <template #title>
             <I18nT keypath="explorer.catalog.duplication.title">
                 <template #catalogName>

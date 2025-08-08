@@ -41,6 +41,7 @@ async function activateCatalog(): Promise<boolean> {
         :model-value="modelValue"
         :confirm="activateCatalog"
         :changed="changed"
+        confirm-button-icon="mdi-check-circle-outline"
         @update:model-value="emit('update:modelValue', $event)"
     >
         <template #title>

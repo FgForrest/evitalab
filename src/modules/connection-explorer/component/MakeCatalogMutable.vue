@@ -47,6 +47,7 @@ async function makeCatalogMutable(): Promise<boolean> {
         :model-value="modelValue"
         :confirm="makeCatalogMutable"
         :changed="changed"
+        confirm-button-icon="mdi-lock-open-variant-outline"
         @update:model-value="emit('update:modelValue', $event)"
     >
         <template #title>

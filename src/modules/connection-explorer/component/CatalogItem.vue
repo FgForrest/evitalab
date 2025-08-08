@@ -176,7 +176,7 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
         <template #activator="{ isOpen, props }">
             <VTreeViewItem
                 v-bind="props"
-                :openable="!catalog.corrupted"
+                :openable="!catalog.unusable"
                 :is-open="isOpen"
                 :prepend-icon="catalog.readOnly ? 'mdi-database-eye-outline' : 'mdi-database-outline'"
                 :loading="loading"
@@ -191,7 +191,7 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
             </VTreeViewItem>
         </template>
 
-        <div v-if="!catalog.corrupted">
+        <div v-if="!catalog.unusable">
             <template v-if="catalog.entityCollectionStatistics.size > 0">
                 <CollectionItem
                     v-for="entityCollection in entityCollections"

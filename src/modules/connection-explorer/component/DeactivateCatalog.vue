@@ -39,6 +39,7 @@ async function deactivateCatalog(): Promise<boolean> {
         :model-value="modelValue"
         :confirm="deactivateCatalog"
         :changed="changed"
+        confirm-button-icon="mdi-close-circle-outline"
         @update:model-value="emit('update:modelValue', $event)"
     >
         <template #title>

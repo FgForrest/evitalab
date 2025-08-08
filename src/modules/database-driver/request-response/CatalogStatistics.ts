@@ -26,10 +26,6 @@ export class CatalogStatistics {
      */
     readonly entityCollectionStatistics: ImmutableList<EntityCollectionStatistics>
     /**
-     * Whether this catalog is corrupted or can be freely used.
-     */
-    readonly corrupted: boolean
-    /**
      * Current catalog state
      */
     readonly catalogState: CatalogState
@@ -56,7 +52,6 @@ export class CatalogStatistics {
         version: bigint,
         name: string,
         entityCollectionStatistics: ImmutableList<EntityCollectionStatistics>,
-        corrupted: boolean,
         catalogState: CatalogState,
         totalRecords: bigint,
         indexCount: bigint,
@@ -68,7 +63,6 @@ export class CatalogStatistics {
         this.version = version
         this.name = name
         this.entityCollectionStatistics = entityCollectionStatistics
-        this.corrupted = corrupted
         this.catalogState = catalogState
         this.totalRecords = totalRecords
         this.indexCount = indexCount

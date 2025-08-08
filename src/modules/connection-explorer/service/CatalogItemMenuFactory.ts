@@ -91,8 +91,8 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         if (immutableCatalogCallback == undefined) throw new Error('Missing mutateCatalogCallback')
 
         const graphQlEnabled: boolean = serverStatus != undefined && serverStatus.apiEnabled(ApiType.GraphQL)
-        const serverWritable: boolean = serverStatus != undefined && !serverStatus.readOnly
-        const baseEnabledFunctions: boolean = !catalog.corrupted && state === CatalogState.Alive
+        const serverWritable: boolean = serverStatus != undefined && !serverStatus.readOnly && !catalog.readOnly
+        const baseEnabledFunctions: boolean = !catalog.unusable && state === CatalogState.Alive
         const deactivated: boolean = state === CatalogState.Inactive
 
         const items: Map<CatalogMenuItemType, MenuItem<CatalogMenuItemType>> = new Map()
