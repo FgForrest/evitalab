@@ -171,34 +171,16 @@ onMounted(async () => {
     await loadAllReflectedSchemas()
 })
 
-
-function openFrom(): void {
-    workspaceService.createTab(schemaViewerTabFactory.createNew(
-        new EntitySchemaPointer(
-            props.dataPointer.schemaPointer.catalogName,
-            referenceSchemaPointer.value.entityType
-        )
-    ))
-}
-
-function openTo(): void {
-    workspaceService.createTab(schemaViewerTabFactory.createNew(
-        new EntitySchemaPointer(
-            props.dataPointer.schemaPointer.catalogName,
-            props.schema.entityType
-        )
-    ))
-}
 </script>
 
 <template>
     <div>
         <SchemaContainer :properties="properties">
-            <template #relation>
-                <RelationViewer @open-from="openFrom" @open-to="openTo"
-                                :is-from-managed="!schema.referencedEntityTypeManaged"
-                                :cardinality="schema.cardinality"
-                                :from="referenceSchemaPointer.entityType" :to="schema.entityType" />
+            <template #prepend>
+                <RelationViewer
+                    :schema="schema"
+                    :data-pointer="dataPointer"
+                    :reference-schema-pointer="referenceSchemaPointer" />
             </template>
             <template #nested-details>
                 <NameVariants :name-variants="schema.nameVariants" />
