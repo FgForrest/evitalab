@@ -13,6 +13,7 @@ import { List } from 'immutable'
 import SchemaContainerSectionListItem from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionListItem.vue'
 import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
+import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
@@ -22,7 +23,7 @@ const props = defineProps<{
     schema: ReferenceSchema
 }>()
 
-const flags: ComputedRef<List<string>> = computed(() => props.schema.representativeFlags)
+const flags: ComputedRef<List<Flag>> = computed(() => props.schema.representativeFlags)
 
 function openReferenceSchema(): void {
     if (!(props.dataPointer.schemaPointer instanceof EntitySchemaPointer)) {
@@ -36,7 +37,6 @@ function openReferenceSchema(): void {
         )
     ))
 }
-
 </script>
 
 <template>

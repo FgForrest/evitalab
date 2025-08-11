@@ -7,13 +7,14 @@ import { EntitySchema } from '@/modules/database-driver/request-response/schema/
 import { GlobalAttributeSchema } from '@/modules/database-driver/request-response/schema/GlobalAttributeSchema'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import {
+    GrpcAttributeInheritanceBehavior,
     GrpcAttributeSchemaType,
     GrpcAttributeUniquenessType,
-    GrpcCardinality,
+    GrpcCardinality, GrpcEntityScope,
     GrpcEvolutionMode,
     GrpcGlobalAttributeUniquenessType,
     GrpcOrderBehaviour,
-    GrpcOrderDirection,
+    GrpcOrderDirection, GrpcReferenceIndexType
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { GlobalAttributeUniquenessType } from '@/modules/database-driver/request-response/schema/GlobalAttributeUniquenessType'
@@ -29,16 +30,19 @@ import type {
     GrpcAttributeSchema,
     GrpcEntitySchema,
     GrpcReferenceSchema,
-    GrpcSortableAttributeCompoundSchema,
+    GrpcSortableAttributeCompoundSchema
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchema_pb'
 import type {
     GrpcCurrency,
     GrpcLocale,
+    GrpcScopedAttributeUniquenessType,
+    GrpcScopedGlobalAttributeUniquenessType,
+    GrpcScopedReferenceIndexType
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import {
     AttributeElement,
-    SortableAttributeCompoundSchema,
+    SortableAttributeCompoundSchema
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema'
 import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
 import { ScalarConverter } from './ScalarConverter'
@@ -47,6 +51,22 @@ import type { EntitySchemaAccessor } from '@/modules/database-driver/request-res
 import { MapUtil } from '@/modules/database-driver/connector/grpc/utils/MapUtil'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { Currency } from '@/modules/database-driver/data-type/Currency'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { List as ImmutableList } from 'immutable'
+import {
+    ScopedAttributeUniquenessType
+} from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
+import {
+    ScopedGlobalAttributeUniquenessType
+} from '@/modules/database-driver/request-response/schema/ScopedGlobalAttributeUniquenessType.ts'
+import {
+    ScopedReferenceIndexType
+} from '@/modules/database-driver/request-response/schema/ScopedReferenceIndexType.ts'
+import { ReferenceIndexType } from '@/modules/database-driver/request-response/schema/ReferenceIndexType.ts'
+import { ReflectedReferenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
+import {
+    AttributeInheritanceBehavior
+} from '@/modules/database-driver/request-response/schema/AttributeInheritanceBehavior.ts'
 
 export class CatalogSchemaConverter {
     private readonly evitaValueConverter: EvitaValueConverter
@@ -91,9 +111,6 @@ export class CatalogSchemaConverter {
     ): AttributeSchema {
         const scalar = ScalarConverter.convertScalar(attribute.type)
         const nameVariants = MapUtil.getNamingMap(attribute.nameVariant)
-        const uniquenessType = this.convertAttributeUniquenessType(
-            attribute.unique
-        )
         if (attribute.schemaType === GrpcAttributeSchemaType.ENTITY_SCHEMA) {
             return new AttributeSchema(
                 attribute.name,
@@ -101,16 +118,16 @@ export class CatalogSchemaConverter {
                 attribute.description ?? undefined,
                 attribute.deprecationNotice ?? undefined,
                 scalar,
-                uniquenessType,
-                attribute.filterable,
-                attribute.sortable,
                 attribute.nullable,
                 this.evitaValueConverter.convertGrpcValue(
                     attribute.defaultValue,
                     attribute.defaultValue?.value.case
                 ),
                 attribute.localized,
-                attribute.indexedDecimalPlaces
+                attribute.indexedDecimalPlaces,
+                this.convertEntityScopes(attribute.sortableInScopes),
+                this.convertEntityScopes(attribute.filterableInScopes),
+                this.convertUniqueInScopes(attribute.uniqueInScopes)
             )
         } else if (attribute.schemaType === GrpcAttributeSchemaType.REFERENCE_SCHEMA) {
             return new EntityAttributeSchema(
@@ -119,28 +136,6 @@ export class CatalogSchemaConverter {
                 attribute.description,
                 attribute.deprecationNotice,
                 scalar,
-                uniquenessType,
-                attribute.filterable,
-                attribute.sortable,
-                attribute.nullable,
-                this.evitaValueConverter.convertGrpcValue(
-                    attribute.defaultValue,
-                    attribute.defaultValue?.value.case
-                ),
-                attribute.localized,
-                attribute.indexedDecimalPlaces,
-                attribute.representative
-            )
-        } else if (attribute.schemaType === GrpcAttributeSchemaType.GLOBAL_SCHEMA) {
-            return new GlobalAttributeSchema(
-                attribute.name,
-                MapUtil.getNamingMap(attribute.nameVariant),
-                attribute.description,
-                attribute.deprecationNotice,
-                ScalarConverter.convertScalar(attribute.type),
-                this.convertAttributeUniquenessType(attribute.unique),
-                attribute.filterable,
-                attribute.sortable,
                 attribute.nullable,
                 this.evitaValueConverter.convertGrpcValue(
                     attribute.defaultValue,
@@ -149,13 +144,72 @@ export class CatalogSchemaConverter {
                 attribute.localized,
                 attribute.indexedDecimalPlaces,
                 attribute.representative,
-                this.convertGlobalAttributeUniquenessType(
-                    attribute.uniqueGlobally
-                )
+                this.convertEntityScopes(attribute.sortableInScopes),
+                this.convertEntityScopes(attribute.filterableInScopes),
+                this.convertUniqueInScopes(attribute.uniqueInScopes)
+            )
+        } else if (attribute.schemaType === GrpcAttributeSchemaType.GLOBAL_SCHEMA) {
+            return new GlobalAttributeSchema(
+                attribute.name,
+                MapUtil.getNamingMap(attribute.nameVariant),
+                attribute.description,
+                attribute.deprecationNotice,
+                ScalarConverter.convertScalar(attribute.type),
+                attribute.nullable,
+                this.evitaValueConverter.convertGrpcValue(
+                    attribute.defaultValue,
+                    attribute.defaultValue?.value.case
+                ),
+                attribute.localized,
+                attribute.indexedDecimalPlaces,
+                attribute.representative,
+                this.convertEntityScopes(attribute.sortableInScopes),
+                this.convertEntityScopes(attribute.filterableInScopes),
+                this.convertUniqueGloballyInScopes(attribute.uniqueGloballyInScopes),
+                this.convertUniqueInScopes(attribute.uniqueInScopes),
             )
         } else {
             throw new UnexpectedError('Unaccepted type')
         }
+    }
+
+
+    private convertEntityScopes(entityScopes: GrpcEntityScope[]): ImmutableList<EntityScope> {
+        const convertedEntityScopes: EntityScope[] = []
+
+        for (const entityScope of entityScopes) {
+            convertedEntityScopes.push(this.convertEntityScope(entityScope))
+        }
+        return ImmutableList(convertedEntityScopes)
+    }
+
+    private convertEntityScope(entityScope: GrpcEntityScope): EntityScope {
+        switch (entityScope) {
+            case GrpcEntityScope.SCOPE_ARCHIVED:
+                return EntityScope.Archive
+            case GrpcEntityScope.SCOPE_LIVE:
+                return EntityScope.Live
+            default:
+                throw new UnexpectedError('Unexpected entity scope')
+        }
+    }
+
+    private convertUniqueInScopes(uniqueGloballyInScopes: GrpcScopedAttributeUniquenessType[]):ImmutableList<ScopedAttributeUniquenessType>{
+        const scopes: ScopedAttributeUniquenessType[] = []
+        for (const uniqueGloballyInScope of uniqueGloballyInScopes) {
+            scopes.push(new ScopedAttributeUniquenessType(this.convertEntityScope(uniqueGloballyInScope.scope), this.convertAttributeUniquenessType(uniqueGloballyInScope.uniquenessType)))
+        }
+
+        return ImmutableList(scopes)
+    }
+
+    private convertUniqueGloballyInScopes(uniqueGloballyInScopes: GrpcScopedGlobalAttributeUniquenessType[]):ImmutableList<ScopedGlobalAttributeUniquenessType>{
+        const scopes: ScopedGlobalAttributeUniquenessType[] = []
+        for (const uniqueGloballyInScope of uniqueGloballyInScopes) {
+            scopes.push(new ScopedGlobalAttributeUniquenessType(this.convertEntityScope(uniqueGloballyInScope.scope), this.convertGlobalAttributeUniquenessType(uniqueGloballyInScope.uniquenessType)))
+        }
+
+        return ImmutableList(scopes)
     }
 
     private convertGlobalAttributeSchema(
@@ -167,9 +221,6 @@ export class CatalogSchemaConverter {
             globalAttributeSchema.description,
             globalAttributeSchema.deprecationNotice,
             ScalarConverter.convertScalar(globalAttributeSchema.type),
-            this.convertAttributeUniquenessType(globalAttributeSchema.unique),
-            globalAttributeSchema.filterable,
-            globalAttributeSchema.sortable,
             globalAttributeSchema.nullable,
             this.evitaValueConverter.convertGrpcValue(
                 globalAttributeSchema.defaultValue,
@@ -178,9 +229,10 @@ export class CatalogSchemaConverter {
             globalAttributeSchema.localized,
             globalAttributeSchema.indexedDecimalPlaces,
             globalAttributeSchema.representative,
-            this.convertGlobalAttributeUniquenessType(
-                globalAttributeSchema.uniqueGlobally
-            )
+            this.convertEntityScopes(globalAttributeSchema.sortableInScopes),
+            this.convertEntityScopes(globalAttributeSchema.filterableInScopes),
+            this.convertUniqueGloballyInScopes(globalAttributeSchema.uniqueGloballyInScopes),
+            this.convertUniqueInScopes(globalAttributeSchema.uniqueInScopes)
         )
     }
 
@@ -301,28 +353,94 @@ export class CatalogSchemaConverter {
         return entityAttributesSchemas
     }
 
+    private convertAttributeInheritanceBehavior(attributeInheritanceBehavior: GrpcAttributeInheritanceBehavior) {
+        if(attributeInheritanceBehavior === GrpcAttributeInheritanceBehavior.INHERIT_ALL_EXCEPT)
+            return AttributeInheritanceBehavior.InheritAllExcept
+        else if(attributeInheritanceBehavior === GrpcAttributeInheritanceBehavior.INHERIT_ONLY_SPECIFIED)
+            return AttributeInheritanceBehavior.InheritOnlySpecified
+        else
+            throw new UnexpectedError('Unavailable attribute inheritance behavior')
+    }
+
     private convertReferenceSchema(
         referenceSchema: GrpcReferenceSchema
     ): ReferenceSchema {
-        return new ReferenceSchema(
-            referenceSchema.name,
-            MapUtil.getNamingMap(referenceSchema.nameVariant),
-            referenceSchema.description,
-            referenceSchema.deprecationNotice,
-            referenceSchema.entityType,
-            referenceSchema.referencedEntityTypeManaged,
-            MapUtil.getNamingMap(referenceSchema.entityTypeNameVariant),
-            referenceSchema.groupType,
-            referenceSchema.referencedGroupTypeManaged,
-            MapUtil.getNamingMap(referenceSchema.groupTypeNameVariant),
-            referenceSchema.indexed,
-            referenceSchema.faceted,
-            this.convertCardinality(referenceSchema.cardinality),
-            this.convertAttributeSchemas(referenceSchema.attributes),
-            this.convertSortableAttributeCompoundSchemas(
-                referenceSchema.sortableAttributeCompounds
+        if(referenceSchema.reflectedReferenceName != undefined) {
+            return new ReflectedReferenceSchema(
+                referenceSchema.name,
+                MapUtil.getNamingMap(referenceSchema.nameVariant),
+                referenceSchema.description,
+                referenceSchema.deprecationNotice,
+                referenceSchema.entityType,
+                referenceSchema.referencedEntityTypeManaged,
+                MapUtil.getNamingMap(referenceSchema.entityTypeNameVariant),
+                referenceSchema.groupType,
+                referenceSchema.referencedGroupTypeManaged,
+                MapUtil.getNamingMap(referenceSchema.groupTypeNameVariant),
+                this.convertCardinality(referenceSchema.cardinality),
+                this.convertAttributeSchemas(referenceSchema.attributes),
+                this.convertSortableAttributeCompoundSchemas(
+                    referenceSchema.sortableAttributeCompounds
+                ),
+                this.convertScopedIndexTypes(referenceSchema.scopedIndexTypes),
+                this.convertEntityScopes(referenceSchema.facetedInScopes),
+                referenceSchema.reflectedReferenceName,
+                referenceSchema.descriptionInherited,
+                referenceSchema.deprecationNoticeInherited,
+                referenceSchema.cardinalityInherited,
+                referenceSchema.facetedInherited,
+                referenceSchema.indexedInherited,
+                this.convertAttributeInheritanceBehavior(referenceSchema.attributeInheritanceBehavior),
+                referenceSchema.attributeInheritanceFilter
             )
+        } else {
+            return new ReferenceSchema(
+                referenceSchema.name,
+                MapUtil.getNamingMap(referenceSchema.nameVariant),
+                referenceSchema.description,
+                referenceSchema.deprecationNotice,
+                referenceSchema.entityType,
+                referenceSchema.referencedEntityTypeManaged,
+                MapUtil.getNamingMap(referenceSchema.entityTypeNameVariant),
+                referenceSchema.groupType,
+                referenceSchema.referencedGroupTypeManaged,
+                MapUtil.getNamingMap(referenceSchema.groupTypeNameVariant),
+                this.convertCardinality(referenceSchema.cardinality),
+                this.convertAttributeSchemas(referenceSchema.attributes),
+                this.convertSortableAttributeCompoundSchemas(
+                    referenceSchema.sortableAttributeCompounds
+                ),
+                this.convertScopedIndexTypes(referenceSchema.scopedIndexTypes),
+                this.convertEntityScopes(referenceSchema.facetedInScopes)
+            )
+        }
+    }
+
+    private convertScopedIndexTypes(scopeType: GrpcScopedReferenceIndexType[]): ImmutableList<ScopedReferenceIndexType> {
+        const items:ScopedReferenceIndexType[] = []
+        for (const index of scopeType) {
+            items.push(this.convertScopedIndexType(index))
+        }
+
+        return ImmutableList(items)
+    }
+
+    private convertScopedIndexType(scopedIndexType: GrpcScopedReferenceIndexType): ScopedReferenceIndexType {
+        return new ScopedReferenceIndexType(
+            this.convertEntityScope(scopedIndexType.scope),
+            this.convertReferenceIndexType(scopedIndexType.indexType)
         )
+    }
+
+    private convertReferenceIndexType(indexType: GrpcReferenceIndexType): ReferenceIndexType {
+        switch (indexType) {
+            case GrpcReferenceIndexType.REFERENCE_INDEX_TYPE_NONE:
+                return ReferenceIndexType.ReferenceIndexTypeNone
+            case GrpcReferenceIndexType.REFERENCE_INDEX_TYPE_FOR_FILTERING:
+                return ReferenceIndexType.ReferenceIndexTypeForFiltering
+            case GrpcReferenceIndexType.REFERENCE_INDEX_TYPE_FOR_FILTERING_AND_PARTITIONING:
+                return ReferenceIndexType.ReferenceIndexTypeForFilteringAndPartitioning
+        }
     }
 
     private convertAttributeSchemas(attributeSchemas: {

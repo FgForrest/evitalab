@@ -24,25 +24,30 @@ const props = defineProps<{
     schema: EntitySchema
 }>()
 
-const properties = computed<Property[]>(() => [
-    new Property(t('schemaViewer.entity.label.version'), new PropertyValue(props.schema.version)),
-    new Property(t('schemaViewer.entity.label.description'), new PropertyValue(props.schema.description)),
-    new Property(t('schemaViewer.entity.label.deprecationNotice'), new PropertyValue(props.schema.deprecationNotice)),
-    new Property(t('schemaViewer.entity.label.locales'), props.schema.locales.map(locale => new PropertyValue(new KeywordValue(locale.toString())))),
-    new Property(t('schemaViewer.entity.label.currencies'), List(props.schema.currencies.values()).map(currency => new PropertyValue(new KeywordValue(currency.toString())))),
-    new Property(t('schemaViewer.entity.label.generatedPrimaryKey'), new PropertyValue(props.schema.withGeneratedPrimaryKey)),
-    new Property(t('schemaViewer.entity.label.hierarchical'), new PropertyValue(props.schema.withHierarchy)),
-    new Property(t('schemaViewer.entity.label.prices'), new PropertyValue(props.schema.withPrice)),
-    new Property(t('schemaViewer.entity.label.indexedDecimalPlaces'), new PropertyValue(props.schema.indexedPricePlaces)),
-    new Property(
-        t('schemaViewer.entity.label.evolutionModes'),
-        props.schema.evolutionMode.map(mode => {
-            return new PropertyValue(new KeywordValue(
-                i18n.global.t(`schemaViewer.entity.evolutionMode.${mode}`)
-            ))
-        })
-    )
-])
+const properties = computed<Property[]>(() => {
+    const propertiesArr = [
+        new Property(t('schemaViewer.entity.label.version'), new PropertyValue(props.schema.version)),
+        new Property(t('schemaViewer.entity.label.description'), new PropertyValue(props.schema.description)),
+        new Property(t('schemaViewer.entity.label.locales'), props.schema.locales.map(locale => new PropertyValue(new KeywordValue(locale.toString())))),
+        new Property(t('schemaViewer.entity.label.currencies'), List(props.schema.currencies.values()).map(currency => new PropertyValue(new KeywordValue(currency.toString())))),
+        new Property(t('schemaViewer.entity.label.generatedPrimaryKey'), new PropertyValue(props.schema.withGeneratedPrimaryKey)),
+        new Property(t('schemaViewer.entity.label.hierarchical'), new PropertyValue(props.schema.withHierarchy)),
+        new Property(t('schemaViewer.entity.label.prices'), new PropertyValue(props.schema.withPrice)),
+        new Property(t('schemaViewer.entity.label.indexedDecimalPlaces'), new PropertyValue(props.schema.indexedPricePlaces)),
+        new Property(
+            t('schemaViewer.entity.label.evolutionModes'),
+            props.schema.evolutionMode.map(mode => {
+                return new PropertyValue(new KeywordValue(
+                    i18n.global.t(`schemaViewer.entity.evolutionMode.${mode}`)
+                ))
+            })
+        )
+    ]
+    if (props.schema.deprecationNotice)
+        propertiesArr.splice(2, 0,
+            new Property(t('schemaViewer.entity.label.deprecationNotice'), new PropertyValue(props.schema.deprecationNotice)))
+    return propertiesArr
+})
 </script>
 
 <template>

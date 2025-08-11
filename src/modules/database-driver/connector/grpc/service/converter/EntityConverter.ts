@@ -15,9 +15,9 @@ import { EntityReferenceWithParent } from '@/modules/database-driver/request-res
 import { Attributes } from '@/modules/database-driver/request-response/data/Attributes'
 import { Reference } from '@/modules/database-driver/request-response/data/Reference'
 import {
-    GrpcCardinality,
+    GrpcCardinality, GrpcEntityScope,
     GrpcEvitaAssociatedDataDataType_GrpcEvitaDataType,
-    GrpcPriceInnerRecordHandling,
+    GrpcPriceInnerRecordHandling
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import type { GrpcLocalizedAssociatedData } from '@/modules/database-driver/connector/grpc/gen/GrpcAssociatedData_pb'
 import type { GrpcPrice } from '@/modules/database-driver/connector/grpc/gen/GrpcPrice_pb'
@@ -33,6 +33,7 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { Currency } from '@/modules/database-driver/data-type/Currency'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { DateTimeUtil } from '@/modules/database-driver/connector/grpc/utils/DateTimeUtil'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 export class EntityConverter {
     private readonly evitaValueConverter: EvitaValueConverter;
@@ -56,10 +57,20 @@ export class EntityConverter {
             grpcEntity.priceForSale
                 ? this.convertPrice(grpcEntity.priceForSale)
                 : undefined,
-            this.convertLocales(grpcEntity.locales)
+            this.convertLocales(grpcEntity.locales),
+            this.convertEntityScope(grpcEntity.scope)
         )
     }
-
+    private convertEntityScope(entityScope: GrpcEntityScope): EntityScope {
+        switch (entityScope) {
+            case GrpcEntityScope.SCOPE_ARCHIVED:
+                return EntityScope.Archive
+            case GrpcEntityScope.SCOPE_LIVE:
+                return EntityScope.Live
+            default:
+                throw new UnexpectedError('Unexpected entity scope')
+        }
+    }
     private convertEntityReference(grpcEntityReference: GrpcEntityReference): EntityReference {
         return new EntityReference(
             grpcEntityReference.entityType,

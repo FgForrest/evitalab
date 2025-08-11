@@ -262,6 +262,15 @@
       "changePriceType": "Change price type",
       "shareTab": "Share tab",
       "openPropertySelector": "Open property selector",
+      "scopeSelector": {
+        "title": "Select scope",
+        "live": "In Live scope",
+        "archive": "In Archive scope"
+      },
+      "toolbar": {
+        "live": "In Live scope",
+        "archive": "In Archive scope"
+      },
       "propertySelector": {
         "_title": "Property selector",
         "findProperty": "Find property"
@@ -622,6 +631,10 @@
         "failedToSaveQueryToHistory": "Failed to save query to history."
       }
     },
+    "layerSelector": {
+      "live": "The default scope is where all new entities are created.",
+      "archive": "The archive scope is where outdated entities that are no longer actively used are stored. The archive is usually covered by fewer indexes than the live scope and is not searched unless explicitly requested in a query."
+    },
     "propertySelector": {
       "title": "Displayed properties",
       "label": {
@@ -931,7 +944,8 @@
           "nullsFirst": "nulls first",
           "nullsLast": "nulls last",
           "asc": "ascending",
-          "desc": "descending"
+          "desc": "descending",
+          "reflected": "reflected"
         },
         "entitySchema": {
           "hierarchical": "hierarchical"
@@ -945,7 +959,8 @@
           "filterable": "filterable",
           "sortable": "sortable",
           "localized": "localized",
-          "nullable": "nullable"
+          "nullable": "nullable",
+          "attributeTooltip": "The attribute can be filtered/sorted within the live/archive scope."
         },
         "associatedDataSchema": {
           "localized": "localized",
@@ -955,6 +970,9 @@
           "external": "external",
           "indexed": "indexed",
           "faceted": "faceted"
+        },
+        "reflectedReferenceSchema": {
+          "reflectedReference": "reflected"
         }
       }
     },
@@ -1018,6 +1036,8 @@
         "globallyUniqueWithinLocaleOfCatalog": "Within locale of catalog"
       },
       "label": {
+        "live": "In Live scope",
+        "archive": "In Archive scope",
         "type": "Type",
         "description": "Description",
         "deprecationNotice": "Deprecation notice",
@@ -1026,16 +1046,30 @@
         "globallyUnique": "Globally unique",
         "filterable": "Filterable",
         "sortable": "Sortable",
+        "filtered": "filtered",
+        "filteredDueToUnique": "due to uniqueness",
+        "sorted": "sorted",
         "localized": "Localized",
         "nullable": "Nullable",
         "defaultValue": "Default value",
-        "indexedDecimalPlaces": "Indexed decimal places"
+        "indexedDecimalPlaces": "Indexed decimal places",
+        "attributes": "Attributes",
+        "uniqueWithinCollection": "within collection",
+        "uniqueWithinLocaleOfCollection": "within locale of collection"
+      },
+      "tooltip": {
+        "content": "The attribute can be {0} within the {1} scope.",
+        "contentNegation": "The attribute cannot be {0} within the {1} scope.",
+        "uniqueContent": "The attribute {0} in {1} scope.",
+        "referenceAttributeContent": "Attribute {0} is present in {1} scope.",
+        "filterableUnique": "In live scope (due to uniqueness)",
+        "uniquePer": ""
       },
       "help": {
-        "uniqueWithinCollection": "The attribute value must be unique among all the entities of the same collection.",
-        "uniqueWithinLocaleOfCollection": "The localized attribute value must be unique among all values of the same locale among all the entities.",
-        "globallyUniqueWithinCatalog": "The attribute value (either localized or non-localized) must be unique among all values among all the entities using this global attribute schema in the entire catalog.",
-        "globallyUniqueWithinLocaleOfCatalog": "The localized attribute value must be unique among all values of the same locale among all the entities using this global attribute schema in the entire catalog.",
+        "uniqueWithinCollection": "The attribute value must be unique among all the entities of the same collection. The {0} attribute is present in scope {1}.",
+        "uniqueWithinLocaleOfCollection": "The localized attribute value must be unique among all values of the same locale among all the entities. The {0} attribute is present in scope {1}.",
+        "globallyUniqueWithinCatalog": "The attribute value (either localized or non-localized) must be unique among all values among all the entities using this global attribute schema in the entire catalog. The {0} attribute is present in scope {1}.",
+        "globallyUniqueWithinLocaleOfCatalog": "The localized attribute value must be unique among all values of the same locale among all the entities using this global attribute schema in the entire catalog. The {0} attribute is present in scope {1}.",
         "implicitlyFilterable": "The attribute is implicitly filterable because it is unique."
       }
     },
@@ -1056,17 +1090,40 @@
     },
     "reference": {
       "label": {
+        "live": "In Live scope",
+        "archive": "In Archive scope",
         "description": "Description",
         "deprecationNotice": "Deprecation notice",
         "cardinality": "Cardinality",
         "referencedEntity": "Referenced entity",
         "referencedEntityManaged": "Referenced entity managed",
         "referencedGroup": "Referenced group",
-        "referencedGroupManaged": "Referenced group managed",
-        "indexed": "Indexed",
         "faceted": "Faceted",
         "referencedEntityNameVariants": "Referenced entity",
-        "referencedGroupNameVariants": "Referenced group"
+        "referencedGroupNameVariants": "Referenced group",
+        "indexed": {
+          "title": "Indexed",
+          "none": "None",
+          "forFiltering": "For filtering",
+          "forFilteringAndPartitioning": "For filtering and partitioning"
+        },
+        "reflectedReference": "Reflects",
+        "inherited": "inherited",
+        "groupManagedByEvita": "This referenced group is managed by EvitaDB.",
+        "groupManagedExternal": "This referenced group is managed externally."
+      },
+      "tooltip": {
+        "content": "The reference is {0} indexed within the {1} scope.",
+        "facetedContent": "The reference {0} provide facets within the {1} scope.",
+        "indexedTooltip": {
+          "none": "Reference has no index available.",
+          "forFiltering": "Reference has only basic index available that is necessary for ReferenceHaving constraint interpretation.",
+          "forFilteringAndPartitioning": "Reference has basic index available and also partitioning indexes for the main entity type."
+        },
+        "faceted": "Special facet index is maintained for this reference allowing interpretation of FacetHaving filtering and FacetSummary requirement constraints."
+      },
+      "reflected": {
+        "reflectedReferences": "Reflected by"
       }
     },
     "sortableAttributeCompound": {
@@ -1079,6 +1136,17 @@
       "attributeElement": {
         "title": "Attribute elements"
       }
+    },
+    "tooltip": {
+      "live": "live",
+      "archive": "archive",
+      "filtered": "filtered",
+      "sorted": "sorted",
+      "doesNot": "doesn't",
+      "not": "not",
+      "unique": "unique",
+      "liveContent": "The default scope is where all new entities are created.",
+      "archiveContent": "The archive scope is where outdated entities that are no longer actively used are stored. The archive is usually covered by fewer indexes than the live scope and is not searched unless explicitly requested in a query."
     }
   },
   "serverViewer": {
@@ -1232,7 +1300,8 @@
         "couldNotLoadMinimalDate": "Could not load available moments: {reason}",
         "backupRequested": "A backup for the {catalogName} catalog requested.",
         "couldNotRequestBackup": "Could not request a backup for the {catalogName} catalog: {reason}"
-      }
+      },
+      "description": "Request a new backup for the catalog:"
     },
     "restore": {
       "title": "Restore catalog from {fileName}",
@@ -1794,5 +1863,16 @@
         }
       }
     }
+  },
+  "relationViewer": {
+    "title": "Relation",
+    "cardinality": {
+      "exactlyOne": "1:1",
+      "oneOrMore": "1:1…*",
+      "zeroOrOne": "1:0…1",
+      "zeroOrMore": "1:0…*"
+    },
+    "managedByEvita": "This reference is managed by EvitaDB.",
+    "managedExternal": "This referenced entity is managed externally."
   }
 }

@@ -3,6 +3,7 @@ import { NamingConvention } from '../NamingConvetion'
 import { AbstractSchema } from '@/modules/database-driver/request-response/schema/AbstractSchema'
 import { OrderBehaviour } from '@/modules/database-driver/request-response/schema/OrderBehaviour'
 import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
+import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 
 /**
  * evitaLab's representation of a single evitaDB sortable attribute compound schema schema independent of specific evitaDB version
@@ -28,7 +29,7 @@ export class SortableAttributeCompoundSchema extends AbstractSchema {
      */
     readonly attributeElements: List<AttributeElement>
 
-    private readonly _representativeFlags: List<string> = List()
+    private readonly _representativeFlags: List<Flag> = List()
 
     constructor(name: string,
                 nameVariants: Map<NamingConvention, string>,
@@ -43,7 +44,7 @@ export class SortableAttributeCompoundSchema extends AbstractSchema {
         this.attributeElements = List(attributeElements)
     }
 
-    get representativeFlags(): List<string> {
+    get representativeFlags(): List<Flag> {
         return this._representativeFlags
     }
 }
@@ -60,7 +61,7 @@ export class AttributeElement extends AbstractSchema {
     readonly attributeName: string
     readonly behaviour: OrderBehaviour
     readonly direction: OrderDirection
-    private _representativeFlags?: List<string>
+    private _representativeFlags?: List<Flag>
 
     constructor(attributeName: string,
                 behaviour: OrderBehaviour,
@@ -71,18 +72,18 @@ export class AttributeElement extends AbstractSchema {
         this.direction = direction
     }
 
-    get representativeFlags(): List<string> {
+    get representativeFlags(): List<Flag> {
         if(this._representativeFlags == undefined) {
-            const flags: string[] = []
+            const flags: Flag[] = []
 
             if (this.direction === OrderDirection.Asc)
-                flags.push(AttributeElementFlag.Asc)
+                flags.push(new Flag(AttributeElementFlag.Asc))
             else if (this.direction === OrderDirection.Desc)
-                flags.push(AttributeElementFlag.Desc)
+                flags.push(new Flag(AttributeElementFlag.Desc))
             if (this.behaviour === OrderBehaviour.NullsLast)
-                flags.push(AttributeElementFlag.NullsLast)
+                flags.push(new Flag(AttributeElementFlag.NullsLast))
             else if (this.behaviour === OrderBehaviour.NullsFirst)
-                flags.push(AttributeElementFlag.NullsFirst)
+                flags.push(new Flag(AttributeElementFlag.NullsFirst))
 
             this._representativeFlags = List(flags)
         }

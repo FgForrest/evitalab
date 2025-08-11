@@ -10,6 +10,7 @@ const props = defineProps<{
 
 <template>
     <VSheet class="container">
+        <slot name="prepend"></slot>
         <VPropertiesTable :properties="properties"/>
         <VExpansionPanels v-if="$slots['nested-details']" multiple class="mt-5">
             <slot name="nested-details"/>
