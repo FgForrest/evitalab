@@ -153,7 +153,7 @@ export class CatalogItemService {
             }
         }
 
-        internal().then(async () => await this.evitaClient.clearCache())
+        internal().then(async () => await this.evitaClient.management.clearCatalogStatisticsCache())
     }
 
     deactivateCatalogWithProgress(catalog: CatalogStatistics): void {
@@ -173,7 +173,7 @@ export class CatalogItemService {
             }
         }
 
-        internal().then(async () => await this.evitaClient.clearCache())
+        internal().then(async () => await this.evitaClient.management.clearCatalogStatisticsCache())
     }
 
     replaceCatalogWithProgress(catalog: CatalogStatistics, newCatalogName: string): void {
