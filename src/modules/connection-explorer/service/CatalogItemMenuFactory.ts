@@ -277,7 +277,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
             'mdi-delete-outline',
             this.getItemTitle,
             () => deleteCatalogCallback(),
-            baseEnabledFunctions && serverWritable
+            serverWritable
         )
 
         this.createMenuSubheader(

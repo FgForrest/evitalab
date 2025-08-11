@@ -38,7 +38,6 @@ import {
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
 import BackupSelector from '@/modules/backup-viewer/components/BackupSelector.vue'
 import DuplicateCatalogDialog from '@/modules/connection-explorer/component/DuplicateCatalogDialog.vue'
-import type { MutationProgressType } from '@/modules/connection-explorer/model/MutationProgressType.ts'
 import ActivateCatalog from '@/modules/connection-explorer/component/ActivateCatalog.vue'
 import DeactivateCatalog from '@/modules/connection-explorer/component/DeactivateCatalog.vue'
 import MakeCatalogImmutable from '@/modules/connection-explorer/component/MakeCatalogImmutable.vue'
@@ -55,6 +54,7 @@ const { t } = useI18n()
 const props = defineProps<{
     catalog: CatalogStatistics
 }>()
+const catalogRef = toRef(props, 'catalog')
 const serverStatus: Ref<ServerStatus | undefined> = useServerStatus()
 
 const showRenameCatalogDialog = ref<boolean>(false)
@@ -73,7 +73,7 @@ const flags = ref<ItemFlag[]>([])
 
 onMounted(() => changeFlags())
 
-function changeFlags(runningProgresses?: Map<MutationProgressType, number>) {
+function changeFlags() {
     flags.value = []
 
     if (props.catalog.catalogState === CatalogState.Corrupted) {
@@ -88,8 +88,8 @@ function changeFlags(runningProgresses?: Map<MutationProgressType, number>) {
     }
 
 
-    if (runningProgresses) {
-        for (const runningProgress of runningProgresses) {
+    if (props.catalog.progresses) {
+        for (const runningProgress of props.catalog.progresses) {
             flags.value.push(ItemFlag.info(t(`explorer.catalog.flag.${runningProgress[0]}`, [runningProgress[1]])))
         }
     }
@@ -97,8 +97,8 @@ function changeFlags(runningProgresses?: Map<MutationProgressType, number>) {
 
 const menuItems = ref<Map<CatalogMenuItemType, MenuItem<CatalogMenuItemType>>>()
 
-watch(props.catalog.progresses, (value) => {
-    changeFlags(value)
+watch(catalogRef, () => {
+    changeFlags()
 })
 
 watch(
@@ -119,8 +119,6 @@ const entityCollections = computed<ImmutableList<EntityCollectionStatistics>>(()
             return a.entityType.localeCompare(b.entityType)
         })
 })
-
-const catalogRef = ref(props.catalog)
 provideCatalog(catalogRef as Ref<CatalogStatistics>)
 
 const loading = ref<boolean>(false)

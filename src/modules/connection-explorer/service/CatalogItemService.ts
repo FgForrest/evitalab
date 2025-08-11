@@ -153,7 +153,9 @@ export class CatalogItemService {
             }
         }
 
-        internal().then(async () => await this.evitaClient.management.clearCatalogStatisticsCache())
+        internal().then(async () =>
+            await this.evitaClient.management.clearCatalogStatisticsCache()
+        )
     }
 
     deactivateCatalogWithProgress(catalog: CatalogStatistics): void {
