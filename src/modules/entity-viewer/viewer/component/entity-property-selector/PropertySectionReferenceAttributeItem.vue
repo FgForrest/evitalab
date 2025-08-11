@@ -20,6 +20,7 @@ import PropertySectionItem
     from '@/modules/entity-viewer/viewer/component/entity-property-selector/PropertySectionItem.vue'
 import { List } from 'immutable'
 import { useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
+import type { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
@@ -47,7 +48,7 @@ const referenceAttributeSchema: ComputedRef<AttributeSchema> = computed(() => {
     return props.attributePropertyDescriptor.schema
 })
 
-const flags: ComputedRef<List<string>> = computed(() => referenceAttributeSchema.value.representativeFlags)
+const flags: ComputedRef<List<Flag>> = computed(() => referenceAttributeSchema.value.representativeFlags)
 
 function openSchema(): void {
     workspaceService.createTab(
