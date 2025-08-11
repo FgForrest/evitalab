@@ -65,14 +65,11 @@ function openTo(): void {
         <tr class="properties-table__row">
             <td>{{ t('relationViewer.title') }}</td>
             <td class="content-row">
-                <VChip @click="!schema.referencedEntityTypeManaged ? openFrom() : null"
-                       :variant="!schema.referencedEntityTypeManaged ? 'outlined' : 'plain'"
-                       :class="!schema.referencedEntityTypeManaged ? 'clickable' : ''" dense>
+                <VChip @click="openFrom"
+                       variant="outlined"
+                       class="clickable" dense>
                     {{ referenceSchemaPointer.entityType }}
-                    <VTooltip activator="parent" v-if="schema.referencedEntityTypeManaged">
-                        {{ t('relationViewer.managedExternal') }}
-                    </VTooltip>
-                    <VTooltip activator="parent" v-else>
+                    <VTooltip activator="parent">
                         {{ t('relationViewer.managedByEvita') }}
                     </VTooltip>
                 </VChip>
@@ -82,7 +79,17 @@ function openTo(): void {
                         {{ t(`relationViewer.cardinality.${schema.cardinality}`) }}
                     </VTooltip>
                 </div>
-                <VChip @click="openTo" variant="outlined" class="clickable">{{ schema.entityType }}</VChip>
+                <VChip @click="schema.referencedEntityTypeManaged ? openTo() : null"
+                       :variant="schema.referencedEntityTypeManaged ? 'outlined' : 'plain'"
+                       :class="schema.referencedEntityTypeManaged ? 'clickable' : ''" dense>
+                    {{ schema.entityType }}
+                    <VTooltip activator="parent" v-if="schema.referencedEntityTypeManaged">
+                        {{ t('relationViewer.managedByEvita') }}
+                    </VTooltip>
+                    <VTooltip activator="parent" v-else>
+                        {{ t('relationViewer.managedExternal') }}
+                    </VTooltip>
+                </VChip>
             </td>
         </tr>
     </table>
