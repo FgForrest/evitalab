@@ -365,7 +365,9 @@
         "inactive": "Inactive",
         "duplication": "Duplicating - {0}%",
         "rename": "Renaming - {0}%",
-        "replace": "Replacing - {0}%"
+        "replace": "Replacing - {0}%",
+        "activate": "Activating - {0}",
+        "deactivate": "Deactivating - {0"
       },
       "title": {
         "readOnly": "catalog is read-only"
