@@ -20,11 +20,6 @@ const props = defineProps<{
     referenceSchemaPointer: ReferenceSchemaPointer,
 }>()
 
-const emit = defineEmits<{
-    (e: 'openFrom'): void,
-    (e: 'openTo'): void,
-}>()
-
 const { t } = useI18n()
 
 const icon = computed(() => {

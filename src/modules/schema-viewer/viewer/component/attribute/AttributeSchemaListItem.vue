@@ -18,9 +18,6 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import SchemaContainerSectionListItem from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionListItem.vue'
 import type { ComputedRef } from 'vue'
 import { computed } from 'vue'
-import {
-    AttributeInheritanceBehavior
-} from '@/modules/database-driver/request-response/schema/AttributeInheritanceBehavior.ts'
 import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 import { useI18n } from 'vue-i18n'
 
@@ -32,9 +29,7 @@ const showTooltip = ref<boolean>(false)
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
-    schema: AttributeSchema,
-    inheritedAttributesFilter?: string[]
-    attributeInheritanceBehavior?: AttributeInheritanceBehavior
+    schema: AttributeSchema
 }>()
 
 const flags: ComputedRef<List<Flag>> = computed(() => {

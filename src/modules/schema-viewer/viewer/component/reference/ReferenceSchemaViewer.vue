@@ -102,10 +102,6 @@ const properties = computed<Property[]>(() => {
             new PropertyValue(new KeywordValue(props.schema.referencedGroupType, t('schemaViewer.reference.label.groupManagedExternal')) ? new KeywordValue(props.schema.referencedGroupType, undefined, t('schemaViewer.reference.label.groupManagedExternal')) : undefined)
         ))
     }
-    properties.push(new Property(
-        t('schemaViewer.reference.label.referencedGroupManaged'),
-        new PropertyValue(props.schema.referencedGroupTypeManaged || false)
-    ))
 
     properties.push(new Property(t('schemaViewer.reference.label.indexed.title'), ImmutableList(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
         props.schema.scopedIndexTypes.some(y => getEnumKeyByValue(EntityScope, y.scope) === x), t(`schemaViewer.reference.label.${x.toLowerCase()}`) + (() => {
