@@ -7,15 +7,14 @@ import { EntitySchema } from '@/modules/database-driver/request-response/schema/
 import { GlobalAttributeSchema } from '@/modules/database-driver/request-response/schema/GlobalAttributeSchema'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import {
+    GrpcAttributeInheritanceBehavior,
     GrpcAttributeSchemaType,
     GrpcAttributeUniquenessType,
-    GrpcCardinality,
-    GrpcEntityScope,
+    GrpcCardinality, GrpcEntityScope,
     GrpcEvolutionMode,
     GrpcGlobalAttributeUniquenessType,
     GrpcOrderBehaviour,
-    GrpcOrderDirection,
-    GrpcReferenceIndexType
+    GrpcOrderDirection, GrpcReferenceIndexType
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import {
@@ -66,6 +65,10 @@ import {
     ScopedReferenceIndexType
 } from '@/modules/database-driver/request-response/schema/ScopedReferenceIndexType.ts'
 import { ReferenceIndexType } from '@/modules/database-driver/request-response/schema/ReferenceIndexType.ts'
+import { ReflectedReferenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
+import {
+    AttributeInheritanceBehavior
+} from '@/modules/database-driver/request-response/schema/AttributeInheritanceBehavior.ts'
 
 export class CatalogSchemaConverter {
     private readonly evitaValueConverter: EvitaValueConverter
@@ -270,7 +273,6 @@ export class CatalogSchemaConverter {
     }
 
     convertEntitySchema(entitySchema: GrpcEntitySchema): EntitySchema {
-
         return new EntitySchema(
             entitySchema.version,
             entitySchema.name,
@@ -353,28 +355,67 @@ export class CatalogSchemaConverter {
         return entityAttributesSchemas
     }
 
+    private convertAttributeInheritanceBehavior(attributeInheritanceBehavior: GrpcAttributeInheritanceBehavior) {
+        if(attributeInheritanceBehavior === GrpcAttributeInheritanceBehavior.INHERIT_ALL_EXCEPT)
+            return AttributeInheritanceBehavior.InheritAllExcept
+        else if(attributeInheritanceBehavior === GrpcAttributeInheritanceBehavior.INHERIT_ONLY_SPECIFIED)
+            return AttributeInheritanceBehavior.InheritOnlySpecified
+        else
+            throw new UnexpectedError('Unavailable attribute inheritance behavior')
+    }
+
     private convertReferenceSchema(
         referenceSchema: GrpcReferenceSchema
     ): ReferenceSchema {
-        return new ReferenceSchema(
-            referenceSchema.name,
-            MapUtil.getNamingMap(referenceSchema.nameVariant),
-            referenceSchema.description,
-            referenceSchema.deprecationNotice,
-            referenceSchema.entityType,
-            referenceSchema.referencedEntityTypeManaged,
-            MapUtil.getNamingMap(referenceSchema.entityTypeNameVariant),
-            referenceSchema.groupType,
-            referenceSchema.referencedGroupTypeManaged,
-            MapUtil.getNamingMap(referenceSchema.groupTypeNameVariant),
-            this.convertCardinality(referenceSchema.cardinality),
-            this.convertAttributeSchemas(referenceSchema.attributes),
-            this.convertSortableAttributeCompoundSchemas(
-                referenceSchema.sortableAttributeCompounds
-            ),
-            this.convertScopedIndexTypes(referenceSchema.scopedIndexTypes),
-            this.convertEntityScopes(referenceSchema.facetedInScopes)
-        )
+        if(referenceSchema.reflectedReferenceName != undefined) {
+            return new ReflectedReferenceSchema(
+                referenceSchema.name,
+                MapUtil.getNamingMap(referenceSchema.nameVariant),
+                referenceSchema.description,
+                referenceSchema.deprecationNotice,
+                referenceSchema.entityType,
+                referenceSchema.referencedEntityTypeManaged,
+                MapUtil.getNamingMap(referenceSchema.entityTypeNameVariant),
+                referenceSchema.groupType,
+                referenceSchema.referencedGroupTypeManaged,
+                MapUtil.getNamingMap(referenceSchema.groupTypeNameVariant),
+                this.convertCardinality(referenceSchema.cardinality),
+                this.convertAttributeSchemas(referenceSchema.attributes),
+                this.convertSortableAttributeCompoundSchemas(
+                    referenceSchema.sortableAttributeCompounds
+                ),
+                this.convertScopedIndexTypes(referenceSchema.scopedIndexTypes),
+                this.convertEntityScopes(referenceSchema.facetedInScopes),
+                referenceSchema.reflectedReferenceName,
+                referenceSchema.descriptionInherited,
+                referenceSchema.deprecationNoticeInherited,
+                referenceSchema.cardinalityInherited,
+                referenceSchema.facetedInherited,
+                referenceSchema.indexedInherited,
+                this.convertAttributeInheritanceBehavior(referenceSchema.attributeInheritanceBehavior),
+                referenceSchema.attributeInheritanceFilter
+            )
+        } else {
+            return new ReferenceSchema(
+                referenceSchema.name,
+                MapUtil.getNamingMap(referenceSchema.nameVariant),
+                referenceSchema.description,
+                referenceSchema.deprecationNotice,
+                referenceSchema.entityType,
+                referenceSchema.referencedEntityTypeManaged,
+                MapUtil.getNamingMap(referenceSchema.entityTypeNameVariant),
+                referenceSchema.groupType,
+                referenceSchema.referencedGroupTypeManaged,
+                MapUtil.getNamingMap(referenceSchema.groupTypeNameVariant),
+                this.convertCardinality(referenceSchema.cardinality),
+                this.convertAttributeSchemas(referenceSchema.attributes),
+                this.convertSortableAttributeCompoundSchemas(
+                    referenceSchema.sortableAttributeCompounds
+                ),
+                this.convertScopedIndexTypes(referenceSchema.scopedIndexTypes),
+                this.convertEntityScopes(referenceSchema.facetedInScopes)
+            )
+        }
     }
 
     private convertScopedIndexTypes(scopeType: GrpcScopedReferenceIndexType[]): ImmutableList<ScopedReferenceIndexType> {

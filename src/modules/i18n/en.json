@@ -864,7 +864,8 @@
           "nullsFirst": "nulls first",
           "nullsLast": "nulls last",
           "asc": "ascending",
-          "desc": "descending"
+          "desc": "descending",
+          "reflected": "reflected"
         },
         "entitySchema": {
           "hierarchical": "hierarchical"
@@ -889,6 +890,9 @@
           "external": "external",
           "indexed": "indexed",
           "faceted": "faceted"
+        },
+        "reflectedReferenceSchema": {
+          "reflectedReference": "reflected"
         }
       }
     },
@@ -1014,7 +1018,6 @@
         "referencedEntity": "Referenced entity",
         "referencedEntityManaged": "Referenced entity managed",
         "referencedGroup": "Referenced group",
-        "referencedGroupManaged": "Referenced group managed",
         "faceted": "Faceted",
         "referencedEntityNameVariants": "Referenced entity",
         "referencedGroupNameVariants": "Referenced group",
@@ -1023,7 +1026,11 @@
           "none": "None",
           "forFiltering": "For filtering",
           "forFilteringAndPartitioning": "For filtering and partitioning"
-        }
+        },
+        "reflectedReference": "Reflects",
+        "inherited": "inherited",
+        "groupManagedByEvita": "This referenced group is managed by EvitaDB.",
+        "groupManagedExternal": "This referenced group is managed externally."
       },
       "tooltip": {
         "content": "The reference is {0} indexed within the {1} scope.",
@@ -1034,6 +1041,9 @@
           "forFilteringAndPartitioning": "Reference has basic index available and also partitioning indexes for the main entity type."
         },
         "faceted": "Special facet index is maintained for this reference allowing interpretation of FacetHaving filtering and FacetSummary requirement constraints."
+      },
+      "reflected": {
+        "reflectedReferences": "Reflected by"
       }
     },
     "sortableAttributeCompound": {
@@ -1210,7 +1220,8 @@
         "couldNotLoadMinimalDate": "Could not load available moments: {reason}",
         "backupRequested": "A backup for the {catalogName} catalog requested.",
         "couldNotRequestBackup": "Could not request a backup for the {catalogName} catalog: {reason}"
-      }
+      },
+      "description": "Request a new backup for the catalog:"
     },
     "restore": {
       "title": "Restore catalog from {fileName}",
@@ -1772,5 +1783,16 @@
         }
       }
     }
+  },
+  "relationViewer": {
+    "title": "Relation",
+    "cardinality": {
+      "exactlyOne": "1:1",
+      "oneOrMore": "1:1…*",
+      "zeroOrOne": "1:0…1",
+      "zeroOrMore": "1:0…*"
+    },
+    "managedByEvita": "This reference is managed by EvitaDB.",
+    "managedExternal": "This referenced entity is managed externally."
   }
 }

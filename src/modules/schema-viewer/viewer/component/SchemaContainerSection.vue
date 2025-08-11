@@ -1,13 +1,15 @@
 <script setup lang="ts">
 const props = defineProps<{
-    name: string
+    name: string,
+    loading?: boolean,
 }>()
 </script>
 
 <template>
     <VExpansionPanel>
         <VExpansionPanelTitle>
-            {{ name }}
+            <VProgressCircular v-if="loading" indeterminate size="22.5" />
+            <span :class="loading ? 'content-title' : ''">{{ name }}</span>
         </VExpansionPanelTitle>
 
         <VExpansionPanelText>
@@ -17,5 +19,7 @@ const props = defineProps<{
 </template>
 
 <style lang="scss" scoped>
-
+.content-title{
+    margin-left: 10px;
+}
 </style>

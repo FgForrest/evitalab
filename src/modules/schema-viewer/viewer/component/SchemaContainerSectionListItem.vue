@@ -74,6 +74,10 @@ function open() {
     align-items: center;
 }
 
+.clickable:hover {
+    cursor: pointer;
+}
+
 .chip-icon {
     margin-left: 4px;
     margin-right: 3px;

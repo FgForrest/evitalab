@@ -1,47 +1,46 @@
 <script setup lang="ts">
+
 import SchemaContainerSectionListItem from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionListItem.vue'
 import type { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer.ts'
 import type {
-    SortableAttributeCompoundSchema
-} from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema.ts'
-import { computed, type ComputedRef } from 'vue'
-import { List } from 'immutable'
-import { EntitySchemaPointer } from '@/modules/schema-viewer/viewer/model/EntitySchemaPointer.ts'
+    ReflectedReferenceSchema
+} from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
+import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer.ts'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
 import {
     SchemaViewerTabFactory,
     useSchemaViewerTabFactory
 } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory.ts'
-import { SortableAttributeCompoundSchemaPointer } from '@/modules/schema-viewer/viewer/model/SortableAttributeCompoundSchemaPointer.ts'
-import type { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
-    schema: SortableAttributeCompoundSchema
+    schema: ReflectedReferenceSchema
 }>()
 
-const flags: ComputedRef<List<Flag>> = computed(() => props.schema.representativeFlags)
-
-function openSortableSchema(): void {
-    if (!(props.dataPointer.schemaPointer instanceof EntitySchemaPointer)) {
+function openReferenceSchema(): void {
+    if (!(props.dataPointer.schemaPointer instanceof ReferenceSchemaPointer)) {
         throw new UnexpectedError('Unsupported parent schema for entities.')
     }
     workspaceService.createTab(schemaViewerTabFactory.createNew(
-        new SortableAttributeCompoundSchemaPointer(props.dataPointer.schemaPointer.catalogName,
-            props.dataPointer.schemaPointer.entityType, props.schema.name)))
+        new ReferenceSchemaPointer(
+            props.dataPointer.schemaPointer.catalogName,
+            props.schema.reflectedType!,
+            props.schema.name!
+        )
+    ))
 }
 </script>
 
 <template>
     <SchemaContainerSectionListItem
         :name="schema.name"
-        :deprecated="!!schema.deprecationNotice"
-        :flags="flags"
-        @open="openSortableSchema"
+        :entity-schema="schema.reflectedType!"
+        :flags="schema.representativeFlags"
+        @open="openReferenceSchema"
     />
 </template>
 

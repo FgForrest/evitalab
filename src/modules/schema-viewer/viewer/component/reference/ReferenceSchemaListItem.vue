@@ -37,7 +37,6 @@ function openReferenceSchema(): void {
         )
     ))
 }
-
 </script>
 
 <template>

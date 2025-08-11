@@ -16,8 +16,8 @@ import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/Ref
 import { ReferenceAttributeSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceAttributeSchemaPointer'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import SchemaContainerSectionListItem from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionListItem.vue'
-import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
+import { computed } from 'vue'
 import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 import { useI18n } from 'vue-i18n'
 
