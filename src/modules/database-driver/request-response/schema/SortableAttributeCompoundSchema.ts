@@ -61,7 +61,7 @@ export class AttributeElement extends AbstractSchema {
     readonly attributeName: string
     readonly behaviour: OrderBehaviour
     readonly direction: OrderDirection
-    private _representativeFlags?: List<string>
+    private _representativeFlags?: List<Flag>
 
     constructor(attributeName: string,
                 behaviour: OrderBehaviour,
@@ -72,18 +72,18 @@ export class AttributeElement extends AbstractSchema {
         this.direction = direction
     }
 
-    get representativeFlags(): List<string> {
+    get representativeFlags(): List<Flag> {
         if(this._representativeFlags == undefined) {
-            const flags: string[] = []
+            const flags: Flag[] = []
 
             if (this.direction === OrderDirection.Asc)
-                flags.push(AttributeElementFlag.Asc)
+                flags.push(new Flag(AttributeElementFlag.Asc))
             else if (this.direction === OrderDirection.Desc)
-                flags.push(AttributeElementFlag.Desc)
+                flags.push(new Flag(AttributeElementFlag.Desc))
             if (this.behaviour === OrderBehaviour.NullsLast)
-                flags.push(AttributeElementFlag.NullsLast)
+                flags.push(new Flag(AttributeElementFlag.NullsLast))
             else if (this.behaviour === OrderBehaviour.NullsFirst)
-                flags.push(AttributeElementFlag.NullsFirst)
+                flags.push(new Flag(AttributeElementFlag.NullsFirst))
 
             this._representativeFlags = List(flags)
         }
