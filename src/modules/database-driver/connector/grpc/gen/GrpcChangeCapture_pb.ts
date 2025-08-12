@@ -240,7 +240,7 @@ export const GrpcChangeCatalogCaptureSchema: GenMessage<GrpcChangeCatalogCapture
  */
 export type GrpcChangeSystemCapture = Message<"io.evitadb.externalApi.grpc.generated.GrpcChangeSystemCapture"> & {
   /**
-   * the version of the catalog where the operation was performed
+   * the version of the engine where the operation was performed
    *
    * @generated from field: int64 version = 1 [jstype = JS_STRING];
    */

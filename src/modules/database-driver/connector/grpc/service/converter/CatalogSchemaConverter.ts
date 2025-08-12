@@ -36,8 +36,7 @@ import type {
     GrpcCurrency,
     GrpcLocale,
     GrpcScopedAttributeUniquenessType,
-    GrpcScopedGlobalAttributeUniquenessType,
-    GrpcScopedReferenceIndexType
+    GrpcScopedGlobalAttributeUniquenessType, GrpcScopedReferenceIndexType
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import {
@@ -67,6 +66,7 @@ import { ReflectedReferenceSchema } from '@/modules/database-driver/request-resp
 import {
     AttributeInheritanceBehavior
 } from '@/modules/database-driver/request-response/schema/AttributeInheritanceBehavior.ts'
+
 
 export class CatalogSchemaConverter {
     private readonly evitaValueConverter: EvitaValueConverter

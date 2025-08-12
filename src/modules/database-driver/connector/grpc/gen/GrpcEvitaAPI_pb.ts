@@ -751,14 +751,14 @@ export const GrpcApplyMutationWithProgressResponseSchema: GenMessage<GrpcApplyMu
  */
 export type GrpcRegisterSystemChangeCaptureRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcRegisterSystemChangeCaptureRequest"> & {
   /**
-   * Starting point for the search (catalog version)
+   * Starting point for the search (engine version)
    *
    * @generated from field: google.protobuf.Int64Value sinceVersion = 1;
    */
   sinceVersion?: bigint;
 
   /**
-   * Starting point for the search (index of the mutation within catalog version)
+   * Starting point for the search (index of the mutation within engine version - currently each engine level transaction contains only one mutation)
    *
    * @generated from field: google.protobuf.Int32Value sinceIndex = 2;
    */
