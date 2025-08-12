@@ -12,7 +12,6 @@ export interface Props {
     isReadOnly?: boolean,
     catalogName?: string,
     prependIcon: string,
-    inMenu?: boolean,
     loading?: boolean,
     flags?: ItemFlag[],
     actions?: MenuItem<any>[]
