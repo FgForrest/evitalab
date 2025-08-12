@@ -1872,7 +1872,7 @@
       "zeroOrOne": "1:0…1",
       "zeroOrMore": "1:0…*"
     },
-    "managedByEvita": "This reference is managed by EvitaDB.",
-    "managedExternal": "This referenced entity is managed externally."
+    "managedByEvita": "This entity is managed by evitaDB.",
+    "managedExternal": "This entity is managed externally."
   }
 }
