@@ -31,7 +31,11 @@
       "switch": "Switch",
       "accept": "Accept",
       "reload": "Reload",
-      "duplicate": "Duplicate"
+      "duplicate": "Duplicate",
+      "makeCatalogImmutable": "Make catalog immutable",
+      "makeCatalogMutable": "Make catalog mutable",
+      "deactivateCatalog": "Deactivate catalog",
+      "activateCatalog": "Activate catalog"
     },
     "notification": {
       "copiedToClipboard": "Copied to clipboard",
@@ -366,17 +370,17 @@
         "corrupted": "corrupted",
         "warmingUp": "warming up",
         "alive": "alive",
-        "beingActivated": "Being activated",
+        "beingActivated": "Being activated {0}%",
         "beingCreated": "Being created",
-        "beingDeactivated": "Being deactivated",
+        "beingDeactivated": "Being deactivated {0}%",
         "beingDeleted": "Being deleted",
         "goingAlive": "Going alive",
         "inactive": "Inactive",
         "duplication": "Duplicating - {0}%",
-        "rename": "Renaming - {0}%",
-        "replace": "Replacing - {0}%",
-        "activate": "Activating - {0}%",
-        "deactivate": "Deactivating - {0}%"
+        "renaming": "Renaming - {0}%",
+        "replacing": "Replacing - {0}%",
+        "activation": "Activating - {0}%",
+        "deactivation": "Deactivating - {0}%"
       },
       "title": {
         "readOnly": "catalog is read-only"

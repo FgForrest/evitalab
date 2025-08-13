@@ -40,9 +40,6 @@ export function useEvitaClient(): EvitaClient {
  * are different or simplified.
  */
 export class EvitaClient extends AbstractEvitaClient {
-
-    private readonly mutationProgressConverter: MutationProgressConverter
-
     private readonly schemaCache: Map<string, EvitaSchemaCache> = new Map()
     private _management?: EvitaClientManagement
 
@@ -56,7 +53,6 @@ export class EvitaClient extends AbstractEvitaClient {
     constructor(evitaLabConfig: EvitaLabConfig,
                 connectionService: ConnectionService) {
         super(evitaLabConfig, connectionService)
-        this.mutationProgressConverter = new MutationProgressConverter()
     }
 
     /**
@@ -478,14 +474,6 @@ export class EvitaClient extends AbstractEvitaClient {
     async *replaceCatalogWithProgress(catalogNameToBeReplacedWith: string, catalogNameToBeReplaced: string):AsyncIterable<ApplyMutationWithProgressResponse> {
         for await (const progress of this.evitaClient.replaceCatalogWithProgress({catalogNameToBeReplacedWith, catalogNameToBeReplaced})) {
             yield this.mutationProgressConverter.convertMutationWithProgress(progress)
-        }
-    }
-
-    async *registerSystemChangeCapture(): AsyncIterable<GrpcRegisterSystemChangeCaptureResponse> {
-        for await (const activity of this.evitaClient.registerSystemChangeCapture({
-            content: GrpcChangeCaptureContent.CHANGE_BODY,
-        })) {
-            yield activity
         }
     }
 

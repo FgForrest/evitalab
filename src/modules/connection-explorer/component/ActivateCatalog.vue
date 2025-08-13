@@ -21,10 +21,10 @@ const changed = computed<boolean>(() => props.catalog != undefined)
 
 async function activateCatalog(): Promise<boolean> {
     try {
+        catalogItemService.activateCatalogWithProgress(props.catalog)
         await toaster.info(t('explorer.catalog.activateCatalog.notification.catalogActivationStarted', {
             catalogName: props.catalog.name
         }))
-        catalogItemService.activateCatalogWithProgress(props.catalog)
         return true
     } catch (e: any) {
         await toaster.error(t('explorer.catalog.activateCatalog.notification.couldNotActivateCatalog', {
@@ -57,7 +57,7 @@ async function activateCatalog(): Promise<boolean> {
         </template>
 
         <template #confirm-button-body>
-            {{ t('common.button.switch') }}
+            {{ t('common.button.activateCatalog') }}
         </template>
     </VFormDialog>
 </template>

@@ -27,10 +27,10 @@ const changed = computed<boolean>(() => props.catalog != undefined)
 
 async function makeCatalogMutable(): Promise<boolean> {
     try {
+        catalogItemService.makeCatalogMutableWithProgress(props.catalog)
         await toaster.info(t('explorer.catalog.makeCatalogMutable.notification.catalogMutableSwitchStarted', {
             catalogName: props.catalog.name
         }))
-        catalogItemService.makeCatalogMutableWithProgress(props.catalog)
         return true
     } catch (e: any) {
         await toaster.error(t('explorer.catalog.makeCatalogMutable.notification.couldNotMakeCatalogMutable', {
@@ -63,7 +63,7 @@ async function makeCatalogMutable(): Promise<boolean> {
         </template>
 
         <template #confirm-button-body>
-            {{ t('common.button.switch') }}
+            {{ t('common.button.makeCatalogMutable') }}
         </template>
     </VFormDialog>
 </template>

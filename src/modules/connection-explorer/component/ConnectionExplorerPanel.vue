@@ -138,8 +138,10 @@ load().then()
             <div class="panel-header">
                 <span class="text-gray-light text-sm-body-2 font-weight-medium">
                   <span class="d-inline-flex align-center">
+                    {{ t('explorer.title') }}
                     <VTooltip location="bottom">
-                      <template #activator="{ props }">
+                      {{ t('explorer.readOnlyToolTip') }}
+                        <template #activator="{ props }">
                         <VIcon
                             v-if="serverStatus?.readOnly"
                             v-bind="props"
@@ -147,9 +149,7 @@ load().then()
                             icon="mdi-eye-outline"
                         />
                       </template>
-                      {{ t('explorer.readOnlyToolTip') }}
                     </VTooltip>
-                    {{ t('explorer.title') }}
                   </span>
                 </span>
 

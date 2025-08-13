@@ -1,9 +1,12 @@
+/**
+ * Internal running process type representation
+ */
 export enum MutationProgressType {
     Duplication = 'duplication',
-    Rename = 'rename',
-    Replace = 'replace',
-    Activate = 'activate',
-    Deactivate = 'deactivate',
+    Renaming = 'renaming',
+    Replacing = 'replacing',
+    Activation = 'activation',
+    Deactivation = 'deactivation',
     Mutable = 'mutable',
     Immutable = 'immutable',
     Alive = 'alive'

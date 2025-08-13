@@ -21,8 +21,8 @@ const changed = computed<boolean>(() => props.catalog != undefined)
 
 async function deactivateCatalog(): Promise<boolean> {
     try {
-        await toaster.info(t('explorer.catalog.deactivateCatalog.notification.catalogDeactivationStarted'))
         catalogItemService.deactivateCatalogWithProgress(props.catalog)
+        await toaster.info(t('explorer.catalog.deactivateCatalog.notification.catalogDeactivationStarted'))
         return true
     } catch (e: any) {
         await toaster.error(t('explorer.catalog.deactivateCatalog.notification.couldNotDeactivateCatalog', {
@@ -55,7 +55,7 @@ async function deactivateCatalog(): Promise<boolean> {
         </template>
 
         <template #confirm-button-body>
-            {{ t('common.button.switch') }}
+            {{ t('common.button.deactivateCatalog') }}
         </template>
     </VFormDialog>
 </template>

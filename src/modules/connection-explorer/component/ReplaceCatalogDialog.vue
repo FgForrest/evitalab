@@ -65,13 +65,13 @@ function reset(): void {
 
 async function replace(): Promise<boolean> {
     try {
-        await toaster.info(t('explorer.catalog.replace.notification.catalogReplacementStarted', {
-            catalogName: props.catalog.name
-        }))
         catalogItemService.replaceCatalogWithProgress(
             props.catalog,
             catalogNameToBeReplacedWith.value!
         )
+        await toaster.info(t('explorer.catalog.replace.notification.catalogReplacementStarted', {
+            catalogName: props.catalog.name
+        }))
         return true
     } catch (e: any) {
         await toaster.error(t(

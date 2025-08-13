@@ -21,10 +21,10 @@ const changed = computed<boolean>(() => props.catalog != undefined)
 
 async function makeCatalogImmutable(): Promise<boolean> {
     try {
+        catalogItemService.makeCatalogImmutableWithProgress(props.catalog)
         await toaster.info(t('explorer.catalog.makeCatalogImmutable.notification.catalogImmutableSwitchStarted', {
             catalogName: props.catalog.name
         }))
-        catalogItemService.makeCatalogImmutableWithProgress(props.catalog)
         return true
     } catch (e: any) {
         await toaster.error(t('explorer.catalog.makeCatalogImmutable.notification.couldNotMakeCatalogImmutable', {
@@ -57,7 +57,7 @@ async function makeCatalogImmutable(): Promise<boolean> {
         </template>
 
         <template #confirm-button-body>
-            {{ t('common.button.switch') }}
+            {{ t('common.button.makeCatalogImmutable') }}
         </template>
     </VFormDialog>
 </template>

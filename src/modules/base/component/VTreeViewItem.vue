@@ -3,14 +3,10 @@ import { ref } from 'vue'
 import VLoadingCircular from '@/modules/base/component/VLoadingCircular.vue'
 import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
 import { ItemFlag } from '@/modules/base/model/tree-view/ItemFlag'
-import { useI18n } from 'vue-i18n'
-import { getCurrentInstance, computed } from 'vue'
 
 export interface Props {
     openable?: boolean,
     isOpen?: boolean,
-    isReadOnly?: boolean,
-    catalogName?: string,
     prependIcon: string,
     loading?: boolean,
     flags?: ItemFlag[],
@@ -24,13 +20,6 @@ const props = withDefaults(defineProps<Props>(), {
     flags: () => [],
     actions: () => []
 })
-
-const instance = getCurrentInstance()
-
-const parentName = instance?.parent?.type?.name || ''
-const isInMenu = computed(() => parentName.includes('VMenu') || parentName.includes('VList'))
-
-const { t } = useI18n()
 
 const actionsOpened = ref<boolean>(false)
 
@@ -92,13 +81,7 @@ function openActions(): void {
                 </template>
 
                 <template #default>
-                    <template v-if="!isInMenu">
-                        <slot></slot>
-                    </template>
-                    <template v-else>
-                        <span v-if="!isReadOnly">{{ catalogName }} </span>
-                        <span v-else>{{ catalogName }} {{ t('explorer.catalog.title.readOnly') }}</span>
-                    </template>
+                    <slot name="tooltip"></slot>
                     <!-- couldn't use VChips because custom colors didn't work on them -->
                     <span v-if="flags.length > 0" class="tree-view-item__flags">
                         <span

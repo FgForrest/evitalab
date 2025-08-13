@@ -81,10 +81,8 @@ function changeFlags() {
     } else if (props.catalog.catalogState === CatalogState.WarmingUp) {
         flags.value.push(ItemFlag.warning(t('explorer.catalog.flag.warmingUp')))
     } else {
-        if(props.catalog.catalogState === CatalogState.Alive)
-            return
-
-        flags.value.push(ItemFlag.info(t(`explorer.catalog.flag.${props.catalog.catalogState.toString()}`)))
+        if (props.catalog.catalogState !== CatalogState.Alive)
+            flags.value.push(ItemFlag.info(t(`explorer.catalog.flag.${props.catalog.catalogState.toString()}`)))
     }
 
 
@@ -99,7 +97,7 @@ const menuItems = ref<Map<CatalogMenuItemType, MenuItem<CatalogMenuItemType>>>()
 
 watch(catalogRef, () => {
     changeFlags()
-})
+}, { deep: true })
 
 watch(
     [serverStatus, () => props.catalog],
@@ -185,7 +183,13 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
                 @click:action="handleAction"
                 class="text-gray-light"
             >
-                {{ catalog.name }}
+                <template #default>
+                    <span>{{ catalog.name }}</span>
+                </template>
+                <template #tooltip>
+                    <span v-if="!catalog.readOnly">{{ catalog.name }} </span>
+                    <span v-else>{{ catalog.name }} {{ t('explorer.catalog.title.readOnly') }}</span>
+                </template>
             </VTreeViewItem>
         </template>
 

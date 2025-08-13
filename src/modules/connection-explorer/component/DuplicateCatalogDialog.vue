@@ -47,10 +47,10 @@ const changed = computed<boolean>(() => props.catalog.name !== duplicationCatalo
 
 async function duplicateCatalog():Promise<boolean> {
     try {
+        catalogItemService.duplicateCatalogWithProgress(props.catalog, duplicationCatalogName.value!)
         await toaster.info(t('explorer.catalog.duplication.notification.catalogDuplicationStarted', {
             catalogName: props.catalog.name
         }))
-        catalogItemService.duplicateCatalogWithProgress(props.catalog, duplicationCatalogName.value!)
         return true
     } catch (e: any) {
         await toaster.error(t(

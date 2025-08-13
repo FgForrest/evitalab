@@ -29,6 +29,9 @@ import { EvitaSessionService } from './connector/grpc/gen/GrpcEvitaSessionAPI_pb
 import { EvitaManagementService } from './connector/grpc/gen/GrpcEvitaManagementAPI_pb'
 import { GrpcEvitaTrafficRecordingService } from './connector/grpc/gen/GrpcEvitaTrafficRecordingAPI_pb'
 import type { KyInstance } from 'ky/distribution/types/ky'
+import {
+    MutationProgressConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/MutationProgressConverter.ts'
 
 export type EvitaServiceClient = Client<typeof EvitaService>
 export type EvitaSessionServiceClient = Client<typeof EvitaSessionService>
@@ -60,6 +63,7 @@ export abstract class AbstractEvitaClient {
     private _entityConverter?: EntityConverter
     private _extraResultConverter?: ExtraResultConverter
     private _responseConverter?: EvitaResponseConverter
+    private _mutationProgressConverter?: MutationProgressConverter
 
     private _serverStatusConverter?: ServerStatusConverter
     private _reservedKeywordsConverter?: ReservedKeywordsConverter
@@ -213,4 +217,11 @@ export abstract class AbstractEvitaClient {
         return this._trafficRecordingConverter
     }
 
+    protected get mutationProgressConverter(): MutationProgressConverter {
+        if (this._mutationProgressConverter == undefined) {
+            this._mutationProgressConverter = new MutationProgressConverter()
+        }
+
+        return this._mutationProgressConverter
+    }
 }

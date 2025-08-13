@@ -50,10 +50,10 @@ function reset(): void {
 
 async function rename(): Promise<boolean> {
     try {
+        catalogItemService.renameCatalogWithProgress(props.catalog, newCatalogName.value)
         await toaster.info(t('explorer.catalog.rename.notification.catalogRenameStarted', {
             catalogName: props.catalog.name
         }))
-        catalogItemService.renameCatalogWithProgress(props.catalog, newCatalogName.value)
         return true
     } catch (e: any) {
         await toaster.error(t(

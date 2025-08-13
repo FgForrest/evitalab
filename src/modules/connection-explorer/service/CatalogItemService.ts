@@ -112,19 +112,19 @@ export class CatalogItemService {
             }
         }
 
-        interval().then(async () => await this.evitaClient.clearCache())
+        interval().then(async () => await this.evitaClient.management.clearCatalogStatisticsCache())
     }
 
     renameCatalogWithProgress(catalog: CatalogStatistics, newCatalogName: string): void {
         const internal = async () => {
             try {
                 for await (const progress of this.evitaClient.renameCatalogWithProgress(catalog.name, newCatalogName)) {
-                    catalog.setProgress(MutationProgressType.Rename, progress.progressInPercent)
+                    catalog.setProgress(MutationProgressType.Renaming, progress.progressInPercent)
                 }
 
                 await this.toaster.success(i18n.global.t('explorer.collection.rename.notification.collectionRenamed'))
             } catch (e: any) {
-                catalog.removeProgress(MutationProgressType.Rename)
+                catalog.removeProgress(MutationProgressType.Renaming)
                 await this.toaster.error(i18n.global.t('explorer.catalog.rename.notification.couldNotRenameCatalog',
                     {
                         catalogName: catalog.name,
@@ -133,19 +133,19 @@ export class CatalogItemService {
             }
         }
 
-        internal().then(async () => await this.evitaClient.clearCache())
+        internal().then(async () => await this.evitaClient.management.clearCatalogStatisticsCache())
     }
 
     activateCatalogWithProgress(catalog: CatalogStatistics): void {
         const internal = async () => {
             try {
                 for await (const progress of this.evitaClient.activateCatalogWithProgress(catalog.name)) {
-                    catalog.setProgress(MutationProgressType.Activate, progress.progressInPercent)
+                    catalog.setProgress(MutationProgressType.Activation, progress.progressInPercent)
                 }
 
                 await this.toaster.success(i18n.global.t('explorer.catalog.activateCatalog.notification.catalogActivated'))
             } catch (e: any) {
-                catalog.removeProgress(MutationProgressType.Activate)
+                catalog.removeProgress(MutationProgressType.Activation)
                 await this.toaster.error(i18n.global.t('explorer.catalog.activateCatalog.notification.couldNotActivateCatalog', {
                     catalogName: catalog.name,
                     reason: e.message
@@ -162,12 +162,12 @@ export class CatalogItemService {
         const internal = async () => {
             try {
                 for await (const progress of this.evitaClient.deactivateCatalogWithProgress(catalog.name)) {
-                    catalog.setProgress(MutationProgressType.Deactivate, progress.progressInPercent)
+                    catalog.setProgress(MutationProgressType.Deactivation, progress.progressInPercent)
                 }
 
                 await this.toaster.success(i18n.global.t('explorer.catalog.deactivateCatalog.notification.catalogDeactivated'))
             } catch (e: any) {
-                catalog.removeProgress(MutationProgressType.Deactivate)
+                catalog.removeProgress(MutationProgressType.Deactivation)
                 await this.toaster.error(i18n.global.t('explorer.catalog.deactivateCatalog.notification.couldNotDeactivateCatalog', {
                     catalogName: catalog.name,
                     reason: e.message
@@ -182,12 +182,12 @@ export class CatalogItemService {
         const internal = async () => {
             try {
                 for await (const progress of this.evitaClient.replaceCatalogWithProgress(catalog.name, newCatalogName)) {
-                    catalog.setProgress(MutationProgressType.Replace, progress.progressInPercent)
+                    catalog.setProgress(MutationProgressType.Replacing, progress.progressInPercent)
                 }
 
                 await this.toaster.success(i18n.global.t('explorer.catalog.replace.notification.catalogReplaced'))
             } catch (e: any) {
-                catalog.removeProgress(MutationProgressType.Replace)
+                catalog.removeProgress(MutationProgressType.Replacing)
                 await this.toaster.error(i18n.global.t('explorer.catalog.replace.notification.couldNotReplaceCatalog',
                     {
                         catalogNameToBeReplaced: catalog.name,

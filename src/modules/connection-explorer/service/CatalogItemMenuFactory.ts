@@ -157,7 +157,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
             'mdi-cloud-download-outline',
             this.getItemTitle,
             () => backupCatalogCallback(),
-            baseEnabledFunctions
+            baseEnabledFunctions && !serverStatus?.readOnly
         )
 
 
@@ -228,7 +228,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
                 'mdi-close-circle-outline',
                 this.getItemTitle,
                 () => deactivateCatalogCallback(),
-                baseEnabledFunctions
+                baseEnabledFunctions && !serverStatus?.readOnly
             )
         }
         if(deactivated) {

@@ -20,10 +20,10 @@ const emit = defineEmits<{
 
 async function switchCatalog(): Promise<boolean> {
     try {
+        catalogItemService.switchCatalogAliveWithProgress(props.catalog)
         await toaster.info(t('explorer.catalog.switchToAliveState.notification.catalogSwitchStarted', {
             catalogName: props.catalog.name,
         }))
-        catalogItemService.switchCatalogAliveWithProgress(props.catalog)
         return true
     } catch (e: any) {
         await toaster.error(t(
