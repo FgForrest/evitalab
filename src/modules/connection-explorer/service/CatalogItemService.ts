@@ -97,7 +97,6 @@ export class CatalogItemService {
     duplicateCatalogWithProgress(catalog: CatalogStatistics, newCatalogName: string): void {
         const interval = async () => {
             try {
-                catalog.setProgress(MutationProgressType.Duplication, 0)
                 for await (const progress of this.evitaClient.duplicateCatalogWithProgress(catalog.name, newCatalogName)) {
                     catalog.setProgress(MutationProgressType.Duplication, progress.progressInPercent)
                 }
@@ -119,7 +118,6 @@ export class CatalogItemService {
     renameCatalogWithProgress(catalog: CatalogStatistics, newCatalogName: string): void {
         const internal = async () => {
             try {
-                catalog.setProgress(MutationProgressType.Renaming, 0)
                 for await (const progress of this.evitaClient.renameCatalogWithProgress(catalog.name, newCatalogName)) {
                     catalog.setProgress(MutationProgressType.Renaming, progress.progressInPercent)
                 }
@@ -141,7 +139,6 @@ export class CatalogItemService {
     activateCatalogWithProgress(catalog: CatalogStatistics): void {
         const internal = async () => {
             try {
-                catalog.setProgress(MutationProgressType.Activation, 0)
                 for await (const progress of this.evitaClient.activateCatalogWithProgress(catalog.name)) {
                     catalog.setProgress(MutationProgressType.Activation, progress.progressInPercent)
                 }
@@ -164,7 +161,6 @@ export class CatalogItemService {
     deactivateCatalogWithProgress(catalog: CatalogStatistics): void {
         const internal = async () => {
             try {
-                catalog.setProgress(MutationProgressType.Deactivation, 0)
                 for await (const progress of this.evitaClient.deactivateCatalogWithProgress(catalog.name)) {
                     catalog.setProgress(MutationProgressType.Deactivation, progress.progressInPercent)
                 }
@@ -185,7 +181,6 @@ export class CatalogItemService {
     replaceCatalogWithProgress(catalog: CatalogStatistics, newCatalogName: string): void {
         const internal = async () => {
             try {
-                catalog.setProgress(MutationProgressType.Replacing, 0)
                 for await (const progress of this.evitaClient.replaceCatalogWithProgress(catalog.name, newCatalogName)) {
                     catalog.setProgress(MutationProgressType.Replacing, progress.progressInPercent)
                 }
@@ -207,7 +202,6 @@ export class CatalogItemService {
     makeCatalogMutableWithProgress(catalog: CatalogStatistics): void {
         const internal = async () => {
             try {
-                catalog.setProgress(MutationProgressType.Mutable, 0)
                 for await (const progress of this.evitaClient.makeCatalogMutable(catalog.name)) {
                     catalog.setProgress(MutationProgressType.Mutable, progress.progressInPercent)
                 }
@@ -228,7 +222,6 @@ export class CatalogItemService {
     makeCatalogImmutableWithProgress(catalog: CatalogStatistics): void {
         const internal = async () => {
             try {
-                catalog.setProgress(MutationProgressType.Immutable, 0)
                 for await (const progress of this.evitaClient.makeCatalogImmutableWithProgress(catalog.name)) {
                     catalog.setProgress(MutationProgressType.Immutable, progress.progressInPercent)
                 }
@@ -249,7 +242,6 @@ export class CatalogItemService {
     switchCatalogAliveWithProgress(catalog: CatalogStatistics): void {
         const internal = async () => {
             try {
-                catalog.setProgress(MutationProgressType.Alive, 0)
                 for await (const progress of this.evitaClient.makeCatalogAliveWithProgress(catalog.name)) {
                     catalog.setProgress(MutationProgressType.Alive, progress.progressInPercent)
                 }
