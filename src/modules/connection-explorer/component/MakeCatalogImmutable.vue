@@ -57,7 +57,7 @@ async function makeCatalogImmutable(): Promise<boolean> {
         </template>
 
         <template #confirm-button-body>
-            {{ t('common.button.makeCatalogImmutable') }}
+            {{ t('explorer.catalog.makeCatalogImmutable.buttons.makeCatalogImmutable') }}
         </template>
     </VFormDialog>
 </template>

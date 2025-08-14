@@ -89,7 +89,7 @@ async function reset() {
         </template>
 
         <template #confirm-button-body>
-            {{ t('common.button.duplicate') }}
+            {{ t('explorer.catalog.duplication.form.buttons.duplicate') }}
         </template>
     </VFormDialog>
 </template>

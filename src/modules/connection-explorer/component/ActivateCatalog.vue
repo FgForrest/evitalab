@@ -57,7 +57,7 @@ async function activateCatalog(): Promise<boolean> {
         </template>
 
         <template #confirm-button-body>
-            {{ t('common.button.activateCatalog') }}
+            {{ t('explorer.catalog.activateCatalog.buttons.activateCatalog') }}
         </template>
     </VFormDialog>
 </template>

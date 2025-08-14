@@ -30,12 +30,7 @@
       "replace": "Replace",
       "switch": "Switch",
       "accept": "Accept",
-      "reload": "Reload",
-      "duplicate": "Duplicate",
-      "makeCatalogImmutable": "Make catalog immutable",
-      "makeCatalogMutable": "Make catalog mutable",
-      "deactivateCatalog": "Deactivate catalog",
-      "activateCatalog": "Activate catalog"
+      "reload": "Reload"
     },
     "notification": {
       "copiedToClipboard": "Copied to clipboard",
@@ -456,6 +451,9 @@
               "format": "New name doesn't match supported format.",
               "notAvailable": "Catalog with this new name already exists."
             }
+          },
+          "buttons": {
+            "duplicate": "Duplicate"
           }
         },
         "notification": {
@@ -521,6 +519,9 @@
           "catalogImmutableSwitchStarted": "Switching {catalogName} catalog to immutable state has started.",
           "catalogMadeAsImmutable": "The {catalogName} catalog has been made as immutable",
           "couldNotMakeCatalogImmutable": "Could not make immutable the {catalogName} catalog: {reason}"
+        },
+        "buttons": {
+          "makeCatalogImmutable": "Immutable"
         }
       },
       "makeCatalogMutable": {
@@ -530,6 +531,9 @@
           "catalogMutableSwitchStarted": "Switching {catalogName} catalog to mutable state has started.",
           "catalogMadeAsMutable": "The {catalogName} catalog has been made as mutable",
           "couldNotMakeCatalogMutable": "Could not make mutable the {catalogName} catalog: {reason}"
+        },
+        "buttons": {
+          "makeCatalogMutable": "Mutable"
         }
       },
       "deactivateCatalog": {
@@ -539,6 +543,9 @@
           "catalogDeactivationStarted": "Deactivation of {catalogName} catalog has started.",
           "catalogDeactivated": "The {catalogName} catalog has been deactivated",
           "couldNotDeactivateCatalog": "Could not deactivate {catalogName} catalog: {reason}"
+        },
+        "buttons": {
+          "deactivateCatalog": "Deactivate"
         }
       },
       "activateCatalog": {
@@ -548,6 +555,9 @@
           "catalogActivationStarted": "Activation of {catalogName} catalog has started.",
           "catalogActivated": "The {catalogName} catalog has been activated",
           "couldNotActivateCatalog": "Could not activate {catalogName} catalog: {reason}"
+        },
+        "buttons": {
+          "activateCatalog": "Activate"
         }
       }
     },

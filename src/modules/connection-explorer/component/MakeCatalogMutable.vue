@@ -63,7 +63,7 @@ async function makeCatalogMutable(): Promise<boolean> {
         </template>
 
         <template #confirm-button-body>
-            {{ t('common.button.makeCatalogMutable') }}
+            {{ t('explorer.catalog.makeCatalogMutable.buttons.makeCatalogMutable') }}
         </template>
     </VFormDialog>
 </template>
