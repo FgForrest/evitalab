@@ -477,6 +477,14 @@ export class EvitaClient extends AbstractEvitaClient {
         }
     }
 
+    async *registerSystemChangeCapture(): AsyncIterable<GrpcRegisterSystemChangeCaptureResponse> {
+        for await (const activity of this.evitaClient.registerSystemChangeCapture({
+            content: GrpcChangeCaptureContent.CHANGE_BODY,
+        })) {
+            yield activity
+        }
+    }
+
     private getOrCreateSchemaCache(catalogName: string): EvitaSchemaCache {
         let entitySchemaCacheForSession: EvitaSchemaCache | undefined = this.schemaCache.get(catalogName)
         if (entitySchemaCacheForSession == undefined) {

@@ -64,6 +64,10 @@
         "language": {
           "label": "Supported language in the active editor"
         }
+      },
+      "autoRefresh": {
+        "connected": "The lab is connected to EvitaDB and receives changes.",
+        "disconnected": "The lab is not connected to EvitaDB and does not accept changes."
       }
     },
     "dialog": {
