@@ -1,13 +1,16 @@
 import {
     LocalCatalogSchemaMutation
 } from '@/modules/database-driver/request-response/cdc/LocalCatalogSchemaMutation.ts'
+import type {
+    AttributeUniquenessType
+} from '@/modules/database-driver/request-response/schema/AttributeUniquenessType.ts'
 
 export class CreateGlobalAttributeSchemaMutation extends LocalCatalogSchemaMutation {
     readonly kind = 'createGlobalAttributeSchemaMutation'
     readonly name: string
     readonly description?: string
     readonly deprecationNotice?: string
-    readonly unique: boolean
+    readonly unique: AttributeUniquenessType
     readonly filterable: boolean
     readonly sortable: boolean
     readonly localized: boolean
@@ -22,7 +25,7 @@ export class CreateGlobalAttributeSchemaMutation extends LocalCatalogSchemaMutat
         name: string,
         description: string | undefined,
         deprecationNotice: string | undefined,
-        unique: boolean,
+        unique: AttributeUniquenessType,
         filterable: boolean,
         sortable: boolean,
         localized: boolean,
