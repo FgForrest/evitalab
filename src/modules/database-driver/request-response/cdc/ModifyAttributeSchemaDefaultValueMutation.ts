@@ -5,9 +5,9 @@ import {
 export class ModifyAttributeSchemaDefaultValueMutation extends LocalCatalogSchemaMutation {
     readonly kind = 'modifyAttributeSchemaDefaultValueMutation'
     readonly name: string
-    readonly defaultValue?: string | number | boolean | null
+    readonly defaultValue?: any
 
-    constructor(name: string, defaultValue: string | number | boolean | null | undefined) {
+    constructor(name: string, defaultValue?: any) {
         super()
         this.name = name
         this.defaultValue = defaultValue

@@ -5,10 +5,10 @@ import {
 export class ModifyAttributeSchemaTypeMutation extends LocalCatalogSchemaMutation {
     readonly kind = 'modifyAttributeSchemaTypeMutation'
     readonly name: string
-    readonly type: string
+    readonly type: any
     readonly indexedDecimalPlaces: number
 
-    constructor(name: string, type: string, indexedDecimalPlaces: number) {
+    constructor(name: string, type: any, indexedDecimalPlaces: number) {
         super()
         this.name = name
         this.type = type

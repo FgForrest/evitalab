@@ -9,18 +9,14 @@ import { AttributeSchema } from '@/modules/database-driver/request-response/sche
 import {
     GrpcAttributeInheritanceBehavior,
     GrpcAttributeSchemaType,
-    GrpcAttributeUniquenessType,
-    GrpcCardinality, GrpcEntityScope,
+    GrpcCardinality,
     GrpcEvolutionMode,
-    GrpcGlobalAttributeUniquenessType,
     GrpcOrderBehaviour,
     GrpcOrderDirection, GrpcReferenceIndexType
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { GlobalAttributeUniquenessType } from '@/modules/database-driver/request-response/schema/GlobalAttributeUniquenessType'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
 import { EvolutionMode } from '@/modules/database-driver/request-response/schema/EvolutionMode'
-import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType'
 import { OrderBehaviour } from '@/modules/database-driver/request-response/schema/OrderBehaviour'
 import { Cardinality } from '@/modules/database-driver/request-response/schema/Cardinality'
 import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
@@ -35,8 +31,7 @@ import type {
 import type {
     GrpcCurrency,
     GrpcLocale,
-    GrpcScopedAttributeUniquenessType,
-    GrpcScopedGlobalAttributeUniquenessType, GrpcScopedReferenceIndexType
+    GrpcScopedReferenceIndexType
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import {
@@ -50,14 +45,7 @@ import type { EntitySchemaAccessor } from '@/modules/database-driver/request-res
 import { MapUtil } from '@/modules/database-driver/connector/grpc/utils/MapUtil'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { Currency } from '@/modules/database-driver/data-type/Currency'
-import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { List as ImmutableList } from 'immutable'
-import {
-    ScopedAttributeUniquenessType
-} from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
-import {
-    ScopedGlobalAttributeUniquenessType
-} from '@/modules/database-driver/request-response/schema/ScopedGlobalAttributeUniquenessType.ts'
 import {
     ScopedReferenceIndexType
 } from '@/modules/database-driver/request-response/schema/ScopedReferenceIndexType.ts'
@@ -66,13 +54,16 @@ import { ReflectedReferenceSchema } from '@/modules/database-driver/request-resp
 import {
     AttributeInheritanceBehavior
 } from '@/modules/database-driver/request-response/schema/AttributeInheritanceBehavior.ts'
+import type { ScopesConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScopesConverter.ts'
 
 
 export class CatalogSchemaConverter {
     private readonly evitaValueConverter: EvitaValueConverter
+    private readonly scopesConverter: ScopesConverter
 
-    constructor(evitaValueConverter: EvitaValueConverter) {
+    constructor(evitaValueConverter: EvitaValueConverter, scopesConverter: ScopesConverter) {
         this.evitaValueConverter = evitaValueConverter
+        this.scopesConverter = scopesConverter
     }
 
     convert(
@@ -125,9 +116,9 @@ export class CatalogSchemaConverter {
                 ),
                 attribute.localized,
                 attribute.indexedDecimalPlaces,
-                this.convertEntityScopes(attribute.sortableInScopes),
-                this.convertEntityScopes(attribute.filterableInScopes),
-                this.convertUniqueInScopes(attribute.uniqueInScopes)
+                this.scopesConverter.convertEntityScopes(attribute.sortableInScopes),
+                this.scopesConverter.convertEntityScopes(attribute.filterableInScopes),
+                this.scopesConverter.convertUniqueInScopes(attribute.uniqueInScopes)
             )
         } else if (attribute.schemaType === GrpcAttributeSchemaType.REFERENCE_SCHEMA) {
             return new EntityAttributeSchema(
@@ -144,9 +135,9 @@ export class CatalogSchemaConverter {
                 attribute.localized,
                 attribute.indexedDecimalPlaces,
                 attribute.representative,
-                this.convertEntityScopes(attribute.sortableInScopes),
-                this.convertEntityScopes(attribute.filterableInScopes),
-                this.convertUniqueInScopes(attribute.uniqueInScopes)
+                this.scopesConverter.convertEntityScopes(attribute.sortableInScopes),
+                this.scopesConverter.convertEntityScopes(attribute.filterableInScopes),
+                this.scopesConverter.convertUniqueInScopes(attribute.uniqueInScopes)
             )
         } else if (attribute.schemaType === GrpcAttributeSchemaType.GLOBAL_SCHEMA) {
             return new GlobalAttributeSchema(
@@ -163,54 +154,16 @@ export class CatalogSchemaConverter {
                 attribute.localized,
                 attribute.indexedDecimalPlaces,
                 attribute.representative,
-                this.convertEntityScopes(attribute.sortableInScopes),
-                this.convertEntityScopes(attribute.filterableInScopes),
-                this.convertUniqueGloballyInScopes(attribute.uniqueGloballyInScopes),
-                this.convertUniqueInScopes(attribute.uniqueInScopes),
+                this.scopesConverter.convertEntityScopes(attribute.sortableInScopes),
+                this.scopesConverter.convertEntityScopes(attribute.filterableInScopes),
+                this.scopesConverter.convertUniqueGloballyInScopes(attribute.uniqueGloballyInScopes),
+                this.scopesConverter.convertUniqueInScopes(attribute.uniqueInScopes),
             )
         } else {
             throw new UnexpectedError('Unaccepted type')
         }
     }
 
-
-    private convertEntityScopes(entityScopes: GrpcEntityScope[]): ImmutableList<EntityScope> {
-        const convertedEntityScopes: EntityScope[] = []
-
-        for (const entityScope of entityScopes) {
-            convertedEntityScopes.push(this.convertEntityScope(entityScope))
-        }
-        return ImmutableList(convertedEntityScopes)
-    }
-
-    private convertEntityScope(entityScope: GrpcEntityScope): EntityScope {
-        switch (entityScope) {
-            case GrpcEntityScope.SCOPE_ARCHIVED:
-                return EntityScope.Archive
-            case GrpcEntityScope.SCOPE_LIVE:
-                return EntityScope.Live
-            default:
-                throw new UnexpectedError('Unexpected entity scope')
-        }
-    }
-
-    private convertUniqueInScopes(uniqueGloballyInScopes: GrpcScopedAttributeUniquenessType[]):ImmutableList<ScopedAttributeUniquenessType>{
-        const scopes: ScopedAttributeUniquenessType[] = []
-        for (const uniqueGloballyInScope of uniqueGloballyInScopes) {
-            scopes.push(new ScopedAttributeUniquenessType(this.convertEntityScope(uniqueGloballyInScope.scope), this.convertAttributeUniquenessType(uniqueGloballyInScope.uniquenessType)))
-        }
-
-        return ImmutableList(scopes)
-    }
-
-    private convertUniqueGloballyInScopes(uniqueGloballyInScopes: GrpcScopedGlobalAttributeUniquenessType[]):ImmutableList<ScopedGlobalAttributeUniquenessType>{
-        const scopes: ScopedGlobalAttributeUniquenessType[] = []
-        for (const uniqueGloballyInScope of uniqueGloballyInScopes) {
-            scopes.push(new ScopedGlobalAttributeUniquenessType(this.convertEntityScope(uniqueGloballyInScope.scope), this.convertGlobalAttributeUniquenessType(uniqueGloballyInScope.uniquenessType)))
-        }
-
-        return ImmutableList(scopes)
-    }
 
     private convertGlobalAttributeSchema(
         globalAttributeSchema: GrpcGlobalAttributeSchema
@@ -229,45 +182,11 @@ export class CatalogSchemaConverter {
             globalAttributeSchema.localized,
             globalAttributeSchema.indexedDecimalPlaces,
             globalAttributeSchema.representative,
-            this.convertEntityScopes(globalAttributeSchema.sortableInScopes),
-            this.convertEntityScopes(globalAttributeSchema.filterableInScopes),
-            this.convertUniqueGloballyInScopes(globalAttributeSchema.uniqueGloballyInScopes),
-            this.convertUniqueInScopes(globalAttributeSchema.uniqueInScopes)
+            this.scopesConverter.convertEntityScopes(globalAttributeSchema.sortableInScopes),
+            this.scopesConverter.convertEntityScopes(globalAttributeSchema.filterableInScopes),
+            this.scopesConverter.convertUniqueGloballyInScopes(globalAttributeSchema.uniqueGloballyInScopes),
+            this.scopesConverter.convertUniqueInScopes(globalAttributeSchema.uniqueInScopes)
         )
-    }
-
-    private convertAttributeUniquenessType(
-        attributeUniquenessType: GrpcAttributeUniquenessType
-    ): AttributeUniquenessType {
-        switch (attributeUniquenessType) {
-            case GrpcAttributeUniquenessType.NOT_UNIQUE:
-                return AttributeUniquenessType.NotUnique
-            case GrpcAttributeUniquenessType.UNIQUE_WITHIN_COLLECTION:
-                return AttributeUniquenessType.UniqueWithinCollection
-            case GrpcAttributeUniquenessType.UNIQUE_WITHIN_COLLECTION_LOCALE:
-                return AttributeUniquenessType.UniqueWithinCollectionLocale
-            default:
-                throw new UnexpectedError(
-                    `Unsupported attribute uniqueness type '${attributeUniquenessType}'.`
-                )
-        }
-    }
-
-    private convertGlobalAttributeUniquenessType(
-        globalAttributeUniquenessType: GrpcGlobalAttributeUniquenessType
-    ): GlobalAttributeUniquenessType {
-        switch (globalAttributeUniquenessType) {
-            case GrpcGlobalAttributeUniquenessType.NOT_GLOBALLY_UNIQUE:
-                return GlobalAttributeUniquenessType.NotUnique
-            case GrpcGlobalAttributeUniquenessType.UNIQUE_WITHIN_CATALOG:
-                return GlobalAttributeUniquenessType.UniqueWithinCatalog
-            case GrpcGlobalAttributeUniquenessType.UNIQUE_WITHIN_CATALOG_LOCALE:
-                return GlobalAttributeUniquenessType.UniqueWithinCatalogLocale
-            default:
-                throw new UnexpectedError(
-                    `Unsupported global attribute uniqueness type '${globalAttributeUniquenessType}'.`
-                )
-        }
     }
 
     convertEntitySchema(entitySchema: GrpcEntitySchema): EntitySchema {
@@ -383,7 +302,7 @@ export class CatalogSchemaConverter {
                     referenceSchema.sortableAttributeCompounds
                 ),
                 this.convertScopedIndexTypes(referenceSchema.scopedIndexTypes),
-                this.convertEntityScopes(referenceSchema.facetedInScopes),
+                this.scopesConverter.convertEntityScopes(referenceSchema.facetedInScopes),
                 referenceSchema.reflectedReferenceName,
                 referenceSchema.descriptionInherited,
                 referenceSchema.deprecationNoticeInherited,
@@ -411,7 +330,7 @@ export class CatalogSchemaConverter {
                     referenceSchema.sortableAttributeCompounds
                 ),
                 this.convertScopedIndexTypes(referenceSchema.scopedIndexTypes),
-                this.convertEntityScopes(referenceSchema.facetedInScopes)
+                this.scopesConverter.convertEntityScopes(referenceSchema.facetedInScopes)
             )
         }
     }
@@ -427,7 +346,7 @@ export class CatalogSchemaConverter {
 
     private convertScopedIndexType(scopedIndexType: GrpcScopedReferenceIndexType): ScopedReferenceIndexType {
         return new ScopedReferenceIndexType(
-            this.convertEntityScope(scopedIndexType.scope),
+            this.scopesConverter.convertEntityScope(scopedIndexType.scope),
             this.convertReferenceIndexType(scopedIndexType.indexType)
         )
     }

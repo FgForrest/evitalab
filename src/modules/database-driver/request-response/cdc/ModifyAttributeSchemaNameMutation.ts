@@ -6,12 +6,10 @@ export class ModifyAttributeSchemaNameMutation extends LocalCatalogSchemaMutatio
     readonly kind = 'modifyAttributeSchemaNameMutation'
     readonly name: string
     readonly newName: string
-    readonly overwriteTarget: boolean
 
-    constructor(name: string, newName: string, overwriteTarget: boolean) {
+    constructor(name: string, newName: string) {
         super()
         this.name = name
         this.newName = newName
-        this.overwriteTarget = overwriteTarget
     }
 }
