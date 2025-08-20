@@ -52,7 +52,7 @@ export class CollectionItemMenuFactory extends MenuFactory<CollectionMenuItemTyp
         if (renameCollectionCallback == undefined) throw new Error('Missing renameCollectionCallback')
         if (deleteCollectionCallback == undefined) throw new Error('Missing deleteCollectionCallback')
 
-        const serverWritable: boolean = serverStatus != undefined && !serverStatus.readOnly
+        const writeable: boolean = serverStatus != undefined && !serverStatus.readOnly && !catalog.readOnly
 
         const items: Map<CollectionMenuItemType, MenuItem<CollectionMenuItemType>> = new Map()
         this.createMenuAction(
@@ -96,7 +96,7 @@ export class CollectionItemMenuFactory extends MenuFactory<CollectionMenuItemTyp
             'mdi-pencil-outline',
             this.getItemTitle,
             () => renameCollectionCallback(),
-            serverWritable
+            writeable
         )
         this.createMenuAction(
             items,
@@ -104,7 +104,7 @@ export class CollectionItemMenuFactory extends MenuFactory<CollectionMenuItemTyp
             'mdi-delete-outline',
             this.getItemTitle,
             () => deleteCollectionCallback(),
-            serverWritable
+            writeable
         )
 
         return items

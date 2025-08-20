@@ -1,6 +1,6 @@
 import type {
     GrpcCatalogSchema,
-    GrpcGlobalAttributeSchema
+    GrpcGlobalAttributeSchema,
 } from '@/modules/database-driver/connector/grpc/gen/GrpcCatalogSchema_pb'
 import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
@@ -17,9 +17,7 @@ import {
     GrpcOrderDirection, GrpcReferenceIndexType
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import {
-    GlobalAttributeUniquenessType
-} from '@/modules/database-driver/request-response/schema/GlobalAttributeUniquenessType'
+import { GlobalAttributeUniquenessType } from '@/modules/database-driver/request-response/schema/GlobalAttributeUniquenessType'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
 import { EvolutionMode } from '@/modules/database-driver/request-response/schema/EvolutionMode'
 import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType'
@@ -38,8 +36,7 @@ import type {
     GrpcCurrency,
     GrpcLocale,
     GrpcScopedAttributeUniquenessType,
-    GrpcScopedGlobalAttributeUniquenessType,
-    GrpcScopedReferenceIndexType
+    GrpcScopedGlobalAttributeUniquenessType, GrpcScopedReferenceIndexType
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import {
@@ -69,6 +66,7 @@ import { ReflectedReferenceSchema } from '@/modules/database-driver/request-resp
 import {
     AttributeInheritanceBehavior
 } from '@/modules/database-driver/request-response/schema/AttributeInheritanceBehavior.ts'
+
 
 export class CatalogSchemaConverter {
     private readonly evitaValueConverter: EvitaValueConverter

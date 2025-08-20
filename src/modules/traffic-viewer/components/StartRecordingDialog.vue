@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { computed, ref, watch } from 'vue'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import { Toaster } from '@/modules/notification/service/Toaster'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { TrafficViewerService, useTrafficViewerService } from '@/modules/traffic-viewer/service/TrafficViewerService'
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
@@ -12,6 +13,7 @@ import {
 } from '@/utils/number'
 import { parseHumanDurationToMs } from '@/utils/duration'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
+import { CatalogState } from '@/modules/database-driver/request-response/CatalogState.ts'
 
 const trafficViewerService: TrafficViewerService = useTrafficViewerService()
 const toaster: Toaster = useToaster()
@@ -162,7 +164,7 @@ async function loadAvailableCatalogs(): Promise<void> {
         const fetchedAvailableCatalogs: ImmutableList<CatalogStatistics> =
             await trafficViewerService.getAvailableCatalogs()
         availableCatalogs.value = fetchedAvailableCatalogs
-            .filter(it => !it.corrupted)
+            .filter(it => !it.unusable)
             .map(it => it.name)
             .toArray()
         availableCatalogsLoaded.value = true

@@ -25,6 +25,7 @@ import { SchemaViewerTabFactory } from '@/modules/schema-viewer/viewer/workspace
 import {
     TrafficRecordHistoryViewerTabFactory
 } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
+import { CatalogState } from '@/modules/database-driver/request-response/CatalogState.ts'
 
 export const catalogItemMenuFactoryInjectionKey: symbol = Symbol('catalogItemMenuFactoryInjectionKey')
 
@@ -63,24 +64,36 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         catalog?: CatalogStatistics,
         closeSharedSessionCallback?: () => void,
         renameCatalogCallback?: () => void,
+        duplicateCatalogCallback?: () => void,
         replaceCatalogCallback?: () => void,
+        mutateCatalogCallback?: () => void,
+        immutableCatalogCallback?: () => void,
+        activateCatalogCallback?: () => void,
+        deactivateCatalogCallback?: () => void,
         switchCatalogToAliveStateCallback?: () => void,
         deleteCatalogCallback?: () => void,
         createCollectionCallback?: () => void,
         backupCatalogCallback?: () => void,
+        state?: CatalogState
     ): Promise<Map<CatalogMenuItemType, MenuItem<CatalogMenuItemType>>> {
         if (catalog == undefined) throw new Error('catalog is not defined!')
         if (closeSharedSessionCallback == undefined) throw new Error('Missing closeSharedSessionCallback')
         if (renameCatalogCallback == undefined) throw new Error('Missing renameCatalogCallback')
+        if (duplicateCatalogCallback == undefined) throw new Error('Missing duplicateCatalogCallback')
         if (replaceCatalogCallback == undefined) throw new Error('Missing replaceCatalogCallback')
         if (switchCatalogToAliveStateCallback == undefined) throw new Error('Missing switchCatalogToAliveStateCallback')
         if (deleteCatalogCallback == undefined) throw new Error('Missing deleteCatalogCallback')
         if (createCollectionCallback == undefined) throw new Error('Missing createCollectionCallback')
-        if(backupCatalogCallback == undefined) throw new Error('Missing backupCatalogCallback')
+        if (backupCatalogCallback == undefined) throw new Error('Missing backupCatalogCallback')
+        if (activateCatalogCallback == undefined) throw new Error('Missing activateCatalogCallback')
+        if (deactivateCatalogCallback == undefined) throw new Error('Missing deleteCatalogCallback')
+        if (mutateCatalogCallback == undefined) throw new Error('Missing mutateCatalogCallback')
+        if (immutableCatalogCallback == undefined) throw new Error('Missing mutateCatalogCallback')
 
         const graphQlEnabled: boolean = serverStatus != undefined && serverStatus.apiEnabled(ApiType.GraphQL)
-        const catalogNotCorrupted: boolean = !catalog.corrupted
-        const serverWritable: boolean = serverStatus != undefined && !serverStatus.readOnly
+        const serverWritable: boolean = serverStatus != undefined && !serverStatus.readOnly && !catalog.readOnly
+        const baseEnabledFunctions: boolean = !catalog.unusable && state === CatalogState.Alive
+        const deactivated: boolean = state === CatalogState.Inactive
 
         const items: Map<CatalogMenuItemType, MenuItem<CatalogMenuItemType>> = new Map()
         this.createMenuAction(
@@ -93,7 +106,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
                     this.evitaQLConsoleTabFactory.createNew(catalog.name)
                 )
             },
-            catalogNotCorrupted
+            baseEnabledFunctions
         )
         this.createMenuAction(
             items,
@@ -108,7 +121,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
                     )
                 )
             },
-            catalogNotCorrupted && graphQlEnabled
+            baseEnabledFunctions && graphQlEnabled
         )
         this.createMenuAction(
             items,
@@ -123,7 +136,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
                     )
                 )
             },
-            catalogNotCorrupted && graphQlEnabled
+            baseEnabledFunctions && graphQlEnabled
         )
         this.createMenuAction(
             items,
@@ -137,15 +150,15 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
                     )
                 )
             },
-            catalogNotCorrupted
+            baseEnabledFunctions
         )
         this.createMenuAction(items,
             CatalogMenuItemType.Backup,
-            "mdi-cloud-download-outline",
+            'mdi-cloud-download-outline',
             this.getItemTitle,
             () => backupCatalogCallback(),
-            catalogNotCorrupted && serverWritable
-            )
+            baseEnabledFunctions && !serverStatus?.readOnly
+        )
 
 
         this.createMenuSubheader(
@@ -163,7 +176,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
                     catalog.name
                 )
             ),
-            catalogNotCorrupted && serverWritable
+            baseEnabledFunctions && serverWritable
         )
 
         this.createMenuSubheader(
@@ -190,7 +203,15 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
             'mdi-pencil-outline',
             this.getItemTitle,
             () => renameCatalogCallback(),
-            catalogNotCorrupted && serverWritable
+            baseEnabledFunctions && serverWritable
+        )
+        this.createMenuAction(
+            items,
+            CatalogMenuItemType.DuplicateCatalog,
+            'mdi-content-duplicate',
+            this.getItemTitle,
+            () => duplicateCatalogCallback(),
+            baseEnabledFunctions && serverWritable
         )
         this.createMenuAction(
             items,
@@ -198,8 +219,48 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
             'mdi-file-replace-outline',
             this.getItemTitle,
             () => replaceCatalogCallback(),
-            catalogNotCorrupted && serverWritable
+            baseEnabledFunctions && serverWritable
         )
+        if(baseEnabledFunctions) {
+            this.createMenuAction(
+                items,
+                CatalogMenuItemType.DeactivateCatalog,
+                'mdi-close-circle-outline',
+                this.getItemTitle,
+                () => deactivateCatalogCallback(),
+                baseEnabledFunctions && !serverStatus?.readOnly
+            )
+        }
+        if(deactivated) {
+            this.createMenuAction(
+                items,
+                CatalogMenuItemType.ActivateCatalog,
+                'mdi-check-circle-outline',
+                this.getItemTitle,
+                () => activateCatalogCallback(),
+                deactivated
+            )
+        }
+        if(catalog.readOnly) {
+            this.createMenuAction(
+                items,
+                CatalogMenuItemType.SwitchToMutable,
+                'mdi-lock-open-variant-outline',
+                this.getItemTitle,
+                () => mutateCatalogCallback(),
+                baseEnabledFunctions)
+        }
+        if(!catalog.readOnly) {
+            this.createMenuAction(
+                items,
+                CatalogMenuItemType.SwitchToImmutable,
+                'mdi-lock-outline',
+                this.getItemTitle,
+                () => immutableCatalogCallback(),
+                baseEnabledFunctions && serverWritable
+            )
+        }
+
         if (catalog.isInWarmup) {
             this.createMenuAction(
                 items,
@@ -207,7 +268,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
                 'mdi-toggle-switch-outline',
                 this.getItemTitle,
                 () => switchCatalogToAliveStateCallback(),
-                catalogNotCorrupted && serverWritable
+                baseEnabledFunctions && serverWritable
             )
         }
         this.createMenuAction(
@@ -222,7 +283,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         this.createMenuSubheader(
             items,
             CatalogMenuItemType.CollectionsSubheader,
-            this.getItemTitle,
+            this.getItemTitle
         )
 
         this.createMenuAction(
@@ -231,7 +292,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
             'mdi-plus',
             this.getItemTitle,
             () => createCollectionCallback(),
-            catalogNotCorrupted && serverWritable
+            baseEnabledFunctions && serverWritable
         )
 
         return items

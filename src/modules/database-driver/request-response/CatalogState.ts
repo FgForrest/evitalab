@@ -4,5 +4,12 @@
 export enum CatalogState {
     Unknown = 'unknown',
     WarmingUp = 'warmingUp',
-    Alive = 'alive'
+    Alive = 'alive',
+    BeingActivated = 'beingActivated',
+    BeingCreated = 'beingCreated',
+    BeingDeactivated = 'beingDeactivated',
+    BeingDeleted = 'beingDeleted',
+    Corrupted = 'corrupted',
+    GoingAlive = 'goingAlive',
+    Inactive = 'inactive',
 }

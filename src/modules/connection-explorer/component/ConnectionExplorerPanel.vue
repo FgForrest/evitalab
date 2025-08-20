@@ -136,7 +136,23 @@ load().then()
             nav
         >
             <div class="panel-header">
-                <span class="text-gray-light text-sm-body-2 font-weight-medium">{{ t('explorer.title') }}</span>
+                <span class="text-gray-light text-sm-body-2 font-weight-medium">
+                  <span class="d-inline-flex align-center">
+                    {{ t('explorer.title') }}
+                    <VTooltip location="bottom">
+                      {{ t('explorer.readOnlyToolTip') }}
+                        <template #activator="{ props }">
+                        <VIcon
+                            v-if="serverStatus?.readOnly"
+                            v-bind="props"
+                            class="icon"
+                            icon="mdi-eye-outline"
+                        />
+                      </template>
+                    </VTooltip>
+                  </span>
+                </span>
+
 
                 <VMenu
                     :menu-items="menuItems"
@@ -209,5 +225,10 @@ load().then()
 
 .connection-loading {
     justify-self: center;
+}
+
+.icon {
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 </style>
