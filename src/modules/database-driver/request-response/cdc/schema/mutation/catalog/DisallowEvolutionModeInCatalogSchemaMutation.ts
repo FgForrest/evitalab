@@ -1,5 +1,7 @@
 import { Set as ImmutableSet } from 'immutable'
-import type { CatalogEvolutionMode } from '@/modules/database-driver/request-response/cdc/CatalogEvolutionMode.ts'
+import type {
+    CatalogEvolutionMode
+} from '@/modules/database-driver/request-response/cdc/schema/CatalogEvolutionMode.ts'
 export class DisallowEvolutionModeInCatalogSchemaMutation {
     readonly evolutionModes: ImmutableSet<CatalogEvolutionMode>
 

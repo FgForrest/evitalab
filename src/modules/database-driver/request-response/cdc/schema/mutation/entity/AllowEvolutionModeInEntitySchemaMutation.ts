@@ -1,5 +1,5 @@
-import type { EvolutionMode } from '@/modules/database-driver/request-response/schema/EvolutionMode.ts'
 import { List as ImmutableList } from 'immutable'
+import type { EvolutionMode } from '@/modules/database-driver/request-response/schema/EvolutionMode.ts'
 
 export class AllowEvolutionModeInEntitySchemaMutation {
     readonly evolutionModes: ImmutableList<EvolutionMode>
