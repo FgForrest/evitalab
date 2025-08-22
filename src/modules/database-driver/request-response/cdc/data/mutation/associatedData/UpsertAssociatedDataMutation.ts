@@ -1,0 +1,11 @@
+import {
+    AssociatedDataMutation
+} from '@/modules/database-driver/request-response/cdc/data/mutation/associatedData/AssociatedDataMutation.ts'
+import type { AssociatedDataKey } from '@/modules/database-driver/request-response/cdc/data/AssociatedDataKey.ts'
+
+export class UpsertAssociatedDataMutation extends AssociatedDataMutation {
+
+    constructor(associatedDataKey: AssociatedDataKey) {
+        super(associatedDataKey)
+    }
+}

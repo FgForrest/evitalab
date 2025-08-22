@@ -9,7 +9,7 @@ import { LocalTime } from '@/modules/database-driver/data-type/LocalTime'
 import { OffsetDateTime, Timestamp } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { Predecessor } from '@/modules/database-driver/data-type/Predecessor'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
-import { List as ImmutableList } from 'immutable'
+import { List, List as ImmutableList } from 'immutable'
 import type {
     GrpcBigDecimal,
     GrpcOffsetDateTime,

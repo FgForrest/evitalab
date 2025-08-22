@@ -82,14 +82,34 @@ import {
 import type {
     ModifyEntitySchemaMutation
 } from '@/modules/database-driver/request-response/cdc/ModifyEntitySchemaMutation.ts'
+import type {
+    ModifyAttributeSchemaConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/modify/schema/ModifyAttributeSchemaConverter.ts'
+import type {
+    RemoveAttributeSchemaConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/remove/schema/RemoveAttributeSchemaConverter.ts'
+import type {
+    SetAttributeSchemaConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/set/schema/SetAttributeSchemaConverter.ts'
+import type {
+    CreateEntitySchemaConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/create/schema/CreateEntitySchemaConverter.ts'
 
 export class LocalCatalogSchemaMutationConverter {
     private readonly catalogEvolutionModeConverter: CatalogEvolutionModeConverter
     private readonly scopesConvertor: ScopesConverter
+    private readonly modifyAttributeSchemaConverter: ModifyAttributeSchemaConverter
+    private readonly removeAttributeSchemaConverter: RemoveAttributeSchemaConverter
+    private readonly setAttributeSchemaConverter: SetAttributeSchemaConverter
+    private readonly createEntitySchemaConverter: CreateEntitySchemaConverter
 
-    constructor(catalogEvolutionModeConverter: CatalogEvolutionModeConverter, scopesConvertor: ScopesConverter) {
+    constructor(catalogEvolutionModeConverter: CatalogEvolutionModeConverter, scopesConvertor: ScopesConverter, modifyAttributeSchemaConverter: ModifyAttributeSchemaConverter, removeAttributeSchemaConverter: RemoveAttributeSchemaConverter, setAttributeSchemaConverter: SetAttributeSchemaConverter, createEntitySchemaConverter: CreateEntitySchemaConverter) {
         this.catalogEvolutionModeConverter = catalogEvolutionModeConverter
         this.scopesConvertor = scopesConvertor
+        this.modifyAttributeSchemaConverter = modifyAttributeSchemaConverter
+        this.removeAttributeSchemaConverter = removeAttributeSchemaConverter
+        this.setAttributeSchemaConverter = setAttributeSchemaConverter
+        this.createEntitySchemaConverter = createEntitySchemaConverter
     }
 
     convertLocalCatalogSchemaMutations(mutations: GrpcLocalCatalogSchemaMutation[]): ImmutableList<LocalCatalogSchemaMutation> {
@@ -107,33 +127,33 @@ export class LocalCatalogSchemaMutationConverter {
             case 'createGlobalAttributeSchemaMutation':
                 return this.convertCreateGlobalAttributeSchemaMutation(mutation.mutation.value)
             case 'modifyAttributeSchemaDefaultValueMutation':
-                return this.convertModifyAttributeSchemaDefaultValueMutation(mutation.mutation.value)
+                return this.modifyAttributeSchemaConverter.convertModifyAttributeSchemaDefaultValueMutation(mutation.mutation.value)
             case 'modifyAttributeSchemaDeprecationNoticeMutation':
-                return this.convertAttributeSchemaDeprecationNoticeMutation(mutation.mutation.value)
+                return this.modifyAttributeSchemaConverter.convertAttributeSchemaDeprecationNoticeMutation(mutation.mutation.value)
             case 'modifyAttributeSchemaDescriptionMutation':
-                return this.convertModifyAttributeSchemaDescriptionMutation(mutation.mutation.value)
+                return this.modifyAttributeSchemaConverter.convertModifyAttributeSchemaDescriptionMutation(mutation.mutation.value)
             case 'modifyAttributeSchemaNameMutation':
-                return this.convertModifyAttributeSchemaNameMutation(mutation.mutation.value)
+                return this.modifyAttributeSchemaConverter.convertModifyAttributeSchemaNameMutation(mutation.mutation.value)
             case 'modifyAttributeSchemaTypeMutation':
-                return this.convertModifyAttributeSchemaTypeMutation(mutation.mutation.value)
+                return this.modifyAttributeSchemaConverter.convertModifyAttributeSchemaTypeMutation(mutation.mutation.value)
             case 'removeAttributeSchemaMutation':
-                return this.convertRemoveAttributeSchemaMutation(mutation.mutation.value)
+                return this.removeAttributeSchemaConverter.convertRemoveAttributeSchemaMutation(mutation.mutation.value)
             case 'setAttributeSchemaFilterableMutation':
-                return this.convertSetAttributeSchemaFilterableMutation(mutation.mutation.value)
+                return this.setAttributeSchemaConverter.convertSetAttributeSchemaFilterableMutation(mutation.mutation.value)
             case 'setAttributeSchemaLocalizedMutation':
-                return this.convertSetAttributeSchemaLocalizedMutation(mutation.mutation.value)
+                return this.setAttributeSchemaConverter.convertSetAttributeSchemaLocalizedMutation(mutation.mutation.value)
             case 'setAttributeSchemaNullableMutation':
-                return this.convertSetAttributeSchemaNullableMutation(mutation.mutation.value)
+                return this.setAttributeSchemaConverter.convertSetAttributeSchemaNullableMutation(mutation.mutation.value)
             case 'setAttributeSchemaRepresentativeMutation':
-                return this.convertSetAttributeSchemaRepresentativeMutation(mutation.mutation.value)
+                return this.setAttributeSchemaConverter.convertSetAttributeSchemaRepresentativeMutation(mutation.mutation.value)
             case 'setAttributeSchemaSortableMutation':
-                return this.convertSetAttributeSchemaSortableMutation(mutation.mutation.value)
+                return this.setAttributeSchemaConverter.convertSetAttributeSchemaSortableMutation(mutation.mutation.value)
             case 'setAttributeSchemaUniqueMutation':
-                return this.convertSetAttributeSchemaUniqueMutation(mutation.mutation.value)
+                return this.setAttributeSchemaConverter.convertSetAttributeSchemaUniqueMutation(mutation.mutation.value)
             case 'setAttributeSchemaGloballyUniqueMutation':
-                return this.convertSetAttributeSchemaGloballyUniqueMutation(mutation.mutation.value)
+                return this.setAttributeSchemaConverter.convertSetAttributeSchemaGloballyUniqueMutation(mutation.mutation.value)
             case 'createEntitySchemaMutation':
-                return this.convertCreateEntitySchemaMutation(mutation.mutation.value)
+                return this.createEntitySchemaConverter.convertCreateEntitySchemaMutation(mutation.mutation.value)
             case 'modifyEntitySchemaMutation':
                 // TODO: handle modifyEntitySchemaMutation
                 break;
@@ -181,107 +201,11 @@ export class LocalCatalogSchemaMutationConverter {
         )
     }
 
-    private convertModifyAttributeSchemaDefaultValueMutation(modifyAttributeSchemaDefaultValueMutation: GrpcModifyAttributeSchemaDefaultValueMutation): ModifyAttributeSchemaDefaultValueMutation {
-        return new ModifyAttributeSchemaDefaultValueMutation(
-            modifyAttributeSchemaDefaultValueMutation.name,
-            modifyAttributeSchemaDefaultValueMutation.defaultValue
-        )
-    }
-
-    private convertAttributeSchemaDeprecationNoticeMutation(attributeSchemaDeprecationNoticeMutation: GrpcModifyAttributeSchemaDeprecationNoticeMutation): ModifyAttributeSchemaDeprecationNoticeMutation {
-        return new ModifyAttributeSchemaDeprecationNoticeMutation(
-            attributeSchemaDeprecationNoticeMutation.name,
-            attributeSchemaDeprecationNoticeMutation.deprecationNotice
-        )
-    }
-
-    private convertModifyAttributeSchemaDescriptionMutation(modifyAttributeSchemaDescriptionMutation: GrpcModifyAttributeSchemaDescriptionMutation): ModifyAttributeSchemaDescriptionMutation {
-        return new ModifyAttributeSchemaDescriptionMutation(
-            modifyAttributeSchemaDescriptionMutation.name,
-            modifyAttributeSchemaDescriptionMutation.description,
-        )
-    }
-
-    private convertModifyAttributeSchemaNameMutation(modifyAttributeSchemaNameMutation: GrpcModifyAttributeSchemaNameMutation): ModifyAttributeSchemaNameMutation {
-        return new ModifyAttributeSchemaNameMutation(
-            modifyAttributeSchemaNameMutation.name,
-            modifyAttributeSchemaNameMutation.newName
-        )
-    }
-
-    private convertModifyAttributeSchemaTypeMutation(modifyAttributeSchemaTypeMutation: GrpcModifyAttributeSchemaTypeMutation): ModifyAttributeSchemaTypeMutation {
-        return new ModifyAttributeSchemaTypeMutation(
-            modifyAttributeSchemaTypeMutation.name,
-            modifyAttributeSchemaTypeMutation.type,
-            modifyAttributeSchemaTypeMutation.indexedDecimalPlaces
-        )
-    }
-
-    private convertRemoveAttributeSchemaMutation(removeAttributeSchemaMutation: GrpcRemoveAttributeSchemaMutation): RemoveAttributeSchemaMutation {
-        return new RemoveAttributeSchemaMutation(
-            removeAttributeSchemaMutation.name
-        )
-    }
-
-    private convertSetAttributeSchemaFilterableMutation(setAttributeSchemaFilterableMutation: GrpcSetAttributeSchemaFilterableMutation): SetAttributeSchemaFilterableMutation {
-        return new SetAttributeSchemaFilterableMutation(
-            setAttributeSchemaFilterableMutation.name,
-            this.scopesConvertor.convertEntityScopes(setAttributeSchemaFilterableMutation.filterableInScopes)
-        )
-    }
-
-    private convertSetAttributeSchemaLocalizedMutation(setAttributeSchemaLocalizedMutation: GrpcSetAttributeSchemaLocalizedMutation): SetAttributeSchemaLocalizedMutation {
-        return new SetAttributeSchemaLocalizedMutation(
-            setAttributeSchemaLocalizedMutation.name,
-            setAttributeSchemaLocalizedMutation.localized
-        )
-    }
-
-    private convertSetAttributeSchemaNullableMutation(setAttributeSchemaNullableMutation: GrpcSetAttributeSchemaNullableMutation): SetAttributeSchemaNullableMutation {
-        return new SetAttributeSchemaNullableMutation(
-            setAttributeSchemaNullableMutation.name,
-            setAttributeSchemaNullableMutation.nullable
-        )
-    }
-
-    private convertSetAttributeSchemaRepresentativeMutation(setAttributeSchemaRepresentativeMutation: GrpcSetAttributeSchemaRepresentativeMutation): SetAttributeSchemaRepresentativeMutation {
-        return new SetAttributeSchemaRepresentativeMutation(
-            setAttributeSchemaRepresentativeMutation.name,
-            setAttributeSchemaRepresentativeMutation.representative
-        )
-    }
-
-    private convertSetAttributeSchemaSortableMutation(setAttributeSchemaSortableMutation: GrpcSetAttributeSchemaSortableMutation): SetAttributeSchemaSortableMutation {
-        return new SetAttributeSchemaSortableMutation(
-            setAttributeSchemaSortableMutation.name,
-            this.scopesConvertor.convertEntityScopes(setAttributeSchemaSortableMutation.sortableInScopes)
-        )
-    }
-
-    private convertSetAttributeSchemaUniqueMutation(setAttributeSchemaUniqueMutation: GrpcSetAttributeSchemaUniqueMutation): SetAttributeSchemaUniqueMutation {
-        return new SetAttributeSchemaUniqueMutation(
-            setAttributeSchemaUniqueMutation.name,
-            this.scopesConvertor.convertUniqueInScopes(setAttributeSchemaUniqueMutation.uniqueInScopes)
-        )
-    }
-
-    private convertSetAttributeSchemaGloballyUniqueMutation(setAttributeSchemaGloballyUniqueMutation: GrpcSetAttributeSchemaGloballyUniqueMutation): SetAttributeSchemaGloballyUniqueMutation {
-        return new SetAttributeSchemaGloballyUniqueMutation(
-            setAttributeSchemaGloballyUniqueMutation.name,
-            this.scopesConvertor.convertScopedGlobalAttributeUniquenessTypes(setAttributeSchemaGloballyUniqueMutation.uniqueGloballyInScopes)
-        )
-    }
-
-    private convertCreateEntitySchemaMutation(createEntitySchemaMutation: GrpcCreateEntitySchemaMutation): CreateEntitySchemaMutation {
-        return new CreateEntitySchemaMutation(
-            createEntitySchemaMutation.entityType
-        )
-    }
-
     private convertModifyEntitySchemaMutation(modifyEntitySchemaMutation: GrpcModifyEntitySchemaMutation): ModifyEntitySchemaMutation {
         return new ModifyEntitySchemaMutation(
             modifyEntitySchemaMutation.entityType,
-            modifyEntitySchemaMutation.entitySchemaMutations
+            modifyEntitySchemaMutation.entitySchemaMutations,
+
         )
     }
 }

@@ -39,12 +39,45 @@ import type {
     GrpcCreateAttributeSchemaMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcAttributeSchemaMutations_pb.ts'
 import type { ScopesConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScopesConverter.ts'
+import type {
+    ModifyAttributeSchemaConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/modify/schema/ModifyAttributeSchemaConverter.ts'
+import type {
+    RemoveAttributeSchemaConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/remove/schema/RemoveAttributeSchemaConverter.ts'
+import type {
+    SetAttributeSchemaConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/set/schema/SetAttributeSchemaConverter.ts'
+import type {
+    CreateEntitySchemaConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/create/schema/CreateEntitySchemaConverter.ts'
+import type {
+    ModifyEntitySchemaMutation
+} from '@/modules/database-driver/request-response/cdc/ModifyEntitySchemaMutation.ts'
+import { List as ImmutableList } from 'immutable'
 
 export class EntitySchemaMutationConverter {
     private readonly scopesConverter: ScopesConverter
+    private readonly modifyAttributeSchemaConverter: ModifyAttributeSchemaConverter
+    private readonly removeAttributeSchemaConverter: RemoveAttributeSchemaConverter
+    private readonly setAttributeSchemaConverter: SetAttributeSchemaConverter
+    private readonly createEntitySchemaConverter: CreateEntitySchemaConverter
 
-    constructor(scopesConverter: ScopesConverter) {
+    constructor(scopesConverter: ScopesConverter, modifyAttributeSchemaConverter: ModifyAttributeSchemaConverter, removeAttributeSchemaConverter: RemoveAttributeSchemaConverter, setAttributeSchemaConverter: SetAttributeSchemaConverter, createEntitySchemaConverter: CreateEntitySchemaConverter) {
         this.scopesConverter = scopesConverter
+        this.modifyAttributeSchemaConverter = modifyAttributeSchemaConverter
+        this.removeAttributeSchemaConverter = removeAttributeSchemaConverter
+        this.setAttributeSchemaConverter = setAttributeSchemaConverter
+        this.createEntitySchemaConverter = createEntitySchemaConverter
+    }
+
+    convertEntitySchemaMutations(entitySchemaMutations: GrpcEntitySchemaMutation[]): ImmutableList<EntitySchemaMutation> {
+        const convertedEntitySchemaMutations: EntitySchemaMutation[] = []
+        for (const mutation of entitySchemaMutations) {
+            convertedEntitySchemaMutations.push(this.convertEntitySchemaMutation(mutation))
+        }
+
+        return ImmutableList<EntitySchemaMutation>(convertedEntitySchemaMutations)
     }
 
     convertEntitySchemaMutation(entitySchemaMutation: GrpcEntitySchemaMutation): EntitySchemaMutation {
@@ -69,41 +102,29 @@ export class EntitySchemaMutationConverter {
                 return this.convertCreateAttributeSchemaMutation(entitySchemaMutation.mutation.value)
 
             case 'modifyAttributeSchemaDefaultValueMutation':
-                // TODO
-                break
+                return this.modifyAttributeSchemaConverter.convertModifyAttributeSchemaDefaultValueMutation(entitySchemaMutation.mutation.value)
             case 'modifyAttributeSchemaDeprecationNoticeMutation':
-                // TODO
-                break
+                return this.modifyAttributeSchemaConverter.convertAttributeSchemaDeprecationNoticeMutation(entitySchemaMutation.mutation.value)
             case 'modifyAttributeSchemaDescriptionMutation':
-                // TODO
-                break
+                return this.modifyAttributeSchemaConverter.convertModifyAttributeSchemaDescriptionMutation(entitySchemaMutation.mutation.value)
             case 'modifyAttributeSchemaNameMutation':
-                // TODO
-                break
+                return this.modifyAttributeSchemaConverter.convertModifyAttributeSchemaNameMutation(entitySchemaMutation.mutation.value)
             case 'modifyAttributeSchemaTypeMutation':
-                // TODO
-                break
+                return this.modifyAttributeSchemaConverter.convertModifyAttributeSchemaTypeMutation(entitySchemaMutation.mutation.value)
             case 'removeAttributeSchemaMutation':
-                // TODO
-                break
+                return this.removeAttributeSchemaConverter.convertRemoveAttributeSchemaMutation(entitySchemaMutation.mutation.value)
             case 'setAttributeSchemaFilterableMutation':
-                // TODO
-                break
+                return this.setAttributeSchemaConverter.convertSetAttributeSchemaFilterableMutation(entitySchemaMutation.mutation.value)
             case 'setAttributeSchemaLocalizedMutation':
-                // TODO
-                break
+                return this.setAttributeSchemaConverter.convertSetAttributeSchemaLocalizedMutation(entitySchemaMutation.mutation.value)
             case 'setAttributeSchemaNullableMutation':
-                // TODO
-                break
+                return this.setAttributeSchemaConverter.convertSetAttributeSchemaNullableMutation(entitySchemaMutation.mutation.value)
             case 'setAttributeSchemaRepresentativeMutation':
-                // TODO
-                break
+                return this.setAttributeSchemaConverter.convertSetAttributeSchemaRepresentativeMutation(entitySchemaMutation.mutation.value)
             case 'setAttributeSchemaSortableMutation':
-                // TODO
-                break
+                return this.setAttributeSchemaConverter.convertSetAttributeSchemaSortableMutation(entitySchemaMutation.mutation.value)
             case 'setAttributeSchemaUniqueMutation':
-                // TODO
-                break
+                return this.setAttributeSchemaConverter.convertSetAttributeSchemaUniqueMutation(entitySchemaMutation.mutation.value)
             case 'useGlobalAttributeSchemaMutation':
                 // TODO
                 break
@@ -136,7 +157,7 @@ export class EntitySchemaMutationConverter {
                 // TODO
                 break
             case 'setEntitySchemaWithHierarchyMutation':
-                // TODO
+                // TODO return set
                 break
             case 'setEntitySchemaWithPriceMutation':
                 // TODO
@@ -148,9 +169,7 @@ export class EntitySchemaMutationConverter {
                 // TODO
                 break
             case 'createEntitySchemaMutation':
-                // TODO
-                break
-
+                return this.createEntitySchemaConverter.convertCreateEntitySchemaMutation(entitySchemaMutation.mutation.value)
             case 'createReferenceSchemaMutation':
                 // TODO
                 break

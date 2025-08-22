@@ -15,18 +15,15 @@ import {
 import {
     ModifyCatalogSchemaMutation
 } from '@/modules/database-driver/request-response/cdc/ModifyCatalogSchemaMutation.ts'
-import type {
-    GrpcLocalCatalogSchemaMutation
-} from '@/modules/database-driver/connector/grpc/gen/GrpcCatalogSchemaMutation_pb.ts'
-import type {
-    LocalCatalogSchemaMutation
-} from '@/modules/database-driver/request-response/cdc/LocalCatalogSchemaMutation.ts'
 
 export class EngineMutationConverter {
     convertEngineMutation(
-    input: GrpcEngineMutation,
-): EngineMutation {
-        const mutation = input.mutation;
+    input: GrpcEngineMutation | undefined,
+): EngineMutation | undefined {
+        if (input) {
+            return undefined
+        }
+        const mutation = input!.mutation;
         if (!mutation || !mutation.case) {
             throw new Error('GrpcEngineMutation.mutation is undefined');
         }
@@ -110,6 +107,7 @@ export class EngineMutationConverter {
     convertModifyCatalogSchemaMutation(modifyCatalogSchemaMutation: GrpcModifyCatalogSchemaMutation): ModifyCatalogSchemaMutation {
         return new ModifyCatalogSchemaMutation(
             modifyCatalogSchemaMutation.catalogName,
+
         )
     }
 }
