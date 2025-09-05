@@ -111,7 +111,6 @@ export class WorkspaceModuleRegistrar implements ModuleRegistrar {
         builder.provide(
             demoSnippetResolverInjectionKey,
             new DemoSnippetResolver(
-                connectionService,
                 evitaQLConsoleTabFactory,
                 graphQLConsoleTabFactory
             )
