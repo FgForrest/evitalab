@@ -9,6 +9,7 @@ building process.
 
 For more indepth knowledge, check these sections:
 
+- [Running development version][running-development-version.md]
 - [Codebase architecture](architecture.md)
 - [Developer toolkit](toolkit.md)
 - [Guidelines](guidelines.md)
