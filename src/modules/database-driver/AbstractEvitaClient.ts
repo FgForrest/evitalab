@@ -32,6 +32,11 @@ import type { KyInstance } from 'ky/distribution/types/ky'
 import {
     MutationProgressConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/MutationProgressConverter.ts'
+import { ScopesConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScopesConverter.ts'
+import {
+    AttributeUniquenessTypeConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/AttributeUniquenessTypeConverter.ts'
+
 
 export type EvitaServiceClient = Client<typeof EvitaService>
 export type EvitaSessionServiceClient = Client<typeof EvitaSessionService>
@@ -58,6 +63,7 @@ export abstract class AbstractEvitaClient {
     private _evitaTrafficRecordingClient?: EvitaTrafficRecordingServiceClient = undefined
 
     private _evitaValueConverter?: EvitaValueConverter
+    private _scopeConverter?: ScopesConverter
     private _catalogStatisticsConverter?: CatalogStatisticsConverter
     private _catalogSchemaConverter?: CatalogSchemaConverter
     private _entityConverter?: EntityConverter
@@ -138,6 +144,13 @@ export abstract class AbstractEvitaClient {
         return this._evitaValueConverter
     }
 
+    protected get scopeConverter(): ScopesConverter {
+        if (this._scopeConverter == undefined) {
+            this._scopeConverter = new ScopesConverter(new AttributeUniquenessTypeConverter())
+        }
+        return this._scopeConverter
+    }
+
     protected get catalogStatisticsConverter(): CatalogStatisticsConverter {
         if (this._catalogStatisticsConverter == undefined) {
             this._catalogStatisticsConverter = new CatalogStatisticsConverter(this.evitaValueConverter)
@@ -147,7 +160,7 @@ export abstract class AbstractEvitaClient {
 
     protected get catalogSchemaConverter(): CatalogSchemaConverter {
         if (this._catalogSchemaConverter == undefined) {
-            this._catalogSchemaConverter = new CatalogSchemaConverter(this.evitaValueConverter)
+            this._catalogSchemaConverter = new CatalogSchemaConverter(this.evitaValueConverter, this.scopeConverter)
         }
         return this._catalogSchemaConverter
     }

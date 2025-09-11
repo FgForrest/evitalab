@@ -1,5 +1,5 @@
-import  { type EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
-import  { type ReferenceIndexType } from '@/modules/database-driver/request-response/schema/ReferenceIndexType.ts'
+import { type EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { type ReferenceIndexType } from '@/modules/database-driver/request-response/schema/ReferenceIndexType.ts'
 
 export class ScopedReferenceIndexType {
     readonly scope: EntityScope

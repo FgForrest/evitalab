@@ -2,10 +2,10 @@
 import type {
     RegisterSystemChangeCaptureResponse
 } from '@/modules/database-driver/request-response/cdc/RegisterSystemChangeCaptureResponse.ts'
-import {
+import type {
     GrpcRegisterSystemChangeCaptureResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaAPI_pb.ts'
-import type {
+import  {
     EvitaValueConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
 import type {

@@ -1,6 +1,6 @@
-import { CatalogEvolutionMode } from '@/modules/database-driver/request-response/cdc/CatalogEvolutionMode.ts'
 import { List as ImmutableList } from 'immutable'
 import { GrpcCatalogEvolutionMode } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb.ts'
+import { CatalogEvolutionMode } from '@/modules/database-driver/request-response/schema/CatalogEvolutionMode.ts'
 
 export class CatalogEvolutionModeConverter {
     convertCatalogEvolutionModes(catalogEvolutionModes: GrpcCatalogEvolutionMode[]): ImmutableList<CatalogEvolutionMode> {
@@ -12,7 +12,8 @@ export class CatalogEvolutionModeConverter {
 
         return ImmutableList(newCatalogEvolutionModes)
     }
-    convertCatalogEvolutionMode(catalogEvolutionMode: GrpcCatalogEvolutionMode):CatalogEvolutionMode {
+
+    convertCatalogEvolutionMode(catalogEvolutionMode: GrpcCatalogEvolutionMode): CatalogEvolutionMode {
         switch (catalogEvolutionMode) {
             case GrpcCatalogEvolutionMode.ADDING_ENTITY_TYPES:
                 return CatalogEvolutionMode.AddingEntityTypes

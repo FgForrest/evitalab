@@ -1,9 +1,7 @@
 import { List as ImmutableList } from 'immutable'
-import type {
-    CatalogEvolutionMode
-} from '@/modules/database-driver/request-response/cdc/schema/CatalogEvolutionMode.ts'
+import type { CatalogEvolutionMode } from '@/modules/database-driver/request-response/schema/CatalogEvolutionMode.ts'
 
-export class AllowEvolutionModeInCatalogSchemaMutation{
+export class AllowEvolutionModeInCatalogSchemaMutation {
     readonly evolutionModes: ImmutableList<CatalogEvolutionMode>
 
     constructor(evolutionModes: ImmutableList<CatalogEvolutionMode>) {

@@ -1,7 +1,7 @@
 import {
     AbstractModifyReferenceDataSchemaMutation
 } from '@/modules/database-driver/request-response/cdc/schema/mutation/reference/AbstractModifyReferenceDataSchemaMutation.ts'
-import  {
+import {
     type AttributeInheritanceBehavior
 } from '@/modules/database-driver/request-response/schema/AttributeInheritanceBehavior.ts'
 import Immutable, { List as ImmutableList } from 'immutable'
