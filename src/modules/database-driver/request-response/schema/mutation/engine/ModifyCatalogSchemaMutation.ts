@@ -6,10 +6,10 @@ import type {
 
 export class ModifyCatalogSchemaMutation {
     readonly catalogName: string
-    readonly sessionId: Uuid
+    readonly sessionId: Uuid|undefined
     readonly schemaMutations: ImmutableList<LocalCatalogSchemaMutation>
 
-    constructor(catalogName: string, sessionId: Uuid, schemaMutations: ImmutableList<LocalCatalogSchemaMutation>) {
+    constructor(catalogName: string, sessionId: Uuid|undefined, schemaMutations: ImmutableList<LocalCatalogSchemaMutation>) {
         this.catalogName = catalogName
         this.sessionId = sessionId
         this.schemaMutations = schemaMutations

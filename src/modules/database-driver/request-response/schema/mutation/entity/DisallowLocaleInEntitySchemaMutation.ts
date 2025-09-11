@@ -1,7 +1,7 @@
 import { Set as ImmutableSet } from 'immutable'
-import type { Locale } from 'vue-i18n'
+import type { Locale } from '@/modules/database-driver/data-type/Locale.ts'
 
-export class DisallowLocaleInEntity {
+export class DisallowLocaleInEntitySchemaMutation {
     readonly locales: ImmutableSet<Locale>
 
     constructor(locales: ImmutableSet<Locale>) {

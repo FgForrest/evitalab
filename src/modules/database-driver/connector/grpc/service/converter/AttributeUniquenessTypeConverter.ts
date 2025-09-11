@@ -4,7 +4,7 @@ import { AttributeUniquenessType } from '@/modules/database-driver/request-respo
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 
 export class AttributeUniquenessTypeConverter {
-    convertAttributeUniquenessType(
+    static convertAttributeUniquenessType(
         attributeUniquenessType: GrpcAttributeUniquenessType
     ): AttributeUniquenessType {
         switch (attributeUniquenessType) {

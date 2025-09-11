@@ -146,7 +146,7 @@ export abstract class AbstractEvitaClient {
 
     protected get scopeConverter(): ScopesConverter {
         if (this._scopeConverter == undefined) {
-            this._scopeConverter = new ScopesConverter(new AttributeUniquenessTypeConverter())
+            this._scopeConverter = new ScopesConverter()
         }
         return this._scopeConverter
     }

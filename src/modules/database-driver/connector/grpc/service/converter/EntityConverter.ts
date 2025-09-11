@@ -58,10 +58,11 @@ export class EntityConverter {
                 ? this.convertPrice(grpcEntity.priceForSale)
                 : undefined,
             this.convertLocales(grpcEntity.locales),
-            this.convertEntityScope(grpcEntity.scope)
+            EntityConverter.convertEntityScope(grpcEntity.scope)
         )
     }
-    private convertEntityScope(entityScope: GrpcEntityScope): EntityScope {
+
+    static convertEntityScope(entityScope: GrpcEntityScope): EntityScope {
         switch (entityScope) {
             case GrpcEntityScope.SCOPE_ARCHIVED:
                 return EntityScope.Archive
@@ -128,7 +129,7 @@ export class EntityConverter {
             if (attributeValue.value.value != undefined) {
                 attributeMap.set(
                     attributeName,
-                    this.evitaValueConverter.convertGrpcValue(attributeValue, attributeValue.value.case)
+                    EvitaValueConverter.convertGrpcValue(attributeValue, attributeValue.value.case)
                 )
             }
         }
@@ -250,7 +251,7 @@ export class EntityConverter {
         ) {
             return JSON.parse(value.value.value as string)
         } else {
-            return this.evitaValueConverter.convertGrpcValue(value.value.value, value.value.case)
+            return EvitaValueConverter.convertGrpcValue(value.value.value, value.value.case)
         }
     }
 

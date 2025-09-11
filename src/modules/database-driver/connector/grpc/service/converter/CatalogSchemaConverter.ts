@@ -54,16 +54,13 @@ import { ReflectedReferenceSchema } from '@/modules/database-driver/request-resp
 import {
     AttributeInheritanceBehavior
 } from '@/modules/database-driver/request-response/schema/AttributeInheritanceBehavior.ts'
-import type { ScopesConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScopesConverter.ts'
+import { ScopesConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScopesConverter.ts'
 
 
 export class CatalogSchemaConverter {
-    private readonly evitaValueConverter: EvitaValueConverter
-    private readonly scopesConverter: ScopesConverter
 
+    // todo pfi: remove constructor
     constructor(evitaValueConverter: EvitaValueConverter, scopesConverter: ScopesConverter) {
-        this.evitaValueConverter = evitaValueConverter
-        this.scopesConverter = scopesConverter
     }
 
     convert(
@@ -110,15 +107,15 @@ export class CatalogSchemaConverter {
                 attribute.deprecationNotice ?? undefined,
                 scalar,
                 attribute.nullable,
-                this.evitaValueConverter.convertGrpcValue(
+                EvitaValueConverter.convertGrpcValue(
                     attribute.defaultValue,
                     attribute.defaultValue?.value.case
                 ),
                 attribute.localized,
                 attribute.indexedDecimalPlaces,
-                this.scopesConverter.convertEntityScopes(attribute.sortableInScopes),
-                this.scopesConverter.convertEntityScopes(attribute.filterableInScopes),
-                this.scopesConverter.convertUniqueInScopes(attribute.uniqueInScopes)
+                ScopesConverter.convertEntityScopes(attribute.sortableInScopes),
+                ScopesConverter.convertEntityScopes(attribute.filterableInScopes),
+                ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes)
             )
         } else if (attribute.schemaType === GrpcAttributeSchemaType.REFERENCE_SCHEMA) {
             return new EntityAttributeSchema(
@@ -128,16 +125,16 @@ export class CatalogSchemaConverter {
                 attribute.deprecationNotice,
                 scalar,
                 attribute.nullable,
-                this.evitaValueConverter.convertGrpcValue(
+                EvitaValueConverter.convertGrpcValue(
                     attribute.defaultValue,
                     attribute.defaultValue?.value.case
                 ),
                 attribute.localized,
                 attribute.indexedDecimalPlaces,
                 attribute.representative,
-                this.scopesConverter.convertEntityScopes(attribute.sortableInScopes),
-                this.scopesConverter.convertEntityScopes(attribute.filterableInScopes),
-                this.scopesConverter.convertUniqueInScopes(attribute.uniqueInScopes)
+                ScopesConverter.convertEntityScopes(attribute.sortableInScopes),
+                ScopesConverter.convertEntityScopes(attribute.filterableInScopes),
+                ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes)
             )
         } else if (attribute.schemaType === GrpcAttributeSchemaType.GLOBAL_SCHEMA) {
             return new GlobalAttributeSchema(
@@ -147,17 +144,17 @@ export class CatalogSchemaConverter {
                 attribute.deprecationNotice,
                 ScalarConverter.convertScalar(attribute.type),
                 attribute.nullable,
-                this.evitaValueConverter.convertGrpcValue(
+                EvitaValueConverter.convertGrpcValue(
                     attribute.defaultValue,
                     attribute.defaultValue?.value.case
                 ),
                 attribute.localized,
                 attribute.indexedDecimalPlaces,
                 attribute.representative,
-                this.scopesConverter.convertEntityScopes(attribute.sortableInScopes),
-                this.scopesConverter.convertEntityScopes(attribute.filterableInScopes),
-                this.scopesConverter.convertUniqueGloballyInScopes(attribute.uniqueGloballyInScopes),
-                this.scopesConverter.convertUniqueInScopes(attribute.uniqueInScopes),
+                ScopesConverter.convertEntityScopes(attribute.sortableInScopes),
+                ScopesConverter.convertEntityScopes(attribute.filterableInScopes),
+                ScopesConverter.convertUniqueGloballyInScopes(attribute.uniqueGloballyInScopes),
+                ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes),
             )
         } else {
             throw new UnexpectedError('Unaccepted type')
@@ -175,17 +172,17 @@ export class CatalogSchemaConverter {
             globalAttributeSchema.deprecationNotice,
             ScalarConverter.convertScalar(globalAttributeSchema.type),
             globalAttributeSchema.nullable,
-            this.evitaValueConverter.convertGrpcValue(
+            EvitaValueConverter.convertGrpcValue(
                 globalAttributeSchema.defaultValue,
                 globalAttributeSchema.defaultValue?.value.case
             ),
             globalAttributeSchema.localized,
             globalAttributeSchema.indexedDecimalPlaces,
             globalAttributeSchema.representative,
-            this.scopesConverter.convertEntityScopes(globalAttributeSchema.sortableInScopes),
-            this.scopesConverter.convertEntityScopes(globalAttributeSchema.filterableInScopes),
-            this.scopesConverter.convertUniqueGloballyInScopes(globalAttributeSchema.uniqueGloballyInScopes),
-            this.scopesConverter.convertUniqueInScopes(globalAttributeSchema.uniqueInScopes)
+            ScopesConverter.convertEntityScopes(globalAttributeSchema.sortableInScopes),
+            ScopesConverter.convertEntityScopes(globalAttributeSchema.filterableInScopes),
+            ScopesConverter.convertUniqueGloballyInScopes(globalAttributeSchema.uniqueGloballyInScopes),
+            ScopesConverter.convertUniqueInScopes(globalAttributeSchema.uniqueInScopes)
         )
     }
 
@@ -200,9 +197,9 @@ export class CatalogSchemaConverter {
             entitySchema.withHierarchy,
             entitySchema.withPrice,
             entitySchema.indexedPricePlaces,
-            this.convertLocales(entitySchema.locales),
-            this.convertCurrency(entitySchema.currencies),
-            this.convertEvolutionMode(entitySchema.evolutionMode),
+            CatalogSchemaConverter.convertLocales(entitySchema.locales),
+            CatalogSchemaConverter.convertCurrency(entitySchema.currencies),
+            CatalogSchemaConverter.convertEvolutionMode(entitySchema.evolutionMode),
             this.convertEntityAttributeSchemas(entitySchema.attributes),
             this.convertSortableAttributeCompoundSchemas(
                 entitySchema.sortableAttributeCompounds
@@ -302,7 +299,7 @@ export class CatalogSchemaConverter {
                     referenceSchema.sortableAttributeCompounds
                 ),
                 this.convertScopedIndexTypes(referenceSchema.scopedIndexTypes),
-                this.scopesConverter.convertEntityScopes(referenceSchema.facetedInScopes),
+                ScopesConverter.convertEntityScopes(referenceSchema.facetedInScopes),
                 referenceSchema.reflectedReferenceName,
                 referenceSchema.descriptionInherited,
                 referenceSchema.deprecationNoticeInherited,
@@ -330,7 +327,7 @@ export class CatalogSchemaConverter {
                     referenceSchema.sortableAttributeCompounds
                 ),
                 this.convertScopedIndexTypes(referenceSchema.scopedIndexTypes),
-                this.scopesConverter.convertEntityScopes(referenceSchema.facetedInScopes)
+                ScopesConverter.convertEntityScopes(referenceSchema.facetedInScopes)
             )
         }
     }
@@ -346,7 +343,7 @@ export class CatalogSchemaConverter {
 
     private convertScopedIndexType(scopedIndexType: GrpcScopedReferenceIndexType): ScopedReferenceIndexType {
         return new ScopedReferenceIndexType(
-            this.scopesConverter.convertEntityScope(scopedIndexType.scope),
+            ScopesConverter.convertEntityScope(scopedIndexType.scope),
             this.convertReferenceIndexType(scopedIndexType.indexType)
         )
     }
@@ -406,7 +403,7 @@ export class CatalogSchemaConverter {
         )
     }
 
-    private convertLocales(locales: GrpcLocale[]): Locale[] {
+    static convertLocales(locales: GrpcLocale[]): Locale[] {
         const convertedLocales: Locale[] = []
         for (const locale of locales) {
             convertedLocales.push(new Locale(locale.languageTag))
@@ -430,7 +427,7 @@ export class CatalogSchemaConverter {
         return sortableAttributeSchemas
     }
 
-    private convertCurrency(currencies: GrpcCurrency[]): Currency[] {
+    static convertCurrency(currencies: GrpcCurrency[]): Currency[] {
         const convertedCurrencies: Currency[] = []
         for (const currency of currencies) {
             convertedCurrencies.push(new Currency(currency.code))
@@ -438,7 +435,7 @@ export class CatalogSchemaConverter {
         return convertedCurrencies
     }
 
-    private convertEvolutionMode(
+    static convertEvolutionMode(
         evolutionModes: GrpcEvolutionMode[]
     ): EvolutionMode[] {
         const newEvolutionModes: EvolutionMode[] = []

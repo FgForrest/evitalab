@@ -4,9 +4,9 @@ import {
 import type { SchemaMutation } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutation.ts'
 
 export class ModifyAssociatedDataSchemaDeprecationNoticeMutation extends AbstractModifyAssociatedDataSchemaMutation implements SchemaMutation {
-    readonly deprecationNotice: string
+    readonly deprecationNotice: string|undefined
 
-    constructor(name: string, deprecationNotice: string) {
+    constructor(name: string, deprecationNotice: string|undefined=undefined) {
         super(name)
         this.deprecationNotice = deprecationNotice
     }

@@ -4,7 +4,7 @@ import {
 import Immutable, { List as ImmutableList } from 'immutable'
 import { types } from 'sass'
 import Number = types.Number
-import type { AttributeKey } from '@/modules/database-driver/request-response/data/mutation/AttributeKey.ts'
+import type { AttributeKey } from '@/modules/database-driver/request-response/data/mutation/attribute/AttributeKey.ts'
 
 export class ApplyDeltaAttributeMutation<T extends Number> extends AttributeSchemaEvolvingMutation {
     readonly delta: T

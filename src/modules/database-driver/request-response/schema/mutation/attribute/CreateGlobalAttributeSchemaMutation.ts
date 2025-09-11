@@ -9,8 +9,8 @@ import  {
 
 export class CreateGlobalAttributeSchemaMutation {
     readonly name: string
-    readonly description: string
-    readonly deprecationNotice: string
+    readonly description: string|undefined
+    readonly deprecationNotice: string|undefined
     readonly uniqueInScopes: ImmutableList<ScopedAttributeUniquenessType>
     readonly uniqueGloballyInScopes: ImmutableList<ScopedGlobalAttributeUniquenessType>
     readonly filterableInScopes: ImmutableList<EntityScope>
@@ -23,7 +23,7 @@ export class CreateGlobalAttributeSchemaMutation {
     readonly indexedDecimalPlaces: number
 
 
-    constructor(name: string, description: string, deprecationNotice: string, uniqueInScopes: Immutable.List<ScopedAttributeUniquenessType>, uniqueGloballyInScopes: Immutable.List<ScopedGlobalAttributeUniquenessType>, filterableInScopes: Immutable.List<EntityScope>, sortableInScopes: Immutable.List<EntityScope>, localized: boolean, nullable: boolean, representative: boolean, type: any, defaultValue: any, indexedDecimalPlaces: number) {
+    constructor(name: string, description: string|undefined, deprecationNotice: string|undefined, uniqueInScopes: Immutable.List<ScopedAttributeUniquenessType>, uniqueGloballyInScopes: Immutable.List<ScopedGlobalAttributeUniquenessType>, filterableInScopes: Immutable.List<EntityScope>, sortableInScopes: Immutable.List<EntityScope>, localized: boolean, nullable: boolean, representative: boolean, type: any, defaultValue: any, indexedDecimalPlaces: number) {
         this.name = name
         this.description = description
         this.deprecationNotice = deprecationNotice

@@ -1,7 +1,7 @@
-export class ModifyEntitySchemaDeprecationNotice {
-    readonly deprecationNotice: string
+export class ModifyEntitySchemaDeprecationNoticeMutation {
+    readonly deprecationNotice: string|undefined
 
-    constructor(deprecationNotice: string) {
+    constructor(deprecationNotice: string|undefined) {
         this.deprecationNotice = deprecationNotice
     }
 }

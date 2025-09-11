@@ -23,13 +23,8 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/AttributeUniquenessTypeConverter.ts'
 
 export class ScopesConverter {
-    private readonly attributeUniquenessTypeConvertor: AttributeUniquenessTypeConverter
 
-    constructor(attributeUniquenessTypeConvertor: AttributeUniquenessTypeConverter) {
-        this.attributeUniquenessTypeConvertor = attributeUniquenessTypeConvertor
-    }
-
-    convertEntityScopes(entityScopes: GrpcEntityScope[]): ImmutableList<EntityScope> {
+    static convertEntityScopes(entityScopes: GrpcEntityScope[]): ImmutableList<EntityScope> {
         const convertedEntityScopes: EntityScope[] = []
 
         for (const entityScope of entityScopes) {
@@ -38,7 +33,7 @@ export class ScopesConverter {
         return ImmutableList(convertedEntityScopes)
     }
 
-    convertEntityScope(entityScope: GrpcEntityScope): EntityScope {
+    static convertEntityScope(entityScope: GrpcEntityScope): EntityScope {
         switch (entityScope) {
             case GrpcEntityScope.SCOPE_ARCHIVED:
                 return EntityScope.Archive
@@ -49,7 +44,7 @@ export class ScopesConverter {
         }
     }
 
-    convertScopedGlobalAttributeUniquenessTypes(scopedGlobalAttributeUniquenessTypes: GrpcScopedGlobalAttributeUniquenessType[]):ImmutableList<ScopedGlobalAttributeUniquenessType> {
+    static convertScopedGlobalAttributeUniquenessTypes(scopedGlobalAttributeUniquenessTypes: GrpcScopedGlobalAttributeUniquenessType[]):ImmutableList<ScopedGlobalAttributeUniquenessType> {
         const convertedScopedGlobalAttributeUniquenessTypes: ScopedGlobalAttributeUniquenessType[] = []
         for (const entityScope of scopedGlobalAttributeUniquenessTypes) {
             convertedScopedGlobalAttributeUniquenessTypes.push(this.convertScopedGlobalAttributeUniquenessType(entityScope))
@@ -57,21 +52,21 @@ export class ScopesConverter {
         return ImmutableList(convertedScopedGlobalAttributeUniquenessTypes)
     }
 
-    convertScopedGlobalAttributeUniquenessType(scopedGlobalAttributeUniquenessType: GrpcScopedGlobalAttributeUniquenessType): ScopedGlobalAttributeUniquenessType {
+    static convertScopedGlobalAttributeUniquenessType(scopedGlobalAttributeUniquenessType: GrpcScopedGlobalAttributeUniquenessType): ScopedGlobalAttributeUniquenessType {
         return new ScopedGlobalAttributeUniquenessType(this.convertEntityScope(scopedGlobalAttributeUniquenessType.scope), this.convertGlobalAttributeUniquenessType(scopedGlobalAttributeUniquenessType.uniquenessType))
     }
 
 
-    convertUniqueInScopes(uniqueGloballyInScopes: GrpcScopedAttributeUniquenessType[]):ImmutableList<ScopedAttributeUniquenessType>{
+    static convertUniqueInScopes(uniqueGloballyInScopes: GrpcScopedAttributeUniquenessType[]):ImmutableList<ScopedAttributeUniquenessType>{
         const scopes: ScopedAttributeUniquenessType[] = []
         for (const uniqueGloballyInScope of uniqueGloballyInScopes) {
-            scopes.push(new ScopedAttributeUniquenessType(this.convertEntityScope(uniqueGloballyInScope.scope), this.attributeUniquenessTypeConvertor.convertAttributeUniquenessType(uniqueGloballyInScope.uniquenessType)))
+            scopes.push(new ScopedAttributeUniquenessType(this.convertEntityScope(uniqueGloballyInScope.scope), AttributeUniquenessTypeConverter.convertAttributeUniquenessType(uniqueGloballyInScope.uniquenessType)))
         }
 
         return ImmutableList(scopes)
     }
 
-    convertUniqueGloballyInScopes(uniqueGloballyInScopes: GrpcScopedGlobalAttributeUniquenessType[]):ImmutableList<ScopedGlobalAttributeUniquenessType>{
+    static convertUniqueGloballyInScopes(uniqueGloballyInScopes: GrpcScopedGlobalAttributeUniquenessType[]):ImmutableList<ScopedGlobalAttributeUniquenessType>{
         const scopes: ScopedGlobalAttributeUniquenessType[] = []
         for (const uniqueGloballyInScope of uniqueGloballyInScopes) {
             scopes.push(new ScopedGlobalAttributeUniquenessType(this.convertEntityScope(uniqueGloballyInScope.scope), this.convertGlobalAttributeUniquenessType(uniqueGloballyInScope.uniquenessType)))
@@ -80,7 +75,7 @@ export class ScopesConverter {
         return ImmutableList(scopes)
     }
 
-    private convertGlobalAttributeUniquenessType(
+    static convertGlobalAttributeUniquenessType(
         globalAttributeUniquenessType: GrpcGlobalAttributeUniquenessType
     ): GlobalAttributeUniquenessType {
         switch (globalAttributeUniquenessType) {

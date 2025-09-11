@@ -1,7 +1,7 @@
 export class ModifyEntitySchemaDescriptionMutation {
-    readonly description: string
+    readonly description: string|undefined
 
-    constructor(description: string) {
+    constructor(description: string|undefined) {
         this.description = description
     }
 }

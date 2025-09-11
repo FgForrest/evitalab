@@ -6,8 +6,8 @@ import  { type EntityScope } from '@/modules/database-driver/request-response/sc
 
 export class CreateAttributeSchemaMutation {
     readonly name: string
-    readonly description: string
-    readonly deprecationNotice: string
+    readonly description: string|undefined
+    readonly deprecationNotice: string|undefined
     readonly uniqueInScopes: ImmutableList<ScopedAttributeUniquenessType>
     readonly filterableInScopes: ImmutableList<EntityScope>
     readonly sortableInScopes: ImmutableList<EntityScope>
@@ -15,11 +15,11 @@ export class CreateAttributeSchemaMutation {
     readonly nullable: boolean
     readonly representative: boolean
     readonly type: any
-    readonly defaultValue: any
+    readonly defaultValue: any|undefined
     readonly indexedDecimalPlaces: number
 
 
-    constructor(name: string, description: string, deprecationNotice: string, uniqueInScopes: Immutable.List<ScopedAttributeUniquenessType>, filterableInScopes: Immutable.List<EntityScope>, sortableInScopes: Immutable.List<EntityScope>, localized: boolean, nullable: boolean, representative: boolean, type: any, defaultValue: any, indexedDecimalPlaces: number) {
+    constructor(name: string, description: string|undefined, deprecationNotice: string|undefined, uniqueInScopes: Immutable.List<ScopedAttributeUniquenessType>, filterableInScopes: Immutable.List<EntityScope>, sortableInScopes: Immutable.List<EntityScope>, localized: boolean, nullable: boolean, representative: boolean, type: any, defaultValue: any|undefined, indexedDecimalPlaces: number) {
         this.name = name
         this.description = description
         this.deprecationNotice = deprecationNotice

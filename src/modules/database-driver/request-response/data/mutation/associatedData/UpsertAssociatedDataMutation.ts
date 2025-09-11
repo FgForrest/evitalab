@@ -1,7 +1,9 @@
 import {
     AssociatedDataMutation
 } from '@/modules/database-driver/request-response/data/mutation/associatedData/AssociatedDataMutation.ts'
-import type { AssociatedDataKey } from '@/modules/database-driver/request-response/cdc/data/AssociatedDataKey.ts'
+import type {
+    AssociatedDataKey
+} from '@/modules/database-driver/request-response/data/mutation/associatedData/AssociatedDataKey.ts'
 
 export class UpsertAssociatedDataMutation extends AssociatedDataMutation {
 
