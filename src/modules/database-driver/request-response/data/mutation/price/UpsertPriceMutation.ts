@@ -5,15 +5,15 @@ import type { PriceKey } from '@/modules/database-driver/request-response/data/m
 
 export class UpsertPriceMutation extends PriceMutation
 {
-    readonly innerRecordId: number
+    readonly innerRecordId: number|undefined // todo pfi: not sure about the undefined
     readonly priceWithoutTax: BigDecimal
     readonly taxRate: BigDecimal
     readonly priceWithTax: BigDecimal
-    readonly validity: DateTimeRange
+    readonly validity: DateTimeRange|undefined
     readonly indexed: boolean
 
 
-    constructor(priceKey: PriceKey, innerRecordId: number, priceWithoutTax: BigDecimal, taxRate: BigDecimal, priceWithTax: BigDecimal, validity: DateTimeRange, indexed: boolean) {
+    constructor(priceKey: PriceKey, innerRecordId: number|undefined, priceWithoutTax: BigDecimal, taxRate: BigDecimal, priceWithTax: BigDecimal, validity: DateTimeRange|undefined, indexed: boolean) {
         super(priceKey)
         this.innerRecordId = innerRecordId
         this.priceWithoutTax = priceWithoutTax

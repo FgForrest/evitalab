@@ -456,7 +456,7 @@ export class EvitaValueConverter {
         return ImmutableList(shortNumberRangeArray)
     }
 
-    static  convertGrpcByteNumberRangeArray(
+    static convertGrpcByteNumberRangeArray(
         value: GrpcIntegerNumberRangeArray
     ): ImmutableList<Range<number>> {
         const byteNumberRangeArray: Range<number>[] = []
@@ -468,7 +468,7 @@ export class EvitaValueConverter {
         return ImmutableList(byteNumberRangeArray)
     }
 
-    static   convertGrpcLocaleArray(value: GrpcLocaleArray): ImmutableList<Locale> {
+    static convertGrpcLocaleArray(value: GrpcLocaleArray): ImmutableList<Locale> {
         const localeArray: Locale[] = []
         for (const locale of value.value) {
             localeArray.push(new Locale(locale.languageTag))
@@ -476,7 +476,7 @@ export class EvitaValueConverter {
         return ImmutableList(localeArray)
     }
 
-    static    convertGrpcCurrencyArray(
+    static convertGrpcCurrencyArray(
         value: GrpcCurrencyArray
     ): ImmutableList<Currency> {
         const currencyArray: Currency[] = []
@@ -486,7 +486,7 @@ export class EvitaValueConverter {
         return ImmutableList(currencyArray)
     }
 
-    static    convertGrpcUuidArray(grpcUuids: GrpcUuidArray): ImmutableList<Uuid> {
+    static convertGrpcUuidArray(grpcUuids: GrpcUuidArray): ImmutableList<Uuid> {
         const uuids: Uuid[] = []
         for (const grpcUuid of grpcUuids.value) {
             uuids.push(EvitaValueConverter.convertGrpcUuid(grpcUuid))
@@ -494,7 +494,7 @@ export class EvitaValueConverter {
         return ImmutableList(uuids)
     }
 
-    static    convertGrpcLocalDate(offsetDateTime: GrpcOffsetDateTime): LocalDate {
+    static convertGrpcLocalDate(offsetDateTime: GrpcOffsetDateTime): LocalDate {
         if (!offsetDateTime.timestamp) {
             throw new Error('Missing prop timestamp')
         }
@@ -506,7 +506,7 @@ export class EvitaValueConverter {
         return localDate
     }
 
-    static   convertGrpcLocalDateTime(offsetDateTime: GrpcOffsetDateTime): LocalDateTime {
+    static convertGrpcLocalDateTime(offsetDateTime: GrpcOffsetDateTime): LocalDateTime {
         if (!offsetDateTime.timestamp) {
             throw new Error('Missing prop timestamp')
         }
@@ -517,7 +517,7 @@ export class EvitaValueConverter {
         )
     }
 
-    static   convertGrpcOffsetDateTime(
+    static convertGrpcOffsetDateTime(
         offsetDateTime: GrpcOffsetDateTime
     ): OffsetDateTime {
         if (!offsetDateTime.timestamp) {
@@ -529,7 +529,7 @@ export class EvitaValueConverter {
         )
     }
 
-    static   convertOffsetDateTime(offsetDateTime: OffsetDateTime): GrpcOffsetDateTime {
+    static convertOffsetDateTime(offsetDateTime: OffsetDateTime): GrpcOffsetDateTime {
         return {
             timestamp: {
                 nanos: offsetDateTime.timestamp.nanos,
@@ -540,7 +540,7 @@ export class EvitaValueConverter {
         } as GrpcOffsetDateTime
     }
 
-    static    convertGrpcLocalTime(grpcTime: GrpcOffsetDateTime): LocalTime {
+    static convertGrpcLocalTime(grpcTime: GrpcOffsetDateTime): LocalTime {
         if (!grpcTime.timestamp) {
             throw new Error('Missing prop timestamp')
         }

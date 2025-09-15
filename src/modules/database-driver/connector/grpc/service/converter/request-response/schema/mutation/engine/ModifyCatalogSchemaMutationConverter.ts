@@ -8,10 +8,12 @@ import type {
     GrpcModifyCatalogSchemaMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEngineMutation_pb.ts'
 import Immutable from 'immutable'
+import {
+    DelegatingLocalCatalogSchemaMutationConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/DelegatingLocalCatalogSchemaMutationConverter.ts'
 
 export class ModifyCatalogSchemaMutationConverter implements SchemaMutationConverter<ModifyCatalogSchemaMutation, GrpcModifyCatalogSchemaMutation> {
 
-    //todo pfi: DelegatingLocalCatalogSchemaMutationConverter
     convert(mutation: GrpcModifyCatalogSchemaMutation): ModifyCatalogSchemaMutation {
         const schemaMutations = mutation.schemaMutations.map(DelegatingLocalCatalogSchemaMutationConverter.convert)
 

@@ -4,7 +4,11 @@ import {
 import type { AttributeKey } from '@/modules/database-driver/request-response/data/mutation/attribute/AttributeKey.ts'
 
 export class UpsertAttributeMutation extends AttributeSchemaEvolvingMutation {
-    constructor(attributeKey: AttributeKey) {
+
+    private readonly value: any;
+
+    constructor(attributeKey: AttributeKey, value: any) {
         super(attributeKey)
+        this.value = value
     }
 }

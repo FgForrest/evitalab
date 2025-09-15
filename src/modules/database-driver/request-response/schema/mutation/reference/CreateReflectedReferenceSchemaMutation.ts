@@ -4,21 +4,24 @@ import  { type EntityScope } from '@/modules/database-driver/request-response/sc
 import  {
     type AttributeInheritanceBehavior
 } from '@/modules/database-driver/request-response/schema/AttributeInheritanceBehavior.ts'
+import {
+    ScopedReferenceIndexType
+} from '@/modules/database-driver/request-response/schema/mutation/reference/ScopedReferenceIndexType.ts'
 
 export class CreateReflectedReferenceSchemaMutation {
     readonly name: string
-    readonly description: string
-    readonly deprecationNotice: string
-    readonly cardinality: Cardinality
+    readonly description: string|undefined
+    readonly deprecationNotice: string|undefined
+    readonly cardinality: Cardinality|undefined
     readonly referencedEntityType: string
     readonly reflectedReferenceName: string
-    readonly indexedInScopes: ImmutableList<EntityScope>
-    readonly facetedInScopes: ImmutableList<EntityScope>
+    readonly indexedInScopes: ImmutableList<ScopedReferenceIndexType>|undefined
+    readonly facetedInScopes: ImmutableList<EntityScope>|undefined
     readonly attributeInheritanceBehavior: AttributeInheritanceBehavior
-    readonly attributeInheritanceFilter: ImmutableList<string>
+    readonly attributeInheritanceFilter: ImmutableList<string>|undefined
 
 
-    constructor(name: string, description: string, deprecationNotice: string, cardinality: Cardinality, referencedEntityType: string, reflectedReferenceName: string, indexedInScopes: Immutable.List<EntityScope>, facetedInScopes: Immutable.List<EntityScope>, attributeInheritanceBehavior: AttributeInheritanceBehavior, attributeInheritanceFilter: Immutable.List<string>) {
+    constructor(name: string, description: string|undefined, deprecationNotice: string|undefined, cardinality: Cardinality|undefined, referencedEntityType: string, reflectedReferenceName: string, indexedInScopes: Immutable.List<ScopedReferenceIndexType>|undefined, facetedInScopes: Immutable.List<EntityScope>|undefined, attributeInheritanceBehavior: AttributeInheritanceBehavior, attributeInheritanceFilter: Immutable.List<string>|undefined) {
         this.name = name
         this.description = description
         this.deprecationNotice = deprecationNotice

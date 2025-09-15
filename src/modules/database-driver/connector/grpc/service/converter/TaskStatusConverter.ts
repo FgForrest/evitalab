@@ -19,12 +19,10 @@ import type { StringValue } from '@bufbuild/protobuf/wkt'
  * representation
  */
 export class TaskStatusConverter {
-    private readonly evitaValueConverter: EvitaValueConverter
     private readonly taskStateConverter: TaskStateConverter
     private readonly serverFileConverter: ServerFileConverter
 
-    constructor(evitaValueConverter: EvitaValueConverter, taskStateConverter: TaskStateConverter, serverFileConverter: ServerFileConverter) {
-        this.evitaValueConverter = evitaValueConverter
+    constructor(taskStateConverter: TaskStateConverter, serverFileConverter: ServerFileConverter) {
         this.taskStateConverter = taskStateConverter
         this.serverFileConverter = serverFileConverter
     }
@@ -54,17 +52,17 @@ export class TaskStatusConverter {
         return new TaskStatus(
             ImmutableList(taskTypes),
             grpcTaskStatus.taskName,
-            this.evitaValueConverter.convertGrpcUuid(grpcTaskStatus.taskId!),
+            EvitaValueConverter.convertGrpcUuid(grpcTaskStatus.taskId!),
             grpcTaskStatus.catalogName,
-            this.evitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.created!),
+            EvitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.created!),
             grpcTaskStatus.issued != undefined
-                ? this.evitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.issued!)
+                ? EvitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.issued!)
                 : undefined,
             grpcTaskStatus.started != undefined
-                ? this.evitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.started!)
+                ? EvitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.started!)
                 : undefined,
             grpcTaskStatus.finished != undefined
-                ? this.evitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.finished!)
+                ? EvitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.finished!)
                 : undefined,
             grpcTaskStatus.progress,
             grpcTaskStatus.settings!,

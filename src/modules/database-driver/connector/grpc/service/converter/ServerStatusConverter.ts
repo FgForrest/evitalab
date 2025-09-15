@@ -18,16 +18,14 @@ import { Endpoint } from '@/modules/database-driver/request-response/status/Endp
  */
 export class ServerStatusConverter {
 
-    readonly evitaValueConverter: EvitaValueConverter
 
-    constructor(evitaValueConverter: EvitaValueConverter) {
-        this.evitaValueConverter = evitaValueConverter
+    constructor() {
     }
 
     convert(serverStatus: GrpcEvitaServerStatusResponse):ServerStatus{
         return new ServerStatus(
             serverStatus.version,
-            this.evitaValueConverter.convertGrpcOffsetDateTime(serverStatus.startedAt!),
+            EvitaValueConverter.convertGrpcOffsetDateTime(serverStatus.startedAt!),
             BigInt(serverStatus.uptime),
             serverStatus.instanceId,
             serverStatus.catalogsCorrupted,

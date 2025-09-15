@@ -16,7 +16,7 @@ export class AllowCurrencyInEntitySchemaMutationConverter implements SchemaMutat
 
     convert(mutation: GrpcAllowCurrencyInEntitySchemaMutation): AllowCurrencyInEntitySchemaMutation {
         return new AllowCurrencyInEntitySchemaMutation(
-            Immutable.List(CatalogSchemaConverter.convertCurrency(mutation.currencies))
+            Immutable.List(CatalogSchemaConverter.toCurrencyArray(mutation.currencies))
         )
     }
 }

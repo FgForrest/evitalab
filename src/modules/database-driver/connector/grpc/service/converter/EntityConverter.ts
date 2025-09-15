@@ -36,10 +36,8 @@ import { DateTimeUtil } from '@/modules/database-driver/connector/grpc/utils/Dat
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 export class EntityConverter {
-    private readonly evitaValueConverter: EvitaValueConverter;
 
-    constructor(evitaValueConverter: EvitaValueConverter){
-        this.evitaValueConverter = evitaValueConverter
+    constructor(){
     }
 
     convert(grpcEntity: GrpcSealedEntity): Entity {
@@ -52,7 +50,7 @@ export class EntityConverter {
             this.convertAttributes(grpcEntity.globalAttributes, grpcEntity.localizedAttributes),
             this.convertAssociatedData(grpcEntity.globalAssociatedData, grpcEntity.localizedAssociatedData),
             this.convertReferences(grpcEntity.references),
-            this.convertPriceInnerHandling(grpcEntity.priceInnerRecordHandling),
+            EntityConverter.convertPriceInnerHandling(grpcEntity.priceInnerRecordHandling),
             this.convertPrices(grpcEntity.prices),
             grpcEntity.priceForSale
                 ? this.convertPrice(grpcEntity.priceForSale)
@@ -193,7 +191,7 @@ export class EntityConverter {
         }
     }
 
-    private convertPriceInnerHandling(
+    static convertPriceInnerHandling(
         price: GrpcPriceInnerRecordHandling
     ): PriceInnerRecordHandling {
         switch (price) {

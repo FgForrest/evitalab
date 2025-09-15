@@ -10,3 +10,10 @@ export class ScopedReferenceIndexType {
         this.indexType = indexType
     }
 }
+
+
+export namespace ScopedReferenceIndexType {
+
+    export const Empty:ScopedReferenceIndexType[] = [];
+
+}

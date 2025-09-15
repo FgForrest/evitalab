@@ -1,9 +1,8 @@
-import  {
+import {
     type AttributeMutation
 } from '@/modules/database-driver/request-response/data/mutation/attribute/AttributeMutation.ts'
-import  { type AttributeKey } from '@/modules/database-driver/request-response/data/mutation/AttributeKey.ts'
-import  {
-    type ReferenceKeyWithAttributeKey
+import {
+    ReferenceKeyWithAttributeKey
 } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceKeyWithAttributeKey.ts'
 import {
     ReferenceMutation
@@ -11,6 +10,7 @@ import {
 import type {
     ReferenceKey
 } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceKey.ts'
+import type { AttributeKey } from '@/modules/database-driver/request-response/data/mutation/attribute/AttributeKey.ts'
 
 export class ReferenceAttributeMutation extends ReferenceMutation<ReferenceKeyWithAttributeKey> {
     readonly attributeMutation: AttributeMutation
@@ -18,10 +18,10 @@ export class ReferenceAttributeMutation extends ReferenceMutation<ReferenceKeyWi
     readonly comparableKey: ReferenceKeyWithAttributeKey
 
 
-    constructor(referenceKey: ReferenceKey, attributeMutation: AttributeMutation, attributeKey: AttributeKey, comparableKey: ReferenceKeyWithAttributeKey) {
+    constructor(referenceKey: ReferenceKey, attributeMutation: AttributeMutation) {
         super(referenceKey)
         this.attributeMutation = attributeMutation
-        this.attributeKey = attributeKey
-        this.comparableKey = comparableKey
+        this.attributeKey = attributeMutation.attributeKey
+        this.comparableKey = new ReferenceKeyWithAttributeKey(referenceKey, this.attributeKey)
     }
 }

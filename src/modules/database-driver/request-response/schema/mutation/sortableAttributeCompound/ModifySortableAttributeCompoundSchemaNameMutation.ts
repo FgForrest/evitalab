@@ -1,4 +1,11 @@
-export class ModifySortableAttributeCompoundSchemaNameMutation {
+import type {
+    SortableAttributeCompoundSchemaMutation
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/SortableAttributeCompoundSchemaMutation.ts'
+import type {
+    ReferenceSortableAttributeCompoundSchemaMutation
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/ReferenceSortableAttributeCompoundSchemaMutation.ts'
+
+export class ModifySortableAttributeCompoundSchemaNameMutation  implements ReferenceSortableAttributeCompoundSchemaMutation {
     readonly name: string
     readonly newName: string
 

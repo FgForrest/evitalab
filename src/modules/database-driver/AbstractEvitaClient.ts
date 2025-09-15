@@ -153,21 +153,21 @@ export abstract class AbstractEvitaClient {
 
     protected get catalogStatisticsConverter(): CatalogStatisticsConverter {
         if (this._catalogStatisticsConverter == undefined) {
-            this._catalogStatisticsConverter = new CatalogStatisticsConverter(this.evitaValueConverter)
+            this._catalogStatisticsConverter = new CatalogStatisticsConverter()
         }
         return this._catalogStatisticsConverter
     }
 
     protected get catalogSchemaConverter(): CatalogSchemaConverter {
         if (this._catalogSchemaConverter == undefined) {
-            this._catalogSchemaConverter = new CatalogSchemaConverter(this.evitaValueConverter, this.scopeConverter)
+            this._catalogSchemaConverter = new CatalogSchemaConverter()
         }
         return this._catalogSchemaConverter
     }
 
     protected get entityConverter(): EntityConverter {
         if (this._entityConverter == undefined) {
-            this._entityConverter = new EntityConverter(this.evitaValueConverter)
+            this._entityConverter = new EntityConverter()
         }
         return this._entityConverter
     }
@@ -188,7 +188,7 @@ export abstract class AbstractEvitaClient {
 
     protected get serverStatusConverter(): ServerStatusConverter {
         if (this._serverStatusConverter == undefined) {
-            this._serverStatusConverter = new ServerStatusConverter(this.evitaValueConverter)
+            this._serverStatusConverter = new ServerStatusConverter()
         }
         return this._serverStatusConverter
     }
@@ -202,7 +202,7 @@ export abstract class AbstractEvitaClient {
 
     protected get serverFileConverter(): ServerFileConverter {
         if (this._serverFileConverter == undefined) {
-            this._serverFileConverter = new ServerFileConverter(this.evitaValueConverter)
+            this._serverFileConverter = new ServerFileConverter()
         }
         return this._serverFileConverter
     }
@@ -216,16 +216,14 @@ export abstract class AbstractEvitaClient {
 
     protected get taskStatusConverter(): TaskStatusConverter {
         if (this._taskStatusConverter == undefined) {
-            this._taskStatusConverter = new TaskStatusConverter(this.evitaValueConverter, this.taskStateConverter, this.serverFileConverter)
+            this._taskStatusConverter = new TaskStatusConverter(this.taskStateConverter, this.serverFileConverter)
         }
         return this._taskStatusConverter
     }
 
     protected get trafficRecordingConverter(): TrafficRecordingConverter {
         if (this._trafficRecordingConverter == undefined) {
-            this._trafficRecordingConverter = new TrafficRecordingConverter(
-                this.evitaValueConverter
-            )
+            this._trafficRecordingConverter = new TrafficRecordingConverter()
         }
         return this._trafficRecordingConverter
     }

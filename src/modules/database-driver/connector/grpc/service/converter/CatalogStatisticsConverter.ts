@@ -11,15 +11,13 @@ import { EntityCollectionStatistics } from '@/modules/database-driver/request-re
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
 
 export class CatalogStatisticsConverter {
-    private readonly evitaValueConverter
 
-    constructor(evitaValueConverter: EvitaValueConverter) {
-        this.evitaValueConverter = evitaValueConverter
+    constructor() {
     }
 
     convert(catalog: GrpcCatalogStatistics): CatalogStatistics {
         return new CatalogStatistics(
-            catalog.catalogId ? this.evitaValueConverter.convertGrpcUuid(catalog.catalogId).toString() : undefined,
+            catalog.catalogId ? EvitaValueConverter.convertGrpcUuid(catalog.catalogId).toString() : undefined,
             BigInt(catalog.catalogVersion),
             catalog.catalogName,
             this.convertEntityTypes(catalog.entityCollectionStatistics),

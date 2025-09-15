@@ -12,10 +12,10 @@ import type {
 export class InsertReferenceMutation extends ReferenceMutation<ReferenceKeyWithAttributeKey> {
     readonly referenceKey: ReferenceKey
     readonly referenceCardinality: Cardinality
-    readonly referenceEntityType: string
+    readonly referenceEntityType: string|undefined
 
 
-    constructor(referenceKey: ReferenceKey, referenceCardinality: Cardinality, referenceEntityType: string) {
+    constructor(referenceKey: ReferenceKey, referenceCardinality: Cardinality, referenceEntityType: string|undefined) {
         super(referenceKey)
         this.referenceKey = referenceKey
         this.referenceCardinality = referenceCardinality

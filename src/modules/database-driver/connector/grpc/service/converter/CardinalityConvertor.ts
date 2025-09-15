@@ -1,9 +1,9 @@
-//todo: lho
 import { GrpcCardinality } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb.ts'
 import { Cardinality } from '@/modules/database-driver/request-response/schema/Cardinality.ts'
+import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 
 export class CardinalityConvertor {
-    convertCardinality(cardinality: GrpcCardinality): Cardinality {
+    static convertCardinality(cardinality: GrpcCardinality): Cardinality {
         switch (cardinality) {
             case GrpcCardinality.EXACTLY_ONE:
                 return Cardinality.ExactlyOne
@@ -16,7 +16,8 @@ export class CardinalityConvertor {
             case GrpcCardinality.ZERO_OR_ONE:
                 return Cardinality.ZeroOrOne
             default:
-                throw new Error('Unknown cardinality')
-        }
+                throw new UnexpectedError(
+                    `Unsupported cardinality '${cardinality}'.`
+                )        }
     }
 }

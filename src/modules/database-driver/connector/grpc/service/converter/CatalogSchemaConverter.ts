@@ -55,12 +55,20 @@ import {
     AttributeInheritanceBehavior
 } from '@/modules/database-driver/request-response/schema/AttributeInheritanceBehavior.ts'
 import { ScopesConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScopesConverter.ts'
+import {
+    CardinalityConvertor
+} from '@/modules/database-driver/connector/grpc/service/converter/CardinalityConvertor.ts'
+import {
+    ReferenceIndexTypeConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/ReferenceIndexTypeConverter.ts'
+import {
+    EntitySchemaConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/EntitySchemaConverter.ts'
 
 
 export class CatalogSchemaConverter {
 
-    // todo pfi: remove constructor
-    constructor(evitaValueConverter: EvitaValueConverter, scopesConverter: ScopesConverter) {
+    constructor() {
     }
 
     convert(
@@ -198,7 +206,7 @@ export class CatalogSchemaConverter {
             entitySchema.withPrice,
             entitySchema.indexedPricePlaces,
             CatalogSchemaConverter.convertLocales(entitySchema.locales),
-            CatalogSchemaConverter.convertCurrency(entitySchema.currencies),
+            CatalogSchemaConverter.toCurrencyArray(entitySchema.currencies),
             CatalogSchemaConverter.convertEvolutionMode(entitySchema.evolutionMode),
             this.convertEntityAttributeSchemas(entitySchema.attributes),
             this.convertSortableAttributeCompoundSchemas(
@@ -217,27 +225,13 @@ export class CatalogSchemaConverter {
             MapUtil.getNamingMap(sortableAttributeCompoundSchema.nameVariant),
             sortableAttributeCompoundSchema.description,
             sortableAttributeCompoundSchema.deprecationNotice,
-            this.convertAttributeElements(
+            EntitySchemaConverter.toAttributeElement(
                 sortableAttributeCompoundSchema.attributeElements
             )
         )
     }
 
-    private convertAttributeElements(
-        attributeElements: GrpcAttributeElement[]
-    ): AttributeElement[] {
-        return attributeElements.map((it) => this.convertAttributeElement(it))
-    }
 
-    private convertAttributeElement(
-        attributeElement: GrpcAttributeElement
-    ): AttributeElement {
-        return new AttributeElement(
-            attributeElement.attributeName,
-            this.convertOrderBehaviour(attributeElement.behaviour),
-            this.convertOrderDirection(attributeElement.direction)
-        )
-    }
 
     private convertReferenceSchemas(referenceSchemas: {
         [key: string]: GrpcReferenceSchema
@@ -269,7 +263,7 @@ export class CatalogSchemaConverter {
         return entityAttributesSchemas
     }
 
-    private convertAttributeInheritanceBehavior(attributeInheritanceBehavior: GrpcAttributeInheritanceBehavior) {
+    static convertAttributeInheritanceBehavior(attributeInheritanceBehavior: GrpcAttributeInheritanceBehavior) {
         if(attributeInheritanceBehavior === GrpcAttributeInheritanceBehavior.INHERIT_ALL_EXCEPT)
             return AttributeInheritanceBehavior.InheritAllExcept
         else if(attributeInheritanceBehavior === GrpcAttributeInheritanceBehavior.INHERIT_ONLY_SPECIFIED)
@@ -293,7 +287,7 @@ export class CatalogSchemaConverter {
                 referenceSchema.groupType,
                 referenceSchema.referencedGroupTypeManaged,
                 MapUtil.getNamingMap(referenceSchema.groupTypeNameVariant),
-                this.convertCardinality(referenceSchema.cardinality),
+                CardinalityConvertor.convertCardinality(referenceSchema.cardinality),
                 this.convertAttributeSchemas(referenceSchema.attributes),
                 this.convertSortableAttributeCompoundSchemas(
                     referenceSchema.sortableAttributeCompounds
@@ -306,7 +300,7 @@ export class CatalogSchemaConverter {
                 referenceSchema.cardinalityInherited,
                 referenceSchema.facetedInherited,
                 referenceSchema.indexedInherited,
-                this.convertAttributeInheritanceBehavior(referenceSchema.attributeInheritanceBehavior),
+                CatalogSchemaConverter.convertAttributeInheritanceBehavior(referenceSchema.attributeInheritanceBehavior),
                 referenceSchema.attributeInheritanceFilter
             )
         } else {
@@ -321,7 +315,7 @@ export class CatalogSchemaConverter {
                 referenceSchema.groupType,
                 referenceSchema.referencedGroupTypeManaged,
                 MapUtil.getNamingMap(referenceSchema.groupTypeNameVariant),
-                this.convertCardinality(referenceSchema.cardinality),
+                CardinalityConvertor.convertCardinality(referenceSchema.cardinality),
                 this.convertAttributeSchemas(referenceSchema.attributes),
                 this.convertSortableAttributeCompoundSchemas(
                     referenceSchema.sortableAttributeCompounds
@@ -344,19 +338,8 @@ export class CatalogSchemaConverter {
     private convertScopedIndexType(scopedIndexType: GrpcScopedReferenceIndexType): ScopedReferenceIndexType {
         return new ScopedReferenceIndexType(
             ScopesConverter.convertEntityScope(scopedIndexType.scope),
-            this.convertReferenceIndexType(scopedIndexType.indexType)
+            ReferenceIndexTypeConverter.convertReferenceIndexType(scopedIndexType.indexType)
         )
-    }
-
-    private convertReferenceIndexType(indexType: GrpcReferenceIndexType): ReferenceIndexType {
-        switch (indexType) {
-            case GrpcReferenceIndexType.REFERENCE_INDEX_TYPE_NONE:
-                return ReferenceIndexType.ReferenceIndexTypeNone
-            case GrpcReferenceIndexType.REFERENCE_INDEX_TYPE_FOR_FILTERING:
-                return ReferenceIndexType.ReferenceIndexTypeForFiltering
-            case GrpcReferenceIndexType.REFERENCE_INDEX_TYPE_FOR_FILTERING_AND_PARTITIONING:
-                return ReferenceIndexType.ReferenceIndexTypeForFilteringAndPartitioning
-        }
     }
 
     private convertAttributeSchemas(attributeSchemas: {
@@ -406,9 +389,13 @@ export class CatalogSchemaConverter {
     static convertLocales(locales: GrpcLocale[]): Locale[] {
         const convertedLocales: Locale[] = []
         for (const locale of locales) {
-            convertedLocales.push(new Locale(locale.languageTag))
+            convertedLocales.push(CatalogSchemaConverter.convertLocale(locale))
         }
         return convertedLocales
+    }
+
+    static convertLocale(locale: GrpcLocale): Locale {
+        return new Locale(locale.languageTag)
     }
 
     private convertSortableAttributeCompoundSchemas(sortableAttributeCompoundSchemas: {
@@ -427,12 +414,16 @@ export class CatalogSchemaConverter {
         return sortableAttributeSchemas
     }
 
-    static convertCurrency(currencies: GrpcCurrency[]): Currency[] {
+    static toCurrencyArray(currencies: GrpcCurrency[]): Currency[] {
         const convertedCurrencies: Currency[] = []
         for (const currency of currencies) {
-            convertedCurrencies.push(new Currency(currency.code))
+            convertedCurrencies.push(CatalogSchemaConverter.toCurrency(currency))
         }
         return convertedCurrencies
+    }
+
+    static toCurrency(currency: GrpcCurrency): Currency {
+        return new Currency(currency.code)
     }
 
     static convertEvolutionMode(
@@ -476,50 +467,6 @@ export class CatalogSchemaConverter {
         return newEvolutionModes
     }
 
-    private convertOrderBehaviour(
-        orderBehaviour: GrpcOrderBehaviour
-    ): OrderBehaviour {
-        switch (orderBehaviour) {
-            case GrpcOrderBehaviour.NULLS_FIRST:
-                return OrderBehaviour.NullsFirst
-            case GrpcOrderBehaviour.NULLS_LAST:
-                return OrderBehaviour.NullsLast
-            default:
-                throw new UnexpectedError(
-                    `Unsupported order behaviour '${orderBehaviour}'.`
-                )
-        }
-    }
 
-    private convertCardinality(cardinality: GrpcCardinality): Cardinality {
-        switch (cardinality) {
-            case GrpcCardinality.EXACTLY_ONE:
-                return Cardinality.ExactlyOne
-            case GrpcCardinality.ONE_OR_MORE:
-                return Cardinality.OneOrMore
-            case GrpcCardinality.ZERO_OR_MORE:
-                return Cardinality.ZeroOrMore
-            case GrpcCardinality.ZERO_OR_ONE:
-                return Cardinality.ZeroOrOne
-            default:
-                throw new UnexpectedError(
-                    `Unsupported cardinality '${cardinality}'.`
-                )
-        }
-    }
 
-    private convertOrderDirection(
-        orderDirection: GrpcOrderDirection
-    ): OrderDirection {
-        switch (orderDirection) {
-            case GrpcOrderDirection.ASC:
-                return OrderDirection.Desc
-            case GrpcOrderDirection.DESC:
-                return OrderDirection.Desc
-            default:
-                throw new UnexpectedError(
-                    `Unsupported order direction '${orderDirection}'.`
-                )
-        }
-    }
 }
