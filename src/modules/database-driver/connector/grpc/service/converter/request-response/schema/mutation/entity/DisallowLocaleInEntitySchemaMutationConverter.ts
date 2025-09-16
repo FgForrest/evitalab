@@ -10,7 +10,6 @@ import {
 import {
     DisallowLocaleInEntitySchemaMutation
 } from '@/modules/database-driver/request-response/schema/mutation/entity/DisallowLocaleInEntitySchemaMutation.ts'
-import Immutable from 'immutable'
 
 export class DisallowLocaleInEntitySchemaMutationConverter implements SchemaMutationConverter<DisallowLocaleInEntitySchemaMutation, GrpcDisallowLocaleInEntitySchemaMutation> {
 

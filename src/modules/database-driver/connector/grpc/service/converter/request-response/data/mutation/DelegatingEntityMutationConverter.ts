@@ -66,8 +66,9 @@ export class DelegatingEntityMutationConverter {
 
     private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>(
         [
-            EntityUpsertMutationConverter,
-            EntityRemoveMutationConverter
+            //todo pfi
+            // EntityUpsertMutationConverter,
+            // EntityRemoveMutationConverter
         ].map(converter => [getKeyFromConverterName(converter), converter])
     );
 

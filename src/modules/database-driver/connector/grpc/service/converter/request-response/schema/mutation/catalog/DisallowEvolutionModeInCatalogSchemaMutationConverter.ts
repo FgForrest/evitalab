@@ -10,7 +10,6 @@ import type {
 import {
     CatalogEvolutionModeConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogEvolutionModeConverter.ts'
-import Immutable from 'immutable'
 
 export class DisallowEvolutionModeInCatalogSchemaMutationConverter implements SchemaMutationConverter<DisallowEvolutionModeInCatalogSchemaMutation, GrpcDisallowEvolutionModeInCatalogSchemaMutation> {
 

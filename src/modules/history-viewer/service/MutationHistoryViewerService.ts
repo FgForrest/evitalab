@@ -1,9 +1,8 @@
 import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
-import type {
-    GetMutationsHistoryResponse
-} from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaSessionAPI_pb.ts'
+import type { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
+import { List as ImmutableList } from 'immutable'
 
 export const historyViewerServiceInjectionKey: InjectionKey<MutationHistoryViewerService> = Symbol('mutationHistoryViewerService')
 
@@ -19,8 +18,8 @@ export class MutationHistoryViewerService {
     }
 
 
-    async getMutationHistory(catalogName: string): Promise<GetMutationsHistoryResponse> {
-        return await this.evitaClient.queryCatalog(
+    getMutationHistory(catalogName: string): Promise<ImmutableList<ChangeCatalogCapture>> {
+        return this.evitaClient.queryCatalog(
             catalogName,
             async session => await session.getMutationHistory()
         )

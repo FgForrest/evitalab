@@ -1,4 +1,4 @@
-import Immutable, { List as ImmutableList } from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import {
     AbstractModifyReferenceDataSchemaMutation
@@ -7,8 +7,8 @@ import {
 export class SetReferenceSchemaFacetedMutation extends AbstractModifyReferenceDataSchemaMutation {
     readonly facetedInScopes: ImmutableList<EntityScope>
 
-    constructor(name: string, facetedInScopes: Immutable.List<EntityScope>|undefined) {
+    constructor(name: string, facetedInScopes: ImmutableList<EntityScope>|undefined) {
         super(name)
-        this.facetedInScopes = Immutable.List(facetedInScopes ? EntityScope.DefaultScopes : EntityScope.NoScope)
+        this.facetedInScopes = ImmutableList(facetedInScopes ? EntityScope.DefaultScopes : EntityScope.NoScope)
     }
 }

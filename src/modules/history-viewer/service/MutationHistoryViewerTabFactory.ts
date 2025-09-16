@@ -4,9 +4,14 @@ import { Connection } from '@/modules/connection/model/Connection'
 import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
 import { mandatoryInject } from '@/utils/reactivity'
 import { i18n } from '@/vue-plugins/i18n'
-import  { MutationHistoryViewerTabDefinition } from '@/modules/history-viewer/model/MutationHistoryViewerTabDefinition.ts'
+import {
+    MutationHistoryViewerTabDefinition
+} from '@/modules/history-viewer/model/MutationHistoryViewerTabDefinition.ts'
 import { MutationHistoryViewerTabParams } from '@/modules/history-viewer/model/MutationHistoryViewerTabParams.ts'
-import type { MutationHistoryViewerTabParamsDto } from '@/modules/history-viewer/model/MutationHistoryViewerTabParamsDto.ts'
+import type {
+    MutationHistoryViewerTabParamsDto
+} from '@/modules/history-viewer/model/MutationHistoryViewerTabParamsDto.ts'
+import { MutationHistoryDataPointer } from '@/modules/history-viewer/model/MutationHistoryDataPointer.ts'
 
 export const mutationHistoryViewerTabFactoryInjectionKey: InjectionKey<MutationHistoryViewerTabFactory> = Symbol('mutationHistoryViewerTabFactory')
 
@@ -21,7 +26,12 @@ export class MutationHistoryViewerTabFactory {
         const connection: Connection = this.connectionService.getConnection()
         return new MutationHistoryViewerTabDefinition(
             this.constructTitle(),
-            new MutationHistoryViewerTabParams(connection, catalogName)
+            new MutationHistoryViewerTabParams(
+                new MutationHistoryDataPointer(
+                    connection,
+                    catalogName
+                )
+            )
         )
     }
 
@@ -40,12 +50,14 @@ export class MutationHistoryViewerTabFactory {
     private restoreTabParamsFromSerializable(json: TabParamsDto): MutationHistoryViewerTabParams {
         const dto: MutationHistoryViewerTabParamsDto = json as MutationHistoryViewerTabParamsDto
         return new MutationHistoryViewerTabParams(
-            this.connectionService.getConnection(dto.connectionId),
-            dto.catalogName
+            new MutationHistoryDataPointer(
+                this.connectionService.getConnection(dto.connectionId),
+                dto.catalogName
+            )
         )
     }
 }
 
-export const useHistoryViewerTabFactory = ():MutationHistoryViewerTabFactory => {
+export const useHistoryViewerTabFactory = (): MutationHistoryViewerTabFactory => {
     return mandatoryInject(mutationHistoryViewerTabFactoryInjectionKey) as MutationHistoryViewerTabFactory
 }

@@ -9,7 +9,7 @@ import type {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcAttributeSchemaMutations_pb.ts'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 
 export class SetAttributeSchemaFilterableMutationConverter implements SchemaMutationConverter<SetAttributeSchemaFilterableMutation, GrpcSetAttributeSchemaFilterableMutation> {
 
@@ -19,7 +19,7 @@ export class SetAttributeSchemaFilterableMutationConverter implements SchemaMuta
 
         return new SetAttributeSchemaFilterableMutation(
             mutation.name,
-            Immutable.List(filterableInScopes)
+            ImmutableList(filterableInScopes)
         )
     }
 }

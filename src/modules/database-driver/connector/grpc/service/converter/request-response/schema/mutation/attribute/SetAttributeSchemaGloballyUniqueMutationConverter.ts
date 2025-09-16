@@ -13,7 +13,7 @@ import {
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { ScopesConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScopesConverter.ts'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 
 export class SetAttributeSchemaGloballyUniqueMutationConverter implements SchemaMutationConverter<SetAttributeSchemaGloballyUniqueMutation, GrpcSetAttributeSchemaGloballyUniqueMutation> {
 
@@ -24,7 +24,7 @@ export class SetAttributeSchemaGloballyUniqueMutationConverter implements Schema
 
         return new SetAttributeSchemaGloballyUniqueMutation(
             mutation.name,
-            Immutable.List(uniqueGloballyInScopes)
+            ImmutableList(uniqueGloballyInScopes)
         )
     }
 }

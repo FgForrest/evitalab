@@ -8,7 +8,7 @@ import { EntityConverter } from '@/modules/database-driver/connector/grpc/servic
 import type {
     SchemaMutationConverter
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import type {
     SortableAttributeCompoundSchemaMutation
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/SortableAttributeCompoundSchemaMutation.ts'
@@ -20,7 +20,7 @@ export class SetSortableAttributeCompoundIndexedMutationConverter implements Sch
 
         return new SetSortableAttributeCompoundIndexedMutation(
             mutation.name,
-            Immutable.List(indexedInScopes)
+            ImmutableList(indexedInScopes)
         )
     }
 }

@@ -9,7 +9,7 @@ import type {
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 
 export class SetReferenceSchemaFacetedMutationConverter implements SchemaMutationConverter<SetReferenceSchemaFacetedMutation, GrpcSetReferenceSchemaFacetedMutation> {
 
@@ -19,7 +19,7 @@ export class SetReferenceSchemaFacetedMutationConverter implements SchemaMutatio
 
         return new SetReferenceSchemaFacetedMutation(
             mutation.name,
-            mutation.inherited ? undefined : Immutable.List(facetedInScopes)
+            mutation.inherited ? undefined : ImmutableList(facetedInScopes)
         )
     }
 }

@@ -7,7 +7,7 @@ import {
 import type {
     GrpcModifyEntitySchemaMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcCatalogSchemaMutations_pb.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import {
     DelegatingEntitySchemaMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/DelegatingEntitySchemaMutationConverter.ts'
@@ -19,7 +19,7 @@ export class ModifyEntitySchemaMutationConverter implements SchemaMutationConver
 
         return new ModifyEntitySchemaMutation(
             mutation.entityType,
-            Immutable.List(entitySchemaMutations)
+            ImmutableList(entitySchemaMutations)
         )
     }
 }

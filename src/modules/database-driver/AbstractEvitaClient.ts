@@ -1,15 +1,19 @@
-import { createClient } from '@connectrpc/connect'
 import type { Client, Transport } from '@connectrpc/connect'
+import { createClient } from '@connectrpc/connect'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
 import {
     CatalogSchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter'
 import { Connection } from '@/modules/connection/model/Connection'
 import { createGrpcWebTransport } from '@connectrpc/connect-web'
-import { CatalogStatisticsConverter } from '@/modules/database-driver/connector/grpc/service/converter/CatalogStatisticsConverter'
+import {
+    CatalogStatisticsConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/CatalogStatisticsConverter'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter'
 import { ExtraResultConverter } from '@/modules/database-driver/connector/grpc/service/converter/ExtraResultConverter'
-import { EvitaResponseConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaResponseConverter'
+import {
+    EvitaResponseConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/EvitaResponseConverter'
 import { ErrorTransformer } from '@/modules/database-driver/exception/ErrorTransformer'
 import { ServerStatusConverter } from '@/modules/database-driver/connector/grpc/service/converter/ServerStatusConverter'
 import {
@@ -34,8 +38,8 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/MutationProgressConverter.ts'
 import { ScopesConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScopesConverter.ts'
 import {
-    AttributeUniquenessTypeConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/AttributeUniquenessTypeConverter.ts'
+    MutationHistoryConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/MutationHistoryConverter.ts'
 
 
 export type EvitaServiceClient = Client<typeof EvitaService>
@@ -77,6 +81,7 @@ export abstract class AbstractEvitaClient {
     private _taskStateConverter?: TaskStateConverter
     private _taskStatusConverter?: TaskStatusConverter
     private _trafficRecordingConverter?: TrafficRecordingConverter
+    private _mutationHistoryConverter?: MutationHistoryConverter
 
     protected constructor(evitaLabConfig: EvitaLabConfig,
                           connectionService: ConnectionService) {
@@ -226,6 +231,13 @@ export abstract class AbstractEvitaClient {
             this._trafficRecordingConverter = new TrafficRecordingConverter()
         }
         return this._trafficRecordingConverter
+    }
+
+    protected get mutationHistoryConverter(): MutationHistoryConverter {
+        if (this._mutationHistoryConverter == undefined) {
+            this._mutationHistoryConverter = new MutationHistoryConverter()
+        }
+        return this._mutationHistoryConverter
     }
 
     protected get mutationProgressConverter(): MutationProgressConverter {

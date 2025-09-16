@@ -8,7 +8,7 @@ import type {
     GrpcSetEntitySchemaWithPriceMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchemaMutations_pb.ts'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 
 export class SetEntitySchemaWithPriceMutationConverter implements SchemaMutationConverter<SetEntitySchemaWithPriceMutation, GrpcSetEntitySchemaWithPriceMutation> {
 
@@ -17,7 +17,7 @@ export class SetEntitySchemaWithPriceMutationConverter implements SchemaMutation
 
         return new SetEntitySchemaWithPriceMutation(
             mutation.withPrice,
-            Immutable.List(indexedInScopes),
+            ImmutableList(indexedInScopes),
             mutation.indexedPricePlaces
         )
     }

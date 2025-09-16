@@ -1,5 +1,5 @@
 export enum CaptureArea {
     Data = 'data',
-    Schema = 'shchema',
+    Schema = 'schema',
     Infrastructure = 'infrastructure'
 }

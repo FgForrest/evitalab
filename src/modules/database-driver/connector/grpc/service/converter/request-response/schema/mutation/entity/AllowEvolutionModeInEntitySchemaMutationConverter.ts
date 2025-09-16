@@ -7,7 +7,7 @@ import type {
 import {
     CatalogSchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import {
     AllowEvolutionModeInEntitySchemaMutation
 } from '@/modules/database-driver/request-response/schema/mutation/entity/AllowEvolutionModeInEntitySchemaMutation.ts'
@@ -16,7 +16,7 @@ export class AllowEvolutionModeInEntitySchemaMutationConverter implements Schema
 
     convert(mutation: GrpcAllowEvolutionModeInEntitySchemaMutation): AllowEvolutionModeInEntitySchemaMutation {
         return new AllowEvolutionModeInEntitySchemaMutation(
-            Immutable.List(CatalogSchemaConverter.convertEvolutionMode(mutation.evolutionModes))
+            ImmutableList(CatalogSchemaConverter.convertEvolutionMode(mutation.evolutionModes))
         )
     }
 }

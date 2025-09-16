@@ -21,7 +21,7 @@ import {
 } from '@/modules/database-driver/request-response/schema/mutation/attribute/ScopedGlobalAttributeUniquenessType.ts'
 import { ScalarConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScalarConverter.ts'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { ScopesConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScopesConverter.ts'
 
 export class CreateGlobalAttributeSchemaMutationConverter implements SchemaMutationConverter<CreateGlobalAttributeSchemaMutation, GrpcCreateGlobalAttributeSchemaMutation> {
@@ -49,10 +49,10 @@ export class CreateGlobalAttributeSchemaMutationConverter implements SchemaMutat
             mutation.name,
             mutation.description,
             mutation.deprecationNotice,
-            Immutable.List(uniqueInScopes),
-            Immutable.List(uniqueGloballyInScopes),
-            Immutable.List(filterableInScopes),
-            Immutable.List(sortableInScopes),
+            ImmutableList(uniqueInScopes),
+            ImmutableList(uniqueGloballyInScopes),
+            ImmutableList(filterableInScopes),
+            ImmutableList(sortableInScopes),
             mutation.localized,
             mutation.nullable,
             mutation.representative,

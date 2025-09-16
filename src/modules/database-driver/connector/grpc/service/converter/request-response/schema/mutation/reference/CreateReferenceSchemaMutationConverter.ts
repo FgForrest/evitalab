@@ -13,7 +13,7 @@ import {
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { ReferenceIndexType } from '@/modules/database-driver/request-response/schema/ReferenceIndexType.ts'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import {
     CardinalityConvertor
 } from '@/modules/database-driver/connector/grpc/service/converter/CardinalityConvertor.ts'
@@ -37,8 +37,8 @@ export class CreateReferenceSchemaMutationConverter implements SchemaMutationCon
             mutation.referencedEntityTypeManaged,
             mutation.referencedGroupType,
             mutation.referencedGroupTypeManaged,
-            Immutable.List(indexedInScopes),
-            Immutable.List(facetedInScopes)
+            ImmutableList(indexedInScopes),
+            ImmutableList(facetedInScopes)
         )
     }
 }

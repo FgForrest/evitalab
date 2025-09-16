@@ -8,7 +8,7 @@ import { EntityConverter } from '@/modules/database-driver/connector/grpc/servic
 import type {
     GrpcSetEntitySchemaWithHierarchyMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchemaMutations_pb.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 
 export class SetEntitySchemaWithHierarchyMutationConverter implements SchemaMutationConverter<SetEntitySchemaWithHierarchyMutation, GrpcSetEntitySchemaWithHierarchyMutation> {
 
@@ -17,7 +17,7 @@ export class SetEntitySchemaWithHierarchyMutationConverter implements SchemaMuta
 
         return new SetEntitySchemaWithHierarchyMutation(
             mutation.withHierarchy,
-            Immutable.List(indexedInScopes)
+            ImmutableList(indexedInScopes)
         )
     }
 }

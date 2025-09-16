@@ -5,26 +5,25 @@
  */
 
 import VDateTimeInput from '@/modules/base/component/VDateTimeInput.vue'
-import { DateTime } from 'luxon'
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Uuid } from '@/modules/database-driver/data-type/Uuid'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
-import { List as ImmutableList } from 'immutable'
 
 import VLabelSelect from '@/modules/mutationHistory-viewer/components/VLabelSelect.vue'
-import { parseHumanDurationToMs } from '@/utils/duration'
-import { parseHumanByteSizeToNumber } from '@/utils/number'
-import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
-import { useMutationHistoryViewerService } from '@/modules/history-viewer/service/MutationHistoryViewerService.ts'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import {
+    MutationHistoryViewerService,
+    useMutationHistoryViewerService
+} from '@/modules/history-viewer/service/MutationHistoryViewerService.ts'
+import { MutationHistoryCriteria } from '@/modules/history-viewer/model/MutationHistoryCriteria.ts'
+import type { MutationHistoryDataPointer } from '@/modules/history-viewer/model/MutationHistoryDataPointer.ts'
+import { UserMutationType } from '@/modules/history-viewer/model/UserMutationHistoryType.ts'
 
 const mutationHistoryViewerService: MutationHistoryViewerService = useMutationHistoryViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const userMutationHistoryRecordTypeItems: any[] = Object.values(UserMutationHistoryRecordType).map(type => {
+const userMutationHistoryRecordTypeItems: any[] = Object.values(UserMutationType).map(type => {
     return {
         value: type,
         title: t(`mutationHistoryViewer.recordHistory.filter.form.types.type.${type}`)
@@ -32,21 +31,16 @@ const userMutationHistoryRecordTypeItems: any[] = Object.values(UserMutationHist
 })
 
 const props = defineProps<{
-    modelValue: MutationHistoryRecordHistoryCriteria
-    dataPointer: MutationHistoryRecordHistoryDataPointer
+    modelValue: MutationHistoryCriteria
+    dataPointer: MutationHistoryDataPointer
 }>()
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: MutationHistoryRecordHistoryCriteria): void,
+    (e: 'update:modelValue', value: MutationHistoryCriteria): void,
     (e: 'apply'): void
 }>()
 
-const criteria = ref<MutationHistoryRecordHistoryCriteria>(new MutationHistoryRecordHistoryCriteria(
-    props.modelValue.since,
-    props.modelValue.types,
-    props.modelValue.sessionId,
-    props.modelValue.longerThanInHumanFormat,
-    props.modelValue.fetchingMoreBytesThanInHumanFormat,
-    props.modelValue.labels
+const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
+
 ))
 const criteriaChanged = ref<boolean>(false)
 watch(criteria.value, (newValue) => {
@@ -57,140 +51,140 @@ watch(criteria.value, (newValue) => {
 const form = ref<HTMLFormElement | null>(null)
 const formValidationState = ref<boolean | null>(null)
 
-const since = ref<DateTime | undefined>(criteria.value.since?.toDateTime())
-watch(since, async (newValue) => {
-    if (await assertFormValidated()) {
-        if (newValue == undefined) {
-            criteria.value.since = undefined
-        } else {
-            criteria.value.since = OffsetDateTime.fromDateTime(newValue)
-        }
-    }
-})
+// const since = ref<DateTime | undefined>(criteria.value.since?.toDateTime())
+// watch(since, async (newValue) => {
+//     if (await assertFormValidated()) {
+//         if (newValue == undefined) {
+//             criteria.value.since = undefined
+//         } else {
+//             criteria.value.since = OffsetDateTime.fromDateTime(newValue)
+//         }
+//     }
+// })
 
-const types = ref<UserMutationHistoryRecordType[]>(
-    criteria.value.types != undefined
-        ? criteria.value.types
-        : []
-)
-watch(types, async (newValue) => {
-    if (await assertFormValidated()) {
-        criteria.value.types = newValue
-    }
-})
+// const types = ref<UserMutationHistoryRecordType[]>(
+//     criteria.value.types != undefined
+//         ? criteria.value.types
+//         : []
+// )
+// watch(types, async (newValue) => {
+//     if (await assertFormValidated()) {
+//         criteria.value.types = newValue
+//     }
+// })
 
-const sessionId = ref<string>(criteria.value.sessionId?.toString() || '')
-watch(sessionId, async (newValue) => {
-    if (await assertFormValidated()) {
-        if (newValue == undefined || newValue.trim().length === 0) {
-            criteria.value.sessionId = undefined
-        } else {
-            criteria.value.sessionId = Uuid.fromCode(newValue)
-        }
-    }
-})
-const sessionIdRules = [
-    (value: string): any => {
-        if (value == undefined || value === '') {
-            return true
-        }
-        const uuidPattern: RegExp = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/
-        if (!uuidPattern.exec(value)) {
-            return t('mutationHistoryViewer.recordHistory.filter.form.sessionId.validations.notUuid')
-        }
-        return true
-    }
-]
-
-const longerThan = ref<string | undefined>(criteria.value.longerThanInHumanFormat || '')
-const longerThanRules = [
-    (value: string): any => {
-        if (value == undefined || value === '') {
-            return true
-        }
-        let duration: bigint
-        try {
-            duration = parseHumanDurationToMs(value.trim())
-        } catch (e) {
-            return t('mutationHistoryViewer.recordHistory.filter.form.longerThan.validations.notNumber')
-        }
-        if (duration < 0 || duration > Number.MAX_SAFE_INTEGER) {
-            return t('mutationHistoryViewer.recordHistory.filter.form.longerThan.validations.outOfRange')
-        }
-        return true
-    }
-]
-watch(longerThan, async (newValue) => {
-    if (await assertFormValidated()) {
-        if (newValue == undefined || newValue.trim().length === 0) {
-            criteria.value.longerThanInHumanFormat = undefined
-        } else {
-            criteria.value.longerThanInHumanFormat = newValue.trim()
-        }
-    }
-})
-
-const fetchingMoreBytesThan = ref<string>(criteria.value.fetchingMoreBytesThanInHumanFormat || '')
-const fetchingMoreBytesThanRules = [
-    (value: string): any => {
-        if (value == undefined || value === '') {
-            return true
-        }
-        let number: number
-        try {
-            number = parseHumanByteSizeToNumber(value.trim())[0]
-        } catch (e) {
-            return t('mutationHistoryViewer.recordHistory.filter.form.fetchingMoreBytesThan.validations.notByteSize')
-        }
-        if (number < 0 || number > Number.MAX_SAFE_INTEGER) {
-            return t('mutationHistoryViewer.recordHistory.filter.form.fetchingMoreBytesThan.validations.outOfRange')
-        }
-        return true
-    }
-]
-watch(fetchingMoreBytesThan, async (newValue) => {
-    if (await assertFormValidated()) {
-        if (newValue == undefined || newValue.trim().length === 0) {
-            criteria.value.fetchingMoreBytesThanInHumanFormat = undefined
-        } else {
-            criteria.value.fetchingMoreBytesThanInHumanFormat = newValue.trim()
-        }
-    }
-})
-
-const labels = ref<Label[]>(criteria.value.labels || [])
-watch(labels, async (newValue) => {
-    if (await assertFormValidated()) {
-        criteria.value.labels = newValue
-    }
-})
-
-async function loadLabelNames(nameStartsWith: string): Promise<ImmutableList<string>> {
-    return mutationHistoryViewerService.getLabelNames(
-        props.dataPointer.catalogName,
-        nameStartsWith,
-        10
-    )
-}
-
-async function loadLabelValues(labelName: string, valueStartsWith: string): Promise<ImmutableList<string>> {
-    return mutationHistoryViewerService.getLabelValues(
-        props.dataPointer.catalogName,
-        labelName,
-        valueStartsWith,
-        10
-    )
-}
-
-async function assertFormValidated(): Promise<boolean> {
-    if (form.value == undefined) {
-        throw new UnexpectedError('Missing form reference.')
-    }
-
-    //@ts-ignore
-    const { valid }: any = await form.value.validate()
-    return valid
-}
+// const sessionId = ref<string>(criteria.value.sessionId?.toString() || '')
+// watch(sessionId, async (newValue) => {
+//     if (await assertFormValidated()) {
+//         if (newValue == undefined || newValue.trim().length === 0) {
+//             criteria.value.sessionId = undefined
+//         } else {
+//             criteria.value.sessionId = Uuid.fromCode(newValue)
+//         }
+//     }
+// })
+// const sessionIdRules = [
+//     (value: string): any => {
+//         if (value == undefined || value === '') {
+//             return true
+//         }
+//         const uuidPattern: RegExp = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/
+//         if (!uuidPattern.exec(value)) {
+//             return t('mutationHistoryViewer.recordHistory.filter.form.sessionId.validations.notUuid')
+//         }
+//         return true
+//     }
+// ]
+//
+// const longerThan = ref<string | undefined>(criteria.value.longerThanInHumanFormat || '')
+// const longerThanRules = [
+//     (value: string): any => {
+//         if (value == undefined || value === '') {
+//             return true
+//         }
+//         let duration: bigint
+//         try {
+//             duration = parseHumanDurationToMs(value.trim())
+//         } catch (e) {
+//             return t('mutationHistoryViewer.recordHistory.filter.form.longerThan.validations.notNumber')
+//         }
+//         if (duration < 0 || duration > Number.MAX_SAFE_INTEGER) {
+//             return t('mutationHistoryViewer.recordHistory.filter.form.longerThan.validations.outOfRange')
+//         }
+//         return true
+//     }
+// ]
+// watch(longerThan, async (newValue) => {
+//     if (await assertFormValidated()) {
+//         if (newValue == undefined || newValue.trim().length === 0) {
+//             criteria.value.longerThanInHumanFormat = undefined
+//         } else {
+//             criteria.value.longerThanInHumanFormat = newValue.trim()
+//         }
+//     }
+// })
+//
+// const fetchingMoreBytesThan = ref<string>(criteria.value.fetchingMoreBytesThanInHumanFormat || '')
+// const fetchingMoreBytesThanRules = [
+//     (value: string): any => {
+//         if (value == undefined || value === '') {
+//             return true
+//         }
+//         let number: number
+//         try {
+//             number = parseHumanByteSizeToNumber(value.trim())[0]
+//         } catch (e) {
+//             return t('mutationHistoryViewer.recordHistory.filter.form.fetchingMoreBytesThan.validations.notByteSize')
+//         }
+//         if (number < 0 || number > Number.MAX_SAFE_INTEGER) {
+//             return t('mutationHistoryViewer.recordHistory.filter.form.fetchingMoreBytesThan.validations.outOfRange')
+//         }
+//         return true
+//     }
+// ]
+// watch(fetchingMoreBytesThan, async (newValue) => {
+//     if (await assertFormValidated()) {
+//         if (newValue == undefined || newValue.trim().length === 0) {
+//             criteria.value.fetchingMoreBytesThanInHumanFormat = undefined
+//         } else {
+//             criteria.value.fetchingMoreBytesThanInHumanFormat = newValue.trim()
+//         }
+//     }
+// })
+//
+// const labels = ref<Label[]>(criteria.value.labels || [])
+// watch(labels, async (newValue) => {
+//     if (await assertFormValidated()) {
+//         criteria.value.labels = newValue
+//     }
+// })
+//
+// async function loadLabelNames(nameStartsWith: string): Promise<ImmutableList<string>> {
+//     return mutationHistoryViewerService.getLabelNames(
+//         props.dataPointer.catalogName,
+//         nameStartsWith,
+//         10
+//     )
+// }
+//
+// async function loadLabelValues(labelName: string, valueStartsWith: string): Promise<ImmutableList<string>> {
+//     return mutationHistoryViewerService.getLabelValues(
+//         props.dataPointer.catalogName,
+//         labelName,
+//         valueStartsWith,
+//         10
+//     )
+// }
+//
+// async function assertFormValidated(): Promise<boolean> {
+//     if (form.value == undefined) {
+//         throw new UnexpectedError('Missing form reference.')
+//     }
+//
+//     //@ts-ignore
+//     const { valid }: any = await form.value.validate()
+//     return valid
+// }
 
 async function applyChangedCriteria(): Promise<void> {
     //@ts-ignore

@@ -1,22 +1,23 @@
 import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
-import { Connection } from '@/modules/connection/model/Connection'
-import type { MutationHistoryViewerTabParamsDto } from '@/modules/history-viewer/model/MutationHistoryViewerTabParamsDto.ts'
+import type {
+    MutationHistoryViewerTabParamsDto
+} from '@/modules/history-viewer/model/MutationHistoryViewerTabParamsDto.ts'
+import type { MutationHistoryDataPointer } from '@/modules/history-viewer/model/MutationHistoryDataPointer.ts'
 
 export class MutationHistoryViewerTabParams implements TabParams<MutationHistoryViewerTabParamsDto> {
 
-    readonly connection: Connection
-    readonly catalogName: string
+    readonly dataPointer: MutationHistoryDataPointer
 
-    constructor(connection: Connection, catalogName: string) {
-        this.connection = connection
-        this.catalogName = catalogName
+
+    constructor(dataPointer: MutationHistoryDataPointer) {
+        this.dataPointer = dataPointer
     }
 
     toSerializable(): MutationHistoryViewerTabParamsDto {
         return {
-            connectionId: this.connection.id,
-            connectionName: this.connection.name,
-            catalogName: this.catalogName,
+            connectionId: this.dataPointer.connection.id,
+            connectionName: this.dataPointer.connection.name,
+            catalogName: this.dataPointer.catalogName,
         }
     }
 }

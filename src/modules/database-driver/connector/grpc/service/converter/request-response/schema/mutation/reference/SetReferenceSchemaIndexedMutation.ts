@@ -35,6 +35,6 @@ export class SetReferenceSchemaIndexedMutationConverter implements SchemaMutatio
             indexedInScopes = ScopedReferenceIndexType.EMPTY
         }
 
-        return new SetReferenceSchemaIndexedMutation(mutation.name, Immutable.List(indexedInScopes))
+        return new SetReferenceSchemaIndexedMutation(mutation.name, ImmutableList(indexedInScopes))
     }
 }

@@ -10,13 +10,13 @@ import type {
 import {
     CatalogEvolutionModeConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogEvolutionModeConverter.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 
 export class AllowEvolutionModeInCatalogSchemaMutationConverter implements SchemaMutationConverter<AllowEvolutionModeInCatalogSchemaMutation, GrpcAllowEvolutionModeInCatalogSchemaMutation> {
 
     convert(mutation: GrpcAllowEvolutionModeInCatalogSchemaMutation): AllowEvolutionModeInCatalogSchemaMutation {
         return new AllowEvolutionModeInCatalogSchemaMutation(
-            Immutable.List(mutation.evolutionModes.map(CatalogEvolutionModeConverter.convertCatalogEvolutionMode))
+            ImmutableList(mutation.evolutionModes.map(CatalogEvolutionModeConverter.convertCatalogEvolutionMode))
         )
     }
 }

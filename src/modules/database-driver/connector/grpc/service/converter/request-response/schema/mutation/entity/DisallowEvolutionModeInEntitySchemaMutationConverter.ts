@@ -10,7 +10,6 @@ import {
 import {
     DisallowEvolutionModeInEntitySchemaMutation
 } from '@/modules/database-driver/request-response/schema/mutation/entity/DisallowEvolutionModeInEntitySchemaMutation.ts'
-import Immutable from 'immutable'
 
 export class DisallowEvolutionModeInEntitySchemaMutationConverter implements SchemaMutationConverter<DisallowEvolutionModeInEntitySchemaMutation, GrpcDisallowEvolutionModeInEntitySchemaMutation> {
 

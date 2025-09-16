@@ -7,7 +7,6 @@ import type {
 import {
     CatalogSchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
-import Immutable from 'immutable'
 import {
     DisallowCurrencyInEntitySchemaMutation
 } from '@/modules/database-driver/request-response/schema/mutation/entity/DisallowCurrencyInEntitySchemaMutation.ts'

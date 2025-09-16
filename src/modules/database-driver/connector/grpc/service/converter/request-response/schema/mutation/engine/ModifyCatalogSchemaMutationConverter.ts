@@ -7,7 +7,7 @@ import {
 import type {
     GrpcModifyCatalogSchemaMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEngineMutation_pb.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import {
     DelegatingLocalCatalogSchemaMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/DelegatingLocalCatalogSchemaMutationConverter.ts'
@@ -20,7 +20,7 @@ export class ModifyCatalogSchemaMutationConverter implements SchemaMutationConve
         return new ModifyCatalogSchemaMutation(
             mutation.catalogName,
             undefined,
-            Immutable.List(schemaMutations)
+            ImmutableList(schemaMutations)
         )
     }
 }

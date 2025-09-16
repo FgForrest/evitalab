@@ -1,7 +1,7 @@
 import type {
     SchemaMutationConverter
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import {
     CatalogSchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
@@ -17,7 +17,7 @@ export class AllowLocaleInEntitySchemaMutationConverter implements SchemaMutatio
 
     convert(mutation: GrpcAllowLocaleInEntitySchemaMutation): AllowLocaleInEntitySchemaMutation {
         return new AllowLocaleInEntitySchemaMutation(
-            Immutable.List(CatalogSchemaConverter.convertLocales(mutation.locales))
+            ImmutableList(CatalogSchemaConverter.convertLocales(mutation.locales))
         )
     }
 }

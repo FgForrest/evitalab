@@ -13,12 +13,12 @@ import {
 } from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
 import { ScalarConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScalarConverter.ts'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
-import Immutable from 'immutable'
 import {
     AttributeUniquenessTypeConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/AttributeUniquenessTypeConverter.ts'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter.ts'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
+import { List as ImmutableList } from 'immutable'
 
 export class CreateAttributeSchemaMutationConverter implements SchemaMutationConverter<CreateAttributeSchemaMutation, GrpcCreateAttributeSchemaMutation> {
 
@@ -41,9 +41,9 @@ export class CreateAttributeSchemaMutationConverter implements SchemaMutationCon
             mutation.name,
             mutation.description,
             mutation.deprecationNotice,
-            Immutable.List(uniqueInScopes),
-            Immutable.List(filterableInScopes),
-            Immutable.List(sortableInScopes),
+            ImmutableList(uniqueInScopes),
+            ImmutableList(filterableInScopes),
+            ImmutableList(sortableInScopes),
             mutation.localized,
             mutation.nullable,
             mutation.representative,

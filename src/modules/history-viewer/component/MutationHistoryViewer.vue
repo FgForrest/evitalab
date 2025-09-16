@@ -14,11 +14,13 @@ import { onBeforeMount, ref } from 'vue'
 import { List } from 'immutable'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import type { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData.ts'
-import { MutationHistoryViewerTabDefinition } from '@/modules/history-viewer/model/MutationHistoryViewerTabDefinition.ts'
+import {
+    MutationHistoryViewerTabDefinition
+} from '@/modules/history-viewer/model/MutationHistoryViewerTabDefinition.ts'
 import type { MutationHistoryViewerTabParams } from '@/modules/history-viewer/model/MutationHistoryViewerTabParams.ts'
 import { useMutationHistoryViewerService } from '@/modules/history-viewer/service/MutationHistoryViewerService.ts'
-import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList.ts'
 import { type Toaster, useToaster } from '@/modules/notification/service/Toaster.ts'
+import { MutationHistoryCriteria } from '@/modules/history-viewer/model/MutationHistoryCriteria.ts'
 
 const keymap: Keymap = useKeymap()
 const toaster: Toaster = useToaster()
@@ -32,9 +34,9 @@ const emit = defineEmits<TabComponentEvents>()
 defineExpose<TabComponentExpose>({
     path(): SubjectPath | undefined {
         return new ConnectionSubjectPath(
-            props.params.connection,
+            props.params.dataPointer.connection,
             [
-                SubjectPathItem.plain(props.params.catalogName),
+                SubjectPathItem.plain(props.params.dataPointer.catalogName),
                 SubjectPathItem.significant(
                     MutationHistoryViewerTabDefinition.icon(),
                     t('mutationHistoryViewer.title')
@@ -45,15 +47,15 @@ defineExpose<TabComponentExpose>({
 })
 
 const title: List<string> = List.of(
-    props.params.catalogName,
+    props.params.dataPointer.catalogName,
     t('mutationHistoryViewer.title')
 )
 
 
 async function loadHistoryMutations(): Promise<boolean> {
     try {
-        console.log(`Getting data from ${props.params.catalogName} catalog`)
-        recordings.value = await mutationHistoryViewerService.getMutationHistory(props.params.catalogName)
+        console.log(`Getting data from ${props.params.dataPointer.catalogName} catalog`)
+        recordings.value = await mutationHistoryViewerService.getMutationHistory(props.params.dataPointer.catalogName)
 
         return true
     } catch (e: any) {
@@ -73,26 +75,39 @@ onBeforeMount(() => {
     emit('ready')
 })
 
+
+const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
+
+))
+
 </script>
 
 <template>
-    <div class="history-recording-viewer">
+    <div class="mutation-history-viewer">
         <VTabToolbar
             :prepend-icon="MutationHistoryViewerTabDefinition.icon()"
             :title="title"
             :extension-height="64"
         >
 
+            <template #extension>
+<!--                <MutaionHistoryFilter-->
+<!--                    v-model="criteria"-->
+<!--                    :data-pointer="params.dataPointer"-->
+<!--                    @apply="reloadHistoryList"-->
+<!--                />-->
+            </template>
+
         </VTabToolbar>
 
-        <VSheet class="history-recording-viewer__body">
+        <VSheet class="mutation-history-viewer__body">
             {{ JSON.stringify(recordings) }}
         </VSheet>
     </div>
 </template>
 
 <style lang="scss" scoped>
-.history-recording-viewer {
+.mutation-history-viewer {
     display: grid;
     grid-template-rows: 6.5rem 1fr;
 

@@ -1,8 +1,8 @@
-import  {
+import {
     type ScopedAttributeUniquenessType
 } from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
-import Immutable, { List as ImmutableList } from 'immutable'
-import  { type EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { List as ImmutableList } from 'immutable'
+import { type EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 export class CreateAttributeSchemaMutation {
     readonly name: string
@@ -19,7 +19,7 @@ export class CreateAttributeSchemaMutation {
     readonly indexedDecimalPlaces: number
 
 
-    constructor(name: string, description: string|undefined, deprecationNotice: string|undefined, uniqueInScopes: Immutable.List<ScopedAttributeUniquenessType>, filterableInScopes: Immutable.List<EntityScope>, sortableInScopes: Immutable.List<EntityScope>, localized: boolean, nullable: boolean, representative: boolean, type: any, defaultValue: any|undefined, indexedDecimalPlaces: number) {
+    constructor(name: string, description: string|undefined, deprecationNotice: string|undefined, uniqueInScopes: ImmutableList<ScopedAttributeUniquenessType>, filterableInScopes: ImmutableList<EntityScope>, sortableInScopes: ImmutableList<EntityScope>, localized: boolean, nullable: boolean, representative: boolean, type: any, defaultValue: any|undefined, indexedDecimalPlaces: number) {
         this.name = name
         this.description = description
         this.deprecationNotice = deprecationNotice

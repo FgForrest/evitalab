@@ -10,13 +10,13 @@ import type {
 import {
     CatalogSchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 
 export class AllowCurrencyInEntitySchemaMutationConverter implements SchemaMutationConverter<AllowCurrencyInEntitySchemaMutation, GrpcAllowCurrencyInEntitySchemaMutation> {
 
     convert(mutation: GrpcAllowCurrencyInEntitySchemaMutation): AllowCurrencyInEntitySchemaMutation {
         return new AllowCurrencyInEntitySchemaMutation(
-            Immutable.List(CatalogSchemaConverter.toCurrencyArray(mutation.currencies))
+            ImmutableList(CatalogSchemaConverter.toCurrencyArray(mutation.currencies))
         )
     }
 }

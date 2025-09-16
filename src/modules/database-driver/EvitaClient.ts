@@ -2,7 +2,8 @@ import { AbstractEvitaClient } from '@/modules/database-driver/AbstractEvitaClie
 import type {
     GrpcCatalogNamesResponse,
     GrpcDefineCatalogResponse,
-    GrpcEvitaSessionResponse, GrpcRegisterSystemChangeCaptureResponse
+    GrpcEvitaSessionResponse,
+    GrpcRegisterSystemChangeCaptureResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaAPI_pb'
 import { EvitaClientSession } from '@/modules/database-driver/EvitaClientSession'
 import { Code, ConnectError } from '@connectrpc/connect'
@@ -20,9 +21,6 @@ import { CatalogStatistics } from '@/modules/database-driver/request-response/Ca
 import type {
     ApplyMutationWithProgressResponse
 } from '@/modules/database-driver/request-response/schema/ApplyMutationWithProgressResponse.ts'
-import {
-    MutationProgressConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/MutationProgressConverter.ts'
 import { GrpcChangeCaptureContent } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 
 export const evitaClientInjectionKey: InjectionKey<EvitaClient> = Symbol('EvitaClient')
@@ -548,7 +546,8 @@ export class EvitaClient extends AbstractEvitaClient {
             () => this.catalogSchemaConverter,
             () => this.responseConverter,
             () => this.taskStatusConverter,
-            () => this.trafficRecordingConverter
+            () => this.trafficRecordingConverter,
+            () => this.mutationHistoryConverter
         )
     }
 

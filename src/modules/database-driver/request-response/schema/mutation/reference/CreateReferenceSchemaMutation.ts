@@ -1,6 +1,6 @@
-import  { type Cardinality } from '@/modules/database-driver/request-response/schema/Cardinality.ts'
-import Immutable, { List as ImmutableList } from 'immutable'
-import  { type EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { type Cardinality } from '@/modules/database-driver/request-response/schema/Cardinality.ts'
+import { List as ImmutableList } from 'immutable'
+import { type EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import {
     ScopedReferenceIndexType
 } from '@/modules/database-driver/request-response/schema/mutation/reference/ScopedReferenceIndexType.ts'
@@ -18,7 +18,7 @@ export class CreateReferenceSchemaMutation {
     readonly facetedInScopes: ImmutableList<EntityScope>
 
 
-    constructor(name: string, description: string|undefined, deprecationNotice: string|undefined, cardinality: Cardinality|undefined, referencedEntityType: string, referencedEntityTypeManaged: boolean, referencedGroupType: string|undefined, referencedGroupTypeManaged: boolean, indexedInScopes: Immutable.List<ScopedReferenceIndexType>, facetedInScopes: Immutable.List<EntityScope>) {
+    constructor(name: string, description: string|undefined, deprecationNotice: string|undefined, cardinality: Cardinality|undefined, referencedEntityType: string, referencedEntityTypeManaged: boolean, referencedGroupType: string|undefined, referencedGroupTypeManaged: boolean, indexedInScopes: ImmutableList<ScopedReferenceIndexType>, facetedInScopes: ImmutableList<EntityScope>) {
         this.name = name
         this.description = description
         this.deprecationNotice = deprecationNotice

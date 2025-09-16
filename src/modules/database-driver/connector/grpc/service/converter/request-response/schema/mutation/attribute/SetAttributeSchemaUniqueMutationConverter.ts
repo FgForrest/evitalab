@@ -15,7 +15,7 @@ import { EntityScope } from '@/modules/database-driver/request-response/schema/E
 import type {
     SchemaMutationConverter
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 
 export class SetAttributeSchemaUniqueMutationConverter implements SchemaMutationConverter<SetAttributeSchemaUniqueMutation, GrpcSetAttributeSchemaUniqueMutation> {
 
@@ -26,7 +26,7 @@ export class SetAttributeSchemaUniqueMutationConverter implements SchemaMutation
 
         return new SetAttributeSchemaUniqueMutation(
             mutation.name,
-            Immutable.List(uniqueInScopes)
+            ImmutableList(uniqueInScopes)
         )
     }
 }

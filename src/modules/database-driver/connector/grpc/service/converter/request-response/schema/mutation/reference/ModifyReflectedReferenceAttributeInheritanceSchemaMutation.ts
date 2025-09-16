@@ -7,7 +7,7 @@ import type {
 import type {
     GrpcModifyReflectedReferenceAttributeInheritanceSchemaMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcReferenceSchemaMutations_pb.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import {
     CatalogSchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
@@ -18,7 +18,7 @@ export class ModifyReflectedReferenceAttributeInheritanceSchemaMutationConverter
         return new ModifyReflectedReferenceAttributeInheritanceSchemaMutation(
             mutation.name,
             CatalogSchemaConverter.convertAttributeInheritanceBehavior(mutation.attributeInheritanceBehavior),
-            Immutable.List(mutation.attributeInheritanceFilter)
+            ImmutableList(mutation.attributeInheritanceFilter)
         )
     }
 }

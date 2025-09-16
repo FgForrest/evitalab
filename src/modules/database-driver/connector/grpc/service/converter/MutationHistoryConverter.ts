@@ -21,9 +21,12 @@ export class MutationHistoryConverter {
     convertGrpcMutationHistory(changeCapture: GrpcChangeCatalogCapture): ChangeCatalogCapture {
 
         // ChangeCaptureConverter.toChangeCatalogCapture() // todo pfi:
+        let mutation: Mutation|undefined // todo pfi: is possible to have it undefined?
 
-        let mutation: Mutation
-        if (changeCapture.body.case == 'schemaMutation') {
+        if (!changeCapture.body?.value?.mutation || !changeCapture.body?.value?.mutation.case) {
+            console.error(`Issue with ${changeCapture.body}`)
+            mutation = undefined;
+        } else if (changeCapture.body.case == 'schemaMutation') {
             mutation = DelegatingEntitySchemaMutationConverter.convert(changeCapture.body.value)
         } else if (changeCapture.body.case == 'entityMutation') {
             mutation = DelegatingEntityMutationConverter.convert(changeCapture.body.value)

@@ -16,7 +16,7 @@ import { EntityConverter } from '@/modules/database-driver/connector/grpc/servic
 import {
     CardinalityConvertor
 } from '@/modules/database-driver/connector/grpc/service/converter/CardinalityConvertor.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import {
     CatalogSchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
@@ -38,10 +38,10 @@ export class CreateReflectedReferenceSchemaMutationConverter implements SchemaMu
             CardinalityConvertor.convertCardinality(mutation.cardinality),
             mutation.referencedEntityType,
             mutation.reflectedReferenceName,
-            mutation.indexedInherited ? undefined : Immutable.List(indexedInScopes),
-            mutation.facetedInherited ? undefined : Immutable.List(facetedInScopes),
+            mutation.indexedInherited ? undefined : ImmutableList(indexedInScopes),
+            mutation.facetedInherited ? undefined : ImmutableList(facetedInScopes),
             CatalogSchemaConverter.convertAttributeInheritanceBehavior(mutation.attributeInheritanceBehavior),
-            Immutable.List(mutation.attributeInheritanceFilter)
+            ImmutableList(mutation.attributeInheritanceFilter)
         )
     }
 }

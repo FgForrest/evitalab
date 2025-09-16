@@ -8,7 +8,7 @@ import type {
     SchemaMutationConverter
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter.ts'
-import Immutable from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import {
     EntitySchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/EntitySchemaConverter.ts'
@@ -23,8 +23,8 @@ export class CreateSortableAttributeCompoundSchemaMutationConverter implements S
             mutation.name,
             mutation.description,
             mutation.deprecationNotice,
-            Immutable.List(indexedInScopes),
-            Immutable.List(attributeElements)
+            ImmutableList(indexedInScopes),
+            ImmutableList(attributeElements)
         )
     }
 }

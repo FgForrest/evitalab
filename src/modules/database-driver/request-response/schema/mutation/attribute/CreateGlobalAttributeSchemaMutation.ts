@@ -1,9 +1,9 @@
-import  {
+import {
     type ScopedAttributeUniquenessType
 } from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
-import Immutable, { List as ImmutableList } from 'immutable'
-import  { type EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
-import  {
+import { List as ImmutableList } from 'immutable'
+import { type EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import {
     type ScopedGlobalAttributeUniquenessType
 } from '@/modules/database-driver/request-response/schema/ScopedGlobalAttributeUniquenessType.ts'
 
@@ -23,7 +23,7 @@ export class CreateGlobalAttributeSchemaMutation {
     readonly indexedDecimalPlaces: number
 
 
-    constructor(name: string, description: string|undefined, deprecationNotice: string|undefined, uniqueInScopes: Immutable.List<ScopedAttributeUniquenessType>, uniqueGloballyInScopes: Immutable.List<ScopedGlobalAttributeUniquenessType>, filterableInScopes: Immutable.List<EntityScope>, sortableInScopes: Immutable.List<EntityScope>, localized: boolean, nullable: boolean, representative: boolean, type: any, defaultValue: any, indexedDecimalPlaces: number) {
+    constructor(name: string, description: string|undefined, deprecationNotice: string|undefined, uniqueInScopes: ImmutableList<ScopedAttributeUniquenessType>, uniqueGloballyInScopes: ImmutableList<ScopedGlobalAttributeUniquenessType>, filterableInScopes: ImmutableList<EntityScope>, sortableInScopes: ImmutableList<EntityScope>, localized: boolean, nullable: boolean, representative: boolean, type: any, defaultValue: any, indexedDecimalPlaces: number) {
         this.name = name
         this.description = description
         this.deprecationNotice = deprecationNotice
