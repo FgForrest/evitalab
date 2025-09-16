@@ -45,7 +45,7 @@ import {
 } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 import type { MutationHistoryViewerTabFactory } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
-import { HistoryViewerTabDefinition } from '@/modules/history-viewer/model/HistoryViewerTabDefinition.ts'
+import { MutationHistoryViewerTabDefinition } from '@/modules/history-viewer/model/MutationHistoryViewerTabDefinition.ts'
 
 const openedTabsStorageKey: string = 'openedTabs'
 const tabHistoryStorageKey: string = 'tabHistory'
@@ -213,7 +213,7 @@ export class WorkspaceService {
                         return this.trafficRecordingsViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
                     case TabType.TrafficRecordHistoryViewer:
                         return this.trafficRecordHistoryViewerTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
-                    case TabType.HistoryViewer:
+                    case TabType.MutationHistoryViewer:
                         return this.mutationHistoryViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
                     default:
                         throw new UnexpectedError(`Unsupported stored tab type '${storedTabObject.tabType}'.`)
@@ -262,8 +262,8 @@ export class WorkspaceService {
                     tabType = TabType.TrafficRecordingsViewer
                 } else if (tabRequest instanceof TrafficRecordHistoryViewerTabDefinition) {
                     tabType = TabType.TrafficRecordHistoryViewer
-                } else if (tabRequest instanceof HistoryViewerTabDefinition) {
-                    tabType = TabType.HistoryViewer
+                } else if (tabRequest instanceof MutationHistoryViewerTabDefinition) {
+                    tabType = TabType.MutationHistoryViewer
                 } else {
                     console.info(undefined, `Unsupported tab type '${tabRequest.constructor.name}'. Not storing for next session.`)
                     return undefined

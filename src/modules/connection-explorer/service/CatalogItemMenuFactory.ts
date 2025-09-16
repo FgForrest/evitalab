@@ -27,7 +27,7 @@ import {
 } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState.ts'
 import type { MutationHistoryViewerTabFactory } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
-import { HistoryViewerTabDefinition } from '@/modules/history-viewer/model/HistoryViewerTabDefinition.ts'
+import { MutationHistoryViewerTabDefinition } from '@/modules/history-viewer/model/MutationHistoryViewerTabDefinition.ts'
 
 export const catalogItemMenuFactoryInjectionKey: symbol = Symbol('catalogItemMenuFactoryInjectionKey')
 
@@ -53,7 +53,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         graphQLConsoleTabFactory: GraphQLConsoleTabFactory,
         schemaViewerTabFactory: SchemaViewerTabFactory,
         trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory,
-        historyViewerTabFactory: MutationHistoryViewerTabFactory
+        mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
     ) {
         super()
         this.workspaceService = workspaceService
@@ -61,7 +61,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         this.graphQLConsoleTabFactory = graphQLConsoleTabFactory
         this.schemaViewerTabFactory = schemaViewerTabFactory
         this.trafficRecordHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
-        this.mutationHistoryViewerTabFactory = historyViewerTabFactory
+        this.mutationHistoryViewerTabFactory = mutationHistoryViewerTabFactory
     }
 
     async createItems(
@@ -105,7 +105,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         this.createMenuAction( // todo pfi: update order of thi current item
             items,
             CatalogMenuItemType.MutationHistoryViewer,
-            HistoryViewerTabDefinition.icon(),
+            MutationHistoryViewerTabDefinition.icon(),
             this.getItemTitle,
             () => {
                 this.workspaceService.createTab(

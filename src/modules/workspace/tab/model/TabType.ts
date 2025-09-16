@@ -14,5 +14,5 @@ export enum TabType {
     JfrViewer = 'jfrViewer',
     TrafficRecordingsViewer = 'trafficRecordingsViewer',
     TrafficRecordHistoryViewer = 'trafficRecordHistoryViewer',
-    HistoryViewer = 'historyViewer' // todo pfi: rename HistoryViewer to mutationHistoryViewer
+    MutationHistoryViewer = 'mutationHistoryViewer'
 }

@@ -14,8 +14,8 @@ import { onBeforeMount, ref } from 'vue'
 import { List } from 'immutable'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import type { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData.ts'
-import { HistoryViewerTabDefinition } from '@/modules/history-viewer/model/HistoryViewerTabDefinition.ts'
-import type { HistoryViewerTabParams } from '@/modules/history-viewer/model/HistoryViewerTabParams.ts'
+import { MutationHistoryViewerTabDefinition } from '@/modules/history-viewer/model/MutationHistoryViewerTabDefinition.ts'
+import type { MutationHistoryViewerTabParams } from '@/modules/history-viewer/model/MutationHistoryViewerTabParams.ts'
 import { useMutationHistoryViewerService } from '@/modules/history-viewer/service/MutationHistoryViewerService.ts'
 import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList.ts'
 import { type Toaster, useToaster } from '@/modules/notification/service/Toaster.ts'
@@ -27,7 +27,7 @@ const mutationHistoryViewerService = useMutationHistoryViewerService();
 const { t } = useI18n()
 const recordings = ref<any | undefined>()
 
-const props = defineProps<TabComponentProps<HistoryViewerTabParams, VoidTabData>>()
+const props = defineProps<TabComponentProps<MutationHistoryViewerTabParams, VoidTabData>>()
 const emit = defineEmits<TabComponentEvents>()
 defineExpose<TabComponentExpose>({
     path(): SubjectPath | undefined {
@@ -36,7 +36,7 @@ defineExpose<TabComponentExpose>({
             [
                 SubjectPathItem.plain(props.params.catalogName),
                 SubjectPathItem.significant(
-                    HistoryViewerTabDefinition.icon(),
+                    MutationHistoryViewerTabDefinition.icon(),
                     t('mutationHistoryViewer.title')
                 )
             ]
@@ -78,7 +78,7 @@ onBeforeMount(() => {
 <template>
     <div class="history-recording-viewer">
         <VTabToolbar
-            :prepend-icon="HistoryViewerTabDefinition.icon()"
+            :prepend-icon="MutationHistoryViewerTabDefinition.icon()"
             :title="title"
             :extension-height="64"
         >

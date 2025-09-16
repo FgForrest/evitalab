@@ -6,7 +6,7 @@ import {
     historyViewerServiceInjectionKey
 } from '@/modules/history-viewer/service/MutationHistoryViewerService.ts'
 
-export class HistoryViewerModuleRegistrar implements ModuleRegistrar {
+export class MutationHistoryViewerModuleRegistrar implements ModuleRegistrar {
     async register(builder: ModuleContextBuilder): Promise<void> {
         const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
         // const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
@@ -14,9 +14,9 @@ export class HistoryViewerModuleRegistrar implements ModuleRegistrar {
         // const graphQLConsoleTabFactory: GraphQLConsoleTabFactory = builder.inject(graphQLConsoleTabFactoryInjectionKey)
         // const trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory = builder.inject(trafficRecordHistoryViewerTabFactoryInjectionKey)
 
-        const historyViewerService: MutationHistoryViewerService = new MutationHistoryViewerService(
+        const mutationHistoryViewerService: MutationHistoryViewerService = new MutationHistoryViewerService(
             evitaClient
         )
-        builder.provide(historyViewerServiceInjectionKey, historyViewerService)
+        builder.provide(historyViewerServiceInjectionKey, mutationHistoryViewerService)
     }
 }
