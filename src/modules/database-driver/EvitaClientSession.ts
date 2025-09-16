@@ -518,10 +518,12 @@ export class EvitaClientSession {
         this.assertActive()
         try {
             const request: GetMutationsHistoryPageRequest = {
+                page: 1,
+                pageSize: 50,
                 content: GrpcChangeCaptureContent.CHANGE_BODY,
                 criteria: [
                     {
-                        area: GrpcChangeCaptureArea.SCHEMA
+                        area: GrpcChangeCaptureArea.DATA
                     }
                 ]
             } as GetMutationsHistoryPageRequest
@@ -531,6 +533,9 @@ export class EvitaClientSession {
             console.log(response)
             const captures =  response.changeCapture.map(i => this.mutationHistoryConverterProvider()
                 .convertGrpcMutationHistory(i))
+
+            console.log(captures)
+
             return ImmutableList(captures)
 
         } catch (e) {

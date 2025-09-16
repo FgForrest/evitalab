@@ -25,7 +25,7 @@ import { MutationHistoryCriteria } from '@/modules/history-viewer/model/Mutation
 const keymap: Keymap = useKeymap()
 const toaster: Toaster = useToaster()
 
-const mutationHistoryViewerService = useMutationHistoryViewerService();
+const mutationHistoryViewerService = useMutationHistoryViewerService()
 const { t } = useI18n()
 const recordings = ref<any | undefined>()
 
@@ -91,17 +91,19 @@ const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
         >
 
             <template #extension>
-<!--                <MutaionHistoryFilter-->
-<!--                    v-model="criteria"-->
-<!--                    :data-pointer="params.dataPointer"-->
-<!--                    @apply="reloadHistoryList"-->
-<!--                />-->
+                <!--                <MutaionHistoryFilter-->
+                <!--                    v-model="criteria"-->
+                <!--                    :data-pointer="params.dataPointer"-->
+                <!--                    @apply="reloadHistoryList"-->
+                <!--                />-->
             </template>
 
         </VTabToolbar>
 
         <VSheet class="mutation-history-viewer__body">
-            {{ JSON.stringify(recordings) }}
+            <pre>
+                {{ JSON.stringify(recordings, null, 2) }}
+            </pre>
         </VSheet>
     </div>
 </template>

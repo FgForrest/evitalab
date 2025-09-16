@@ -9,6 +9,7 @@ import { AttributeSchema } from '@/modules/database-driver/request-response/sche
 import {
     GrpcAttributeInheritanceBehavior,
     GrpcAttributeSchemaType,
+    GrpcEntityExistence,
     GrpcEvolutionMode
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
@@ -59,6 +60,7 @@ import {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import { CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
 import { Operation } from '@/modules/database-driver/request-response/cdc/Operation.ts'
+import { EntityExistence } from '@/modules/database-driver/request-response/data/mutation/EntityMutation.ts'
 
 
 export class CatalogSchemaConverter {
@@ -492,4 +494,18 @@ export class CatalogSchemaConverter {
     }
 
 
+    static toEntityExistence(entityExistence: GrpcEntityExistence): EntityExistence {
+        switch (entityExistence) {
+            case GrpcEntityExistence.MAY_EXIST:
+                return EntityExistence.MayExist
+            case GrpcEntityExistence.MUST_EXIST:
+                return EntityExistence.MustExist
+            case GrpcEntityExistence.MUST_NOT_EXIST:
+                return EntityExistence.MustNotExist
+            default:
+                throw new UnexpectedError(
+                    `Unsupported cardinality '${entityExistence}'.`
+                )
+        }
+    }
 }

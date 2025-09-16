@@ -23,7 +23,7 @@ export class MutationHistoryConverter {
         // ChangeCaptureConverter.toChangeCatalogCapture() // todo pfi:
         let mutation: Mutation|undefined // todo pfi: is possible to have it undefined?
 
-        if (!changeCapture.body?.value?.mutation || !changeCapture.body?.value?.mutation.case) {
+        if (!changeCapture.body?.value?.mutation || !changeCapture.body?.value?.mutation.case) { // todo pfi: remove me?
             console.error(`Issue with ${changeCapture.body}`)
             mutation = undefined;
         } else if (changeCapture.body.case == 'schemaMutation') {

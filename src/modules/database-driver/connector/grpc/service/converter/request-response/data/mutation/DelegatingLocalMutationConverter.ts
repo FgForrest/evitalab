@@ -55,8 +55,8 @@ function getKeyFromConverterName(converter: any): string {
     return converter.name
         .replace(/Converter$/, '') // Remove 'Converter' suffix
         .replace(/([A-Z])/g, (match: string, p1: string, offset: number) =>
-            offset === 0 ? p1.toLowerCase() : p1.toLowerCase()
-        ); // Convert to camelCase
+            offset === 0 ? p1.toLowerCase() : p1
+        ); // Convert first letter to lowercase, keep others as-is
 }
 
 export class DelegatingLocalMutationConverter {
@@ -88,12 +88,13 @@ export class DelegatingLocalMutationConverter {
             throw new UnexpectedError('Unknown mutation type: ' + mutation?.mutation.case)
         }
 
-        const conversionDescriptor = this.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
-        if (!conversionDescriptor) {
+        const ConverterClass = this.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
+        if (!ConverterClass) {
             throw new UnexpectedError('Unknown mutation type: ' + mutation.mutation.case)
         }
 
-        return mutation.mutation.value
+        const converter = new ConverterClass()
+        return converter.convert(mutation.mutation.value)
     }
 }
 
