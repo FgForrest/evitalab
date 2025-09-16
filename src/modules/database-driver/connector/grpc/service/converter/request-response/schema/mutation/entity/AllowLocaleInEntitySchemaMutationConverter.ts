@@ -1,22 +1,23 @@
 import type {
     SchemaMutationConverter
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
-import {
-    DisallowCurrencyInEntitySchemaMutation
-} from '@/modules/database-driver/request-response/schema/mutation/entity/DisallowCurrencyInEntitySchemaMutation.ts'
-import type {
-    GrpcDisallowCurrencyInEntitySchemaMutation
-} from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchemaMutations_pb.ts'
 import Immutable from 'immutable'
 import {
     CatalogSchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
+import {
+    AllowLocaleInEntitySchemaMutation
+} from '@/modules/database-driver/request-response/schema/mutation/entity/AllowLocaleInEntitySchemaMutation.ts'
+import type {
+    GrpcAllowLocaleInEntitySchemaMutation
+} from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchemaMutations_pb.ts'
 
-export class DisallowCurrencyInEntitySchemaMutationConverter implements SchemaMutationConverter<DisallowCurrencyInEntitySchemaMutation, GrpcDisallowCurrencyInEntitySchemaMutation> {
 
-    convert(mutation: GrpcDisallowCurrencyInEntitySchemaMutation): DisallowCurrencyInEntitySchemaMutation {
-        return new DisallowCurrencyInEntitySchemaMutation(
-            Immutable.Set(CatalogSchemaConverter.toCurrencyArray(mutation.currencies))
+export class AllowLocaleInEntitySchemaMutationConverter implements SchemaMutationConverter<AllowLocaleInEntitySchemaMutation, GrpcAllowLocaleInEntitySchemaMutation> {
+
+    convert(mutation: GrpcAllowLocaleInEntitySchemaMutation): AllowLocaleInEntitySchemaMutation {
+        return new AllowLocaleInEntitySchemaMutation(
+            Immutable.List(CatalogSchemaConverter.convertLocales(mutation.locales))
         )
     }
 }

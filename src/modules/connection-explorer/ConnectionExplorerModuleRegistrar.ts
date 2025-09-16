@@ -62,6 +62,10 @@ import {
     entityViewerTabFactoryInjectionKey
 } from '@/modules/entity-viewer/viewer/workspace/service/EntityViewerTabFactory'
 import { type Toaster, toasterInjectionKey } from '@/modules/notification/service/Toaster.ts'
+import {
+    type MutationHistoryViewerTabFactory,
+    mutationHistoryViewerTabFactoryInjectionKey
+} from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
 
 export class ConnectionExplorerModuleRegistrar implements ModuleRegistrar {
 
@@ -78,6 +82,7 @@ export class ConnectionExplorerModuleRegistrar implements ModuleRegistrar {
         const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory = builder.inject(evitaQLConsoleTabFactoryInjectionKey)
         const schemaViewerTabFactory: SchemaViewerTabFactory = builder.inject(schemaViewerTabFactoryInjectionKey)
         const trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory = builder.inject(trafficRecordHistoryViewerTabFactoryInjectionKey)
+        const mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory = builder.inject(mutationHistoryViewerTabFactoryInjectionKey)
         const toaster: Toaster = builder.inject(toasterInjectionKey)
 
         const connectionExplorerService: ConnectionExplorerService = new ConnectionExplorerService(evitaClient)
@@ -96,7 +101,8 @@ export class ConnectionExplorerModuleRegistrar implements ModuleRegistrar {
             evitaQLConsoleTabFactory,
             graphQLConsoleTabFactory,
             schemaViewerTabFactory,
-            trafficRecordHistoryViewerTabFactory
+            trafficRecordHistoryViewerTabFactory,
+            mutationHistoryViewerTabFactory
         )
         const collectionItemMenuFactory: CollectionItemMenuFactory = new CollectionItemMenuFactory(
             workspaceService,

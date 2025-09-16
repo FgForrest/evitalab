@@ -1,6 +1,6 @@
 import type {
     GrpcCatalogSchema,
-    GrpcGlobalAttributeSchema,
+    GrpcGlobalAttributeSchema
 } from '@/modules/database-driver/connector/grpc/gen/GrpcCatalogSchema_pb'
 import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
@@ -9,20 +9,13 @@ import { AttributeSchema } from '@/modules/database-driver/request-response/sche
 import {
     GrpcAttributeInheritanceBehavior,
     GrpcAttributeSchemaType,
-    GrpcCardinality,
-    GrpcEvolutionMode,
-    GrpcOrderBehaviour,
-    GrpcOrderDirection, GrpcReferenceIndexType
+    GrpcEvolutionMode
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
 import { EvolutionMode } from '@/modules/database-driver/request-response/schema/EvolutionMode'
-import { OrderBehaviour } from '@/modules/database-driver/request-response/schema/OrderBehaviour'
-import { Cardinality } from '@/modules/database-driver/request-response/schema/Cardinality'
-import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
 import type {
     GrpcAssociatedDataSchema,
-    GrpcAttributeElement,
     GrpcAttributeSchema,
     GrpcEntitySchema,
     GrpcReferenceSchema,
@@ -35,7 +28,6 @@ import type {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import {
-    AttributeElement,
     SortableAttributeCompoundSchema
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema'
 import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
@@ -46,10 +38,7 @@ import { MapUtil } from '@/modules/database-driver/connector/grpc/utils/MapUtil'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { Currency } from '@/modules/database-driver/data-type/Currency'
 import { List as ImmutableList } from 'immutable'
-import {
-    ScopedReferenceIndexType
-} from '@/modules/database-driver/request-response/schema/ScopedReferenceIndexType.ts'
-import { ReferenceIndexType } from '@/modules/database-driver/request-response/schema/ReferenceIndexType.ts'
+import { ScopedReferenceIndexType } from '@/modules/database-driver/request-response/schema/ScopedReferenceIndexType.ts'
 import { ReflectedReferenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 import {
     AttributeInheritanceBehavior
@@ -64,6 +53,12 @@ import {
 import {
     EntitySchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/EntitySchemaConverter.ts'
+import {
+    GrpcChangeCaptureArea,
+    GrpcChangeCaptureOperation
+} from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
+import { CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
+import { Operation } from '@/modules/database-driver/request-response/cdc/Operation.ts'
 
 
 export class CatalogSchemaConverter {
@@ -162,7 +157,7 @@ export class CatalogSchemaConverter {
                 ScopesConverter.convertEntityScopes(attribute.sortableInScopes),
                 ScopesConverter.convertEntityScopes(attribute.filterableInScopes),
                 ScopesConverter.convertUniqueGloballyInScopes(attribute.uniqueGloballyInScopes),
-                ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes),
+                ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes)
             )
         } else {
             throw new UnexpectedError('Unaccepted type')
@@ -232,7 +227,6 @@ export class CatalogSchemaConverter {
     }
 
 
-
     private convertReferenceSchemas(referenceSchemas: {
         [key: string]: GrpcReferenceSchema
     }): ReferenceSchema[] {
@@ -264,9 +258,9 @@ export class CatalogSchemaConverter {
     }
 
     static convertAttributeInheritanceBehavior(attributeInheritanceBehavior: GrpcAttributeInheritanceBehavior) {
-        if(attributeInheritanceBehavior === GrpcAttributeInheritanceBehavior.INHERIT_ALL_EXCEPT)
+        if (attributeInheritanceBehavior === GrpcAttributeInheritanceBehavior.INHERIT_ALL_EXCEPT)
             return AttributeInheritanceBehavior.InheritAllExcept
-        else if(attributeInheritanceBehavior === GrpcAttributeInheritanceBehavior.INHERIT_ONLY_SPECIFIED)
+        else if (attributeInheritanceBehavior === GrpcAttributeInheritanceBehavior.INHERIT_ONLY_SPECIFIED)
             return AttributeInheritanceBehavior.InheritOnlySpecified
         else
             throw new UnexpectedError('Unavailable attribute inheritance behavior')
@@ -275,7 +269,7 @@ export class CatalogSchemaConverter {
     private convertReferenceSchema(
         referenceSchema: GrpcReferenceSchema
     ): ReferenceSchema {
-        if(referenceSchema.reflectedReferenceName != undefined) {
+        if (referenceSchema.reflectedReferenceName != undefined) {
             return new ReflectedReferenceSchema(
                 referenceSchema.name,
                 MapUtil.getNamingMap(referenceSchema.nameVariant),
@@ -327,7 +321,7 @@ export class CatalogSchemaConverter {
     }
 
     private convertScopedIndexTypes(scopeType: GrpcScopedReferenceIndexType[]): ImmutableList<ScopedReferenceIndexType> {
-        const items:ScopedReferenceIndexType[] = []
+        const items: ScopedReferenceIndexType[] = []
         for (const index of scopeType) {
             items.push(this.convertScopedIndexType(index))
         }
@@ -467,6 +461,35 @@ export class CatalogSchemaConverter {
         return newEvolutionModes
     }
 
+    static toCaptureArea(cardinality: GrpcChangeCaptureArea): CaptureArea {
+        switch (cardinality) {
+            case GrpcChangeCaptureArea.SCHEMA:
+                return CaptureArea.Schema
+            case GrpcChangeCaptureArea.DATA:
+                return CaptureArea.Data
+            case GrpcChangeCaptureArea.INFRASTRUCTURE:
+                return CaptureArea.Infrastructure
+            default:
+                throw new UnexpectedError(
+                    `Unsupported cardinality '${cardinality}'.`
+                )
+        }
+    }
+
+    static toOperation(operation: GrpcChangeCaptureOperation): Operation {
+        switch (operation) {
+            case GrpcChangeCaptureOperation.UPSERT:
+                return Operation.Upsert
+            case GrpcChangeCaptureOperation.REMOVE:
+                return Operation.Remove
+            case GrpcChangeCaptureOperation.TRANSACTION:
+                return Operation.Transaction
+            default:
+                throw new UnexpectedError(
+                    `Unsupported cardinality '${operation}'.`
+                )
+        }
+    }
 
 
 }

@@ -33,11 +33,19 @@ import { BackupViewerTabFactory } from '@/modules/backup-viewer/service/BackupVi
 import { JfrViewerTabFactory } from '@/modules/jfr-viewer/service/JfrViewerTabFactory'
 import { SubjectPathStatus } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathStatus'
 import { EditorStatus } from '@/modules/workspace/status-bar/model/editor-status/EditorStatus'
-import { TrafficRecordingsViewerTabDefinition } from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabDefinition'
+import {
+    TrafficRecordingsViewerTabDefinition
+} from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabDefinition'
 import { TrafficRecordingsViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordingsViewerTabFactory'
-import { TrafficRecordHistoryViewerTabDefinition } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabDefinition'
-import { TrafficRecordHistoryViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
+import {
+    TrafficRecordHistoryViewerTabDefinition
+} from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabDefinition'
+import {
+    TrafficRecordHistoryViewerTabFactory
+} from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
+import type { MutationHistoryViewerTabFactory } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
+import { HistoryViewerTabDefinition } from '@/modules/history-viewer/model/HistoryViewerTabDefinition.ts'
 
 const openedTabsStorageKey: string = 'openedTabs'
 const tabHistoryStorageKey: string = 'tabHistory'
@@ -63,6 +71,7 @@ export class WorkspaceService {
     private readonly jfrViewerTabFactory: JfrViewerTabFactory
     private readonly trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory
     private readonly trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory
+    private readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
 
     constructor(evitaLabConfig: EvitaLabConfig,
                 store: WorkspaceStore,
@@ -77,7 +86,9 @@ export class WorkspaceService {
                 backupViewerTabFactory: BackupViewerTabFactory,
                 jfrViewerTabFactory: JfrViewerTabFactory,
                 trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory,
-                trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory) {
+                trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory,
+                historyViewerTabFactory: MutationHistoryViewerTabFactory
+    ) {
         this.evitaLabConfig = evitaLabConfig
         this.store = store
         this.labStorage = labStorage
@@ -92,6 +103,7 @@ export class WorkspaceService {
         this.jfrViewerTabFactory = jfrViewerTabFactory
         this.trafficRecordingsViewerTabFactory = trafficRecordingsViewerTabFactory
         this.trafficRecordHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
+        this.mutationHistoryViewerTabFactory = historyViewerTabFactory
     }
 
     getTabDefinitions(): TabDefinition<any, any>[] {
@@ -134,7 +146,7 @@ export class WorkspaceService {
 
     /**
      * Replace tab data with new ones
-      *@param tabId
+     *@param tabId
      * @param updatedData
      */
     replaceTabData(tabId: string, updatedData: TabData<any>): void {
@@ -201,6 +213,8 @@ export class WorkspaceService {
                         return this.trafficRecordingsViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
                     case TabType.TrafficRecordHistoryViewer:
                         return this.trafficRecordHistoryViewerTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
+                    case TabType.HistoryViewer:
+                        return this.mutationHistoryViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
                     default:
                         throw new UnexpectedError(`Unsupported stored tab type '${storedTabObject.tabType}'.`)
                 }
@@ -248,6 +262,8 @@ export class WorkspaceService {
                     tabType = TabType.TrafficRecordingsViewer
                 } else if (tabRequest instanceof TrafficRecordHistoryViewerTabDefinition) {
                     tabType = TabType.TrafficRecordHistoryViewer
+                } else if (tabRequest instanceof HistoryViewerTabDefinition) {
+                    tabType = TabType.HistoryViewer
                 } else {
                     console.info(undefined, `Unsupported tab type '${tabRequest.constructor.name}'. Not storing for next session.`)
                     return undefined

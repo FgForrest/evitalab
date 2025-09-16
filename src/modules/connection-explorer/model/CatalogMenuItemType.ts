@@ -1,3 +1,4 @@
+
 /**
  * List of actions that can be performed on a catalog.
  */
@@ -26,5 +27,6 @@ export enum CatalogMenuItemType {
     DeactivateCatalog = 'deactivateCatalog',
 
     CollectionsSubheader = 'collectionsSubheader',
-    CreateCollection = 'createCollection'
+    CreateCollection = 'createCollection',
+    MutationHistoryViewer = 'mutationHistoryViewer'
 }

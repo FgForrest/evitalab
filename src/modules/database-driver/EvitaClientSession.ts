@@ -1,17 +1,25 @@
 import { List as ImmutableList } from 'immutable'
 import { Code, ConnectError } from '@connectrpc/connect'
-import type { EvitaSessionServiceClient, EvitaTrafficRecordingServiceClient } from '@/modules/database-driver/AbstractEvitaClient'
+import type {
+    EvitaSessionServiceClient,
+    EvitaTrafficRecordingServiceClient
+} from '@/modules/database-driver/AbstractEvitaClient'
 import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
 import { InstanceTerminatedError } from '@/modules/database-driver/exception/InstanceTerminatedError'
-import type {
-    GrpcBackupCatalogResponse,
-    GrpcCatalogSchemaResponse,
-    GrpcCatalogVersionAtResponse, GrpcDefineEntitySchemaResponse,
-    GrpcDeleteCollectionResponse,
-    GrpcEntitySchemaResponse,
-    GrpcEntityTypesResponse, GrpcFullBackupCatalogResponse,
-    GrpcGoLiveAndCloseResponse, GrpcQueryResponse,
-    GrpcRenameCollectionResponse
+import {
+    type GetMutationsHistoryPageRequest,
+    type GetMutationsHistoryPageResponse,
+    type GrpcBackupCatalogResponse,
+    type GrpcCatalogSchemaResponse,
+    type GrpcCatalogVersionAtResponse,
+    type GrpcDefineEntitySchemaResponse,
+    type GrpcDeleteCollectionResponse,
+    type GrpcEntitySchemaResponse,
+    type GrpcEntityTypesResponse,
+    type GrpcFullBackupCatalogResponse,
+    type GrpcGoLiveAndCloseResponse,
+    type GrpcQueryResponse,
+    type GrpcRenameCollectionResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaSessionAPI_pb'
 import {
     CatalogSchemaConverter
@@ -22,7 +30,9 @@ import { CatalogVersionAtResponse } from '@/modules/database-driver/request-resp
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
 import { ErrorTransformer } from '@/modules/database-driver/exception/ErrorTransformer'
 import type { GrpcEntitySchema } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchema_pb'
-import { EvitaResponseConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaResponseConverter'
+import {
+    EvitaResponseConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/EvitaResponseConverter'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { TaskStatusConverter } from '@/modules/database-driver/connector/grpc/service/converter/TaskStatusConverter'
@@ -30,7 +40,8 @@ import type {
     GetTrafficHistoryListRequest,
     GetTrafficHistoryListResponse,
     GetTrafficRecordingLabelNamesResponse,
-    GetTrafficRecordingStatusResponse, GetTrafficRecordingValuesNamesResponse
+    GetTrafficRecordingStatusResponse,
+    GetTrafficRecordingValuesNamesResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaTrafficRecordingAPI_pb'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
@@ -45,6 +56,14 @@ import type { EntitySchemaAccessor } from '@/modules/database-driver/request-res
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
+import {
+    GrpcChangeCaptureArea,
+    GrpcChangeCaptureContent
+} from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
+import type {
+    MutationHistoryConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/MutationHistoryConverter.ts'
+import { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
 
 const sessionTimeout: number = 30 * 1000 // 30 seconds
 
@@ -80,6 +99,7 @@ export class EvitaClientSession {
     private readonly responseConverterProvider: () => EvitaResponseConverter
     private readonly taskStatusConverterProvider: () => TaskStatusConverter
     private readonly trafficRecordingConverterProvider: () => TrafficRecordingConverter
+    private readonly mutationHistoryConverterProvider: () => MutationHistoryConverter
 
     constructor(id: string,
                 catalogName: string,
@@ -93,7 +113,9 @@ export class EvitaClientSession {
                 catalogSchemaConverterProvider: () => CatalogSchemaConverter,
                 responseConverterProvider: () => EvitaResponseConverter,
                 taskStatusConverterProvider: () => TaskStatusConverter,
-                trafficRecordingConverterProvider: () => TrafficRecordingConverter) {
+                trafficRecordingConverterProvider: () => TrafficRecordingConverter,
+                mutationHistoryConverterProvider: () => MutationHistoryConverter
+    ) {
         this._id = id
         this._catalogName = catalogName
         this._catalogState = catalogState
@@ -110,6 +132,7 @@ export class EvitaClientSession {
 
         this.taskStatusConverterProvider = taskStatusConverterProvider
         this.trafficRecordingConverterProvider = trafficRecordingConverterProvider
+        this.mutationHistoryConverterProvider = mutationHistoryConverterProvider
 
         this._callMetadata = {
             headers: {
@@ -323,7 +346,7 @@ export class EvitaClientSession {
 
             return new CatalogVersionAtResponse(
                 BigInt(result.version),
-                this.evitaValueConverterProvider().convertGrpcOffsetDateTime(result.introducedAt!)
+                EvitaValueConverter.convertGrpcOffsetDateTime(result.introducedAt!)
             )
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
@@ -341,7 +364,7 @@ export class EvitaClientSession {
                             offset: pastMoment.offset,
                             timestamp: pastMoment.timestamp
                         }
-                        : undefined,
+                        : undefined
                 },
                 this._callMetadata
             )
@@ -355,7 +378,7 @@ export class EvitaClientSession {
     async fullBackupCatalog(): Promise<TaskStatus> {
         this.assertActive()
         try {
-            const response:GrpcFullBackupCatalogResponse = await this.evitaSessionClientProvider().fullBackupCatalog({}, this._callMetadata)
+            const response: GrpcFullBackupCatalogResponse = await this.evitaSessionClientProvider().fullBackupCatalog({}, this._callMetadata)
             return this.taskStatusConverterProvider().convert(response.taskStatus!)
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
@@ -485,6 +508,31 @@ export class EvitaClientSession {
             }
             return this.trafficRecordingConverterProvider()
                 .convertGrpcTrafficRecords(response.trafficRecord)
+        } catch (e) {
+            throw this.errorTransformerProvider().transformError(e)
+        }
+    }
+
+
+    async getMutationHistory(): Promise<ImmutableList<ChangeCatalogCapture>> {
+        this.assertActive()
+        try {
+            const request: GetMutationsHistoryPageRequest = {
+                content: GrpcChangeCaptureContent.CHANGE_BODY,
+                criteria: [
+                    {
+                        area: GrpcChangeCaptureArea.SCHEMA
+                    }
+                ]
+            } as GetMutationsHistoryPageRequest
+
+            const response: GetMutationsHistoryPageResponse = await this.evitaSessionClientProvider().getMutationsHistoryPage(request, this._callMetadata)
+
+            console.log(response)
+            const captures =  response.changeCapture.map(i => this.mutationHistoryConverterProvider()
+                .convertGrpcMutationHistory(i))
+            return ImmutableList(captures)
+
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
         }

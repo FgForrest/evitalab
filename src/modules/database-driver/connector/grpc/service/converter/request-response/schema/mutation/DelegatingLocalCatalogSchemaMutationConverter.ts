@@ -1,26 +1,4 @@
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
-import type {
-    GrpcSortableAttributeCompoundSchemaMutation
-} from '@/modules/database-driver/connector/grpc/gen/GrpcSortableAttributeCompoundSchemaMutations_pb.ts'
-
-import {
-    CreateSortableAttributeCompoundSchemaMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/CreateSortableAttributeCompoundSchemaMutationConverter.ts'
-import {
-    ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter.ts'
-import {
-    ModifySortableAttributeCompoundSchemaDescriptionMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/ModifySortableAttributeCompoundSchemaDescriptionMutationConverter.ts'
-import {
-    ModifySortableAttributeCompoundSchemaNameMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/ModifySortableAttributeCompoundSchemaNameMutationConverter.ts'
-import {
-    RemoveSortableAttributeCompoundSchemaMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/RemoveSortableAttributeCompoundSchemaMutationConverter.ts'
-import type {
-    ReferenceSortableAttributeCompoundSchemaMutation
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/ReferenceSortableAttributeCompoundSchemaMutation.ts'
 import {
     CreateGlobalAttributeSchemaMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/attribute/CreateGlobalAttributeSchemaMutationConverter.ts'

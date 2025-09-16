@@ -26,6 +26,8 @@ import {
     TrafficRecordHistoryViewerTabFactory
 } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState.ts'
+import type { MutationHistoryViewerTabFactory } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
+import { HistoryViewerTabDefinition } from '@/modules/history-viewer/model/HistoryViewerTabDefinition.ts'
 
 export const catalogItemMenuFactoryInjectionKey: symbol = Symbol('catalogItemMenuFactoryInjectionKey')
 
@@ -43,13 +45,15 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
     private readonly graphQLConsoleTabFactory: GraphQLConsoleTabFactory
     private readonly schemaViewerTabFactory: SchemaViewerTabFactory
     private readonly trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory
+    private readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
 
     constructor(
         workspaceService: WorkspaceService,
         evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory,
         graphQLConsoleTabFactory: GraphQLConsoleTabFactory,
         schemaViewerTabFactory: SchemaViewerTabFactory,
-        trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory
+        trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory,
+        historyViewerTabFactory: MutationHistoryViewerTabFactory
     ) {
         super()
         this.workspaceService = workspaceService
@@ -57,6 +61,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         this.graphQLConsoleTabFactory = graphQLConsoleTabFactory
         this.schemaViewerTabFactory = schemaViewerTabFactory
         this.trafficRecordHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
+        this.mutationHistoryViewerTabFactory = historyViewerTabFactory
     }
 
     async createItems(
@@ -96,6 +101,20 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         const deactivated: boolean = state === CatalogState.Inactive
 
         const items: Map<CatalogMenuItemType, MenuItem<CatalogMenuItemType>> = new Map()
+
+        this.createMenuAction( // todo pfi: update order of thi current item
+            items,
+            CatalogMenuItemType.MutationHistoryViewer,
+            HistoryViewerTabDefinition.icon(),
+            this.getItemTitle,
+            () => {
+                this.workspaceService.createTab(
+                    this.mutationHistoryViewerTabFactory.createNew(catalog.name)
+                )
+            },
+            baseEnabledFunctions
+        )
+
         this.createMenuAction(
             items,
             CatalogMenuItemType.EvitaQLConsole,
@@ -221,7 +240,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
             () => replaceCatalogCallback(),
             baseEnabledFunctions && serverWritable
         )
-        if(baseEnabledFunctions) {
+        if (baseEnabledFunctions) {
             this.createMenuAction(
                 items,
                 CatalogMenuItemType.DeactivateCatalog,
@@ -231,7 +250,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
                 baseEnabledFunctions && !serverStatus?.readOnly
             )
         }
-        if(deactivated) {
+        if (deactivated) {
             this.createMenuAction(
                 items,
                 CatalogMenuItemType.ActivateCatalog,
@@ -241,7 +260,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
                 deactivated
             )
         }
-        if(catalog.readOnly) {
+        if (catalog.readOnly) {
             this.createMenuAction(
                 items,
                 CatalogMenuItemType.SwitchToMutable,
@@ -250,7 +269,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
                 () => mutateCatalogCallback(),
                 baseEnabledFunctions)
         }
-        if(!catalog.readOnly) {
+        if (!catalog.readOnly) {
             this.createMenuAction(
                 items,
                 CatalogMenuItemType.SwitchToImmutable,

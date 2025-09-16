@@ -1,22 +1,22 @@
 import type {
     SchemaMutationConverter
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
-import {
-    AllowLocaleInEntitySchemaMutation
-} from '@/modules/database-driver/request-response/schema/mutation/entity/AllowLocaleInEntitySchemaMutation.ts'
 import type {
-    GrpcAllowLocaleInEntitySchemaMutation
+    GrpcAllowEvolutionModeInEntitySchemaMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchemaMutations_pb.ts'
 import {
     CatalogSchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
 import Immutable from 'immutable'
+import {
+    AllowEvolutionModeInEntitySchemaMutation
+} from '@/modules/database-driver/request-response/schema/mutation/entity/AllowEvolutionModeInEntitySchemaMutation.ts'
 
-export class AllowLocaleInEntitySchemaMutationConverter implements SchemaMutationConverter<AllowLocaleInEntitySchemaMutation, GrpcAllowLocaleInEntitySchemaMutation> {
+export class AllowEvolutionModeInEntitySchemaMutationConverter implements SchemaMutationConverter<AllowEvolutionModeInEntitySchemaMutation, GrpcAllowEvolutionModeInEntitySchemaMutation> {
 
-    convert(mutation: GrpcAllowLocaleInEntitySchemaMutation): AllowLocaleInEntitySchemaMutation {
-        return new AllowLocaleInEntitySchemaMutation(
-            Immutable.List(CatalogSchemaConverter.convertLocales(mutation.locales))
+    convert(mutation: GrpcAllowEvolutionModeInEntitySchemaMutation): AllowEvolutionModeInEntitySchemaMutation {
+        return new AllowEvolutionModeInEntitySchemaMutation(
+            Immutable.List(CatalogSchemaConverter.convertEvolutionMode(mutation.evolutionModes))
         )
     }
 }
