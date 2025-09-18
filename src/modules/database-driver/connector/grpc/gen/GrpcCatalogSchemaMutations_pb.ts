@@ -6,8 +6,6 @@ import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { GrpcCatalogEvolutionMode } from "./GrpcEnums_pb";
 import { file_GrpcEnums } from "./GrpcEnums_pb";
-import type { GrpcEntitySchemaMutation } from "./GrpcEntitySchemaMutation_pb";
-import { file_GrpcEntitySchemaMutation } from "./GrpcEntitySchemaMutation_pb";
 import { file_google_protobuf_wrappers } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
@@ -15,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file GrpcCatalogSchemaMutations.proto.
  */
 export const file_GrpcCatalogSchemaMutations: GenFile = /*@__PURE__*/
-  fileDesc("CiBHcnBjQ2F0YWxvZ1NjaGVtYU11dGF0aW9ucy5wcm90bxIlaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZCJfCipHcnBjTW9kaWZ5Q2F0YWxvZ1NjaGVtYURlc2NyaXB0aW9uTXV0YXRpb24SMQoLZGVzY3JpcHRpb24YASABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUiiAEKLUdycGNBbGxvd0V2b2x1dGlvbk1vZGVJbkNhdGFsb2dTY2hlbWFNdXRhdGlvbhJXCg5ldm9sdXRpb25Nb2RlcxgBIAMoDjI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NhdGFsb2dFdm9sdXRpb25Nb2RlIosBCjBHcnBjRGlzYWxsb3dFdm9sdXRpb25Nb2RlSW5DYXRhbG9nU2NoZW1hTXV0YXRpb24SVwoOZXZvbHV0aW9uTW9kZXMYASADKA4yPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDYXRhbG9nRXZvbHV0aW9uTW9kZSKUAQoeR3JwY01vZGlmeUVudGl0eVNjaGVtYU11dGF0aW9uEhIKCmVudGl0eVR5cGUYASABKAkSXgoVZW50aXR5U2NoZW1hTXV0YXRpb25zGAIgAygLMj8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5U2NoZW1hTXV0YXRpb25ChgIKKWNvbS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkQh9HcnBjQ2F0YWxvZ1NjaGVtYU11dGF0aW9uc1Byb3RvUAGiAgVJRUVHR6oCJUlvLkV2aXRhZGIuRXh0ZXJuYWxBcGkuR3JwYy5HZW5lcmF0ZWTKAiVJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVk4gIxSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZFxHUEJNZXRhZGF0YeoCKUlvOjpFdml0YWRiOjpFeHRlcm5hbEFwaTo6R3JwYzo6R2VuZXJhdGVkYgZwcm90bzM", [file_GrpcEnums, file_GrpcEntitySchemaMutation, file_google_protobuf_wrappers]);
+  fileDesc("CiBHcnBjQ2F0YWxvZ1NjaGVtYU11dGF0aW9ucy5wcm90bxIlaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZCJfCipHcnBjTW9kaWZ5Q2F0YWxvZ1NjaGVtYURlc2NyaXB0aW9uTXV0YXRpb24SMQoLZGVzY3JpcHRpb24YASABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUiiAEKLUdycGNBbGxvd0V2b2x1dGlvbk1vZGVJbkNhdGFsb2dTY2hlbWFNdXRhdGlvbhJXCg5ldm9sdXRpb25Nb2RlcxgBIAMoDjI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NhdGFsb2dFdm9sdXRpb25Nb2RlIosBCjBHcnBjRGlzYWxsb3dFdm9sdXRpb25Nb2RlSW5DYXRhbG9nU2NoZW1hTXV0YXRpb24SVwoOZXZvbHV0aW9uTW9kZXMYASADKA4yPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDYXRhbG9nRXZvbHV0aW9uTW9kZUKGAgopY29tLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWRCH0dycGNDYXRhbG9nU2NoZW1hTXV0YXRpb25zUHJvdG9QAaICBUlFRUdHqgIlSW8uRXZpdGFkYi5FeHRlcm5hbEFwaS5HcnBjLkdlbmVyYXRlZMoCJUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWTiAjFJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVkXEdQQk1ldGFkYXRh6gIpSW86OkV2aXRhZGI6OkV4dGVybmFsQXBpOjpHcnBjOjpHZW5lcmF0ZWRiBnByb3RvMw", [file_GrpcEnums, file_google_protobuf_wrappers]);
 
 /**
  * Mutation is responsible for setting value to a `CatalogSchema.description` in `CatalogSchema`.
@@ -84,32 +82,4 @@ export type GrpcDisallowEvolutionModeInCatalogSchemaMutation = Message<"io.evita
  */
 export const GrpcDisallowEvolutionModeInCatalogSchemaMutationSchema: GenMessage<GrpcDisallowEvolutionModeInCatalogSchemaMutation> = /*@__PURE__*/
   messageDesc(file_GrpcCatalogSchemaMutations, 2);
-
-/**
- * Mutation is a holder for a set of `EntitySchemaMutation` that affect a single entity schema within the `CatalogSchema`.
- *
- * @generated from message io.evitadb.externalApi.grpc.generated.GrpcModifyEntitySchemaMutation
- */
-export type GrpcModifyEntitySchemaMutation = Message<"io.evitadb.externalApi.grpc.generated.GrpcModifyEntitySchemaMutation"> & {
-  /**
-   * Entity type of entity schema that will be affected by passed mutations.
-   *
-   * @generated from field: string entityType = 1;
-   */
-  entityType: string;
-
-  /**
-   * Collection of mutations that should be applied on current version of the schema.
-   *
-   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntitySchemaMutation entitySchemaMutations = 2;
-   */
-  entitySchemaMutations: GrpcEntitySchemaMutation[];
-};
-
-/**
- * Describes the message io.evitadb.externalApi.grpc.generated.GrpcModifyEntitySchemaMutation.
- * Use `create(GrpcModifyEntitySchemaMutationSchema)` to create a new message.
- */
-export const GrpcModifyEntitySchemaMutationSchema: GenMessage<GrpcModifyEntitySchemaMutation> = /*@__PURE__*/
-  messageDesc(file_GrpcCatalogSchemaMutations, 3);
 
