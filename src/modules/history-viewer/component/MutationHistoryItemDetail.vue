@@ -1,10 +1,10 @@
 <script setup lang="ts">
 
-import { Action } from '@/modules/traffic-viewer/model/TrafficRecordVisualisationDefinition'
-import RecordMetadata from '@/modules/traffic-viewer/components/RecordMetadata.vue'
-import type {
-    MutationHistoryItemVisualisationDefinition
+import {
+    Action,
+    type MutationHistoryItemVisualisationDefinition
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
+import RecordMetadata from '@/modules/history-viewer/component/RecordMetadata.vue'
 
 const props = defineProps<{
     definition: MutationHistoryItemVisualisationDefinition

@@ -4,11 +4,6 @@ import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import type { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
 import { List as ImmutableList } from 'immutable'
 import type { MutationHistoryRequest } from '@/modules/history-viewer/model/MutationHistoryRequest.ts'
-import { TrafficRecordHistoryCriteria } from '@/modules/traffic-viewer/model/TrafficRecordHistoryCriteria.ts'
-import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord.ts'
-import {
-    TrafficRecordVisualisationDefinition
-} from '@/modules/traffic-viewer/model/TrafficRecordVisualisationDefinition.ts'
 import type { MutationHistoryCriteria } from '@/modules/history-viewer/model/MutationHistoryCriteria.ts'
 import type {
     MutationHistoryVisualisationProcessor

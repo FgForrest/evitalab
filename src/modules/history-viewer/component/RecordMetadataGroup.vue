@@ -13,14 +13,15 @@ import {
 } from '@/modules/history-viewer/model/MutationHistoryMetadataItemContext.ts'
 import type { MutationHistoryCriteria } from '@/modules/history-viewer/model/MutationHistoryCriteria.ts'
 import { useHistoryCriteria } from '@/modules/history-viewer/component/dependencies.ts'
+import RecordMetadataItem from '@/modules/history-viewer/component/RecordMetadataItem.vue'
 
 const toaster: Toaster = useToaster()
+const historyCriteria: Ref<MutationHistoryCriteria> = useHistoryCriteria()
 
 const props = defineProps<{
     group: MetadataGroup
 }>()
 
-const historyCriteria: Ref<MutationHistoryCriteria> = useHistoryCriteria()
 
 const withHeader = computed<boolean>(() => props.group.identifier !== defaultMetadataGroupIdentifier)
 const ctx = computed<MutationHistoryMetadataItemContext>(() => {
