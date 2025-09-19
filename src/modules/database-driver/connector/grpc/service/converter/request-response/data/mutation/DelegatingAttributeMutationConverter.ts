@@ -37,7 +37,7 @@ export class DelegatingAttributeMutationConverter {
             throw new UnexpectedError('Unknown mutation type: ' + mutation?.mutation.case)
         }
 
-        const ConverterClass = this.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
+        const ConverterClass = DelegatingAttributeMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
         if (!ConverterClass) {
             throw new UnexpectedError('Unknown mutation type: ' + mutation.mutation.case)
         }

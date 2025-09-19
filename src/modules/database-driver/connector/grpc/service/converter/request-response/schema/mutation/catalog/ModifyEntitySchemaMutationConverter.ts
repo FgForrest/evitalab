@@ -4,13 +4,14 @@ import type {
 import {
     ModifyEntitySchemaMutation
 } from '@/modules/database-driver/request-response/schema/mutation/catalog/ModifyEntitySchemaMutation.ts'
-import type {
-    GrpcModifyEntitySchemaMutation
-} from '@/modules/database-driver/connector/grpc/gen/GrpcCatalogSchemaMutations_pb.ts'
+
 import { List as ImmutableList } from 'immutable'
 import {
     DelegatingEntitySchemaMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/DelegatingEntitySchemaMutationConverter.ts'
+import type {
+    GrpcModifyEntitySchemaMutation
+} from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchemaMutation_pb.ts'
 
 export class ModifyEntitySchemaMutationConverter implements SchemaMutationConverter<ModifyEntitySchemaMutation, GrpcModifyEntitySchemaMutation> {
 

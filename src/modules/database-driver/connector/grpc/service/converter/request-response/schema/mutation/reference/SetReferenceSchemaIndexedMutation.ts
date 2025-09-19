@@ -1,7 +1,7 @@
 import type {
     GrpcSetReferenceSchemaIndexedMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcReferenceSchemaMutations_pb.ts'
-import type {
+import {
     SetReferenceSchemaIndexedMutation
 } from '@/modules/database-driver/request-response/schema/mutation/reference/SetReferenceSchemaIndexedMutation.ts'
 import type {

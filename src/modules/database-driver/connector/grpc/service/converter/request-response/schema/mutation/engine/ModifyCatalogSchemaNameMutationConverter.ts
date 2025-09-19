@@ -9,6 +9,7 @@ import type {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEngineMutation_pb.ts'
 
 export class ModifyCatalogSchemaNameMutationConverter implements SchemaMutationConverter<ModifyCatalogSchemaNameMutation, GrpcModifyCatalogSchemaNameMutation> {
+    public static readonly INSTANCE = new ModifyCatalogSchemaNameMutationConverter()
 
     convert(mutation: GrpcModifyCatalogSchemaNameMutation): ModifyCatalogSchemaNameMutation {
         return new ModifyCatalogSchemaNameMutation(

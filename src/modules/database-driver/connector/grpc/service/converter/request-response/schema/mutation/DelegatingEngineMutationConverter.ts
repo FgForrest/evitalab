@@ -174,89 +174,60 @@ import {
 import {
     ModifyEntitySchemaMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/catalog/ModifyEntitySchemaMutationConverter.ts'
+import {
+    DuplicateCatalogMutationConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/engine/DuplicateCatalogMutationConverter.ts'
+import {
+    SetCatalogMutabilityMutationConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/engine/SetCatalogMutabilityMutationConverter.ts'
+import {
+    SetCatalogStateMutationConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/engine/SetCatalogStateMutationConverter.ts'
+import {
+    TransactionMutationConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/engine/TransactionMutationConverter.ts'
+import {
+    RemoveCatalogSchemaMutationConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/engine/RemoveCatalogSchemaMutationConverter.ts'
+import {
+    MakeCatalogAliveMutationConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/engine/MakeCatalogAliveMutationConverter.ts'
+import {
+    ModifyCatalogSchemaMutationConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/engine/ModifyCatalogSchemaMutationConverter.ts'
+import {
+    CreateCatalogSchemaMutationConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/engine/CreateCatalogSchemaMutationConverter.ts'
+import {
+    ModifyCatalogSchemaNameMutationConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/engine/ModifyCatalogSchemaNameMutationConverter.ts'
 
 
 function getKeyFromConverterName(converter: any): string {
-    return converter.name
+    // Handle both class constructors and instances
+    const name = typeof converter === 'function' ? converter.name : converter.constructor.name;
+
+    return name
         .replace(/Converter$/, '') // Remove 'Converter' suffix
         .replace(/([A-Z])/g, (match: string, p1: string, offset: number) =>
             offset === 0 ? p1.toLowerCase() : p1
         ); // Convert first letter to lowercase, keep others as-is
 }
 
-export class DelegatingEntitySchemaMutationConverter {
+export class DelegatingEngineMutationConverter {
 
 
     private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>(
         [
-            // entity schema mutations
-            CreateEntitySchemaMutationConverter,
-            RemoveEntitySchemaMutationConverter,
-            ModifyEntitySchemaMutationConverter,
-
-            // associated data schema mutations
-            CreateAssociatedDataSchemaMutationConverter,
-            ModifyAssociatedDataSchemaDeprecationNoticeMutationConverter,
-            ModifyAssociatedDataSchemaDescriptionMutationConverter,
-            ModifyAssociatedDataSchemaNameMutationConverter,
-            ModifyAssociatedDataSchemaTypeMutationConverter,
-            RemoveAssociatedDataSchemaMutationConverter,
-            SetAssociatedDataSchemaLocalizedMutationConverter,
-            SetAssociatedDataSchemaNullableMutationConverter,
-
-            // attribute schema mutations
-            CreateAttributeSchemaMutationConverter,
-            ModifyAttributeSchemaDefaultValueMutationConverter,
-            ModifyAttributeSchemaDeprecationNoticeMutationConverter,
-            ModifyAttributeSchemaDescriptionMutationConverter,
-            ModifyAttributeSchemaNameMutationConverter,
-            ModifyAttributeSchemaTypeMutationConverter,
-            RemoveAttributeSchemaMutationConverter,
-            SetAttributeSchemaFilterableMutationConverter,
-            SetAttributeSchemaLocalizedMutationConverter,
-            SetAttributeSchemaNullableMutationConverter,
-            SetAttributeSchemaRepresentativeMutationConverter,
-            SetAttributeSchemaSortableMutationConverter,
-            SetAttributeSchemaUniqueMutationConverter,
-            UseGlobalAttributeSchemaMutationConverter,
-
-            // sortable attribute compound schema mutations
-            CreateSortableAttributeCompoundSchemaMutationConverter,
-            ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter,
-            ModifySortableAttributeCompoundSchemaDescriptionMutationConverter,
-            ModifySortableAttributeCompoundSchemaNameMutationConverter,
-            RemoveSortableAttributeCompoundSchemaMutationConverter,
-            SetSortableAttributeCompoundIndexedMutationConverter,
-
-            // entity schema mutations
-            AllowCurrencyInEntitySchemaMutationConverter,
-            AllowEvolutionModeInEntitySchemaMutationConverter,
-            AllowLocaleInEntitySchemaMutationConverter,
-            DisallowCurrencyInEntitySchemaMutationConverter,
-            DisallowEvolutionModeInEntitySchemaMutationConverter,
-            DisallowLocaleInEntitySchemaMutationConverter,
-            ModifyEntitySchemaNameMutationConverter,
-            ModifyEntitySchemaDeprecationNoticeMutationConverter,
-            ModifyEntitySchemaDescriptionMutationConverter,
-            SetEntitySchemaWithGeneratedPrimaryKeyMutationConverter,
-            SetEntitySchemaWithHierarchyMutationConverter,
-            SetEntitySchemaWithPriceMutationConverter,
-
-            // reference schema mutations
-            CreateReferenceSchemaMutationConverter,
-            CreateReflectedReferenceSchemaMutationConverter,
-            ModifyReferenceAttributeSchemaMutationConverter,
-            ModifyReferenceSchemaCardinalityMutationConverter,
-            ModifyReferenceSchemaDeprecationNoticeMutationConverter,
-            ModifyReferenceSchemaDescriptionMutationConverter,
-            ModifyReferenceSchemaNameMutationConverter,
-            ModifyReferenceSchemaRelatedEntityGroupMutationConverter,
-            ModifyReferenceSchemaRelatedEntityMutationConverter,
-            ModifyReflectedReferenceAttributeInheritanceSchemaMutationConverter,
-            RemoveReferenceSchemaMutationConverter,
-            SetReferenceSchemaFacetedMutationConverter,
-            SetReferenceSchemaIndexedMutationConverter,
-            ModifyReferenceSortableAttributeCompoundSchemaMutationConverter
+            CreateCatalogSchemaMutationConverter.INSTANCE,
+            ModifyCatalogSchemaNameMutationConverter.INSTANCE,
+            ModifyCatalogSchemaMutationConverter.INSTANCE,
+            MakeCatalogAliveMutationConverter.INSTANCE,
+            RemoveCatalogSchemaMutationConverter.INSTANCE,
+            TransactionMutationConverter.INSTANCE,
+            DuplicateCatalogMutationConverter.INSTANCE,
+            SetCatalogMutabilityMutationConverter.INSTANCE,
+            SetCatalogStateMutationConverter.INSTANCE
         ].map(converter => [getKeyFromConverterName(converter), converter])
     );
 
@@ -265,12 +236,12 @@ export class DelegatingEntitySchemaMutationConverter {
             throw new UnexpectedError('Unknown mutation type: ' + mutation?.mutation.case)
         }
 
-        const conversionDescriptor = this.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
-        if (!conversionDescriptor) {
+        const converter = DelegatingEngineMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
+        if (!converter) {
             throw new UnexpectedError('Unknown mutation type: ' + mutation.mutation.case)
         }
 
-        return mutation.mutation.value
+        return converter.convert(mutation.mutation.value)
     }
 }
 

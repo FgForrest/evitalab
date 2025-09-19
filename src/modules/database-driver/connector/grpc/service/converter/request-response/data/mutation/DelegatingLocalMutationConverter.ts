@@ -88,7 +88,7 @@ export class DelegatingLocalMutationConverter {
             throw new UnexpectedError('Unknown mutation type: ' + mutation?.mutation.case)
         }
 
-        const ConverterClass = this.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
+        const ConverterClass = DelegatingLocalMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
         if (!ConverterClass) {
             throw new UnexpectedError('Unknown mutation type: ' + mutation.mutation.case)
         }

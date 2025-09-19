@@ -7,6 +7,7 @@ import {
 } from '@/modules/database-driver/request-response/schema/mutation/engine/SetCatalogStateMutation.ts'
 
 export class SetCatalogStateMutationConverter implements SchemaMutationConverter<SetCatalogStateMutation, GrpcSetCatalogStateMutation> {
+    public static readonly INSTANCE = new SetCatalogStateMutationConverter()
 
     convert(mutation: GrpcSetCatalogStateMutation): SetCatalogStateMutation {
         return new SetCatalogStateMutation(

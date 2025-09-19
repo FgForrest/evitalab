@@ -14,31 +14,44 @@ import {
     CatalogSchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
 import type { Mutation } from '@/modules/database-driver/request-response/Mutation.ts'
+import { CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
+import {
+    DelegatingEngineMutationConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/DelegatingEngineMutationConverter.ts'
 
 export class MutationHistoryConverter {
 
 
     convertGrpcMutationHistory(changeCapture: GrpcChangeCatalogCapture): ChangeCatalogCapture {
+        let mutation: Mutation | undefined // todo pfi: is possible to have it undefined?
 
-        // ChangeCaptureConverter.toChangeCatalogCapture() // todo pfi:
-        let mutation: Mutation|undefined // todo pfi: is possible to have it undefined?
+        try {
+            // ChangeCaptureConverter.toChangeCatalogCapture() // todo pfi:
 
-        if (!changeCapture.body?.value?.mutation || !changeCapture.body?.value?.mutation.case) { // todo pfi: remove me?
-            console.error(`Issue with ${changeCapture.body}`)
-            mutation = undefined;
-        } else if (changeCapture.body.case == 'schemaMutation') {
-            mutation = DelegatingEntitySchemaMutationConverter.convert(changeCapture.body.value)
-        } else if (changeCapture.body.case == 'entityMutation') {
-            mutation = DelegatingEntityMutationConverter.convert(changeCapture.body.value)
-        } else if (changeCapture.body.case == 'localMutation') {
-            mutation = DelegatingLocalMutationConverter.convert(changeCapture.body.value)
-        } else {
-            throw new UnexpectedError(`Unexpected type ${changeCapture.body.case}.`)
+            if (CatalogSchemaConverter.toCaptureArea(changeCapture.area) !== CaptureArea.Infrastructure &&
+                (!changeCapture.body?.value?.mutation || !changeCapture.body?.value?.mutation.case)) { // todo pfi: remove me?
+                console.error(`Issue with ${changeCapture.body}`)
+                mutation = undefined
+            } else if (CatalogSchemaConverter.toCaptureArea(changeCapture.area) == CaptureArea.Infrastructure ) {
+                // mutation = DelegatingEngineMutationConverter.convert(changeCapture.body.value);
+                mutation = undefined
+            } else if (changeCapture.body.case == 'schemaMutation') {
+                mutation = DelegatingEntitySchemaMutationConverter.convert(changeCapture.body.value)
+            } else if (changeCapture.body.case == 'entityMutation') {
+                mutation = DelegatingEntityMutationConverter.convert(changeCapture.body.value)
+            } else if (changeCapture.body.case == 'localMutation') {
+                mutation = DelegatingLocalMutationConverter.convert(changeCapture.body.value)
+            } else {
+                throw new UnexpectedError(`Unexpected type ${changeCapture.body.case}.`)
+            }
+        } catch (error) {
+            console.error(error)
+            throw new UnexpectedError(`Unexpected error ${changeCapture.body.case}.`)
         }
 
         return new ChangeCatalogCapture(
             Number(changeCapture.version),
-            changeCapture.index,
+            changeCapture.index || 0,
             CatalogSchemaConverter.toCaptureArea(changeCapture.area),
             changeCapture.entityType,
             changeCapture.entityPrimaryKey,

@@ -13,6 +13,7 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/DelegatingLocalCatalogSchemaMutationConverter.ts'
 
 export class ModifyCatalogSchemaMutationConverter implements SchemaMutationConverter<ModifyCatalogSchemaMutation, GrpcModifyCatalogSchemaMutation> {
+    public static readonly INSTANCE = new ModifyCatalogSchemaMutationConverter()
 
     convert(mutation: GrpcModifyCatalogSchemaMutation): ModifyCatalogSchemaMutation {
         const schemaMutations = mutation.schemaMutations.map(DelegatingLocalCatalogSchemaMutationConverter.convert)

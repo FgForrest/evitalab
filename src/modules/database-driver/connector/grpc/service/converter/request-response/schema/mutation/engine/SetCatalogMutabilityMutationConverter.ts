@@ -9,6 +9,7 @@ import {
 } from '@/modules/database-driver/request-response/schema/mutation/engine/SetCatalogMutabilityMutation.ts'
 
 export class SetCatalogMutabilityMutationConverter implements SchemaMutationConverter<SetCatalogMutabilityMutation, GrpcSetCatalogMutabilityMutation> {
+    public static readonly INSTANCE = new SetCatalogMutabilityMutationConverter()
 
     convert(mutation: GrpcSetCatalogMutabilityMutation): SetCatalogMutabilityMutation {
         return new SetCatalogMutabilityMutation(

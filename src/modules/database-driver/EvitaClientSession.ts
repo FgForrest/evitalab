@@ -57,7 +57,7 @@ import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
 import {
-    GrpcChangeCaptureArea,
+    GrpcChangeCaptureArea, GrpcChangeCaptureContainerType,
     GrpcChangeCaptureContent
 } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import type {
@@ -519,11 +519,27 @@ export class EvitaClientSession {
         try {
             const request: GetMutationsHistoryPageRequest = {
                 page: 1,
-                pageSize: 50,
+                pageSize: 20,
                 content: GrpcChangeCaptureContent.CHANGE_BODY,
                 criteria: [
                     {
-                        area: GrpcChangeCaptureArea.DATA
+                        area: GrpcChangeCaptureArea.INFRASTRUCTURE
+                    },
+                    {
+                        site: {
+                            value: {
+                                containerType: [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
+                            },
+                            case: 'dataSite'
+                        }
+                    },
+                    {
+                        site: {
+                            value: {
+                                containerType: [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
+                            },
+                            case: 'schemaSite'
+                        }
                     }
                 ]
             } as GetMutationsHistoryPageRequest
@@ -531,7 +547,7 @@ export class EvitaClientSession {
             const response: GetMutationsHistoryPageResponse = await this.evitaSessionClientProvider().getMutationsHistoryPage(request, this._callMetadata)
 
             console.log(response)
-            const captures =  response.changeCapture.map(i => this.mutationHistoryConverterProvider()
+            const captures = response.changeCapture.map(i => this.mutationHistoryConverterProvider()
                 .convertGrpcMutationHistory(i))
 
             console.log(captures)
