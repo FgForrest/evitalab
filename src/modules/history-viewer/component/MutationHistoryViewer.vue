@@ -21,6 +21,8 @@ import type { MutationHistoryViewerTabParams } from '@/modules/history-viewer/mo
 import { useMutationHistoryViewerService } from '@/modules/history-viewer/service/MutationHistoryViewerService.ts'
 import { type Toaster, useToaster } from '@/modules/notification/service/Toaster.ts'
 import { MutationHistoryCriteria } from '@/modules/history-viewer/model/MutationHistoryCriteria.ts'
+import MutationHistory from '@/modules/history-viewer/component/MutationHistory.vue'
+import { provideHistoryCriteria } from '@/modules/history-viewer/component/dependencies.ts'
 
 const keymap: Keymap = useKeymap()
 const toaster: Toaster = useToaster()
@@ -46,6 +48,7 @@ defineExpose<TabComponentExpose>({
     }
 })
 
+
 const title: List<string> = List.of(
     props.params.dataPointer.catalogName,
     t('mutationHistoryViewer.title')
@@ -55,7 +58,7 @@ const title: List<string> = List.of(
 async function loadHistoryMutations(): Promise<boolean> {
     try {
         console.log(`Getting data from ${props.params.dataPointer.catalogName} catalog`)
-        recordings.value = await mutationHistoryViewerService.getMutationHistory(props.params.dataPointer.catalogName)
+        recordings.value = await mutationHistoryViewerService.getMutationHistoryList(props.params.dataPointer.catalogName, 20)
 
         return true
     } catch (e: any) {
@@ -79,6 +82,7 @@ onBeforeMount(() => {
 const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
 
 ))
+provideHistoryCriteria(criteria)
 
 </script>
 
@@ -101,9 +105,19 @@ const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
         </VTabToolbar>
 
         <VSheet class="mutation-history-viewer__body">
+
+            <MutationHistory
+                ref="mutationHistoryListRef"
+                :data-pointer="params.dataPointer"
+                :criteria="criteria"
+            />
+
             <pre>
                 {{ JSON.stringify(recordings, null, 2) }}
             </pre>
+
+
+
         </VSheet>
     </div>
 </template>

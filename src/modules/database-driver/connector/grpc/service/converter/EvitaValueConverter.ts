@@ -35,7 +35,7 @@ import type {
     GrpcCurrencyArray,
     GrpcUuidArray,
     GrpcEvitaValue,
-    GrpcDataItem
+    GrpcDataItem, GrpcEvitaAssociatedDataValue
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { DateTime } from 'luxon'
 import { Range } from '@/modules/database-driver/data-type/Range'
@@ -51,6 +51,19 @@ import type { Timestamp as GrpcTimestamp } from '@bufbuild/protobuf/wkt'
 export class EvitaValueConverter {
 
 
+    static convertGrpcAssociatedValue(value: GrpcEvitaAssociatedDataValue | undefined, valueCase: string | undefined): any {
+        if (value?.value.case == 'primitiveValue') {
+            return EvitaValueConverter.convertGrpcValue(value.value.value, valueCase);
+        } else if (value?.value.case == 'root') {
+            // return toComplexObject(value.getRoot());
+            throw new UnexpectedError("PFI todo");
+        } else if (value?.value.case == 'jsonValue') {
+            // return ComplexDataObjectConverter.convertJsonToComplexDataObject(value.getJsonValue());
+            throw new UnexpectedError("PFI todo");
+        } else {
+            throw new UnexpectedError("Unknown value type.");
+        }
+    }
     static convertGrpcValue(value: string | GrpcEvitaValue | GrpcDataItem | undefined, valueCase: string | undefined): any {
         if (typeof value === 'string') {
             return value

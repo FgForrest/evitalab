@@ -1873,7 +1873,23 @@
     }
   },
   "mutationHistoryViewer": {
-    "title": "Mutation history"
+    "title": "Mutation history",
+    "record": {
+      "type": {
+        "transaction": {
+          "title": "Transaction {version}"
+        },
+        "schema": {
+          "title": "Entity: {entityType}"
+        },
+        "entity": {
+          "title": "Entity: {entityType}"
+        },
+        "attribute": {
+          "title": "Attribute: {attributeName}"
+        }
+      }
+    }
   },
   "relationViewer": {
     "title": "Relation",

@@ -13,7 +13,7 @@ export class EntityUpsertMutation implements EntityMutation {
     private readonly entityPrimaryKey: number |undefined
     private readonly entityType: string
     private readonly entityExistence: EntityExistence
-    private readonly localMutations: ImmutableList<LocalMutation>
+    public readonly localMutations: ImmutableList<LocalMutation>
 
 
     constructor(entityPrimaryKey: number | undefined, entityType: string, entityExistence: EntityExistence, localMutations: ImmutableList<LocalMutation>) {

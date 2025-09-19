@@ -5,7 +5,7 @@ import type { AttributeKey } from '@/modules/database-driver/request-response/da
 
 export class UpsertAttributeMutation extends AttributeSchemaEvolvingMutation {
 
-    private readonly value: any;
+    public readonly value: any;
 
     constructor(attributeKey: AttributeKey, value: any) {
         super(attributeKey)

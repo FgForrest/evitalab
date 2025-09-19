@@ -44,10 +44,6 @@ import type {
     GetTrafficRecordingValuesNamesResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaTrafficRecordingAPI_pb'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
-import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
-import {
-    TrafficRecordingCaptureRequest
-} from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordingCaptureRequest'
 import {
     TrafficRecordingConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/TrafficRecordingConverter'
@@ -56,14 +52,16 @@ import type { EntitySchemaAccessor } from '@/modules/database-driver/request-res
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
-import {
-    GrpcChangeCaptureArea, GrpcChangeCaptureContainerType,
-    GrpcChangeCaptureContent
-} from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
+import { GrpcChangeCaptureContent } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import type {
     MutationHistoryConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/MutationHistoryConverter.ts'
 import { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
+import type { MutationHistoryRequest } from '@/modules/history-viewer/model/MutationHistoryRequest.ts'
+import type {
+    TrafficRecordingCaptureRequest
+} from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordingCaptureRequest.ts'
+import type { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord.ts'
 
 const sessionTimeout: number = 30 * 1000 // 30 seconds
 
@@ -514,34 +512,17 @@ export class EvitaClientSession {
     }
 
 
-    async getMutationHistory(): Promise<ImmutableList<ChangeCatalogCapture>> {
+    async getMutationHistory(mutationHistoryRequest: MutationHistoryRequest,
+                             limit: number): Promise<ImmutableList<ChangeCatalogCapture>> {
         this.assertActive()
         try {
-            const request: GetMutationsHistoryPageRequest = {
+
+
+            const request: GetMutationsHistoryPageRequest = { // todo pfi: celé toto tělo schovat do konverzní metody
                 page: 1,
-                pageSize: 20,
+                pageSize: limit || 20,
                 content: GrpcChangeCaptureContent.CHANGE_BODY,
-                criteria: [
-                    {
-                        area: GrpcChangeCaptureArea.INFRASTRUCTURE
-                    },
-                    {
-                        site: {
-                            value: {
-                                containerType: [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
-                            },
-                            case: 'dataSite'
-                        }
-                    },
-                    {
-                        site: {
-                            value: {
-                                containerType: [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
-                            },
-                            case: 'schemaSite'
-                        }
-                    }
-                ]
+                criteria: this.mutationHistoryConverterProvider().convertMutationHistoryRequest(mutationHistoryRequest)
             } as GetMutationsHistoryPageRequest
 
             const response: GetMutationsHistoryPageResponse = await this.evitaSessionClientProvider().getMutationsHistoryPage(request, this._callMetadata)

@@ -1,4 +1,9 @@
-import type { GrpcChangeCatalogCapture } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
+import {
+    GrpcChangeCaptureArea,
+    GrpcChangeCaptureContainerType,
+    type GrpcChangeCaptureCriteria,
+    type GrpcChangeCatalogCapture
+} from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
 import {
     DelegatingLocalMutationConverter
@@ -15,9 +20,13 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
 import type { Mutation } from '@/modules/database-driver/request-response/Mutation.ts'
 import { CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
+import type { MutationHistoryRequest } from '@/modules/history-viewer/model/MutationHistoryRequest.ts'
 import {
-    DelegatingEngineMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/DelegatingEngineMutationConverter.ts'
+    DelegatingInfrastructureMutationConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/DelegatingInfrastructureMutationConverter.ts'
+import type {
+    GrpcInfrastructureMutation
+} from '@/modules/database-driver/connector/grpc/gen/GrpcInfrastrutureMutation_pb.ts'
 
 export class MutationHistoryConverter {
 
@@ -32,9 +41,8 @@ export class MutationHistoryConverter {
                 (!changeCapture.body?.value?.mutation || !changeCapture.body?.value?.mutation.case)) { // todo pfi: remove me?
                 console.error(`Issue with ${changeCapture.body}`)
                 mutation = undefined
-            } else if (CatalogSchemaConverter.toCaptureArea(changeCapture.area) == CaptureArea.Infrastructure ) {
-                // mutation = DelegatingEngineMutationConverter.convert(changeCapture.body.value);
-                mutation = undefined
+            } else if (CatalogSchemaConverter.toCaptureArea(changeCapture.area) == CaptureArea.Infrastructure && changeCapture.body.value) {
+                mutation = DelegatingInfrastructureMutationConverter.convert(changeCapture.body.value as GrpcInfrastructureMutation);
             } else if (changeCapture.body.case == 'schemaMutation') {
                 mutation = DelegatingEntitySchemaMutationConverter.convert(changeCapture.body.value)
             } else if (changeCapture.body.case == 'entityMutation') {
@@ -61,4 +69,30 @@ export class MutationHistoryConverter {
 
 
     }
+
+
+    convertMutationHistoryRequest(mutationHistoryRequest: MutationHistoryRequest): GrpcChangeCaptureCriteria[] {
+        return [
+            {
+                area: GrpcChangeCaptureArea.INFRASTRUCTURE
+            },
+            {
+                site: {
+                    value: {
+                        containerType: [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
+                    },
+                    case: 'dataSite'
+                }
+            },
+            {
+                site: {
+                    value: {
+                        containerType: [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
+                    },
+                    case: 'schemaSite'
+                }
+            }
+        ]
+    }
+
 }
