@@ -39,7 +39,6 @@ import { MapUtil } from '@/modules/database-driver/connector/grpc/utils/MapUtil'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { Currency } from '@/modules/database-driver/data-type/Currency'
 import { List as ImmutableList } from 'immutable'
-import { ScopedReferenceIndexType } from '@/modules/database-driver/request-response/schema/ScopedReferenceIndexType.ts'
 import { ReflectedReferenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 import {
     AttributeInheritanceBehavior
@@ -61,6 +60,9 @@ import {
 import { CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
 import { Operation } from '@/modules/database-driver/request-response/cdc/Operation.ts'
 import { EntityExistence } from '@/modules/database-driver/request-response/data/mutation/EntityMutation.ts'
+import {
+    ScopedReferenceIndexType
+} from '@/modules/database-driver/request-response/schema/mutation/reference/ScopedReferenceIndexType.ts'
 
 
 export class CatalogSchemaConverter {

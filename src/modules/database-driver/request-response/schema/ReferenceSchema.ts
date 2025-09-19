@@ -10,9 +10,10 @@ import { EntityScope } from '@/modules/database-driver/request-response/schema/E
 import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 import { useI18n } from 'vue-i18n'
 import { getEnumKeyByValue } from '@/utils/enum.ts'
-import type {
+import {
     ScopedReferenceIndexType
-} from '@/modules/database-driver/request-response/schema/ScopedReferenceIndexType.ts'
+} from '@/modules/database-driver/request-response/schema/mutation/reference/ScopedReferenceIndexType.ts'
+
 
 /**
  * evitaLab's representation of a single evitaDB reference schema independent of specific evitaDB version

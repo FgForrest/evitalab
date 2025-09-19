@@ -7,10 +7,16 @@ import {
 import type {
     SchemaMutationConverter
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
-import type {
-    ScopedReferenceIndexType
-} from '@/modules/database-driver/request-response/schema/ScopedReferenceIndexType.ts'
+
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter.ts'
+import {
+    ScopedReferenceIndexType
+} from '@/modules/database-driver/request-response/schema/mutation/reference/ScopedReferenceIndexType.ts'
+import {
+    ReferenceIndexTypeConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/ReferenceIndexTypeConverter.ts'
+import { ReferenceIndexType } from '@/modules/database-driver/request-response/schema/ReferenceIndexType.ts'
+import { List as ImmutableList } from 'immutable'
 
 export class SetReferenceSchemaIndexedMutationConverter implements SchemaMutationConverter<SetReferenceSchemaIndexedMutation, GrpcSetReferenceSchemaIndexedMutation> {
 
@@ -29,10 +35,10 @@ export class SetReferenceSchemaIndexedMutationConverter implements SchemaMutatio
             )
         } else if (mutation.indexedInScopes.length > 0) {
             indexedInScopes = mutation.indexedInScopes.map(scope =>
-                new ScopedReferenceIndexType(EntityConverter.convertEntityScope(scope), ReferenceIndexType.FOR_FILTERING)
+                new ScopedReferenceIndexType(EntityConverter.convertEntityScope(scope), ReferenceIndexType.ForFiltering)
             )
         } else {
-            indexedInScopes = ScopedReferenceIndexType.EMPTY
+            indexedInScopes = ScopedReferenceIndexType.Empty
         }
 
         return new SetReferenceSchemaIndexedMutation(mutation.name, ImmutableList(indexedInScopes))

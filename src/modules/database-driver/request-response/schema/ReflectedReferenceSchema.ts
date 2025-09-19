@@ -13,10 +13,11 @@ import {
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema.ts'
 import { i18n } from '@/vue-plugins/i18n.ts'
 import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
-import type {
-    ScopedReferenceIndexType
-} from '@/modules/database-driver/request-response/schema/ScopedReferenceIndexType.ts'
+
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import {
+    ScopedReferenceIndexType
+} from '@/modules/database-driver/request-response/schema/mutation/reference/ScopedReferenceIndexType.ts'
 
 export class ReflectedReferenceSchema extends ReferenceSchema {
     /**

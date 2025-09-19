@@ -265,12 +265,13 @@ export class DelegatingEntitySchemaMutationConverter {
             throw new UnexpectedError('Unknown mutation type: ' + mutation?.mutation.case)
         }
 
-        const conversionDescriptor = this.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
-        if (!conversionDescriptor) {
+        const ConverterClass = DelegatingEntitySchemaMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
+        if (!ConverterClass) {
             throw new UnexpectedError('Unknown mutation type: ' + mutation.mutation.case)
         }
 
-        return mutation.mutation.value
+        const converter = new ConverterClass()
+        return converter.convert(mutation.mutation.value)
     }
 }
 
