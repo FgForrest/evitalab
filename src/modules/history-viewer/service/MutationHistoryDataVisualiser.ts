@@ -11,20 +11,35 @@ import {
 import {
     Action,
     MetadataGroup,
-    MetadataItem,
+    MetadataItem, metadataItemSessionIdIdentifier, MetadataItemSeverity,
     MutationHistoryItemVisualisationDefinition
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
 import { CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
 import type {
     AttributeMutation
 } from '@/modules/database-driver/request-response/data/mutation/attribute/AttributeMutation.ts'
-import type {
+import {
     UpsertAttributeMutation
 } from '@/modules/database-driver/request-response/data/mutation/attribute/UpsertAttributeMutation.ts'
 import { EntityUpsertMutation } from '@/modules/database-driver/request-response/data/mutation/EntityUpsertMutation.ts'
 import {
     ReferenceMutation
 } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceMutation.ts'
+import type { LocalMutation } from '@/modules/database-driver/request-response/data/mutation/LocalMutation.ts'
+import {
+    UpsertPriceMutation
+} from '@/modules/database-driver/request-response/data/mutation/price/UpsertPriceMutation.ts'
+import { PriceMutation } from '@/modules/database-driver/request-response/data/mutation/price/PriceMutation.ts'
+import {
+    RemovePriceMutation
+} from '@/modules/database-driver/request-response/data/mutation/price/RemovePriceMutation.ts'
+import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
+import type { DateTimeRange } from '@/modules/database-driver/data-type/DateTimeRange.ts'
+import { ReferenceKey } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceKey.ts'
+import {
+    InsertReferenceMutation
+} from '@/modules/database-driver/request-response/data/mutation/reference/InsertReferenceMutation.ts'
+import type { Cardinality } from '@/modules/database-driver/request-response/schema/Cardinality.ts'
 
 /**
  * Visualises entity enrichment container.
@@ -62,25 +77,40 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
             if (attributeMutation instanceof ReferenceMutation) { // todo pfi: fix this ugly code
 
-                const attributeName = attributeMutation?.referenceKey.referenceName
+                const referenceName = attributeMutation?.referenceKey.referenceName
                 const attributeValue = attributeMutation?.referenceKey.primaryKey.toString()
                 const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
                     mutationHistory,
-                    i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }),
-                    attributeValue,
-                    this.constructReferenceMetadata(mutationHistory, visualisedSessionRecord),
+                    i18n.global.t('mutationHistoryViewer.record.type.attribute.reference.title', { referenceName: referenceName }),
+                    `(FK ${attributeValue})`,
+                    this.constructReferenceMetadata(attributeMutation, visualisedSessionRecord),
                     ImmutableList() // this.constructActions(ctx, mutationHistory)
                 )
                 visualisedRecord.addChild(attributeMutationVisualised)
 
+            } else if (attributeMutation instanceof PriceMutation) {
+                const attributeName = 'Price'
+                const attributeValue = attributeMutation instanceof UpsertPriceMutation ? i18n.global.t('mutationHistoryViewer.record.type.attribute.price.detail', {
+                    priceWithoutTax: attributeMutation.priceWithoutTax,
+                    priceWithTax: attributeMutation.priceWithTax,
+                    taxRate: attributeMutation.taxRate
+                }) : ''
+                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
+                    mutationHistory,
+                    i18n.global.t('mutationHistoryViewer.record.type.attribute.price.title'),
+                    attributeValue,
+                    this.constructAttributePriceMetadata(attributeMutation, visualisedSessionRecord),
+                    ImmutableList() // this.constructActions(ctx, mutationHistory)
+                )
+                visualisedRecord.addChild(attributeMutationVisualised)
             } else {
                 const attributeName = (attributeMutation as AttributeMutation)?.attributeKey?.attributeName
-                const attributeValue =  (attributeMutation as UpsertAttributeMutation)?.value?.toString()
+                const attributeValue = (attributeMutation as UpsertAttributeMutation)?.value?.toString()
                 const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
                     mutationHistory,
                     i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }),
                     attributeValue,
-                    this.constructAttributeMetadata(mutationHistory, visualisedSessionRecord),
+                    this.constructAttributeMetadata(attributeMutation, visualisedSessionRecord),
                     ImmutableList() // this.constructActions(ctx, mutationHistory)
                 )
                 visualisedRecord.addChild(attributeMutationVisualised)
@@ -97,44 +127,204 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         ctx.addRootVisualisedRecord(visualisedRecord) // todo pfi: this should never happens - try it with pagination and filters and limits
     }
 
-    private constructEntityMetadata(trafficRecord: ChangeCatalogCapture,
-                              visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
-        const defaultMetadata: MetadataItem[] = []
-
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.area))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.operation))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.entityType))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.entityPrimaryKey))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.version))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.index))
-
-        return [MetadataGroup.default(defaultMetadata)]
-    }
-
-    private constructAttributeMetadata(trafficRecord: ChangeCatalogCapture,
+    private constructEntityMetadata(mutationHistory: ChangeCatalogCapture,
                                     visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
 
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.area))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.operation))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.entityType))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.entityPrimaryKey))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.version))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.index))
+        defaultMetadata.push(MetadataItem.area(mutationHistory.area))
+        defaultMetadata.push(MetadataItem.operation(mutationHistory.operation))
+        defaultMetadata.push(MetadataItem.entityType(mutationHistory.entityType))
+        defaultMetadata.push(MetadataItem.entityPrimaryKey(mutationHistory.entityPrimaryKey))
+        defaultMetadata.push(MetadataItem.version(mutationHistory.version))
+        defaultMetadata.push(MetadataItem.index(mutationHistory.index))
 
         return [MetadataGroup.default(defaultMetadata)]
     }
 
-    private constructReferenceMetadata(trafficRecord: ChangeCatalogCapture,
+    private constructAttributeMetadata(localMutation: LocalMutation,
                                        visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
 
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.area))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.operation))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.entityType))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.entityPrimaryKey))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.version))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.index))
+        defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(localMutation.constructor.name))
+
+        // console.log(localMutation)
+
+        if (localMutation instanceof UpsertAttributeMutation) {
+            if (localMutation?.attributeKey?.locale) {
+                defaultMetadata.push(MutationHistoryDataVisualiser.locale(localMutation.attributeKey.locale))
+            }
+        } else if (localMutation instanceof UpsertPriceMutation) {
+            // if (localMutation.) {
+            //     defaultMetadata.push(MutationHistoryDataVisualiser.locale(localMutation.attributeKey.locale))
+            // }
+        }
+
+
+        return [MetadataGroup.default(defaultMetadata)]
+    }
+
+    private constructAttributePriceMetadata(localMutation: PriceMutation,
+                                            visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
+        const defaultMetadata: MetadataItem[] = []
+
+        defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(localMutation.constructor.name))
+
+        // console.log(localMutation)
+
+        if (localMutation instanceof UpsertPriceMutation) {
+            defaultMetadata.push(MutationHistoryDataVisualiser.currency(localMutation.priceKey.currency))
+            defaultMetadata.push(MutationHistoryDataVisualiser.priceList(localMutation.priceKey.priceList))
+            defaultMetadata.push(MutationHistoryDataVisualiser.priceId(localMutation.priceKey.priceId))
+
+            defaultMetadata.push(MutationHistoryDataVisualiser.indexed(localMutation.indexed))
+            defaultMetadata.push(MutationHistoryDataVisualiser.validityFromTo(localMutation.validity))
+
+        } else if (localMutation instanceof RemovePriceMutation) {
+
+        } else {
+            console.error(`Not implemented price mutation ${localMutation}`)
+        }
+
+
+        return [MetadataGroup.default(defaultMetadata)]
+    }
+
+    static validityFromTo(validity: DateTimeRange | undefined): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-calendar-range-outline',
+            i18n.global.t('mutationHistoryViewer.record.type.attribute.validity.tooltip'),
+            validity?.getPrettyPrintableString() ?? 'Infinity',
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+    static indexed(currency: any): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-flash',
+            i18n.global.t('mutationHistoryViewer.record.type.attribute.indexed.tooltip'),
+            currency?.toString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+    static priceId(currency: any): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-identifier',
+            i18n.global.t('mutationHistoryViewer.record.type.attribute.priceId.tooltip'),
+            currency?.toString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+    static priceList(currency: any): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-currency-usd',
+            i18n.global.t('mutationHistoryViewer.record.type.attribute.priceList.tooltip'),
+            currency?.toString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+    static currency(currency: any): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-cash',
+            i18n.global.t('mutationHistoryViewer.record.type.attribute.currency.tooltip'),
+            currency?.toString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+
+    static locale(sessionId: any): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-file-tree',
+            i18n.global.t('mutationHistoryViewer.record.type.attribute.locale.tooltip'),
+            sessionId?.toString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+    static mutationType(sessionId: any): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-file-tree',
+            i18n.global.t('mutationHistoryViewer.record.type.attribute.mutationType.tooltip'),
+            sessionId?.toString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+    static referenceCardinality(referenceCardinality: Cardinality): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-file-tree',
+            i18n.global.t('mutationHistoryViewer.record.type.attribute.referenceCardinality.tooltip'),
+            referenceCardinality?.toString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+    static referenceEntityType(referenceEntityType: string|undefined): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-file-tree',
+            i18n.global.t('mutationHistoryViewer.record.type.attribute.referenceEntityType.tooltip'),
+            referenceEntityType ? referenceEntityType.toString() : 'Unknown',
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+    static relation(referenceName: string, referenceId: any): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-file-tree',
+            i18n.global.t('mutationHistoryViewer.record.type.attribute.referenceRelation.tooltip'),
+            `${referenceName} : ${referenceId}`,
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+
+    private constructReferenceMetadata(referenceMutation: ReferenceMutation,
+                                       visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
+        const defaultMetadata: MetadataItem[] = []
+        defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(referenceMutation.constructor.name))
+        const referenceName = referenceMutation?.referenceKey.referenceName
+        const attributeValue = referenceMutation?.referenceKey.primaryKey.toString()
+        defaultMetadata.push(MutationHistoryDataVisualiser.relation(referenceName, attributeValue))
+        if (referenceMutation instanceof InsertReferenceMutation) {
+            defaultMetadata.push(MutationHistoryDataVisualiser.referenceCardinality(referenceMutation.referenceCardinality))
+            defaultMetadata.push(MutationHistoryDataVisualiser.referenceEntityType(referenceMutation.referenceEntityType))
+        }
+
+        // console.log(referenceMutation)
+
 
         return [MetadataGroup.default(defaultMetadata)]
     }

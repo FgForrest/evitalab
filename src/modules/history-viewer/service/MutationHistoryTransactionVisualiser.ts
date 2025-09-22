@@ -56,17 +56,17 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
         ctx.addRootVisualisedRecord(visualisedRecord)
     }
 
-    private constructMetadata(trafficRecord: ChangeCatalogCapture,
+    private constructMetadata(mutationHistory: ChangeCatalogCapture,
                               visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
 
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.area))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.operation))
-        if (trafficRecord.body instanceof TransactionMutation) {
-            defaultMetadata.push(MutationHistoryTransactionVisualiser.mutationCount((trafficRecord.body.mutationCount)))
-            defaultMetadata.push(MutationHistoryTransactionVisualiser.commitTimestamp((trafficRecord.body.commitTimestamp)))
-            defaultMetadata.push(MutationHistoryTransactionVisualiser.transactionId((trafficRecord.body.transactionId)))
-            defaultMetadata.push(MutationHistoryTransactionVisualiser.walSizeInBytes((trafficRecord.body.walSizeInBytes)))
+        defaultMetadata.push(MetadataItem.area(mutationHistory.area))
+        defaultMetadata.push(MetadataItem.operation(mutationHistory.operation))
+        if (mutationHistory.body instanceof TransactionMutation) {
+            defaultMetadata.push(MutationHistoryTransactionVisualiser.mutationCount((mutationHistory.body.mutationCount)))
+            defaultMetadata.push(MutationHistoryTransactionVisualiser.commitTimestamp((mutationHistory.body.commitTimestamp)))
+            defaultMetadata.push(MutationHistoryTransactionVisualiser.transactionId((mutationHistory.body.transactionId)))
+            defaultMetadata.push(MutationHistoryTransactionVisualiser.walSizeInBytes((mutationHistory.body.walSizeInBytes)))
         }
 
         return [MetadataGroup.default(defaultMetadata)]

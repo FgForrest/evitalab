@@ -78,6 +78,81 @@ export class MetadataItem {
         this.onClickCallback = onClickCallback
     }
 
+    static area(sessionId: any): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-file-tree',
+            i18n.global.t('mutationHistoryViewer.record.type.area.tooltip'),
+            sessionId?.toString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+    static operation(sessionId: any): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-file-tree',
+            i18n.global.t('mutationHistoryViewer.record.type.operation.tooltip'),
+            sessionId?.toString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+
+    static entityType(sessionId: any): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-file-tree',
+            i18n.global.t('mutationHistoryViewer.record.type.entityType.tooltip'),
+            sessionId?.toString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+    static version(sessionId: any): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-file-tree',
+            i18n.global.t('mutationHistoryViewer.record.type.version.tooltip'),
+            sessionId?.toString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+    static entityPrimaryKey(sessionId: any): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-file-tree',
+            i18n.global.t('mutationHistoryViewer.record.type.entityPrimaryKey.tooltip'),
+            sessionId?.toString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+    static index(sessionId: any): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-file-tree',
+            i18n.global.t('mutationHistoryViewer.record.type.index.tooltip'),
+            sessionId?.toString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
+    }
+
+
+
     static sessionId(sessionId: any): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,

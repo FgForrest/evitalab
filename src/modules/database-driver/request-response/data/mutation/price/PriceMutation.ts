@@ -2,7 +2,7 @@ import type { LocalMutation } from '@/modules/database-driver/request-response/d
 import type { PriceKey } from '@/modules/database-driver/request-response/data/mutation/price/PriceKey.ts'
 
 export abstract class PriceMutation implements LocalMutation {
-    protected readonly priceKey: PriceKey
+    public readonly priceKey: PriceKey
 
     constructor(priceKey: PriceKey) {
         this.priceKey = priceKey

@@ -112,9 +112,9 @@ provideHistoryCriteria(criteria)
                 :criteria="criteria"
             />
 
-            <pre>
-                {{ JSON.stringify(recordings, null, 2) }}
-            </pre>
+<!--            <pre>-->
+<!--                {{ JSON.stringify(recordings, null, 2) }}-->
+<!--            </pre>-->
 
 
 

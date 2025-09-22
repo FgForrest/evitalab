@@ -44,7 +44,7 @@ export class MutationHistoryViewerTabFactory {
     }
 
     private constructTitle(): string {
-        return i18n.global.t('historyViewer.definition.title')
+        return i18n.global.t('mutationHistoryViewer.definition.title')
     }
 
     private restoreTabParamsFromSerializable(json: TabParamsDto): MutationHistoryViewerTabParams {

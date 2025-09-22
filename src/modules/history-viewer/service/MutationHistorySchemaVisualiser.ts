@@ -11,10 +11,16 @@ import {
 import {
     Action,
     MetadataGroup,
-    MetadataItem,
+    MetadataItem, metadataItemIoFetchCountIdentifier,
+    metadataItemSessionIdIdentifier,
+    MetadataItemSeverity,
     MutationHistoryItemVisualisationDefinition
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
 import { CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
+import type {
+    ModifyEntitySchemaMutation
+} from '@/modules/database-driver/request-response/schema/mutation/catalog/ModifyEntitySchemaMutation.ts'
+import { formatCount } from '@/utils/string.ts'
 
 /**
  * Visualises entity enrichment container.
@@ -42,29 +48,75 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
             i18n.global.t('mutationHistoryViewer.record.type.schema.title', { entityType: mutationHistory.entityType }),
             undefined,
             this.constructMetadata(mutationHistory, visualisedSessionRecord),
-            this.constructActions(ctx, mutationHistory)
+            ImmutableList()//this.constructActions(ctx, mutationHistory)
         )
+
+
+        // entity attributes
+        if ((mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations) {
+            for (let schemaMutation of (mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations) {
+                console.log(schemaMutation)
+
+                const attributeName = schemaMutation?.constructor.name
+                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
+                    mutationHistory,
+                    i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }), // todo pfi: fix translation key
+                    JSON.stringify(schemaMutation),
+                    [], //this.constructAttributeMetadata(attributeMutation, visualisedSessionRecord),
+                    ImmutableList() // this.constructActions(ctx, mutationHistory)
+                )
+                visualisedRecord.addChild(attributeMutationVisualised)
+            }
+        }
+
 
         if (visualisedSessionRecord != undefined) {
             visualisedSessionRecord.addChild(visualisedRecord)
             return
         }
-        ctx.addRootVisualisedRecord(visualisedRecord)
+        console.error('Hey, some data without transaction')
+        ctx.addRootVisualisedRecord(visualisedRecord) // todo pfi: this should never happens - try it with pagination and filters and limits
     }
 
-    private constructMetadata(trafficRecord: ChangeCatalogCapture,
+    private constructMetadata(mutationHistory: ChangeCatalogCapture,
                               visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
 
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.area))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.operation))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.entityType))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.entityPrimaryKey))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.version))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.index))
+        defaultMetadata.push(MetadataItem.area(mutationHistory.area))
+        defaultMetadata.push(MetadataItem.operation(mutationHistory.operation))
+        defaultMetadata.push(MetadataItem.entityType(mutationHistory.entityType))
+        defaultMetadata.push(MetadataItem.version(mutationHistory.version))
+        defaultMetadata.push(MetadataItem.index(mutationHistory.index))
+        defaultMetadata.push(MutationHistorySchemaVisualiser.mutationCount((mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations?.size))
+        defaultMetadata.push(MutationHistorySchemaVisualiser.mutationType(mutationHistory?.body?.constructor?.name))
 
 
         return [MetadataGroup.default(defaultMetadata)]
+    }
+
+    static mutationCount(ioFetchCount: number): MetadataItem {
+        return new MetadataItem(
+            metadataItemIoFetchCountIdentifier,
+            'mdi-download-network-outline',
+            i18n.global.t('mutationHistoryViewer.record.type.transaction.mutationCount.tooltip'),
+            i18n.global.t(
+                'mutationHistoryViewer.record.type.transaction.mutationCount.value',
+                { count: formatCount(ioFetchCount) }
+            )
+        )
+    }
+
+
+    static mutationType(sessionId: any): MetadataItem {
+        return new MetadataItem(
+            metadataItemSessionIdIdentifier,
+            'mdi-file-tree',
+            i18n.global.t('mutationHistoryViewer.record.type.attribute.mutationType.tooltip'), // todo fix translation key
+            sessionId?.toString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            undefined
+        )
     }
 
     private constructActions(ctx: MutationHistoryVisualisationContext,

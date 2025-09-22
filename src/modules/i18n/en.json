@@ -411,7 +411,8 @@
           "activateCatalog": "Activate catalog",
           "deactivateCatalog": "Deactivate catalog",
           "switchToMutable": "Switch to mutable",
-          "switchToImmutable": "Switch to immutable"
+          "switchToImmutable": "Switch to immutable",
+          "mutationHistoryViewer": "Mutation history"
         }
       },
       "notification": {
@@ -1874,6 +1875,9 @@
   },
   "mutationHistoryViewer": {
     "title": "Mutation history",
+    "definition": {
+      "title": "Mutation history"
+    },
     "record": {
       "type": {
         "transaction": {
@@ -1883,7 +1887,7 @@
             "value": "Mutation count {count}"
           },
           "walSizeInBytes": {
-            "tooltip": "WAL in bytes",
+            "tooltip": "WAL size in bytes",
             "value": "WAL {count}"
           },
           "commitTimestamp": {
@@ -1894,13 +1898,71 @@
           }
         },
         "schema": {
-          "title": "Entity: {entityType}"
+          "title": "Schema: {entityType}"
         },
         "entity": {
           "title": "Entity: {entityType}"
         },
+        "area": {
+          "tooltip": "Area"
+        },
+        "operation": {
+          "tooltip": "Operation"
+        },
+        "entityType": {
+          "tooltip": "Entity type"
+        },
+        "entityPrimaryKey": {
+          "tooltip": "Entity primary key"
+        },
+        "version": {
+          "tooltip": "Version"
+        },
+        "index": {
+          "tooltip": "index"
+        },
         "attribute": {
-          "title": "Attribute: {attributeName}"
+          "title": "Attribute: {attributeName}",
+          "locale": {
+            "tooltip": "Locale"
+          },
+          "mutationType": {
+            "tooltip": "Mutation type"
+          },
+          "currency": {
+            "tooltip": "Currency"
+          },
+          "priceList": {
+            "tooltip": "Price list"
+          },
+          "priceId": {
+            "tooltip": "Price ID",
+            "title": "Price ID"
+          },
+          "indexed": {
+            "tooltip": "Indexed",
+            "title": "Indexed"
+          },
+          "validity": {
+            "tooltip": "Validity",
+            "title": "Validity"
+          },
+          "reference": {
+            "title": "Reference {referenceName} updated"
+          },
+          "referenceRelation": {
+            "tooltip": "Reference relation"
+          },
+          "referenceCardinality": {
+            "tooltip": "Cardinality"
+          },
+          "referenceEntityType": {
+            "tooltip": "Entity type"
+          },
+          "price": {
+            "title": "Price updated:",
+            "detail": "Update price without tax {priceWithoutTax} / with tax {priceWithTax} / tax rate {taxRate}"
+          }
         }
       }
     }
