@@ -11,10 +11,16 @@ import {
 import {
     Action,
     MetadataGroup,
-    MetadataItem,
+    MetadataItem, metadataItemCreatedIdentifier, metadataItemIoFetchCountIdentifier, MetadataItemSeverity,
     MutationHistoryItemVisualisationDefinition
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
 import { CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
+import { TransactionMutation } from '@/modules/database-driver/request-response/transaction/TransactionMutation.ts'
+import { formatCount } from '@/utils/string.ts'
+import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime.ts'
+import type {
+    MutationHistoryMetadataItemContext
+} from '@/modules/history-viewer/model/MutationHistoryMetadataItemContext.ts'
 
 /**
  * Visualises entity enrichment container.
@@ -42,7 +48,7 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
             i18n.global.t('mutationHistoryViewer.record.type.transaction.title', { version: mutationHistory.version }),
             undefined,
             this.constructMetadata(mutationHistory, visualisedSessionRecord),
-            this.constructActions(ctx, mutationHistory)
+            ImmutableList()
         )
 
 
@@ -56,13 +62,78 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
 
         defaultMetadata.push(MetadataItem.sessionId(trafficRecord.area))
         defaultMetadata.push(MetadataItem.sessionId(trafficRecord.operation))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.entityType))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.entityPrimaryKey))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.version))
-        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.index))
-
+        if (trafficRecord.body instanceof TransactionMutation) {
+            defaultMetadata.push(MutationHistoryTransactionVisualiser.mutationCount((trafficRecord.body.mutationCount)))
+            defaultMetadata.push(MutationHistoryTransactionVisualiser.commitTimestamp((trafficRecord.body.commitTimestamp)))
+            defaultMetadata.push(MutationHistoryTransactionVisualiser.transactionId((trafficRecord.body.transactionId)))
+            defaultMetadata.push(MutationHistoryTransactionVisualiser.walSizeInBytes((trafficRecord.body.walSizeInBytes)))
+        }
 
         return [MetadataGroup.default(defaultMetadata)]
+    }
+
+    static transactionId(created: string): MetadataItem {
+        return new MetadataItem(
+            metadataItemCreatedIdentifier,
+            'mdi-identifier',
+            i18n.global.t('mutationHistoryViewer.record.type.transaction.transactionId.tooltip'),
+            created,
+            MetadataItemSeverity.Info,
+            undefined,
+            (ctx: MutationHistoryMetadataItemContext): void => {
+                navigator.clipboard.writeText(`${created}`).then(() => {
+                    ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.type.transaction.transactionId.notification.copiedToClipboard'))
+                        .then()
+                }).catch(() => {
+                    ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
+                        .then()
+                })
+            }
+        )
+    }
+
+    static walSizeInBytes(ioFetchCount: number): MetadataItem {
+        return new MetadataItem(
+            metadataItemIoFetchCountIdentifier,
+            'mdi-folder-zip-outline',
+            i18n.global.t('mutationHistoryViewer.record.type.transaction.walSizeInBytes.tooltip'),
+            i18n.global.t(
+                'mutationHistoryViewer.record.type.transaction.walSizeInBytes.value',
+                { count: formatCount(ioFetchCount) }
+            )
+        )
+    }
+
+    static mutationCount(ioFetchCount: number): MetadataItem {
+        return new MetadataItem(
+            metadataItemIoFetchCountIdentifier,
+            'mdi-download-network-outline',
+            i18n.global.t('mutationHistoryViewer.record.type.transaction.mutationCount.tooltip'),
+            i18n.global.t(
+                'mutationHistoryViewer.record.type.transaction.mutationCount.value',
+                { count: formatCount(ioFetchCount) }
+            )
+        )
+    }
+
+    static commitTimestamp(created: OffsetDateTime): MetadataItem {
+        return new MetadataItem(
+            metadataItemCreatedIdentifier,
+            'mdi-clock-outline',
+            i18n.global.t('mutationHistoryViewer.record.type.transaction.commitTimestamp.tooltip'),
+            created.getPrettyPrintableString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            (ctx: MutationHistoryMetadataItemContext): void => {
+                navigator.clipboard.writeText(`${created.toString()}`).then(() => {
+                    ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.type.transaction.commitTimestamp.notification.copiedToClipboard'))
+                        .then()
+                }).catch(() => {
+                    ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
+                        .then()
+                })
+            }
+        )
     }
 
     private constructActions(ctx: MutationHistoryVisualisationContext,

@@ -110,6 +110,8 @@ export class MetadataItem {
         )
     }
 
+
+
     static duration(duration: Duration,
                     thresholds?: [number, number]): MetadataItem {
         const durationInMillis: number = duration.toMillis()

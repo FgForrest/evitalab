@@ -1877,7 +1877,21 @@
     "record": {
       "type": {
         "transaction": {
-          "title": "Transaction {version}"
+          "title": "Transaction {version}",
+          "mutationCount": {
+            "tooltip": "Mutation count",
+            "value": "Mutation count {count}"
+          },
+          "walSizeInBytes": {
+            "tooltip": "WAL in bytes",
+            "value": "WAL {count}"
+          },
+          "commitTimestamp": {
+            "tooltip": "Commit timestamp"
+          },
+          "transactionId": {
+            "tooltip": "Transaction ID"
+          }
         },
         "schema": {
           "title": "Entity: {entityType}"

@@ -22,6 +22,9 @@ import type {
     UpsertAttributeMutation
 } from '@/modules/database-driver/request-response/data/mutation/attribute/UpsertAttributeMutation.ts'
 import { EntityUpsertMutation } from '@/modules/database-driver/request-response/data/mutation/EntityUpsertMutation.ts'
+import {
+    ReferenceMutation
+} from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceMutation.ts'
 
 /**
  * Visualises entity enrichment container.
@@ -44,27 +47,45 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
         const visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined = ctx.getVisualisedSessionRecord(mutationHistory.version)
 
+        // entity
         const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
             mutationHistory,
             i18n.global.t('mutationHistoryViewer.record.type.entity.title', { entityType: mutationHistory.entityType }),
-            undefined,
-            this.constructMetadata(mutationHistory, visualisedSessionRecord),
-            this.constructActions(ctx, mutationHistory)
+            `(PK ${mutationHistory.entityPrimaryKey?.toString()})`,
+            this.constructEntityMetadata(mutationHistory, visualisedSessionRecord),
+            ImmutableList() // this.constructActions(ctx, mutationHistory)
         )
 
 
+        // entity attributes
         for (let attributeMutation of (mutationHistory.body as EntityUpsertMutation).localMutations) {
 
-            const an = (attributeMutation as UpsertAttributeMutation)?.attributeKey?.attributeName
-            const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
-                mutationHistory,
-                i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName:  an}),
-                (attributeMutation as UpsertAttributeMutation)?.value?.toString(),
-                this.constructMetadata(mutationHistory, visualisedSessionRecord),
-                this.constructActions(ctx, mutationHistory)
-            )
+            if (attributeMutation instanceof ReferenceMutation) { // todo pfi: fix this ugly code
 
-            visualisedRecord.addChild(attributeMutationVisualised);
+                const attributeName = attributeMutation?.referenceKey.referenceName
+                const attributeValue = attributeMutation?.referenceKey.primaryKey.toString()
+                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
+                    mutationHistory,
+                    i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }),
+                    attributeValue,
+                    this.constructReferenceMetadata(mutationHistory, visualisedSessionRecord),
+                    ImmutableList() // this.constructActions(ctx, mutationHistory)
+                )
+                visualisedRecord.addChild(attributeMutationVisualised)
+
+            } else {
+                const attributeName = (attributeMutation as AttributeMutation)?.attributeKey?.attributeName
+                const attributeValue =  (attributeMutation as UpsertAttributeMutation)?.value?.toString()
+                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
+                    mutationHistory,
+                    i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }),
+                    attributeValue,
+                    this.constructAttributeMetadata(mutationHistory, visualisedSessionRecord),
+                    ImmutableList() // this.constructActions(ctx, mutationHistory)
+                )
+                visualisedRecord.addChild(attributeMutationVisualised)
+            }
+
         }
 
 
@@ -72,11 +93,11 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             visualisedSessionRecord.addChild(visualisedRecord)
             return
         }
-        console.error("Hey, some data without transaction")
+        console.error('Hey, some data without transaction')
         ctx.addRootVisualisedRecord(visualisedRecord) // todo pfi: this should never happens - try it with pagination and filters and limits
     }
 
-    private constructMetadata(trafficRecord: ChangeCatalogCapture,
+    private constructEntityMetadata(trafficRecord: ChangeCatalogCapture,
                               visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
 
@@ -87,9 +108,37 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         defaultMetadata.push(MetadataItem.sessionId(trafficRecord.version))
         defaultMetadata.push(MetadataItem.sessionId(trafficRecord.index))
 
+        return [MetadataGroup.default(defaultMetadata)]
+    }
+
+    private constructAttributeMetadata(trafficRecord: ChangeCatalogCapture,
+                                    visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
+        const defaultMetadata: MetadataItem[] = []
+
+        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.area))
+        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.operation))
+        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.entityType))
+        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.entityPrimaryKey))
+        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.version))
+        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.index))
 
         return [MetadataGroup.default(defaultMetadata)]
     }
+
+    private constructReferenceMetadata(trafficRecord: ChangeCatalogCapture,
+                                       visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
+        const defaultMetadata: MetadataItem[] = []
+
+        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.area))
+        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.operation))
+        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.entityType))
+        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.entityPrimaryKey))
+        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.version))
+        defaultMetadata.push(MetadataItem.sessionId(trafficRecord.index))
+
+        return [MetadataGroup.default(defaultMetadata)]
+    }
+
 
     private constructActions(ctx: MutationHistoryVisualisationContext,
                              trafficRecord: ChangeCatalogCapture): ImmutableList<Action> {
