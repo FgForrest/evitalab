@@ -167,7 +167,7 @@ async function reloadHistoryList(): Promise<void> {
 
         <VSheet class="mutation-history-viewer__body">
             <MutationHistory
-                ref="mutationHistoryListRef"
+                ref="historyListRef"
                 :data-pointer="params.dataPointer"
                 :criteria="criteria"
                 @update:start-pointer-active="historyStartPointerActive = $event"

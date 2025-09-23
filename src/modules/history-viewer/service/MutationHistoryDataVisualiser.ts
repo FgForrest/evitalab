@@ -123,7 +123,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             visualisedSessionRecord.addChild(visualisedRecord)
             return
         }
-        console.error('Hey, some data without transaction')
+        console.error('Hey, some data without transaction') // todo pfi throw exception instead
         ctx.addRootVisualisedRecord(visualisedRecord) // todo pfi: this should never happens - try it with pagination and filters and limits
     }
 
@@ -147,6 +147,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
         defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(localMutation.constructor.name))
 
+        // todo pfi fix
         // console.log(localMutation)
 
         if (localMutation instanceof UpsertAttributeMutation) {
@@ -169,6 +170,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
         defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(localMutation.constructor.name))
 
+        // todo pfi fix
         // console.log(localMutation)
 
         if (localMutation instanceof UpsertPriceMutation) {
