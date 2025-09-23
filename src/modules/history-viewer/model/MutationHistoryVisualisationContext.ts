@@ -16,7 +16,7 @@ export class MutationHistoryVisualisationContext {
 
     readonly catalogName: string
 
-    private rootVisualisedRecords: MutationHistoryItemVisualisationDefinition[] = []
+    private rootVisualisedRecords: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
     private visualisedSessionRecordsIndex: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
     private visualisedSourceQueryRecordsIndex: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
 
@@ -25,11 +25,17 @@ export class MutationHistoryVisualisationContext {
     }
 
     getVisualisedRecords(): ImmutableList<MutationHistoryItemVisualisationDefinition> {
-        return ImmutableList(this.rootVisualisedRecords)
+        return ImmutableList(this.rootVisualisedRecords.values())
     }
 
+    // todo pfi: consultation required
     addRootVisualisedRecord(record: MutationHistoryItemVisualisationDefinition): void {
-        this.rootVisualisedRecords.push(record)
+        if (this.rootVisualisedRecords.has(record.source.version.toString())) {
+            // throw new UnexpectedError(`There is already mutation history record with transaction ID '${sessionId.toString()}'`)
+        } else {
+            this.rootVisualisedRecords.set(record.source.version.toString(), record)
+        }
+
     }
 
     getVisualisedSessionRecord(sessionId: number): MutationHistoryItemVisualisationDefinition | undefined {
@@ -38,9 +44,10 @@ export class MutationHistoryVisualisationContext {
 
     addVisualisedSessionRecord(sessionId: number, record: MutationHistoryItemVisualisationDefinition): void {
         if (this.visualisedSessionRecordsIndex.has(sessionId.toString())) {
-            throw new UnexpectedError(`There is already session record with session ID '${sessionId.toString()}'`)
+            // throw new UnexpectedError(`There is already mutation history record with transaction ID '${sessionId.toString()}'`)
+        } else {
+            this.visualisedSessionRecordsIndex.set(sessionId.toString(), record)
         }
-        this.visualisedSessionRecordsIndex.set(sessionId.toString(), record)
     }
 
     getVisualisedSourceQueryRecord(sourceQueryId: string): MutationHistoryItemVisualisationDefinition | undefined {

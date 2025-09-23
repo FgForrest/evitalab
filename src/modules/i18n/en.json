@@ -1878,6 +1878,30 @@
     "definition": {
       "title": "Mutation history"
     },
+    "filter": {
+      "label": "Filter",
+      "button": {
+        "apply": "Apply filter"
+      },
+      "form": {
+        "from": {
+          "hint": "From",
+          "label": "From"
+        },
+        "to": {
+          "hint": "To",
+          "label": "To"
+        },
+        "mutationTypes": {
+          "hint": "To",
+          "valueDescriptor": "To"
+        },
+        "entityPrimaryKey": {
+          "hint": "Entity PK",
+          "label": "Entity PK"
+        }
+      }
+    },
     "record": {
       "type": {
         "transaction": {

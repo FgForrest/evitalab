@@ -10,28 +10,28 @@ import {
 } from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
 import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
 import { useI18n } from 'vue-i18n'
-import { onBeforeMount, ref } from 'vue'
+import { computed, onBeforeMount, onMounted, onUnmounted, ref, watch } from 'vue'
 import { List } from 'immutable'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
-import type { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData.ts'
 import {
     MutationHistoryViewerTabDefinition
 } from '@/modules/history-viewer/model/MutationHistoryViewerTabDefinition.ts'
 import type { MutationHistoryViewerTabParams } from '@/modules/history-viewer/model/MutationHistoryViewerTabParams.ts'
-import { useMutationHistoryViewerService } from '@/modules/history-viewer/service/MutationHistoryViewerService.ts'
-import { type Toaster, useToaster } from '@/modules/notification/service/Toaster.ts'
 import { MutationHistoryCriteria } from '@/modules/history-viewer/model/MutationHistoryCriteria.ts'
 import MutationHistory from '@/modules/history-viewer/component/MutationHistory.vue'
 import { provideHistoryCriteria } from '@/modules/history-viewer/component/dependencies.ts'
+import MutationHistoryFilter from '@/modules/history-viewer/component/MutationHistoryFilter.vue'
+import { Command } from '@/modules/keymap/model/Command.ts'
+import ShareTabButton from '@/modules/workspace/tab/component/ShareTabButton.vue'
+import { MutationHistoryViewerTabData } from '@/modules/history-viewer/model/MutationHistoryViewerTabData.ts'
+import { TabType } from '@/modules/workspace/tab/model/TabType.ts'
+import StartPointerButton from '@/modules/traffic-viewer/components/StartPointerButton.vue'
+import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 
 const keymap: Keymap = useKeymap()
-const toaster: Toaster = useToaster()
-
-const mutationHistoryViewerService = useMutationHistoryViewerService()
 const { t } = useI18n()
-const recordings = ref<any | undefined>()
 
-const props = defineProps<TabComponentProps<MutationHistoryViewerTabParams, VoidTabData>>()
+const props = defineProps<TabComponentProps<MutationHistoryViewerTabParams, MutationHistoryViewerTabData>>()
 const emit = defineEmits<TabComponentEvents>()
 defineExpose<TabComponentExpose>({
     path(): SubjectPath | undefined {
@@ -48,42 +48,80 @@ defineExpose<TabComponentExpose>({
     }
 })
 
-
 const title: List<string> = List.of(
     props.params.dataPointer.catalogName,
     t('mutationHistoryViewer.title')
 )
 
-
-async function loadHistoryMutations(): Promise<boolean> {
-    try {
-        console.log(`Getting data from ${props.params.dataPointer.catalogName} catalog`)
-        recordings.value = await mutationHistoryViewerService.getMutationHistoryList(props.params.dataPointer.catalogName, 20)
-
-        return true
-    } catch (e: any) {
-        console.error(e)
-        await toaster.error(t(
-            'mutationHistoryViewer.recordings.notification.couldNotLoadRecordings',
-            { reason: e.message }
-        ))
-        return false
-    }
-}
-
-loadHistoryMutations()
-
-
-onBeforeMount(() => {
-    emit('ready')
-})
-
-
+const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
+const historyListRef = ref<InstanceType<typeof MutationHistory> | undefined>()
 const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
-
+    props.data.from,
+    props.data.to,
+    props.data.entityPrimaryKey
 ))
 provideHistoryCriteria(criteria)
 
+const initialized = ref<boolean>(false)
+const historyListLoading = ref<boolean>(false)
+const historyStartPointerLoading = ref<boolean>(false)
+const historyStartPointerActive = ref<boolean>(false)
+
+
+const currentData = computed<MutationHistoryViewerTabData>(() => {
+    return new MutationHistoryViewerTabData(
+        criteria.value.from,
+        criteria.value.to,
+        criteria.value.entityPrimaryKey,
+    )
+})
+watch(currentData, (data) => {
+    emit('update:data', data)
+})
+
+watch(
+    historyListRef,
+    () => {
+        if (!initialized.value && historyListRef.value != undefined ) {
+            reloadHistoryList()
+            initialized.value = true
+        }
+    },
+    { immediate: true }
+)
+onBeforeMount(() => {
+    emit('ready')
+})
+onMounted(() => {
+    // register viewer specific keyboard shortcuts
+    keymap.bind(Command.MutationHistoryViewer_ShareTab, props.id, () => shareTabButtonRef.value?.share())
+    keymap.bind(Command.MutationHistoryViewer_ReloadRecordHistory, props.id, async () => await reloadHistoryList())
+    keymap.bind(Command.MutationHistoryViewer_MoveStartPointer, props.id, async () => await moveStartPointerToNewest())
+})
+onUnmounted(() => {
+    // unregister console specific keyboard shortcuts
+    keymap.unbind(Command.MutationHistoryViewer_ShareTab, props.id)
+    keymap.unbind(Command.MutationHistoryViewer_ReloadRecordHistory, props.id)
+    keymap.unbind(Command.MutationHistoryViewer_MoveStartPointer, props.id)
+})
+
+async function moveStartPointerToNewest(): Promise<void> {
+    historyStartPointerLoading.value = true
+    await historyListRef.value?.moveStartPointerToNewest()
+    historyStartPointerLoading.value = false
+}
+
+function removeStartPointer(): void {
+    historyStartPointerLoading.value = true
+    historyListRef.value?.removeStartPointer()
+    historyStartPointerLoading.value = false
+}
+
+async function reloadHistoryList(): Promise<void> {
+    historyListLoading.value = true
+    await historyListRef.value?.reload()
+    historyListLoading.value = false
+}
 </script>
 
 <template>
@@ -93,31 +131,47 @@ provideHistoryCriteria(criteria)
             :title="title"
             :extension-height="64"
         >
+            <template #append>
+                <ShareTabButton
+                    ref="shareTabButtonRef"
+                    :tab-type="TabType.MutationHistoryViewer"
+                    :tab-params="params"
+                    :tab-data="currentData"
+                    :command="Command.MutationHistoryViewer_ShareTab"
+                />
 
-            <template #extension>
-                <!--                <MutaionHistoryFilter-->
-                <!--                    v-model="criteria"-->
-                <!--                    :data-pointer="params.dataPointer"-->
-                <!--                    @apply="reloadHistoryList"-->
-                <!--                />-->
+                <StartPointerButton
+                    :active="historyStartPointerActive"
+                    :loading="historyStartPointerLoading"
+                    @move-start-pointer-to-newest="moveStartPointerToNewest"
+                    @remove-start-pointer="removeStartPointer"
+                />
+
+                <VBtn icon density="compact" :loading="historyListLoading" @click="reloadHistoryList">
+                    <!--            todo lho new data indicator-->
+                    <VIcon>mdi-refresh</VIcon>
+                    <VActionTooltip activator="parent" :command="Command.MutationHistoryViewer_ReloadRecordHistory">
+                        {{ t('mutationHistoryViewer.button.reloadMutationHistory') }}
+                    </VActionTooltip>
+                </VBtn>
             </template>
 
+            <template #extension>
+                <MutationHistoryFilter
+                    v-model="criteria"
+                    :data-pointer="params.dataPointer"
+                    @apply="reloadHistoryList"
+                />
+            </template>
         </VTabToolbar>
 
         <VSheet class="mutation-history-viewer__body">
-
             <MutationHistory
                 ref="mutationHistoryListRef"
                 :data-pointer="params.dataPointer"
                 :criteria="criteria"
+                @update:start-pointer-active="historyStartPointerActive = $event"
             />
-
-<!--            <pre>-->
-<!--                {{ JSON.stringify(recordings, null, 2) }}-->
-<!--            </pre>-->
-
-
-
         </VSheet>
     </div>
 </template>

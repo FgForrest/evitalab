@@ -28,6 +28,10 @@ import MutationHistoryItem from '@/modules/history-viewer/component/MutationHist
 // note: this is enum from vuetify, but vuetify doesn't export it
 type InfiniteScrollStatus = 'ok' | 'empty' | 'loading' | 'error';
 
+enum MutationHistoryFetchErrorType {
+
+}
+
 class StartRecordsPointer {
     readonly sinceSessionSequenceId: number
     readonly sinceRecordSessionOffset: number
@@ -39,7 +43,7 @@ class StartRecordsPointer {
 }
 
 class RecordsPointer {
-    private _sinceSessionSequenceId: number = 1n
+    private _sinceSessionSequenceId: number = 1
     private _sinceRecordSessionOffset: number = 0
 
     get sinceSessionSequenceId(): number {
@@ -75,6 +79,7 @@ const emit = defineEmits<{
     (e: 'update:startPointerActive', value: boolean): void
 }>()
 
+const fetchError = ref<MutationHistoryFetchErrorType | undefined>(undefined)
 let records: ChangeCatalogCapture[] = []
 const history = ref<MutationHistoryItemVisualisationDefinition[]>([])
 
@@ -87,15 +92,16 @@ const fetchingNewRecordsWhenThereArentAny = ref<boolean>(false)
 
 
 const nextPageRequest = computed<MutationHistoryRequest>(() => {
-    return new MutationHistoryRequest()
+    return new MutationHistoryRequest(props.criteria.entityPrimaryKey, undefined)
 })
 const lastRecordRequest = computed<MutationHistoryRequest>(() => {
-    return new MutationHistoryRequest()
+    return new MutationHistoryRequest(props.criteria.entityPrimaryKey, undefined)
 })
 
 async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) => void }): Promise<void> {
     try {
         const fetchedRecords: ImmutableList<ChangeCatalogCapture> = await fetchRecords()
+        fetchError.value = undefined
 
         if (fetchedRecords.size === 0) {
             await toaster.info(t('trafficViewer.recordHistory.list.notification.noNewerRecords'))
@@ -117,6 +123,7 @@ async function reloadHistory(): Promise<void> {
     nextPagePointer.value.reset(startPointer.value)
     records = []
     history.value = []
+    fetchError.value = undefined
 
     try {
         const fetchedRecords: ImmutableList<ChangeCatalogCapture> = await fetchRecords()
@@ -152,7 +159,11 @@ async function fetchRecords(): Promise<ImmutableList<ChangeCatalogCapture>> {
 
 function moveNextPagePointer(fetchedRecords: ImmutableList<ChangeCatalogCapture>): void {
     const lastFetchedRecord: ChangeCatalogCapture = fetchedRecords.last()!
-  // todo pfi:
+    // if (lastFetchedRecord.recordSessionOffset < (lastFetchedRecord.sessionRecordsCount - 1)) {
+    //     nextPagePointer.value.move(lastFetchedRecord.sessionSequenceOrder, lastFetchedRecord.recordSessionOffset + 1)
+    // } else {
+    //     nextPagePointer.value.move(lastFetchedRecord.sessionSequenceOrder + 1n, 0)
+    // }
 }
 
 function pushNewRecords(newRecords: ImmutableList<ChangeCatalogCapture>): void {
@@ -164,7 +175,7 @@ function pushNewRecords(newRecords: ImmutableList<ChangeCatalogCapture>): void {
 async function processRecords(): Promise<void> {
     // note: we compute the history manually here because for some reason, computed ref wasn't working
     try {
-    history.value = (await mutationHistoryViewerService.processRecords(props.dataPointer.catalogName, props.criteria, records)).toArray()
+        history.value = (await mutationHistoryViewerService.processRecords(props.dataPointer.catalogName, props.criteria, records)).toArray()
     } catch (e: any) {
         console.error(e)
     }
@@ -172,10 +183,10 @@ async function processRecords(): Promise<void> {
 
 function handleRecordFetchError(e: any): void {
     if (e instanceof ConnectError && e.code === Code.InvalidArgument) {
-
+// todp pfi: do I need to fix this?
     }
     toaster.error(t(
-        'trafficViewer.recordHistory.notification.couldNotLoadRecords',
+        'mutationHistoryViewer.notification.couldNotLoadRecords',
         { reason: e.message }
     )).then()
 }
@@ -210,6 +221,9 @@ function removeStartPointer(): void {
     emit('update:startPointerActive', false)
 }
 
+tryReloadHistoryForPossibleNewRecords()
+
+
 defineExpose<{
     reload(): Promise<void>,
     moveStartPointerToNewest(): Promise<void>,
@@ -222,7 +236,7 @@ defineExpose<{
 </script>
 
 <template>
-    <VList v-if="history.length > 0">
+    <VList v-if="fetchError == undefined && history.length > 0">
         <VInfiniteScroll
             mode="manual"
             side="end"

@@ -8,7 +8,6 @@ import VDateTimeInput from '@/modules/base/component/VDateTimeInput.vue'
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import VLabelSelect from '@/modules/mutationHistory-viewer/components/VLabelSelect.vue'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import {
@@ -18,6 +17,9 @@ import {
 import { MutationHistoryCriteria } from '@/modules/history-viewer/model/MutationHistoryCriteria.ts'
 import type { MutationHistoryDataPointer } from '@/modules/history-viewer/model/MutationHistoryDataPointer.ts'
 import { UserMutationType } from '@/modules/history-viewer/model/UserMutationHistoryType.ts'
+import type { DateTime } from 'luxon'
+import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
+import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime.ts'
 
 const mutationHistoryViewerService: MutationHistoryViewerService = useMutationHistoryViewerService()
 const toaster: Toaster = useToaster()
@@ -40,6 +42,9 @@ const emit = defineEmits<{
 }>()
 
 const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
+    props.modelValue.from,
+    props.modelValue.to,
+    props.modelValue.entityPrimaryKey,
 
 ))
 const criteriaChanged = ref<boolean>(false)
@@ -51,16 +56,27 @@ watch(criteria.value, (newValue) => {
 const form = ref<HTMLFormElement | null>(null)
 const formValidationState = ref<boolean | null>(null)
 
-// const since = ref<DateTime | undefined>(criteria.value.since?.toDateTime())
-// watch(since, async (newValue) => {
-//     if (await assertFormValidated()) {
-//         if (newValue == undefined) {
-//             criteria.value.since = undefined
-//         } else {
-//             criteria.value.since = OffsetDateTime.fromDateTime(newValue)
-//         }
-//     }
-// })
+const from = ref<DateTime | undefined>(criteria.value.from?.toDateTime())
+watch(from, async (newValue) => {
+    if (await assertFormValidated()) {
+        if (newValue == undefined) {
+            criteria.value.from = undefined
+        } else {
+            criteria.value.from = OffsetDateTime.fromDateTime(newValue)
+        }
+    }
+})
+
+const to = ref<DateTime | undefined>(criteria.value.to?.toDateTime())
+watch(to, async (newValue) => {
+    if (await assertFormValidated()) {
+        if (newValue == undefined) {
+            criteria.value.to = undefined
+        } else {
+            criteria.value.to = OffsetDateTime.fromDateTime(newValue)
+        }
+    }
+})
 
 // const types = ref<UserMutationHistoryRecordType[]>(
 //     criteria.value.types != undefined
@@ -73,118 +89,40 @@ const formValidationState = ref<boolean | null>(null)
 //     }
 // })
 
-// const sessionId = ref<string>(criteria.value.sessionId?.toString() || '')
-// watch(sessionId, async (newValue) => {
-//     if (await assertFormValidated()) {
-//         if (newValue == undefined || newValue.trim().length === 0) {
-//             criteria.value.sessionId = undefined
-//         } else {
-//             criteria.value.sessionId = Uuid.fromCode(newValue)
-//         }
-//     }
-// })
-// const sessionIdRules = [
-//     (value: string): any => {
-//         if (value == undefined || value === '') {
-//             return true
-//         }
-//         const uuidPattern: RegExp = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/
-//         if (!uuidPattern.exec(value)) {
-//             return t('mutationHistoryViewer.recordHistory.filter.form.sessionId.validations.notUuid')
-//         }
-//         return true
-//     }
-// ]
-//
-// const longerThan = ref<string | undefined>(criteria.value.longerThanInHumanFormat || '')
-// const longerThanRules = [
-//     (value: string): any => {
-//         if (value == undefined || value === '') {
-//             return true
-//         }
-//         let duration: bigint
-//         try {
-//             duration = parseHumanDurationToMs(value.trim())
-//         } catch (e) {
-//             return t('mutationHistoryViewer.recordHistory.filter.form.longerThan.validations.notNumber')
-//         }
-//         if (duration < 0 || duration > Number.MAX_SAFE_INTEGER) {
-//             return t('mutationHistoryViewer.recordHistory.filter.form.longerThan.validations.outOfRange')
-//         }
-//         return true
-//     }
-// ]
-// watch(longerThan, async (newValue) => {
-//     if (await assertFormValidated()) {
-//         if (newValue == undefined || newValue.trim().length === 0) {
-//             criteria.value.longerThanInHumanFormat = undefined
-//         } else {
-//             criteria.value.longerThanInHumanFormat = newValue.trim()
-//         }
-//     }
-// })
-//
-// const fetchingMoreBytesThan = ref<string>(criteria.value.fetchingMoreBytesThanInHumanFormat || '')
-// const fetchingMoreBytesThanRules = [
-//     (value: string): any => {
-//         if (value == undefined || value === '') {
-//             return true
-//         }
-//         let number: number
-//         try {
-//             number = parseHumanByteSizeToNumber(value.trim())[0]
-//         } catch (e) {
-//             return t('mutationHistoryViewer.recordHistory.filter.form.fetchingMoreBytesThan.validations.notByteSize')
-//         }
-//         if (number < 0 || number > Number.MAX_SAFE_INTEGER) {
-//             return t('mutationHistoryViewer.recordHistory.filter.form.fetchingMoreBytesThan.validations.outOfRange')
-//         }
-//         return true
-//     }
-// ]
-// watch(fetchingMoreBytesThan, async (newValue) => {
-//     if (await assertFormValidated()) {
-//         if (newValue == undefined || newValue.trim().length === 0) {
-//             criteria.value.fetchingMoreBytesThanInHumanFormat = undefined
-//         } else {
-//             criteria.value.fetchingMoreBytesThanInHumanFormat = newValue.trim()
-//         }
-//     }
-// })
-//
-// const labels = ref<Label[]>(criteria.value.labels || [])
-// watch(labels, async (newValue) => {
-//     if (await assertFormValidated()) {
-//         criteria.value.labels = newValue
-//     }
-// })
-//
-// async function loadLabelNames(nameStartsWith: string): Promise<ImmutableList<string>> {
-//     return mutationHistoryViewerService.getLabelNames(
-//         props.dataPointer.catalogName,
-//         nameStartsWith,
-//         10
-//     )
-// }
-//
-// async function loadLabelValues(labelName: string, valueStartsWith: string): Promise<ImmutableList<string>> {
-//     return mutationHistoryViewerService.getLabelValues(
-//         props.dataPointer.catalogName,
-//         labelName,
-//         valueStartsWith,
-//         10
-//     )
-// }
-//
-// async function assertFormValidated(): Promise<boolean> {
-//     if (form.value == undefined) {
-//         throw new UnexpectedError('Missing form reference.')
-//     }
-//
-//     //@ts-ignore
-//     const { valid }: any = await form.value.validate()
-//     return valid
-// }
+const entityPrimaryKey = ref<number|undefined>(criteria.value.entityPrimaryKey || undefined)
+watch(entityPrimaryKey, async (newValue) => {
+    if (await assertFormValidated()) {
+        if (newValue == undefined || newValue === 0) {
+            criteria.value.entityPrimaryKey = undefined
+        } else {
+            criteria.value.entityPrimaryKey = newValue
+        }
+    }
+})
+const entityPrimaryKeyRules = [
+    (value: string): any => {
+        if (value == undefined || value === '') {
+            return true
+        }
+        // todo number validation
+        // const uuidPattern: RegExp = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/
+        // if (!uuidPattern.exec(value)) {
+        //     return t('mutationHistoryViewer.recordHistory.filter.form.entityPrimaryKey.validations.notValid')
+        // }
+        return true
+    }
+]
+
+
+async function assertFormValidated(): Promise<boolean> {
+    if (form.value == undefined) {
+        throw new UnexpectedError('Missing form reference.')
+    }
+
+    //@ts-ignore
+    const { valid }: any = await form.value.validate()
+    return valid
+}
 
 async function applyChangedCriteria(): Promise<void> {
     //@ts-ignore
@@ -208,12 +146,12 @@ async function applyChangedCriteria(): Promise<void> {
         class="record-history-filter-form"
     >
         <div class="record-history-filter">
-            <span class="record-history-filter__label text-disabled">{{ t('mutationHistoryViewer.recordHistory.filter.label') }}:</span>
+            <span class="record-history-filter__label text-disabled">{{ t('mutationHistoryViewer.filter.label') }}:</span>
             <VTooltip>
                 <template #activator="{ props }">
                     <VDateTimeInput
-                        v-model="since"
-                        :label="t('mutationHistoryViewer.recordHistory.filter.form.since.label')"
+                        v-model="from"
+                        :label="t('mutationHistoryViewer.filter.form.from.label')"
                         hide-details
                         clearable
                         class="record-history-filter__input"
@@ -221,74 +159,56 @@ async function applyChangedCriteria(): Promise<void> {
                     />
                 </template>
                 <template #default>
-                    {{ t('mutationHistoryViewer.recordHistory.filter.form.since.hint') }}
+                    {{ t('mutationHistoryViewer.filter.form.from.hint') }}
                 </template>
             </VTooltip>
             <VTooltip>
                 <template #activator="{ props }">
-                    <VSelect
-                        v-model="types"
-                        :items="userMutationHistoryRecordTypeItems"
-                        :label="t('mutationHistoryViewer.recordHistory.filter.form.types.label')"
-                        multiple
-                        clearable
+                    <VDateTimeInput
+                        v-model="to"
+                        :label="t('mutationHistoryViewer.filter.form.to.label')"
                         hide-details
-                        class="record-history-filter__input"
-                        v-bind="props"
-                    >
-                        <template #selection="{ index }">
-                        <span
-                            v-if="index === 0"
-                            class="text-grey text-caption align-self-center text-truncate"
-                        >
-                            {{ t('mutationHistoryViewer.recordHistory.filter.form.types.valueDescriptor', { count: types.length }) }}
-                          </span>
-                        </template>
-                    </VSelect>
-                </template>
-                <template #default>
-                    {{ t('mutationHistoryViewer.recordHistory.filter.form.types.hint') }}
-                </template>
-            </VTooltip>
-            <VTooltip>
-                <template #activator="{ props }">
-                    <VTextField
-                        v-model="sessionId"
-                        :label="t('mutationHistoryViewer.recordHistory.filter.form.sessionId.label')"
-                        :rules="sessionIdRules"
                         clearable
-                        hide-details
                         class="record-history-filter__input"
                         v-bind="props"
                     />
                 </template>
                 <template #default>
-                    {{ t('mutationHistoryViewer.recordHistory.filter.form.sessionId.hint') }}
+                    {{ t('mutationHistoryViewer.filter.form.to.hint') }}
                 </template>
             </VTooltip>
-            <VTooltip>
-                <template #activator="{ props }">
-                    <VTextField
-                        v-model="longerThan"
-                        :label="t('mutationHistoryViewer.recordHistory.filter.form.longerThan.label')"
-                        :rules="longerThanRules"
-                        clearable
-                        hide-details
-                        class="record-history-filter__input"
-                        v-bind="props"
-                    />
-                </template>
-                <template #default>
-                    {{ t('mutationHistoryViewer.recordHistory.filter.form.longerThan.hint') }}
-                </template>
-            </VTooltip>
+<!--            <VTooltip>-->
+<!--                <template #activator="{ props }">-->
+<!--                    <VSelect-->
+<!--                        v-model="types"-->
+<!--                        :items="userMutationHistoryRecordTypeItems"-->
+<!--                        :label="t('mutationHistoryViewer.filter.form.mutationTypes.label')"-->
+<!--                        multiple-->
+<!--                        clearable-->
+<!--                        hide-details-->
+<!--                        class="record-history-filter__input"-->
+<!--                        v-bind="props"-->
+<!--                    >-->
+<!--                        <template #selection="{ index }">-->
+<!--                        <span-->
+<!--                            v-if="index === 0"-->
+<!--                            class="text-grey text-caption align-self-center text-truncate"-->
+<!--                        >-->
+<!--                            {{ t('mutationHistoryViewer.filter.form.mutationTypes.valueDescriptor', { count: types.length }) }}-->
+<!--                          </span>-->
+<!--                        </template>-->
+<!--                    </VSelect>-->
+<!--                </template>-->
+<!--                <template #default>-->
+<!--                    {{ t('mutationHistoryViewer.filter.form.types.hint') }}-->
+<!--                </template>-->
+<!--            </VTooltip>-->
             <VTooltip>
                 <template #activator="{ props }">
                     <VTextField
-                        v-model="fetchingMoreBytesThan"
-                        :label="t('mutationHistoryViewer.recordHistory.filter.form.fetchingMoreBytesThan.label')"
-                        :suffix="t('mutationHistoryViewer.recordHistory.filter.form.fetchingMoreBytesThan.unit')"
-                        :rules="fetchingMoreBytesThanRules"
+                        v-model="entityPrimaryKey"
+                        :label="t('mutationHistoryViewer.filter.form.entityPrimaryKey.label')"
+                        :rules="entityPrimaryKeyRules"
                         clearable
                         hide-details
                         class="record-history-filter__input"
@@ -296,26 +216,10 @@ async function applyChangedCriteria(): Promise<void> {
                     />
                 </template>
                 <template #default>
-                    {{ t('mutationHistoryViewer.recordHistory.filter.form.fetchingMoreBytesThan.hint') }}
+                    {{ t('mutationHistoryViewer.filter.form.entityPrimaryKey.hint') }}
                 </template>
             </VTooltip>
-            <VTooltip>
-                <template #activator="{ props }">
-                    <VLabelSelect
-                        v-model="labels"
-                        :label="t('mutationHistoryViewer.recordHistory.filter.form.labels.label')"
-                        :label-names-provider="loadLabelNames"
-                        :label-values-provider="loadLabelValues"
-                        clearable
-                        hide-details
-                        class="record-history-filter__input"
-                        v-bind="props"
-                    />
-                </template>
-                <template #default>
-                    {{ t('mutationHistoryViewer.recordHistory.filter.form.labels.hint') }}
-                </template>
-            </VTooltip>
+
         </div>
 
         <VTooltip v-if="criteriaChanged">
@@ -330,7 +234,7 @@ async function applyChangedCriteria(): Promise<void> {
                 </VBtn>
             </template>
             <template #default>
-                {{ t('mutationHistoryViewer.recordHistory.filter.button.apply') }}
+                {{ t('mutationHistoryViewer.filter.button.apply') }}
             </template>
         </VTooltip>
     </VForm>
