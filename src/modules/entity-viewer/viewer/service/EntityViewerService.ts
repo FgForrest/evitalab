@@ -39,6 +39,7 @@ import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceM
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
+import { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
 
 export const entityViewerServiceInjectionKey: InjectionKey<EntityViewerService> = Symbol('entityViewerService')
 
@@ -106,6 +107,7 @@ export class EntityViewerService {
                        language: QueryLanguage,
                        filterBy: string,
                        orderBy: string,
+                       layersSelected: SelectedScope[],
                        dataLocale: string | undefined,
                        priceType: QueryPriceMode | undefined,
                        requiredData: EntityPropertyKey[],
@@ -118,6 +120,7 @@ export class EntityViewerService {
             dataPointer,
             filterBy,
             orderBy,
+            layersSelected,
             dataLocale,
             priceType,
             requiredData,
@@ -150,6 +153,7 @@ export class EntityViewerService {
             '',
             undefined,
             undefined,
+            undefined,
             [EntityPropertyKey.prices()],
             1,
             1
@@ -173,7 +177,7 @@ export class EntityViewerService {
     async buildOrderByFromGridColumns(dataPointer: EntityViewerDataPointer,
                                       language: QueryLanguage,
                                       columns: any[]): Promise<string> {
-        const entitySchema: EntitySchema  = await this.evitaClient.queryCatalog(
+        const entitySchema: EntitySchema = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
             async session => await session.getEntitySchemaOrThrowException(dataPointer.entityType)
         )
@@ -250,7 +254,7 @@ export class EntityViewerService {
      * Returns a list of locales in which data are stored in given collection.
      */
     async getDataLocales(dataPointer: EntityViewerDataPointer): Promise<ImmutableList<Locale>> {
-        const entitySchema: EntitySchema  = await this.evitaClient.queryCatalog(
+        const entitySchema: EntitySchema = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
             async session => await session.getEntitySchemaOrThrowException(dataPointer.entityType)
         )
@@ -258,7 +262,7 @@ export class EntityViewerService {
     }
 
     async supportsPrices(dataPointer: EntityViewerDataPointer): Promise<boolean> {
-        const entitySchema: EntitySchema  = await this.evitaClient.queryCatalog(
+        const entitySchema: EntitySchema = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
             async session => await session.getEntitySchemaOrThrowException(dataPointer.entityType)
         )
@@ -286,6 +290,16 @@ export class EntityViewerService {
             EntityPropertyKey.entity(StaticEntityProperties.Version),
             'Version',
             'Version',
+            undefined,
+            undefined,
+            ImmutableList()
+        ))
+
+        descriptors.push(new EntityPropertyDescriptor(
+            EntityPropertyType.Entity,
+            EntityPropertyKey.entity(StaticEntityProperties.Scope),
+            'Scope',
+            'Scope',
             undefined,
             undefined,
             ImmutableList()

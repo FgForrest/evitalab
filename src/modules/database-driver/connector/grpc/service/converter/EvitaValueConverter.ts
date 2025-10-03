@@ -9,7 +9,7 @@ import { LocalTime } from '@/modules/database-driver/data-type/LocalTime'
 import { OffsetDateTime, Timestamp } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { Predecessor } from '@/modules/database-driver/data-type/Predecessor'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
-import { List as ImmutableList } from 'immutable'
+import { List, List as ImmutableList } from 'immutable'
 import type {
     GrpcBigDecimal,
     GrpcOffsetDateTime,
@@ -35,7 +35,7 @@ import type {
     GrpcCurrencyArray,
     GrpcUuidArray,
     GrpcEvitaValue,
-    GrpcDataItem
+    GrpcDataItem, GrpcEvitaAssociatedDataValue
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { DateTime } from 'luxon'
 import { Range } from '@/modules/database-driver/data-type/Range'
@@ -50,7 +50,21 @@ import type { Timestamp as GrpcTimestamp } from '@bufbuild/protobuf/wkt'
  */
 export class EvitaValueConverter {
 
-    convertGrpcValue(value: string | GrpcEvitaValue | GrpcDataItem | undefined, valueCase: string | undefined): any {
+
+    static convertGrpcAssociatedValue(value: GrpcEvitaAssociatedDataValue | undefined, valueCase: string | undefined): any {
+        if (value?.value.case == 'primitiveValue') {
+            return EvitaValueConverter.convertGrpcValue(value.value.value, valueCase);
+        } else if (value?.value.case == 'root') {
+            // return toComplexObject(value.getRoot());
+            throw new UnexpectedError("PFI todo");
+        } else if (value?.value.case == 'jsonValue') {
+            // return ComplexDataObjectConverter.convertJsonToComplexDataObject(value.getJsonValue());
+            throw new UnexpectedError("PFI todo");
+        } else {
+            throw new UnexpectedError("Unknown value type.");
+        }
+    }
+    static convertGrpcValue(value: string | GrpcEvitaValue | GrpcDataItem | undefined, valueCase: string | undefined): any {
         if (typeof value === 'string') {
             return value
         } else if (value == undefined) {
@@ -71,139 +85,139 @@ export class EvitaValueConverter {
                 case GrpcEvitaDataType.CHARACTER:
                     return objectValue as object
                 case GrpcEvitaDataType.BIG_DECIMAL:
-                    return this.convertGrpcBigDecimal(objectValue as GrpcBigDecimal)
+                    return EvitaValueConverter.convertGrpcBigDecimal(objectValue as GrpcBigDecimal)
                 case GrpcEvitaDataType.BIG_DECIMAL_ARRAY:
-                    return this.convertGrpcBigDecimalArray(
+                    return EvitaValueConverter.convertGrpcBigDecimalArray(
                         objectValue as GrpcBigDecimalArray
                     )
                 case GrpcEvitaDataType.BIG_DECIMAL_NUMBER_RANGE:
-                    return this.convertGrpcBigDecimalNumberRange(
+                    return EvitaValueConverter.convertGrpcBigDecimalNumberRange(
                         objectValue as GrpcBigDecimalNumberRange
                     )
                 case GrpcEvitaDataType.BIG_DECIMAL_NUMBER_RANGE_ARRAY:
-                    return this.convertGrpcBigDecimalNumberRangeArray(
+                    return EvitaValueConverter.convertGrpcBigDecimalNumberRangeArray(
                         objectValue as GrpcBigDecimalNumberRangeArray
                     )
                 case GrpcEvitaDataType.BOOLEAN_ARRAY:
-                    return this.convertGrpcBooleanArray(
+                    return EvitaValueConverter.convertGrpcBooleanArray(
                         objectValue as GrpcBooleanArray
                     )
                 case GrpcEvitaDataType.BYTE_ARRAY:
-                    return this.convertGrpcIntegerArray(
+                    return EvitaValueConverter.convertGrpcIntegerArray(
                         objectValue as GrpcIntegerArray
                     )
                 case GrpcEvitaDataType.BYTE_NUMBER_RANGE:
-                    return this.convertGrpcByteNumberRange(
+                    return EvitaValueConverter.convertGrpcByteNumberRange(
                         objectValue as GrpcIntegerNumberRange
                     )
                 case GrpcEvitaDataType.LONG_ARRAY:
-                    return this.convertGrpcLongArray(objectValue as GrpcLongArray)
+                    return EvitaValueConverter.convertGrpcLongArray(objectValue as GrpcLongArray)
                 case GrpcEvitaDataType.LONG_NUMBER_RANGE_ARRAY:
-                    return this.convertGrpcLongNumberRangeArray(
+                    return EvitaValueConverter.convertGrpcLongNumberRangeArray(
                         objectValue as GrpcLongNumberRangeArray
                     )
                 case GrpcEvitaDataType.SHORT_NUMBER_RANGE:
-                    return this.convertGrpcShortNumberRangeArray(
+                    return EvitaValueConverter.convertGrpcShortNumberRangeArray(
                         objectValue as GrpcIntegerNumberRangeArray
                     )
                 case GrpcEvitaDataType.SHORT_ARRAY:
-                    return this.convertGrpcShortNumberRange(
+                    return EvitaValueConverter.convertGrpcShortNumberRange(
                         objectValue as GrpcIntegerNumberRange
                     )
                 case GrpcEvitaDataType.LOCALE:
-                    return this.convertGrpcLocale(objectValue as GrpcLocale)
+                    return EvitaValueConverter.convertGrpcLocale(objectValue as GrpcLocale)
                 case GrpcEvitaDataType.CURRENCY:
-                    return this.convertGrpcCurrency(objectValue as GrpcCurrency)
+                    return EvitaValueConverter.convertGrpcCurrency(objectValue as GrpcCurrency)
                 case GrpcEvitaDataType.BYTE_NUMBER_RANGE_ARRAY:
-                    return this.convertGrpcByteNumberRangeArray(
+                    return EvitaValueConverter.convertGrpcByteNumberRangeArray(
                         objectValue as GrpcIntegerNumberRangeArray
                     )
                 case GrpcEvitaDataType.CHARACTER_ARRAY:
-                    return this.convertGrpcIntegerArray(
+                    return EvitaValueConverter.convertGrpcIntegerArray(
                         objectValue as GrpcIntegerArray
                     )
                 case GrpcEvitaDataType.CURRENCY_ARRAY:
-                    return this.convertGrpcCurrencyArray(
+                    return EvitaValueConverter.convertGrpcCurrencyArray(
                         objectValue as GrpcCurrencyArray
                     )
                 case GrpcEvitaDataType.DATE_TIME_RANGE_ARRAY:
-                    return this.convertGrpcDateTimeRangeArray(
+                    return EvitaValueConverter.convertGrpcDateTimeRangeArray(
                         objectValue as GrpcDateTimeRangeArray
                     )
                 case GrpcEvitaDataType.INTEGER_ARRAY:
-                    return this.convertGrpcIntegerArray(
+                    return EvitaValueConverter.convertGrpcIntegerArray(
                         objectValue as GrpcIntegerArray
                     )
                 case GrpcEvitaDataType.INTEGER_NUMBER_RANGE:
-                    return this.convertGrpcIntegerNumberRange(
+                    return EvitaValueConverter.convertGrpcIntegerNumberRange(
                         objectValue as GrpcIntegerNumberRange
                     )
                 case GrpcEvitaDataType.INTEGER_NUMBER_RANGE_ARRAY:
-                    return this.convertGrpcIntegerNumberRangeArray(
+                    return EvitaValueConverter.convertGrpcIntegerNumberRangeArray(
                         objectValue as GrpcIntegerNumberRangeArray
                     )
                 case GrpcEvitaDataType.PREDECESSOR:
-                    return this.convertGrpcPredecessor(
+                    return EvitaValueConverter.convertGrpcPredecessor(
                         objectValue as GrpcPredecessor
                     )
                 case GrpcEvitaDataType.REFERENCED_ENTITY_PREDECESSOR:
-                    return this.convertGrpcPredecessor(
+                    return EvitaValueConverter.convertGrpcPredecessor(
                         objectValue as GrpcPredecessor
                     )
                 case GrpcEvitaDataType.SHORT_NUMBER_RANGE_ARRAY:
-                    return this.convertGrpcIntegerNumberRangeArray(
+                    return EvitaValueConverter.convertGrpcIntegerNumberRangeArray(
                         objectValue as GrpcIntegerNumberRangeArray
                     )
                 case GrpcEvitaDataType.STRING_ARRAY:
-                    return this.convertGrpcStringArray(
+                    return EvitaValueConverter.convertGrpcStringArray(
                         objectValue as GrpcStringArray
                     )
                 case GrpcEvitaDataType.UUID:
-                    return this.convertGrpcUuid(objectValue as GrpcUuid)
+                    return EvitaValueConverter.convertGrpcUuid(objectValue as GrpcUuid)
                 case GrpcEvitaDataType.UUID_ARRAY:
-                    return this.convertGrpcUuidArray(objectValue as GrpcUuidArray)
+                    return EvitaValueConverter.convertGrpcUuidArray(objectValue as GrpcUuidArray)
                 case GrpcEvitaDataType.OFFSET_DATE_TIME_ARRAY:
-                    return this.convertGrpcOffsetDateTimeArray(
+                    return EvitaValueConverter.convertGrpcOffsetDateTimeArray(
                         objectValue as GrpcOffsetDateTimeArray
                     )
                 case GrpcEvitaDataType.DATE_TIME_RANGE:
-                    return this.convertGrpcDateTimeRange(
+                    return EvitaValueConverter.convertGrpcDateTimeRange(
                         objectValue as GrpcDateTimeRange
                     )
                 case GrpcEvitaDataType.LOCALE_ARRAY:
-                    return this.convertGrpcLocaleArray(
+                    return EvitaValueConverter.convertGrpcLocaleArray(
                         objectValue as GrpcLocaleArray
                     )
                 case GrpcEvitaDataType.LOCAL_DATE:
-                    return this.convertGrpcLocalDate(
+                    return EvitaValueConverter.convertGrpcLocalDate(
                         objectValue as GrpcOffsetDateTime
                     )
                 case GrpcEvitaDataType.LOCAL_DATE_ARRAY:
-                    return this.convertGrpcLocalDateArray(
+                    return EvitaValueConverter.convertGrpcLocalDateArray(
                         objectValue as GrpcOffsetDateTimeArray
                     )
                 case GrpcEvitaDataType.LOCAL_DATE_TIME:
-                    return this.convertGrpcLocalDateTime(
+                    return EvitaValueConverter.convertGrpcLocalDateTime(
                         objectValue as GrpcOffsetDateTime
                     )
                 case GrpcEvitaDataType.LOCAL_DATE_TIME_ARRAY:
-                    return this.convertGrpcLocalDateTimeArray(
+                    return EvitaValueConverter.convertGrpcLocalDateTimeArray(
                         objectValue as GrpcOffsetDateTimeArray
                     )
                 case GrpcEvitaDataType.LOCAL_TIME:
-                    return this.convertGrpcLocalTime(
+                    return EvitaValueConverter.convertGrpcLocalTime(
                         objectValue as GrpcOffsetDateTime
                     )
                 case GrpcEvitaDataType.LOCAL_TIME_ARRAY:
-                    return this.convertGrpcLocalTimeArray(
+                    return EvitaValueConverter.convertGrpcLocalTimeArray(
                         objectValue as GrpcOffsetDateTimeArray
                     )
                 case GrpcEvitaDataType.LONG_NUMBER_RANGE:
-                    return this.convertGrpcLongNumberRange(
+                    return EvitaValueConverter.convertGrpcLongNumberRange(
                         objectValue as GrpcLongNumberRange
                     )
                 case GrpcEvitaDataType.OFFSET_DATE_TIME:
-                    return this.convertGrpcOffsetDateTime(
+                    return EvitaValueConverter.convertGrpcOffsetDateTime(
                         objectValue as GrpcOffsetDateTime
                     )
                 default:
@@ -212,25 +226,25 @@ export class EvitaValueConverter {
         }
     }
 
-    convertGrpcBigDecimal(value: GrpcBigDecimal): BigDecimal {
+    static convertGrpcBigDecimal(value: GrpcBigDecimal): BigDecimal {
         return new BigDecimal(value.valueString)
     }
 
-    convertGrpcDateTimeRange(value: GrpcDateTimeRange): DateTimeRange {
-        if (!this.checkGrpcDateTimeValidity(value.from, value.to, false))
+    static convertGrpcDateTimeRange(value: GrpcDateTimeRange): DateTimeRange {
+        if (!EvitaValueConverter.checkGrpcDateTimeValidity(value.from, value.to, false))
             throw new Error('DateTimeRange has undefined prop from and to')
         else
             return new DateTimeRange(
                 value.from != undefined
-                    ? this.convertGrpcOffsetDateTime(value.from!)
+                    ? EvitaValueConverter.convertGrpcOffsetDateTime(value.from!)
                     : undefined,
                 value.to != undefined
-                    ? this.convertGrpcOffsetDateTime(value.to!)
+                    ? EvitaValueConverter.convertGrpcOffsetDateTime(value.to!)
                     : undefined
             )
     }
 
-    convertGrpcBigDecimalNumberRange(
+    static convertGrpcBigDecimalNumberRange(
         value: GrpcBigDecimalNumberRange
     ): Range<BigDecimal> {
         return new BigDecimalNumberRange(
@@ -243,83 +257,83 @@ export class EvitaValueConverter {
         )
     }
 
-    convertGrpcLongNumberRange(value: GrpcLongNumberRange): Range<bigint> {
-        if (this.checkNumberRangeValidity(value.from, value.to))
+    static convertGrpcLongNumberRange(value: GrpcLongNumberRange): Range<bigint> {
+        if (EvitaValueConverter.checkNumberRangeValidity(value.from, value.to))
             throw new Error('LongRangeNumber has undefined prop from and to')
         return new BigintNumberRange(value.from, value.to)
     }
 
-    convertGrpcIntegerNumberRange(
+    static convertGrpcIntegerNumberRange(
         value: GrpcIntegerNumberRange
     ): Range<number> {
-        if (this.checkNumberRangeValidity(value.from, value.to))
+        if (EvitaValueConverter.checkNumberRangeValidity(value.from, value.to))
             throw new Error('IntegerRangeNumber has undefined prop from and to')
         return new IntegerRange(value.from, value.to)
     }
 
-    convertGrpcShortNumberRange(
+    static convertGrpcShortNumberRange(
         value: GrpcIntegerNumberRange
     ): Range<number> {
-        if (this.checkNumberRangeValidity(value.from, value.to))
+        if (EvitaValueConverter.checkNumberRangeValidity(value.from, value.to))
             throw new Error('ShortRangeNumber has undefined prop from and to')
         return new IntegerRange(value.from, value.to)
     }
 
-    convertGrpcByteNumberRange(
+    static convertGrpcByteNumberRange(
         value: GrpcIntegerNumberRange
     ): Range<number> {
-        if (this.checkNumberRangeValidity(value.from, value.to))
+        if (EvitaValueConverter.checkNumberRangeValidity(value.from, value.to))
             throw new Error('ByteRangeNumber has undefined prop from and to')
         return new IntegerRange(value.from, value.to)
     }
 
-    convertGrpcLocale(value: GrpcLocale): Locale {
+    static convertGrpcLocale(value: GrpcLocale): Locale {
         return new Locale(value.languageTag)
     }
 
-    convertGrpcCurrency(value: GrpcCurrency): Currency {
+    static convertGrpcCurrency(value: GrpcCurrency): Currency {
         return new Currency(value.code)
     }
 
-    convertGrpcUuid(grpcUuid: GrpcUuid): Uuid {
+    static convertGrpcUuid(grpcUuid: GrpcUuid): Uuid {
         return Uuid.fromBits(BigInt(grpcUuid.mostSignificantBits), BigInt(grpcUuid.leastSignificantBits))
     }
 
-    convertUuid(uuid: Uuid): GrpcUuid {
+    static convertUuid(uuid: Uuid): GrpcUuid {
         return {
             mostSignificantBits: uuid.mostSignificantBits.toString(),
             leastSignificantBits: uuid.leastSignificantBits.toString()
         } as GrpcUuid
     }
 
-    convertGrpcPredecessor(value: GrpcPredecessor): Predecessor {
+    static convertGrpcPredecessor(value: GrpcPredecessor): Predecessor {
         return new Predecessor(
             value.head,
             value.head ? -1 : value.predecessorId
         )
     }
 
-    convertGrpcStringArray(value: GrpcStringArray): ImmutableList<string> {
+    static convertGrpcStringArray(value: GrpcStringArray): ImmutableList<string> {
         return ImmutableList(value.value)
     }
 
-    convertGrpcIntegerArray(
+    static convertGrpcIntegerArray(
         value: GrpcIntegerArray
     ): ImmutableList<number> {
         return ImmutableList(value.value)
     }
 
-    convertGrpcLongArray(value: GrpcLongArray): ImmutableList<bigint> {
+    static convertGrpcLongArray(value: GrpcLongArray): ImmutableList<bigint> {
         return ImmutableList(value.value.map(BigInt))
     }
 
-    convertGrpcBooleanArray(
+    static convertGrpcBooleanArray(
         value: GrpcBooleanArray
     ): ImmutableList<boolean> {
         return ImmutableList(value.value)
     }
 
-    convertGrpcBigDecimalArray(
+    static convertGrpcBigDecimalArray(
         value: GrpcBigDecimalArray
     ): ImmutableList<BigDecimal> {
         const newBigDecimalArray: BigDecimal[] = []
@@ -330,53 +344,53 @@ export class EvitaValueConverter {
         return ImmutableList(newBigDecimalArray)
     }
 
-    convertGrpcOffsetDateTimeArray(
+    static convertGrpcOffsetDateTimeArray(
         value: GrpcOffsetDateTimeArray
     ): ImmutableList<OffsetDateTime> {
         const offsetDateTimeArray: OffsetDateTime[] = []
         for (const grpcDateTime of value.value) {
-            offsetDateTimeArray.push(this.convertGrpcOffsetDateTime(grpcDateTime))
+            offsetDateTimeArray.push(EvitaValueConverter.convertGrpcOffsetDateTime(grpcDateTime))
         }
         return ImmutableList(offsetDateTimeArray)
     }
 
-    convertGrpcLocalDateTimeArray(
+    static convertGrpcLocalDateTimeArray(
         value: GrpcOffsetDateTimeArray
     ): ImmutableList<LocalDateTime> {
         const localeDateTimeArray: LocalDateTime[] = []
         for (const grpcDateTime of value.value) {
-            localeDateTimeArray.push(this.convertGrpcLocalDateTime(grpcDateTime))
+            localeDateTimeArray.push(EvitaValueConverter.convertGrpcLocalDateTime(grpcDateTime))
         }
         return ImmutableList(localeDateTimeArray)
     }
 
-    convertGrpcLocalDateArray(
+    static convertGrpcLocalDateArray(
         value: GrpcOffsetDateTimeArray
     ): ImmutableList<LocalDate> {
         const localDateArray: LocalDate[] = []
         for (const localDate of value.value) {
-            localDateArray.push(this.convertGrpcLocalDate(localDate))
+            localDateArray.push(EvitaValueConverter.convertGrpcLocalDate(localDate))
         }
         return ImmutableList(localDateArray)
     }
 
-    convertGrpcLocalTimeArray(
+    static convertGrpcLocalTimeArray(
         value: GrpcOffsetDateTimeArray
     ): ImmutableList<LocalTime> {
         const localTimeArray: LocalTime[] = []
         for (const localTime of value.value) {
-            localTimeArray.push(this.convertGrpcLocalTime(localTime))
+            localTimeArray.push(EvitaValueConverter.convertGrpcLocalTime(localTime))
         }
         return ImmutableList(localTimeArray)
     }
 
-    convertGrpcDateTimeRangeArray(
+    static convertGrpcDateTimeRangeArray(
         value: GrpcDateTimeRangeArray
     ): ImmutableList<DateTimeRange> {
         const dateTimeRange: DateTimeRange[] = []
         for (const grpcDateTimeRange of value.value) {
             if (
-                this.checkGrpcDateTimeValidity(
+                EvitaValueConverter.checkGrpcDateTimeValidity(
                     grpcDateTimeRange.from,
                     grpcDateTimeRange.to,
                     false
@@ -385,10 +399,10 @@ export class EvitaValueConverter {
                 dateTimeRange.push(
                     new DateTimeRange(
                         grpcDateTimeRange.from != undefined
-                            ? this.convertGrpcOffsetDateTime(grpcDateTimeRange.from!)
+                            ? EvitaValueConverter.convertGrpcOffsetDateTime(grpcDateTimeRange.from!)
                             : undefined,
                         grpcDateTimeRange.to != undefined
-                            ? this.convertGrpcOffsetDateTime(grpcDateTimeRange.to!)
+                            ? EvitaValueConverter.convertGrpcOffsetDateTime(grpcDateTimeRange.to!)
                             : undefined
                     )
                 )
@@ -397,7 +411,7 @@ export class EvitaValueConverter {
         return ImmutableList(dateTimeRange)
     }
 
-    convertGrpcBigDecimalNumberRangeArray(
+    static convertGrpcBigDecimalNumberRangeArray(
         value: GrpcBigDecimalNumberRangeArray
     ): ImmutableList<Range<BigDecimal>> {
         const bigDecimalRange: Range<BigDecimal>[] = []
@@ -416,7 +430,7 @@ export class EvitaValueConverter {
         return ImmutableList(bigDecimalRange)
     }
 
-    convertGrpcLongNumberRangeArray(
+    static convertGrpcLongNumberRangeArray(
         value: GrpcLongNumberRangeArray
     ): ImmutableList<Range<bigint>> {
         const longNumberRangeArray: Range<bigint>[] = []
@@ -428,7 +442,7 @@ export class EvitaValueConverter {
         return ImmutableList(longNumberRangeArray)
     }
 
-    convertGrpcIntegerNumberRangeArray(
+    static convertGrpcIntegerNumberRangeArray(
         value: GrpcIntegerNumberRangeArray
     ): ImmutableList<Range<number>> {
         const integerNumberRangeArray: Range<number>[] = []
@@ -440,7 +454,7 @@ export class EvitaValueConverter {
         return ImmutableList(integerNumberRangeArray)
     }
 
-    convertGrpcShortNumberRangeArray(
+    static convertGrpcShortNumberRangeArray(
         value: GrpcIntegerNumberRangeArray
     ): ImmutableList<Range<number>> {
         const shortNumberRangeArray: Range<number>[] = []
@@ -455,7 +469,7 @@ export class EvitaValueConverter {
         return ImmutableList(shortNumberRangeArray)
     }
 
-    convertGrpcByteNumberRangeArray(
+    static convertGrpcByteNumberRangeArray(
         value: GrpcIntegerNumberRangeArray
     ): ImmutableList<Range<number>> {
         const byteNumberRangeArray: Range<number>[] = []
@@ -467,7 +481,7 @@ export class EvitaValueConverter {
         return ImmutableList(byteNumberRangeArray)
     }
 
-    convertGrpcLocaleArray(value: GrpcLocaleArray): ImmutableList<Locale> {
+    static convertGrpcLocaleArray(value: GrpcLocaleArray): ImmutableList<Locale> {
         const localeArray: Locale[] = []
         for (const locale of value.value) {
             localeArray.push(new Locale(locale.languageTag))
@@ -475,7 +489,7 @@ export class EvitaValueConverter {
         return ImmutableList(localeArray)
     }
 
-    convertGrpcCurrencyArray(
+    static convertGrpcCurrencyArray(
         value: GrpcCurrencyArray
     ): ImmutableList<Currency> {
         const currencyArray: Currency[] = []
@@ -485,15 +499,15 @@ export class EvitaValueConverter {
         return ImmutableList(currencyArray)
     }
 
-    convertGrpcUuidArray(grpcUuids: GrpcUuidArray): ImmutableList<Uuid> {
+    static convertGrpcUuidArray(grpcUuids: GrpcUuidArray): ImmutableList<Uuid> {
         const uuids: Uuid[] = []
         for (const grpcUuid of grpcUuids.value) {
-            uuids.push(this.convertGrpcUuid(grpcUuid))
+            uuids.push(EvitaValueConverter.convertGrpcUuid(grpcUuid))
         }
         return ImmutableList(uuids)
     }
 
-    convertGrpcLocalDate(offsetDateTime: GrpcOffsetDateTime): LocalDate {
+    static convertGrpcLocalDate(offsetDateTime: GrpcOffsetDateTime): LocalDate {
         if (!offsetDateTime.timestamp) {
             throw new Error('Missing prop timestamp')
         }
@@ -505,7 +519,7 @@ export class EvitaValueConverter {
         return localDate
     }
 
-    convertGrpcLocalDateTime(offsetDateTime: GrpcOffsetDateTime): LocalDateTime {
+    static convertGrpcLocalDateTime(offsetDateTime: GrpcOffsetDateTime): LocalDateTime {
         if (!offsetDateTime.timestamp) {
             throw new Error('Missing prop timestamp')
         }
@@ -516,30 +530,30 @@ export class EvitaValueConverter {
         )
     }
 
-    convertGrpcOffsetDateTime(
+    static convertGrpcOffsetDateTime(
         offsetDateTime: GrpcOffsetDateTime
     ): OffsetDateTime {
         if (!offsetDateTime.timestamp) {
             throw new Error('Missing prop timestamp')
         }
         return new OffsetDateTime(
-            this.convertGrpcTimestamp(offsetDateTime.timestamp),
+            EvitaValueConverter.convertGrpcTimestamp(offsetDateTime.timestamp),
             offsetDateTime.offset
         )
     }
 
-    convertOffsetDateTime(offsetDateTime: OffsetDateTime): GrpcOffsetDateTime {
+    static convertOffsetDateTime(offsetDateTime: OffsetDateTime): GrpcOffsetDateTime {
         return {
             timestamp: {
                 nanos: offsetDateTime.timestamp.nanos,
                 seconds: offsetDateTime.timestamp.seconds
             },
-            offset: offsetDateTime.offset,
+            offset: offsetDateTime.offset
 
         } as GrpcOffsetDateTime
     }
 
-    convertGrpcLocalTime(grpcTime: GrpcOffsetDateTime): LocalTime {
+    static convertGrpcLocalTime(grpcTime: GrpcOffsetDateTime): LocalTime {
         if (!grpcTime.timestamp) {
             throw new Error('Missing prop timestamp')
         }
@@ -549,14 +563,14 @@ export class EvitaValueConverter {
         return localTime
     }
 
-    private convertGrpcTimestamp(grpcTimestamp: GrpcTimestamp): Timestamp {
+    private static convertGrpcTimestamp(grpcTimestamp: GrpcTimestamp): Timestamp {
         return new Timestamp(
             grpcTimestamp.seconds,
             grpcTimestamp.nanos
         )
     }
 
-    private checkGrpcDateTimeValidity(
+    private static checkGrpcDateTimeValidity(
         from: GrpcOffsetDateTime | undefined,
         to: GrpcOffsetDateTime | undefined,
         hasOffset: boolean
@@ -576,7 +590,7 @@ export class EvitaValueConverter {
         }
     }
 
-    private checkNumberRangeValidity(
+    private static checkNumberRangeValidity(
         from: number | bigint | undefined,
         to: number | bigint | undefined
     ): boolean {

@@ -6,6 +6,14 @@ import { AttributeSchema } from '@/modules/database-driver/request-response/sche
 import {
     SortableAttributeCompoundSchema
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
+import { useI18n } from 'vue-i18n'
+import { getEnumKeyByValue } from '@/utils/enum.ts'
+import {
+    ScopedReferenceIndexType
+} from '@/modules/database-driver/request-response/schema/mutation/reference/ScopedReferenceIndexType.ts'
+
 
 /**
  * evitaLab's representation of a single evitaDB reference schema independent of specific evitaDB version
@@ -47,14 +55,6 @@ export class ReferenceSchema extends AbstractSchema {
     readonly referencedGroupTypeManaged: boolean | undefined
     readonly groupTypeNameVariants: Map<NamingConvention, string> | undefined
 
-    /**
-     * Contains `true` if the index for this reference should be created and maintained allowing to filter by `reference_{reference name}_having` filtering constraints. Index is also required when reference is `faceted`.  Do not mark reference as faceted unless you know that you'll need to filter/sort entities by this reference. Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed, the entity cannot be looked up by reference attributes or relation existence itself, but the data can be fetched.
-     */
-    readonly indexed: boolean
-    /**
-     * Contains `true` if the statistics data for this reference should be maintained and this allowing to get `facetStatistics` for this reference or use `facet_{reference name}_inSet` filtering constraint.  Do not mark reference as faceted unless you want it among `facetStatistics`. Each faceted reference occupies (memory/disk) space in the form of index.  Reference that was marked as faceted is called Facet.
-     */
-    readonly faceted: boolean
     readonly cardinality: Cardinality
 
     /**
@@ -65,8 +65,10 @@ export class ReferenceSchema extends AbstractSchema {
      * Contains definitions of all sortable attribute compounds defined in this schema.
      */
     readonly sortableAttributeCompounds: Map<string, SortableAttributeCompoundSchema>
+    readonly scopedIndexTypes: List<ScopedReferenceIndexType>
+    readonly facetedInScopes: List<EntityScope>
 
-    private _representativeFlags?: List<string>
+    private _representativeFlags?: List<Flag>
 
     constructor(name: string,
                 nameVariants: Map<NamingConvention, string>,
@@ -78,11 +80,11 @@ export class ReferenceSchema extends AbstractSchema {
                 referencedGroupType: string | undefined,
                 referencedGroupTypeManaged: boolean | undefined,
                 groupTypeNameVariants: Map<NamingConvention, string> | undefined,
-                indexed: boolean,
-                faceted: boolean,
                 cardinality: Cardinality,
                 attributes: AttributeSchema[],
-                sortableAttributeCompounds: SortableAttributeCompoundSchema[]) {
+                sortableAttributeCompounds: SortableAttributeCompoundSchema[],
+                scopedIndexTypes: List<ScopedReferenceIndexType>,
+                facetedInScopes: List<EntityScope>) {
         super()
         this.name = name
         this.nameVariants = nameVariants
@@ -94,20 +96,21 @@ export class ReferenceSchema extends AbstractSchema {
         this.referencedGroupType = referencedGroupType
         this.referencedGroupTypeManaged = referencedGroupTypeManaged
         this.groupTypeNameVariants = groupTypeNameVariants
-        this.indexed = indexed
-        this.faceted = faceted
         this.cardinality = cardinality
         this.attributes = Map(attributes.map(attribute => [attribute.name, attribute]))
         this.sortableAttributeCompounds = Map(sortableAttributeCompounds.map(sac => [sac.name, sac]))
+        this.scopedIndexTypes = scopedIndexTypes
+        this.facetedInScopes = facetedInScopes
     }
 
-    get representativeFlags(): List<string> {
+    get representativeFlags(): List<Flag> {
         if (this._representativeFlags == null) {
-            const representativeFlags: string[] = []
+            const { t } = useI18n()
+            const representativeFlags: Flag[] = []
 
-            if (!this.referencedEntityTypeManaged) representativeFlags.push(ReferenceSchemaFlag.External)
-            if (this.indexed) representativeFlags.push(ReferenceSchemaFlag.Indexed)
-            if (this.faceted) representativeFlags.push(ReferenceSchemaFlag.Faceted)
+            if (!this.referencedEntityTypeManaged) representativeFlags.push(new Flag(ReferenceSchemaFlag.External))
+            if (this.scopedIndexTypes.size > 0) representativeFlags.push(new Flag(ReferenceSchemaFlag.Indexed, this.scopedIndexTypes.map(x => x.scope).toArray(), t('schemaViewer.reference.tooltip.content', ['', this.scopedIndexTypes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z.scope).toLowerCase()}`)).join('/')])))
+            if (this.facetedInScopes.size > 0) representativeFlags.push(new Flag(ReferenceSchemaFlag.Faceted, this.facetedInScopes.map(x => x).toArray(), t('schemaViewer.reference.tooltip.facetedContent', ['', this.facetedInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
 
             this._representativeFlags = List(representativeFlags)
         }

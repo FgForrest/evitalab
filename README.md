@@ -78,38 +78,12 @@ This way you can host your own instance of evitaLab, for example, for your inter
 ### From source
 
 If you want to run a development version of the evitaLab, you can clone this repository.
-
-Before you start, make sure you have [Node.js](https://nodejs.org/en/) in version specified in `.nvmrc` and [Yarn](https://yarnpkg.com/) 
-package manager installed.
-
-Then you can run it either in standalone mode:
-
-```shell
-yarn install
-yarn dev
-```
-
-_this will start a development server on [localhost:3000/lab](http://localhost:3000/lab) address._
-
-Or the driver mode (for [evitaLab Desktop](https://github.com/FgForrest/evitalab-desktop)):
-
-```shell
-yarn install
-yarn dev-driver
-```
-
-_this will start a development server on [localhost:3000](http://localhost:3000) address._
-
-By default, the development version of evitaLab starts with connection to the evitaDB Demo server. You can change it
-in the `.env` file by modifying the `VITE_DEV_CONNECTION` variable. Right now following values are supported:
-
-- `DEMO` - connects to the evitaDB Demo server
-- `LOCAL` - connects to a local evitaDB server running on the default port 5555
+Then navigate to the [running development version](documentation/developer/running-development-version.md) section.
 
 ## Development
 
 If you would like to contribute to evitaLab source code or just simply play with it locally, you just need to
-clone the project, install the [Node.js](https://nodejs.org/en/) in version specified in `.nvmrc` and [Yarn](https://yarnpkg.com/) (as that's what we use for development)
+clone the project, install the [Node.js](https://nodejs.org/en/) in the version specified in `.nvmrc` and [Yarn](https://yarnpkg.com/) (as that's what we use for development)
 and run the following commands to run the evitaLab locally:
 
 ```shell
@@ -118,7 +92,7 @@ yarn install
 yarn dev
 ```
 
-You can find more indepth info about internal structure and guidelines of evitaLab in [developer documentation](/documentation/developer/index.md).
+For more in-depth information about the evitaLab development navigate to the [developer documentation](/documentation/developer/index.md).
 
 ## Licence
 

@@ -13,5 +13,6 @@ export enum TabType {
     BackupViewer = 'backupViewer',
     JfrViewer = 'jfrViewer',
     TrafficRecordingsViewer = 'trafficRecordingsViewer',
-    TrafficRecordHistoryViewer = 'trafficRecordHistoryViewer'
+    TrafficRecordHistoryViewer = 'trafficRecordHistoryViewer',
+    MutationHistoryViewer = 'mutationHistoryViewer'
 }

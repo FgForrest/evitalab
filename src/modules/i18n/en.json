@@ -30,7 +30,12 @@
       "replace": "Replace",
       "switch": "Switch",
       "accept": "Accept",
-      "reload": "Reload"
+      "reload": "Reload",
+      "duplicate": "Duplicate",
+      "makeCatalogImmutable": "Make catalog immutable",
+      "makeCatalogMutable": "Make catalog mutable",
+      "deactivateCatalog": "Deactivate catalog",
+      "activateCatalog": "Activate catalog"
     },
     "notification": {
       "copiedToClipboard": "Copied to clipboard",
@@ -59,6 +64,10 @@
         "language": {
           "label": "Supported language in the active editor"
         }
+      },
+      "autoRefresh": {
+        "connected": "The lab is connected to EvitaDB and receives changes.",
+        "disconnected": "The lab is not connected to EvitaDB and does not accept changes."
       }
     },
     "dialog": {
@@ -261,6 +270,15 @@
       "changePriceType": "Change price type",
       "shareTab": "Share tab",
       "openPropertySelector": "Open property selector",
+      "scopeSelector": {
+        "title": "Select scope",
+        "live": "In Live scope",
+        "archive": "In Archive scope"
+      },
+      "toolbar": {
+        "live": "In Live scope",
+        "archive": "In Archive scope"
+      },
       "propertySelector": {
         "_title": "Property selector",
         "findProperty": "Find property"
@@ -320,6 +338,7 @@
   },
   "explorer": {
     "title": "Connection Explorer",
+    "readOnlyToolTip": "Server is read-only",
     "button": {
       "connect": "Connect"
     },
@@ -353,7 +372,22 @@
     "catalog": {
       "flag": {
         "corrupted": "corrupted",
-        "warmingUp": "warming up"
+        "warmingUp": "warming up",
+        "alive": "alive",
+        "beingActivated": "Being activated {0}%",
+        "beingCreated": "Being created",
+        "beingDeactivated": "Being deactivated {0}%",
+        "beingDeleted": "Being deleted",
+        "goingAlive": "Going alive",
+        "inactive": "Inactive",
+        "duplication": "Duplicating - {0}%",
+        "renaming": "Renaming - {0}%",
+        "replacing": "Replacing - {0}%",
+        "activation": "Activating - {0}%",
+        "deactivation": "Deactivating - {0}%"
+      },
+      "title": {
+        "readOnly": "catalog is read-only"
       },
       "menu": {
         "item": {
@@ -369,10 +403,16 @@
           "closeSharedSession": "Close shared session",
           "deleteCatalog": "Delete catalog",
           "renameCatalog": "Rename catalog",
+          "duplicateCatalog": "Duplicate catalog",
           "replaceCatalog": "Replace catalog",
           "createCollection": "Create collection",
           "switchCatalogToAliveState": "Switch catalog to alive state",
-          "activeTrafficRecording": "Active traffic recording"
+          "activeTrafficRecording": "Active traffic recording",
+          "activateCatalog": "Activate catalog",
+          "deactivateCatalog": "Deactivate catalog",
+          "switchToMutable": "Switch to mutable",
+          "switchToImmutable": "Switch to immutable",
+          "mutationHistoryViewer": "Mutation history"
         }
       },
       "notification": {
@@ -408,6 +448,27 @@
           "couldNotDeleteCatalog": "Could not delete the {catalogName} catalog: {reason}"
         }
       },
+      "duplication": {
+        "title": "Duplicate {catalogName} catalog",
+        "form": {
+          "duplicationName": {
+            "label": "New duplicated catalog name",
+            "validations": {
+              "required": "New name is required.",
+              "empty": "New name is required.",
+              "leadingTrailingWhiteSpace": "New name cannot have leading or trailing whitespace characters.",
+              "keyword": "New name is same as a reserved keyword.",
+              "format": "New name doesn't match supported format.",
+              "notAvailable": "Catalog with this new name already exists."
+            }
+          }
+        },
+        "notification": {
+          "catalogDuplicationStarted": "Duplication of {catalogName} catalog has started.",
+          "catalogDuplicated": "The {catalogName} catalog has been successfully duplicated to {newCatalogName}.",
+          "couldNotDuplicateCatalog": "Could not duplicate the {catalogName} catalog: {reason}"
+        }
+      },
       "rename": {
         "title": "Rename {catalogName} catalog",
         "form": {
@@ -424,8 +485,8 @@
           }
         },
         "notification": {
+          "catalogRenameStarted": "Renaming of {catalogName} catalog has started.",
           "catalogRenamed": "The {catalogName} catalog has been successfully renamed to {newName}.",
-          "catalogNotRenamed": "The {catalogName} catalog has not been renamed.",
           "couldNotRenameCatalog": "Could not rename catalog {catalogName}: {reason}"
         }
       },
@@ -442,6 +503,7 @@
           }
         },
         "notification": {
+          "catalogReplacementStarted": "Replacement of {catalogNameToBeReplaced} catalog with {catalogNameToBeReplacedWith} has started.",
           "catalogReplaced": "The {catalogNameToBeReplaced} catalog has been successfully replaced with {catalogToBeReplacedWith}.",
           "catalogNotReplaced": "The {catalogNameToBeReplaced} catalog has not been replaced.",
           "couldNotReplaceCatalog": "Could not replace the {catalogNameToBeReplaced} catalog: {reason}"
@@ -452,9 +514,45 @@
         "description": "Switch the catalog's state from the warm up to the alive.",
         "warning": "Catalog in the alive state will no longer support bulk indexing. Instead, the catalog will use incremental indexing. However, it will support transactions and multiple parallel sessions.",
         "notification": {
+          "catalogSwitchStarted": "Switching {catalogName} catalog from warm up to alive state has started.",
           "catalogSwitched": "The {catalogName} catalog has been switched from the warm up state to the alive state.",
-          "catalogNotSwitched": "The {catalogName} catalog has not been switched to alive state. Probably it already is in the alive state.",
           "couldNotSwitchCatalog": "Could not switch the {catalogName} catalog to the alive state: {reason}"
+        }
+      },
+      "makeCatalogImmutable": {
+        "title": "Switch {catalogName} catalog to immutable",
+        "description": "Switch the catalog to the immutable state. In this state, no data modifications are allowed, and the catalog is read-only.",
+        "notification": {
+          "catalogImmutableSwitchStarted": "Switching {catalogName} catalog to immutable state has started.",
+          "catalogMadeAsImmutable": "The {catalogName} catalog has been made as immutable",
+          "couldNotMakeCatalogImmutable": "Could not make immutable the {catalogName} catalog: {reason}"
+        }
+      },
+      "makeCatalogMutable": {
+        "title": "Switch {catalogName} catalog to mutable",
+        "description": "Switch the catalog to the mutable state. In this state, data modifications are allowed again.",
+        "notification": {
+          "catalogMutableSwitchStarted": "Switching {catalogName} catalog to mutable state has started.",
+          "catalogMadeAsMutable": "The {catalogName} catalog has been made as mutable",
+          "couldNotMakeCatalogMutable": "Could not make mutable the {catalogName} catalog: {reason}"
+        }
+      },
+      "deactivateCatalog": {
+        "title": "Deactivate {catalogName}",
+        "description": "Deactivate the catalog to temporarily prevent any operations on it. The catalog will remain in storage but won't be accessible.",
+        "notification": {
+          "catalogDeactivationStarted": "Deactivation of {catalogName} catalog has started.",
+          "catalogDeactivated": "The {catalogName} catalog has been deactivated",
+          "couldNotDeactivateCatalog": "Could not deactivate {catalogName} catalog: {reason}"
+        }
+      },
+      "activateCatalog": {
+        "title": "Activate {catalogName}",
+        "description": "Activate the catalog to make it accessible again after it was deactivated.",
+        "notification": {
+          "catalogActivationStarted": "Activation of {catalogName} catalog has started.",
+          "catalogActivated": "The {catalogName} catalog has been activated",
+          "couldNotActivateCatalog": "Could not activate {catalogName} catalog: {reason}"
         }
       }
     },
@@ -541,6 +639,10 @@
       "notification": {
         "failedToSaveQueryToHistory": "Failed to save query to history."
       }
+    },
+    "layerSelector": {
+      "live": "The default scope is where all new entities are created.",
+      "archive": "The archive scope is where outdated entities that are no longer actively used are stored. The archive is usually covered by fewer indexes than the live scope and is not searched unless explicitly requested in a query."
     },
     "propertySelector": {
       "title": "Displayed properties",
@@ -851,7 +953,8 @@
           "nullsFirst": "nulls first",
           "nullsLast": "nulls last",
           "asc": "ascending",
-          "desc": "descending"
+          "desc": "descending",
+          "reflected": "reflected"
         },
         "entitySchema": {
           "hierarchical": "hierarchical"
@@ -865,7 +968,8 @@
           "filterable": "filterable",
           "sortable": "sortable",
           "localized": "localized",
-          "nullable": "nullable"
+          "nullable": "nullable",
+          "attributeTooltip": "The attribute can be filtered/sorted within the live/archive scope."
         },
         "associatedDataSchema": {
           "localized": "localized",
@@ -875,6 +979,9 @@
           "external": "external",
           "indexed": "indexed",
           "faceted": "faceted"
+        },
+        "reflectedReferenceSchema": {
+          "reflectedReference": "reflected"
         }
       }
     },
@@ -938,6 +1045,8 @@
         "globallyUniqueWithinLocaleOfCatalog": "Within locale of catalog"
       },
       "label": {
+        "live": "In Live scope",
+        "archive": "In Archive scope",
         "type": "Type",
         "description": "Description",
         "deprecationNotice": "Deprecation notice",
@@ -946,16 +1055,30 @@
         "globallyUnique": "Globally unique",
         "filterable": "Filterable",
         "sortable": "Sortable",
+        "filtered": "filtered",
+        "filteredDueToUnique": "due to uniqueness",
+        "sorted": "sorted",
         "localized": "Localized",
         "nullable": "Nullable",
         "defaultValue": "Default value",
-        "indexedDecimalPlaces": "Indexed decimal places"
+        "indexedDecimalPlaces": "Indexed decimal places",
+        "attributes": "Attributes",
+        "uniqueWithinCollection": "within collection",
+        "uniqueWithinLocaleOfCollection": "within locale of collection"
+      },
+      "tooltip": {
+        "content": "The attribute can be {0} within the {1} scope.",
+        "contentNegation": "The attribute cannot be {0} within the {1} scope.",
+        "uniqueContent": "The attribute {0} in {1} scope.",
+        "referenceAttributeContent": "Attribute {0} is present in {1} scope.",
+        "filterableUnique": "In live scope (due to uniqueness)",
+        "uniquePer": ""
       },
       "help": {
-        "uniqueWithinCollection": "The attribute value must be unique among all the entities of the same collection.",
-        "uniqueWithinLocaleOfCollection": "The localized attribute value must be unique among all values of the same locale among all the entities.",
-        "globallyUniqueWithinCatalog": "The attribute value (either localized or non-localized) must be unique among all values among all the entities using this global attribute schema in the entire catalog.",
-        "globallyUniqueWithinLocaleOfCatalog": "The localized attribute value must be unique among all values of the same locale among all the entities using this global attribute schema in the entire catalog.",
+        "uniqueWithinCollection": "The attribute value must be unique among all the entities of the same collection. The {0} attribute is present in scope {1}.",
+        "uniqueWithinLocaleOfCollection": "The localized attribute value must be unique among all values of the same locale among all the entities. The {0} attribute is present in scope {1}.",
+        "globallyUniqueWithinCatalog": "The attribute value (either localized or non-localized) must be unique among all values among all the entities using this global attribute schema in the entire catalog. The {0} attribute is present in scope {1}.",
+        "globallyUniqueWithinLocaleOfCatalog": "The localized attribute value must be unique among all values of the same locale among all the entities using this global attribute schema in the entire catalog. The {0} attribute is present in scope {1}.",
         "implicitlyFilterable": "The attribute is implicitly filterable because it is unique."
       }
     },
@@ -976,17 +1099,40 @@
     },
     "reference": {
       "label": {
+        "live": "In Live scope",
+        "archive": "In Archive scope",
         "description": "Description",
         "deprecationNotice": "Deprecation notice",
         "cardinality": "Cardinality",
         "referencedEntity": "Referenced entity",
         "referencedEntityManaged": "Referenced entity managed",
         "referencedGroup": "Referenced group",
-        "referencedGroupManaged": "Referenced group managed",
-        "indexed": "Indexed",
         "faceted": "Faceted",
         "referencedEntityNameVariants": "Referenced entity",
-        "referencedGroupNameVariants": "Referenced group"
+        "referencedGroupNameVariants": "Referenced group",
+        "indexed": {
+          "title": "Indexed",
+          "none": "None",
+          "forFiltering": "For filtering",
+          "forFilteringAndPartitioning": "For filtering and partitioning"
+        },
+        "reflectedReference": "Reflects",
+        "inherited": "inherited",
+        "groupManagedByEvita": "This referenced group is managed by EvitaDB.",
+        "groupManagedExternal": "This referenced group is managed externally."
+      },
+      "tooltip": {
+        "content": "The reference is {0} indexed within the {1} scope.",
+        "facetedContent": "The reference {0} provide facets within the {1} scope.",
+        "indexedTooltip": {
+          "none": "Reference has no index available.",
+          "forFiltering": "Reference has only basic index available that is necessary for ReferenceHaving constraint interpretation.",
+          "forFilteringAndPartitioning": "Reference has basic index available and also partitioning indexes for the main entity type."
+        },
+        "faceted": "Special facet index is maintained for this reference allowing interpretation of FacetHaving filtering and FacetSummary requirement constraints."
+      },
+      "reflected": {
+        "reflectedReferences": "Reflected by"
       }
     },
     "sortableAttributeCompound": {
@@ -999,6 +1145,17 @@
       "attributeElement": {
         "title": "Attribute elements"
       }
+    },
+    "tooltip": {
+      "live": "live",
+      "archive": "archive",
+      "filtered": "filtered",
+      "sorted": "sorted",
+      "doesNot": "doesn't",
+      "not": "not",
+      "unique": "unique",
+      "liveContent": "The default scope is where all new entities are created.",
+      "archiveContent": "The archive scope is where outdated entities that are no longer actively used are stored. The archive is usually covered by fewer indexes than the live scope and is not searched unless explicitly requested in a query."
     }
   },
   "serverViewer": {
@@ -1082,6 +1239,12 @@
     }
   },
   "backupViewer": {
+    "backupSelector": {
+      "currentSnapshot": "Current snapshot",
+      "pointInTime": "Point in time",
+      "fullBackup": "Full",
+      "selectSubTitle": "Choose backup type"
+    },
     "definition": {
       "title": "Catalog backups"
     },
@@ -1109,7 +1272,6 @@
     },
     "backup": {
       "title": "Backup catalog",
-      "description": "Request a new backup for the catalog:",
       "info": "The back up process may take a while. Therefore it will be started asynchronously. You can find it’s progress and backup file to download in task listing.",
       "form": {
         "catalogName": {
@@ -1127,6 +1289,18 @@
           "description": "Will apply all mutations from WAL during restoration resulting in the latest version of catalog"
         }
       },
+      "full": {
+        "title": "Full backup",
+        "description": "A full backup will contain a binary copy of all catalog files at the current time. After restoring the catalog from this backup, it will also be possible to perform additional \"point-in-time\" backups from this restored copy for all moments for which historical data is available. This full backup is the largest backup of the catalog in size.\n"
+      },
+      "pointInTime": {
+        "title": "Point in time backup",
+        "description": "A point in time backup contains only data valid at the point in time (version) of the catalog that is selected when the backup is created. When going back in time, it is only possible to select a point in time for which the database still has historical data. In order to protect against running out of disk capacity, historical data is deleted after some time / reaching a limit size. A catalog restored from this backup will not allow point in time recovery, or will only allow it over other write operations performed over the restored catalog."
+      },
+      "snapshot": {
+        "title": "Current snapshot backup",
+        "description": "The current snapshot contains only currently valid data. It is the smallest possible functional backup, which also makes it the fastest backup option. A catalog restored from this backup will not allow point-in-time recovery, or will only allow recovery over other write operations performed on the restored catalog."
+      },
       "button": {
         "backup": "Backup"
       },
@@ -1135,7 +1309,8 @@
         "couldNotLoadMinimalDate": "Could not load available moments: {reason}",
         "backupRequested": "A backup for the {catalogName} catalog requested.",
         "couldNotRequestBackup": "Could not request a backup for the {catalogName} catalog: {reason}"
-      }
+      },
+      "description": "Request a new backup for the catalog:"
     },
     "restore": {
       "title": "Restore catalog from {fileName}",
@@ -1697,5 +1872,134 @@
         }
       }
     }
+  },
+  "mutationHistoryViewer": {
+    "title": "Mutation history",
+    "definition": {
+      "title": "Mutation history"
+    },
+    "filter": {
+      "label": "Filter",
+      "button": {
+        "apply": "Apply filter"
+      },
+      "form": {
+        "from": {
+          "hint": "From",
+          "label": "From"
+        },
+        "to": {
+          "hint": "To",
+          "label": "To"
+        },
+        "mutationTypes": {
+          "hint": "To",
+          "valueDescriptor": "To"
+        },
+        "entityPrimaryKey": {
+          "hint": "Entity PK",
+          "label": "Entity PK"
+        }
+      }
+    },
+    "record": {
+      "type": {
+        "transaction": {
+          "title": "Transaction {version}",
+          "mutationCount": {
+            "tooltip": "Mutation count",
+            "value": "Mutation count {count}"
+          },
+          "walSizeInBytes": {
+            "tooltip": "WAL size in bytes",
+            "value": "WAL {count}"
+          },
+          "commitTimestamp": {
+            "tooltip": "Commit timestamp"
+          },
+          "transactionId": {
+            "tooltip": "Transaction ID"
+          }
+        },
+        "schema": {
+          "title": "Schema: {entityType}"
+        },
+        "entity": {
+          "title": "Entity: {entityType}"
+        },
+        "area": {
+          "tooltip": "Area"
+        },
+        "operation": {
+          "tooltip": "Operation"
+        },
+        "entityType": {
+          "tooltip": "Entity type"
+        },
+        "entityPrimaryKey": {
+          "tooltip": "Entity primary key"
+        },
+        "version": {
+          "tooltip": "Version"
+        },
+        "index": {
+          "tooltip": "index"
+        },
+        "attribute": {
+          "title": "Attribute: {attributeName}",
+          "locale": {
+            "tooltip": "Locale"
+          },
+          "mutationType": {
+            "tooltip": "Mutation type"
+          },
+          "currency": {
+            "tooltip": "Currency"
+          },
+          "priceList": {
+            "tooltip": "Price list"
+          },
+          "priceId": {
+            "tooltip": "Price ID",
+            "title": "Price ID"
+          },
+          "indexed": {
+            "tooltip": "Indexed",
+            "title": "Indexed"
+          },
+          "validity": {
+            "tooltip": "Validity",
+            "title": "Validity"
+          },
+          "reference": {
+            "title": "Reference {referenceName} updated"
+          },
+          "referenceRelation": {
+            "tooltip": "Reference relation"
+          },
+          "referenceCardinality": {
+            "tooltip": "Cardinality"
+          },
+          "referenceEntityType": {
+            "tooltip": "Entity type"
+          },
+          "price": {
+            "title": "Price updated:",
+            "detail": "Update price without tax {priceWithoutTax} / with tax {priceWithTax} / tax rate {taxRate}"
+          }
+        }
+      }
+    }
+  },
+  "relationViewer": {
+    "title": "Relation",
+    "cardinality": {
+      "exactlyOne": "1:1",
+      "oneOrMore": "1:1…*",
+      "zeroOrOne": "1:0…1",
+      "zeroOrMore": "1:0…*"
+    },
+    "managedByEvita": "This entity is managed by evitaDB.",
+    "managedExternal": "This entity is managed externally."
   }
 }

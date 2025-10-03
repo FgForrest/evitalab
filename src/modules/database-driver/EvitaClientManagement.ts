@@ -39,7 +39,6 @@ import { EntityCollectionStatistics } from '@/modules/database-driver/request-re
 import { EvitaServerMetadataCache } from '@/modules/database-driver/EvitaServerMetadataCache'
 import type { StringValue } from '@bufbuild/protobuf/wkt'
 
-
 /**
  * Chunk size for upload local backup files
  */
@@ -227,6 +226,15 @@ export class EvitaClientManagement {
         )
     }
 
+    async fullBackupCatalog(catalogName: string): Promise<TaskStatus> {
+        return await this.evitaClientProvider().updateCatalog(
+            catalogName,
+            session => {
+                return session.fullBackupCatalog()
+            }
+        )
+    }
+
     /**
      * Restores a catalog from the provided file which contains the binary data of a previously backed up zip
      * file.
@@ -376,11 +384,18 @@ export class EvitaClientManagement {
      * @param origin origin of the files (derived from task type), it filters the returned files to only those that are
      *              related to the specified origin
      */
-    async listFilesToFetch(pageNumber: number, pageSize: number, origin: string): Promise<PaginatedList<ServerFile>> {
+    async listFilesToFetch(pageNumber: number, pageSize: number, origin: string[]): Promise<PaginatedList<ServerFile>> {
         try {
+            const originValues:StringValue[] = []
+            origin.forEach(origin => {
+                originValues.push({
+                    value: origin
+                } as StringValue)
+            })
+
             const result = await this.evitaManagementClientProvider()
                 .listFilesToFetch({
-                    origin,
+                    origin: originValues,
                     pageNumber,
                     pageSize
                 })

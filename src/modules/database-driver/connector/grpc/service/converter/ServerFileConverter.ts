@@ -11,11 +11,6 @@ import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/se
  */
 export class ServerFileConverter {
 
-    private readonly evitaValueConverter: EvitaValueConverter
-
-    constructor(evitaValueConverter: EvitaValueConverter) {
-        this.evitaValueConverter = evitaValueConverter
-    }
 
     convertServerFiles(grpcFiles: GrpcFilesToFetchResponse): PaginatedList<ServerFile> {
         const files: ServerFile[] = []
@@ -32,12 +27,12 @@ export class ServerFileConverter {
 
     convert(grpcFile: GrpcFile): ServerFile {
         return new ServerFile(
-            this.evitaValueConverter.convertGrpcUuid(grpcFile.fileId!),
+            EvitaValueConverter.convertGrpcUuid(grpcFile.fileId!),
             grpcFile.name,
             grpcFile.description!,
             grpcFile.contentType,
             BigInt(grpcFile.totalSizeInBytes),
-            this.evitaValueConverter.convertGrpcOffsetDateTime(grpcFile.created!),
+            EvitaValueConverter.convertGrpcOffsetDateTime(grpcFile.created!),
             grpcFile.origin!
         )
     }

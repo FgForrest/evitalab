@@ -19,6 +19,7 @@ import { ServerFileViewerModuleRegistrar } from '@/modules/server-file-viewer/Se
 import { TrafficViewerModuleRegistrar } from '@/modules/traffic-viewer/TrafficViewerModuleRegistrar'
 import { ConnectionExplorerModuleRegistrar } from '@/modules/connection-explorer/ConnectionExplorerModuleRegistrar'
 import { DatabaseDriverModuleRegistrar } from '@/modules/database-driver/DatabaseDriverModuleRegistrar'
+import { MutationHistoryViewerModuleRegistrar } from '@/modules/history-viewer/MutationHistoryViewerModuleRegistrar.ts'
 
 /**
  * Registers all modules during startup.
@@ -46,5 +47,6 @@ export const modules: ModuleRegistrar[] = [
     new BackupViewerModuleRegistrar(),
     new TaskViewerModuleRegistrar(),
     new JfrViewerModuleRegistrar(),
-    new TrafficViewerModuleRegistrar()
+    new TrafficViewerModuleRegistrar(),
+    new MutationHistoryViewerModuleRegistrar()
 ]

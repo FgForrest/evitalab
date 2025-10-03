@@ -1,15 +1,19 @@
-import { createClient } from '@connectrpc/connect'
 import type { Client, Transport } from '@connectrpc/connect'
+import { createClient } from '@connectrpc/connect'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
 import {
     CatalogSchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter'
 import { Connection } from '@/modules/connection/model/Connection'
 import { createGrpcWebTransport } from '@connectrpc/connect-web'
-import { CatalogStatisticsConverter } from '@/modules/database-driver/connector/grpc/service/converter/CatalogStatisticsConverter'
+import {
+    CatalogStatisticsConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/CatalogStatisticsConverter'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter'
 import { ExtraResultConverter } from '@/modules/database-driver/connector/grpc/service/converter/ExtraResultConverter'
-import { EvitaResponseConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaResponseConverter'
+import {
+    EvitaResponseConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/EvitaResponseConverter'
 import { ErrorTransformer } from '@/modules/database-driver/exception/ErrorTransformer'
 import { ServerStatusConverter } from '@/modules/database-driver/connector/grpc/service/converter/ServerStatusConverter'
 import {
@@ -29,6 +33,14 @@ import { EvitaSessionService } from './connector/grpc/gen/GrpcEvitaSessionAPI_pb
 import { EvitaManagementService } from './connector/grpc/gen/GrpcEvitaManagementAPI_pb'
 import { GrpcEvitaTrafficRecordingService } from './connector/grpc/gen/GrpcEvitaTrafficRecordingAPI_pb'
 import type { KyInstance } from 'ky/distribution/types/ky'
+import {
+    MutationProgressConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/MutationProgressConverter.ts'
+import { ScopesConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScopesConverter.ts'
+import {
+    MutationHistoryConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/MutationHistoryConverter.ts'
+
 
 export type EvitaServiceClient = Client<typeof EvitaService>
 export type EvitaSessionServiceClient = Client<typeof EvitaSessionService>
@@ -55,11 +67,13 @@ export abstract class AbstractEvitaClient {
     private _evitaTrafficRecordingClient?: EvitaTrafficRecordingServiceClient = undefined
 
     private _evitaValueConverter?: EvitaValueConverter
+    private _scopeConverter?: ScopesConverter
     private _catalogStatisticsConverter?: CatalogStatisticsConverter
     private _catalogSchemaConverter?: CatalogSchemaConverter
     private _entityConverter?: EntityConverter
     private _extraResultConverter?: ExtraResultConverter
     private _responseConverter?: EvitaResponseConverter
+    private _mutationProgressConverter?: MutationProgressConverter
 
     private _serverStatusConverter?: ServerStatusConverter
     private _reservedKeywordsConverter?: ReservedKeywordsConverter
@@ -67,6 +81,7 @@ export abstract class AbstractEvitaClient {
     private _taskStateConverter?: TaskStateConverter
     private _taskStatusConverter?: TaskStatusConverter
     private _trafficRecordingConverter?: TrafficRecordingConverter
+    private _mutationHistoryConverter?: MutationHistoryConverter
 
     protected constructor(evitaLabConfig: EvitaLabConfig,
                           connectionService: ConnectionService) {
@@ -134,23 +149,30 @@ export abstract class AbstractEvitaClient {
         return this._evitaValueConverter
     }
 
+    protected get scopeConverter(): ScopesConverter {
+        if (this._scopeConverter == undefined) {
+            this._scopeConverter = new ScopesConverter()
+        }
+        return this._scopeConverter
+    }
+
     protected get catalogStatisticsConverter(): CatalogStatisticsConverter {
         if (this._catalogStatisticsConverter == undefined) {
-            this._catalogStatisticsConverter = new CatalogStatisticsConverter(this.evitaValueConverter)
+            this._catalogStatisticsConverter = new CatalogStatisticsConverter()
         }
         return this._catalogStatisticsConverter
     }
 
     protected get catalogSchemaConverter(): CatalogSchemaConverter {
         if (this._catalogSchemaConverter == undefined) {
-            this._catalogSchemaConverter = new CatalogSchemaConverter(this.evitaValueConverter)
+            this._catalogSchemaConverter = new CatalogSchemaConverter()
         }
         return this._catalogSchemaConverter
     }
 
     protected get entityConverter(): EntityConverter {
         if (this._entityConverter == undefined) {
-            this._entityConverter = new EntityConverter(this.evitaValueConverter)
+            this._entityConverter = new EntityConverter()
         }
         return this._entityConverter
     }
@@ -171,7 +193,7 @@ export abstract class AbstractEvitaClient {
 
     protected get serverStatusConverter(): ServerStatusConverter {
         if (this._serverStatusConverter == undefined) {
-            this._serverStatusConverter = new ServerStatusConverter(this.evitaValueConverter)
+            this._serverStatusConverter = new ServerStatusConverter()
         }
         return this._serverStatusConverter
     }
@@ -185,7 +207,7 @@ export abstract class AbstractEvitaClient {
 
     protected get serverFileConverter(): ServerFileConverter {
         if (this._serverFileConverter == undefined) {
-            this._serverFileConverter = new ServerFileConverter(this.evitaValueConverter)
+            this._serverFileConverter = new ServerFileConverter()
         }
         return this._serverFileConverter
     }
@@ -199,18 +221,30 @@ export abstract class AbstractEvitaClient {
 
     protected get taskStatusConverter(): TaskStatusConverter {
         if (this._taskStatusConverter == undefined) {
-            this._taskStatusConverter = new TaskStatusConverter(this.evitaValueConverter, this.taskStateConverter, this.serverFileConverter)
+            this._taskStatusConverter = new TaskStatusConverter(this.taskStateConverter, this.serverFileConverter)
         }
         return this._taskStatusConverter
     }
 
     protected get trafficRecordingConverter(): TrafficRecordingConverter {
         if (this._trafficRecordingConverter == undefined) {
-            this._trafficRecordingConverter = new TrafficRecordingConverter(
-                this.evitaValueConverter
-            )
+            this._trafficRecordingConverter = new TrafficRecordingConverter()
         }
         return this._trafficRecordingConverter
     }
 
+    protected get mutationHistoryConverter(): MutationHistoryConverter {
+        if (this._mutationHistoryConverter == undefined) {
+            this._mutationHistoryConverter = new MutationHistoryConverter()
+        }
+        return this._mutationHistoryConverter
+    }
+
+    protected get mutationProgressConverter(): MutationProgressConverter {
+        if (this._mutationProgressConverter == undefined) {
+            this._mutationProgressConverter = new MutationProgressConverter()
+        }
+
+        return this._mutationProgressConverter
+    }
 }

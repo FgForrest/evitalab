@@ -81,5 +81,11 @@ export enum Command {
 
     TrafficRecordHistoryViewer_ShareTab = 'trafficRecordHistoryViewer.shareTab',
     TrafficRecordHistoryViewer_ReloadRecordHistory = 'trafficRecordHistoryViewer.reloadRecordHistory',
-    TrafficRecordHistoryViewer_MoveStartPointer = 'trafficRecordHistoryViewer.moveStartPointer'
+    TrafficRecordHistoryViewer_MoveStartPointer = 'trafficRecordHistoryViewer.moveStartPointer',
+
+    // Mutation history viewer
+
+    MutationHistoryViewer_ShareTab = 'mutationHistoryViewer.shareTab',
+    MutationHistoryViewer_ReloadRecordHistory = 'mutationHistoryViewer.reloadRecordHistory',
+    MutationHistoryViewer_MoveStartPointer = 'mutationHistoryViewer.moveStartPointer'
 }

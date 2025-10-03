@@ -1,6 +1,7 @@
 import { TabDefinition } from "@/modules/workspace/tab/model/TabDefinition";
 import { VoidTabData } from "@/modules/workspace/tab/model/void/VoidTabData";
-import type { DefineComponent, markRaw } from "vue";
+import type { DefineComponent } from "vue";
+import { markRaw } from 'vue'
 import { BackupViewerTabParams } from '@/modules/backup-viewer/model/BackupViewerTabParams'
 import BackupViewer from '@/modules/backup-viewer/components/BackupViewer.vue'
 

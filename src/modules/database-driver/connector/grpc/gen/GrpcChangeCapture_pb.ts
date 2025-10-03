@@ -5,19 +5,23 @@
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import { file_google_protobuf_wrappers } from "@bufbuild/protobuf/wkt";
+import type { GrpcEngineMutation } from "./GrpcEngineMutation_pb";
+import { file_GrpcEngineMutation } from "./GrpcEngineMutation_pb";
 import type { GrpcEntityMutation } from "./GrpcEntityMutation_pb";
 import { file_GrpcEntityMutation } from "./GrpcEntityMutation_pb";
 import type { GrpcLocalMutation } from "./GrpcLocalMutation_pb";
 import { file_GrpcLocalMutation } from "./GrpcLocalMutation_pb";
 import type { GrpcEntitySchemaMutation } from "./GrpcEntitySchemaMutation_pb";
 import { file_GrpcEntitySchemaMutation } from "./GrpcEntitySchemaMutation_pb";
+import type { GrpcInfrastructureMutation } from "./GrpcInfrastrutureMutation_pb";
+import { file_GrpcInfrastrutureMutation } from "./GrpcInfrastrutureMutation_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file GrpcChangeCapture.proto.
  */
 export const file_GrpcChangeCapture: GenFile = /*@__PURE__*/
-  fileDesc("ChdHcnBjQ2hhbmdlQ2FwdHVyZS5wcm90bxIlaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZCKfAgoZR3JwY0NoYW5nZUNhcHR1cmVDcml0ZXJpYRJKCgRhcmVhGAEgASgOMjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2hhbmdlQ2FwdHVyZUFyZWESWAoKc2NoZW1hU2l0ZRgCIAEoCzJCLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZUNhcHR1cmVTY2hlbWFTaXRlSAASVAoIZGF0YVNpdGUYAyABKAsyQC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlRGF0YVNpdGVIAEIGCgRzaXRlIoMCChtHcnBjQ2hhbmdlQ2FwdHVyZVNjaGVtYVNpdGUSMAoKZW50aXR5VHlwZRgBIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRJUCglvcGVyYXRpb24YAiADKA4yQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlT3BlcmF0aW9uElwKDWNvbnRhaW5lclR5cGUYAyADKA4yRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlQ29udGFpbmVyVHlwZSLPAgoZR3JwY0NoYW5nZUNhcHR1cmVEYXRhU2l0ZRIwCgplbnRpdHlUeXBlGAEgASgLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlEjUKEGVudGl0eVByaW1hcnlLZXkYAiABKAsyGy5nb29nbGUucHJvdG9idWYuSW50MzJWYWx1ZRJUCglvcGVyYXRpb24YAyADKA4yQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlT3BlcmF0aW9uElwKDWNvbnRhaW5lclR5cGUYBCADKA4yRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlQ29udGFpbmVyVHlwZRIVCg1jb250YWluZXJOYW1lGAUgAygJIp0EChhHcnBjQ2hhbmdlQ2F0YWxvZ0NhcHR1cmUSEwoHdmVyc2lvbhgBIAEoA0ICMAESDQoFaW5kZXgYAiABKAUSSgoEYXJlYRgDIAEoDjI8LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZUNhcHR1cmVBcmVhEjAKCmVudGl0eVR5cGUYBCABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSVAoJb3BlcmF0aW9uGAUgASgOMkEuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2hhbmdlQ2FwdHVyZU9wZXJhdGlvbhJZCg5zY2hlbWFNdXRhdGlvbhgGIAEoCzI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjaGVtYU11dGF0aW9uSAASUwoOZW50aXR5TXV0YXRpb24YByABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlNdXRhdGlvbkgAElEKDWxvY2FsTXV0YXRpb24YCCABKAsyOC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNMb2NhbE11dGF0aW9uSABCBgoEYm9keSpBChVHcnBjQ2hhbmdlQ2FwdHVyZUFyZWESCgoGU0NIRU1BEAASCAoEREFUQRABEhIKDklORlJBU1RSVUNUVVJFEAIqRQoaR3JwY0NoYW5nZUNhcHR1cmVPcGVyYXRpb24SCgoGVVBTRVJUEAASCgoGUkVNT1ZFEAESDwoLVFJBTlNBQ1RJT04QAiqzAQoeR3JwY0NoYW5nZUNhcHR1cmVDb250YWluZXJUeXBlEhUKEUNPTlRBSU5FUl9DQVRBTE9HEAASFAoQQ09OVEFJTkVSX0VOVElUWRABEhcKE0NPTlRBSU5FUl9BVFRSSUJVVEUQAhIdChlDT05UQUlORVJfQVNTT0NJQVRFRF9EQVRBEAMSEwoPQ09OVEFJTkVSX1BSSUNFEAQSFwoTQ09OVEFJTkVSX1JFRkVSRU5DRRAFKj4KGEdycGNDaGFuZ2VDYXB0dXJlQ29udGVudBIRCg1DSEFOR0VfSEVBREVSEAASDwoLQ0hBTkdFX0JPRFkQAUL9AQopY29tLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWRCFkdycGNDaGFuZ2VDYXB0dXJlUHJvdG9QAaICBUlFRUdHqgIlSW8uRXZpdGFkYi5FeHRlcm5hbEFwaS5HcnBjLkdlbmVyYXRlZMoCJUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWTiAjFJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVkXEdQQk1ldGFkYXRh6gIpSW86OkV2aXRhZGI6OkV4dGVybmFsQXBpOjpHcnBjOjpHZW5lcmF0ZWRiBnByb3RvMw", [file_google_protobuf_wrappers, file_GrpcEntityMutation, file_GrpcLocalMutation, file_GrpcEntitySchemaMutation]);
+  fileDesc("ChdHcnBjQ2hhbmdlQ2FwdHVyZS5wcm90bxIlaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZCKfAgoZR3JwY0NoYW5nZUNhcHR1cmVDcml0ZXJpYRJKCgRhcmVhGAEgASgOMjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2hhbmdlQ2FwdHVyZUFyZWESWAoKc2NoZW1hU2l0ZRgCIAEoCzJCLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZUNhcHR1cmVTY2hlbWFTaXRlSAASVAoIZGF0YVNpdGUYAyABKAsyQC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlRGF0YVNpdGVIAEIGCgRzaXRlIoMCChtHcnBjQ2hhbmdlQ2FwdHVyZVNjaGVtYVNpdGUSMAoKZW50aXR5VHlwZRgBIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRJUCglvcGVyYXRpb24YAiADKA4yQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlT3BlcmF0aW9uElwKDWNvbnRhaW5lclR5cGUYAyADKA4yRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlQ29udGFpbmVyVHlwZSLPAgoZR3JwY0NoYW5nZUNhcHR1cmVEYXRhU2l0ZRIwCgplbnRpdHlUeXBlGAEgASgLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlEjUKEGVudGl0eVByaW1hcnlLZXkYAiABKAsyGy5nb29nbGUucHJvdG9idWYuSW50MzJWYWx1ZRJUCglvcGVyYXRpb24YAyADKA4yQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlT3BlcmF0aW9uElwKDWNvbnRhaW5lclR5cGUYBCADKA4yRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlQ29udGFpbmVyVHlwZRIVCg1jb250YWluZXJOYW1lGAUgAygJIu8FChhHcnBjQ2hhbmdlQ2F0YWxvZ0NhcHR1cmUSLAoHdmVyc2lvbhgBIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQ2NFZhbHVlEioKBWluZGV4GAIgASgLMhsuZ29vZ2xlLnByb3RvYnVmLkludDMyVmFsdWUSSgoEYXJlYRgDIAEoDjI8LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZUNhcHR1cmVBcmVhEjAKCmVudGl0eVR5cGUYBCABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSNQoQZW50aXR5UHJpbWFyeUtleRgFIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQzMlZhbHVlElQKCW9wZXJhdGlvbhgGIAEoDjJBLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZUNhcHR1cmVPcGVyYXRpb24SWQoOc2NoZW1hTXV0YXRpb24YByABKAsyPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlTY2hlbWFNdXRhdGlvbkgAElMKDmVudGl0eU11dGF0aW9uGAggASgLMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5TXV0YXRpb25IABJRCg1sb2NhbE11dGF0aW9uGAkgASgLMjguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTG9jYWxNdXRhdGlvbkgAEmMKFmluZnJhc3RydWN0dXJlTXV0YXRpb24YCiABKAsyQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNJbmZyYXN0cnVjdHVyZU11dGF0aW9uSABCBgoEYm9keSLmAQoXR3JwY0NoYW5nZVN5c3RlbUNhcHR1cmUSEwoHdmVyc2lvbhgBIAEoA0ICMAESDQoFaW5kZXgYAiABKAUSVAoJb3BlcmF0aW9uGAMgASgOMkEuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2hhbmdlQ2FwdHVyZU9wZXJhdGlvbhJRCg5zeXN0ZW1NdXRhdGlvbhgEIAEoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VuZ2luZU11dGF0aW9uKkEKFUdycGNDaGFuZ2VDYXB0dXJlQXJlYRIKCgZTQ0hFTUEQABIICgREQVRBEAESEgoOSU5GUkFTVFJVQ1RVUkUQAipFChpHcnBjQ2hhbmdlQ2FwdHVyZU9wZXJhdGlvbhIKCgZVUFNFUlQQABIKCgZSRU1PVkUQARIPCgtUUkFOU0FDVElPThACKrMBCh5HcnBjQ2hhbmdlQ2FwdHVyZUNvbnRhaW5lclR5cGUSFQoRQ09OVEFJTkVSX0NBVEFMT0cQABIUChBDT05UQUlORVJfRU5USVRZEAESFwoTQ09OVEFJTkVSX0FUVFJJQlVURRACEh0KGUNPTlRBSU5FUl9BU1NPQ0lBVEVEX0RBVEEQAxITCg9DT05UQUlORVJfUFJJQ0UQBBIXChNDT05UQUlORVJfUkVGRVJFTkNFEAUqPgoYR3JwY0NoYW5nZUNhcHR1cmVDb250ZW50EhEKDUNIQU5HRV9IRUFERVIQABIPCgtDSEFOR0VfQk9EWRABKjoKF0dycGNDYXB0dXJlUmVzcG9uc2VUeXBlEhMKD0FDS05PV0xFREdFTUVOVBAAEgoKBkNIQU5HRRABQv0BCiljb20uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZEIWR3JwY0NoYW5nZUNhcHR1cmVQcm90b1ABogIFSUVFR0eqAiVJby5Fdml0YWRiLkV4dGVybmFsQXBpLkdycGMuR2VuZXJhdGVkygIlSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZOICMUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWRcR1BCTWV0YWRhdGHqAilJbzo6RXZpdGFkYjo6RXh0ZXJuYWxBcGk6OkdycGM6OkdlbmVyYXRlZGIGcHJvdG8z", [file_google_protobuf_wrappers, file_GrpcEngineMutation, file_GrpcEntityMutation, file_GrpcLocalMutation, file_GrpcEntitySchemaMutation, file_GrpcInfrastrutureMutation]);
 
 /**
  * Record for the criteria of the capture request allowing to limit mutations to specific area of interest an its
@@ -149,7 +153,7 @@ export const GrpcChangeCaptureDataSiteSchema: GenMessage<GrpcChangeCaptureDataSi
   messageDesc(file_GrpcChangeCapture, 2);
 
 /**
- * Record represents a CDC event that is sent to the subscriber if it matches to the request he made.
+ * Record represents a catalog CDC event that is sent to the subscriber if it matches to the request he made.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcChangeCatalogCapture
  */
@@ -157,16 +161,16 @@ export type GrpcChangeCatalogCapture = Message<"io.evitadb.externalApi.grpc.gene
   /**
    * the version of the catalog where the operation was performed
    *
-   * @generated from field: int64 version = 1 [jstype = JS_STRING];
+   * @generated from field: google.protobuf.Int64Value version = 1;
    */
-  version: string;
+  version?: bigint;
 
   /**
    * the index of the event within the enclosed transaction, index 0 is the transaction lead event
    *
-   * @generated from field: int32 index = 2;
+   * @generated from field: google.protobuf.Int32Value index = 2;
    */
-  index: number;
+  index?: number;
 
   /**
    * the area of the operation
@@ -184,9 +188,17 @@ export type GrpcChangeCatalogCapture = Message<"io.evitadb.externalApi.grpc.gene
   entityType?: string;
 
   /**
+   * the primary key of the entity that was affected by the operation
+   * (null for schema operations)
+   *
+   * @generated from field: google.protobuf.Int32Value entityPrimaryKey = 5;
+   */
+  entityPrimaryKey?: number;
+
+  /**
    * the operation that was performed
    *
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureOperation operation = 5;
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureOperation operation = 6;
    */
   operation: GrpcChangeCaptureOperation;
 
@@ -197,22 +209,28 @@ export type GrpcChangeCatalogCapture = Message<"io.evitadb.externalApi.grpc.gene
    */
   body: {
     /**
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntitySchemaMutation schemaMutation = 6;
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntitySchemaMutation schemaMutation = 7;
      */
     value: GrpcEntitySchemaMutation;
     case: "schemaMutation";
   } | {
     /**
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntityMutation entityMutation = 7;
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntityMutation entityMutation = 8;
      */
     value: GrpcEntityMutation;
     case: "entityMutation";
   } | {
     /**
-     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcLocalMutation localMutation = 8;
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcLocalMutation localMutation = 9;
      */
     value: GrpcLocalMutation;
     case: "localMutation";
+  } | {
+    /**
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcInfrastructureMutation infrastructureMutation = 10;
+     */
+    value: GrpcInfrastructureMutation;
+    case: "infrastructureMutation";
   } | { case: undefined; value?: undefined };
 };
 
@@ -222,6 +240,48 @@ export type GrpcChangeCatalogCapture = Message<"io.evitadb.externalApi.grpc.gene
  */
 export const GrpcChangeCatalogCaptureSchema: GenMessage<GrpcChangeCatalogCapture> = /*@__PURE__*/
   messageDesc(file_GrpcChangeCapture, 3);
+
+/**
+ * Record represents a system CDC event that is sent to the subscriber if it matches to the request he made.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcChangeSystemCapture
+ */
+export type GrpcChangeSystemCapture = Message<"io.evitadb.externalApi.grpc.generated.GrpcChangeSystemCapture"> & {
+  /**
+   * the version of the engine where the operation was performed
+   *
+   * @generated from field: int64 version = 1 [jstype = JS_STRING];
+   */
+  version: string;
+
+  /**
+   * the index of the event within the enclosed transaction, index 0 is the transaction lead event
+   *
+   * @generated from field: int32 index = 2;
+   */
+  index: number;
+
+  /**
+   * the operation that was performed
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureOperation operation = 3;
+   */
+  operation: GrpcChangeCaptureOperation;
+
+  /**
+   * optional body of the operation when it is requested by the GrpcContent
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEngineMutation systemMutation = 4;
+   */
+  systemMutation?: GrpcEngineMutation;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcChangeSystemCapture.
+ * Use `create(GrpcChangeSystemCaptureSchema)` to create a new message.
+ */
+export const GrpcChangeSystemCaptureSchema: GenMessage<GrpcChangeSystemCapture> = /*@__PURE__*/
+  messageDesc(file_GrpcChangeCapture, 4);
 
 /**
  * The enum defines what catalog area is covered by the capture.
@@ -374,4 +434,31 @@ export enum GrpcChangeCaptureContent {
  */
 export const GrpcChangeCaptureContentSchema: GenEnum<GrpcChangeCaptureContent> = /*@__PURE__*/
   enumDesc(file_GrpcChangeCapture, 3);
+
+/**
+ * Enum specifying the type of response that is sent to the subscriber.
+ *
+ * @generated from enum io.evitadb.externalApi.grpc.generated.GrpcCaptureResponseType
+ */
+export enum GrpcCaptureResponseType {
+  /**
+   * The response contains only the acknowledgement of the subscription.
+   *
+   * @generated from enum value: ACKNOWLEDGEMENT = 0;
+   */
+  ACKNOWLEDGEMENT = 0,
+
+  /**
+   * The response contains the change event that was captured.
+   *
+   * @generated from enum value: CHANGE = 1;
+   */
+  CHANGE = 1,
+}
+
+/**
+ * Describes the enum io.evitadb.externalApi.grpc.generated.GrpcCaptureResponseType.
+ */
+export const GrpcCaptureResponseTypeSchema: GenEnum<GrpcCaptureResponseType> = /*@__PURE__*/
+  enumDesc(file_GrpcChangeCapture, 4);
 

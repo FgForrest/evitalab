@@ -4,6 +4,7 @@ import { AbstractSchema } from '@/modules/database-driver/request-response/schem
 import { GlobalAttributeSchema } from '@/modules/database-driver/request-response/schema/GlobalAttributeSchema'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import type { EntitySchemaAccessor } from '@/modules/database-driver/request-response/schema/EntitySchemaAccessor'
+import type { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 
 /**
  * evitaLab's representation of a single evitaDB catalog schema independent of specific evitaDB version
@@ -30,7 +31,7 @@ export class CatalogSchema extends AbstractSchema {
         return this._entitySchemas
     }
 
-    private readonly _representativeFlags: List<string> = List()
+    private readonly _representativeFlags: List<Flag> = List()
 
     constructor(
         version: number,
@@ -49,7 +50,7 @@ export class CatalogSchema extends AbstractSchema {
         this.entitySchemaAccessor = entitySchemaAccessor
     }
 
-    get representativeFlags(): List<string> {
+    get representativeFlags(): List<Flag> {
         return this._representativeFlags
     }
 }

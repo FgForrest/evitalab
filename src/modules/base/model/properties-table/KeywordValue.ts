@@ -11,10 +11,12 @@ export class KeywordValue {
      * Optional color of the keyword
      */
     readonly color?: string
+    readonly tooltip?: string
 
-    constructor(value: string, color?: string) {
+    constructor(value: string, color?: string, tooltip?: string) {
         this.value = value
         this.color = color
+        this.tooltip = tooltip
     }
 
     toString() {

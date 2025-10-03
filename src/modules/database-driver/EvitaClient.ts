@@ -3,11 +3,10 @@ import type {
     GrpcCatalogNamesResponse,
     GrpcDefineCatalogResponse,
     GrpcEvitaSessionResponse,
-    GrpcGetCatalogStateResponse
+    GrpcRegisterSystemChangeCaptureResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaAPI_pb'
 import { EvitaClientSession } from '@/modules/database-driver/EvitaClientSession'
 import { Code, ConnectError } from '@connectrpc/connect'
-import { CatalogState } from '@/modules/database-driver/request-response/CatalogState'
 import { EvitaClientManagement } from '@/modules/database-driver/EvitaClientManagement'
 import { EvitaSchemaCache } from '@/modules/database-driver/EvitaSchemaCache'
 import { Set } from 'immutable'
@@ -19,6 +18,10 @@ import type { GraphQLResponse } from '@/modules/database-driver/connector/gql/mo
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
+import type {
+    ApplyMutationWithProgressResponse
+} from '@/modules/database-driver/request-response/schema/ApplyMutationWithProgressResponse.ts'
+import { GrpcChangeCaptureContent } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 
 export const evitaClientInjectionKey: InjectionKey<EvitaClient> = Symbol('EvitaClient')
 
@@ -35,7 +38,6 @@ export function useEvitaClient(): EvitaClient {
  * are different or simplified.
  */
 export class EvitaClient extends AbstractEvitaClient {
-
     private readonly schemaCache: Map<string, EvitaSchemaCache> = new Map()
     private _management?: EvitaClientManagement
 
@@ -415,6 +417,71 @@ export class EvitaClient extends AbstractEvitaClient {
             await this.closeSession(sharedSession)
         }
     }
+    async *duplicateCatalogWithProgress(catalogName: string, newCatalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
+        for await (const progress of this.evitaClient.duplicateCatalogWithProgress({
+            catalogName,
+            newCatalogName
+        })) {
+            yield this.mutationProgressConverter.convertMutationWithProgress(progress)
+        }
+    }
+
+    async *renameCatalogWithProgress(catalogName: string, newCatalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
+        for await (const progress of this.evitaClient.renameCatalogWithProgress({
+            catalogName,
+            newCatalogName
+        })) {
+            yield this.mutationProgressConverter.convertMutationWithProgress(progress)
+        }
+    }
+
+    async *deactivateCatalogWithProgress(catalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
+        for await (const progress of this.evitaClient.deactivateCatalogWithProgress({
+            catalogName
+        })) {
+            yield this.mutationProgressConverter.convertMutationWithProgress(progress)
+        }
+    }
+
+    async *activateCatalogWithProgress(catalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
+        for await (const progress of this.evitaClient.activateCatalogWithProgress({
+            catalogName
+        })) {
+            yield this.mutationProgressConverter.convertMutationWithProgress(progress)
+        }
+    }
+
+    async *makeCatalogAliveWithProgress(catalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
+        for await (const progress of this.evitaClient.makeCatalogAliveWithProgress({ catalogName })){
+            yield this.mutationProgressConverter.convertMutationWithProgress(progress)
+        }
+    }
+
+    async *makeCatalogImmutableWithProgress(catalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
+        for await (const progress of this.evitaClient.makeCatalogImmutableWithProgress({ catalogName })){
+            yield this.mutationProgressConverter.convertMutationWithProgress(progress)
+        }
+    }
+
+    async *makeCatalogMutable(catalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
+        for await (const progress of this.evitaClient.makeCatalogMutableWithProgress({ catalogName })){
+            yield this.mutationProgressConverter.convertMutationWithProgress(progress)
+        }
+    }
+
+    async *replaceCatalogWithProgress(catalogNameToBeReplacedWith: string, catalogNameToBeReplaced: string):AsyncIterable<ApplyMutationWithProgressResponse> {
+        for await (const progress of this.evitaClient.replaceCatalogWithProgress({catalogNameToBeReplacedWith, catalogNameToBeReplaced})) {
+            yield this.mutationProgressConverter.convertMutationWithProgress(progress)
+        }
+    }
+
+    async *registerSystemChangeCapture(): AsyncIterable<GrpcRegisterSystemChangeCaptureResponse> {
+        for await (const activity of this.evitaClient.registerSystemChangeCapture({
+            content: GrpcChangeCaptureContent.CHANGE_BODY,
+        })) {
+            yield activity
+        }
+    }
 
     private getOrCreateSchemaCache(catalogName: string): EvitaSchemaCache {
         let entitySchemaCacheForSession: EvitaSchemaCache | undefined = this.schemaCache.get(catalogName)
@@ -479,7 +546,8 @@ export class EvitaClient extends AbstractEvitaClient {
             () => this.catalogSchemaConverter,
             () => this.responseConverter,
             () => this.taskStatusConverter,
-            () => this.trafficRecordingConverter
+            () => this.trafficRecordingConverter,
+            () => this.mutationHistoryConverter
         )
     }
 
