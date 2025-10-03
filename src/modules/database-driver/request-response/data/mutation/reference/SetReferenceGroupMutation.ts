@@ -1,12 +1,9 @@
 import {
     ReferenceMutation
 } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceMutation.ts'
-import type {
-    ReferenceKeyWithAttributeKey
-} from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceKeyWithAttributeKey.ts'
 import type { ReferenceKey } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceKey.ts'
 
-export class SetReferenceGroupMutation extends ReferenceMutation<ReferenceKeyWithAttributeKey> {
+export class SetReferenceGroupMutation extends ReferenceMutation {
     readonly resolvedGroupType: string | undefined
     readonly groupPrimaryKey: number
     readonly groupType: string | undefined

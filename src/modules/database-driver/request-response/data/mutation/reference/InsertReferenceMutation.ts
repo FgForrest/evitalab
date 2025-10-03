@@ -9,7 +9,7 @@ import type {
     ReferenceKeyWithAttributeKey
 } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceKeyWithAttributeKey.ts'
 
-export class InsertReferenceMutation extends ReferenceMutation<ReferenceKeyWithAttributeKey> {
+export class InsertReferenceMutation extends ReferenceMutation {
     readonly referenceKey: ReferenceKey
     readonly referenceCardinality: Cardinality
     readonly referenceEntityType: string|undefined

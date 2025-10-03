@@ -27,10 +27,12 @@ const icon = computed(() => {
         case Cardinality.ExactlyOne:
             return 'mdi-relation-one-to-one'
         case Cardinality.OneOrMore:
+        case Cardinality.OneOrMoreWithDuplicates:
             return 'mdi-relation-one-to-one-or-many'
         case Cardinality.ZeroOrOne:
             return 'mdi-relation-one-to-zero-or-one'
         case Cardinality.ZeroOrMore:
+        case Cardinality.ZeroOrMoreWithDuplicates:
             return 'mdi-relation-one-to-zero-or-many'
     }
 })
