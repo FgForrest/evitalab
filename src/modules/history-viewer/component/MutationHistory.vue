@@ -92,10 +92,10 @@ const fetchingNewRecordsWhenThereArentAny = ref<boolean>(false)
 
 
 const nextPageRequest = computed<MutationHistoryRequest>(() => {
-    return new MutationHistoryRequest(props.criteria.entityPrimaryKey, undefined)
+    return new MutationHistoryRequest(props.criteria.from, props.criteria.to, props.criteria.entityPrimaryKey, undefined)
 })
 const lastRecordRequest = computed<MutationHistoryRequest>(() => {
-    return new MutationHistoryRequest(props.criteria.entityPrimaryKey, undefined)
+    return new MutationHistoryRequest(props.criteria.from, props.criteria.to, props.criteria.entityPrimaryKey, undefined)
 })
 
 async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) => void }): Promise<void> {

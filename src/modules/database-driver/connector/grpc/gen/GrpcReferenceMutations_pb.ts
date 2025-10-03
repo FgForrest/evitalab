@@ -17,7 +17,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file GrpcReferenceMutations.proto.
  */
 export const file_GrpcReferenceMutations: GenFile = /*@__PURE__*/
-  fileDesc("ChxHcnBjUmVmZXJlbmNlTXV0YXRpb25zLnByb3RvEiVpby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkIuMBChtHcnBjSW5zZXJ0UmVmZXJlbmNlTXV0YXRpb24SFQoNcmVmZXJlbmNlTmFtZRgBIAEoCRIbChNyZWZlcmVuY2VQcmltYXJ5S2V5GAIgASgFElQKFHJlZmVyZW5jZUNhcmRpbmFsaXR5GAMgASgOMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2FyZGluYWxpdHkSOgoUcmVmZXJlbmNlZEVudGl0eVR5cGUYBCABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUiUQobR3JwY1JlbW92ZVJlZmVyZW5jZU11dGF0aW9uEhUKDXJlZmVyZW5jZU5hbWUYASABKAkSGwoTcmVmZXJlbmNlUHJpbWFyeUtleRgCIAEoBSKdAQodR3JwY1NldFJlZmVyZW5jZUdyb3VwTXV0YXRpb24SFQoNcmVmZXJlbmNlTmFtZRgBIAEoCRIbChNyZWZlcmVuY2VQcmltYXJ5S2V5GAIgASgFEi8KCWdyb3VwVHlwZRgDIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRIXCg9ncm91cFByaW1hcnlLZXkYBCABKAUiVgogR3JwY1JlbW92ZVJlZmVyZW5jZUdyb3VwTXV0YXRpb24SFQoNcmVmZXJlbmNlTmFtZRgBIAEoCRIbChNyZWZlcmVuY2VQcmltYXJ5S2V5GAIgASgFIq0BCh5HcnBjUmVmZXJlbmNlQXR0cmlidXRlTXV0YXRpb24SFQoNcmVmZXJlbmNlTmFtZRgBIAEoCRIbChNyZWZlcmVuY2VQcmltYXJ5S2V5GAIgASgFElcKEWF0dHJpYnV0ZU11dGF0aW9uGAMgASgLMjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQXR0cmlidXRlTXV0YXRpb24i/wEKI0dycGNMb2NhbGl6ZWRBdHRyaWJ1dGVNdXRhdGlvblZhbHVlEm4KCmF0dHJpYnV0ZXMYASADKAsyWi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNMb2NhbGl6ZWRBdHRyaWJ1dGVNdXRhdGlvblZhbHVlLkF0dHJpYnV0ZXNFbnRyeRpoCg9BdHRyaWJ1dGVzRW50cnkSCwoDa2V5GAEgASgJEkQKBXZhbHVlGAIgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZpdGFWYWx1ZToCOAFCggIKKWNvbS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkQhtHcnBjUmVmZXJlbmNlTXV0YXRpb25zUHJvdG9QAaICBUlFRUdHqgIlSW8uRXZpdGFkYi5FeHRlcm5hbEFwaS5HcnBjLkdlbmVyYXRlZMoCJUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWTiAjFJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVkXEdQQk1ldGFkYXRh6gIpSW86OkV2aXRhZGI6OkV4dGVybmFsQXBpOjpHcnBjOjpHZW5lcmF0ZWRiBnByb3RvMw", [file_GrpcEnums, file_GrpcEvitaDataTypes, file_GrpcAttributeMutations, file_google_protobuf_wrappers]);
+  fileDesc("ChxHcnBjUmVmZXJlbmNlTXV0YXRpb25zLnByb3RvEiVpby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkIuMBChtHcnBjSW5zZXJ0UmVmZXJlbmNlTXV0YXRpb24SFQoNcmVmZXJlbmNlTmFtZRgBIAEoCRIbChNyZWZlcmVuY2VQcmltYXJ5S2V5GAIgASgFElQKFHJlZmVyZW5jZUNhcmRpbmFsaXR5GAMgASgOMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2FyZGluYWxpdHkSOgoUcmVmZXJlbmNlZEVudGl0eVR5cGUYBCABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUibQobR3JwY1JlbW92ZVJlZmVyZW5jZU11dGF0aW9uEhUKDXJlZmVyZW5jZU5hbWUYASABKAkSGwoTcmVmZXJlbmNlUHJpbWFyeUtleRgCIAEoBRIaChJpbnRlcm5hbFByaW1hcnlLZXkYAyABKAUiuQEKHUdycGNTZXRSZWZlcmVuY2VHcm91cE11dGF0aW9uEhUKDXJlZmVyZW5jZU5hbWUYASABKAkSGwoTcmVmZXJlbmNlUHJpbWFyeUtleRgCIAEoBRIvCglncm91cFR5cGUYAyABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSFwoPZ3JvdXBQcmltYXJ5S2V5GAQgASgFEhoKEmludGVybmFsUHJpbWFyeUtleRgFIAEoBSJyCiBHcnBjUmVtb3ZlUmVmZXJlbmNlR3JvdXBNdXRhdGlvbhIVCg1yZWZlcmVuY2VOYW1lGAEgASgJEhsKE3JlZmVyZW5jZVByaW1hcnlLZXkYAiABKAUSGgoSaW50ZXJuYWxQcmltYXJ5S2V5GAMgASgFIskBCh5HcnBjUmVmZXJlbmNlQXR0cmlidXRlTXV0YXRpb24SFQoNcmVmZXJlbmNlTmFtZRgBIAEoCRIbChNyZWZlcmVuY2VQcmltYXJ5S2V5GAIgASgFElcKEWF0dHJpYnV0ZU11dGF0aW9uGAMgASgLMjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQXR0cmlidXRlTXV0YXRpb24SGgoSaW50ZXJuYWxQcmltYXJ5S2V5GAQgASgFIv8BCiNHcnBjTG9jYWxpemVkQXR0cmlidXRlTXV0YXRpb25WYWx1ZRJuCgphdHRyaWJ1dGVzGAEgAygLMlouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTG9jYWxpemVkQXR0cmlidXRlTXV0YXRpb25WYWx1ZS5BdHRyaWJ1dGVzRW50cnkaaAoPQXR0cmlidXRlc0VudHJ5EgsKA2tleRgBIAEoCRJECgV2YWx1ZRgCIAEoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhVmFsdWU6AjgBQoICCiljb20uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZEIbR3JwY1JlZmVyZW5jZU11dGF0aW9uc1Byb3RvUAGiAgVJRUVHR6oCJUlvLkV2aXRhZGIuRXh0ZXJuYWxBcGkuR3JwYy5HZW5lcmF0ZWTKAiVJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVk4gIxSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZFxHUEJNZXRhZGF0YeoCKUlvOjpFdml0YWRiOjpFeHRlcm5hbEFwaTo6R3JwYzo6R2VuZXJhdGVkYgZwcm90bzM", [file_GrpcEnums, file_GrpcEvitaDataTypes, file_GrpcAttributeMutations, file_google_protobuf_wrappers]);
 
 /**
  * This mutation allows to create a reference in the entity.
@@ -84,6 +84,27 @@ export type GrpcRemoveReferenceMutation = Message<"io.evitadb.externalApi.grpc.g
    * @generated from field: int32 referencePrimaryKey = 2;
    */
   referencePrimaryKey: number;
+
+  /**
+   * internal PK is assigned by evitaDB engine and is used to uniquely identify the
+   * reference among other references. It is used when multiple references share same
+   * business key - entityType and primaryKey - but differ by other properties (fe. reference group or attributes).
+   *
+   * When a reference is created for the first time, internal id is set to a unique
+   * negative number that is not used by the server side, which assigns positive unique
+   * numbers to the references on first reference persistence. This allows distinguishing
+   * references that are not yet persisted from those that are already persistent.
+   *
+   * When standalone key is used:
+   *
+   * - negative number: means that the reference is new and hasn't been yet persisted
+   * - zero: means we don't know the internal PK
+   * - positive number: means that the reference is persistent and has been already stored
+   *   in the database
+   *
+   * @generated from field: int32 internalPrimaryKey = 3;
+   */
+  internalPrimaryKey: number;
 };
 
 /**
@@ -129,6 +150,27 @@ export type GrpcSetReferenceGroupMutation = Message<"io.evitadb.externalApi.grpc
    * @generated from field: int32 groupPrimaryKey = 4;
    */
   groupPrimaryKey: number;
+
+  /**
+   * internal PK is assigned by evitaDB engine and is used to uniquely identify the
+   * reference among other references. It is used when multiple references share same
+   * business key - entityType and primaryKey - but differ by other properties (fe. reference group or attributes).
+   *
+   * When a reference is created for the first time, internal id is set to a unique
+   * negative number that is not used by the server side, which assigns positive unique
+   * numbers to the references on first reference persistence. This allows distinguishing
+   * references that are not yet persisted from those that are already persistent.
+   *
+   * When standalone key is used:
+   *
+   * - negative number: means that the reference is new and hasn't been yet persisted
+   * - zero: means we don't know the internal PK
+   * - positive number: means that the reference is persistent and has been already stored
+   *   in the database
+   *
+   * @generated from field: int32 internalPrimaryKey = 5;
+   */
+  internalPrimaryKey: number;
 };
 
 /**
@@ -158,6 +200,27 @@ export type GrpcRemoveReferenceGroupMutation = Message<"io.evitadb.externalApi.g
    * @generated from field: int32 referencePrimaryKey = 2;
    */
   referencePrimaryKey: number;
+
+  /**
+   * internal PK is assigned by evitaDB engine and is used to uniquely identify the
+   * reference among other references. It is used when multiple references share same
+   * business key - entityType and primaryKey - but differ by other properties (fe. reference group or attributes).
+   *
+   * When a reference is created for the first time, internal id is set to a unique
+   * negative number that is not used by the server side, which assigns positive unique
+   * numbers to the references on first reference persistence. This allows distinguishing
+   * references that are not yet persisted from those that are already persistent.
+   *
+   * When standalone key is used:
+   *
+   * - negative number: means that the reference is new and hasn't been yet persisted
+   * - zero: means we don't know the internal PK
+   * - positive number: means that the reference is persistent and has been already stored
+   *   in the database
+   *
+   * @generated from field: int32 internalPrimaryKey = 3;
+   */
+  internalPrimaryKey: number;
 };
 
 /**
@@ -194,6 +257,27 @@ export type GrpcReferenceAttributeMutation = Message<"io.evitadb.externalApi.grp
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeMutation attributeMutation = 3;
    */
   attributeMutation?: GrpcAttributeMutation;
+
+  /**
+   * internal PK is assigned by evitaDB engine and is used to uniquely identify the
+   * reference among other references. It is used when multiple references share same
+   * business key - entityType and primaryKey - but differ by other properties (fe. reference group or attributes).
+   *
+   * When a reference is created for the first time, internal id is set to a unique
+   * negative number that is not used by the server side, which assigns positive unique
+   * numbers to the references on first reference persistence. This allows distinguishing
+   * references that are not yet persisted from those that are already persistent.
+   *
+   * When standalone key is used:
+   *
+   * - negative number: means that the reference is new and hasn't been yet persisted
+   * - zero: means we don't know the internal PK
+   * - positive number: means that the reference is persistent and has been already stored
+   *   in the database
+   *
+   * @generated from field: int32 internalPrimaryKey = 4;
+   */
+  internalPrimaryKey: number;
 };
 
 /**

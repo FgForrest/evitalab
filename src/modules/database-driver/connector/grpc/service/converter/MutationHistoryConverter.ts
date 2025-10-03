@@ -74,10 +74,12 @@ export class MutationHistoryConverter {
     convertMutationHistoryRequest(mutationHistoryRequest: MutationHistoryRequest): GrpcChangeCaptureCriteria[] {
         console.log(mutationHistoryRequest)
         return [
+
             {
                 area: GrpcChangeCaptureArea.INFRASTRUCTURE
             },
             {
+                area: GrpcChangeCaptureArea.DATA,
                 site: {
                     value: {
                         entityType: mutationHistoryRequest.entityType,
@@ -85,8 +87,7 @@ export class MutationHistoryConverter {
                         containerType: [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
                     },
                     case: 'dataSite'
-                },
-                area: GrpcChangeCaptureArea.DATA
+                }
             },
             {
                 site: {
