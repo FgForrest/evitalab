@@ -19,7 +19,7 @@ export class JfrViewerService {
         return await this.evitaClient.management.listFilesToFetch(
             pageNumber,
             pageSize,
-            jfrRecorderTaskName
+            [jfrRecorderTaskName]
         )
     }
 

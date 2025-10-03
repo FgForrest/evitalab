@@ -1,14 +1,11 @@
 <script setup lang="ts">
-
-import BackupCatalogDialog from '@/modules/backup-viewer/components/BackupCatalogDialog.vue'
 import VTabMainActionButton from '@/modules/base/component/VTabMainActionButton.vue'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import BackupSelector from '@/modules/backup-viewer/components/BackupSelector.vue'
 
 const { t } = useI18n()
 
-const props = defineProps<{
-}>()
 const emit = defineEmits<{
     (e: 'backup'): void
 }>()
@@ -17,7 +14,7 @@ const showBackupCatalogDialog = ref<boolean>(false)
 </script>
 
 <template>
-    <BackupCatalogDialog
+    <BackupSelector
         v-model="showBackupCatalogDialog"
         @backup="emit('backup')"
     >
@@ -30,7 +27,7 @@ const showBackupCatalogDialog = ref<boolean>(false)
                 {{ t('backupViewer.button.backupCatalog') }}
             </VTabMainActionButton>
         </template>
-    </BackupCatalogDialog>
+    </BackupSelector>
 </template>
 
 <style lang="scss" scoped>

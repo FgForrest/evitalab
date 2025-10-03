@@ -4,6 +4,7 @@ import { AbstractSchema } from '@/modules/database-driver/request-response/schem
 import type { TypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
 import type { LocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
+import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 
 /**
  * evitaLab's representation of a single evitaDB associated data schema independent of specific evitaDB version
@@ -41,7 +42,7 @@ export class AssociatedDataSchema extends AbstractSchema implements TypedSchema,
      */
     readonly localized: boolean
 
-    protected _representativeFlags?: List<string>
+    protected _representativeFlags?: List<Flag>
 
     constructor(name: string,
                 nameVariants: Map<NamingConvention, string>,
@@ -60,14 +61,14 @@ export class AssociatedDataSchema extends AbstractSchema implements TypedSchema,
         this.localized = localized
     }
 
-    get representativeFlags(): List<string> {
+    get representativeFlags(): List<Flag> {
         if (this._representativeFlags == undefined) {
-            const representativeFlags: string[] = []
+            const representativeFlags: Flag[] = []
 
-            representativeFlags.push(this.formatDataTypeForFlag(this.type))
+            representativeFlags.push(new Flag(this.formatDataTypeForFlag(this.type)))
 
-            if (this.localized) representativeFlags.push(AssociatedDataSchemaFlag.Localized)
-            if (this.nullable) representativeFlags.push(AssociatedDataSchemaFlag.Nullable)
+            if (this.localized) representativeFlags.push(new Flag(AssociatedDataSchemaFlag.Localized))
+            if (this.nullable) representativeFlags.push(new Flag(AssociatedDataSchemaFlag.Nullable))
 
             this._representativeFlags = List(representativeFlags)
         }

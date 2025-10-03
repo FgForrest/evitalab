@@ -15,9 +15,9 @@ import { EntityReferenceWithParent } from '@/modules/database-driver/request-res
 import { Attributes } from '@/modules/database-driver/request-response/data/Attributes'
 import { Reference } from '@/modules/database-driver/request-response/data/Reference'
 import {
-    GrpcCardinality,
+    GrpcCardinality, GrpcEntityScope,
     GrpcEvitaAssociatedDataDataType_GrpcEvitaDataType,
-    GrpcPriceInnerRecordHandling,
+    GrpcPriceInnerRecordHandling
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import type { GrpcLocalizedAssociatedData } from '@/modules/database-driver/connector/grpc/gen/GrpcAssociatedData_pb'
 import type { GrpcPrice } from '@/modules/database-driver/connector/grpc/gen/GrpcPrice_pb'
@@ -33,12 +33,11 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { Currency } from '@/modules/database-driver/data-type/Currency'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { DateTimeUtil } from '@/modules/database-driver/connector/grpc/utils/DateTimeUtil'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 export class EntityConverter {
-    private readonly evitaValueConverter: EvitaValueConverter;
 
-    constructor(evitaValueConverter: EvitaValueConverter){
-        this.evitaValueConverter = evitaValueConverter
+    constructor(){
     }
 
     convert(grpcEntity: GrpcSealedEntity): Entity {
@@ -51,15 +50,26 @@ export class EntityConverter {
             this.convertAttributes(grpcEntity.globalAttributes, grpcEntity.localizedAttributes),
             this.convertAssociatedData(grpcEntity.globalAssociatedData, grpcEntity.localizedAssociatedData),
             this.convertReferences(grpcEntity.references),
-            this.convertPriceInnerHandling(grpcEntity.priceInnerRecordHandling),
+            EntityConverter.convertPriceInnerHandling(grpcEntity.priceInnerRecordHandling),
             this.convertPrices(grpcEntity.prices),
             grpcEntity.priceForSale
                 ? this.convertPrice(grpcEntity.priceForSale)
                 : undefined,
-            this.convertLocales(grpcEntity.locales)
+            this.convertLocales(grpcEntity.locales),
+            EntityConverter.convertEntityScope(grpcEntity.scope)
         )
     }
 
+    static convertEntityScope(entityScope: GrpcEntityScope): EntityScope {
+        switch (entityScope) {
+            case GrpcEntityScope.SCOPE_ARCHIVED:
+                return EntityScope.Archive
+            case GrpcEntityScope.SCOPE_LIVE:
+                return EntityScope.Live
+            default:
+                throw new UnexpectedError('Unexpected entity scope')
+        }
+    }
     private convertEntityReference(grpcEntityReference: GrpcEntityReference): EntityReference {
         return new EntityReference(
             grpcEntityReference.entityType,
@@ -117,7 +127,7 @@ export class EntityConverter {
             if (attributeValue.value.value != undefined) {
                 attributeMap.set(
                     attributeName,
-                    this.evitaValueConverter.convertGrpcValue(attributeValue, attributeValue.value.case)
+                    EvitaValueConverter.convertGrpcValue(attributeValue, attributeValue.value.case)
                 )
             }
         }
@@ -178,10 +188,14 @@ export class EntityConverter {
                 return Cardinality.ZeroOrMore
             case GrpcCardinality.ZERO_OR_ONE:
                 return Cardinality.ZeroOrOne
+            case GrpcCardinality.ZERO_OR_MORE_WITH_DUPLICATES:
+                return Cardinality.ZeroOrMoreWithDuplicates
+            case GrpcCardinality.ONE_OR_MORE_WITH_DUPLICATES:
+                return Cardinality.OneOrMoreWithDuplicates
         }
     }
 
-    private convertPriceInnerHandling(
+    static convertPriceInnerHandling(
         price: GrpcPriceInnerRecordHandling
     ): PriceInnerRecordHandling {
         switch (price) {
@@ -239,7 +253,7 @@ export class EntityConverter {
         ) {
             return JSON.parse(value.value.value as string)
         } else {
-            return this.evitaValueConverter.convertGrpcValue(value.value.value, value.value.case)
+            return EvitaValueConverter.convertGrpcValue(value.value.value, value.value.case)
         }
     }
 

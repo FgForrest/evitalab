@@ -81,8 +81,7 @@ function openActions(): void {
                 </template>
 
                 <template #default>
-                    <slot />
-
+                    <slot name="tooltip"></slot>
                     <!-- couldn't use VChips because custom colors didn't work on them -->
                     <span v-if="flags.length > 0" class="tree-view-item__flags">
                         <span

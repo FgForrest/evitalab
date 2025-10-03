@@ -46,5 +46,10 @@ export enum EvolutionMode {
     /**
      * When hierarchy placement for the entity is encountered, it is silently added.
      */
-    AddingHierarchy = 'addingHierarchy'
+    AddingHierarchy = 'addingHierarchy',
+    /**
+     * When a new duplicate reference is added to the entity, evitaDB automatically updates the schema
+     * to allow such duplicities. By default, references are set up with {@link Cardinality#ZERO_OR_MORE}.
+     */
+    UpdatingReferenceCardinality = 'updatingReferenceCardinality'
 }

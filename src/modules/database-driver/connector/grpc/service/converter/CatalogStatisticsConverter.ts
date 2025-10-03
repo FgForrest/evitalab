@@ -9,26 +9,24 @@ import { CatalogStatistics } from '@/modules/database-driver/request-response/Ca
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState'
 import { EntityCollectionStatistics } from '@/modules/database-driver/request-response/EntityCollectionStatistics'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
-import { ca } from 'vuetify/locale'
 
 export class CatalogStatisticsConverter {
-    private readonly evitaValueConverter
 
-    constructor(evitaValueConverter: EvitaValueConverter) {
-        this.evitaValueConverter = evitaValueConverter
+    constructor() {
     }
 
     convert(catalog: GrpcCatalogStatistics): CatalogStatistics {
         return new CatalogStatistics(
-            catalog.catalogId ? this.evitaValueConverter.convertGrpcUuid(catalog.catalogId).toString() : undefined,
+            catalog.catalogId ? EvitaValueConverter.convertGrpcUuid(catalog.catalogId).toString() : undefined,
             BigInt(catalog.catalogVersion),
             catalog.catalogName,
             this.convertEntityTypes(catalog.entityCollectionStatistics),
-            catalog.corrupted,
             this.convertCatalogState(catalog.catalogState),
             BigInt(catalog.totalRecords),
             BigInt(catalog.indexCount),
-            BigInt(catalog.sizeOnDiskInBytes)
+            BigInt(catalog.sizeOnDiskInBytes),
+            catalog.readOnly,
+            catalog.unusable
         )
     }
 
@@ -40,6 +38,20 @@ export class CatalogStatisticsConverter {
                 return CatalogState.WarmingUp
             case GrpcCatalogState.ALIVE:
                 return CatalogState.Alive
+            case GrpcCatalogState.BEING_ACTIVATED:
+                return CatalogState.BeingActivated
+            case GrpcCatalogState.BEING_CREATED:
+                return CatalogState.BeingCreated
+            case GrpcCatalogState.BEING_DEACTIVATED:
+                return CatalogState.BeingDeactivated
+            case GrpcCatalogState.BEING_DELETED:
+                return CatalogState.BeingDeleted
+            case GrpcCatalogState.CORRUPTED:
+                return CatalogState.Corrupted
+            case GrpcCatalogState.GOING_ALIVE:
+                return CatalogState.GoingAlive
+            case GrpcCatalogState.INACTIVE:
+                return CatalogState.Inactive
             default:
                 throw new UnexpectedError(
                     `Unsupported catalog state '${catalogState}'.`

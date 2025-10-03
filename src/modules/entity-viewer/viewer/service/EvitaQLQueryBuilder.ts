@@ -11,6 +11,8 @@ import { ReferenceSchema } from '@/modules/database-driver/request-response/sche
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
 import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import type { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 /**
  * Query builder for EvitaQL language.
@@ -31,6 +33,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
     async buildQuery(dataPointer: EntityViewerDataPointer,
                      filterBy: string,
                      orderBy: string,
+                     selectedScope: SelectedScope[],
                      dataLocale: string | undefined,
                      priceType: QueryPriceMode | undefined,
                      requiredData: EntityPropertyKey[],
@@ -53,6 +56,27 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
         if (dataLocale) {
             filterByContainer.push(`entityLocaleEquals("${dataLocale}")`)
         }
+
+        if(selectedScope.length > 0) {
+            let allSelected: boolean = selectedScope.length > 1
+            let nothingSelected: boolean = true
+            for (const item of selectedScope) {
+                if (!item.value) {
+                    allSelected = false
+                } else {
+                    nothingSelected = false
+                }
+            }
+
+            if(!nothingSelected) {
+                filterByContainer.push(`scope(${selectedScope.some(x => x.scope === EntityScope.Live && x.value) ? 'LIVE' : ''} ${allSelected ? ',' : ''} ${selectedScope.some(x => x.scope === EntityScope.Archive && x.value) ? 'ARCHIVED' : ''})`)
+            } else {
+                return `query(collection("${dataPointer.entityType}"))`
+            }
+        } else {
+            return `query(collection("${dataPointer.entityType}"))`
+        }
+
         if (filterByContainer.length > 0) {
             constraints.push(`filterBy(${filterByContainer.join(',')})`)
         }
@@ -60,6 +84,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
         if (orderBy) {
             constraints.push(`orderBy(${orderBy})`)
         }
+
 
         const requireConstraints: string[] = []
         requireConstraints.push(`page(${pageNumber}, ${pageSize})`)

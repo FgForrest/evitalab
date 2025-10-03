@@ -89,7 +89,8 @@ export class EntityViewerTabFactory {
             dto.dataLocale,
             dto.displayedProperties?.map((key: string) => EntityPropertyKey.fromString(key)),
             dto.pageSize,
-            dto.pageNumber
+            dto.pageNumber,
+            dto.selectedLayers
         )
     }
 }

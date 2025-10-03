@@ -17,6 +17,7 @@ import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
 import { useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
 import type { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey.ts'
+import type { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
@@ -37,7 +38,7 @@ const schema: ComputedRef<AssociatedDataSchema> = computed(() => {
     return props.propertyDescriptor.schema
 })
 
-const flags: ComputedRef<List<string>> = computed(() => schema.value!.representativeFlags)
+const flags: ComputedRef<List<Flag>> = computed(() => schema.value!.representativeFlags)
 
 function openSchema(): void {
     workspaceService.createTab(

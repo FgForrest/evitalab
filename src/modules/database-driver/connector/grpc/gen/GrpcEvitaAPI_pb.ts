@@ -5,19 +5,22 @@
 import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import type { EmptySchema } from "@bufbuild/protobuf/wkt";
-import { file_google_protobuf_empty } from "@bufbuild/protobuf/wkt";
+import { file_google_protobuf_empty, file_google_protobuf_wrappers } from "@bufbuild/protobuf/wkt";
 import type { GrpcCatalogState, GrpcCommitBehavior, GrpcSessionType } from "./GrpcEnums_pb";
 import { file_GrpcEnums } from "./GrpcEnums_pb";
+import type { GrpcUuid } from "./GrpcEvitaDataTypes_pb";
 import { file_GrpcEvitaDataTypes } from "./GrpcEvitaDataTypes_pb";
-import type { GrpcTopLevelCatalogSchemaMutation } from "./GrpcCatalogSchemaMutation_pb";
-import { file_GrpcCatalogSchemaMutation } from "./GrpcCatalogSchemaMutation_pb";
+import type { GrpcEngineMutation } from "./GrpcEngineMutation_pb";
+import { file_GrpcEngineMutation } from "./GrpcEngineMutation_pb";
+import type { GrpcCaptureResponseType, GrpcChangeCaptureContent, GrpcChangeSystemCapture } from "./GrpcChangeCapture_pb";
+import { file_GrpcChangeCapture } from "./GrpcChangeCapture_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file GrpcEvitaAPI.proto.
  */
 export const file_GrpcEvitaAPI: GenFile = /*@__PURE__*/
-  fileDesc("ChJHcnBjRXZpdGFBUEkucHJvdG8SJWlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQiIgoRR3JwY1JlYWR5UmVzcG9uc2USDQoFcmVhZHkYASABKAgikQEKF0dycGNFdml0YVNlc3Npb25SZXF1ZXN0EhMKC2NhdGFsb2dOYW1lGAEgASgJElEKDmNvbW1pdEJlaGF2aW9yGAIgASgOMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ29tbWl0QmVoYXZpb3ISDgoGZHJ5UnVuGAMgASgIIrACChhHcnBjRXZpdGFTZXNzaW9uUmVzcG9uc2USEQoJc2Vzc2lvbklkGAEgASgJEksKC3Nlc3Npb25UeXBlGAIgASgOMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU2Vzc2lvblR5cGUSUgoPY29tbWl0QmVoYXZpb3VyGAMgASgOMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ29tbWl0QmVoYXZpb3ISTQoMY2F0YWxvZ1N0YXRlGAQgASgOMjcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2F0YWxvZ1N0YXRlEhEKCWNhdGFsb2dJZBgFIAEoCSI3CiJHcnBjRXZpdGFTZXNzaW9uVGVybWluYXRpb25SZXF1ZXN0EhEKCXNlc3Npb25JZBgCIAEoCSI5CiNHcnBjRXZpdGFTZXNzaW9uVGVybWluYXRpb25SZXNwb25zZRISCgp0ZXJtaW5hdGVkGAEgASgIIjAKGEdycGNDYXRhbG9nTmFtZXNSZXNwb25zZRIUCgxjYXRhbG9nTmFtZXMYASADKAkiMQoaR3JwY0dldENhdGFsb2dTdGF0ZVJlcXVlc3QSEwoLY2F0YWxvZ05hbWUYASABKAkiggEKG0dycGNHZXRDYXRhbG9nU3RhdGVSZXNwb25zZRJSCgxjYXRhbG9nU3RhdGUYASABKA4yNy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDYXRhbG9nU3RhdGVIAIgBAUIPCg1fY2F0YWxvZ1N0YXRlIi8KGEdycGNEZWZpbmVDYXRhbG9nUmVxdWVzdBITCgtjYXRhbG9nTmFtZRgBIAEoCSIsChlHcnBjRGVmaW5lQ2F0YWxvZ1Jlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgiRwoYR3JwY1JlbmFtZUNhdGFsb2dSZXF1ZXN0EhMKC2NhdGFsb2dOYW1lGAEgASgJEhYKDm5ld0NhdGFsb2dOYW1lGAIgASgJIiwKGUdycGNSZW5hbWVDYXRhbG9nUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCJhChlHcnBjUmVwbGFjZUNhdGFsb2dSZXF1ZXN0EiMKG2NhdGFsb2dOYW1lVG9CZVJlcGxhY2VkV2l0aBgBIAEoCRIfChdjYXRhbG9nTmFtZVRvQmVSZXBsYWNlZBgCIAEoCSItChpHcnBjUmVwbGFjZUNhdGFsb2dSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIIjcKIEdycGNEZWxldGVDYXRhbG9nSWZFeGlzdHNSZXF1ZXN0EhMKC2NhdGFsb2dOYW1lGAEgASgJIjQKIUdycGNEZWxldGVDYXRhbG9nSWZFeGlzdHNSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIInsKFkdycGNVcGRhdGVFdml0YVJlcXVlc3QSYQoPc2NoZW1hTXV0YXRpb25zGAEgAygLMkguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVG9wTGV2ZWxDYXRhbG9nU2NoZW1hTXV0YXRpb24y6A4KDEV2aXRhU2VydmljZRJbCgdJc1JlYWR5EhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GjguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVhZHlSZXNwb25zZRKYAQoVQ3JlYXRlUmVhZE9ubHlTZXNzaW9uEj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZpdGFTZXNzaW9uUmVxdWVzdBo/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhU2Vzc2lvblJlc3BvbnNlEpkBChZDcmVhdGVSZWFkV3JpdGVTZXNzaW9uEj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZpdGFTZXNzaW9uUmVxdWVzdBo/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhU2Vzc2lvblJlc3BvbnNlEp4BChtDcmVhdGVCaW5hcnlSZWFkT25seVNlc3Npb24SPi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFdml0YVNlc3Npb25SZXF1ZXN0Gj8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZpdGFTZXNzaW9uUmVzcG9uc2USnwEKHENyZWF0ZUJpbmFyeVJlYWRXcml0ZVNlc3Npb24SPi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFdml0YVNlc3Npb25SZXF1ZXN0Gj8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZpdGFTZXNzaW9uUmVzcG9uc2USqQEKEFRlcm1pbmF0ZVNlc3Npb24SSS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFdml0YVNlc3Npb25UZXJtaW5hdGlvblJlcXVlc3QaSi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFdml0YVNlc3Npb25UZXJtaW5hdGlvblJlc3BvbnNlEmoKD0dldENhdGFsb2dOYW1lcxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRo/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NhdGFsb2dOYW1lc1Jlc3BvbnNlEpgBCg9HZXRDYXRhbG9nU3RhdGUSQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNHZXRDYXRhbG9nU3RhdGVSZXF1ZXN0GkIuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjR2V0Q2F0YWxvZ1N0YXRlUmVzcG9uc2USkgEKDURlZmluZUNhdGFsb2cSPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNEZWZpbmVDYXRhbG9nUmVxdWVzdBpALmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0RlZmluZUNhdGFsb2dSZXNwb25zZRKqAQoVRGVsZXRlQ2F0YWxvZ0lmRXhpc3RzEkcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRGVsZXRlQ2F0YWxvZ0lmRXhpc3RzUmVxdWVzdBpILmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0RlbGV0ZUNhdGFsb2dJZkV4aXN0c1Jlc3BvbnNlEl8KBlVwZGF0ZRI9LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1VwZGF0ZUV2aXRhUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRKSAQoNUmVuYW1lQ2F0YWxvZxI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1JlbmFtZUNhdGFsb2dSZXF1ZXN0GkAuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVuYW1lQ2F0YWxvZ1Jlc3BvbnNlEpUBCg5SZXBsYWNlQ2F0YWxvZxJALmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1JlcGxhY2VDYXRhbG9nUmVxdWVzdBpBLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1JlcGxhY2VDYXRhbG9nUmVzcG9uc2VC+AEKKWNvbS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkQhFHcnBjRXZpdGFBUElQcm90b1ABogIFSUVFR0eqAiVJby5Fdml0YWRiLkV4dGVybmFsQXBpLkdycGMuR2VuZXJhdGVkygIlSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZOICMUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWRcR1BCTWV0YWRhdGHqAilJbzo6RXZpdGFkYjo6RXh0ZXJuYWxBcGk6OkdycGM6OkdlbmVyYXRlZGIGcHJvdG8z", [file_google_protobuf_empty, file_GrpcEnums, file_GrpcEvitaDataTypes, file_GrpcCatalogSchemaMutation]);
+  fileDesc("ChJHcnBjRXZpdGFBUEkucHJvdG8SJWlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQiIgoRR3JwY1JlYWR5UmVzcG9uc2USDQoFcmVhZHkYASABKAgikQEKF0dycGNFdml0YVNlc3Npb25SZXF1ZXN0EhMKC2NhdGFsb2dOYW1lGAEgASgJElEKDmNvbW1pdEJlaGF2aW9yGAIgASgOMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ29tbWl0QmVoYXZpb3ISDgoGZHJ5UnVuGAMgASgIIrACChhHcnBjRXZpdGFTZXNzaW9uUmVzcG9uc2USEQoJc2Vzc2lvbklkGAEgASgJEksKC3Nlc3Npb25UeXBlGAIgASgOMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU2Vzc2lvblR5cGUSUgoPY29tbWl0QmVoYXZpb3VyGAMgASgOMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ29tbWl0QmVoYXZpb3ISTQoMY2F0YWxvZ1N0YXRlGAQgASgOMjcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2F0YWxvZ1N0YXRlEhEKCWNhdGFsb2dJZBgFIAEoCSI3CiJHcnBjRXZpdGFTZXNzaW9uVGVybWluYXRpb25SZXF1ZXN0EhEKCXNlc3Npb25JZBgCIAEoCSI5CiNHcnBjRXZpdGFTZXNzaW9uVGVybWluYXRpb25SZXNwb25zZRISCgp0ZXJtaW5hdGVkGAEgASgIIjAKGEdycGNDYXRhbG9nTmFtZXNSZXNwb25zZRIUCgxjYXRhbG9nTmFtZXMYASADKAkiMQoaR3JwY0dldENhdGFsb2dTdGF0ZVJlcXVlc3QSEwoLY2F0YWxvZ05hbWUYASABKAkiggEKG0dycGNHZXRDYXRhbG9nU3RhdGVSZXNwb25zZRJSCgxjYXRhbG9nU3RhdGUYASABKA4yNy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDYXRhbG9nU3RhdGVIAIgBAUIPCg1fY2F0YWxvZ1N0YXRlIi8KGEdycGNEZWZpbmVDYXRhbG9nUmVxdWVzdBITCgtjYXRhbG9nTmFtZRgBIAEoCSIsChlHcnBjRGVmaW5lQ2F0YWxvZ1Jlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgiRwoYR3JwY1JlbmFtZUNhdGFsb2dSZXF1ZXN0EhMKC2NhdGFsb2dOYW1lGAEgASgJEhYKDm5ld0NhdGFsb2dOYW1lGAIgASgJIiwKGUdycGNSZW5hbWVDYXRhbG9nUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCJhChlHcnBjUmVwbGFjZUNhdGFsb2dSZXF1ZXN0EiMKG2NhdGFsb2dOYW1lVG9CZVJlcGxhY2VkV2l0aBgBIAEoCRIfChdjYXRhbG9nTmFtZVRvQmVSZXBsYWNlZBgCIAEoCSItChpHcnBjUmVwbGFjZUNhdGFsb2dSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIIjcKIEdycGNEZWxldGVDYXRhbG9nSWZFeGlzdHNSZXF1ZXN0EhMKC2NhdGFsb2dOYW1lGAEgASgJIjQKIUdycGNEZWxldGVDYXRhbG9nSWZFeGlzdHNSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIIjQKHUdycGNNYWtlQ2F0YWxvZ011dGFibGVSZXF1ZXN0EhMKC2NhdGFsb2dOYW1lGAEgASgJIjEKHkdycGNNYWtlQ2F0YWxvZ011dGFibGVSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIIjYKH0dycGNNYWtlQ2F0YWxvZ0ltbXV0YWJsZVJlcXVlc3QSEwoLY2F0YWxvZ05hbWUYASABKAkiMwogR3JwY01ha2VDYXRhbG9nSW1tdXRhYmxlUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCIyChtHcnBjTWFrZUNhdGFsb2dBbGl2ZVJlcXVlc3QSEwoLY2F0YWxvZ05hbWUYASABKAkiLwocR3JwY01ha2VDYXRhbG9nQWxpdmVSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIIkoKG0dycGNEdXBsaWNhdGVDYXRhbG9nUmVxdWVzdBITCgtjYXRhbG9nTmFtZRgBIAEoCRIWCg5uZXdDYXRhbG9nTmFtZRgCIAEoCSIvChxHcnBjRHVwbGljYXRlQ2F0YWxvZ1Jlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgiMQoaR3JwY0FjdGl2YXRlQ2F0YWxvZ1JlcXVlc3QSEwoLY2F0YWxvZ05hbWUYASABKAkiLgobR3JwY0FjdGl2YXRlQ2F0YWxvZ1Jlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgiMwocR3JwY0RlYWN0aXZhdGVDYXRhbG9nUmVxdWVzdBITCgtjYXRhbG9nTmFtZRgBIAEoCSIwCh1HcnBjRGVhY3RpdmF0ZUNhdGFsb2dSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIImcKGEdycGNBcHBseU11dGF0aW9uUmVxdWVzdBJLCghtdXRhdGlvbhgBIAEoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VuZ2luZU11dGF0aW9uIhsKGUdycGNBcHBseU11dGF0aW9uUmVzcG9uc2UisgEKJUdycGNBcHBseU11dGF0aW9uV2l0aFByb2dyZXNzUmVzcG9uc2USGQoRcHJvZ3Jlc3NJblBlcmNlbnQYASABKAUSMwoOY2F0YWxvZ1ZlcnNpb24YAiABKAsyGy5nb29nbGUucHJvdG9idWYuSW50NjRWYWx1ZRI5ChRjYXRhbG9nU2NoZW1hVmVyc2lvbhgDIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQzMlZhbHVlIt4BCiZHcnBjUmVnaXN0ZXJTeXN0ZW1DaGFuZ2VDYXB0dXJlUmVxdWVzdBIxCgxzaW5jZVZlcnNpb24YASABKAsyGy5nb29nbGUucHJvdG9idWYuSW50NjRWYWx1ZRIvCgpzaW5jZUluZGV4GAIgASgLMhsuZ29vZ2xlLnByb3RvYnVmLkludDMyVmFsdWUSUAoHY29udGVudBgDIAEoDjI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZUNhcHR1cmVDb250ZW50Io8CCidHcnBjUmVnaXN0ZXJTeXN0ZW1DaGFuZ2VDYXB0dXJlUmVzcG9uc2USPQoEdXVpZBgBIAEoCzIvLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1V1aWQSTwoHY2FwdHVyZRgCIAEoCzI+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZVN5c3RlbUNhcHR1cmUSVAoMcmVzcG9uc2VUeXBlGAMgASgOMj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2FwdHVyZVJlc3BvbnNlVHlwZSItChZHcnBjR2V0UHJvZ3Jlc3NSZXF1ZXN0EhMKC2NhdGFsb2dOYW1lGAEgASgJIuUBChdHcnBjR2V0UHJvZ3Jlc3NSZXNwb25zZRINCgVmb3VuZBgBIAEoCBI2ChFwcm9ncmVzc0luUGVyY2VudBgCIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQzMlZhbHVlEhMKC2NhdGFsb2dOYW1lGAMgASgJEjMKDmNhdGFsb2dWZXJzaW9uGAQgASgLMhsuZ29vZ2xlLnByb3RvYnVmLkludDY0VmFsdWUSOQoUY2F0YWxvZ1NjaGVtYVZlcnNpb24YBSABKAsyGy5nb29nbGUucHJvdG9idWYuSW50MzJWYWx1ZTKNJgoMRXZpdGFTZXJ2aWNlElsKB0lzUmVhZHkSFi5nb29nbGUucHJvdG9idWYuRW1wdHkaOC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZWFkeVJlc3BvbnNlEpgBChVDcmVhdGVSZWFkT25seVNlc3Npb24SPi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFdml0YVNlc3Npb25SZXF1ZXN0Gj8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZpdGFTZXNzaW9uUmVzcG9uc2USmQEKFkNyZWF0ZVJlYWRXcml0ZVNlc3Npb24SPi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFdml0YVNlc3Npb25SZXF1ZXN0Gj8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZpdGFTZXNzaW9uUmVzcG9uc2USngEKG0NyZWF0ZUJpbmFyeVJlYWRPbmx5U2Vzc2lvbhI+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhU2Vzc2lvblJlcXVlc3QaPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFdml0YVNlc3Npb25SZXNwb25zZRKfAQocQ3JlYXRlQmluYXJ5UmVhZFdyaXRlU2Vzc2lvbhI+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhU2Vzc2lvblJlcXVlc3QaPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFdml0YVNlc3Npb25SZXNwb25zZRKpAQoQVGVybWluYXRlU2Vzc2lvbhJJLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhU2Vzc2lvblRlcm1pbmF0aW9uUmVxdWVzdBpKLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhU2Vzc2lvblRlcm1pbmF0aW9uUmVzcG9uc2USagoPR2V0Q2F0YWxvZ05hbWVzEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5Gj8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2F0YWxvZ05hbWVzUmVzcG9uc2USmAEKD0dldENhdGFsb2dTdGF0ZRJBLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0dldENhdGFsb2dTdGF0ZVJlcXVlc3QaQi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNHZXRDYXRhbG9nU3RhdGVSZXNwb25zZRKSAQoNRGVmaW5lQ2F0YWxvZxI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0RlZmluZUNhdGFsb2dSZXF1ZXN0GkAuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRGVmaW5lQ2F0YWxvZ1Jlc3BvbnNlEqoBChVEZWxldGVDYXRhbG9nSWZFeGlzdHMSRy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNEZWxldGVDYXRhbG9nSWZFeGlzdHNSZXF1ZXN0GkguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRGVsZXRlQ2F0YWxvZ0lmRXhpc3RzUmVzcG9uc2USkgEKDUFwcGx5TXV0YXRpb24SPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBcHBseU11dGF0aW9uUmVxdWVzdBpALmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0FwcGx5TXV0YXRpb25SZXNwb25zZRKsAQoZQXBwbHlNdXRhdGlvbldpdGhQcm9ncmVzcxI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0FwcGx5TXV0YXRpb25SZXF1ZXN0GkwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQXBwbHlNdXRhdGlvbldpdGhQcm9ncmVzc1Jlc3BvbnNlMAESkgEKDVJlbmFtZUNhdGFsb2cSPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZW5hbWVDYXRhbG9nUmVxdWVzdBpALmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1JlbmFtZUNhdGFsb2dSZXNwb25zZRKsAQoZUmVuYW1lQ2F0YWxvZ1dpdGhQcm9ncmVzcxI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1JlbmFtZUNhdGFsb2dSZXF1ZXN0GkwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQXBwbHlNdXRhdGlvbldpdGhQcm9ncmVzc1Jlc3BvbnNlMAESlQEKDlJlcGxhY2VDYXRhbG9nEkAuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVwbGFjZUNhdGFsb2dSZXF1ZXN0GkEuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVwbGFjZUNhdGFsb2dSZXNwb25zZRKuAQoaUmVwbGFjZUNhdGFsb2dXaXRoUHJvZ3Jlc3MSQC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZXBsYWNlQ2F0YWxvZ1JlcXVlc3QaTC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBcHBseU11dGF0aW9uV2l0aFByb2dyZXNzUmVzcG9uc2UwARKhAQoSTWFrZUNhdGFsb2dNdXRhYmxlEkQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTWFrZUNhdGFsb2dNdXRhYmxlUmVxdWVzdBpFLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY01ha2VDYXRhbG9nTXV0YWJsZVJlc3BvbnNlErYBCh5NYWtlQ2F0YWxvZ011dGFibGVXaXRoUHJvZ3Jlc3MSRC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNNYWtlQ2F0YWxvZ011dGFibGVSZXF1ZXN0GkwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQXBwbHlNdXRhdGlvbldpdGhQcm9ncmVzc1Jlc3BvbnNlMAESpwEKFE1ha2VDYXRhbG9nSW1tdXRhYmxlEkYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTWFrZUNhdGFsb2dJbW11dGFibGVSZXF1ZXN0GkcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTWFrZUNhdGFsb2dJbW11dGFibGVSZXNwb25zZRK6AQogTWFrZUNhdGFsb2dJbW11dGFibGVXaXRoUHJvZ3Jlc3MSRi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNNYWtlQ2F0YWxvZ0ltbXV0YWJsZVJlcXVlc3QaTC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBcHBseU11dGF0aW9uV2l0aFByb2dyZXNzUmVzcG9uc2UwARKbAQoQTWFrZUNhdGFsb2dBbGl2ZRJCLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY01ha2VDYXRhbG9nQWxpdmVSZXF1ZXN0GkMuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTWFrZUNhdGFsb2dBbGl2ZVJlc3BvbnNlErIBChxNYWtlQ2F0YWxvZ0FsaXZlV2l0aFByb2dyZXNzEkIuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTWFrZUNhdGFsb2dBbGl2ZVJlcXVlc3QaTC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBcHBseU11dGF0aW9uV2l0aFByb2dyZXNzUmVzcG9uc2UwARKbAQoQRHVwbGljYXRlQ2F0YWxvZxJCLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0R1cGxpY2F0ZUNhdGFsb2dSZXF1ZXN0GkMuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRHVwbGljYXRlQ2F0YWxvZ1Jlc3BvbnNlErIBChxEdXBsaWNhdGVDYXRhbG9nV2l0aFByb2dyZXNzEkIuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRHVwbGljYXRlQ2F0YWxvZ1JlcXVlc3QaTC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBcHBseU11dGF0aW9uV2l0aFByb2dyZXNzUmVzcG9uc2UwARKYAQoPQWN0aXZhdGVDYXRhbG9nEkEuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQWN0aXZhdGVDYXRhbG9nUmVxdWVzdBpCLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0FjdGl2YXRlQ2F0YWxvZ1Jlc3BvbnNlErABChtBY3RpdmF0ZUNhdGFsb2dXaXRoUHJvZ3Jlc3MSQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBY3RpdmF0ZUNhdGFsb2dSZXF1ZXN0GkwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQXBwbHlNdXRhdGlvbldpdGhQcm9ncmVzc1Jlc3BvbnNlMAESngEKEURlYWN0aXZhdGVDYXRhbG9nEkMuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRGVhY3RpdmF0ZUNhdGFsb2dSZXF1ZXN0GkQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRGVhY3RpdmF0ZUNhdGFsb2dSZXNwb25zZRK0AQodRGVhY3RpdmF0ZUNhdGFsb2dXaXRoUHJvZ3Jlc3MSQy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNEZWFjdGl2YXRlQ2F0YWxvZ1JlcXVlc3QaTC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBcHBseU11dGF0aW9uV2l0aFByb2dyZXNzUmVzcG9uc2UwARK+AQobUmVnaXN0ZXJTeXN0ZW1DaGFuZ2VDYXB0dXJlEk0uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVnaXN0ZXJTeXN0ZW1DaGFuZ2VDYXB0dXJlUmVxdWVzdBpOLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1JlZ2lzdGVyU3lzdGVtQ2hhbmdlQ2FwdHVyZVJlc3BvbnNlMAESjgEKC0dldFByb2dyZXNzEj0uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjR2V0UHJvZ3Jlc3NSZXF1ZXN0Gj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjR2V0UHJvZ3Jlc3NSZXNwb25zZTABQvgBCiljb20uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZEIRR3JwY0V2aXRhQVBJUHJvdG9QAaICBUlFRUdHqgIlSW8uRXZpdGFkYi5FeHRlcm5hbEFwaS5HcnBjLkdlbmVyYXRlZMoCJUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWTiAjFJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVkXEdQQk1ldGFkYXRh6gIpSW86OkV2aXRhZGI6OkV4dGVybmFsQXBpOjpHcnBjOjpHZW5lcmF0ZWRiBnByb3RvMw", [file_google_protobuf_empty, file_google_protobuf_wrappers, file_GrpcEnums, file_GrpcEvitaDataTypes, file_GrpcEngineMutation, file_GrpcChangeCapture]);
 
 /**
  * Response to a server status request.
@@ -412,25 +415,477 @@ export const GrpcDeleteCatalogIfExistsResponseSchema: GenMessage<GrpcDeleteCatal
   messageDesc(file_GrpcEvitaAPI, 15);
 
 /**
- * Request to update the catalog.
+ * Request to make a catalog mutable.
  *
- * @generated from message io.evitadb.externalApi.grpc.generated.GrpcUpdateEvitaRequest
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogMutableRequest
  */
-export type GrpcUpdateEvitaRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcUpdateEvitaRequest"> & {
+export type GrpcMakeCatalogMutableRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogMutableRequest"> & {
   /**
-   * Collection of top level catalog schema mutations to be applied.
+   * Name of the catalog to make mutable.
    *
-   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcTopLevelCatalogSchemaMutation schemaMutations = 1;
+   * @generated from field: string catalogName = 1;
    */
-  schemaMutations: GrpcTopLevelCatalogSchemaMutation[];
+  catalogName: string;
 };
 
 /**
- * Describes the message io.evitadb.externalApi.grpc.generated.GrpcUpdateEvitaRequest.
- * Use `create(GrpcUpdateEvitaRequestSchema)` to create a new message.
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogMutableRequest.
+ * Use `create(GrpcMakeCatalogMutableRequestSchema)` to create a new message.
  */
-export const GrpcUpdateEvitaRequestSchema: GenMessage<GrpcUpdateEvitaRequest> = /*@__PURE__*/
+export const GrpcMakeCatalogMutableRequestSchema: GenMessage<GrpcMakeCatalogMutableRequest> = /*@__PURE__*/
   messageDesc(file_GrpcEvitaAPI, 16);
+
+/**
+ * Response to a make catalog mutable request.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogMutableResponse
+ */
+export type GrpcMakeCatalogMutableResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogMutableResponse"> & {
+  /**
+   * Indicator whether the catalog was made mutable successfully.
+   *
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogMutableResponse.
+ * Use `create(GrpcMakeCatalogMutableResponseSchema)` to create a new message.
+ */
+export const GrpcMakeCatalogMutableResponseSchema: GenMessage<GrpcMakeCatalogMutableResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 17);
+
+/**
+ * Request to make a catalog immutable.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogImmutableRequest
+ */
+export type GrpcMakeCatalogImmutableRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogImmutableRequest"> & {
+  /**
+   * Name of the catalog to make immutable.
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogImmutableRequest.
+ * Use `create(GrpcMakeCatalogImmutableRequestSchema)` to create a new message.
+ */
+export const GrpcMakeCatalogImmutableRequestSchema: GenMessage<GrpcMakeCatalogImmutableRequest> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 18);
+
+/**
+ * Response to a make catalog immutable request.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogImmutableResponse
+ */
+export type GrpcMakeCatalogImmutableResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogImmutableResponse"> & {
+  /**
+   * Indicator whether the catalog was made immutable successfully.
+   *
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogImmutableResponse.
+ * Use `create(GrpcMakeCatalogImmutableResponseSchema)` to create a new message.
+ */
+export const GrpcMakeCatalogImmutableResponseSchema: GenMessage<GrpcMakeCatalogImmutableResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 19);
+
+/**
+ * Request to make a catalog alive.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogAliveRequest
+ */
+export type GrpcMakeCatalogAliveRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogAliveRequest"> & {
+  /**
+   * Name of the catalog to make alive.
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogAliveRequest.
+ * Use `create(GrpcMakeCatalogAliveRequestSchema)` to create a new message.
+ */
+export const GrpcMakeCatalogAliveRequestSchema: GenMessage<GrpcMakeCatalogAliveRequest> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 20);
+
+/**
+ * Response to a make catalog alive request.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogAliveResponse
+ */
+export type GrpcMakeCatalogAliveResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogAliveResponse"> & {
+  /**
+   * Indicator whether the catalog was made alive successfully.
+   *
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcMakeCatalogAliveResponse.
+ * Use `create(GrpcMakeCatalogAliveResponseSchema)` to create a new message.
+ */
+export const GrpcMakeCatalogAliveResponseSchema: GenMessage<GrpcMakeCatalogAliveResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 21);
+
+/**
+ * Request to duplicate a catalog.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcDuplicateCatalogRequest
+ */
+export type GrpcDuplicateCatalogRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcDuplicateCatalogRequest"> & {
+  /**
+   * Name of the source catalog to duplicate.
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+
+  /**
+   * Name of the new catalog to create with duplicated contents.
+   *
+   * @generated from field: string newCatalogName = 2;
+   */
+  newCatalogName: string;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcDuplicateCatalogRequest.
+ * Use `create(GrpcDuplicateCatalogRequestSchema)` to create a new message.
+ */
+export const GrpcDuplicateCatalogRequestSchema: GenMessage<GrpcDuplicateCatalogRequest> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 22);
+
+/**
+ * Response to a duplicate catalog request.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcDuplicateCatalogResponse
+ */
+export type GrpcDuplicateCatalogResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcDuplicateCatalogResponse"> & {
+  /**
+   * Indicator whether the catalog was duplicated successfully.
+   *
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcDuplicateCatalogResponse.
+ * Use `create(GrpcDuplicateCatalogResponseSchema)` to create a new message.
+ */
+export const GrpcDuplicateCatalogResponseSchema: GenMessage<GrpcDuplicateCatalogResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 23);
+
+/**
+ * Request to activate a catalog.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcActivateCatalogRequest
+ */
+export type GrpcActivateCatalogRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcActivateCatalogRequest"> & {
+  /**
+   * Name of the catalog to activate.
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcActivateCatalogRequest.
+ * Use `create(GrpcActivateCatalogRequestSchema)` to create a new message.
+ */
+export const GrpcActivateCatalogRequestSchema: GenMessage<GrpcActivateCatalogRequest> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 24);
+
+/**
+ * Response to an activate catalog request.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcActivateCatalogResponse
+ */
+export type GrpcActivateCatalogResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcActivateCatalogResponse"> & {
+  /**
+   * Indicator whether the catalog was activated successfully.
+   *
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcActivateCatalogResponse.
+ * Use `create(GrpcActivateCatalogResponseSchema)` to create a new message.
+ */
+export const GrpcActivateCatalogResponseSchema: GenMessage<GrpcActivateCatalogResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 25);
+
+/**
+ * Request to deactivate a catalog.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcDeactivateCatalogRequest
+ */
+export type GrpcDeactivateCatalogRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcDeactivateCatalogRequest"> & {
+  /**
+   * Name of the catalog to deactivate.
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcDeactivateCatalogRequest.
+ * Use `create(GrpcDeactivateCatalogRequestSchema)` to create a new message.
+ */
+export const GrpcDeactivateCatalogRequestSchema: GenMessage<GrpcDeactivateCatalogRequest> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 26);
+
+/**
+ * Response to a deactivate catalog request.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcDeactivateCatalogResponse
+ */
+export type GrpcDeactivateCatalogResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcDeactivateCatalogResponse"> & {
+  /**
+   * Indicator whether the catalog was deactivated successfully.
+   *
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcDeactivateCatalogResponse.
+ * Use `create(GrpcDeactivateCatalogResponseSchema)` to create a new message.
+ */
+export const GrpcDeactivateCatalogResponseSchema: GenMessage<GrpcDeactivateCatalogResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 27);
+
+/**
+ * Request to apply mutation on engine level.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcApplyMutationRequest
+ */
+export type GrpcApplyMutationRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcApplyMutationRequest"> & {
+  /**
+   * Single engine level mutation to be applied.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEngineMutation mutation = 1;
+   */
+  mutation?: GrpcEngineMutation;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcApplyMutationRequest.
+ * Use `create(GrpcApplyMutationRequestSchema)` to create a new message.
+ */
+export const GrpcApplyMutationRequestSchema: GenMessage<GrpcApplyMutationRequest> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 28);
+
+/**
+ * Response to apply mutation on engine level.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcApplyMutationResponse
+ */
+export type GrpcApplyMutationResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcApplyMutationResponse"> & {
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcApplyMutationResponse.
+ * Use `create(GrpcApplyMutationResponseSchema)` to create a new message.
+ */
+export const GrpcApplyMutationResponseSchema: GenMessage<GrpcApplyMutationResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 29);
+
+/**
+ * Response to apply mutation on engine level.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcApplyMutationWithProgressResponse
+ */
+export type GrpcApplyMutationWithProgressResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcApplyMutationWithProgressResponse"> & {
+  /**
+   * The progress of the go live operation in percents.
+   *
+   * @generated from field: int32 progressInPercent = 1;
+   */
+  progressInPercent: number;
+
+  /**
+   * Contains catalog version when operation finishes (only if the mutation relates to a catalog)
+   *
+   * @generated from field: google.protobuf.Int64Value catalogVersion = 2;
+   */
+  catalogVersion?: bigint;
+
+  /**
+   * Contains catalog schema version when operation finishes (only if the mutation relates to a catalog)
+   *
+   * @generated from field: google.protobuf.Int32Value catalogSchemaVersion = 3;
+   */
+  catalogSchemaVersion?: number;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcApplyMutationWithProgressResponse.
+ * Use `create(GrpcApplyMutationWithProgressResponseSchema)` to create a new message.
+ */
+export const GrpcApplyMutationWithProgressResponseSchema: GenMessage<GrpcApplyMutationWithProgressResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 30);
+
+/**
+ * Request to register a system change capture.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcRegisterSystemChangeCaptureRequest
+ */
+export type GrpcRegisterSystemChangeCaptureRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcRegisterSystemChangeCaptureRequest"> & {
+  /**
+   * Starting point for the search (engine version)
+   *
+   * @generated from field: google.protobuf.Int64Value sinceVersion = 1;
+   */
+  sinceVersion?: bigint;
+
+  /**
+   * Starting point for the search (index of the mutation within engine version - currently each engine level transaction contains only one mutation)
+   *
+   * @generated from field: google.protobuf.Int32Value sinceIndex = 2;
+   */
+  sinceIndex?: number;
+
+  /**
+   * Requested content of the capture - i.e. whether client wants to receive only the simple notification about the change
+   * or whether he wants to receive the full content of the change
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureContent content = 3;
+   */
+  content: GrpcChangeCaptureContent;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcRegisterSystemChangeCaptureRequest.
+ * Use `create(GrpcRegisterSystemChangeCaptureRequestSchema)` to create a new message.
+ */
+export const GrpcRegisterSystemChangeCaptureRequestSchema: GenMessage<GrpcRegisterSystemChangeCaptureRequest> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 31);
+
+/**
+ * Response to GrpcRegisterSystemChangeCapture request.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcRegisterSystemChangeCaptureResponse
+ */
+export type GrpcRegisterSystemChangeCaptureResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcRegisterSystemChangeCaptureResponse"> & {
+  /**
+   * Identification of the registered capture
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcUuid uuid = 1;
+   */
+  uuid?: GrpcUuid;
+
+  /**
+   * The list of mutations (CDC events) that match the criteria
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcChangeSystemCapture capture = 2;
+   */
+  capture?: GrpcChangeSystemCapture;
+
+  /**
+   * The type of the response - when subscription is set-up, acknowledgement is sent
+   * Then with each capture event, the type is set to `change`
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCaptureResponseType responseType = 3;
+   */
+  responseType: GrpcCaptureResponseType;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcRegisterSystemChangeCaptureResponse.
+ * Use `create(GrpcRegisterSystemChangeCaptureResponseSchema)` to create a new message.
+ */
+export const GrpcRegisterSystemChangeCaptureResponseSchema: GenMessage<GrpcRegisterSystemChangeCaptureResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 32);
+
+/**
+ * Request to get progress of the top-level engine mutations.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcGetProgressRequest
+ */
+export type GrpcGetProgressRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcGetProgressRequest"> & {
+  /**
+   * The name of the catalog for which the progress is requested.
+   * Might be empty if the progress is not related to any catalog and is related to the whole evitaDB instance.
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcGetProgressRequest.
+ * Use `create(GrpcGetProgressRequestSchema)` to create a new message.
+ */
+export const GrpcGetProgressRequestSchema: GenMessage<GrpcGetProgressRequest> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 33);
+
+/**
+ * Response to GrpcGetProgressRequest.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcGetProgressResponse
+ */
+export type GrpcGetProgressResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcGetProgressResponse"> & {
+  /**
+   * contains information whether the progress was found or not
+   *
+   * @generated from field: bool found = 1;
+   */
+  found: boolean;
+
+  /**
+   * The progress of the top-level engine mutation in percents.
+   *
+   * @generated from field: google.protobuf.Int32Value progressInPercent = 2;
+   */
+  progressInPercent?: number;
+
+  /**
+   * Contains catalog name copied from the request (if the progress is related to a catalog)
+   *
+   * @generated from field: string catalogName = 3;
+   */
+  catalogName: string;
+
+  /**
+   * Contains catalog version when operation finishes (only if the mutation relates to a catalog)
+   *
+   * @generated from field: google.protobuf.Int64Value catalogVersion = 4;
+   */
+  catalogVersion?: bigint;
+
+  /**
+   * Contains catalog schema version when operation finishes (only if the mutation relates to a catalog)
+   *
+   * @generated from field: google.protobuf.Int32Value catalogSchemaVersion = 5;
+   */
+  catalogSchemaVersion?: number;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcGetProgressResponse.
+ * Use `create(GrpcGetProgressResponseSchema)` to create a new message.
+ */
+export const GrpcGetProgressResponseSchema: GenMessage<GrpcGetProgressResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaAPI, 34);
 
 /**
  * This service contains RPCs that could be called by gRPC clients on evitaDB. Main purpose of this service is to provide
@@ -542,12 +997,22 @@ export const EvitaService: GenService<{
   /**
    * Procedure used to update the catalog with a set of mutations.
    *
-   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.Update
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.ApplyMutation
    */
-  update: {
+  applyMutation: {
     methodKind: "unary";
-    input: typeof GrpcUpdateEvitaRequestSchema;
-    output: typeof EmptySchema;
+    input: typeof GrpcApplyMutationRequestSchema;
+    output: typeof GrpcApplyMutationResponseSchema;
+  },
+  /**
+   * Procedure used to update the catalog with a set of mutations which tracks the progress of the operation.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.ApplyMutationWithProgress
+   */
+  applyMutationWithProgress: {
+    methodKind: "server_streaming";
+    input: typeof GrpcApplyMutationRequestSchema;
+    output: typeof GrpcApplyMutationWithProgressResponseSchema;
   },
   /**
    * Procedure used to rename an existing catalog.
@@ -560,6 +1025,16 @@ export const EvitaService: GenService<{
     output: typeof GrpcRenameCatalogResponseSchema;
   },
   /**
+   * Procedure used to rename an existing catalog with progress tracking.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.RenameCatalogWithProgress
+   */
+  renameCatalogWithProgress: {
+    methodKind: "server_streaming";
+    input: typeof GrpcRenameCatalogRequestSchema;
+    output: typeof GrpcApplyMutationWithProgressResponseSchema;
+  },
+  /**
    * Procedure used to replace an existing catalog.
    *
    * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.ReplaceCatalog
@@ -568,6 +1043,156 @@ export const EvitaService: GenService<{
     methodKind: "unary";
     input: typeof GrpcReplaceCatalogRequestSchema;
     output: typeof GrpcReplaceCatalogResponseSchema;
+  },
+  /**
+   * Procedure used to replace an existing catalog with progress tracking.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.ReplaceCatalogWithProgress
+   */
+  replaceCatalogWithProgress: {
+    methodKind: "server_streaming";
+    input: typeof GrpcReplaceCatalogRequestSchema;
+    output: typeof GrpcApplyMutationWithProgressResponseSchema;
+  },
+  /**
+   * Procedure used to make a catalog mutable.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.MakeCatalogMutable
+   */
+  makeCatalogMutable: {
+    methodKind: "unary";
+    input: typeof GrpcMakeCatalogMutableRequestSchema;
+    output: typeof GrpcMakeCatalogMutableResponseSchema;
+  },
+  /**
+   * Procedure used to make a catalog mutable with progress tracking.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.MakeCatalogMutableWithProgress
+   */
+  makeCatalogMutableWithProgress: {
+    methodKind: "server_streaming";
+    input: typeof GrpcMakeCatalogMutableRequestSchema;
+    output: typeof GrpcApplyMutationWithProgressResponseSchema;
+  },
+  /**
+   * Procedure used to make a catalog immutable.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.MakeCatalogImmutable
+   */
+  makeCatalogImmutable: {
+    methodKind: "unary";
+    input: typeof GrpcMakeCatalogImmutableRequestSchema;
+    output: typeof GrpcMakeCatalogImmutableResponseSchema;
+  },
+  /**
+   * Procedure used to make a catalog immutable with progress tracking.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.MakeCatalogImmutableWithProgress
+   */
+  makeCatalogImmutableWithProgress: {
+    methodKind: "server_streaming";
+    input: typeof GrpcMakeCatalogImmutableRequestSchema;
+    output: typeof GrpcApplyMutationWithProgressResponseSchema;
+  },
+  /**
+   * Procedure used to make a catalog alive.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.MakeCatalogAlive
+   */
+  makeCatalogAlive: {
+    methodKind: "unary";
+    input: typeof GrpcMakeCatalogAliveRequestSchema;
+    output: typeof GrpcMakeCatalogAliveResponseSchema;
+  },
+  /**
+   * Procedure used to make a catalog alive with progress tracking.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.MakeCatalogAliveWithProgress
+   */
+  makeCatalogAliveWithProgress: {
+    methodKind: "server_streaming";
+    input: typeof GrpcMakeCatalogAliveRequestSchema;
+    output: typeof GrpcApplyMutationWithProgressResponseSchema;
+  },
+  /**
+   * Procedure used to duplicate a catalog.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.DuplicateCatalog
+   */
+  duplicateCatalog: {
+    methodKind: "unary";
+    input: typeof GrpcDuplicateCatalogRequestSchema;
+    output: typeof GrpcDuplicateCatalogResponseSchema;
+  },
+  /**
+   * Procedure used to duplicate a catalog with progress tracking.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.DuplicateCatalogWithProgress
+   */
+  duplicateCatalogWithProgress: {
+    methodKind: "server_streaming";
+    input: typeof GrpcDuplicateCatalogRequestSchema;
+    output: typeof GrpcApplyMutationWithProgressResponseSchema;
+  },
+  /**
+   * Procedure used to activate a catalog.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.ActivateCatalog
+   */
+  activateCatalog: {
+    methodKind: "unary";
+    input: typeof GrpcActivateCatalogRequestSchema;
+    output: typeof GrpcActivateCatalogResponseSchema;
+  },
+  /**
+   * Procedure used to activate a catalog with progress tracking.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.ActivateCatalogWithProgress
+   */
+  activateCatalogWithProgress: {
+    methodKind: "server_streaming";
+    input: typeof GrpcActivateCatalogRequestSchema;
+    output: typeof GrpcApplyMutationWithProgressResponseSchema;
+  },
+  /**
+   * Procedure used to deactivate a catalog.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.DeactivateCatalog
+   */
+  deactivateCatalog: {
+    methodKind: "unary";
+    input: typeof GrpcDeactivateCatalogRequestSchema;
+    output: typeof GrpcDeactivateCatalogResponseSchema;
+  },
+  /**
+   * Procedure used to deactivate a catalog with progress tracking.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.DeactivateCatalogWithProgress
+   */
+  deactivateCatalogWithProgress: {
+    methodKind: "server_streaming";
+    input: typeof GrpcDeactivateCatalogRequestSchema;
+    output: typeof GrpcApplyMutationWithProgressResponseSchema;
+  },
+  /**
+   * Procedure used to register a system change capture.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.RegisterSystemChangeCapture
+   */
+  registerSystemChangeCapture: {
+    methodKind: "server_streaming";
+    input: typeof GrpcRegisterSystemChangeCaptureRequestSchema;
+    output: typeof GrpcRegisterSystemChangeCaptureResponseSchema;
+  },
+  /**
+   * Procedure used to initiate progress consumption for top-level engine mutations.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaService.GetProgress
+   */
+  getProgress: {
+    methodKind: "server_streaming";
+    input: typeof GrpcGetProgressRequestSchema;
+    output: typeof GrpcGetProgressResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_GrpcEvitaAPI, 0);

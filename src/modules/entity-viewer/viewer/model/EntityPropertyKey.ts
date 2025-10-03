@@ -48,6 +48,10 @@ export class EntityPropertyKey {
         return new EntityPropertyKey(EntityPropertyType.Prices)
     }
 
+    static scope(): EntityPropertyKey {
+        return new EntityPropertyKey(EntityPropertyType.Entity)
+    }
+
     static references(name: string): EntityPropertyKey {
         return new EntityPropertyKey(EntityPropertyType.References, [name])
     }

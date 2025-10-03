@@ -39,10 +39,8 @@ import { Label } from '@/modules/database-driver/request-response/traffic-record
  */
 export class TrafficRecordingConverter {
 
-    private readonly evitaValueConverter: EvitaValueConverter
 
-    constructor(evitaValueConverter: EvitaValueConverter) {
-        this.evitaValueConverter = evitaValueConverter
+    constructor() {
     }
 
     convertGrpcTrafficRecords(grpcTrafficRecords: GrpcTrafficRecord[]): ImmutableList<TrafficRecord> {
@@ -107,7 +105,7 @@ export class TrafficRecordingConverter {
                 header.sessionSequenceOrder, header.sessionId, header.recordSessionOffset, header.sessionRecordsCount,
                 header.type, header.created, header.duration, header.ioFetchedSizeBytes, header.ioFetchCount,
                 header.finishedWithError,
-                this.evitaValueConverter.convertGrpcUuid(grpcTrafficRecord.body.value.sourceQueryId!),
+                EvitaValueConverter.convertGrpcUuid(grpcTrafficRecord.body.value.sourceQueryId!),
                 grpcTrafficRecord.body.value.sourceQuery,
                 this.convertGrpcQueryLabels(grpcTrafficRecord.body.value.labels)
             );
@@ -115,7 +113,7 @@ export class TrafficRecordingConverter {
                 header.sessionSequenceOrder, header.sessionId, header.recordSessionOffset, header.sessionRecordsCount,
                 header.type, header.created, header.duration, header.ioFetchedSizeBytes, header.ioFetchCount,
                 header.finishedWithError,
-                this.evitaValueConverter.convertGrpcUuid(grpcTrafficRecord.body.value.sourceQueryId!),
+                EvitaValueConverter.convertGrpcUuid(grpcTrafficRecord.body.value.sourceQueryId!),
                 grpcTrafficRecord.body.value.returnedRecordCount,
                 grpcTrafficRecord.body.value.totalRecordCount
             );
@@ -128,7 +126,7 @@ export class TrafficRecordingConverter {
         return {
             content: this.convertTrafficRecordContent(captureRequest.content),
             since: captureRequest.since != undefined
-                ? this.evitaValueConverter.convertOffsetDateTime(captureRequest.since)
+                ? EvitaValueConverter.convertOffsetDateTime(captureRequest.since)
                 : undefined,
             sinceSessionSequenceId: captureRequest.sinceSessionSequenceId,
             sinceRecordSessionOffset: captureRequest.sinceRecordSessionOffset,
@@ -136,7 +134,7 @@ export class TrafficRecordingConverter {
                 ? this.convertTrafficRecordTypes(captureRequest.types)
                 : undefined,
             sessionId: captureRequest.sessionIds != undefined
-                ? captureRequest.sessionIds.toArray().map(uuid => this.evitaValueConverter.convertUuid(uuid))
+                ? captureRequest.sessionIds.toArray().map(uuid => EvitaValueConverter.convertUuid(uuid))
                 : [],
             longerThanMilliseconds: captureRequest.longerThan != undefined
                 ? captureRequest.longerThan.toMillis()
@@ -228,11 +226,11 @@ export class TrafficRecordingConverter {
     private convertGrpcTrafficRecordHeader(grpcTrafficRecord: GrpcTrafficRecord): TrafficRecordHeader {
         return new TrafficRecordHeader(
             BigInt(grpcTrafficRecord.sessionSequenceOrder),
-            this.evitaValueConverter.convertGrpcUuid(grpcTrafficRecord.sessionId!),
+            EvitaValueConverter.convertGrpcUuid(grpcTrafficRecord.sessionId!),
             grpcTrafficRecord.recordSessionOffset,
             grpcTrafficRecord.sessionRecordsCount,
             this.convertGrpcTrafficRecordType(grpcTrafficRecord.type),
-            this.evitaValueConverter.convertGrpcOffsetDateTime(grpcTrafficRecord.created!),
+            EvitaValueConverter.convertGrpcOffsetDateTime(grpcTrafficRecord.created!),
             Duration.fromMillis(grpcTrafficRecord.durationInMilliseconds),
             grpcTrafficRecord.ioFetchedSizeBytes,
             grpcTrafficRecord.ioFetchCount,

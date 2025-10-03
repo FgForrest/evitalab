@@ -14,6 +14,7 @@ import {
     useSchemaViewerTabFactory
 } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory.ts'
 import { SortableAttributeCompoundSchemaPointer } from '@/modules/schema-viewer/viewer/model/SortableAttributeCompoundSchemaPointer.ts'
+import type { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
@@ -23,7 +24,7 @@ const props = defineProps<{
     schema: SortableAttributeCompoundSchema
 }>()
 
-const flags: ComputedRef<List<string>> = computed(() => props.schema.representativeFlags)
+const flags: ComputedRef<List<Flag>> = computed(() => props.schema.representativeFlags)
 
 function openSortableSchema(): void {
     if (!(props.dataPointer.schemaPointer instanceof EntitySchemaPointer)) {

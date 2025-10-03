@@ -8,8 +8,8 @@ import 'splitpanes/dist/splitpanes.css'
 import { computed, onBeforeMount, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { EntityViewerService, useEntityViewerService } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
-import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
 import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 import type { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
 import { EntityViewerTabParams } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabParams'
@@ -26,11 +26,12 @@ import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import EntityGrid from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGrid.vue'
 import Toolbar from '@/modules/entity-viewer/viewer/component/Toolbar.vue'
 import QueryInput from '@/modules/entity-viewer/viewer/component/QueryInput.vue'
-import { Map as ImmutableMap, List as ImmutableList } from 'immutable'
+import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
 import {
     provideDataLocale,
     provideEntityPropertyDescriptorIndex,
+    provideScopes,
     providePriceType,
     provideQueryFilter,
     provideQueryLanguage,
@@ -44,6 +45,8 @@ import {
 } from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import { EntityViewerTabDefinition } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabDefinition'
+import { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 const entityViewerService: EntityViewerService = useEntityViewerService()
 const toaster: Toaster = useToaster()
@@ -102,6 +105,9 @@ const filterByCode = ref<string>(props.data.filterBy ? props.data.filterBy : '')
 const lastAppliedFilterByCode = ref<string>('')
 provideQueryFilter(lastAppliedFilterByCode)
 const orderByCode = ref<string>(props.data.orderBy ? props.data.orderBy : '')
+const selectedScopes = ref<SelectedScope[]>(props.data.selectedScopes ? props.data.selectedScopes : [new SelectedScope(EntityScope.Live, true), new SelectedScope(EntityScope.Archive, false)])
+provideScopes(selectedScopes)
+watch(selectedScopes, () => executeQueryManually())
 
 const selectedDataLocale = ref<string | undefined>(props.data.dataLocale ? props.data.dataLocale : undefined)
 provideDataLocale(selectedDataLocale)
@@ -138,7 +144,8 @@ const currentData = computed<EntityViewerTabData>(() => {
         selectedDataLocale.value,
         displayedEntityProperties.value,
         pageSize.value,
-        pageNumber.value
+        pageNumber.value,
+        selectedScopes.value
     )
 })
 watch(currentData, (data) => {
@@ -334,6 +341,7 @@ async function executeQuery(): Promise<void> {
             selectedQueryLanguage.value,
             filterByCode.value,
             orderByCode.value,
+            selectedScopes.value,
             selectedDataLocale.value,
             selectedPriceType.value,
             displayedEntityProperties.value,
@@ -377,10 +385,12 @@ onUnmounted(() => {
                     v-model:selected-query-language="selectedQueryLanguage"
                     v-model:filter-by="filterByCode"
                     v-model:order-by="orderByCode"
+                    v-model:selected-scope="selectedScopes"
                     :data-locales="dataLocales"
                     v-model:selected-data-locale="selectedDataLocale"
                     v-model:selected-price-type="selectedPriceType"
                     v-model:displayed-entity-properties="displayedEntityProperties"
+                    v-model:selected-layer="selectedScopes"
                     @execute-query="executeQueryManually"
                 />
             </template>

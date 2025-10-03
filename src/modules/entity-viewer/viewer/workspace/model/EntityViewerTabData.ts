@@ -3,6 +3,7 @@ import type { EntityViewerTabDataDto } from '@/modules/entity-viewer/viewer/work
 import { QueryLanguage } from '@/modules/entity-viewer/viewer/model/QueryLanguage'
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
+import type { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
 
 /**
  * Represents injectable/storable user data of the LabEditorConsoleDataGrid component.
@@ -11,6 +12,7 @@ export class EntityViewerTabData implements TabData<EntityViewerTabDataDto> {
     readonly queryLanguage?: QueryLanguage
     readonly filterBy?: string
     readonly orderBy?: string
+    readonly selectedScopes?: SelectedScope[]
     readonly dataLocale?: string
     readonly priceType?: QueryPriceMode
     readonly displayedProperties?: EntityPropertyKey[]
@@ -23,7 +25,8 @@ export class EntityViewerTabData implements TabData<EntityViewerTabDataDto> {
                 dataLocale?: string,
                 displayedProperties?: EntityPropertyKey[],
                 pageSize?: number,
-                pageNumber?: number) {
+                pageNumber?: number,
+                selectedScopes?: SelectedScope[]) {
         this.queryLanguage = queryLanguage
         this.filterBy = filterBy
         this.orderBy = orderBy
@@ -31,6 +34,7 @@ export class EntityViewerTabData implements TabData<EntityViewerTabDataDto> {
         this.displayedProperties = displayedProperties
         this.pageSize = pageSize
         this.pageNumber = pageNumber
+        this.selectedScopes = selectedScopes
     }
 
     toSerializable(): EntityViewerTabDataDto {
@@ -38,6 +42,7 @@ export class EntityViewerTabData implements TabData<EntityViewerTabDataDto> {
             queryLanguage: this.queryLanguage,
             filterBy: this.filterBy,
             orderBy: this.orderBy,
+            selectedLayers: this.selectedScopes,
             dataLocale: this.dataLocale,
             displayedProperties: this.displayedProperties?.map(key => key.toString()),
             pageSize: this.pageSize,

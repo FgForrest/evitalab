@@ -31,8 +31,14 @@ import {
     ServerViewerTabFactory,
     serverViewerTabFactoryInjectionKey
 } from '@/modules/server-viewer/service/ServerViewerTabFactory'
-import { BackupViewerTabFactory, backupViewerTabFactoryInjectionKey } from '@/modules/backup-viewer/service/BackupViewerTabFactory'
-import { TaskViewerTabFactory, taskViewerTabFactoryInjectionKey } from '@/modules/task-viewer/services/TaskViewerTabFactory'
+import {
+    BackupViewerTabFactory,
+    backupViewerTabFactoryInjectionKey
+} from '@/modules/backup-viewer/service/BackupViewerTabFactory'
+import {
+    TaskViewerTabFactory,
+    taskViewerTabFactoryInjectionKey
+} from '@/modules/task-viewer/services/TaskViewerTabFactory'
 import { JfrViewerTabFactory, jfrViewerTabFactoryInjectionKey } from '@/modules/jfr-viewer/service/JfrViewerTabFactory'
 import {
     TrafficRecordingsViewerTabFactory,
@@ -47,6 +53,10 @@ import {
     ErrorViewerTabFactory,
     errorViewerTabFactoryInjectionKey
 } from '@/modules/error-viewer/viewer/workspace/service/ErrorViewerTabFactory'
+import {
+    MutationHistoryViewerTabFactory,
+    mutationHistoryViewerTabFactoryInjectionKey
+} from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
 
 export class WorkspaceModuleRegistrar implements ModuleRegistrar {
 
@@ -78,6 +88,8 @@ export class WorkspaceModuleRegistrar implements ModuleRegistrar {
         builder.provide(trafficRecordingsViewerTabFactoryInjectionKey, trafficRecordingsViewerTabFactory)
         const trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory = new TrafficRecordHistoryViewerTabFactory(connectionService)
         builder.provide(trafficRecordHistoryViewerTabFactoryInjectionKey, trafficRecordHistoryViewerTabFactory)
+        const historyViewerTabFactory: MutationHistoryViewerTabFactory = new MutationHistoryViewerTabFactory(connectionService)
+        builder.provide(mutationHistoryViewerTabFactoryInjectionKey, historyViewerTabFactory)
         const backupViewerTabFactory: BackupViewerTabFactory = new BackupViewerTabFactory(connectionService)
         builder.provide(backupViewerTabFactoryInjectionKey, backupViewerTabFactory)
         const errorViewerTabFactory: ErrorViewerTabFactory = new ErrorViewerTabFactory()
@@ -105,7 +117,8 @@ export class WorkspaceModuleRegistrar implements ModuleRegistrar {
                 backupViewerTabFactory,
                 jfrViewerTabFactory,
                 trafficRecordingsViewerTabFactory,
-                trafficRecordHistoryViewerTabFactory
+                trafficRecordHistoryViewerTabFactory,
+                historyViewerTabFactory
             )
         )
         builder.provide(

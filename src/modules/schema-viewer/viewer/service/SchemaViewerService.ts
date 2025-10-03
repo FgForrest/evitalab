@@ -19,7 +19,10 @@ import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
-import { SortableAttributeCompoundSchemaPointer } from '@/modules/schema-viewer/viewer/model/SortableAttributeCompoundSchemaPointer.ts'
+import { ReflectedReferenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
+import {
+    SortableAttributeCompoundSchemaPointer
+} from '@/modules/schema-viewer/viewer/model/SortableAttributeCompoundSchemaPointer.ts'
 import {
     SortableAttributeCompoundSchema
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema.ts'
@@ -53,7 +56,7 @@ export class SchemaViewerService {
             return this.getAssociatedDataSchemaPointer(schemaPointer)
         } else if (schemaPointer instanceof ReferenceSchemaPointer) {
             return this.getReferenceSchemaPointer(schemaPointer)
-        } else if(schemaPointer instanceof SortableAttributeCompoundSchemaPointer) {
+        } else if (schemaPointer instanceof SortableAttributeCompoundSchemaPointer) {
             return this.getSortableCompoundSchemaFromPointer(schemaPointer)
         } else {
             throw new UnexpectedError(`Unsupported type of schema ${schemaPointer}`)
@@ -148,6 +151,26 @@ export class SchemaViewerService {
         )
     }
 
+    async getReflectedSchema(catalogName: string, name: string): Promise<ReflectedReferenceSchema[]> {
+        const reflectedReferenceSchemas: ReflectedReferenceSchema[] = []
+        const catalogSchema = await this.evitaClient.queryCatalog(catalogName, session => session.getCatalogSchema())
+        const entitySchemas = await catalogSchema.entitySchemas()
+
+
+        for (const entity of entitySchemas) {
+            for (const reference of entity[1].references) {
+                if (reference[1] instanceof ReflectedReferenceSchema) {
+                    if (reference[1].reflectedReferenceName === name) {
+                        reference[1].reflectedType = entity[1].name
+                        reflectedReferenceSchemas.push(reference[1])
+                    }
+                }
+            }
+        }
+
+        return reflectedReferenceSchemas
+    }
+
     private async getCatalogSchemaFromPointer(schemaPointer: CatalogSchemaPointer): Promise<CatalogSchema> {
         return await this.evitaClient.queryCatalog(
             schemaPointer.catalogName,
@@ -160,7 +183,7 @@ export class SchemaViewerService {
         )).sortableAttributeCompounds
         const item = data.get(schemaPointer.sortableAttributeCompoundName)
 
-        if(item == undefined) {
+        if (item == undefined) {
             throw new UnexpectedError(`Compound schema ${schemaPointer.sortableAttributeCompoundName} not found in catalog ${schemaPointer.catalogName}.`)
         }
         return item

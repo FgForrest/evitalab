@@ -16,18 +16,25 @@ import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/Ref
 import { ReferenceAttributeSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceAttributeSchemaPointer'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import SchemaContainerSectionListItem from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionListItem.vue'
-import { computed } from 'vue'
 import type { ComputedRef } from 'vue'
+import { computed } from 'vue'
+import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
+import { useI18n } from 'vue-i18n'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
+
+const { t } = useI18n()
+const showTooltip = ref<boolean>(false)
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
     schema: AttributeSchema
 }>()
 
-const flags: ComputedRef<List<string>> = computed(() => props.schema.representativeFlags)
+const flags: ComputedRef<List<Flag>> = computed(() => {
+    return props.schema.representativeFlags
+})
 
 function openAttributeSchema(): void {
     const parentSchemaPointer = props.dataPointer.schemaPointer
@@ -66,6 +73,8 @@ function openAttributeSchema(): void {
         :name="schema.name"
         :deprecated="!!schema.deprecationNotice"
         :flags="flags"
+        :tooltip="t('schemaViewer.section.flag.attributeSchema.attributeTooltip')"
+        :show-tooltip="showTooltip"
         @open="openAttributeSchema"
     />
 </template>

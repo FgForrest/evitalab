@@ -3,8 +3,8 @@
  * Explorer tree item representing a single catalog in evitaDB.
  */
 
-import { computed, ref, watch } from 'vue'
 import type { Ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { MenuAction } from '@/modules/base/model/menu/MenuAction'
 import VTreeViewItem from '@/modules/base/component/VTreeViewItem.vue'
@@ -19,8 +19,8 @@ import SwitchCatalogToAliveStateDialog
     from '@/modules/connection-explorer/component/SwitchCatalogToAliveStateDialog.vue'
 import { ItemFlag } from '@/modules/base/model/tree-view/ItemFlag'
 import { List as ImmutableList } from 'immutable'
-import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 import { provideCatalog, useServerStatus } from '@/modules/connection-explorer/component/dependecies'
@@ -31,12 +31,18 @@ import {
     CatalogItemMenuFactory,
     useCatalogItemMenuFactory
 } from '@/modules/connection-explorer/service/CatalogItemMenuFactory'
-import BackupCatalogDialog from '@/modules/backup-viewer/components/BackupCatalogDialog.vue'
 import {
     type BackupViewerTabFactory,
     useBackupsTabFactory
 } from '@/modules/backup-viewer/service/BackupViewerTabFactory.ts'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
+import BackupSelector from '@/modules/backup-viewer/components/BackupSelector.vue'
+import DuplicateCatalogDialog from '@/modules/connection-explorer/component/DuplicateCatalogDialog.vue'
+import ActivateCatalog from '@/modules/connection-explorer/component/ActivateCatalog.vue'
+import DeactivateCatalog from '@/modules/connection-explorer/component/DeactivateCatalog.vue'
+import MakeCatalogImmutable from '@/modules/connection-explorer/component/MakeCatalogImmutable.vue'
+import MakeCatalogMutable from '@/modules/connection-explorer/component/MakeCatalogMutable.vue'
+import { CatalogState } from '@/modules/database-driver/request-response/CatalogState.ts'
 
 const catalogItemService: CatalogItemService = useCatalogItemService()
 const catalogItemMenuFactory: CatalogItemMenuFactory = useCatalogItemMenuFactory()
@@ -48,6 +54,7 @@ const { t } = useI18n()
 const props = defineProps<{
     catalog: CatalogStatistics
 }>()
+const catalogRef = toRef(props, 'catalog')
 const serverStatus: Ref<ServerStatus | undefined> = useServerStatus()
 
 const showRenameCatalogDialog = ref<boolean>(false)
@@ -56,18 +63,42 @@ const showSwitchCatalogToAliveStateDialog = ref<boolean>(false)
 const showDeleteCatalogDialog = ref<boolean>(false)
 const showCreateCollectionDialog = ref<boolean>(false)
 const showBackupCatalogDialog = ref<boolean>(false)
+const showDuplicationCatalogDialog = ref<boolean>(false)
+const showMutableCatalogDialog = ref<boolean>(false)
+const showImmutableCatalogDialog = ref<boolean>(false)
+const showActivateCatalogDialog = ref<boolean>(false)
+const showDeactivateCatalogDialog = ref<boolean>(false)
 
-const flags = computed<ItemFlag[]>(() => {
-    const flags: ItemFlag[] = []
-    if (props.catalog.corrupted) {
-        flags.push(ItemFlag.error(t('explorer.catalog.flag.corrupted')))
+const flags = ref<ItemFlag[]>([])
+
+onMounted(() => changeFlags())
+
+function changeFlags() {
+    flags.value = []
+
+    if (props.catalog.catalogState === CatalogState.Corrupted) {
+        flags.value.push(ItemFlag.error(t('explorer.catalog.flag.corrupted')))
+    } else if (props.catalog.catalogState === CatalogState.WarmingUp) {
+        flags.value.push(ItemFlag.warning(t('explorer.catalog.flag.warmingUp')))
+    } else {
+        if (props.catalog.catalogState !== CatalogState.Alive)
+            flags.value.push(ItemFlag.info(t(`explorer.catalog.flag.${props.catalog.catalogState.toString()}`)))
     }
-    if (props.catalog.isInWarmup) {
-        flags.push(ItemFlag.warning(t('explorer.catalog.flag.warmingUp')))
+
+
+    if (props.catalog.progresses) {
+        for (const runningProgress of props.catalog.progresses) {
+            flags.value.push(ItemFlag.info(t(`explorer.catalog.flag.${runningProgress[0]}`, [runningProgress[1]])))
+        }
     }
-    return flags
-})
+}
+
 const menuItems = ref<Map<CatalogMenuItemType, MenuItem<CatalogMenuItemType>>>()
+
+watch(catalogRef, () => {
+    changeFlags()
+}, { deep: true })
+
 watch(
     [serverStatus, () => props.catalog],
     async () => menuItems.value = await createMenuItems(),
@@ -86,8 +117,6 @@ const entityCollections = computed<ImmutableList<EntityCollectionStatistics>>(()
             return a.entityType.localeCompare(b.entityType)
         })
 })
-
-const catalogRef = ref(props.catalog)
 provideCatalog(catalogRef as Ref<CatalogStatistics>)
 
 const loading = ref<boolean>(false)
@@ -123,11 +152,17 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
         props.catalog,
         () => closeSharedSession().then(),
         () => showRenameCatalogDialog.value = true,
+        () => showDuplicationCatalogDialog.value = true,
         () => showReplaceCatalogDialog.value = true,
+        () => showMutableCatalogDialog.value = true,
+        () => showImmutableCatalogDialog.value = true,
+        () => showActivateCatalogDialog.value = true,
+        () => showDeactivateCatalogDialog.value = true,
         () => showSwitchCatalogToAliveStateDialog.value = true,
         () => showDeleteCatalogDialog.value = true,
         () => showCreateCollectionDialog.value = true,
         () => showBackupCatalogDialog.value = true,
+        props.catalog.catalogState
     )
 }
 </script>
@@ -137,20 +172,28 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
         <template #activator="{ isOpen, props }">
             <VTreeViewItem
                 v-bind="props"
-                :openable="!catalog.corrupted"
+                :openable="!catalog.unusable"
                 :is-open="isOpen"
-                prepend-icon="mdi-menu"
+                :prepend-icon="catalog.readOnly ? 'mdi-database-eye-outline' : 'mdi-database-outline'"
                 :loading="loading"
                 :flags="flags"
                 :actions="menuItemList"
+                :is-read-only="serverStatus?.readOnly"
+                :catalog-name="catalog.name"
                 @click:action="handleAction"
                 class="text-gray-light"
             >
-                {{ catalog.name }}
+                <template #default>
+                    <span>{{ catalog.name }}</span>
+                </template>
+                <template #tooltip>
+                    <span v-if="!catalog.readOnly">{{ catalog.name }} </span>
+                    <span v-else>{{ catalog.name }} {{ t('explorer.catalog.title.readOnly') }}</span>
+                </template>
             </VTreeViewItem>
         </template>
 
-        <div v-if="!catalog.corrupted">
+        <div v-if="!catalog.unusable">
             <template v-if="catalog.entityCollectionStatistics.size > 0">
                 <CollectionItem
                     v-for="entityCollection in entityCollections"
@@ -163,10 +206,10 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
             </template>
         </div>
 
-        <BackupCatalogDialog
-            v-if="showBackupCatalogDialog"
+        <BackupSelector
             :model-value="showBackupCatalogDialog"
-            :catalog="catalog.name"
+            :catalog-name="catalog.name"
+            @update:model-value="value => showBackupCatalogDialog = value"
             @backup="() => {
                 showBackupCatalogDialog = false
                 workspaceService.createTab(
@@ -177,17 +220,42 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
         <RenameCatalogDialog
             v-if="showRenameCatalogDialog"
             v-model="showRenameCatalogDialog"
-            :catalog-name="catalog.name"
+            :catalog="catalog"
+        />
+        <DuplicateCatalogDialog
+            v-if="showDuplicationCatalogDialog"
+            v-model="showDuplicationCatalogDialog"
+            :catalog="catalog"
         />
         <ReplaceCatalogDialog
             v-if="showReplaceCatalogDialog"
             v-model="showReplaceCatalogDialog"
-            :catalog-name="catalog.name"
+            :catalog="catalog"
+        />
+        <ActivateCatalog
+            v-if="showActivateCatalogDialog"
+            v-model="showActivateCatalogDialog"
+            :catalog="catalog"
+        />
+        <DeactivateCatalog
+            v-if="showDeactivateCatalogDialog"
+            v-model="showDeactivateCatalogDialog"
+            :catalog="catalog"
+        />
+        <MakeCatalogImmutable
+            v-if="showImmutableCatalogDialog"
+            v-model="showImmutableCatalogDialog"
+            :catalog="catalog"
+        />
+        <MakeCatalogMutable
+            v-if="showMutableCatalogDialog"
+            v-model="showMutableCatalogDialog"
+            :catalog="catalog"
         />
         <SwitchCatalogToAliveStateDialog
             v-if="showSwitchCatalogToAliveStateDialog"
             v-model="showSwitchCatalogToAliveStateDialog"
-            :catalog-name="catalog.name"
+            :catalog="catalog"
         />
         <DeleteCatalogDialog
             v-if="showDeleteCatalogDialog"
