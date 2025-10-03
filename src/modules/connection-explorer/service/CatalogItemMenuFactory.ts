@@ -102,19 +102,18 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
 
         const items: Map<CatalogMenuItemType, MenuItem<CatalogMenuItemType>> = new Map()
 
-        // todo pfi: menu item for mutation history viewer
-        // this.createMenuAction( // todo pfi: update order of thi current item
-        //     items,
-        //     CatalogMenuItemType.MutationHistoryViewer,
-        //     MutationHistoryViewerTabDefinition.icon(),
-        //     this.getItemTitle,
-        //     () => {
-        //         this.workspaceService.createTab(
-        //             this.mutationHistoryViewerTabFactory.createNew(catalog.name)
-        //         )
-        //     },
-        //     baseEnabledFunctions
-        // )
+        this.createMenuAction( // todo pfi: update order of thi current item
+            items,
+            CatalogMenuItemType.MutationHistoryViewer,
+            MutationHistoryViewerTabDefinition.icon(),
+            this.getItemTitle,
+            () => {
+                this.workspaceService.createTab(
+                    this.mutationHistoryViewerTabFactory.createNew(catalog.name)
+                )
+            },
+            baseEnabledFunctions
+        )
 
         this.createMenuAction(
             items,
