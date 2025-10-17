@@ -1893,12 +1893,46 @@
           "label": "To"
         },
         "mutationTypes": {
-          "hint": "To",
-          "valueDescriptor": "To"
+          "hint": "Mutation type",
+          "valueDescriptor": "Mutation type",
+          "items": {
+            "UPSERT": "Upsert",
+            "REMOVE": "Remove"
+          }
+        },
+        "entityType": {
+          "hint": "Entity type",
+          "label": "Entity type"
+
+        },
+        "areaType": {
+          "hint": "Area scope",
+          "label": "Area",
+          "items": {
+            "both": "Both",
+            "dataSite": "Data site",
+            "schemaSite": "Schema site"
+          }
         },
         "entityPrimaryKey": {
           "hint": "Entity PK",
           "label": "Entity PK"
+        },
+        "containerName": {
+          "hint": "Container name(s)",
+          "label": "Container name"
+        },
+        "containerType": {
+          "hint": "Container type",
+          "label": "Container type",
+          "valueDescriptor": "{count} selected",
+          "items": {
+            "CONTAINER_CATALOG": "Catalog",
+            "CONTAINER_ATTRIBUTE": "Attribute",
+            "CONTAINER_ASSOCIATED_DATA": "Associated data",
+            "CONTAINER_PRICE": "Price",
+            "CONTAINER_REFERENCE": "Reference"
+          }
         }
       }
     },

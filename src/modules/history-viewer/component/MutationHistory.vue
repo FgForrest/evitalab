@@ -115,32 +115,50 @@ const fetchingNewRecordsWhenThereArentAny = ref<boolean>(false)
 
 
 const nextPageRequest = computed<MutationHistoryRequest>(() => {
+    const infraType = props.criteria.areaType === 'dataSite' ? 'DATA_SITE'
+        : props.criteria.areaType === 'schemaSite' ? 'SCHEMA_SITE'
+        : undefined
     // Initial load: do not send since*/page
     if (!nextPagePointer.value.hasPointer) {
         return new MutationHistoryRequest(
             props.criteria.from,
             props.criteria.to,
+            props.criteria.operationList,
+            props.criteria.containerNameList,
+            props.criteria.containerTypeList,
             props.criteria.entityPrimaryKey,
-            undefined
+            props.criteria.entityType,
+            infraType
         )
     }
     // Subsequent loads: anchor by sinceVersion, paginate by page
     return new MutationHistoryRequest(
         props.criteria.from,
         props.criteria.to,
+        props.criteria.operationList,
+        props.criteria.containerNameList,
+        props.criteria.containerTypeList,
         props.criteria.entityPrimaryKey,
-        undefined,
+        props.criteria.entityType,
+        infraType,
         nextPagePointer.value.sinceSessionSequenceId,
         undefined,
         nextPagePointer.value.page
     )
 })
 const lastRecordRequest = computed<MutationHistoryRequest>(() => {
+    const infraType = props.criteria.areaType === 'dataSite' ? 'DATA_SITE'
+        : props.criteria.areaType === 'schemaSite' ? 'SCHEMA_SITE'
+        : undefined
     return new MutationHistoryRequest(
         props.criteria.from,
         props.criteria.to,
+        props.criteria.operationList,
+        props.criteria.containerNameList,
+        props.criteria.containerTypeList,
         props.criteria.entityPrimaryKey,
-        undefined
+        props.criteria.entityType,
+        infraType
     )
 })
 

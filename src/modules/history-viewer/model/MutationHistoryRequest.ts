@@ -12,6 +12,7 @@ export class MutationHistoryRequest {
     readonly containerTypeList: GrpcChangeCaptureContainerType[]
     readonly entityPrimaryKey: number|undefined
     readonly entityType?: string|undefined
+    readonly infrastructureAreaType?: 'DATA_SITE' | 'SCHEMA_SITE'
     readonly sinceVersion?: number|undefined
     readonly sinceIndex?: number|undefined
     readonly page?: number|undefined
@@ -24,6 +25,7 @@ export class MutationHistoryRequest {
         containerTypeList: GrpcChangeCaptureContainerType[] | undefined,
         entityPrimaryKey: number | undefined,
         entityType: string | undefined,
+        infrastructureAreaType?: 'DATA_SITE' | 'SCHEMA_SITE',
         sinceVersion?: number,
         sinceIndex?: number,
         page?: number
@@ -32,9 +34,10 @@ export class MutationHistoryRequest {
         this.to = to
         this.operationList = operationList ?? []
         this.containerNameList = containerNameList ?? []
-        this.containerTypeList = containerTypeList ?? [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
+        this.containerTypeList = containerTypeList && containerTypeList.length > 0 ? containerTypeList : [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
         this.entityPrimaryKey = entityPrimaryKey
         this.entityType = entityType
+        this.infrastructureAreaType = infrastructureAreaType
         this.sinceVersion = sinceVersion
         this.sinceIndex = sinceIndex
         this.page = page

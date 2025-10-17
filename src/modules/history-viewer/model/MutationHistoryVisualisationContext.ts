@@ -61,12 +61,12 @@ export class MutationHistoryVisualisationContext {
         this.pendingChildrenIndex.set(key, arr)
     }
 
-    attachPendingChildren(sessionId: number, sessionRecord: MutationHistoryItemVisualisationDefinition): void {
+    attachPendingChildren(sessionId: number, transactionRecord: MutationHistoryItemVisualisationDefinition): void {
         const key = sessionId.toString()
         const arr = this.pendingChildrenIndex.get(key)
         if (arr && arr.length > 0) {
             for (const child of arr) {
-                sessionRecord.addChild(child)
+                transactionRecord.addChild(child)
             }
             this.pendingChildrenIndex.delete(key)
         }
