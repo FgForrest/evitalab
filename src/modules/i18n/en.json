@@ -2000,6 +2000,7 @@
       "zeroOrMore": "1:0…*"
     },
     "managedByEvita": "This entity is managed by evitaDB.",
-    "managedExternal": "This entity is managed externally."
+    "managedExternal": "This entity is managed externally.",
+    "cardinalityWithDuplicates": "Allows multiple relations with an identical referenced entity primary key. This may be necessary in cases where the distinguishing factor is a reference attribute value."
   }
 }

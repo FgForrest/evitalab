@@ -3,7 +3,7 @@ import type {
 } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceKey.ts'
 import type { LocalMutation } from '@/modules/database-driver/request-response/data/mutation/LocalMutation.ts'
 
-export abstract class ReferenceMutation<T> implements LocalMutation {
+export abstract class ReferenceMutation implements LocalMutation {
     readonly referenceKey: ReferenceKey
 
     constructor(referenceKey: ReferenceKey) {

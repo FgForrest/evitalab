@@ -27,12 +27,19 @@ const icon = computed(() => {
         case Cardinality.ExactlyOne:
             return 'mdi-relation-one-to-one'
         case Cardinality.OneOrMore:
+        case Cardinality.OneOrMoreWithDuplicates:
             return 'mdi-relation-one-to-one-or-many'
         case Cardinality.ZeroOrOne:
             return 'mdi-relation-one-to-zero-or-one'
         case Cardinality.ZeroOrMore:
+        case Cardinality.ZeroOrMoreWithDuplicates:
             return 'mdi-relation-one-to-zero-or-many'
     }
+})
+
+const cardinalityWithDuplicates = computed(() => {
+    return props.schema.cardinality === Cardinality.OneOrMoreWithDuplicates ||
+        props.schema.cardinality === Cardinality.ZeroOrMoreWithDuplicates
 })
 
 
@@ -77,12 +84,29 @@ function openTo(): void {
                 <VChip @click="schema.referencedEntityTypeManaged ? openTo() : null"
                        :variant="schema.referencedEntityTypeManaged ? 'outlined' : 'plain'"
                        :class="schema.referencedEntityTypeManaged ? 'clickable' : ''" dense>
-                    {{ schema.entityType }}
-                    <VTooltip activator="parent" v-if="schema.referencedEntityTypeManaged">
-                        {{ t('relationViewer.managedByEvita') }}
+                    <VTooltip>
+                        <template #activator="{ props }">
+                            <span v-bind="props">
+                                {{ schema.entityType }}
+                            </span>
+                        </template>
+                        <template #default>
+                            <span v-if="schema.referencedEntityTypeManaged">
+                                {{ t('relationViewer.managedByEvita') }}
+                            </span>
+                            <span v-else>
+                                {{ t('relationViewer.managedExternal') }}
+                            </span>
+                        </template>
                     </VTooltip>
-                    <VTooltip activator="parent" v-else>
-                        {{ t('relationViewer.managedExternal') }}
+
+                    <VTooltip v-if="cardinalityWithDuplicates">
+                        <template #activator="{ props }">
+                            <VIcon class="ml-2" v-bind="props">mdi-card-multiple-outline</VIcon>
+                        </template>
+                        <template #default>
+                            {{ t('relationViewer.cardinalityWithDuplicates') }}
+                        </template>
                     </VTooltip>
                 </VChip>
             </td>

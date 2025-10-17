@@ -6,7 +6,7 @@ import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegen
 import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import type { EmptySchema, StringValue } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_empty, file_google_protobuf_wrappers } from "@bufbuild/protobuf/wkt";
-import type { GrpcClassifierType, GrpcReadiness, GrpcTaskSimplifiedState, GrpcHealthProblem } from "./GrpcEnums_pb";
+import type { GrpcClassifierType, GrpcHealthProblem, GrpcReadiness, GrpcTaskSimplifiedState } from "./GrpcEnums_pb";
 import { file_GrpcEnums } from "./GrpcEnums_pb";
 import type { GrpcCatalogStatistics, GrpcFile, GrpcOffsetDateTime, GrpcTaskStatus, GrpcUuid } from "./GrpcEvitaDataTypes_pb";
 import { file_GrpcEvitaDataTypes } from "./GrpcEvitaDataTypes_pb";

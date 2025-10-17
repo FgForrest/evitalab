@@ -12,7 +12,7 @@ import type {
 } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceKey.ts'
 import type { AttributeKey } from '@/modules/database-driver/request-response/data/mutation/attribute/AttributeKey.ts'
 
-export class ReferenceAttributeMutation extends ReferenceMutation<ReferenceKeyWithAttributeKey> {
+export class ReferenceAttributeMutation extends ReferenceMutation {
     readonly attributeMutation: AttributeMutation
     readonly attributeKey: AttributeKey
     readonly comparableKey: ReferenceKeyWithAttributeKey

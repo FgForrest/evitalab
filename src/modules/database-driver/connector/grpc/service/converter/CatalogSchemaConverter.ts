@@ -456,6 +456,9 @@ export class CatalogSchemaConverter {
                 case GrpcEvolutionMode.ADDING_HIERARCHY:
                     newEvolutionModes.push(EvolutionMode.AddingHierarchy)
                     break
+                case GrpcEvolutionMode.UPDATING_REFERENCE_CARDINALITY:
+                    newEvolutionModes.push(EvolutionMode.UpdatingReferenceCardinality)
+                    break
                 default:
                     throw new UnexpectedError(
                         `Could not convert evolution mode '${grpcEvolutionMode}'.`

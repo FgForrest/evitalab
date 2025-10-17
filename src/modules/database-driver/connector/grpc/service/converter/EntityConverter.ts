@@ -188,6 +188,10 @@ export class EntityConverter {
                 return Cardinality.ZeroOrMore
             case GrpcCardinality.ZERO_OR_ONE:
                 return Cardinality.ZeroOrOne
+            case GrpcCardinality.ZERO_OR_MORE_WITH_DUPLICATES:
+                return Cardinality.ZeroOrMoreWithDuplicates
+            case GrpcCardinality.ONE_OR_MORE_WITH_DUPLICATES:
+                return Cardinality.OneOrMoreWithDuplicates
         }
     }
 
