@@ -123,8 +123,8 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             visualisedSessionRecord.addChild(visualisedRecord)
             return
         }
-        console.error('Hey, some data without transaction') // todo pfi throw exception instead
-        ctx.addRootVisualisedRecord(visualisedRecord) // todo pfi: this should never happens - try it with pagination and filters and limits
+        // If transaction not yet visualised, queue as pending child to be attached once transaction arrives
+        ctx.addPendingChild(mutationHistory.version, visualisedRecord)
     }
 
     private constructEntityMetadata(mutationHistory: ChangeCatalogCapture,
@@ -313,7 +313,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
     }
 
 
-    private constructReferenceMetadata(referenceMutation: ReferenceMutation,
+    private constructReferenceMetadata(referenceMutation: ReferenceMutation<LocalMutation>,
                                        visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
         defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(referenceMutation.constructor.name))
