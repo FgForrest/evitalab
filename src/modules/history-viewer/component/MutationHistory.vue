@@ -45,6 +45,8 @@ class StartRecordsPointer {
 class RecordsPointer {
     private _sinceSessionSequenceId: number = 1
     private _sinceRecordSessionOffset: number = 0
+    private _page: number = 1
+    private _hasPointer: boolean = false
 
     get sinceSessionSequenceId(): number {
         return this._sinceSessionSequenceId
@@ -54,14 +56,35 @@ class RecordsPointer {
         return this._sinceRecordSessionOffset
     }
 
+    get hasPointer(): boolean {
+        return this._hasPointer
+    }
+
     reset(startPointer?: StartRecordsPointer): void {
         this._sinceSessionSequenceId = startPointer?.sinceSessionSequenceId || 1
         this._sinceRecordSessionOffset = startPointer?.sinceRecordSessionOffset || 0
+        this._page = 1
+        this._hasPointer = startPointer != undefined
     }
 
     move(sinceSessionSequenceId: number, sinceRecordSessionOffset: number) {
         this._sinceSessionSequenceId = sinceSessionSequenceId
         this._sinceRecordSessionOffset = sinceRecordSessionOffset
+        this._hasPointer = true
+    }
+
+    get page(): number {
+        return this._page
+    }
+
+    nextPage(): void {
+        this._page = this._page + 1
+        this._hasPointer = true
+    }
+
+    setPage(page: number): void {
+        this._page = page
+        this._hasPointer = true
     }
 }
 
@@ -92,14 +115,41 @@ const fetchingNewRecordsWhenThereArentAny = ref<boolean>(false)
 
 
 const nextPageRequest = computed<MutationHistoryRequest>(() => {
-    return new MutationHistoryRequest(props.criteria.from, props.criteria.to, props.criteria.entityPrimaryKey, undefined)
+    // Initial load: do not send since*/page
+    if (!nextPagePointer.value.hasPointer) {
+        return new MutationHistoryRequest(
+            props.criteria.from,
+            props.criteria.to,
+            props.criteria.entityPrimaryKey,
+            undefined
+        )
+    }
+    // Subsequent loads: anchor by sinceVersion, paginate by page
+    return new MutationHistoryRequest(
+        props.criteria.from,
+        props.criteria.to,
+        props.criteria.entityPrimaryKey,
+        undefined,
+        nextPagePointer.value.sinceSessionSequenceId,
+        undefined,
+        nextPagePointer.value.page
+    )
 })
 const lastRecordRequest = computed<MutationHistoryRequest>(() => {
-    return new MutationHistoryRequest(props.criteria.from, props.criteria.to, props.criteria.entityPrimaryKey, undefined)
+    return new MutationHistoryRequest(
+        props.criteria.from,
+        props.criteria.to,
+        props.criteria.entityPrimaryKey,
+        undefined
+    )
 })
 
 async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) => void }): Promise<void> {
     try {
+        // advance page for subsequent loads before fetching
+        if (nextPagePointer.value.hasPointer) {
+            nextPagePointer.value.nextPage()
+        }
         const fetchedRecords: ImmutableList<ChangeCatalogCapture> = await fetchRecords()
         fetchError.value = undefined
 
@@ -158,12 +208,17 @@ async function fetchRecords(): Promise<ImmutableList<ChangeCatalogCapture>> {
 }
 
 function moveNextPagePointer(fetchedRecords: ImmutableList<ChangeCatalogCapture>): void {
-    const lastFetchedRecord: ChangeCatalogCapture = fetchedRecords.last()!
-    // if (lastFetchedRecord.recordSessionOffset < (lastFetchedRecord.sessionRecordsCount - 1)) {
-    //     nextPagePointer.value.move(lastFetchedRecord.sessionSequenceOrder, lastFetchedRecord.recordSessionOffset + 1)
-    // } else {
-    //     nextPagePointer.value.move(lastFetchedRecord.sessionSequenceOrder + 1n, 0)
-    // }
+    if (fetchedRecords.size === 0) return
+
+    // Initialize anchor (sinceVersion) to newest boundary when not set yet
+    if (!nextPagePointer.value.hasPointer) {
+        const newestVersion: number = fetchedRecords.get(0)!.version
+        nextPagePointer.value.move(newestVersion + 1, 0)
+        nextPagePointer.value.setPage(1)
+        return
+    }
+
+    // For subsequent loads, page is advanced before fetch in loadNextHistory
 }
 
 function pushNewRecords(newRecords: ImmutableList<ChangeCatalogCapture>): void {

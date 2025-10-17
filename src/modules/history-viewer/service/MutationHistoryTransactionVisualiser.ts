@@ -54,6 +54,8 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
 
         ctx.addVisualisedSessionRecord(mutationHistory.version, visualisedRecord)
         ctx.addRootVisualisedRecord(visualisedRecord)
+        // Attach any pending data items that arrived without transaction
+        ctx.attachPendingChildren(mutationHistory.version, visualisedRecord)
     }
 
     private constructMetadata(mutationHistory: ChangeCatalogCapture,

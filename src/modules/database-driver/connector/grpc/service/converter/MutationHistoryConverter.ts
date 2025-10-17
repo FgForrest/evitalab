@@ -82,9 +82,11 @@ export class MutationHistoryConverter {
                 area: GrpcChangeCaptureArea.DATA,
                 site: {
                     value: {
-                        entityType: mutationHistoryRequest.entityType,
-                        entityPrimaryKey: mutationHistoryRequest.entityPrimaryKey,
-                        containerType: [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
+                        entityType: mutationHistoryRequest.entityType, // našeptávat + free text field
+                        entityPrimaryKey: mutationHistoryRequest.entityPrimaryKey, // pouze pokud se vybere data area
+                        containerType: [GrpcChangeCaptureContainerType.CONTAINER_ENTITY],
+                        operation: mutationHistoryRequest.operationList,
+                        containerName: mutationHistoryRequest.containerNameList
                     },
                     case: 'dataSite'
                 }
@@ -93,7 +95,10 @@ export class MutationHistoryConverter {
                 site: {
                     value: {
                         entityType: mutationHistoryRequest.entityType,
-                        containerType: [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
+                        containerType: [GrpcChangeCaptureContainerType.CONTAINER_ENTITY],
+                        operation: mutationHistoryRequest.operationList,
+                        // containerName: mutationHistoryRequest.containerNameList
+
                     },
                     case: 'schemaSite'
                 },
@@ -103,3 +108,4 @@ export class MutationHistoryConverter {
     }
 
 }
+// vybrat area

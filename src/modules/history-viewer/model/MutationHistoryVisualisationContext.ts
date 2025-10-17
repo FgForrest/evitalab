@@ -19,13 +19,17 @@ export class MutationHistoryVisualisationContext {
     private rootVisualisedRecords: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
     private visualisedSessionRecordsIndex: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
     private visualisedSourceQueryRecordsIndex: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
+    private pendingChildrenIndex: Map<string, MutationHistoryItemVisualisationDefinition[]> = new Map()
 
     constructor(catalogName: string) {
         this.catalogName = catalogName
     }
 
     getVisualisedRecords(): ImmutableList<MutationHistoryItemVisualisationDefinition> {
-        return ImmutableList(this.rootVisualisedRecords.values())
+        const filtered = Array.from(this.rootVisualisedRecords.values())
+            .filter(v => v.children.size > 0);
+
+        return ImmutableList(filtered)
     }
 
     // todo pfi: consultation required
@@ -47,6 +51,24 @@ export class MutationHistoryVisualisationContext {
             // throw new UnexpectedError(`There is already mutation history record with transaction ID '${sessionId.toString()}'`)
         } else {
             this.visualisedSessionRecordsIndex.set(sessionId.toString(), record)
+        }
+    }
+
+    addPendingChild(sessionId: number, record: MutationHistoryItemVisualisationDefinition): void {
+        const key = sessionId.toString()
+        const arr = this.pendingChildrenIndex.get(key) || []
+        arr.push(record)
+        this.pendingChildrenIndex.set(key, arr)
+    }
+
+    attachPendingChildren(sessionId: number, sessionRecord: MutationHistoryItemVisualisationDefinition): void {
+        const key = sessionId.toString()
+        const arr = this.pendingChildrenIndex.get(key)
+        if (arr && arr.length > 0) {
+            for (const child of arr) {
+                sessionRecord.addChild(child)
+            }
+            this.pendingChildrenIndex.delete(key)
         }
     }
 
