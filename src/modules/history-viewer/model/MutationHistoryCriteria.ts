@@ -18,6 +18,7 @@ export class MutationHistoryCriteria {
     containerTypeList?: GrpcChangeCaptureContainerType[] | undefined
     entityType?: string | undefined
     areaType?: 'both' | 'dataSite' | 'schemaSite'
+    mutableFilters?: boolean
 
 
     constructor(from?: OffsetDateTime,
@@ -27,7 +28,9 @@ export class MutationHistoryCriteria {
                 containerNameList?: string[] | undefined,
                 containerTypeList?: GrpcChangeCaptureContainerType[] | undefined,
                 entityType?: string | undefined,
-                areaType: 'both' | 'dataSite' | 'schemaSite' = 'both') {
+                areaType: 'both' | 'dataSite' | 'schemaSite' = 'both',
+                mutableFilters?: boolean
+    ) {
         this.from = from
         this.to = to
         this.entityPrimaryKey = entityPrimaryKey
@@ -36,5 +39,6 @@ export class MutationHistoryCriteria {
         this.containerTypeList = containerTypeList ?? []
         this.entityType = entityType
         this.areaType = areaType
+        this.mutableFilters = mutableFilters
     }
 }

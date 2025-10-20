@@ -69,7 +69,8 @@ const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
     props.modelValue.containerNameList,
     props.modelValue.containerTypeList,
     props.modelValue.entityType,
-    props.modelValue.areaType ?? 'both'
+    props.modelValue.areaType ?? 'both',
+    props.modelValue.mutableFilters
 ))
 const criteriaChanged = ref<boolean>(false)
 watch(criteria.value, (newValue) => {

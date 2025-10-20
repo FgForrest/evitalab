@@ -63,7 +63,8 @@ const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
     props.data.containerNameList,
     props.data.containerTypeList,
     props.data.entityType,
-    props.data.areaType ?? 'both'
+    props.data.areaType ?? 'both',
+    props.data.mutableFilters
 ))
 provideHistoryCriteria(criteria)
 
@@ -77,7 +78,7 @@ const currentData = computed<MutationHistoryViewerTabData>(() => {
     return new MutationHistoryViewerTabData(
         criteria.value.from,
         criteria.value.to,
-        criteria.value.entityPrimaryKey,
+        criteria.value.entityPrimaryKey
     )
 })
 watch(currentData, (data) => {
@@ -87,7 +88,7 @@ watch(currentData, (data) => {
 watch(
     historyListRef,
     () => {
-        if (!initialized.value && historyListRef.value != undefined ) {
+        if (!initialized.value && historyListRef.value != undefined) {
             reloadHistoryList()
             initialized.value = true
         }
@@ -132,6 +133,7 @@ async function reloadHistoryList(): Promise<void> {
 <template>
     <div class="mutation-history-viewer">
         <VTabToolbar
+            v-if="criteria.mutableFilters"
             :prepend-icon="MutationHistoryViewerTabDefinition.icon()"
             :title="title"
             :extension-height="64"
@@ -169,6 +171,15 @@ async function reloadHistoryList(): Promise<void> {
                 />
             </template>
         </VTabToolbar>
+<!--        // todo fix the title -->
+        <VTabToolbar
+            v-else
+            :prepend-icon="MutationHistoryViewerTabDefinition.icon()"
+            :title="['evita', ' / ', criteria.entityType, ' / ', criteria.entityPrimaryKey, ' / ', ...criteria.containerNameList,' / ', 'History']"
+            :extension-height="64"
+        >
+        </VTabToolbar>
+
 
         <VSheet class="mutation-history-viewer__body">
             <MutationHistory

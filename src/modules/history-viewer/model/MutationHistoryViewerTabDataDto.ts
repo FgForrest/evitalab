@@ -16,4 +16,5 @@ export interface MutationHistoryViewerTabDataDto extends TabDataDto {
     readonly containerTypeList?: GrpcChangeCaptureContainerType[] | undefined
     readonly entityType?: string | undefined
     readonly areaType?: 'both' | 'dataSite' | 'schemaSite'
+    readonly mutableFilters?: boolean
 }

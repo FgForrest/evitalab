@@ -72,7 +72,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             i18n.global.t('mutationHistoryViewer.record.type.entity.title', { entityType: mutationHistory.entityType }),
             `(PK ${mutationHistory.entityPrimaryKey?.toString()})`,
             this.constructEntityMetadata(mutationHistory, visualisedSessionRecord),
-            this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_ENTITY, ctx, mutationHistory)
+            this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_ENTITY, undefined, ctx, mutationHistory)
         )
 
         const mutations = mutationHistory.body instanceof EntityUpsertMutation ?
@@ -91,7 +91,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                     i18n.global.t('mutationHistoryViewer.record.type.attribute.reference.title', { referenceName: referenceName }),
                     `(FK ${attributeValue})`,
                     this.constructReferenceMetadata(attributeMutation, visualisedSessionRecord),
-                    this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_REFERENCE, ctx, mutationHistory)
+                    this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_REFERENCE, referenceName, ctx, mutationHistory)
                 )
                 visualisedRecord.addChild(attributeMutationVisualised)
 
@@ -107,7 +107,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                     i18n.global.t('mutationHistoryViewer.record.type.attribute.price.title'),
                     attributeValue,
                     this.constructAttributePriceMetadata(attributeMutation, visualisedSessionRecord),
-                    this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_PRICE, ctx, mutationHistory)
+                    this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_PRICE, undefined, ctx, mutationHistory) // todo: fix the input container name
                 )
                 visualisedRecord.addChild(attributeMutationVisualised)
             } else {
@@ -118,7 +118,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                     i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }),
                     attributeValue,
                     this.constructAttributeMetadata(attributeMutation as LocalMutation, visualisedSessionRecord),
-                    this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE, ctx, mutationHistory)
+                    this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE, attributeName, ctx, mutationHistory)
                 )
                 visualisedRecord.addChild(attributeMutationVisualised)
             }
@@ -337,7 +337,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
     }
 
 
-    private constructActions(containerType: GrpcChangeCaptureContainerType, ctx: MutationHistoryVisualisationContext, cdc: ChangeCatalogCapture): ImmutableList<Action> {
+    private constructActions(containerType: GrpcChangeCaptureContainerType, containerName: string|undefined, ctx: MutationHistoryVisualisationContext, cdc: ChangeCatalogCapture): ImmutableList<Action> {
         return ImmutableList([
             new Action(
                 i18n.global.t('trafficViewer.recordHistory.record.type.sessionStart.action.open'),
@@ -350,10 +350,11 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                             undefined,
                             cdc.entityPrimaryKey,
                             undefined,
-                            undefined,
+                            containerName ? [containerName] : undefined,
                             [containerType],
                             cdc.entityType,
-                            undefined
+                            cdc.entityPrimaryKey ? 'dataSite' : 'both',
+                            false
                         )
                     )
                 )

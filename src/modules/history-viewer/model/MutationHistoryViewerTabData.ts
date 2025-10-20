@@ -16,6 +16,7 @@ export class MutationHistoryViewerTabData implements TabData<MutationHistoryView
     readonly containerTypeList?: GrpcChangeCaptureContainerType[] | undefined
     readonly entityType?: string | undefined
     readonly areaType?: 'both' | 'dataSite' | 'schemaSite'
+    readonly mutableFilters?: boolean = true
 
     constructor(from?: OffsetDateTime,
                 to?: OffsetDateTime,
@@ -24,7 +25,9 @@ export class MutationHistoryViewerTabData implements TabData<MutationHistoryView
                 containerNameList?: string[] | undefined,
                 containerTypeList?: GrpcChangeCaptureContainerType[] | undefined,
                 entityType?: string | undefined,
-                areaType: 'both' | 'dataSite' | 'schemaSite' = 'both') {
+                areaType: 'both' | 'dataSite' | 'schemaSite' = 'both',
+                mutableFilters: boolean = true
+    ) {
         this.from = from
         this.to = to
         this.entityPrimaryKey = entityPrimaryKey
@@ -33,6 +36,7 @@ export class MutationHistoryViewerTabData implements TabData<MutationHistoryView
         this.containerTypeList = containerTypeList ?? []
         this.entityType = entityType
         this.areaType = areaType
+        this.mutableFilters = mutableFilters
     }
 
     toSerializable(): MutationHistoryViewerTabDataDto {
@@ -57,6 +61,7 @@ export class MutationHistoryViewerTabData implements TabData<MutationHistoryView
             containerTypeList: this.containerTypeList,
             entityType: this.entityType,
             areaType: this.areaType,
+            mutableFilters: this.mutableFilters
         }
     }
 }

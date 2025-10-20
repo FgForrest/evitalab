@@ -1,6 +1,6 @@
 import {
-    GrpcChangeCaptureArea,
-    type GrpcChangeCaptureCriteria,
+    GrpcChangeCaptureArea, GrpcChangeCaptureContainerType,
+    type GrpcChangeCaptureCriteria, GrpcChangeCaptureOperation,
     type GrpcChangeCatalogCapture
 } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
@@ -69,8 +69,17 @@ export class MutationHistoryConverter {
 
     }
 
+    // todo : fix me
+    toContainerType(input: GrpcChangeCaptureContainerType[]): GrpcChangeCaptureContainerType[] {
+        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureContainerType[it as any] : it)
+    }
 
-    convertMutationHistoryRequest(mutationHistoryRequest: MutationHistoryRequest): GrpcChangeCaptureCriteria[] {
+    // todo : fix me
+    toMutationType(input: GrpcChangeCaptureOperation[]): number[] {
+        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureOperation[it as any] : it)
+    }
+
+    convertMutationHistoryRequest(mutationHistoryRequest: MutationHistoryRequest): number[] {
         console.log(mutationHistoryRequest)
         const criteria: GrpcChangeCaptureCriteria[] = []
 
@@ -84,8 +93,8 @@ export class MutationHistoryConverter {
                 value: {
                     entityType: mutationHistoryRequest.entityType,
                     entityPrimaryKey: mutationHistoryRequest.entityPrimaryKey,
-                    containerType: [...mutationHistoryRequest.containerTypeList] as number[],
-                    operation: mutationHistoryRequest.operationList,
+                    containerType: this.toContainerType(mutationHistoryRequest.containerTypeList) as number[],
+                    operation: this.toMutationType(mutationHistoryRequest.operationList),
                     containerName: mutationHistoryRequest.containerNameList
                 },
                 case: 'dataSite'
@@ -96,7 +105,7 @@ export class MutationHistoryConverter {
             site: {
                 value: {
                     entityType: mutationHistoryRequest.entityType,
-                    containerType: [...mutationHistoryRequest.containerTypeList] as number[],
+                    containerType: this.toContainerType(mutationHistoryRequest.containerTypeList) as number[],
                     operation: mutationHistoryRequest.operationList
                 },
                 case: 'schemaSite'
