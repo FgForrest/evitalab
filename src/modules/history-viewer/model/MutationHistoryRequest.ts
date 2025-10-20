@@ -10,12 +10,12 @@ export class MutationHistoryRequest {
     readonly operationList: GrpcChangeCaptureOperation[]
     readonly containerNameList: string[]
     readonly containerTypeList: GrpcChangeCaptureContainerType[]
-    readonly entityPrimaryKey: number|undefined
-    readonly entityType?: string|undefined
+    readonly entityPrimaryKey: number | undefined
+    readonly entityType?: string | undefined
     readonly infrastructureAreaType?: 'DATA_SITE' | 'SCHEMA_SITE'
-    readonly sinceVersion?: number|undefined
-    readonly sinceIndex?: number|undefined
-    readonly page?: number|undefined
+    readonly sinceVersion?: number | undefined
+    readonly sinceIndex?: number | undefined
+    readonly page?: number | undefined
 
     constructor(
         from: OffsetDateTime | undefined,
@@ -34,12 +34,17 @@ export class MutationHistoryRequest {
         this.to = to
         this.operationList = operationList ?? []
         this.containerNameList = containerNameList ?? []
-        this.containerTypeList = containerTypeList && containerTypeList.length > 0 ? containerTypeList : [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
+        this.containerTypeList = containerTypeList && containerTypeList.length > 0 ? this.toContainerType(containerTypeList) : [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
         this.entityPrimaryKey = entityPrimaryKey
         this.entityType = entityType
         this.infrastructureAreaType = infrastructureAreaType
         this.sinceVersion = sinceVersion
         this.sinceIndex = sinceIndex
         this.page = page
+    }
+
+    // todo : fix me
+    toContainerType(input: GrpcChangeCaptureContainerType[]): GrpcChangeCaptureContainerType[] {
+        return input.map(it => GrpcChangeCaptureContainerType[it.toString() as any])
     }
 }

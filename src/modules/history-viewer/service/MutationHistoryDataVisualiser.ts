@@ -71,9 +71,12 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             ImmutableList() // this.constructActions(ctx, mutationHistory)
         )
 
+        const mutations = mutationHistory.body instanceof EntityUpsertMutation ?
+            (mutationHistory.body as EntityUpsertMutation).localMutations :
+            [mutationHistory.body]
 
         // entity attributes
-        for (let attributeMutation of (mutationHistory.body as EntityUpsertMutation).localMutations) {
+        for (let attributeMutation of mutations) {
 
             if (attributeMutation instanceof ReferenceMutation) { // todo pfi: fix this ugly code
 
@@ -110,7 +113,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                     mutationHistory,
                     i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }),
                     attributeValue,
-                    this.constructAttributeMetadata(attributeMutation, visualisedSessionRecord),
+                    this.constructAttributeMetadata(attributeMutation as LocalMutation, visualisedSessionRecord),
                     ImmutableList() // this.constructActions(ctx, mutationHistory)
                 )
                 visualisedRecord.addChild(attributeMutationVisualised)
@@ -288,7 +291,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         )
     }
 
-    static referenceEntityType(referenceEntityType: string|undefined): MetadataItem {
+    static referenceEntityType(referenceEntityType: string | undefined): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-file-tree',
@@ -313,7 +316,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
     }
 
 
-    private constructReferenceMetadata(referenceMutation: ReferenceMutation<LocalMutation>,
+    private constructReferenceMetadata(referenceMutation: ReferenceMutation,
                                        visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
         defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(referenceMutation.constructor.name))

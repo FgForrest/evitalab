@@ -1,6 +1,5 @@
 import {
     GrpcChangeCaptureArea,
-    GrpcChangeCaptureContainerType,
     type GrpcChangeCaptureCriteria,
     type GrpcChangeCatalogCapture
 } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
@@ -62,7 +61,7 @@ export class MutationHistoryConverter {
             changeCapture.index || 0,
             CatalogSchemaConverter.toCaptureArea(changeCapture.area),
             changeCapture.entityType,
-            changeCapture.entityPrimaryKey,
+            changeCapture.entityPrimaryKey !== undefined ? changeCapture.entityPrimaryKey : (changeCapture.body.case === 'entityMutation' ? changeCapture.body.value?.mutation?.value?.entityPrimaryKey : undefined),
             CatalogSchemaConverter.toOperation(changeCapture.operation),
             mutation
         )
@@ -85,7 +84,7 @@ export class MutationHistoryConverter {
                 value: {
                     entityType: mutationHistoryRequest.entityType,
                     entityPrimaryKey: mutationHistoryRequest.entityPrimaryKey,
-                    containerType: mutationHistoryRequest.containerTypeList,
+                    containerType: [...mutationHistoryRequest.containerTypeList] as number[],
                     operation: mutationHistoryRequest.operationList,
                     containerName: mutationHistoryRequest.containerNameList
                 },
@@ -97,7 +96,7 @@ export class MutationHistoryConverter {
             site: {
                 value: {
                     entityType: mutationHistoryRequest.entityType,
-                    containerType: mutationHistoryRequest.containerTypeList,
+                    containerType: [...mutationHistoryRequest.containerTypeList] as number[],
                     operation: mutationHistoryRequest.operationList
                 },
                 case: 'schemaSite'
@@ -121,5 +120,3 @@ export class MutationHistoryConverter {
     }
 
 }
-
-// vybrat area

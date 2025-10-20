@@ -2024,6 +2024,10 @@
           }
         }
       }
+    },
+    "notification": {
+      "couldNotLoadRecords": "Could not load traffic records: {reason}",
+      "couldNotLoadLatestRecording": "Could not load latest traffic record: {reason}"
     }
   },
   "relationViewer": {
