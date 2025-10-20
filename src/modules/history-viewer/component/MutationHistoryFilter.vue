@@ -34,7 +34,7 @@ const { t } = useI18n()
 const userMutationHistoryMutationOperation: any[] = ['UPSERT', 'REMOVE'].map(type => {
     return {
         value: type,
-        title: t(`mutationHistoryViewer.filter.form.mutationTypes.items.${type}`)
+        title: t(`mutationHistoryViewer.filter.form.mutationOperation.items.${type}`)
     }
 })
 
@@ -265,14 +265,14 @@ async function applyChangedCriteria(): Promise<void> {
                             v-if="index === 0"
                             class="text-grey text-caption align-self-center text-truncate"
                         >
-                            {{ t('mutationHistoryViewer.filter.form.mutationTypes.valueDescriptor', { count: operationList.length })
+                            {{ t('mutationHistoryViewer.filter.form.mutationOperation.valueDescriptor', { count: operationList.length })
                             }}
                           </span>
                         </template>
                     </VSelect>
                 </template>
                 <template #default>
-                    {{ t('mutationHistoryViewer.filter.form.types.hint') }}
+                    {{ t('mutationHistoryViewer.filter.form.mutationOperation.hint') }}
                 </template>
             </VTooltip>
 

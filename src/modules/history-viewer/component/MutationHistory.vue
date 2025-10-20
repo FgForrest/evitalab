@@ -128,7 +128,10 @@ const nextPageRequest = computed<MutationHistoryRequest>(() => {
             props.criteria.containerTypeList,
             props.criteria.entityPrimaryKey,
             props.criteria.entityType,
-            infraType
+            infraType,
+            undefined,
+            undefined,
+            1
         )
     }
     // Subsequent loads: anchor by sinceVersion, paginate by page
@@ -158,7 +161,10 @@ const lastRecordRequest = computed<MutationHistoryRequest>(() => {
         props.criteria.containerTypeList,
         props.criteria.entityPrimaryKey,
         props.criteria.entityType,
-        infraType
+        infraType,
+        undefined,
+        undefined,
+        1
     )
 })
 
@@ -293,8 +299,6 @@ function removeStartPointer(): void {
     startPointer.value = undefined
     emit('update:startPointerActive', false)
 }
-
-tryReloadHistoryForPossibleNewRecords()
 
 
 defineExpose<{

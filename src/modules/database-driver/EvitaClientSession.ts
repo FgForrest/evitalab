@@ -516,25 +516,31 @@ export class EvitaClientSession {
                              limit: number): Promise<ImmutableList<ChangeCatalogCapture>> {
         this.assertActive()
         try {
-
-
-            const request: GetMutationsHistoryPageRequest = { // todo pfi: celé toto tělo schovat do konverzní metody
-                page: 1,
-                pageSize: limit || 20,
+            const request: GetMutationsHistoryPageRequest = {
+                ...(mutationHistoryRequest.page != undefined ? { page: mutationHistoryRequest.page } : {}),
+                pageSize: 10,
+                ...(mutationHistoryRequest.sinceVersion != undefined
+                    ? { sinceVersion: BigInt(mutationHistoryRequest.sinceVersion) }
+                    : {}),
+                ...(mutationHistoryRequest.sinceIndex != undefined
+                    ? { sinceIndex: mutationHistoryRequest.sinceIndex }
+                    : {}),
+                ...((mutationHistoryRequest.from != undefined || mutationHistoryRequest.to != undefined)
+                    ? {
+                        timeFrame: {
+                            from: mutationHistoryRequest.from ? EvitaValueConverter.convertOffsetDateTime(mutationHistoryRequest.from) : undefined,
+                            to: mutationHistoryRequest.to ? EvitaValueConverter.convertOffsetDateTime(mutationHistoryRequest.to) : undefined
+                        }
+                    }
+                    : {}),
                 content: GrpcChangeCaptureContent.CHANGE_BODY,
                 criteria: this.mutationHistoryConverterProvider().convertMutationHistoryRequest(mutationHistoryRequest)
             } as GetMutationsHistoryPageRequest
 
             const response: GetMutationsHistoryPageResponse = await this.evitaSessionClientProvider().getMutationsHistoryPage(request, this._callMetadata)
-
-            console.log(response)
             const captures = response.changeCapture.map(i => this.mutationHistoryConverterProvider()
                 .convertGrpcMutationHistory(i))
-
-            console.log(captures)
-
             return ImmutableList(captures)
-
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
         }

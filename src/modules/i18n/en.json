@@ -1892,9 +1892,10 @@
           "hint": "To",
           "label": "To"
         },
-        "mutationTypes": {
+        "mutationOperation": {
+          "label": "Mutation type",
           "hint": "Mutation type",
-          "valueDescriptor": "Mutation type",
+          "valueDescriptor": "Mutation operation",
           "items": {
             "UPSERT": "Upsert",
             "REMOVE": "Remove"
