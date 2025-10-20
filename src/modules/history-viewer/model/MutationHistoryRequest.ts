@@ -16,6 +16,7 @@ export class MutationHistoryRequest {
     readonly sinceVersion?: number | undefined
     readonly sinceIndex?: number | undefined
     readonly page?: number | undefined
+    readonly loadTransaction?: boolean = true
 
     constructor(
         from: OffsetDateTime | undefined,
@@ -28,7 +29,8 @@ export class MutationHistoryRequest {
         infrastructureAreaType?: 'DATA_SITE' | 'SCHEMA_SITE',
         sinceVersion?: number,
         sinceIndex?: number,
-        page?: number
+        page?: number,
+        loadTransaction?: boolean
     ) {
         this.from = from
         this.to = to
@@ -41,6 +43,7 @@ export class MutationHistoryRequest {
         this.sinceVersion = sinceVersion
         this.sinceIndex = sinceIndex
         this.page = page
+        this.loadTransaction = loadTransaction ?? true
     }
 
     // todo : fix me

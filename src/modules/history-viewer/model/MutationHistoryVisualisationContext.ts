@@ -54,15 +54,15 @@ export class MutationHistoryVisualisationContext {
         }
     }
 
-    addPendingChild(sessionId: number, record: MutationHistoryItemVisualisationDefinition): void {
-        const key = sessionId.toString()
+    addPendingChild(transactionId: number, record: MutationHistoryItemVisualisationDefinition): void {
+        const key = transactionId.toString()
         const arr = this.pendingChildrenIndex.get(key) || []
         arr.push(record)
         this.pendingChildrenIndex.set(key, arr)
     }
 
-    attachPendingChildren(sessionId: number, transactionRecord: MutationHistoryItemVisualisationDefinition): void {
-        const key = sessionId.toString()
+    attachPendingChildren(transactionId: number, transactionRecord: MutationHistoryItemVisualisationDefinition): void {
+        const key = transactionId.toString()
         const arr = this.pendingChildrenIndex.get(key)
         if (arr && arr.length > 0) {
             for (const child of arr) {

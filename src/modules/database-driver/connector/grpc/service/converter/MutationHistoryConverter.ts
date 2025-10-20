@@ -112,16 +112,18 @@ export class MutationHistoryConverter {
             }
         }
 
+        // todo add condition
+        // if (mutationHistoryRequest.loadTransaction) {
+            criteria.push(infrastructureSite)
+        // }
+
 
         if (mutationHistoryRequest.infrastructureAreaType === 'DATA_SITE') {
-            criteria.push(infrastructureSite)
             criteria.push(dataSite)
         } else if (mutationHistoryRequest.infrastructureAreaType === 'SCHEMA_SITE') {
-            criteria.push(infrastructureSite)
             criteria.push(schemaSite)
         } else {
             // both
-            criteria.push(infrastructureSite)
             criteria.push(dataSite)
             criteria.push(schemaSite)
         }

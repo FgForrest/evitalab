@@ -146,7 +146,8 @@ const nextPageRequest = computed<MutationHistoryRequest>(() => {
         infraType,
         nextPagePointer.value.sinceSessionSequenceId,
         undefined,
-        nextPagePointer.value.page
+        nextPagePointer.value.page,
+        props.criteria.mutableFilters
     )
 })
 const lastRecordRequest = computed<MutationHistoryRequest>(() => {
@@ -164,7 +165,8 @@ const lastRecordRequest = computed<MutationHistoryRequest>(() => {
         infraType,
         undefined,
         undefined,
-        1
+        1,
+        props.criteria.mutableFilters
     )
 })
 
