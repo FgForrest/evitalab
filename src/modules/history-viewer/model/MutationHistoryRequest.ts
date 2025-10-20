@@ -32,7 +32,7 @@ export class MutationHistoryRequest {
     ) {
         this.from = from
         this.to = to
-        this.operationList = operationList ?? []
+        this.operationList = operationList && operationList.length > 0 ? this.toMutationType(operationList) : []
         this.containerNameList = containerNameList ?? []
         this.containerTypeList = containerTypeList && containerTypeList.length > 0 ? this.toContainerType(containerTypeList) : [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
         this.entityPrimaryKey = entityPrimaryKey
@@ -46,5 +46,10 @@ export class MutationHistoryRequest {
     // todo : fix me
     toContainerType(input: GrpcChangeCaptureContainerType[]): GrpcChangeCaptureContainerType[] {
         return input.map(it => GrpcChangeCaptureContainerType[it.toString() as any])
+    }
+
+    // todo : fix me
+    toMutationType(input: GrpcChangeCaptureOperation[]): GrpcChangeCaptureOperation[] {
+        return input.map(it => GrpcChangeCaptureOperation[it.toString() as any])
     }
 }

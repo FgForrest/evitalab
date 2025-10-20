@@ -1,6 +1,5 @@
 import { i18n } from '@/vue-plugins/i18n'
 import { List as ImmutableList } from 'immutable'
-import { EvitaQLConsoleTabData } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabData'
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
 import { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
@@ -11,7 +10,9 @@ import {
 import {
     Action,
     MetadataGroup,
-    MetadataItem, metadataItemSessionIdIdentifier, MetadataItemSeverity,
+    MetadataItem,
+    metadataItemSessionIdIdentifier,
+    MetadataItemSeverity,
     MutationHistoryItemVisualisationDefinition
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
 import { CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
@@ -33,13 +34,14 @@ import { PriceMutation } from '@/modules/database-driver/request-response/data/m
 import {
     RemovePriceMutation
 } from '@/modules/database-driver/request-response/data/mutation/price/RemovePriceMutation.ts'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 import type { DateTimeRange } from '@/modules/database-driver/data-type/DateTimeRange.ts'
-import { ReferenceKey } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceKey.ts'
 import {
     InsertReferenceMutation
 } from '@/modules/database-driver/request-response/data/mutation/reference/InsertReferenceMutation.ts'
 import type { Cardinality } from '@/modules/database-driver/request-response/schema/Cardinality.ts'
+import { MutationHistoryViewerTabFactory } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
+import { MutationHistoryViewerTabData } from '@/modules/history-viewer/model/MutationHistoryViewerTabData.ts'
+import { GrpcChangeCaptureContainerType } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 
 /**
  * Visualises entity enrichment container.
@@ -48,11 +50,13 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
     private readonly workspaceService: WorkspaceService
     private readonly evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory
+    private readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
 
-    constructor(workspaceService: WorkspaceService, evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory) {
+    constructor(workspaceService: WorkspaceService, evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory, trafficRecordHistoryViewerTabFactory: MutationHistoryViewerTabFactory) {
         super()
         this.workspaceService = workspaceService
         this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
+        this.mutationHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
     }
 
     canVisualise(trafficRecord: ChangeCatalogCapture): boolean {
@@ -68,7 +72,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             i18n.global.t('mutationHistoryViewer.record.type.entity.title', { entityType: mutationHistory.entityType }),
             `(PK ${mutationHistory.entityPrimaryKey?.toString()})`,
             this.constructEntityMetadata(mutationHistory, visualisedSessionRecord),
-            ImmutableList() // this.constructActions(ctx, mutationHistory)
+            this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_ENTITY, ctx, mutationHistory)
         )
 
         const mutations = mutationHistory.body instanceof EntityUpsertMutation ?
@@ -87,7 +91,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                     i18n.global.t('mutationHistoryViewer.record.type.attribute.reference.title', { referenceName: referenceName }),
                     `(FK ${attributeValue})`,
                     this.constructReferenceMetadata(attributeMutation, visualisedSessionRecord),
-                    ImmutableList() // this.constructActions(ctx, mutationHistory)
+                    this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_REFERENCE, ctx, mutationHistory)
                 )
                 visualisedRecord.addChild(attributeMutationVisualised)
 
@@ -103,7 +107,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                     i18n.global.t('mutationHistoryViewer.record.type.attribute.price.title'),
                     attributeValue,
                     this.constructAttributePriceMetadata(attributeMutation, visualisedSessionRecord),
-                    ImmutableList() // this.constructActions(ctx, mutationHistory)
+                    this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_PRICE, ctx, mutationHistory)
                 )
                 visualisedRecord.addChild(attributeMutationVisualised)
             } else {
@@ -114,10 +118,11 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                     i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }),
                     attributeValue,
                     this.constructAttributeMetadata(attributeMutation as LocalMutation, visualisedSessionRecord),
-                    ImmutableList() // this.constructActions(ctx, mutationHistory)
+                    this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE, ctx, mutationHistory)
                 )
                 visualisedRecord.addChild(attributeMutationVisualised)
             }
+            // todo INSTANCEOF AssociatedDataMutation  GrpcChangeCaptureContainerType.ASSOCIATED_DATA
 
         }
 
@@ -328,28 +333,34 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             defaultMetadata.push(MutationHistoryDataVisualiser.referenceEntityType(referenceMutation.referenceEntityType))
         }
 
-        // console.log(referenceMutation)
-
-
         return [MetadataGroup.default(defaultMetadata)]
     }
 
 
-    private constructActions(ctx: MutationHistoryVisualisationContext,
-                             trafficRecord: ChangeCatalogCapture): ImmutableList<Action> {
-        const actions: Action[] = []
-
-        actions.push(new Action(
-            i18n.global.t('trafficViewer.recordHistory.record.type.enrichment.action.query'),
-            'mdi-play',
-            () => this.workspaceService.createTab(
-                this.evitaQLConsoleTabFactory.createNew(
-                    ctx.catalogName,
-                    new EvitaQLConsoleTabData('')
+    private constructActions(containerType: GrpcChangeCaptureContainerType, ctx: MutationHistoryVisualisationContext, cdc: ChangeCatalogCapture): ImmutableList<Action> {
+        return ImmutableList([
+            new Action(
+                i18n.global.t('trafficViewer.recordHistory.record.type.sessionStart.action.open'),
+                'mdi-open-in-new',
+                () => this.workspaceService.createTab(
+                    this.mutationHistoryViewerTabFactory.createNew(
+                        ctx.catalogName,
+                        new MutationHistoryViewerTabData(
+                            undefined,
+                            undefined,
+                            cdc.entityPrimaryKey,
+                            undefined,
+                            undefined,
+                            [containerType],
+                            cdc.entityType,
+                            undefined
+                        )
+                    )
                 )
             )
-        ))
-
-        return ImmutableList(actions)
+        ])
     }
+
+
+
 }

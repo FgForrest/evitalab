@@ -37,7 +37,7 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
     }
 
     canVisualise(trafficRecord: ChangeCatalogCapture): boolean {
-        return  trafficRecord.area == CaptureArea.Infrastructure // todo pfi: better condition
+        return trafficRecord.area == CaptureArea.Infrastructure // todo pfi: better condition
     }
 
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {

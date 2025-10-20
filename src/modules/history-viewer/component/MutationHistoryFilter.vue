@@ -357,8 +357,6 @@ async function applyChangedCriteria(): Promise<void> {
                     {{ t('mutationHistoryViewer.filter.form.areaType.hint') }}
                 </template>
             </VTooltip>
-            -->
-
 
             <!--            pokud je vybrána "area type" == dataSite, tak zde zobrazit tento input na entityPrimaryKey- -->
             <VTooltip v-if="areaType === 'dataSite'">

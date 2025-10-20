@@ -58,7 +58,12 @@ const historyListRef = ref<InstanceType<typeof MutationHistory> | undefined>()
 const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
     props.data.from,
     props.data.to,
-    props.data.entityPrimaryKey
+    props.data.entityPrimaryKey,
+    props.data.operationList,
+    props.data.containerNameList,
+    props.data.containerTypeList,
+    props.data.entityType,
+    props.data.areaType ?? 'both'
 ))
 provideHistoryCriteria(criteria)
 
