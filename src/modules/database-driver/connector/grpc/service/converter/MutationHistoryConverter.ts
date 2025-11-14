@@ -79,13 +79,11 @@ export class MutationHistoryConverter {
         return input.map(it => typeof it === 'string' ? GrpcChangeCaptureOperation[it as any] : it)
     }
 
-    convertMutationHistoryRequest(mutationHistoryRequest: MutationHistoryRequest): number[] {
+    convertMutationHistoryRequest(mutationHistoryRequest: MutationHistoryRequest): GrpcChangeCaptureCriteria[] {
         console.log(mutationHistoryRequest)
         const criteria: GrpcChangeCaptureCriteria[] = []
 
-        const infrastructureSite: GrpcChangeCaptureCriteria = {
-            area: GrpcChangeCaptureArea.INFRASTRUCTURE
-        }
+
 
         const dataSite: GrpcChangeCaptureCriteria = {
             area: GrpcChangeCaptureArea.DATA,
@@ -114,7 +112,7 @@ export class MutationHistoryConverter {
 
         // todo add condition
         // if (mutationHistoryRequest.loadTransaction) {
-            criteria.push(infrastructureSite)
+        //     criteria.push(infrastructureSite)
         // }
 
 
