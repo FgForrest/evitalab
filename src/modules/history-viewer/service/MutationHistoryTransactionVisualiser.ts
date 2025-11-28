@@ -43,13 +43,7 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
         const visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined = ctx.getVisualisedSessionRecord(mutationHistory.version)
 
-        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
-            mutationHistory,
-            i18n.global.t('mutationHistoryViewer.record.type.transaction.title', { version: mutationHistory.version }),
-            undefined,
-            this.constructMetadata(mutationHistory, visualisedSessionRecord),
-            ImmutableList()
-        )
+        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-graph-outline', i18n.global.t('mutationHistoryViewer.record.type.transaction.title', { version: mutationHistory.version }), undefined, this.constructMetadata(mutationHistory, visualisedSessionRecord), ImmutableList())
 
 
         ctx.addVisualisedSessionRecord(mutationHistory.version, visualisedRecord)
@@ -63,7 +57,7 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
         const defaultMetadata: MetadataItem[] = []
 
         defaultMetadata.push(MetadataItem.area(mutationHistory.area))
-        defaultMetadata.push(MetadataItem.operation(mutationHistory.operation))
+        defaultMetadata.push(MetadataItem.entityType(mutationHistory.operation))
         if (mutationHistory.body instanceof TransactionMutation) {
             defaultMetadata.push(MutationHistoryTransactionVisualiser.mutationCount((mutationHistory.body.mutationCount)))
             defaultMetadata.push(MutationHistoryTransactionVisualiser.commitTimestamp((mutationHistory.body.commitTimestamp)))

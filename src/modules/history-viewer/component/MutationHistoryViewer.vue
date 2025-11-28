@@ -171,11 +171,11 @@ async function reloadHistoryList(): Promise<void> {
                 />
             </template>
         </VTabToolbar>
-<!--        // todo fix the title -->
+        <!--        // todo fix the title -->
         <VTabToolbar
             v-else
             :prepend-icon="MutationHistoryViewerTabDefinition.icon()"
-            :title="['evita', ' / ', criteria.entityType, ' / ', criteria.entityPrimaryKey, ' / ', ...criteria.containerNameList,' / ', 'History']"
+            :title="['evita',' / ',criteria.entityType,' / ',criteria.entityPrimaryKey,...(criteria.containerNameList?.length ? [' / ', 'Attributes' ,'/', ...criteria.containerNameList] : []),' / ', 'History']"
             :extension-height="64"
         >
         </VTabToolbar>

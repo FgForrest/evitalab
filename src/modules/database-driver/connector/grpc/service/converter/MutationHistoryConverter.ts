@@ -110,11 +110,6 @@ export class MutationHistoryConverter {
             }
         }
 
-        // todo add condition
-        // if (mutationHistoryRequest.loadTransaction) {
-        //     criteria.push(infrastructureSite)
-        // }
-
 
         if (mutationHistoryRequest.infrastructureAreaType === 'DATA_SITE') {
             criteria.push(dataSite)

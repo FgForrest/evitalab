@@ -124,6 +124,7 @@ watch(entityPrimaryKey, async (newValue) => {
         }
     }
 })
+
 const entityPrimaryKeyRules = [
     (value: string): any => {
         if (value == undefined || value === '') {
@@ -182,6 +183,12 @@ const areaType = ref<'both' | 'dataSite' | 'schemaSite'>(criteria.value.areaType
 watch(areaType, async (newValue) => {
     if (await assertFormValidated()) {
         criteria.value.areaType = newValue
+
+        if (newValue !== 'dataSite') {
+            entityPrimaryKey.value = undefined;
+            criteria.value.entityPrimaryKey = undefined;
+        }
+
     }
 })
 
@@ -206,6 +213,8 @@ async function applyChangedCriteria(): Promise<void> {
     emit('apply')
     criteriaChanged.value = false
 }
+
+
 </script>
 
 <template>

@@ -42,6 +42,7 @@ import type { Cardinality } from '@/modules/database-driver/request-response/sch
 import { MutationHistoryViewerTabFactory } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
 import { MutationHistoryViewerTabData } from '@/modules/history-viewer/model/MutationHistoryViewerTabData.ts'
 import { GrpcChangeCaptureContainerType } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
+import { EntityRemoveMutation } from '@/modules/database-driver/request-response/data/mutation/EntityRemoveMutation.ts'
 
 /**
  * Visualises entity enrichment container.
@@ -66,14 +67,10 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
         const visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined = ctx.getVisualisedSessionRecord(mutationHistory.version)
 
+        const operationType = mutationHistory.operation;
+
         // entity
-        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
-            mutationHistory,
-            i18n.global.t('mutationHistoryViewer.record.type.entity.title', { entityType: mutationHistory.entityType }),
-            `(PK ${mutationHistory.entityPrimaryKey?.toString()})`,
-            this.constructEntityMetadata(mutationHistory, visualisedSessionRecord),
-            this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_ENTITY, undefined, ctx, mutationHistory)
-        )
+        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-table', i18n.global.t(`mutationHistoryViewer.record.type.entity.title-${operationType}`, { entityType: mutationHistory.entityType }), `(PK ${mutationHistory.entityPrimaryKey?.toString()})`, this.constructEntityMetadata(mutationHistory, visualisedSessionRecord), this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_ENTITY, undefined, ctx, mutationHistory))
 
         const mutations = mutationHistory.body instanceof EntityUpsertMutation ?
             (mutationHistory.body as EntityUpsertMutation).localMutations :
@@ -86,40 +83,28 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
                 const referenceName = attributeMutation?.referenceKey.referenceName
                 const attributeValue = attributeMutation?.referenceKey.primaryKey.toString()
-                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
-                    mutationHistory,
-                    i18n.global.t('mutationHistoryViewer.record.type.attribute.reference.title', { referenceName: referenceName }),
-                    `(FK ${attributeValue})`,
-                    this.constructReferenceMetadata(attributeMutation, visualisedSessionRecord),
-                    this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_REFERENCE, referenceName, ctx, mutationHistory)
-                )
+                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-link-variant', i18n.global.t('mutationHistoryViewer.record.type.attribute.reference.title', { referenceName: referenceName }), `(FK ${attributeValue})`, this.constructReferenceMetadata(attributeMutation, visualisedSessionRecord), this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_REFERENCE, referenceName, ctx, mutationHistory))
                 visualisedRecord.addChild(attributeMutationVisualised)
 
             } else if (attributeMutation instanceof PriceMutation) {
                 const attributeName = 'Price'
                 const attributeValue = attributeMutation instanceof UpsertPriceMutation ? i18n.global.t('mutationHistoryViewer.record.type.attribute.price.detail', {
+                    priceListId: attributeMutation.priceKey.priceId,
+                    priceListName: attributeMutation.priceKey.priceList,
+                    currency: attributeMutation.priceKey.currency,
                     priceWithoutTax: attributeMutation.priceWithoutTax,
                     priceWithTax: attributeMutation.priceWithTax,
                     taxRate: attributeMutation.taxRate
                 }) : ''
-                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
-                    mutationHistory,
-                    i18n.global.t('mutationHistoryViewer.record.type.attribute.price.title'),
-                    attributeValue,
-                    this.constructAttributePriceMetadata(attributeMutation, visualisedSessionRecord),
-                    this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_PRICE, undefined, ctx, mutationHistory) // todo: fix the input container name
-                )
+                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-currency-usd', i18n.global.t('mutationHistoryViewer.record.type.attribute.price.title'), attributeValue, this.constructAttributePriceMetadata(attributeMutation, visualisedSessionRecord), this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_PRICE, undefined, ctx, mutationHistory))
                 visualisedRecord.addChild(attributeMutationVisualised)
             } else {
                 const attributeName = (attributeMutation as AttributeMutation)?.attributeKey?.attributeName
                 const attributeValue = (attributeMutation as UpsertAttributeMutation)?.value?.toString()
-                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
-                    mutationHistory,
-                    i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }),
-                    attributeValue,
-                    this.constructAttributeMetadata(attributeMutation as LocalMutation, visualisedSessionRecord),
-                    this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE, attributeName, ctx, mutationHistory)
-                )
+
+                const operationType = mutationHistory.operation
+
+                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', i18n.global.t(`mutationHistoryViewer.record.type.attribute.title-${operationType}`, { attributeName: attributeName }), attributeValue, this.constructAttributeMetadata(attributeMutation as LocalMutation, visualisedSessionRecord), this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE, attributeName, ctx, mutationHistory))
                 visualisedRecord.addChild(attributeMutationVisualised)
             }
             // todo INSTANCEOF AssociatedDataMutation  GrpcChangeCaptureContainerType.ASSOCIATED_DATA

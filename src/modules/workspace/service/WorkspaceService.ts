@@ -71,7 +71,7 @@ export class WorkspaceService {
     private readonly jfrViewerTabFactory: JfrViewerTabFactory
     private readonly trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory
     private readonly trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory
-    private readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
+    readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
 
     constructor(evitaLabConfig: EvitaLabConfig,
                 store: WorkspaceStore,

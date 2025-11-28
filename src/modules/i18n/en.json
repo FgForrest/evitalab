@@ -288,7 +288,9 @@
           "rawCopyToolTip": "Shift + Middle mouse button",
           "rawCopyToolTipDescription": "Copy raw value from cell",
           "copyValueToolTip": "Middle mouse button",
-          "copyValueToolTipDescription": "Copy value from cell"
+          "copyValueToolTipDescription": "Copy value from cell",
+          "entityHistory": "Entity history",
+          "attributeHistory": "Attribute history"
         }
       }
     },
@@ -1960,7 +1962,8 @@
           "title": "Schema: {entityType}"
         },
         "entity": {
-          "title": "Entity: {entityType}"
+          "title-upsert": "Upsert entity: {entityType}",
+          "title-remove": "Remove entity: {entityType}"
         },
         "area": {
           "tooltip": "Area"
@@ -1981,7 +1984,8 @@
           "tooltip": "index"
         },
         "attribute": {
-          "title": "Attribute: {attributeName}",
+          "title-upsert": "Upsert attribute: {attributeName}",
+          "title-remove": "Remove attribute: {attributeName}",
           "locale": {
             "tooltip": "Locale"
           },
@@ -2007,7 +2011,7 @@
             "title": "Validity"
           },
           "reference": {
-            "title": "Reference {referenceName} updated"
+            "title": "Reference: {referenceName}"
           },
           "referenceRelation": {
             "tooltip": "Reference relation"
@@ -2020,7 +2024,7 @@
           },
           "price": {
             "title": "Price updated:",
-            "detail": "Update price without tax {priceWithoutTax} / with tax {priceWithTax} / tax rate {taxRate}"
+            "detail": "Price ID: {priceListId} ({priceListName}), currency: {currency}, excl.tax:{priceWithoutTax}, incl tax.: {priceWithTax}, taxrate: {taxRate}"
           }
         }
       }

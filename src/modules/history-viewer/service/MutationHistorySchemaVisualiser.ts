@@ -43,13 +43,7 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
         const visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined = ctx.getVisualisedSessionRecord(mutationHistory.version)
 
-        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
-            mutationHistory,
-            i18n.global.t('mutationHistoryViewer.record.type.schema.title', { entityType: mutationHistory.entityType }),
-            undefined,
-            this.constructMetadata(mutationHistory, visualisedSessionRecord),
-            ImmutableList()//this.constructActions(ctx, mutationHistory)
-        )
+        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-table', i18n.global.t('mutationHistoryViewer.record.type.schema.title', { entityType: mutationHistory.entityType }), undefined, this.constructMetadata(mutationHistory, visualisedSessionRecord), ImmutableList())
 
 
         // entity attributes
@@ -58,13 +52,7 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
                 console.log(schemaMutation)
 
                 const attributeName = schemaMutation?.constructor.name
-                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
-                    mutationHistory,
-                    i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }), // todo pfi: fix translation key
-                    JSON.stringify(schemaMutation),
-                    [], //this.constructAttributeMetadata(attributeMutation, visualisedSessionRecord),
-                    ImmutableList() // this.constructActions(ctx, mutationHistory)
-                )
+                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }), JSON.stringify(schemaMutation), [], ImmutableList())
                 visualisedRecord.addChild(attributeMutationVisualised)
             }
         }

@@ -15,6 +15,7 @@ export class MutationHistoryItemVisualisationDefinition {
 
     readonly source: ChangeCatalogCapture
 
+    readonly icon: string|undefined
     readonly title: string
     readonly details?: string
     metadata: MetadataGroup[]
@@ -22,11 +23,12 @@ export class MutationHistoryItemVisualisationDefinition {
     private readonly _children: MutationHistoryItemVisualisationDefinition[] = []
 
     constructor(source: ChangeCatalogCapture,
+                icon: string | undefined,
                 title: string,
                 details: string | undefined,
-                metadata: MetadataGroup[],
-                actions: ImmutableList<Action>) {
+                metadata: MetadataGroup[], actions: Immutable.List<Action>) {
         this.source = source
+        this.icon = icon
         this.title = title
         this.details = details
         this.metadata = metadata
@@ -78,25 +80,26 @@ export class MetadataItem {
         this.onClickCallback = onClickCallback
     }
 
-    static area(sessionId: any): MetadataItem {
+    static area(area: any): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
-            'mdi-file-tree',
+            area === 'infrastructure' ? 'mdi-graph-outline' : 'mdi-table',
             i18n.global.t('mutationHistoryViewer.record.type.area.tooltip'),
-            sessionId?.toString(),
+            area?.toString(),
             MetadataItemSeverity.Info,
             undefined,
             undefined
         )
     }
 
-    static operation(sessionId: any): MetadataItem {
+    // todo vstupuje sem i transaction
+    static operation(operationType: any): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-file-tree',
             i18n.global.t('mutationHistoryViewer.record.type.operation.tooltip'),
-            sessionId?.toString(),
-            MetadataItemSeverity.Info,
+            operationType?.toString(),
+            operationType === 'remove' ? MetadataItemSeverity.Error : MetadataItemSeverity.Success,
             undefined,
             undefined
         )

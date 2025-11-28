@@ -8,18 +8,24 @@ import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/Entity
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { useDataLocale, usePriceType } from '@/modules/entity-viewer/viewer/component/dependencies'
+import { useDataLocale, usePriceType, useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { isLocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
 import { isTypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue.ts'
 import type { Predecessor } from '@/modules/database-driver/data-type/Predecessor.ts'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema.ts'
+import { MutationHistoryViewerTabData } from '@/modules/history-viewer/model/MutationHistoryViewerTabData.ts'
+import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
+import { GrpcChangeCaptureContainerType } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 
+const tabProps = useTabProps()
+const workspaceService: WorkspaceService = useWorkspaceService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
+    propertyKey: number,
     propertyDescriptor: EntityPropertyDescriptor | undefined,
     propertyValue: EntityPropertyValue | EntityPropertyValue[] | undefined
 }>()
@@ -143,8 +149,53 @@ function handleClick(e: MouseEvent): void {
     } else if (e.button === 1) {
         copyValue(false)
     } else if (e.button === 0) {
+        openMutationHistoryByEntity()
+        openMutationHistoryByAttribute()
         emit('click')
+
     }
+}
+
+
+
+const openMutationHistoryByEntity = () => {
+    const entityPrimaryKey = props.propertyKey;
+    workspaceService.createTab(
+        workspaceService.mutationHistoryViewerTabFactory.createNew(
+            tabProps.params.dataPointer.catalogName,
+            new MutationHistoryViewerTabData(
+                undefined,
+                undefined,
+                entityPrimaryKey,
+                undefined,
+                undefined,
+                [GrpcChangeCaptureContainerType.CONTAINER_ENTITY],
+                tabProps.params.dataPointer.entityType,
+                'both',
+                false
+            )
+        )
+    )
+}
+
+const openMutationHistoryByAttribute = () => {
+    const entityPrimaryKey = props.propertyKey;
+    workspaceService.createTab(
+        workspaceService.mutationHistoryViewerTabFactory.createNew(
+            tabProps.params.dataPointer.catalogName,
+            new MutationHistoryViewerTabData(
+                undefined,
+                undefined,
+                entityPrimaryKey,
+                undefined,
+                [props.propertyDescriptor?.schema?.name],
+                [GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE], // todo fix this line
+                tabProps.params.dataPointer.entityType,
+                'dataSite',
+                false
+            )
+        )
+    )
 }
 </script>
 
@@ -171,16 +222,24 @@ function handleClick(e: MouseEvent): void {
                         location="bottom"
                         :interactive="true">
                         <div>
+                            <VChip link @click="openMutationHistoryByEntity"  class="chip" size="small">
+                                <span>{{ t('command.entityViewer.entityGrid.entityGridCell.entityHistory') }}</span>
+                            </VChip>
+                            <VChip link @click="openMutationHistoryByAttribute"  class="chip" size="small">
+                                <span>{{ t('command.entityViewer.entityGrid.entityGridCell.attributeHistory') }}</span>
+                            </VChip>
                             <VChip class="chip" size="small">
                                 <span>{{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTip') }}</span>
                                 <span class="text-disabled ml-1">
-                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTipDescription') }})
+                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTipDescription')
+                                    }})
                                 </span>
                             </VChip>
                             <VChip class="chip" size="small">
                                 <span>{{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTip') }}</span>
                                 <span class="text-disabled ml-1">
-                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTipDescription') }})
+                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTipDescription')
+                                    }})
                                 </span>
                             </VChip>
                         </div>
@@ -237,7 +296,8 @@ hr {
 
     border-radius: 9999px;
 }
- p{
-     margin: 10px;
- }
+
+p {
+    margin: 10px;
+}
 </style>
