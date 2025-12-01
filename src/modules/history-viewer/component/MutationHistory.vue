@@ -131,7 +131,8 @@ const nextPageRequest = computed<MutationHistoryRequest>(() => {
             infraType,
             undefined,
             undefined,
-            1
+            1,
+            props.criteria.mutableFilters
         )
     }
     // Subsequent loads: anchor by sinceVersion, paginate by page

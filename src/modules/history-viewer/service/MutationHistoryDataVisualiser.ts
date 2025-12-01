@@ -121,8 +121,16 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             visualisedSessionRecord.addChild(visualisedRecord)
             return
         }
-        // If transaction not yet visualised, queue as pending child to be attached once transaction arrives
-        ctx.addPendingChild(mutationHistory.version, visualisedRecord)
+
+        if (ctx.historyCriteria.mutableFilters) {
+            // If transaction not yet visualised, queue as pending child to be attached once transaction arrives
+            ctx.addPendingChild(mutationHistory.version, visualisedRecord)
+        } else {
+            ctx.addRootVisualisedRecord(visualisedRecord);
+        }
+
+
+
     }
 
     private constructEntityMetadata(mutationHistory: ChangeCatalogCapture,

@@ -1,35 +1,53 @@
-import { TrafficRecordHistoryDataPointer } from '@/modules/traffic-viewer/model/TrafficRecordHistoryDataPointer'
-import {
-    TrafficRecordVisualisationDefinition
-} from '@/modules/traffic-viewer/model/TrafficRecordVisualisationDefinition'
-import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { List as ImmutableList } from 'immutable'
 import type {
     MutationHistoryItemVisualisationDefinition
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
+import type { MutationHistoryCriteria } from '@/modules/history-viewer/model/MutationHistoryCriteria.ts'
+import {
+    CatalogSchemaConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
+import { ContainerType } from '@/modules/database-driver/data-type/ContainerType.ts'
 
 /**
- * Generic context for record visualisation
+ * Generic context for mutation history visualisation
  */
 export class MutationHistoryVisualisationContext {
 
     readonly catalogName: string
+    readonly historyCriteria: MutationHistoryCriteria;
 
-    private rootVisualisedRecords: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
-    private visualisedSessionRecordsIndex: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
-    private visualisedSourceQueryRecordsIndex: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
-    private pendingChildrenIndex: Map<string, MutationHistoryItemVisualisationDefinition[]> = new Map()
+    private readonly rootVisualisedRecords: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
+    private readonly visualisedSessionRecordsIndex: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
+    private readonly pendingChildrenIndex: Map<string, MutationHistoryItemVisualisationDefinition[]> = new Map()
 
-    constructor(catalogName: string) {
+    constructor(catalogName: string, historyCriteria: MutationHistoryCriteria) {
         this.catalogName = catalogName
+        this.historyCriteria = historyCriteria
     }
 
     getVisualisedRecords(): ImmutableList<MutationHistoryItemVisualisationDefinition> {
-        const filtered = Array.from(this.rootVisualisedRecords.values())
-            .filter(v => v.children.size > 0);
+
+        const entityTypes = CatalogSchemaConverter.toContainerTypes(this.historyCriteria.containerTypeList)
+
+
+        if (entityTypes.contains(ContainerType.ENTITY)) {
+        const filtered = Array.from(this.rootVisualisedRecords.values());
 
         return ImmutableList(filtered)
+        } else if ([ContainerType.PRICE, ContainerType.REFERENCE, ContainerType.ASSOCIATED_DATA, ContainerType.ATTRIBUTE].some(type => entityTypes.includes(type))) {
+            const filtered = Array.from(this.rootVisualisedRecords.values())
+                .filter(v => v.children.size > 0);
+
+            const v = filtered.flatMap(v => Array.from(v.children));
+
+            return ImmutableList(v);
+        } else {
+            const filtered = Array.from(this.rootVisualisedRecords.values())
+                .filter(v => v.children.size > 0);
+
+            return ImmutableList(filtered)
+        }
     }
 
     // todo pfi: consultation required
@@ -72,14 +90,4 @@ export class MutationHistoryVisualisationContext {
         }
     }
 
-    getVisualisedSourceQueryRecord(sourceQueryId: string): MutationHistoryItemVisualisationDefinition | undefined {
-        return this.visualisedSourceQueryRecordsIndex.get(sourceQueryId)
-    }
-
-    addVisualisedSourceQueryRecord(sourceQueryId: string, record: MutationHistoryItemVisualisationDefinition): void {
-        if (this.visualisedSourceQueryRecordsIndex.has(sourceQueryId)) {
-            throw new UnexpectedError(`There is already source query record with ID '${sourceQueryId}'`)
-        }
-        this.visualisedSourceQueryRecordsIndex.set(sourceQueryId, record)
-    }
 }

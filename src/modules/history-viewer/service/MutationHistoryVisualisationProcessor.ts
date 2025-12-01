@@ -42,7 +42,7 @@ export class MutationHistoryVisualisationProcessor {
             records
         )
 
-        const visualisationContext: MutationHistoryVisualisationContext = new MutationHistoryVisualisationContext(catalogName)
+        const visualisationContext: MutationHistoryVisualisationContext = new MutationHistoryVisualisationContext(catalogName, historyCriteria)
         for (const record of recordsToVisualise) {
             this.visualiseRecord(visualisationContext, record)
         }

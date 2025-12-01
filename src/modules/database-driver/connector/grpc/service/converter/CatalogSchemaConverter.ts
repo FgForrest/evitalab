@@ -54,7 +54,7 @@ import {
     EntitySchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/EntitySchemaConverter.ts'
 import {
-    GrpcChangeCaptureArea,
+    GrpcChangeCaptureArea, GrpcChangeCaptureContainerType,
     GrpcChangeCaptureOperation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import { CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
@@ -63,6 +63,7 @@ import { EntityExistence } from '@/modules/database-driver/request-response/data
 import {
     ScopedReferenceIndexType
 } from '@/modules/database-driver/request-response/schema/mutation/reference/ScopedReferenceIndexType.ts'
+import { ContainerType } from '@/modules/database-driver/data-type/ContainerType.ts'
 
 
 export class CatalogSchemaConverter {
@@ -493,10 +494,44 @@ export class CatalogSchemaConverter {
                 return Operation.Transaction
             default:
                 throw new UnexpectedError(
-                    `Unsupported cardinality '${operation}'.`
+                    `Unsupported operation '${operation}'.`
                 )
         }
     }
+
+    static toContainerTypes(containerTypes: GrpcChangeCaptureContainerType[] | undefined): ImmutableList<ContainerType> {
+        if(containerTypes == undefined) return ImmutableList();
+
+        const items: ContainerType[] = []
+        for (const index of containerTypes) {
+            items.push(CatalogSchemaConverter.toContainerType(index))
+        }
+
+        return ImmutableList(items)
+    }
+
+    static toContainerType(containerType: GrpcChangeCaptureContainerType): ContainerType {
+        switch (containerType) {
+            case GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE:
+                return ContainerType.ATTRIBUTE
+            case GrpcChangeCaptureContainerType.CONTAINER_ENTITY:
+                return ContainerType.ENTITY
+            case GrpcChangeCaptureContainerType.CONTAINER_ASSOCIATED_DATA:
+                return ContainerType.ASSOCIATED_DATA
+            case GrpcChangeCaptureContainerType.CONTAINER_PRICE:
+                return ContainerType.PRICE
+            case GrpcChangeCaptureContainerType.CONTAINER_REFERENCE:
+                return ContainerType.REFERENCE
+            case GrpcChangeCaptureContainerType.CONTAINER_CATALOG:
+                return ContainerType.Catalog
+            default:
+                throw new UnexpectedError(
+                    `Unsupported container type '${containerType}'.`
+                )
+        }
+    }
+
+
 
 
     static toEntityExistence(entityExistence: GrpcEntityExistence): EntityExistence {
@@ -509,7 +544,7 @@ export class CatalogSchemaConverter {
                 return EntityExistence.MustNotExist
             default:
                 throw new UnexpectedError(
-                    `Unsupported cardinality '${entityExistence}'.`
+                    `Unsupported entity existance '${entityExistence}'.`
                 )
         }
     }

@@ -555,11 +555,12 @@ export class EvitaClientSession {
                     .map(i => i.version.toString())
             )];
 
-            const transactionRequest: GetTransactionOverviewRequest = {catalogVersion: catalogVersionIdList} as GetTransactionOverviewRequest
-            const transactionResponse: GetTransactionOverviewResponse = await this.evitaSessionClientProvider().getTransactionOverview(transactionRequest, this._callMetadata)
-
-
-            const transactionCaptures = transactionResponse.transactionOverviews.map(i => this.convertGrpcTransactionOverview(i));
+            let transactionCaptures:ChangeCatalogCapture[] = [];
+            if (mutationHistoryRequest.loadTransaction) {
+                const transactionRequest: GetTransactionOverviewRequest = {catalogVersion: catalogVersionIdList} as GetTransactionOverviewRequest
+                const transactionResponse: GetTransactionOverviewResponse = await this.evitaSessionClientProvider().getTransactionOverview(transactionRequest, this._callMetadata)
+                transactionCaptures = transactionResponse.transactionOverviews.map(i => this.convertGrpcTransactionOverview(i));
+            }
 
             return ImmutableList([...captures, ...transactionCaptures])
         } catch (e) {
