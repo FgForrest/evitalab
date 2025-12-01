@@ -178,7 +178,7 @@ function handleClick(e: MouseEvent): void {
 
     if (e.shiftKey && e.button === 1) {
         copyValue(true)
-    } else if (isAPressead.value && e.button === 1) {
+    } else if (isAPressed.value && e.button === 1) {
         openMutationHistoryByAttribute()
     } else if (isEPressed.value && e.button === 1) {
         openMutationHistoryByEntity()
