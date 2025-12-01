@@ -289,8 +289,10 @@
           "rawCopyToolTipDescription": "Copy raw value from cell",
           "copyValueToolTip": "Middle mouse button",
           "copyValueToolTipDescription": "Copy value from cell",
-          "entityHistory": "Entity history",
-          "attributeHistory": "Attribute history"
+          "entityHistory": "E + Middle mouse button",
+          "entityHistoryDescription": "Show entity history",
+          "attributeHistory": "A + Middle mouse button",
+          "attributeHistoryDescription": "Show attribute history"
         }
       }
     },

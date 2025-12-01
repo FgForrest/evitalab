@@ -36,6 +36,38 @@ const dataLocale = useDataLocale()
 const priceType = usePriceType()
 const parent = ref()
 
+function useKeyPress(targetKey: string) {
+    const isPressed = ref(false)
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key.toLowerCase() === targetKey.toLowerCase()) {
+            isPressed.value = true
+        }
+    }
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+        if (e.key.toLowerCase() === targetKey.toLowerCase()) {
+            isPressed.value = false
+        }
+    }
+
+    onMounted(() => {
+        window.addEventListener('keydown', handleKeyDown)
+        window.addEventListener('keyup', handleKeyUp)
+    })
+
+    onBeforeUnmount(() => {
+        window.removeEventListener('keydown', handleKeyDown)
+        window.removeEventListener('keyup', handleKeyUp)
+    })
+
+    return isPressed
+}
+
+const isAPressed = useKeyPress('a')
+const isEPressed = useKeyPress('e')
+
+
 const printablePropertyValue = computed<string>(() => toPrintablePropertyValue(props.propertyValue))
 const prependIcon = computed<string | undefined>(() => {
     if (props.propertyDescriptor?.type === EntityPropertyType.Entity && props.propertyDescriptor?.key.name === StaticEntityProperties.ParentPrimaryKey) {
@@ -146,13 +178,14 @@ function handleClick(e: MouseEvent): void {
 
     if (e.shiftKey && e.button === 1) {
         copyValue(true)
+    } else if (isAPressead.value && e.button === 1) {
+        openMutationHistoryByAttribute()
+    } else if (isEPressed.value && e.button === 1) {
+        openMutationHistoryByEntity()
     } else if (e.button === 1) {
         copyValue(false)
     } else if (e.button === 0) {
-        openMutationHistoryByEntity()
-        openMutationHistoryByAttribute()
         emit('click')
-
     }
 }
 
@@ -248,11 +281,19 @@ const openMutationHistoryByAttribute = () => {
                         location="bottom"
                         :interactive="true">
                         <div>
-                            <VChip link @click="openMutationHistoryByEntity" class="chip" size="small">
+                            <VChip class="chip" size="small">
                                 <span>{{ t('command.entityViewer.entityGrid.entityGridCell.entityHistory') }}</span>
+                                <span class="text-disabled ml-1">
+                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.entityHistoryDescription')
+                                    }})
+                                </span>
                             </VChip>
-                            <VChip link @click="openMutationHistoryByAttribute" class="chip" size="small">
+                            <VChip  class="chip" size="small">
                                 <span>{{ t('command.entityViewer.entityGrid.entityGridCell.attributeHistory') }}</span>
+                                 <span class="text-disabled ml-1">
+                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.attributeHistoryDescription')
+                                     }})
+                                </span>
                             </VChip>
                             <VChip class="chip" size="small">
                                 <span>{{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTip') }}</span>
