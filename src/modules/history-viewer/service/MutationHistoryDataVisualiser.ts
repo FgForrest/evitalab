@@ -67,10 +67,12 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
         const visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined = ctx.getVisualisedSessionRecord(mutationHistory.version)
 
-        const operationType = mutationHistory.operation;
+        const entityOperationType = mutationHistory.operation;
+
+
 
         // entity
-        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-table', i18n.global.t(`mutationHistoryViewer.record.type.entity.title-${operationType}`, { entityType: mutationHistory.entityType }), `(PK ${mutationHistory.entityPrimaryKey?.toString()})`, this.constructEntityMetadata(mutationHistory, visualisedSessionRecord), this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_ENTITY, undefined, ctx, mutationHistory))
+        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-table', i18n.global.t(`mutationHistoryViewer.record.type.entity.title-${entityOperationType}`, { entityType: mutationHistory.entityType }), `(PK ${mutationHistory.entityPrimaryKey?.toString()})`, this.constructEntityMetadata(mutationHistory, visualisedSessionRecord), this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_ENTITY, undefined, ctx, mutationHistory))
 
         const mutations = mutationHistory.body instanceof EntityUpsertMutation ?
             (mutationHistory.body as EntityUpsertMutation).localMutations :
@@ -78,6 +80,9 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
         // entity attributes
         for (let attributeMutation of mutations) {
+            if (entityOperationType === 'remove') {
+                break
+            }
 
             if (attributeMutation instanceof ReferenceMutation) { // todo pfi: fix this ugly code
 

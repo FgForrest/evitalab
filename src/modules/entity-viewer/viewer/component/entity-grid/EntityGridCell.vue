@@ -157,9 +157,8 @@ function handleClick(e: MouseEvent): void {
 }
 
 
-
 const openMutationHistoryByEntity = () => {
-    const entityPrimaryKey = props.propertyKey;
+    const entityPrimaryKey = props.propertyKey
     workspaceService.createTab(
         workspaceService.mutationHistoryViewerTabFactory.createNew(
             tabProps.params.dataPointer.catalogName,
@@ -171,15 +170,38 @@ const openMutationHistoryByEntity = () => {
                 undefined,
                 [GrpcChangeCaptureContainerType.CONTAINER_ENTITY],
                 tabProps.params.dataPointer.entityType,
-                'both',
+                'dataSite',
                 false
             )
         )
     )
 }
 
+function resolveContainerTypeList(schema: EntityPropertyType) {
+    if (schema === EntityPropertyType.References || schema === EntityPropertyType.ReferenceAttributes) { // todo - zde si nejsem jistý
+        return GrpcChangeCaptureContainerType.CONTAINER_REFERENCE
+    } else if (schema === EntityPropertyType.Attributes) {
+        return GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE
+    } else if (schema === EntityPropertyType.Entity) {
+        return GrpcChangeCaptureContainerType.CONTAINER_ENTITY
+    } else if (schema === EntityPropertyType.Prices) {
+        return GrpcChangeCaptureContainerType.CONTAINER_PRICE
+    } else if (schema === EntityPropertyType.AssociatedData) {
+        return GrpcChangeCaptureContainerType.CONTAINER_ASSOCIATED_DATA
+    } else {
+        return undefined
+    }
+}
+
 const openMutationHistoryByAttribute = () => {
-    const entityPrimaryKey = props.propertyKey;
+    const entityPrimaryKey = props.propertyKey
+
+
+    if (props.propertyDescriptor?.type === undefined || props.propertyDescriptor?.type === EntityPropertyType.Entity) {
+        return;
+    }
+
+
     workspaceService.createTab(
         workspaceService.mutationHistoryViewerTabFactory.createNew(
             tabProps.params.dataPointer.catalogName,
@@ -189,7 +211,7 @@ const openMutationHistoryByAttribute = () => {
                 entityPrimaryKey,
                 undefined,
                 [props.propertyDescriptor?.schema?.name],
-                [GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE], // todo fix this line
+                [resolveContainerTypeList(props.propertyDescriptor?.type)],
                 tabProps.params.dataPointer.entityType,
                 'dataSite',
                 false
@@ -197,6 +219,10 @@ const openMutationHistoryByAttribute = () => {
         )
     )
 }
+
+
+
+
 </script>
 
 <template>
@@ -222,10 +248,10 @@ const openMutationHistoryByAttribute = () => {
                         location="bottom"
                         :interactive="true">
                         <div>
-                            <VChip link @click="openMutationHistoryByEntity"  class="chip" size="small">
+                            <VChip link @click="openMutationHistoryByEntity" class="chip" size="small">
                                 <span>{{ t('command.entityViewer.entityGrid.entityGridCell.entityHistory') }}</span>
                             </VChip>
-                            <VChip link @click="openMutationHistoryByAttribute"  class="chip" size="small">
+                            <VChip link @click="openMutationHistoryByAttribute" class="chip" size="small">
                                 <span>{{ t('command.entityViewer.entityGrid.entityGridCell.attributeHistory') }}</span>
                             </VChip>
                             <VChip class="chip" size="small">
