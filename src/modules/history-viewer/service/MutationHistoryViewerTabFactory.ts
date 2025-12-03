@@ -90,7 +90,8 @@ export class MutationHistoryViewerTabFactory {
             dto.containerNameList,
             dto.containerTypeList,
             dto.entityType,
-            dto.areaType
+            dto.areaType,
+            dto.mutableFilters
         )
 
     }

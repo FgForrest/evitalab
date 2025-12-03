@@ -68,6 +68,8 @@ const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
 ))
 provideHistoryCriteria(criteria)
 
+
+
 const initialized = ref<boolean>(false)
 const historyListLoading = ref<boolean>(false)
 const historyStartPointerLoading = ref<boolean>(false)
@@ -78,7 +80,13 @@ const currentData = computed<MutationHistoryViewerTabData>(() => {
     return new MutationHistoryViewerTabData(
         criteria.value.from,
         criteria.value.to,
-        criteria.value.entityPrimaryKey
+        criteria.value.entityPrimaryKey,
+        criteria.value.operationList,
+        criteria.value.containerNameList,
+        criteria.value.containerTypeList,
+        criteria.value.entityType,
+        criteria.value.areaType ?? 'both',
+        criteria.value.mutableFilters
     )
 })
 watch(currentData, (data) => {
@@ -128,6 +136,17 @@ async function reloadHistoryList(): Promise<void> {
     await historyListRef.value?.reload()
     historyListLoading.value = false
 }
+
+const titleDetails: List<string> = List.of(
+    props.params.dataPointer.catalogName,
+    t('mutationHistoryViewer.title'),
+    `${criteria.value.entityType} : ${criteria.value.entityPrimaryKey}`,
+    ...(criteria.value.containerNameList?.length
+        ? [`Attributes : ${criteria.value.containerNameList.join(', ')}`] // todo translate me
+        : []),
+    'History' // todo translate me
+)
+
 </script>
 
 <template>
@@ -171,12 +190,11 @@ async function reloadHistoryList(): Promise<void> {
                 />
             </template>
         </VTabToolbar>
-        <!--        // todo fix the title -->
+<!--        todo pfi: fix height of the toolbar -->
         <VTabToolbar
             v-else
             :prepend-icon="MutationHistoryViewerTabDefinition.icon()"
-            :title="['evita',' / ',criteria.entityType,' / ',criteria.entityPrimaryKey,...(criteria.containerNameList?.length ? [' / ', 'Attributes' ,'/', ...criteria.containerNameList] : []),' / ', 'History']"
-            :extension-height="64"
+            :title=titleDetails
         >
         </VTabToolbar>
 
