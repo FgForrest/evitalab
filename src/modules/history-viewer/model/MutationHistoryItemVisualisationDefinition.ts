@@ -121,7 +121,7 @@ export class MetadataItem {
     static version(sessionId: any): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
-            'mdi-file-tree',
+            'mdi-source-commit',
             i18n.global.t('mutationHistoryViewer.record.type.version.tooltip'),
             sessionId?.toString(),
             MetadataItemSeverity.Info,
@@ -133,7 +133,7 @@ export class MetadataItem {
     static entityPrimaryKey(sessionId: any): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
-            'mdi-file-tree',
+            'mdi-identifier',
             i18n.global.t('mutationHistoryViewer.record.type.entityPrimaryKey.tooltip'),
             sessionId?.toString(),
             MetadataItemSeverity.Info,
@@ -154,110 +154,6 @@ export class MetadataItem {
         )
     }
 
-
-
-    static sessionId(sessionId: any): MetadataItem {
-        return new MetadataItem(
-            metadataItemSessionIdIdentifier,
-            'mdi-file-tree',
-            i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.sessionId.tooltip'),
-            sessionId?.toString(),
-            MetadataItemSeverity.Info,
-            undefined,
-            undefined
-        )
-    }
-
-    static created(created: OffsetDateTime): MetadataItem {
-        return new MetadataItem(
-            metadataItemCreatedIdentifier,
-            'mdi-clock-outline',
-            i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.created.tooltip'),
-            created.getPrettyPrintableString(),
-            MetadataItemSeverity.Info,
-            undefined,
-            (ctx: MutationHistoryMetadataItemContext): void => {
-                navigator.clipboard.writeText(`${created.toString()}`).then(() => {
-                    ctx.toaster.info(i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.created.notification.copiedToClipboard'))
-                        .then()
-                }).catch(() => {
-                    ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
-                        .then()
-                })
-            }
-        )
-    }
-
-
-
-    static duration(duration: Duration,
-                    thresholds?: [number, number]): MetadataItem {
-        const durationInMillis: number = duration.toMillis()
-        let durationIndicator: MetadataItemSeverity = MetadataItemSeverity.Success
-        if (thresholds != undefined) {
-            if (durationInMillis > thresholds[1]) {
-                durationIndicator = MetadataItemSeverity.Error
-            } else if (durationInMillis > thresholds[0]) {
-                durationIndicator = MetadataItemSeverity.Warning
-            }
-        }
-
-        return new MetadataItem(
-            metadataItemDurationIdentifier,
-            'mdi-timer-outline',
-            i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.duration'),
-            // note: typescript cannot comprehend that there is luxon extensions that overrides it...
-            // @ts-ignore
-            duration.toShortHuman(),
-            durationIndicator
-        )
-    }
-
-    static ioFetchedSizeBytes(ioFetchedSizeBytes: number): MetadataItem {
-        return new MetadataItem(
-            metadataItemIoFetchedSizeBytesIdentifier,
-            'mdi-download-network-outline',
-            i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.ioFetchedSizeBytes.tooltip'),
-            i18n.global.t(
-                'trafficViewer.recordHistory.record.type.common.metadata.item.ioFetchedSizeBytes.value',
-                // @ts-ignore
-                ioFetchedSizeBytes,
-                { named: { count: formatByteSize(ioFetchedSizeBytes) } }
-            )
-        )
-    }
-
-    static ioFetchCount(ioFetchCount: number): MetadataItem {
-        return new MetadataItem(
-            metadataItemIoFetchCountIdentifier,
-            'mdi-download-network-outline',
-            i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.ioFetchCount.tooltip'),
-            i18n.global.t(
-                'trafficViewer.recordHistory.record.type.common.metadata.item.ioFetchCount.value',
-                { count: formatCount(ioFetchCount) }
-            )
-        )
-    }
-
-    static finishedStatus(finishedWithError: string | undefined): MetadataItem {
-        if (finishedWithError == undefined) {
-            return new MetadataItem(
-                metadataItemFinishedStatusIdentifier,
-                'mdi-check',
-                i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.finishedStatus.tooltip.success'),
-                i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.finishedStatus.status.success'),
-                MetadataItemSeverity.Success
-            )
-        } else {
-            return new MetadataItem(
-                metadataItemFinishedStatusIdentifier,
-                'mdi-alert-circle-outline',
-                i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.finishedStatus.tooltip.error', { error: JSON.stringify(finishedWithError) }),
-                i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.finishedStatus.status.error'),
-                MetadataItemSeverity.Error
-            )
-        }
-    }
 }
 
 export const defaultMetadataGroupIdentifier: string = 'default'
@@ -282,7 +178,7 @@ export class MetadataGroup {
         return new MetadataGroup(
             defaultMetadataGroupIdentifier,
             'mdi-format-list-bulleted',
-            i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.group.default'),
+            i18n.global.t('trafficViewer.record.type.common.metadata.group.default'),
             undefined,
             items
         )
@@ -299,11 +195,15 @@ export enum MetadataItemSeverity {
 export class Action {
     readonly title: string
     readonly icon: string
+    readonly buttonType: 'icon' | 'full' = 'icon'
     readonly callback?: () => void
 
-    constructor(title: string, icon: string, callback?: (() => void) | undefined) {
+    constructor(title: string, icon: string, buttonType: 'icon' | 'full', callback?: (() => void) | undefined) {
         this.title = title
         this.icon = icon
+        this.buttonType = buttonType
         this.callback = callback
     }
+
+
 }

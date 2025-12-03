@@ -29,17 +29,28 @@ function callAction(action: Action): void {
             <RecordMetadata :metadata="definition.metadata" />
         </template>
         <template v-if="definition.actions.size > 0" #append="{ isActive }">
+<!--            <VBtn-->
+<!--                v-for="(action, index) in definition.actions"-->
+<!--                :key="index"-->
+<!--                icon-->
+<!--                @click.stop="callAction(action)"-->
+<!--            >-->
+<!--                <VIcon>{{ action.icon }}</VIcon>-->
+<!--                <VTooltip activator="parent">-->
+<!--                    {{ action.title }}-->
+<!--                </VTooltip>-->
+<!--                {{ action.title }}-->
+<!--            </VBtn>-->
+
             <VBtn
                 v-for="(action, index) in definition.actions"
                 :key="index"
-                icon
                 @click.stop="callAction(action)"
             >
                 <VIcon>{{ action.icon }}</VIcon>
-                <VTooltip activator="parent">
-                    {{ action.title }}
-                </VTooltip>
+                {{ action.title }}
             </VBtn>
+
 
             <VIcon v-if="definition.children.size > 0" class="ml-2">
                 {{ isActive ? 'mdi-chevron-up' : 'mdi-chevron-down' }}

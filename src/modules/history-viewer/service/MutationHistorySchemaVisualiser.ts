@@ -107,21 +107,4 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
         )
     }
 
-    private constructActions(ctx: MutationHistoryVisualisationContext,
-                             trafficRecord: ChangeCatalogCapture): ImmutableList<Action> {
-        const actions: Action[] = []
-
-        actions.push(new Action(
-            i18n.global.t('trafficViewer.recordHistory.record.type.enrichment.action.query'),
-            'mdi-play',
-            () => this.workspaceService.createTab(
-                this.evitaQLConsoleTabFactory.createNew(
-                    ctx.catalogName,
-                    new EvitaQLConsoleTabData('')
-                )
-            )
-        ))
-
-        return ImmutableList(actions)
-    }
 }

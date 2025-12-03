@@ -14,18 +14,18 @@ export abstract class MutationVisualiser<R extends ChangeCatalogCapture> {
     /**
      * Determines if this visualiser can visualise this record
      */
-    abstract canVisualise(trafficRecord: ChangeCatalogCapture): boolean
+    abstract canVisualise(changeCatalogCapture: ChangeCatalogCapture): boolean
 
     /**
      * Can be overridden for doing some preparation work for the entire history
      * before actual visualisation
      */
-    prepare(ctx: MutationHistoryPreparationContext, trafficRecord: R): void {
+    prepare(ctx: MutationHistoryPreparationContext, changeCatalogCapture: R): void {
         // do nothing by default
     }
 
     /**
      * Creates visualisation definition for this traffic record. Can return `null` if particular record shouldn't be visualised
      */
-    abstract visualise(ctx: MutationHistoryVisualisationContext, trafficRecord: R): void
+    abstract visualise(ctx: MutationHistoryVisualisationContext, changeCatalogCapture: R): void
 }

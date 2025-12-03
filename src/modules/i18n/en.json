@@ -1945,6 +1945,9 @@
       "type": {
         "transaction": {
           "title": "Transaction {version}",
+          "action": {
+            "open": "Transaction"
+          },
           "mutationCount": {
             "tooltip": "Mutation count",
             "value": "Mutation count {count}"
@@ -1965,10 +1968,20 @@
         },
         "entity": {
           "title-upsert": "Upsert entity: {entityType}",
-          "title-remove": "Remove entity: {entityType}"
+          "title-remove": "Remove entity: {entityType}",
+          "action": {
+            "open": "Entity"
+          }
         },
         "area": {
           "tooltip": "Area"
+        },
+        "common": {
+          "metadata": {
+            "group": {
+              "default": "Default metadata"
+            }
+          }
         },
         "operation": {
           "tooltip": "Operation"
@@ -1986,6 +1999,9 @@
           "tooltip": "index"
         },
         "attribute": {
+          "action": {
+            "open": "Attribute"
+          },
           "title-upsert": "Upsert attribute: {attributeName}",
           "title-remove": "Remove attribute: {attributeName}",
           "locale": {
@@ -2023,6 +2039,10 @@
           },
           "referenceEntityType": {
             "tooltip": "Entity type"
+          },
+          "associatedData": {
+            "title-upsert": "Upsert associated data: {key}",
+            "title-remove": "Remove associated data: {key}"
           },
           "price": {
             "title": "Price updated:",
