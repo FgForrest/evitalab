@@ -119,7 +119,7 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
             undefined,
             (ctx: MutationHistoryMetadataItemContext): void => {
                 navigator.clipboard.writeText(`${created.toString()}`).then(() => {
-                    ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.type.transaction.commitTimestamp.notification.copiedToClipboard'))
+                        ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.type.transaction.commitTimestamp.notification.copiedToClipboard'))
                         .then()
                 }).catch(() => {
                     ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))

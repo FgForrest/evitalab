@@ -115,7 +115,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                     priceWithTax: attributeMutation.priceWithTax,
                     taxRate: attributeMutation.taxRate
                 }) : ''
-                const actions: Immutable.List<Action> = this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_PRICE, ctx.historyCriteria.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.entity.action.open')
+                const actions: Immutable.List<Action> = this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_PRICE, ctx.historyCriteria.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.attribute.action.open')
                 const metadata: MetadataGroup[] = this.constructAttributePriceMetadata(attributeMutation)
                 const title: string = i18n.global.t('mutationHistoryViewer.record.type.attribute.price.title')
                 const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-currency-usd', title, attributeValue, metadata, actions)
@@ -126,7 +126,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                     key: attributeMutation.associatedDataKey.associatedDataName
                 }) : ''
                 const attributeValue = attributeMutation instanceof UpsertAssociatedDataMutation ? attributeMutation?.value?.toString().substring(0, 100) : ''
-                const actions: Immutable.List<Action> = this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_PRICE, ctx.historyCriteria.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.entity.action.open')
+                const actions: Immutable.List<Action> = this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_PRICE, ctx.historyCriteria.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.attribute.action.open')
                 const metadata: MetadataGroup[] = this.constructAttributeMetadata(attributeMutation, visualisedSessionRecord)
                 const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-relation-one-to-one-or-many', title, attributeValue, metadata, actions)
                 visualisedRecord.addChild(attributeMutationVisualised)
@@ -166,7 +166,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
     private getAttributeAction(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture, attributeName: string | undefined): Immutable.List<Action> {
         if (ctx.historyCriteria.mutableFilters) {
             return this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE, ctx.historyCriteria.entityPrimaryKey, attributeName, ctx, mutationHistory, 'mutationHistoryViewer.record.type.attribute.action.open')
-        } else if(CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.ATTRIBUTE)) {
+        } else if(!ctx.historyCriteria.mutableFilters && CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.ATTRIBUTE)) {
             return this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_ENTITY, ctx.historyCriteria.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.entity.action.open')
         } else {
             return this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE, ctx.historyCriteria.entityPrimaryKey, attributeName, ctx, mutationHistory, 'mutationHistoryViewer.record.type.attribute.action.open')
