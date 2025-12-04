@@ -7,7 +7,7 @@ import {
 } from '@/modules/history-viewer/model/MutationHistoryVisualisationContext.ts'
 
 /**
- * Provides definition about how to visualise traffic record to user
+ * Provides definition about how to visualise mutation history record to user
  */
 export abstract class MutationVisualiser<R extends ChangeCatalogCapture> {
 
@@ -25,7 +25,7 @@ export abstract class MutationVisualiser<R extends ChangeCatalogCapture> {
     }
 
     /**
-     * Creates visualisation definition for this traffic record. Can return `null` if particular record shouldn't be visualised
+     * Creates visualisation definition for this mutation history record. Can return `null` if particular record shouldn't be visualised
      */
     abstract visualise(ctx: MutationHistoryVisualisationContext, changeCatalogCapture: R): void
 }

@@ -28,8 +28,7 @@ export class MutationHistoryViewerModuleRegistrar implements ModuleRegistrar {
         const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
         const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
         const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory = builder.inject(evitaQLConsoleTabFactoryInjectionKey)
-        // const graphQLConsoleTabFactory: GraphQLConsoleTabFactory = builder.inject(graphQLConsoleTabFactoryInjectionKey)
-        const trafficRecordHistoryViewerTabFactory: MutationHistoryViewerTabFactory = builder.inject(mutationHistoryViewerTabFactoryInjectionKey)
+        const mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory = builder.inject(mutationHistoryViewerTabFactoryInjectionKey)
 
         const mutationHistoryViewerService: MutationHistoryViewerService = new MutationHistoryViewerService(
             evitaClient,
@@ -38,7 +37,7 @@ export class MutationHistoryViewerModuleRegistrar implements ModuleRegistrar {
                 ImmutableList([
                     new MutationHistoryTransactionVisualiser(workspaceService, evitaQLConsoleTabFactory),
                     new MutationHistorySchemaVisualiser(workspaceService, evitaQLConsoleTabFactory),
-                    new MutationHistoryDataVisualiser(workspaceService, evitaQLConsoleTabFactory, trafficRecordHistoryViewerTabFactory)
+                    new MutationHistoryDataVisualiser(workspaceService, mutationHistoryViewerTabFactory)
                 ])
             )
         )

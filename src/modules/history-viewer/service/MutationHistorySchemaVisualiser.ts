@@ -36,8 +36,8 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
         this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
     }
 
-    canVisualise(trafficRecord: ChangeCatalogCapture): boolean {
-        return trafficRecord.area == CaptureArea.Schema // todo pfi: better condition
+    canVisualise(changeCatalogCapture: ChangeCatalogCapture): boolean {
+        return changeCatalogCapture.area == CaptureArea.Schema // todo pfi: better condition
     }
 
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {

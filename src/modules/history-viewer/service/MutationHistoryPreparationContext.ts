@@ -1,6 +1,5 @@
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { Map as ImmutableMap } from 'immutable'
-import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import type { Mutation } from '@/modules/database-driver/request-response/Mutation.ts'
 

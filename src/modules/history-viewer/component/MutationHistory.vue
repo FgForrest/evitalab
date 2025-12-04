@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 /**
- * Lists traffic recording history
+ * Lists mutation history
  */
 
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
@@ -181,7 +181,7 @@ async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) 
         fetchError.value = undefined
 
         if (fetchedRecords.size === 0) {
-            await toaster.info(t('trafficViewer.recordHistory.list.notification.noNewerRecords'))
+            await toaster.info(t('mutationHistoryViewer.list.notification.noNewerRecords'))
             done('ok')
             return
         }
@@ -221,7 +221,7 @@ async function tryReloadHistoryForPossibleNewRecords(): Promise<void> {
     await reloadHistory()
     fetchingNewRecordsWhenThereArentAny.value = false
     if (history.value.length === 0) {
-        await toaster.info(t('trafficViewer.recordHistory.list.notification.noNewerRecords'))
+        await toaster.info(t('mutationHistoryViewer.list.notification.noNewerRecords'))
         return
     }
 }
@@ -290,7 +290,7 @@ async function moveStartPointerToNewest(): Promise<void> {
         }
     } catch (e: any) {
         await toaster.error(t(
-            'trafficViewer.recordHistory.notification.couldNotLoadLatestRecording',
+            'mutationHistoryViewer.notification.couldNotLoadLatestRecording',
             { reason: e.message }
         ))
         emit('update:startPointerActive', false)
@@ -332,7 +332,7 @@ defineExpose<{
 
             <template #load-more="{ props }">
                 <VBtn v-bind="props">
-                    {{ t('trafficViewer.recordHistory.list.button.loadMore') }}
+                    {{ t('mutationHistoryViewer.list.button.loadMore') }}
                 </VBtn>
             </template>
         </VInfiniteScroll>
@@ -342,11 +342,11 @@ defineExpose<{
     <VMissingDataIndicator
         v-else
         icon="mdi-record-circle-outline"
-        :title="t('trafficViewer.recordHistory.list.info.noRecords', { catalogName: dataPointer.catalogName })"
+        :title="t('mutationHistoryViewer.list.info.noRecords', { catalogName: dataPointer.catalogName })"
     >
         <template #actions>
             <VBtn :loading="fetchingNewRecordsWhenThereArentAny" @click="tryReloadHistoryForPossibleNewRecords">
-                {{ t('trafficViewer.recordHistory.button.reloadRecordHistory') }}
+                {{ t('mutationHistoryViewer.list.button.reloadRecordHistory') }}
             </VBtn>
         </template>
     </VMissingDataIndicator>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 /**
- * Visualises a single traffic record base on its implementation
+ * Visualises a single mutation record base on its implementation
  */
 
 import VListItemDivider from '@/modules/base/component/VListItemDivider.vue'

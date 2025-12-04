@@ -15,7 +15,7 @@ import {
 } from '@/modules/history-viewer/model/MutationHistoryVisualisationContext.ts'
 
 /**
- * Takes raw flat traffic records from server and processes them into visualisable tree structure.
+ * Takes raw flat mutation history records from server and processes them into visualisable tree structure.
  */
 export class MutationHistoryVisualisationProcessor {
 

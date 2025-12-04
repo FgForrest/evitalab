@@ -59,14 +59,12 @@ import {
 export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCatalogCapture> {
 
     private readonly workspaceService: WorkspaceService
-    private readonly evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory
     private readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
 
-    constructor(workspaceService: WorkspaceService, evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory, trafficRecordHistoryViewerTabFactory: MutationHistoryViewerTabFactory) {
+    constructor(workspaceService: WorkspaceService, mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory) {
         super()
         this.workspaceService = workspaceService
-        this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
-        this.mutationHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
+        this.mutationHistoryViewerTabFactory = mutationHistoryViewerTabFactory
     }
 
     canVisualise(changeCatalogCapture: ChangeCatalogCapture): boolean {
@@ -75,7 +73,6 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
         const visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined = ctx.getVisualisedSessionRecord(mutationHistory.version)
-
         const entityOperationType = mutationHistory.operation;
 
 
@@ -96,12 +93,12 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                 break
             }
 
-            if (attributeMutation instanceof ReferenceMutation) { // todo pfi: fix this ugly code
+            if (attributeMutation instanceof ReferenceMutation) {
 
                 const referenceName = attributeMutation?.referenceKey.referenceName
                 const attributeValue = attributeMutation?.referenceKey.primaryKey.toString()
-                const metadata: MetadataGroup[] = this.constructReferenceMetadata(attributeMutation, visualisedSessionRecord)
-                const actions: Immutable.List<Action> = this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_REFERENCE, ctx.historyCriteria.entityPrimaryKey, referenceName, ctx, mutationHistory, 'trafficViewer.recordHistory.record.type.sessionStart.action.open')
+                const metadata: MetadataGroup[] = this.constructReferenceMetadata(attributeMutation)
+                const actions: Immutable.List<Action> = this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_REFERENCE, ctx.historyCriteria.entityPrimaryKey, referenceName, ctx, mutationHistory, 'mutationHistoryViewer.record.type.reference.action.open')
                 const title: string = i18n.global.t('mutationHistoryViewer.record.type.attribute.reference.title', { referenceName: referenceName })
                 const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-link-variant', title, `(FK ${attributeValue})`, metadata, actions)
                 visualisedRecord.addChild(attributeMutationVisualised)
@@ -217,8 +214,6 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
         defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(localMutation.constructor.name))
 
-        // todo pfi fix
-        // console.log(localMutation)
 
         if (localMutation instanceof UpsertPriceMutation) {
             defaultMetadata.push(MutationHistoryDataVisualiser.currency(localMutation.priceKey.currency))
@@ -360,8 +355,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
     }
 
 
-    private constructReferenceMetadata(referenceMutation: ReferenceMutation,
-                                       visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
+    private constructReferenceMetadata(referenceMutation: ReferenceMutation): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
         defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(referenceMutation.constructor.name))
         const referenceName = referenceMutation?.referenceKey.referenceName

@@ -9,7 +9,7 @@ import type {
 } from '@/modules/history-viewer/model/MutationHistoryMetadataItemContext.ts'
 
 /**
- * Defines how a particular traffic record should be displayed in UI
+ * Defines how a particular mutation history record should be displayed in UI
  */
 export class MutationHistoryItemVisualisationDefinition {
 
@@ -178,7 +178,7 @@ export class MetadataGroup {
         return new MetadataGroup(
             defaultMetadataGroupIdentifier,
             'mdi-format-list-bulleted',
-            i18n.global.t('trafficViewer.record.type.common.metadata.group.default'),
+            i18n.global.t('mutationHistoryViewer.record.type.common.metadata.group.default'),
             undefined,
             items
         )

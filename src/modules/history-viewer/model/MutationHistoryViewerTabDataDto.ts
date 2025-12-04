@@ -1,6 +1,4 @@
 import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
-import { UserTrafficRecordType } from '@/modules/traffic-viewer/model/UserTrafficRecordType'
-import { Label } from '@/modules/database-driver/request-response/traffic-recording/Label'
 import {
     GrpcChangeCaptureContainerType,
     GrpcChangeCaptureOperation

@@ -25,8 +25,8 @@ import { Command } from '@/modules/keymap/model/Command.ts'
 import ShareTabButton from '@/modules/workspace/tab/component/ShareTabButton.vue'
 import { MutationHistoryViewerTabData } from '@/modules/history-viewer/model/MutationHistoryViewerTabData.ts'
 import { TabType } from '@/modules/workspace/tab/model/TabType.ts'
-import StartPointerButton from '@/modules/traffic-viewer/components/StartPointerButton.vue'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
+import StartPointerButton from '@/modules/history-viewer/component/StartPointerButton.vue'
 
 const keymap: Keymap = useKeymap()
 const { t } = useI18n()

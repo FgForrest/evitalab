@@ -1879,6 +1879,26 @@
   },
   "mutationHistoryViewer": {
     "title": "Mutation history",
+    "button": {
+      "reloadMutationHistory": "Reload record history",
+      "reloadRecordHistory": "Reload record history",
+      "moveStartPointerToNewest": "Load only records newer than now",
+      "removeStartPointer": "Load entire record history",
+      "modifyStartPointer": "Change start of loaded record history"
+    },
+    "list": {
+      "info": {
+        "noRecords": "There are no mutation history for defined filter."
+      },
+      "button": {
+        "loadMore": "Load more",
+        "reloadRecordHistory": "Reload record history",
+        "moveStartPointer": "Load only records newer than now"
+      },
+      "notification": {
+        "noNewerRecords": "No newer records exist."
+      }
+    },
     "definition": {
       "title": "Mutation history"
     },
@@ -1997,6 +2017,11 @@
         },
         "index": {
           "tooltip": "index"
+        },
+        "reference": {
+          "action": {
+            "open": "Reference"
+          }
         },
         "attribute": {
           "action": {
