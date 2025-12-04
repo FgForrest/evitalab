@@ -503,7 +503,9 @@ export class CatalogSchemaConverter {
         if(containerTypes == undefined) return ImmutableList();
 
         const items: ContainerType[] = []
-        for (const index of containerTypes) {
+        const i = this.toContainerType2(containerTypes)
+
+        for (const index of i) {
             items.push(CatalogSchemaConverter.toContainerType(index))
         }
 
@@ -530,6 +532,11 @@ export class CatalogSchemaConverter {
                 )
         }
     }
+
+    static toContainerType2(input: GrpcChangeCaptureContainerType[]): GrpcChangeCaptureContainerType[] {
+        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureContainerType[it as any] : it)
+    }
+
 
 
 
