@@ -562,7 +562,7 @@ export class EvitaClientSession {
                 transactionCaptures = transactionResponse.transactionOverviews.map(i => this.convertGrpcTransactionOverview(i));
             }
 
-            return ImmutableList([...captures, ...transactionCaptures])
+            return ImmutableList([...transactionCaptures, ...captures])
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
         }

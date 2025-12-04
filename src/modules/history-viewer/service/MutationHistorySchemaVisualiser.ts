@@ -53,7 +53,6 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
             visualisedSessionRecord.addChild(visualisedRecord)
             return
         }
-        console.error('Hey, some data without transaction')
         ctx.addRootVisualisedRecord(visualisedRecord)
     }
 
