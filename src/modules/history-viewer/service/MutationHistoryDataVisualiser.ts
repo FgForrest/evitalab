@@ -37,7 +37,7 @@ import type { DateTimeRange } from '@/modules/database-driver/data-type/DateTime
 import {
     InsertReferenceMutation
 } from '@/modules/database-driver/request-response/data/mutation/reference/InsertReferenceMutation.ts'
-import type { Cardinality } from '@/modules/database-driver/request-response/schema/Cardinality.ts'
+import { Cardinality } from '@/modules/database-driver/request-response/schema/Cardinality.ts'
 import { MutationHistoryViewerTabFactory } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
 import { MutationHistoryViewerTabData } from '@/modules/history-viewer/model/MutationHistoryViewerTabData.ts'
 import { GrpcChangeCaptureContainerType } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
@@ -319,13 +319,28 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
     static referenceCardinality(referenceCardinality: Cardinality): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
-            'mdi-relation-on-to-many',
+            this.referenceCardinalityIcon(referenceCardinality),
             i18n.global.t('mutationHistoryViewer.record.type.attribute.referenceCardinality.tooltip'),
             referenceCardinality?.toString(),
             MetadataItemSeverity.Info,
             undefined,
             undefined
         )
+    }
+
+    static referenceCardinalityIcon(referenceCardinality: Cardinality): string  {
+        switch (referenceCardinality) {
+            case Cardinality.ExactlyOne:
+                return 'mdi-relation-one-to-one'
+            case Cardinality.OneOrMore:
+            case Cardinality.OneOrMoreWithDuplicates:
+                return 'mdi-relation-one-to-one-or-many'
+            case Cardinality.ZeroOrOne:
+                return 'mdi-relation-one-to-zero-or-one'
+            case Cardinality.ZeroOrMore:
+            case Cardinality.ZeroOrMoreWithDuplicates:
+                return 'mdi-relation-one-to-zero-or-many'
+        }
     }
 
     static referenceEntityType(referenceEntityType: string | undefined): MetadataItem {
