@@ -3,9 +3,9 @@
  */
 export enum ContainerType {
     Catalog = 'catalog',
-    ENTITY = 'entity',
-    ATTRIBUTE = 'attribute',
-    ASSOCIATED_DATA = 'associatedData',
-    PRICE = 'price',
-    REFERENCE = 'reference',
+    Entity = 'entity',
+    Attribute = 'attribute',
+    AssociatedData = 'associatedData',
+    Price = 'price',
+    Reference = 'reference',
 }

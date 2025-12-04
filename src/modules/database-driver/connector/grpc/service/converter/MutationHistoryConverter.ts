@@ -93,7 +93,7 @@ export class MutationHistoryConverter {
                     entityPrimaryKey: mutationHistoryRequest.entityPrimaryKey,
                     containerType: this.toContainerType(mutationHistoryRequest.containerTypeList) as number[],
                     operation: this.toMutationType(mutationHistoryRequest.operationList),
-                    containerName: ["cores"]
+                    containerName: [...mutationHistoryRequest.containerNameList]
                 },
                 case: 'dataSite'
             }

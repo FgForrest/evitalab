@@ -515,15 +515,15 @@ export class CatalogSchemaConverter {
     static toContainerType(containerType: GrpcChangeCaptureContainerType): ContainerType {
         switch (containerType) {
             case GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE:
-                return ContainerType.ATTRIBUTE
+                return ContainerType.Attribute
             case GrpcChangeCaptureContainerType.CONTAINER_ENTITY:
-                return ContainerType.ENTITY
+                return ContainerType.Entity
             case GrpcChangeCaptureContainerType.CONTAINER_ASSOCIATED_DATA:
-                return ContainerType.ASSOCIATED_DATA
+                return ContainerType.AssociatedData
             case GrpcChangeCaptureContainerType.CONTAINER_PRICE:
-                return ContainerType.PRICE
+                return ContainerType.Price
             case GrpcChangeCaptureContainerType.CONTAINER_REFERENCE:
-                return ContainerType.REFERENCE
+                return ContainerType.Reference
             case GrpcChangeCaptureContainerType.CONTAINER_CATALOG:
                 return ContainerType.Catalog
             default:

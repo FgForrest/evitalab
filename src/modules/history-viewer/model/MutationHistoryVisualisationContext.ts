@@ -30,11 +30,11 @@ export class MutationHistoryVisualisationContext {
         const entityTypes = CatalogSchemaConverter.toContainerTypes(this.historyCriteria.containerTypeList)
 
 
-        if (entityTypes.contains(ContainerType.ENTITY)) {
+        if (entityTypes.contains(ContainerType.Entity)) {
         const filtered = Array.from(this.rootVisualisedRecords.values());
 
         return ImmutableList(filtered)
-        } else if ([ContainerType.PRICE, ContainerType.REFERENCE, ContainerType.ASSOCIATED_DATA, ContainerType.ATTRIBUTE].some(type => entityTypes.includes(type))) {
+        } else if ([ContainerType.Price, ContainerType.Reference, ContainerType.AssociatedData, ContainerType.Attribute].some(type => entityTypes.includes(type))) {
             const filtered = Array.from(this.rootVisualisedRecords.values())
                 .filter(v => v.children.size > 0);
 

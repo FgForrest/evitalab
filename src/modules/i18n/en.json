@@ -2033,6 +2033,16 @@
             "open": "Reference"
           }
         },
+        "price": {
+          "action": {
+            "open": "Attribute"
+          }
+        },
+        "associatedData": {
+          "action": {
+            "open": "Attribute"
+          }
+        },
         "attribute": {
           "action": {
             "open": "Attribute"
