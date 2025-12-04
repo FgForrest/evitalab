@@ -1,4 +1,3 @@
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { List as ImmutableList } from 'immutable'
 import type {
     MutationHistoryItemVisualisationDefinition

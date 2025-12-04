@@ -1,8 +1,5 @@
 import { List as ImmutableList } from 'immutable'
-import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
-import { Duration } from 'luxon'
 import { i18n } from '@/vue-plugins/i18n'
-import { formatByteSize, formatCount } from '@/utils/string'
 import type { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
 import type {
     MutationHistoryMetadataItemContext
@@ -43,17 +40,11 @@ export class MutationHistoryItemVisualisationDefinition {
         return ImmutableList(this._children)
     }
 
-    get defaultMetadata(): MetadataGroup | undefined {
-        return this.metadata.find(group => group.identifier === defaultMetadataGroupIdentifier)
-    }
 }
 
 export const metadataItemSessionIdIdentifier: string = 'sessionId'
 export const metadataItemCreatedIdentifier: string = 'created'
-export const metadataItemDurationIdentifier: string = 'duration'
-export const metadataItemIoFetchedSizeBytesIdentifier: string = 'ioFetchedSizeBytes'
 export const metadataItemIoFetchCountIdentifier: string = 'ioFetchCount'
-export const metadataItemFinishedStatusIdentifier: string = 'finishedStatus'
 
 export class MetadataItem {
     readonly identifier: string | undefined
@@ -153,7 +144,6 @@ export class MetadataItem {
             undefined
         )
     }
-
 }
 
 export const defaultMetadataGroupIdentifier: string = 'default'
@@ -204,6 +194,4 @@ export class Action {
         this.buttonType = buttonType
         this.callback = callback
     }
-
-
 }

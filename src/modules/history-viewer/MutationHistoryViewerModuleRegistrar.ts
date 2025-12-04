@@ -33,10 +33,9 @@ export class MutationHistoryViewerModuleRegistrar implements ModuleRegistrar {
         const mutationHistoryViewerService: MutationHistoryViewerService = new MutationHistoryViewerService(
             evitaClient,
             new MutationHistoryVisualisationProcessor(
-                evitaClient,
                 ImmutableList([
-                    new MutationHistoryTransactionVisualiser(workspaceService, evitaQLConsoleTabFactory),
-                    new MutationHistorySchemaVisualiser(workspaceService, evitaQLConsoleTabFactory),
+                    new MutationHistoryTransactionVisualiser(),
+                    new MutationHistorySchemaVisualiser(),
                     new MutationHistoryDataVisualiser(workspaceService, mutationHistoryViewerTabFactory)
                 ])
             )

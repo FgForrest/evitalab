@@ -10,13 +10,13 @@ export class MutationHistoryViewerTabData implements TabData<MutationHistoryView
 
     readonly from?: OffsetDateTime
     readonly to?: OffsetDateTime
-    readonly entityPrimaryKey?: number | undefined
-    readonly operationList?: GrpcChangeCaptureOperation[] | undefined
-    readonly containerNameList?: string[] | undefined
-    readonly containerTypeList?: GrpcChangeCaptureContainerType[] | undefined
-    readonly entityType?: string | undefined
-    readonly areaType?: 'both' | 'dataSite' | 'schemaSite'
-    readonly mutableFilters?: boolean = true
+    readonly entityPrimaryKey: number | undefined
+    readonly operationList: GrpcChangeCaptureOperation[] | undefined
+    readonly containerNameList: string[] | undefined
+    readonly containerTypeList: GrpcChangeCaptureContainerType[] | undefined
+    readonly entityType: string | undefined
+    readonly areaType: 'both' | 'dataSite' | 'schemaSite' | undefined
+    readonly mutableFilters: boolean | undefined = true
 
     constructor(from?: OffsetDateTime,
                 to?: OffsetDateTime,

@@ -1,5 +1,4 @@
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime.ts'
-import { Uuid } from '@/modules/database-driver/data-type/Uuid.ts'
 import {
     GrpcChangeCaptureContainerType,
     GrpcChangeCaptureOperation
@@ -12,13 +11,13 @@ export class MutationHistoryCriteria {
 
     from?: OffsetDateTime
     to?: OffsetDateTime
-    entityPrimaryKey?: number | undefined
-    operationList?: GrpcChangeCaptureOperation[] | undefined
-    containerNameList?: string[] | undefined
-    containerTypeList?: GrpcChangeCaptureContainerType[] | undefined
-    entityType?: string | undefined
-    areaType?: 'both' | 'dataSite' | 'schemaSite'
-    mutableFilters?: boolean
+    entityPrimaryKey: number | undefined
+    operationList: GrpcChangeCaptureOperation[] | undefined
+    containerNameList: string[] | undefined
+    containerTypeList: GrpcChangeCaptureContainerType[] | undefined
+    entityType: string | undefined
+    areaType: 'both' | 'dataSite' | 'schemaSite' | undefined
+    mutableFilters: boolean | undefined
 
 
     constructor(from?: OffsetDateTime,

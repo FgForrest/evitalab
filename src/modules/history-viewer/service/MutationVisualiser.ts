@@ -1,6 +1,3 @@
-import {
-    MutationHistoryPreparationContext
-} from '@/modules/history-viewer/service/MutationHistoryPreparationContext.ts'
 import type { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
 import {
     MutationHistoryVisualisationContext
@@ -15,14 +12,6 @@ export abstract class MutationVisualiser<R extends ChangeCatalogCapture> {
      * Determines if this visualiser can visualise this record
      */
     abstract canVisualise(changeCatalogCapture: ChangeCatalogCapture): boolean
-
-    /**
-     * Can be overridden for doing some preparation work for the entire history
-     * before actual visualisation
-     */
-    prepare(ctx: MutationHistoryPreparationContext, changeCatalogCapture: R): void {
-        // do nothing by default
-    }
 
     /**
      * Creates visualisation definition for this mutation history record. Can return `null` if particular record shouldn't be visualised

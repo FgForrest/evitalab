@@ -11,11 +11,11 @@ export class MutationHistoryRequest {
     readonly containerNameList: string[]
     readonly containerTypeList: GrpcChangeCaptureContainerType[]
     readonly entityPrimaryKey: number | undefined
-    readonly entityType?: string | undefined
-    readonly infrastructureAreaType?: 'DATA_SITE' | 'SCHEMA_SITE'
-    readonly sinceVersion?: number | undefined
-    readonly sinceIndex?: number | undefined
-    readonly page?: number | undefined
+    readonly entityType: string | undefined
+    readonly infrastructureAreaType: 'DATA_SITE' | 'SCHEMA_SITE' | undefined
+    readonly sinceVersion: number | undefined
+    readonly sinceIndex: number | undefined
+    readonly page: number | undefined
     readonly loadTransaction?: boolean = true
 
     constructor(

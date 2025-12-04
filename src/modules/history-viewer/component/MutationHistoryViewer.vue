@@ -140,11 +140,11 @@ async function reloadHistoryList(): Promise<void> {
 const titleDetails: List<string> = List.of(
     props.params.dataPointer.catalogName,
     t('mutationHistoryViewer.title'),
-    `${criteria.value.entityType} : ${criteria.value.entityPrimaryKey}`,
+    `${criteria.value.entityType}: ${criteria.value.entityPrimaryKey}`,
     ...(criteria.value.containerNameList?.length
-        ? [`Attributes : ${criteria.value.containerNameList.join(', ')}`] // todo translate me
+        ? [t(`mutationHistoryViewer.toolbar.attributes`, {"containerNameList": criteria.value.containerNameList.join(', ') }) ]
         : []),
-    'History' // todo translate me
+    t('mutationHistoryViewer.toolbar.history')
 )
 
 </script>

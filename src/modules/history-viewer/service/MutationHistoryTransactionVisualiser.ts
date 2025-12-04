@@ -9,7 +9,6 @@ import {
     MutationHistoryVisualisationContext
 } from '@/modules/history-viewer/model/MutationHistoryVisualisationContext.ts'
 import {
-    Action,
     MetadataGroup,
     MetadataItem, metadataItemCreatedIdentifier, metadataItemIoFetchCountIdentifier, MetadataItemSeverity,
     MutationHistoryItemVisualisationDefinition
@@ -27,13 +26,11 @@ import type {
  */
 export class MutationHistoryTransactionVisualiser extends MutationVisualiser<ChangeCatalogCapture> {
 
-    private readonly workspaceService: WorkspaceService
-    private readonly evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory
 
-    constructor(workspaceService: WorkspaceService, evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory) {
+
+    constructor() {
         super()
-        this.workspaceService = workspaceService
-        this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
+
     }
 
     canVisualise(changeCatalogCapture: ChangeCatalogCapture): boolean {

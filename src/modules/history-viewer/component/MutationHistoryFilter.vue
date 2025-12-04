@@ -16,7 +16,6 @@ import {
 } from '@/modules/history-viewer/service/MutationHistoryViewerService.ts'
 import { MutationHistoryCriteria } from '@/modules/history-viewer/model/MutationHistoryCriteria.ts'
 import type { MutationHistoryDataPointer } from '@/modules/history-viewer/model/MutationHistoryDataPointer.ts'
-import { UserMutationType } from '@/modules/history-viewer/model/UserMutationHistoryType.ts'
 import type { DateTime } from 'luxon'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime.ts'
@@ -226,8 +225,7 @@ async function applyChangedCriteria(): Promise<void> {
         class="record-history-filter-form"
     >
         <div class="record-history-filter">
-            <span class="record-history-filter__label text-disabled">{{ t('mutationHistoryViewer.filter.label')
-                }}:</span>
+            <span class="record-history-filter__label text-disabled">{{ t('mutationHistoryViewer.filter.label')}}:</span>
             <VTooltip>
                 <template #activator="{ props }">
                     <VDateTimeInput
@@ -275,8 +273,7 @@ async function applyChangedCriteria(): Promise<void> {
                             v-if="index === 0"
                             class="text-grey text-caption align-self-center text-truncate"
                         >
-                            {{ t('mutationHistoryViewer.filter.form.mutationOperation.valueDescriptor', { count: operationList.length })
-                            }}
+                            {{ t('mutationHistoryViewer.filter.form.mutationOperation.valueDescriptor', { count: operationList.length })}}
                           </span>
                         </template>
                     </VSelect>
@@ -320,8 +317,7 @@ async function applyChangedCriteria(): Promise<void> {
                             v-if="index === 0"
                             class="text-grey text-caption align-self-center text-truncate"
                         >
-                            {{ t('mutationHistoryViewer.filter.form.containerType.valueDescriptor', { count: containerTypeList.length })
-                            }}
+                            {{ t('mutationHistoryViewer.filter.form.containerType.valueDescriptor', { count: containerTypeList.length }) }}
                           </span>
                         </template>
                     </VSelect>

@@ -1,7 +1,6 @@
 import { i18n } from '@/vue-plugins/i18n'
 import { List as ImmutableList } from 'immutable'
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
-import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
 import { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
 import { MutationVisualiser } from '@/modules/history-viewer/service/MutationVisualiser.ts'
 import {
@@ -52,6 +51,9 @@ import {
 import {
     UpsertAssociatedDataMutation
 } from '@/modules/database-driver/request-response/data/mutation/associatedData/UpsertAssociatedDataMutation.ts'
+import {
+    SetPriceInnerRecordHandlingMutation
+} from '@/modules/database-driver/request-response/data/mutation/price/SetPriceInnerRecordHandlingMutation.ts'
 
 /**
  * Visualises entity enrichment container.
@@ -114,7 +116,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                     taxRate: attributeMutation.taxRate
                 }) : ''
                 const actions: Immutable.List<Action> = this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_PRICE, ctx.historyCriteria.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.entity.action.open')
-                const metadata: MetadataGroup[] = this.constructAttributePriceMetadata(attributeMutation, visualisedSessionRecord)
+                const metadata: MetadataGroup[] = this.constructAttributePriceMetadata(attributeMutation)
                 const title: string = i18n.global.t('mutationHistoryViewer.record.type.attribute.price.title')
                 const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-currency-usd', title, attributeValue, metadata, actions)
                 visualisedRecord.addChild(attributeMutationVisualised)
@@ -123,14 +125,14 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                 const title = attributeMutation instanceof AssociatedDataMutation ? i18n.global.t(`mutationHistoryViewer.record.type.attribute.associatedData.title-${type}`, {
                     key: attributeMutation.associatedDataKey.associatedDataName
                 }) : ''
-                const attributeValue = attributeMutation instanceof UpsertAssociatedDataMutation ? attributeMutation?.value?.toString() : ''
+                const attributeValue = attributeMutation instanceof UpsertAssociatedDataMutation ? attributeMutation?.value?.toString().substring(0, 100) : ''
                 const actions: Immutable.List<Action> = this.constructActions(GrpcChangeCaptureContainerType.CONTAINER_PRICE, ctx.historyCriteria.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.entity.action.open')
                 const metadata: MetadataGroup[] = this.constructAttributeMetadata(attributeMutation, visualisedSessionRecord)
                 const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-relation-one-to-one-or-many', title, attributeValue, metadata, actions)
                 visualisedRecord.addChild(attributeMutationVisualised)
             } else {
                 const attributeName = (attributeMutation as AttributeMutation)?.attributeKey?.attributeName
-                const attributeValue = (attributeMutation as UpsertAttributeMutation)?.value?.toString()
+                const attributeValue =attributeMutation instanceof SetPriceInnerRecordHandlingMutation ?  (attributeMutation as SetPriceInnerRecordHandlingMutation).priceInnerRecordHandling.toString()  : (attributeMutation as UpsertAttributeMutation)?.value?.toString()
 
                 const operationType = mutationHistory.operation
                 const actions = this.getAttributeAction(ctx, mutationHistory, attributeName)
@@ -191,9 +193,6 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
         defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(localMutation.constructor.name))
 
-        // todo pfi fix
-        // console.log(localMutation)
-
         if (localMutation instanceof UpsertAttributeMutation) {
             if (localMutation?.attributeKey?.locale) {
                 defaultMetadata.push(MutationHistoryDataVisualiser.locale(localMutation.attributeKey.locale))
@@ -208,8 +207,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         return [MetadataGroup.default(defaultMetadata)]
     }
 
-    private constructAttributePriceMetadata(localMutation: PriceMutation,
-                                            visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
+    private constructAttributePriceMetadata(localMutation: PriceMutation): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
 
         defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(localMutation.constructor.name))
@@ -395,8 +393,4 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             )
         ])
     }
-
-
-
-
 }

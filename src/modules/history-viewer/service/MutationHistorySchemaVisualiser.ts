@@ -1,17 +1,14 @@
 import { i18n } from '@/vue-plugins/i18n'
 import { List as ImmutableList } from 'immutable'
-import { EvitaQLConsoleTabData } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabData'
-import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
-import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
 import { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
 import { MutationVisualiser } from '@/modules/history-viewer/service/MutationVisualiser.ts'
 import {
     MutationHistoryVisualisationContext
 } from '@/modules/history-viewer/model/MutationHistoryVisualisationContext.ts'
 import {
-    Action,
     MetadataGroup,
-    MetadataItem, metadataItemIoFetchCountIdentifier,
+    MetadataItem,
+    metadataItemIoFetchCountIdentifier,
     metadataItemSessionIdIdentifier,
     MetadataItemSeverity,
     MutationHistoryItemVisualisationDefinition
@@ -27,23 +24,18 @@ import { formatCount } from '@/utils/string.ts'
  */
 export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCatalogCapture> {
 
-    private readonly workspaceService: WorkspaceService
-    private readonly evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory
-
-    constructor(workspaceService: WorkspaceService, evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory) {
+    constructor() {
         super()
-        this.workspaceService = workspaceService
-        this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
     }
 
     canVisualise(changeCatalogCapture: ChangeCatalogCapture): boolean {
-        return changeCatalogCapture.area == CaptureArea.Schema // todo pfi: better condition
+        return changeCatalogCapture.area == CaptureArea.Schema
     }
 
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
         const visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined = ctx.getVisualisedSessionRecord(mutationHistory.version)
 
-        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-table', i18n.global.t('mutationHistoryViewer.record.type.schema.title', { entityType: mutationHistory.entityType }), undefined, this.constructMetadata(mutationHistory, visualisedSessionRecord), ImmutableList())
+        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-table', i18n.global.t('mutationHistoryViewer.record.type.schema.title', { entityType: mutationHistory.entityType }), undefined, this.constructMetadata(mutationHistory), ImmutableList())
 
 
         // entity attributes
@@ -57,17 +49,15 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
             }
         }
 
-
         if (visualisedSessionRecord != undefined) {
             visualisedSessionRecord.addChild(visualisedRecord)
             return
         }
         console.error('Hey, some data without transaction')
-        ctx.addRootVisualisedRecord(visualisedRecord) // todo pfi: this should never happens - try it with pagination and filters and limits
+        ctx.addRootVisualisedRecord(visualisedRecord)
     }
 
-    private constructMetadata(mutationHistory: ChangeCatalogCapture,
-                              visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
+    private constructMetadata(mutationHistory: ChangeCatalogCapture): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
 
         defaultMetadata.push(MetadataItem.area(mutationHistory.area))
@@ -78,29 +68,28 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
         defaultMetadata.push(MutationHistorySchemaVisualiser.mutationCount((mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations?.size))
         defaultMetadata.push(MutationHistorySchemaVisualiser.mutationType(mutationHistory?.body?.constructor?.name))
 
-
         return [MetadataGroup.default(defaultMetadata)]
     }
 
-    static mutationCount(ioFetchCount: number): MetadataItem {
+    static mutationCount(mutationCount: number): MetadataItem {
         return new MetadataItem(
             metadataItemIoFetchCountIdentifier,
             'mdi-download-network-outline',
             i18n.global.t('mutationHistoryViewer.record.type.transaction.mutationCount.tooltip'),
             i18n.global.t(
                 'mutationHistoryViewer.record.type.transaction.mutationCount.value',
-                { count: formatCount(ioFetchCount) }
+                { count: formatCount(mutationCount) }
             )
         )
     }
 
 
-    static mutationType(sessionId: any): MetadataItem {
+    static mutationType(mutationType: any): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-file-tree',
-            i18n.global.t('mutationHistoryViewer.record.type.attribute.mutationType.tooltip'), // todo fix translation key
-            sessionId?.toString(),
+            i18n.global.t('mutationHistoryViewer.record.type.attribute.mutationType.tooltip'),
+            mutationType?.toString(),
             MetadataItemSeverity.Info,
             undefined,
             undefined
