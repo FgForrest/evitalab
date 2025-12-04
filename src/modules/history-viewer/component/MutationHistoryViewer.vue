@@ -145,11 +145,14 @@ const titleDetails: List<string> = List.of(
     props.params.dataPointer.catalogName,
     t('mutationHistoryViewer.title'),
     `${currentData.value.entityType}: ${currentData.value.entityPrimaryKey}`,
-    ...(currentData.value.containerNameList?.length
+    ...(!!currentData.value?.containerNameList?.length && CatalogSchemaConverter.toContainerTypes(currentData.value.containerTypeList).contains(ContainerType.Attribute)
         ? [t(`mutationHistoryViewer.toolbar.attributes`, {"containerNameList": currentData.value.containerNameList?.join(', ') }) ]
         : []),
     ...(CatalogSchemaConverter.toContainerTypes(currentData.value.containerTypeList).contains(ContainerType.Price)
         ? [t(`mutationHistoryViewer.toolbar.price`)]
+        : []),
+    ...(!!currentData.value?.containerNameList?.length && CatalogSchemaConverter.toContainerTypes(currentData.value.containerTypeList).contains(ContainerType.Reference)
+        ? [t(`mutationHistoryViewer.toolbar.reference`, {"referenceName": currentData.value?.containerNameList[0]})]
         : []),
     ...(CatalogSchemaConverter.toContainerTypes(currentData.value.containerTypeList).contains(ContainerType.AssociatedData)
         ? [t(`mutationHistoryViewer.toolbar.associatedData`)]
@@ -206,6 +209,14 @@ const titleDetails: List<string> = List.of(
             :prepend-icon="MutationHistoryViewerTabDefinition.icon()"
             :title=titleDetails
         >
+            <template #append>
+<!--                <VBtn icon density="compact" @click="showEntity">-->
+<!--                    <VIcon>mdi-table</VIcon>-->
+<!--                    <VActionTooltip activator="parent" >-->
+<!--                        {{ t('mutationHistoryViewer.button.reloadMutationHistory') }}-->
+<!--                    </VActionTooltip>-->
+<!--                </VBtn>-->
+            </template>
         </VTabToolbar>
 
 

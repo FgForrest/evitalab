@@ -1906,7 +1906,8 @@
       "attributes": "Attributes: {containerNameList}",
       "history": "History",
       "price": "Price",
-      "associatedData": "Associated data"
+      "associatedData": "Associated data",
+      "reference": "Reference: {referenceName}"
     },
     "filter": {
       "label": "Filter",
@@ -1969,6 +1970,9 @@
     },
     "record": {
       "type": {
+        "priceSettings": {
+          "title": "Price settings updated:"
+        },
         "transaction": {
           "title": "Transaction {version}",
           "action": {

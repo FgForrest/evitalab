@@ -47,6 +47,7 @@ class RecordsPointer {
     private _sinceRecordSessionOffset: number = 0
     private _page: number = 1
     private _hasPointer: boolean = false
+    private _lastFetchedCount: number | undefined = undefined
 
     get sinceSessionSequenceId(): number {
         return this._sinceSessionSequenceId
@@ -85,6 +86,14 @@ class RecordsPointer {
     setPage(page: number): void {
         this._page = page
         this._hasPointer = true
+    }
+
+    setLastFetchedCount(count: number): void {
+        this._lastFetchedCount = count
+    }
+
+    get lastFetchedCount(): number | undefined {
+        return this._lastFetchedCount
     }
 }
 
@@ -180,6 +189,7 @@ async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) 
         const fetchedRecords: ImmutableList<ChangeCatalogCapture> = await fetchRecords()
         fetchError.value = undefined
 
+        nextPagePointer.value.setLastFetchedCount(fetchedRecords.size)
         if (fetchedRecords.size === 0) {
             await toaster.info(t('mutationHistoryViewer.list.notification.noNewerRecords'))
             done('ok')
@@ -204,6 +214,7 @@ async function reloadHistory(): Promise<void> {
 
     try {
         const fetchedRecords: ImmutableList<ChangeCatalogCapture> = await fetchRecords()
+        nextPagePointer.value.setLastFetchedCount(fetchedRecords.size)
         if (fetchedRecords.size === 0) {
             return
         }
@@ -222,6 +233,7 @@ async function tryReloadHistoryForPossibleNewRecords(): Promise<void> {
     fetchingNewRecordsWhenThereArentAny.value = false
     if (history.value.length === 0) {
         await toaster.info(t('mutationHistoryViewer.list.notification.noNewerRecords'))
+        nextPagePointer.value.setLastFetchedCount(fetchedRecords.size)
         return
     }
 }
@@ -330,8 +342,8 @@ defineExpose<{
                 <VListItemDivider v-if="index < history.length - 1"/>
             </template>
 
-            <template #load-more="{ props }">
-                <VBtn v-bind="props">
+            <template #load-more="{ props }" >
+                <VBtn v-bind="props" v-if="nextPagePointer.lastFetchedCount == undefined || nextPagePointer.lastFetchedCount >= limit " >
                     {{ t('mutationHistoryViewer.list.button.loadMore') }}
                 </VBtn>
             </template>
