@@ -37,7 +37,7 @@ export class MutationHistoryVisualisationContext {
             const filtered = Array.from(this.rootVisualisedRecords.values())
 
             return ImmutableList(filtered)
-        } else if ([ContainerType.Price, ContainerType.Reference, ContainerType.AssociatedData, ContainerType.Attribute].some(type => entityTypes.includes(type))) {
+        } else if (!this.historyCriteria.mutableFilters && [ContainerType.Price, ContainerType.Reference, ContainerType.AssociatedData, ContainerType.Attribute].some(type => entityTypes.includes(type))) {
             const filtered = Array.from(this.rootVisualisedRecords.values())
                 .filter(v => v.children.size > 0)
 
