@@ -1904,7 +1904,9 @@
     },
     "toolbar": {
       "attributes": "Attributes: {containerNameList}",
-      "history": "History"
+      "history": "History",
+      "price": "Price",
+      "associatedData": "Associated data"
     },
     "filter": {
       "label": "Filter",

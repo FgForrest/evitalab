@@ -27,6 +27,10 @@ import { MutationHistoryViewerTabData } from '@/modules/history-viewer/model/Mut
 import { TabType } from '@/modules/workspace/tab/model/TabType.ts'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import StartPointerButton from '@/modules/history-viewer/component/StartPointerButton.vue'
+import {
+    CatalogSchemaConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
+import { ContainerType } from '@/modules/database-driver/data-type/ContainerType.ts'
 
 const keymap: Keymap = useKeymap()
 const { t } = useI18n()
@@ -140,9 +144,15 @@ async function reloadHistoryList(): Promise<void> {
 const titleDetails: List<string> = List.of(
     props.params.dataPointer.catalogName,
     t('mutationHistoryViewer.title'),
-    `${criteria.value.entityType}: ${criteria.value.entityPrimaryKey}`,
-    ...(criteria.value.containerNameList?.length
-        ? [t(`mutationHistoryViewer.toolbar.attributes`, {"containerNameList": criteria.value.containerNameList.join(', ') }) ]
+    `${currentData.value.entityType}: ${currentData.value.entityPrimaryKey}`,
+    ...(currentData.value.containerNameList?.length
+        ? [t(`mutationHistoryViewer.toolbar.attributes`, {"containerNameList": currentData.value.containerNameList?.join(', ') }) ]
+        : []),
+    ...(CatalogSchemaConverter.toContainerTypes(currentData.value.containerTypeList).contains(ContainerType.Price)
+        ? [t(`mutationHistoryViewer.toolbar.price`)]
+        : []),
+    ...(CatalogSchemaConverter.toContainerTypes(currentData.value.containerTypeList).contains(ContainerType.AssociatedData)
+        ? [t(`mutationHistoryViewer.toolbar.associatedData`)]
         : []),
     t('mutationHistoryViewer.toolbar.history')
 )

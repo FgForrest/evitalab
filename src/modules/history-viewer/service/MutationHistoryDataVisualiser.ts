@@ -178,9 +178,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
     // todo: fix this ugly condition
     private getAttributeAction(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture, attributeName: string | undefined): Immutable.List<Action> {
-        if (ctx.historyCriteria.mutableFilters) {
-            return this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_PRICE], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, attributeName, ctx, mutationHistory, 'mutationHistoryViewer.record.type.attribute.action.open')
-        } else if (ctx.historyCriteria.mutableFilters) {
+       if (ctx.historyCriteria.mutableFilters) {
             return this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, attributeName, ctx, mutationHistory, 'mutationHistoryViewer.record.type.attribute.action.open')
         }  else if(!ctx.historyCriteria.mutableFilters && (CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Attribute) ||
             CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Price) ||
