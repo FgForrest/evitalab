@@ -38,12 +38,12 @@ export class MutationHistoryVisualisationContext {
 
             return ImmutableList(filtered)
         } else if (!this.historyCriteria.mutableFilters && [ContainerType.Price, ContainerType.Reference, ContainerType.AssociatedData, ContainerType.Attribute].some(type => entityTypes.includes(type))) {
-            const filtered = Array.from(this.rootVisualisedRecords.values())
-                .filter(v => v.children.size > 0)
+            const filtered = Array.from(this.rootVisualisedRecords.values());
+                // .filter(v => v.children.size > 0)
 
-            const v = filtered.flatMap(v => Array.from(v.children))
+            // const v = filtered.flatMap(v => Array.from(v.children))
 
-            return ImmutableList(v)
+            return ImmutableList(filtered)
         } else {
             const filtered = Array.from(this.rootVisualisedRecords.values())
                 .filter(v => v.children.size > 0)

@@ -75,8 +75,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
         const visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined = ctx.getVisualisedSessionRecord(mutationHistory.version)
-        const entityOperationType = mutationHistory.operation;
-
+        const entityOperationType = mutationHistory.operation
 
 
         // entity
@@ -84,9 +83,12 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         //     this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_ENTITY], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.entity.action.open') :
         //     this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_CATALOG], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.transaction.action.open')
 
-        const entityActions: Immutable.List<Action> = ctx.historyCriteria.mutableFilters ?
-            this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_ENTITY], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.entity.action.open') : ImmutableList()
-        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-table', i18n.global.t(`mutationHistoryViewer.record.type.entity.title-${entityOperationType}`, { entityType: mutationHistory.entityType }), `(PK ${mutationHistory.entityPrimaryKey?.toString()})`, this.constructEntityMetadata(mutationHistory, visualisedSessionRecord), entityActions)
+        let visualisedRecord: MutationHistoryItemVisualisationDefinition | undefined
+        if (ctx.historyCriteria.containerTypeList?.some(i => i === GrpcChangeCaptureContainerType.CONTAINER_ENTITY) || ctx.historyCriteria.containerTypeList?.length === 0) {
+            const entityActions: Immutable.List<Action> = ctx.historyCriteria.mutableFilters ?
+                this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_ENTITY], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.entity.action.open') : ImmutableList()
+            visualisedRecord = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-table', i18n.global.t(`mutationHistoryViewer.record.type.entity.title-${entityOperationType}`, { entityType: mutationHistory.entityType }), `(PK ${mutationHistory.entityPrimaryKey?.toString()})`, this.constructEntityMetadata(mutationHistory, visualisedSessionRecord), entityActions)
+        }
 
         const mutations = mutationHistory.body instanceof EntityUpsertMutation ?
             (mutationHistory.body as EntityUpsertMutation).localMutations :
@@ -98,6 +100,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                 break
             }
 
+            let attributeMutationVisualised: MutationHistoryItemVisualisationDefinition
             if (attributeMutation instanceof ReferenceMutation) {
 
                 const referenceName = attributeMutation?.referenceKey.referenceName
@@ -105,13 +108,12 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                 const metadata: MetadataGroup[] = this.constructReferenceMetadata(attributeMutation)
 
                 const actions: Immutable.List<Action> = (!ctx.historyCriteria.mutableFilters && CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Reference)) ?
-                    ImmutableList():
+                    ImmutableList() :
                     this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_REFERENCE], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, attributeMutation.referenceKey.referenceName, ctx, mutationHistory, 'mutationHistoryViewer.record.type.reference.action.open')
 
 
                 const title: string = i18n.global.t('mutationHistoryViewer.record.type.attribute.reference.title', { referenceName: referenceName })
-                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-link-variant', title, `(FK ${attributeValue})`, metadata, actions)
-                visualisedRecord.addChild(attributeMutationVisualised)
+                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-link-variant', title, `(FK ${attributeValue})`, metadata, actions)
 
             } else if (attributeMutation instanceof PriceMutation) {
                 const attributeValue = attributeMutation instanceof UpsertPriceMutation ? i18n.global.t('mutationHistoryViewer.record.type.attribute.price.detail', {
@@ -123,69 +125,74 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                     taxRate: attributeMutation.taxRate
                 }) : ''
                 const actions: Immutable.List<Action> = (!ctx.historyCriteria.mutableFilters && CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Price)) ?
-                    ImmutableList():
+                    ImmutableList() :
                     this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_PRICE], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.attribute.action.open')
                 const metadata: MetadataGroup[] = this.constructAttributePriceMetadata(attributeMutation)
                 const title: string = i18n.global.t('mutationHistoryViewer.record.type.attribute.price.title')
-                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-currency-usd', title, attributeValue, metadata, actions)
-                visualisedRecord.addChild(attributeMutationVisualised)
-            }  else if (attributeMutation instanceof AssociatedDataMutation) {
+                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-currency-usd', title, attributeValue, metadata, actions)
+            } else if (attributeMutation instanceof AssociatedDataMutation) {
                 const type = attributeMutation.constructor.name.toLowerCase().startsWith('upsert') ? 'upsert' : 'remove'
                 const title = i18n.global.t(`mutationHistoryViewer.record.type.attribute.associatedData.title-${type}`, { key: attributeMutation.associatedDataKey.associatedDataName })
                 const attributeValue = attributeMutation instanceof UpsertAssociatedDataMutation ? attributeMutation?.value?.toString() : ''
 
                 const actions: Immutable.List<Action> = (!ctx.historyCriteria.mutableFilters && CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.AssociatedData)) ?
-                    ImmutableList():
+                    ImmutableList() :
                     this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_ASSOCIATED_DATA], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.associatedData.action.open')
 
                 const metadata: MetadataGroup[] = this.constructAttributeMetadata(attributeMutation, visualisedSessionRecord)
-                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-relation-one-to-one-or-many', title, attributeValue, metadata, actions)
-                visualisedRecord.addChild(attributeMutationVisualised)
-            }  else if (attributeMutation instanceof SetPriceInnerRecordHandlingMutation)  {
+                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-relation-one-to-one-or-many', title, attributeValue, metadata, actions)
+            } else if (attributeMutation instanceof SetPriceInnerRecordHandlingMutation) {
                 const attributeValue = (attributeMutation as SetPriceInnerRecordHandlingMutation).priceInnerRecordHandling.toString()
 
                 const actions = this.getAttributeAction(ctx, mutationHistory, undefined)
                 const metadata: MetadataGroup[] = this.constructAttributeMetadata(attributeMutation as LocalMutation, visualisedSessionRecord)
                 const title: string = i18n.global.t(`mutationHistoryViewer.record.type.priceSettings.title`)
-                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', title, attributeValue, metadata, actions)
-                visualisedRecord.addChild(attributeMutationVisualised)
+                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', title, attributeValue, metadata, actions)
             } else {
                 const attributeName = (attributeMutation as AttributeMutation)?.attributeKey?.attributeName
-                const attributeValue =attributeMutation instanceof SetPriceInnerRecordHandlingMutation ?  (attributeMutation as SetPriceInnerRecordHandlingMutation).priceInnerRecordHandling.toString()  : (attributeMutation as UpsertAttributeMutation)?.value?.toString()
+                const attributeValue = attributeMutation instanceof SetPriceInnerRecordHandlingMutation ? (attributeMutation as SetPriceInnerRecordHandlingMutation).priceInnerRecordHandling.toString() : (attributeMutation as UpsertAttributeMutation)?.value?.toString()
 
                 const operationType = mutationHistory.operation
                 const actions = this.getAttributeAction(ctx, mutationHistory, attributeName)
 
                 const metadata: MetadataGroup[] = this.constructAttributeMetadata(attributeMutation as LocalMutation, visualisedSessionRecord)
                 const title: string = i18n.global.t(`mutationHistoryViewer.record.type.attribute.title-${operationType}`, { attributeName: attributeName })
-                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', title, attributeValue, metadata, actions)
+                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', title, attributeValue, metadata, actions)
+            }
+            if (visualisedRecord != undefined) {
                 visualisedRecord.addChild(attributeMutationVisualised)
+            } else if (visualisedSessionRecord != undefined) {
+                visualisedSessionRecord.addChild(attributeMutationVisualised)
+            } else {
+                ctx.addRootVisualisedRecord(attributeMutationVisualised)
             }
 
         }
 
 
-        if (visualisedSessionRecord != undefined) {
-            visualisedSessionRecord.addChild(visualisedRecord)
-            return
+        if (visualisedRecord != undefined) {
+            if (visualisedSessionRecord != undefined) {
+                visualisedSessionRecord.addChild(visualisedRecord)
+                return
+            }
+
+            if (ctx.historyCriteria.mutableFilters) {
+                // If transaction not yet visualised, queue as pending child to be attached once transaction arrives
+                ctx.addPendingChild(mutationHistory.version, visualisedRecord)
+            } else {
+                ctx.addRootVisualisedRecord(visualisedRecord)
+            }
         }
-
-        if (ctx.historyCriteria.mutableFilters) {
-            // If transaction not yet visualised, queue as pending child to be attached once transaction arrives
-            ctx.addPendingChild(mutationHistory.version, visualisedRecord)
-        } else {
-            ctx.addRootVisualisedRecord(visualisedRecord);
-        }
-
-
 
     }
 
     // todo: fix this ugly condition
     private getAttributeAction(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture, attributeName: string | undefined): Immutable.List<Action> {
-       if (ctx.historyCriteria.mutableFilters) {
+        if (mutationHistory.entityPrimaryKey === undefined) {
+            return ImmutableList()
+        } else if (ctx.historyCriteria.mutableFilters) {
             return this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, attributeName, ctx, mutationHistory, 'mutationHistoryViewer.record.type.attribute.action.open')
-        }  else if(!ctx.historyCriteria.mutableFilters && (CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Attribute) ||
+        } else if (!ctx.historyCriteria.mutableFilters && (CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Attribute) ||
             CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Price) ||
             CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Reference) ||
             CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.AssociatedData)
@@ -351,7 +358,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         )
     }
 
-    static referenceCardinalityIcon(referenceCardinality: Cardinality): string  {
+    static referenceCardinalityIcon(referenceCardinality: Cardinality): string {
         switch (referenceCardinality) {
             case Cardinality.ExactlyOne:
                 return 'mdi-relation-one-to-one'
