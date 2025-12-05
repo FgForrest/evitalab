@@ -9,6 +9,10 @@ export enum CatalogMenuItemType {
     ViewSchema = 'viewSchema',
     Backup = 'backup',
 
+    HistorySubheader = 'historySubheader',
+    MutationHistoryViewer = 'mutationHistoryViewer',
+
+
     TrafficSubheader = 'trafficSubheader',
     ActiveTrafficRecording = 'activeTrafficRecording',
 
@@ -28,5 +32,4 @@ export enum CatalogMenuItemType {
 
     CollectionsSubheader = 'collectionsSubheader',
     CreateCollection = 'createCollection',
-    MutationHistoryViewer = 'mutationHistoryViewer'
 }

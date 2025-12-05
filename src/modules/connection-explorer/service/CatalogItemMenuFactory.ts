@@ -102,18 +102,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
 
         const items: Map<CatalogMenuItemType, MenuItem<CatalogMenuItemType>> = new Map()
 
-        this.createMenuAction( // todo pfi: update order of thi current item
-            items,
-            CatalogMenuItemType.MutationHistoryViewer,
-            MutationHistoryViewerTabDefinition.icon(),
-            this.getItemTitle,
-            () => {
-                this.workspaceService.createTab(
-                    this.mutationHistoryViewerTabFactory.createNew(catalog.name)
-                )
-            },
-            baseEnabledFunctions
-        )
+
 
         this.createMenuAction(
             items,
@@ -177,6 +166,25 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
             this.getItemTitle,
             () => backupCatalogCallback(),
             baseEnabledFunctions && !serverStatus?.readOnly
+        )
+
+        this.createMenuSubheader(
+            items,
+            CatalogMenuItemType.HistorySubheader,
+            this.getItemTitle
+        )
+
+        this.createMenuAction( // todo pfi: update order of thi current item
+            items,
+            CatalogMenuItemType.MutationHistoryViewer,
+            MutationHistoryViewerTabDefinition.icon(),
+            this.getItemTitle,
+            () => {
+                this.workspaceService.createTab(
+                    this.mutationHistoryViewerTabFactory.createNew(catalog.name)
+                )
+            },
+            baseEnabledFunctions
         )
 
 

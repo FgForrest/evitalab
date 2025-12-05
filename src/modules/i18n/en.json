@@ -416,6 +416,7 @@
           "deactivateCatalog": "Deactivate catalog",
           "switchToMutable": "Switch to mutable",
           "switchToImmutable": "Switch to immutable",
+          "historySubheader": "History",
           "mutationHistoryViewer": "Mutation history"
         }
       },
@@ -1904,6 +1905,7 @@
     },
     "toolbar": {
       "attributes": "Attributes: {containerNameList}",
+      "entity": "Entity",
       "history": "History",
       "price": "Price",
       "associatedData": "Associated data",

@@ -31,10 +31,13 @@ import {
     CatalogSchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
 import { ContainerType } from '@/modules/database-driver/data-type/ContainerType.ts'
+import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
+import { GrpcChangeCaptureContainerType } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 
 const keymap: Keymap = useKeymap()
 const { t } = useI18n()
 
+const workspaceService: WorkspaceService = useWorkspaceService()
 const props = defineProps<TabComponentProps<MutationHistoryViewerTabParams, MutationHistoryViewerTabData>>()
 const emit = defineEmits<TabComponentEvents>()
 defineExpose<TabComponentExpose>({
@@ -160,6 +163,29 @@ const titleDetails: List<string> = List.of(
     t('mutationHistoryViewer.toolbar.history')
 )
 
+const openMutationHistoryByAttribute = () => {
+    const entityPrimaryKey = props.data.entityPrimaryKey
+
+
+    workspaceService.createTab(
+        workspaceService.mutationHistoryViewerTabFactory.createNew(
+            props.params.dataPointer.catalogName,
+            new MutationHistoryViewerTabData(
+                undefined,
+                undefined,
+                entityPrimaryKey,
+                undefined,
+                undefined,
+                [GrpcChangeCaptureContainerType.CONTAINER_ENTITY],
+                props.data.entityType,
+                'dataSite',
+                false
+            )
+        )
+    )
+}
+
+
 </script>
 
 <template>
@@ -210,12 +236,13 @@ const titleDetails: List<string> = List.of(
             :title=titleDetails
         >
             <template #append>
-<!--                <VBtn icon density="compact" @click="showEntity">-->
-<!--                    <VIcon>mdi-table</VIcon>-->
-<!--                    <VActionTooltip activator="parent" >-->
-<!--                        {{ t('mutationHistoryViewer.button.reloadMutationHistory') }}-->
-<!--                    </VActionTooltip>-->
-<!--                </VBtn>-->
+                <VBtn icon density="compact" v-if="data.containerTypeList?.some(i => i !== GrpcChangeCaptureContainerType.CONTAINER_ENTITY) && !data.mutableFilters" @click="openMutationHistoryByAttribute">
+                    <VIcon>mdi-table</VIcon>
+                    <VActionTooltip activator="parent" >
+                        {{JSON.stringify(data)}}
+                        {{ t('mutationHistoryViewer.toolbar.entity') }}
+                    </VActionTooltip>
+                </VBtn>
             </template>
         </VTabToolbar>
 
