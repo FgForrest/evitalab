@@ -16,6 +16,7 @@ import { EntityConverter } from '@/modules/database-driver/connector/grpc/servic
 import { List as ImmutableList } from 'immutable'
 
 export class SetAttributeSchemaGloballyUniqueMutationConverter implements SchemaMutationConverter<SetAttributeSchemaGloballyUniqueMutation, GrpcSetAttributeSchemaGloballyUniqueMutation> {
+    public static readonly INSTANCE = new SetAttributeSchemaGloballyUniqueMutationConverter()
 
     convert(mutation: GrpcSetAttributeSchemaGloballyUniqueMutation): SetAttributeSchemaGloballyUniqueMutation {
         const uniqueGloballyInScopes = mutation.uniqueGloballyInScopes.length === 0 ?

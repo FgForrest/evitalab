@@ -9,6 +9,7 @@ import type {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcReferenceSchemaMutations_pb.ts'
 
 export class RemoveReferenceSchemaMutationConverter implements SchemaMutationConverter<RemoveReferenceSchemaMutation, GrpcRemoveReferenceSchemaMutation> {
+    public static readonly INSTANCE = new RemoveReferenceSchemaMutationConverter()
 
     convert(mutation: GrpcRemoveReferenceSchemaMutation): RemoveReferenceSchemaMutation {
         return new RemoveReferenceSchemaMutation(mutation.name)

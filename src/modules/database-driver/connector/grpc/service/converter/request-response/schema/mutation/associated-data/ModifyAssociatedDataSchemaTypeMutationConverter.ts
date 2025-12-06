@@ -11,6 +11,7 @@ import type {
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
 
 export class ModifyAssociatedDataSchemaTypeMutationConverter implements SchemaMutationConverter<ModifyAssociatedDataSchemaTypeMutation, GrpcModifyAssociatedDataSchemaTypeMutation> {
+    public static readonly INSTANCE = new ModifyAssociatedDataSchemaTypeMutationConverter()
 
     convert(mutation: GrpcModifyAssociatedDataSchemaTypeMutation): ModifyAssociatedDataSchemaTypeMutation {
         if (mutation.type == undefined) {

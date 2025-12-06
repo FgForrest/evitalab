@@ -9,6 +9,7 @@ import type {
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
 
 export class SetAssociatedDataSchemaNullableMutationConverter implements SchemaMutationConverter<SetAssociatedDataSchemaNullableMutation, GrpcSetAssociatedDataSchemaNullableMutation> {
+    public static readonly INSTANCE = new SetAssociatedDataSchemaNullableMutationConverter()
 
     convert(mutation: GrpcSetAssociatedDataSchemaNullableMutation): SetAssociatedDataSchemaNullableMutation {
         return new SetAssociatedDataSchemaNullableMutation(

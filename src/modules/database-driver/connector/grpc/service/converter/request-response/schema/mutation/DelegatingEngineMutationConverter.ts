@@ -202,34 +202,19 @@ import {
     ModifyCatalogSchemaNameMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/engine/ModifyCatalogSchemaNameMutationConverter.ts'
 
-
-function getKeyFromConverterName(converter: any): string {
-    // Handle both class constructors and instances
-    const name = typeof converter === 'function' ? converter.name : converter.constructor.name;
-
-    return name
-        .replace(/Converter$/, '') // Remove 'Converter' suffix
-        .replace(/([A-Z])/g, (match: string, p1: string, offset: number) =>
-            offset === 0 ? p1.toLowerCase() : p1
-        ); // Convert first letter to lowercase, keep others as-is
-}
-
 export class DelegatingEngineMutationConverter {
 
-
-    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>(
-        [
-            CreateCatalogSchemaMutationConverter.INSTANCE,
-            ModifyCatalogSchemaNameMutationConverter.INSTANCE,
-            ModifyCatalogSchemaMutationConverter.INSTANCE,
-            MakeCatalogAliveMutationConverter.INSTANCE,
-            RemoveCatalogSchemaMutationConverter.INSTANCE,
-            TransactionMutationConverter.INSTANCE,
-            DuplicateCatalogMutationConverter.INSTANCE,
-            SetCatalogMutabilityMutationConverter.INSTANCE,
-            SetCatalogStateMutationConverter.INSTANCE
-        ].map(converter => [getKeyFromConverterName(converter), converter])
-    );
+    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([
+        ['createCatalogSchemaMutation', CreateCatalogSchemaMutationConverter.INSTANCE],
+        ['modifyCatalogSchemaNameMutation', ModifyCatalogSchemaNameMutationConverter.INSTANCE],
+        ['modifyCatalogSchemaMutation', ModifyCatalogSchemaMutationConverter.INSTANCE],
+        ['makeCatalogAliveMutation', MakeCatalogAliveMutationConverter.INSTANCE],
+        ['removeCatalogSchemaMutation', RemoveCatalogSchemaMutationConverter.INSTANCE],
+        ['transactionMutation', TransactionMutationConverter.INSTANCE],
+        ['setCatalogMutabilityMutation', SetCatalogMutabilityMutationConverter.INSTANCE],
+        ['duplicateCatalogMutation', DuplicateCatalogMutationConverter.INSTANCE],
+        ['setCatalogStateMutation', SetCatalogStateMutationConverter.INSTANCE]
+    ]);
 
     static convert(mutation: GrpcEntitySchemaMutation | undefined): SchemaMutation {
         if (!mutation?.mutation?.case) {

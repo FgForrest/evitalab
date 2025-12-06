@@ -11,6 +11,7 @@ import type {
 import { List as ImmutableList } from 'immutable'
 
 export class SetEntitySchemaWithHierarchyMutationConverter implements SchemaMutationConverter<SetEntitySchemaWithHierarchyMutation, GrpcSetEntitySchemaWithHierarchyMutation> {
+    public static readonly INSTANCE = new SetEntitySchemaWithHierarchyMutationConverter()
 
     convert(mutation: GrpcSetEntitySchemaWithHierarchyMutation): SetEntitySchemaWithHierarchyMutation {
         const indexedInScopes = mutation.indexedInScopes.map(EntityConverter.convertEntityScope)

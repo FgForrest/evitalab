@@ -12,6 +12,7 @@ import { Range } from '@/modules/database-driver/data-type/Range.ts'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
 
 export class ApplyDeltaAttributeMutationConverter extends AttributeMutationConverter<ApplyDeltaAttributeMutation<any>, GrpcApplyDeltaAttributeMutation> {
+    public static readonly INSTANCE = new ApplyDeltaAttributeMutationConverter()
 
     convert(mutation: GrpcApplyDeltaAttributeMutation): ApplyDeltaAttributeMutation<any> {
         const key = AttributeMutationConverter.buildAttributeKey(mutation.attributeName, mutation.attributeLocale)

@@ -13,6 +13,7 @@ import {
 import { List as ImmutableList } from 'immutable'
 
 export class AllowCurrencyInEntitySchemaMutationConverter implements SchemaMutationConverter<AllowCurrencyInEntitySchemaMutation, GrpcAllowCurrencyInEntitySchemaMutation> {
+    public static readonly INSTANCE = new AllowCurrencyInEntitySchemaMutationConverter()
 
     convert(mutation: GrpcAllowCurrencyInEntitySchemaMutation): AllowCurrencyInEntitySchemaMutation {
         return new AllowCurrencyInEntitySchemaMutation(

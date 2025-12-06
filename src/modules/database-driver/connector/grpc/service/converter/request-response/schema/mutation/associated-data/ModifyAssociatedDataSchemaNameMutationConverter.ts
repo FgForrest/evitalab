@@ -10,8 +10,7 @@ import type {
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 
 export class ModifyAssociatedDataSchemaNameMutationConverter implements SchemaMutationConverter<ModifyAssociatedDataSchemaNameMutation, GrpcModifyAssociatedDataSchemaNameMutation> {
-
-
+    public static readonly INSTANCE = new ModifyAssociatedDataSchemaNameMutationConverter()
 
     convert(mutation: GrpcModifyAssociatedDataSchemaNameMutation): ModifyAssociatedDataSchemaNameMutation {
         if (mutation.newName == undefined) {

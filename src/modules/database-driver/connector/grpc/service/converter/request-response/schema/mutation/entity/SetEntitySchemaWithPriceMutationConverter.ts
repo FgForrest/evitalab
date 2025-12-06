@@ -11,6 +11,7 @@ import { EntityConverter } from '@/modules/database-driver/connector/grpc/servic
 import { List as ImmutableList } from 'immutable'
 
 export class SetEntitySchemaWithPriceMutationConverter implements SchemaMutationConverter<SetEntitySchemaWithPriceMutation, GrpcSetEntitySchemaWithPriceMutation> {
+    public static readonly INSTANCE = new SetEntitySchemaWithPriceMutationConverter()
 
     convert(mutation: GrpcSetEntitySchemaWithPriceMutation): SetEntitySchemaWithPriceMutation {
         const indexedInScopes = mutation.indexedInScopes.map(EntityConverter.convertEntityScope)

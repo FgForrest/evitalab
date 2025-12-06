@@ -175,102 +175,87 @@ import {
     ModifyEntitySchemaMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/catalog/ModifyEntitySchemaMutationConverter.ts'
 
-
-function getKeyFromConverterName(converter: any): string {
-    return converter.name
-        .replace(/Converter$/, '') // Remove 'Converter' suffix
-        .replace(/([A-Z])/g, (match: string, p1: string, offset: number) =>
-            offset === 0 ? p1.toLowerCase() : p1
-        ); // Convert first letter to lowercase, keep others as-is
-}
-
 export class DelegatingEntitySchemaMutationConverter {
 
+    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([
+        // associated data schema mutations
+        ['createAssociatedDataSchemaMutation', CreateAssociatedDataSchemaMutationConverter.INSTANCE],
+        ['modifyAssociatedDataSchemaDeprecationNoticeMutation', ModifyAssociatedDataSchemaDeprecationNoticeMutationConverter.INSTANCE],
+        ['modifyAssociatedDataSchemaDescriptionMutation', ModifyAssociatedDataSchemaDescriptionMutationConverter.INSTANCE],
+        ['modifyAssociatedDataSchemaNameMutation', ModifyAssociatedDataSchemaNameMutationConverter.INSTANCE],
+        ['modifyAssociatedDataSchemaTypeMutation', ModifyAssociatedDataSchemaTypeMutationConverter.INSTANCE],
+        ['removeAssociatedDataSchemaMutation', RemoveAssociatedDataSchemaMutationConverter.INSTANCE],
+        ['setAssociatedDataSchemaLocalizedMutation', SetAssociatedDataSchemaLocalizedMutationConverter.INSTANCE],
+        ['setAssociatedDataSchemaNullableMutation', SetAssociatedDataSchemaNullableMutationConverter.INSTANCE],
 
-    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>(
-        [
-            // entity schema mutations
-            CreateEntitySchemaMutationConverter,
-            RemoveEntitySchemaMutationConverter,
-            ModifyEntitySchemaMutationConverter,
+        // attribute schema mutations
+        ['createAttributeSchemaMutation', CreateAttributeSchemaMutationConverter.INSTANCE],
+        ['modifyAttributeSchemaDefaultValueMutation', ModifyAttributeSchemaDefaultValueMutationConverter.INSTANCE],
+        ['modifyAttributeSchemaDeprecationNoticeMutation', ModifyAttributeSchemaDeprecationNoticeMutationConverter.INSTANCE],
+        ['modifyAttributeSchemaDescriptionMutation', ModifyAttributeSchemaDescriptionMutationConverter.INSTANCE],
+        ['modifyAttributeSchemaNameMutation', ModifyAttributeSchemaNameMutationConverter.INSTANCE],
+        ['modifyAttributeSchemaTypeMutation', ModifyAttributeSchemaTypeMutationConverter.INSTANCE],
+        ['removeAttributeSchemaMutation', RemoveAttributeSchemaMutationConverter.INSTANCE],
+        ['setAttributeSchemaFilterableMutation', SetAttributeSchemaFilterableMutationConverter.INSTANCE],
+        ['setAttributeSchemaLocalizedMutation', SetAttributeSchemaLocalizedMutationConverter.INSTANCE],
+        ['setAttributeSchemaNullableMutation', SetAttributeSchemaNullableMutationConverter.INSTANCE],
+        ['setAttributeSchemaRepresentativeMutation', SetAttributeSchemaRepresentativeMutationConverter.INSTANCE],
+        ['setAttributeSchemaSortableMutation', SetAttributeSchemaSortableMutationConverter.INSTANCE],
+        ['setAttributeSchemaUniqueMutation', SetAttributeSchemaUniqueMutationConverter.INSTANCE],
+        ['useGlobalAttributeSchemaMutation', UseGlobalAttributeSchemaMutationConverter.INSTANCE],
 
-            // associated data schema mutations
-            CreateAssociatedDataSchemaMutationConverter,
-            ModifyAssociatedDataSchemaDeprecationNoticeMutationConverter,
-            ModifyAssociatedDataSchemaDescriptionMutationConverter,
-            ModifyAssociatedDataSchemaNameMutationConverter,
-            ModifyAssociatedDataSchemaTypeMutationConverter,
-            RemoveAssociatedDataSchemaMutationConverter,
-            SetAssociatedDataSchemaLocalizedMutationConverter,
-            SetAssociatedDataSchemaNullableMutationConverter,
+        // entity schema mutations
+        ['allowCurrencyInEntitySchemaMutation', AllowCurrencyInEntitySchemaMutationConverter.INSTANCE],
+        ['allowEvolutionModeInEntitySchemaMutation', AllowEvolutionModeInEntitySchemaMutationConverter.INSTANCE],
+        ['allowLocaleInEntitySchemaMutation', AllowLocaleInEntitySchemaMutationConverter.INSTANCE],
+        ['disallowCurrencyInEntitySchemaMutation', DisallowCurrencyInEntitySchemaMutationConverter.INSTANCE],
+        ['disallowEvolutionModeInEntitySchemaMutation', DisallowEvolutionModeInEntitySchemaMutationConverter.INSTANCE],
+        ['disallowLocaleInEntitySchemaMutation', DisallowLocaleInEntitySchemaMutationConverter.INSTANCE],
+        ['modifyEntitySchemaDeprecationNoticeMutation', ModifyEntitySchemaDeprecationNoticeMutationConverter.INSTANCE],
+        ['modifyEntitySchemaDescriptionMutation', ModifyEntitySchemaDescriptionMutationConverter.INSTANCE],
+        ['setEntitySchemaWithGeneratedPrimaryKeyMutation', SetEntitySchemaWithGeneratedPrimaryKeyMutationConverter.INSTANCE],
+        ['setEntitySchemaWithHierarchyMutation', SetEntitySchemaWithHierarchyMutationConverter.INSTANCE],
+        ['setEntitySchemaWithPriceMutation', SetEntitySchemaWithPriceMutationConverter.INSTANCE],
+        ['modifyEntitySchemaNameMutation', ModifyEntitySchemaNameMutationConverter.INSTANCE],
+        ['removeEntitySchemaMutation', RemoveEntitySchemaMutationConverter.INSTANCE],
+        ['createEntitySchemaMutation', CreateEntitySchemaMutationConverter.INSTANCE],
+        ['modifyEntitySchemaMutation', ModifyEntitySchemaMutationConverter.INSTANCE],
 
-            // attribute schema mutations
-            CreateAttributeSchemaMutationConverter,
-            ModifyAttributeSchemaDefaultValueMutationConverter,
-            ModifyAttributeSchemaDeprecationNoticeMutationConverter,
-            ModifyAttributeSchemaDescriptionMutationConverter,
-            ModifyAttributeSchemaNameMutationConverter,
-            ModifyAttributeSchemaTypeMutationConverter,
-            RemoveAttributeSchemaMutationConverter,
-            SetAttributeSchemaFilterableMutationConverter,
-            SetAttributeSchemaLocalizedMutationConverter,
-            SetAttributeSchemaNullableMutationConverter,
-            SetAttributeSchemaRepresentativeMutationConverter,
-            SetAttributeSchemaSortableMutationConverter,
-            SetAttributeSchemaUniqueMutationConverter,
-            UseGlobalAttributeSchemaMutationConverter,
+        // reference schema mutations
+        ['createReferenceSchemaMutation', CreateReferenceSchemaMutationConverter.INSTANCE],
+        ['modifyReferenceAttributeSchemaMutation', ModifyReferenceAttributeSchemaMutationConverter.INSTANCE],
+        ['modifyReferenceSchemaCardinalityMutation', ModifyReferenceSchemaCardinalityMutationConverter.INSTANCE],
+        ['modifyReferenceSchemaDeprecationNoticeMutation', ModifyReferenceSchemaDeprecationNoticeMutationConverter.INSTANCE],
+        ['modifyReferenceSchemaDescriptionMutation', ModifyReferenceSchemaDescriptionMutationConverter.INSTANCE],
+        ['modifyReferenceSchemaNameMutation', ModifyReferenceSchemaNameMutationConverter.INSTANCE],
+        ['modifyReferenceSchemaRelatedEntityGroupMutation', ModifyReferenceSchemaRelatedEntityGroupMutationConverter.INSTANCE],
+        ['modifyReferenceSchemaRelatedEntityMutation', ModifyReferenceSchemaRelatedEntityMutationConverter.INSTANCE],
+        ['removeReferenceSchemaMutation', RemoveReferenceSchemaMutationConverter.INSTANCE],
+        ['setReferenceSchemaFacetedMutation', SetReferenceSchemaFacetedMutationConverter.INSTANCE],
+        ['setReferenceSchemaIndexedMutation', SetReferenceSchemaIndexedMutationConverter.INSTANCE],
+        ['createReflectedReferenceSchemaMutation', CreateReflectedReferenceSchemaMutationConverter.INSTANCE],
+        ['modifyReflectedReferenceAttributeInheritanceSchemaMutation', ModifyReflectedReferenceAttributeInheritanceSchemaMutationConverter.INSTANCE],
+        ['modifyReferenceSortableAttributeCompoundSchemaMutation', ModifyReferenceSortableAttributeCompoundSchemaMutationConverter.INSTANCE],
 
-            // sortable attribute compound schema mutations
-            CreateSortableAttributeCompoundSchemaMutationConverter,
-            ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter,
-            ModifySortableAttributeCompoundSchemaDescriptionMutationConverter,
-            ModifySortableAttributeCompoundSchemaNameMutationConverter,
-            RemoveSortableAttributeCompoundSchemaMutationConverter,
-            SetSortableAttributeCompoundIndexedMutationConverter,
-
-            // entity schema mutations
-            AllowCurrencyInEntitySchemaMutationConverter,
-            AllowEvolutionModeInEntitySchemaMutationConverter,
-            AllowLocaleInEntitySchemaMutationConverter,
-            DisallowCurrencyInEntitySchemaMutationConverter,
-            DisallowEvolutionModeInEntitySchemaMutationConverter,
-            DisallowLocaleInEntitySchemaMutationConverter,
-            ModifyEntitySchemaNameMutationConverter,
-            ModifyEntitySchemaDeprecationNoticeMutationConverter,
-            ModifyEntitySchemaDescriptionMutationConverter,
-            SetEntitySchemaWithGeneratedPrimaryKeyMutationConverter,
-            SetEntitySchemaWithHierarchyMutationConverter,
-            SetEntitySchemaWithPriceMutationConverter,
-
-            // reference schema mutations
-            CreateReferenceSchemaMutationConverter,
-            CreateReflectedReferenceSchemaMutationConverter,
-            ModifyReferenceAttributeSchemaMutationConverter,
-            ModifyReferenceSchemaCardinalityMutationConverter,
-            ModifyReferenceSchemaDeprecationNoticeMutationConverter,
-            ModifyReferenceSchemaDescriptionMutationConverter,
-            ModifyReferenceSchemaNameMutationConverter,
-            ModifyReferenceSchemaRelatedEntityGroupMutationConverter,
-            ModifyReferenceSchemaRelatedEntityMutationConverter,
-            ModifyReflectedReferenceAttributeInheritanceSchemaMutationConverter,
-            RemoveReferenceSchemaMutationConverter,
-            SetReferenceSchemaFacetedMutationConverter,
-            SetReferenceSchemaIndexedMutationConverter,
-            ModifyReferenceSortableAttributeCompoundSchemaMutationConverter
-        ].map(converter => [getKeyFromConverterName(converter), converter])
-    );
+        // sortable attribute compound schema mutations
+        ['createSortableAttributeCompoundSchemaMutation', CreateSortableAttributeCompoundSchemaMutationConverter.INSTANCE],
+        ['modifySortableAttributeCompoundSchemaDeprecationNoticeMutation', ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter.INSTANCE],
+        ['modifySortableAttributeCompoundSchemaDescriptionMutation', ModifySortableAttributeCompoundSchemaDescriptionMutationConverter.INSTANCE],
+        ['modifySortableAttributeCompoundSchemaNameMutation', ModifySortableAttributeCompoundSchemaNameMutationConverter.INSTANCE],
+        ['removeSortableAttributeCompoundSchemaMutation', RemoveSortableAttributeCompoundSchemaMutationConverter.INSTANCE],
+        ['setSortableAttributeCompoundIndexedMutation', SetSortableAttributeCompoundIndexedMutationConverter.INSTANCE]
+    ]);
 
     static convert(mutation: GrpcEntitySchemaMutation | undefined): SchemaMutation {
         if (!mutation?.mutation?.case) {
             throw new UnexpectedError('Unknown mutation type: ' + mutation?.mutation.case)
         }
 
-        const ConverterClass = DelegatingEntitySchemaMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
-        if (!ConverterClass) {
+        const converter = DelegatingEntitySchemaMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
+        if (!converter) {
             throw new UnexpectedError('Unknown mutation type: ' + mutation.mutation.case)
         }
 
-        const converter = new ConverterClass()
         return converter.convert(mutation.mutation.value)
     }
 }

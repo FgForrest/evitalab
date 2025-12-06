@@ -9,6 +9,7 @@ import type {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcAttributeMutations_pb.ts'
 
 export class RemoveAttributeMutationConverter extends AttributeMutationConverter<RemoveAttributeMutation, GrpcRemoveAttributeMutation> {
+    public static readonly INSTANCE = new RemoveAttributeMutationConverter()
 
     convert(mutation: GrpcRemoveAttributeMutation): RemoveAttributeMutation {
         const key = AttributeMutationConverter.buildAttributeKey(mutation.attributeName, mutation.attributeLocale)

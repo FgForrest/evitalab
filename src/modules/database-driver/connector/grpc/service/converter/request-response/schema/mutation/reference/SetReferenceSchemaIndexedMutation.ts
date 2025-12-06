@@ -19,6 +19,7 @@ import { ReferenceIndexType } from '@/modules/database-driver/request-response/s
 import { List as ImmutableList } from 'immutable'
 
 export class SetReferenceSchemaIndexedMutationConverter implements SchemaMutationConverter<SetReferenceSchemaIndexedMutation, GrpcSetReferenceSchemaIndexedMutation> {
+    public static readonly INSTANCE = new SetReferenceSchemaIndexedMutationConverter()
 
     convert(mutation: GrpcSetReferenceSchemaIndexedMutation): SetReferenceSchemaIndexedMutation {
         if (mutation.inherited) {

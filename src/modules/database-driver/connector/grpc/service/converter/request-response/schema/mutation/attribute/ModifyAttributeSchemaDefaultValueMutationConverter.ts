@@ -10,6 +10,7 @@ import type {
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
 
 export class ModifyAttributeSchemaDefaultValueMutationConverter implements SchemaMutationConverter<ModifyAttributeSchemaDefaultValueMutation, GrpcModifyAttributeSchemaDefaultValueMutation> {
+    public static readonly INSTANCE = new ModifyAttributeSchemaDefaultValueMutationConverter()
 
     convert(mutation: GrpcModifyAttributeSchemaDefaultValueMutation): ModifyAttributeSchemaDefaultValueMutation {
         return new ModifyAttributeSchemaDefaultValueMutation(

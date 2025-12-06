@@ -27,19 +27,19 @@ export class DelegatingSortableAttributeCompoundSchemaMutationConverter {
 
     private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([ // todo pfi: replace any
         ['createSortableAttributeCompoundSchemaMutation',
-            CreateSortableAttributeCompoundSchemaMutationConverter
+            CreateSortableAttributeCompoundSchemaMutationConverter.INSTANCE
         ],
         ['modifySortableAttributeCompoundSchemaDeprecationNoticeMutation',
-            ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter
+            ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter.INSTANCE
         ],
         ['modifySortableAttributeCompoundSchemaDescriptionMutation',
-            ModifySortableAttributeCompoundSchemaDescriptionMutationConverter
+            ModifySortableAttributeCompoundSchemaDescriptionMutationConverter.INSTANCE
         ],
         ['modifySortableAttributeCompoundSchemaNameMutation',
-            ModifySortableAttributeCompoundSchemaNameMutationConverter
+            ModifySortableAttributeCompoundSchemaNameMutationConverter.INSTANCE
         ],
         ['removeSortableAttributeCompoundSchemaMutation',
-            RemoveSortableAttributeCompoundSchemaMutationConverter
+            RemoveSortableAttributeCompoundSchemaMutationConverter.INSTANCE
         ],
 
     ])
@@ -49,12 +49,11 @@ export class DelegatingSortableAttributeCompoundSchemaMutationConverter {
             throw new UnexpectedError('Unknown mutation type: ' + mutation?.mutation.case)
         }
 
-        const ConverterClass = DelegatingSortableAttributeCompoundSchemaMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
-        if (!ConverterClass) {
+        const converter = DelegatingSortableAttributeCompoundSchemaMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
+        if (!converter) {
             throw new UnexpectedError('Unknown mutation type: ' + mutation.mutation.case)
         }
 
-        const converter = new ConverterClass()
         return converter.convert(mutation.mutation.value)
     }
 }

@@ -14,6 +14,7 @@ import type {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchemaMutation_pb.ts'
 
 export class ModifyEntitySchemaMutationConverter implements SchemaMutationConverter<ModifyEntitySchemaMutation, GrpcModifyEntitySchemaMutation> {
+    public static readonly INSTANCE = new ModifyEntitySchemaMutationConverter()
 
     convert(mutation: GrpcModifyEntitySchemaMutation): ModifyEntitySchemaMutation {
         const entitySchemaMutations = mutation.entitySchemaMutations.map(DelegatingEntitySchemaMutationConverter.convert) // todo pfi: fix me

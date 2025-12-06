@@ -19,6 +19,7 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/CardinalityConvertor.ts'
 
 export class CreateReferenceSchemaMutationConverter implements SchemaMutationConverter<CreateReferenceSchemaMutation, GrpcCreateReferenceSchemaMutation> {
+    public static readonly INSTANCE = new CreateReferenceSchemaMutationConverter()
 
     convert(mutation: GrpcCreateReferenceSchemaMutation): CreateReferenceSchemaMutation {
         const indexedInScopes = mutation.indexedInScopes.length === 0 ?

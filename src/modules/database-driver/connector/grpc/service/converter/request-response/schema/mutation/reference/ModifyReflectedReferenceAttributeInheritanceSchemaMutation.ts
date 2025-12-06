@@ -13,6 +13,7 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
 
 export class ModifyReflectedReferenceAttributeInheritanceSchemaMutationConverter implements SchemaMutationConverter<ModifyReflectedReferenceAttributeInheritanceSchemaMutation, GrpcModifyReflectedReferenceAttributeInheritanceSchemaMutation> {
+    public static readonly INSTANCE = new ModifyReflectedReferenceAttributeInheritanceSchemaMutationConverter()
 
     convert(mutation: GrpcModifyReflectedReferenceAttributeInheritanceSchemaMutation): ModifyReflectedReferenceAttributeInheritanceSchemaMutation {
         return new ModifyReflectedReferenceAttributeInheritanceSchemaMutation(

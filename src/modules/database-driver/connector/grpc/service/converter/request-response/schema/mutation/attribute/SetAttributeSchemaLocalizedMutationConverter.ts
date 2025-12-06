@@ -9,6 +9,7 @@ import type {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcAttributeSchemaMutations_pb.ts'
 
 export class SetAttributeSchemaLocalizedMutationConverter implements SchemaMutationConverter<SetAttributeSchemaLocalizedMutation, GrpcSetAttributeSchemaLocalizedMutation> {
+    public static readonly INSTANCE = new SetAttributeSchemaLocalizedMutationConverter()
 
     convert(mutation: GrpcSetAttributeSchemaLocalizedMutation): SetAttributeSchemaLocalizedMutation {
         return new SetAttributeSchemaLocalizedMutation(

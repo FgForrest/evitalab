@@ -12,6 +12,7 @@ import { EntityConverter } from '@/modules/database-driver/connector/grpc/servic
 import { List as ImmutableList } from 'immutable'
 
 export class SetAttributeSchemaFilterableMutationConverter implements SchemaMutationConverter<SetAttributeSchemaFilterableMutation, GrpcSetAttributeSchemaFilterableMutation> {
+    public static readonly INSTANCE = new SetAttributeSchemaFilterableMutationConverter()
 
     convert(mutation: GrpcSetAttributeSchemaFilterableMutation): SetAttributeSchemaFilterableMutation {
         const filterableInScopes = mutation.filterableInScopes.length === 0 ?

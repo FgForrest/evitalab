@@ -10,6 +10,7 @@ import type {
 import { ReferenceKey } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceKey.ts'
 
 export class SetReferenceGroupMutationConverter implements LocalMutationConverter<SetReferenceGroupMutation, GrpcSetReferenceGroupMutation> {
+    public static readonly INSTANCE = new SetReferenceGroupMutationConverter()
 
     convert(mutation: GrpcSetReferenceGroupMutation): SetReferenceGroupMutation {
         return new SetReferenceGroupMutation(

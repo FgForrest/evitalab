@@ -13,6 +13,7 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/data/mutation/DelegatingAttributeMutationConverter.ts'
 
 export class ReferenceAttributeMutationConverter implements LocalMutationConverter<ReferenceAttributeMutation, GrpcReferenceAttributeMutation> {
+    public static readonly INSTANCE = new ReferenceAttributeMutationConverter()
 
     convert(mutation: GrpcReferenceAttributeMutation): ReferenceAttributeMutation {
         return new ReferenceAttributeMutation(

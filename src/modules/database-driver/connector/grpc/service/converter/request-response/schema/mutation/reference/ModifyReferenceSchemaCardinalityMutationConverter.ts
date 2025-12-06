@@ -12,6 +12,7 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/CardinalityConvertor.ts'
 
 export class ModifyReferenceSchemaCardinalityMutationConverter implements SchemaMutationConverter<ModifyReferenceSchemaCardinalityMutation, GrpcModifyReferenceSchemaCardinalityMutation> {
+    public static readonly INSTANCE = new ModifyReferenceSchemaCardinalityMutationConverter()
 
     convert(mutation: GrpcModifyReferenceSchemaCardinalityMutation): ModifyReferenceSchemaCardinalityMutation {
         return new ModifyReferenceSchemaCardinalityMutation(

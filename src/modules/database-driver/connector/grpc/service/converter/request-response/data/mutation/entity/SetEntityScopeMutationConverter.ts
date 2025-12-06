@@ -8,6 +8,7 @@ import type { GrpcSetEntityScopeMutation } from '@/modules/database-driver/conne
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter.ts'
 
 export class SetEntityScopeMutationConverter implements LocalMutationConverter<SetEntityScopeMutation, GrpcSetEntityScopeMutation> {
+    public static readonly INSTANCE = new SetEntityScopeMutationConverter()
 
     convert(mutation: GrpcSetEntityScopeMutation): SetEntityScopeMutation {
         return new SetEntityScopeMutation(
