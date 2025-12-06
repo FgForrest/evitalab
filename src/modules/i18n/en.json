@@ -2055,6 +2055,7 @@
           "action": {
             "open": "Attribute"
           },
+          "title": "Attribute: {attributeName}",
           "title-upsert": "Upsert attribute: {attributeName}",
           "title-remove": "Remove attribute: {attributeName}",
           "locale": {

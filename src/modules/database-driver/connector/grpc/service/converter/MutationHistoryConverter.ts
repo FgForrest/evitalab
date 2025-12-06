@@ -80,7 +80,6 @@ export class MutationHistoryConverter {
     }
 
     convertMutationHistoryRequest(mutationHistoryRequest: MutationHistoryRequest): GrpcChangeCaptureCriteria[] {
-        console.log(mutationHistoryRequest)
         const criteria: GrpcChangeCaptureCriteria[] = []
 
 
