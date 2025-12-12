@@ -291,7 +291,7 @@
           "copyValueToolTipDescription": "Copy value from cell",
           "entityHistory": "E + Middle mouse button",
           "entityHistoryDescription": "Show entity history",
-          "attributeHistory": "A + Middle mouse button",
+          "attributeHistory": "L + Middle mouse button",
           "attributeHistoryDescription": "Show attribute history"
         }
       }
@@ -1971,6 +1971,12 @@
       }
     },
     "record": {
+      "timestamp": {
+        "title": "Timestamp",
+        "notification": {
+          "copiedToClipboard": "Timestamp has been copied to clipboard"
+        }
+      },
       "type": {
         "priceSettings": {
           "title": "Price settings updated:"
@@ -1985,8 +1991,8 @@
             "value": "Mutation count {count}"
           },
           "walSizeInBytes": {
-            "tooltip": "WAL size in bytes",
-            "value": "WAL {count}"
+            "tooltip": "WAL size",
+            "value": "WAL {wallSizeInBytes}"
           },
           "commitTimestamp": {
             "tooltip": "Commit timestamp",

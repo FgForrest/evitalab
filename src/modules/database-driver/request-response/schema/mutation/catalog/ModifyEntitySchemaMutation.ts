@@ -4,6 +4,8 @@ import type {
 } from '@/modules/database-driver/request-response/schema/mutation/LocalCatalogSchemaMutation.ts'
 
 export class ModifyEntitySchemaMutation {
+    static readonly TYPE = 'modifyEntitySchemaMutation' as const
+
     readonly entityType: string
     readonly schemaMutations: ImmutableList<LocalCatalogSchemaMutation>
 

@@ -1,4 +1,6 @@
 export class SetPriceInnerRecordHandlingMutation implements LocalMutation {
+    static readonly TYPE = 'setPriceInnerRecordHandlingMutation' as const
+
     readonly priceInnerRecordHandling: PriceInnerRecordHandling
 
     constructor(priceInnerRecordHandling: PriceInnerRecordHandling) {

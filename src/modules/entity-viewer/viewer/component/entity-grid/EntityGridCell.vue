@@ -64,7 +64,7 @@ function useKeyPress(targetKey: string) {
     return isPressed
 }
 
-const isAPressed = useKeyPress('a')
+const isLPressed = useKeyPress('l')
 const isEPressed = useKeyPress('e')
 
 
@@ -178,7 +178,7 @@ function handleClick(e: MouseEvent): void {
 
     if (e.shiftKey && e.button === 1) {
         copyValue(true)
-    } else if (isAPressed.value && e.button === 1) {
+    } else if (isLPressed.value && e.button === 1) {
         openMutationHistoryByAttribute()
     } else if (isEPressed.value && e.button === 1) {
         openMutationHistoryByEntity()

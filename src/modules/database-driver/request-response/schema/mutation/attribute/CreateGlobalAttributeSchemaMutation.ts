@@ -8,6 +8,8 @@ import {
 } from '@/modules/database-driver/request-response/schema/ScopedGlobalAttributeUniquenessType.ts'
 
 export class CreateGlobalAttributeSchemaMutation {
+    static readonly TYPE = 'createGlobalAttributeSchemaMutation' as const
+
     readonly name: string
     readonly description: string|undefined
     readonly deprecationNotice: string|undefined

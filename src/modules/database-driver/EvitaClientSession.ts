@@ -526,7 +526,7 @@ export class EvitaClientSession {
         try {
             const request: GetMutationsHistoryPageRequest = {
                 ...(mutationHistoryRequest.page != undefined ? { page: mutationHistoryRequest.page } : {}),
-                pageSize: 10,
+                pageSize: limit,
                 ...(mutationHistoryRequest.sinceVersion != undefined
                     ? { sinceVersion: BigInt(mutationHistoryRequest.sinceVersion) }
                     : {}),
@@ -587,7 +587,8 @@ export class EvitaClientSession {
             undefined,
             undefined,
             Operation.Transaction,
-            mutation
+            mutation,
+            EvitaValueConverter.convertGrpcOffsetDateTime(grpcTransactionOverview.commitTimestamp!)
         )
 
     }

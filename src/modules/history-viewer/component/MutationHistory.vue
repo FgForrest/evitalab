@@ -233,7 +233,7 @@ async function tryReloadHistoryForPossibleNewRecords(): Promise<void> {
     fetchingNewRecordsWhenThereArentAny.value = false
     if (history.value.length === 0) {
         await toaster.info(t('mutationHistoryViewer.list.notification.noNewerRecords'))
-        nextPagePointer.value.setLastFetchedCount(fetchedRecords.size)
+        nextPagePointer.value.setLastFetchedCount(0)
         return
     }
 }
@@ -290,7 +290,7 @@ async function moveStartPointerToNewest(): Promise<void> {
         const latestRecords: ImmutableList<ChangeCatalogCapture> = await mutationHistoryViewerService.getMutationHistoryList(
             props.dataPointer.catalogName,
             lastRecordRequest.value,
-            1
+            limit
         )
         if (latestRecords.size === 0) {
             startPointer.value = undefined

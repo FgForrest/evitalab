@@ -15,7 +15,7 @@ import {
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
 import { CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
 import { TransactionMutation } from '@/modules/database-driver/request-response/transaction/TransactionMutation.ts'
-import { formatCount } from '@/utils/string.ts'
+import { formatByteSize, formatCount } from '@/utils/string.ts'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime.ts'
 import type {
     MutationHistoryMetadataItemContext
@@ -40,7 +40,7 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
         const visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined = ctx.getVisualisedSessionRecord(mutationHistory.version)
 
-        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-graph-outline', i18n.global.t('mutationHistoryViewer.record.type.transaction.title', { version: mutationHistory.version }), undefined, this.constructMetadata(mutationHistory, visualisedSessionRecord), ImmutableList())
+        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-graph-outline', i18n.global.t('mutationHistoryViewer.record.type.transaction.title', { version: mutationHistory.version }), undefined, this.constructMetadata(mutationHistory), ImmutableList())
 
 
         ctx.addVisualisedSessionRecord(mutationHistory.version, visualisedRecord)
@@ -49,15 +49,17 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
         ctx.attachPendingChildren(mutationHistory.version, visualisedRecord)
     }
 
-    private constructMetadata(mutationHistory: ChangeCatalogCapture,
-                              visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
+    private constructMetadata(mutationHistory: ChangeCatalogCapture): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
+
+        if (mutationHistory.body instanceof TransactionMutation) {
+            defaultMetadata.push(MutationHistoryTransactionVisualiser.commitTimestamp((mutationHistory.body.commitTimestamp)))
+        }
 
         defaultMetadata.push(MetadataItem.area(mutationHistory.area))
         defaultMetadata.push(MetadataItem.entityType(mutationHistory.operation))
         if (mutationHistory.body instanceof TransactionMutation) {
             defaultMetadata.push(MutationHistoryTransactionVisualiser.mutationCount((mutationHistory.body.mutationCount)))
-            defaultMetadata.push(MutationHistoryTransactionVisualiser.commitTimestamp((mutationHistory.body.commitTimestamp)))
             defaultMetadata.push(MutationHistoryTransactionVisualiser.transactionId((mutationHistory.body.transactionId)))
             defaultMetadata.push(MutationHistoryTransactionVisualiser.walSizeInBytes((mutationHistory.body.walSizeInBytes)))
         }
@@ -85,26 +87,26 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
         )
     }
 
-    static walSizeInBytes(ioFetchCount: number): MetadataItem {
+    static walSizeInBytes(wallSizeInBytes: number): MetadataItem {
         return new MetadataItem(
             metadataItemIoFetchCountIdentifier,
             'mdi-folder-zip-outline',
             i18n.global.t('mutationHistoryViewer.record.type.transaction.walSizeInBytes.tooltip'),
             i18n.global.t(
                 'mutationHistoryViewer.record.type.transaction.walSizeInBytes.value',
-                { count: formatCount(ioFetchCount) }
+                { wallSizeInBytes: formatByteSize(wallSizeInBytes) }
             )
         )
     }
 
-    static mutationCount(ioFetchCount: number): MetadataItem {
+    static mutationCount(mutationCount: number): MetadataItem {
         return new MetadataItem(
             metadataItemIoFetchCountIdentifier,
             'mdi-download-network-outline',
             i18n.global.t('mutationHistoryViewer.record.type.transaction.mutationCount.tooltip'),
             i18n.global.t(
                 'mutationHistoryViewer.record.type.transaction.mutationCount.value',
-                { count: formatCount(ioFetchCount) }
+                { count: formatCount(mutationCount) }
             )
         )
     }

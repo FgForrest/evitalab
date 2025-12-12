@@ -1,5 +1,6 @@
 import { i18n } from '@/vue-plugins/i18n'
 import { List as ImmutableList } from 'immutable'
+import { getMutationType } from '@/modules/database-driver/request-response/utils/MutationTypeHelper'
 import { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
 import { MutationVisualiser } from '@/modules/history-viewer/service/MutationVisualiser.ts'
 import {
@@ -41,7 +42,7 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
         // entity attributes
         if ((mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations) {
             for (let schemaMutation of (mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations) {
-                const attributeName = schemaMutation?.constructor.name
+                const attributeName = getMutationType(schemaMutation)
                 const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }), JSON.stringify(schemaMutation), [], ImmutableList())
                 visualisedRecord.addChild(attributeMutationVisualised)
             }
@@ -63,7 +64,7 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
         defaultMetadata.push(MetadataItem.version(mutationHistory.version))
         defaultMetadata.push(MetadataItem.index(mutationHistory.index))
         defaultMetadata.push(MutationHistorySchemaVisualiser.mutationCount((mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations?.size))
-        defaultMetadata.push(MutationHistorySchemaVisualiser.mutationType(mutationHistory?.body?.constructor?.name))
+        defaultMetadata.push(MutationHistorySchemaVisualiser.mutationType(getMutationType(mutationHistory?.body)))
 
         return [MetadataGroup.default(defaultMetadata)]
     }

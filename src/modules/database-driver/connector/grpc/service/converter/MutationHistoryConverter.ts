@@ -26,6 +26,7 @@ import {
 import type {
     GrpcInfrastructureMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcInfrastrutureMutation_pb.ts'
+import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
 
 export class MutationHistoryConverter {
 
@@ -63,7 +64,8 @@ export class MutationHistoryConverter {
             changeCapture.entityType,
             changeCapture.entityPrimaryKey !== undefined ? changeCapture.entityPrimaryKey : (changeCapture.body.case === 'entityMutation' ? changeCapture.body.value?.mutation?.value?.entityPrimaryKey : undefined),
             CatalogSchemaConverter.toOperation(changeCapture.operation),
-            mutation
+            mutation,
+            changeCapture.timestamp !== undefined ? EvitaValueConverter.convertGrpcOffsetDateTime(changeCapture.timestamp) : undefined
         )
 
 

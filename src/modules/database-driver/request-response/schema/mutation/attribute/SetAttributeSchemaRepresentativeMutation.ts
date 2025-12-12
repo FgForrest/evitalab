@@ -1,4 +1,6 @@
 export class SetAttributeSchemaRepresentativeMutation {
+    static readonly TYPE = 'setAttributeSchemaRepresentativeMutation' as const
+
     readonly name: string
     readonly representative: boolean
 

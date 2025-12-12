@@ -2,6 +2,8 @@ import { PriceMutation } from '@/modules/database-driver/request-response/data/m
 import type { PriceKey } from '@/modules/database-driver/request-response/data/mutation/price/PriceKey.ts'
 
 export class RemovePriceMutation extends PriceMutation {
+    static readonly TYPE = 'removePriceMutation' as const
+
     constructor(priceKey: PriceKey) {
         super(priceKey)
     }
