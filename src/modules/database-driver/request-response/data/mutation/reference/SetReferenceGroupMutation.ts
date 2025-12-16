@@ -4,6 +4,8 @@ import {
 import type { ReferenceKey } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceKey.ts'
 
 export class SetReferenceGroupMutation extends ReferenceMutation {
+    static readonly TYPE = 'setReferenceGroupMutation' as const
+
     readonly resolvedGroupType: string | undefined
     readonly groupPrimaryKey: number
     readonly groupType: string | undefined

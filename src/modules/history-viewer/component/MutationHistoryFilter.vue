@@ -5,7 +5,7 @@
  */
 
 import VDateTimeInput from '@/modules/base/component/VDateTimeInput.vue'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import type { Toaster } from '@/modules/notification/service/Toaster'
@@ -16,21 +16,40 @@ import {
 } from '@/modules/history-viewer/service/MutationHistoryViewerService.ts'
 import { MutationHistoryCriteria } from '@/modules/history-viewer/model/MutationHistoryCriteria.ts'
 import type { MutationHistoryDataPointer } from '@/modules/history-viewer/model/MutationHistoryDataPointer.ts'
-import { UserMutationType } from '@/modules/history-viewer/model/UserMutationHistoryType.ts'
 import type { DateTime } from 'luxon'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime.ts'
+import {
+    GrpcChangeCaptureOperation,
+    GrpcChangeCaptureContainerType
+} from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
+import { useEvitaClient } from '@/modules/database-driver/EvitaClient'
 
 const mutationHistoryViewerService: MutationHistoryViewerService = useMutationHistoryViewerService()
+const evitaClient = useEvitaClient()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const userMutationHistoryRecordTypeItems: any[] = Object.values(UserMutationType).map(type => {
+const userMutationHistoryMutationOperation: any[] = ['UPSERT', 'REMOVE'].map(type => {
     return {
         value: type,
-        title: t(`mutationHistoryViewer.recordHistory.filter.form.types.type.${type}`)
+        title: t(`mutationHistoryViewer.filter.form.mutationOperation.items.${type}`)
     }
 })
+
+const userMutationHistoryContainerType: any[] = [
+    'CONTAINER_CATALOG',
+    'CONTAINER_ATTRIBUTE',
+    'CONTAINER_ASSOCIATED_DATA',
+    'CONTAINER_PRICE',
+    'CONTAINER_REFERENCE'
+]
+    .map(type => {
+        return {
+            value: type,
+            title: t(`mutationHistoryViewer.filter.form.containerType.items.${type}`)
+        }
+    })
 
 const props = defineProps<{
     modelValue: MutationHistoryCriteria
@@ -45,7 +64,12 @@ const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
     props.modelValue.from,
     props.modelValue.to,
     props.modelValue.entityPrimaryKey,
-
+    props.modelValue.operationList,
+    props.modelValue.containerNameList,
+    props.modelValue.containerTypeList,
+    props.modelValue.entityType,
+    props.modelValue.areaType ?? 'both',
+    props.modelValue.mutableFilters
 ))
 const criteriaChanged = ref<boolean>(false)
 watch(criteria.value, (newValue) => {
@@ -78,18 +102,18 @@ watch(to, async (newValue) => {
     }
 })
 
-// const types = ref<UserMutationHistoryRecordType[]>(
-//     criteria.value.types != undefined
-//         ? criteria.value.types
-//         : []
-// )
-// watch(types, async (newValue) => {
-//     if (await assertFormValidated()) {
-//         criteria.value.types = newValue
-//     }
-// })
+const operationList = ref<GrpcChangeCaptureOperation[]>(
+    criteria.value.operationList != undefined
+        ? criteria.value.operationList
+        : []
+)
+watch(operationList, async (newValue) => {
+    if (await assertFormValidated()) {
+        criteria.value.operationList = newValue
+    }
+})
 
-const entityPrimaryKey = ref<number|undefined>(criteria.value.entityPrimaryKey || undefined)
+const entityPrimaryKey = ref<number | undefined>(criteria.value.entityPrimaryKey || undefined)
 watch(entityPrimaryKey, async (newValue) => {
     if (await assertFormValidated()) {
         if (newValue == undefined || newValue === 0) {
@@ -99,6 +123,7 @@ watch(entityPrimaryKey, async (newValue) => {
         }
     }
 })
+
 const entityPrimaryKeyRules = [
     (value: string): any => {
         if (value == undefined || value === '') {
@@ -113,6 +138,58 @@ const entityPrimaryKeyRules = [
     }
 ]
 
+const entityTypeItems = ref<string[]>([])
+const entityType = ref<string | undefined>(criteria.value.entityType)
+watch(entityType, async (newValue) => {
+    if (await assertFormValidated()) {
+        criteria.value.entityType = newValue
+    }
+})
+
+const containerNameList = ref<string[]>(criteria.value.containerNameList ?? [])
+watch(containerNameList, async (newValue) => {
+    if (await assertFormValidated()) {
+        criteria.value.containerNameList = newValue
+    }
+})
+
+const containerTypeList = ref<GrpcChangeCaptureContainerType[]>(criteria.value.containerTypeList ?? [])
+watch(containerTypeList, async (newValue) => {
+    if (await assertFormValidated()) {
+        criteria.value.containerTypeList = newValue
+    }
+})
+
+async function loadEntityTypes(): Promise<void> {
+    const schema = await evitaClient.queryCatalog(
+        props.dataPointer.catalogName,
+        async session => await session.getCatalogSchema()
+    )
+    const map = await schema.entitySchemas()
+    entityTypeItems.value = Array.from(map.keys())
+}
+
+onMounted(async () => {
+    await loadEntityTypes()
+})
+
+const areaTypeItems = [
+    { value: 'both', title: t('mutationHistoryViewer.filter.form.areaType.items.both') },
+    { value: 'dataSite', title: t('mutationHistoryViewer.filter.form.areaType.items.dataSite') },
+    { value: 'schemaSite', title: t('mutationHistoryViewer.filter.form.areaType.items.schemaSite') }
+]
+const areaType = ref<'both' | 'dataSite' | 'schemaSite'>(criteria.value.areaType ?? 'both')
+watch(areaType, async (newValue) => {
+    if (await assertFormValidated()) {
+        criteria.value.areaType = newValue
+
+        if (newValue !== 'dataSite') {
+            entityPrimaryKey.value = undefined;
+            criteria.value.entityPrimaryKey = undefined;
+        }
+
+    }
+})
 
 async function assertFormValidated(): Promise<boolean> {
     if (form.value == undefined) {
@@ -135,6 +212,8 @@ async function applyChangedCriteria(): Promise<void> {
     emit('apply')
     criteriaChanged.value = false
 }
+
+
 </script>
 
 <template>
@@ -146,7 +225,7 @@ async function applyChangedCriteria(): Promise<void> {
         class="record-history-filter-form"
     >
         <div class="record-history-filter">
-            <span class="record-history-filter__label text-disabled">{{ t('mutationHistoryViewer.filter.label') }}:</span>
+            <span class="record-history-filter__label text-disabled">{{ t('mutationHistoryViewer.filter.label')}}:</span>
             <VTooltip>
                 <template #activator="{ props }">
                     <VDateTimeInput
@@ -177,33 +256,116 @@ async function applyChangedCriteria(): Promise<void> {
                     {{ t('mutationHistoryViewer.filter.form.to.hint') }}
                 </template>
             </VTooltip>
-<!--            <VTooltip>-->
-<!--                <template #activator="{ props }">-->
-<!--                    <VSelect-->
-<!--                        v-model="types"-->
-<!--                        :items="userMutationHistoryRecordTypeItems"-->
-<!--                        :label="t('mutationHistoryViewer.filter.form.mutationTypes.label')"-->
-<!--                        multiple-->
-<!--                        clearable-->
-<!--                        hide-details-->
-<!--                        class="record-history-filter__input"-->
-<!--                        v-bind="props"-->
-<!--                    >-->
-<!--                        <template #selection="{ index }">-->
-<!--                        <span-->
-<!--                            v-if="index === 0"-->
-<!--                            class="text-grey text-caption align-self-center text-truncate"-->
-<!--                        >-->
-<!--                            {{ t('mutationHistoryViewer.filter.form.mutationTypes.valueDescriptor', { count: types.length }) }}-->
-<!--                          </span>-->
-<!--                        </template>-->
-<!--                    </VSelect>-->
-<!--                </template>-->
-<!--                <template #default>-->
-<!--                    {{ t('mutationHistoryViewer.filter.form.types.hint') }}-->
-<!--                </template>-->
-<!--            </VTooltip>-->
             <VTooltip>
+                <template #activator="{ props }">
+                    <VSelect
+                        v-model="operationList"
+                        :items="userMutationHistoryMutationOperation"
+                        :label="t('mutationHistoryViewer.filter.form.mutationOperation.label')"
+                        multiple
+                        clearable
+                        hide-details
+                        class="record-history-filter__input"
+                        v-bind="props"
+                    >
+                        <template #selection="{ index }">
+                        <span
+                            v-if="index === 0"
+                            class="text-grey text-caption align-self-center text-truncate"
+                        >
+                            {{ t('mutationHistoryViewer.filter.form.mutationOperation.valueDescriptor', { count: operationList.length })}}
+                          </span>
+                        </template>
+                    </VSelect>
+                </template>
+                <template #default>
+                    {{ t('mutationHistoryViewer.filter.form.mutationOperation.hint') }}
+                </template>
+            </VTooltip>
+
+            <VTooltip>
+                <template #activator="{ props }">
+                    <VCombobox
+                        v-model="entityType"
+                        :items="entityTypeItems"
+                        :label="t('mutationHistoryViewer.filter.form.entityType.label')"
+                        hide-details
+                        clearable
+                        class="record-history-filter__input"
+                        v-bind="props"
+                    />
+                </template>
+                <template #default>
+                    {{ t('mutationHistoryViewer.filter.form.entityType.hint') }}
+                </template>
+            </VTooltip>
+
+            <VTooltip>
+                <template #activator="{ props }">
+                    <VSelect
+                        v-model="containerTypeList"
+                        :items="userMutationHistoryContainerType"
+                        :label="t('mutationHistoryViewer.filter.form.containerType.label')"
+                        multiple
+                        clearable
+                        hide-details
+                        class="record-history-filter__input"
+                        v-bind="props"
+                    >
+                        <template #selection="{ index }">
+                        <span
+                            v-if="index === 0"
+                            class="text-grey text-caption align-self-center text-truncate"
+                        >
+                            {{ t('mutationHistoryViewer.filter.form.containerType.valueDescriptor', { count: containerTypeList.length }) }}
+                          </span>
+                        </template>
+                    </VSelect>
+                </template>
+                <template #default>
+                    {{ t('mutationHistoryViewer.filter.form.containerType.hint') }}
+                </template>
+            </VTooltip>
+
+            <VTooltip>
+                <template #activator="{ props }">
+                    <VCombobox
+                        v-model="containerNameList"
+                        :label="t('mutationHistoryViewer.filter.form.containerName.label')"
+                        :items="[]"
+                        multiple
+                        chips
+                        clearable
+                        hide-details
+                        class="record-history-filter__input"
+                        v-bind="props"
+                    />
+                </template>
+                <template #default>
+                    {{ t('mutationHistoryViewer.filter.form.containerName.hint') }}
+                </template>
+            </VTooltip>
+
+            <!-- area type selector -->
+            <VTooltip>
+                <template #activator="{ props }">
+                    <VSelect
+                        v-model="areaType"
+                        :items="areaTypeItems"
+                        :label="t('mutationHistoryViewer.filter.form.areaType.label')"
+                        hide-details
+                        clearable
+                        class="record-history-filter__input"
+                        v-bind="props"
+                    />
+                </template>
+                <template #default>
+                    {{ t('mutationHistoryViewer.filter.form.areaType.hint') }}
+                </template>
+            </VTooltip>
+
+            <!--            pokud je vybrána "area type" == dataSite, tak zde zobrazit tento input na entityPrimaryKey- -->
+            <VTooltip v-if="areaType === 'dataSite'">
                 <template #activator="{ props }">
                     <VTextField
                         v-model="entityPrimaryKey"

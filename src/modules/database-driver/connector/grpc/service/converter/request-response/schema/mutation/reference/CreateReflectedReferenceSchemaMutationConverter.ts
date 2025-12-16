@@ -22,6 +22,7 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
 
 export class CreateReflectedReferenceSchemaMutationConverter implements SchemaMutationConverter<CreateReflectedReferenceSchemaMutation, GrpcCreateReflectedReferenceSchemaMutation> {
+    public static readonly INSTANCE = new CreateReflectedReferenceSchemaMutationConverter()
 
     convert(mutation: GrpcCreateReflectedReferenceSchemaMutation): CreateReflectedReferenceSchemaMutation {
         const indexedInScopes = mutation.indexedInScopes.length === 0 ?

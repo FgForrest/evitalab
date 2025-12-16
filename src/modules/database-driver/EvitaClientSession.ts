@@ -9,6 +9,8 @@ import { InstanceTerminatedError } from '@/modules/database-driver/exception/Ins
 import {
     type GetMutationsHistoryPageRequest,
     type GetMutationsHistoryPageResponse,
+    type GetTransactionOverviewRequest,
+    type GetTransactionOverviewResponse,
     type GrpcBackupCatalogResponse,
     type GrpcCatalogSchemaResponse,
     type GrpcCatalogVersionAtResponse,
@@ -19,7 +21,8 @@ import {
     type GrpcFullBackupCatalogResponse,
     type GrpcGoLiveAndCloseResponse,
     type GrpcQueryResponse,
-    type GrpcRenameCollectionResponse
+    type GrpcRenameCollectionResponse,
+    type GrpcTransactionOverview
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaSessionAPI_pb'
 import {
     CatalogSchemaConverter
@@ -52,7 +55,10 @@ import type { EntitySchemaAccessor } from '@/modules/database-driver/request-res
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
-import { GrpcChangeCaptureContent } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
+import {
+    GrpcChangeCaptureArea,
+    GrpcChangeCaptureContent
+} from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import type {
     MutationHistoryConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/MutationHistoryConverter.ts'
@@ -62,6 +68,8 @@ import type {
     TrafficRecordingCaptureRequest
 } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordingCaptureRequest.ts'
 import type { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord.ts'
+import { TransactionMutation } from '@/modules/database-driver/request-response/transaction/TransactionMutation.ts'
+import { Operation } from '@/modules/database-driver/request-response/cdc/Operation.ts'
 
 const sessionTimeout: number = 30 * 1000 // 30 seconds
 
@@ -516,28 +524,73 @@ export class EvitaClientSession {
                              limit: number): Promise<ImmutableList<ChangeCatalogCapture>> {
         this.assertActive()
         try {
-
-
-            const request: GetMutationsHistoryPageRequest = { // todo pfi: celé toto tělo schovat do konverzní metody
-                page: 1,
-                pageSize: limit || 20,
+            const request: GetMutationsHistoryPageRequest = {
+                ...(mutationHistoryRequest.page != undefined ? { page: mutationHistoryRequest.page } : {}),
+                pageSize: limit,
+                ...(mutationHistoryRequest.sinceVersion != undefined
+                    ? { sinceVersion: BigInt(mutationHistoryRequest.sinceVersion) }
+                    : {}),
+                ...(mutationHistoryRequest.sinceIndex != undefined
+                    ? { sinceIndex: mutationHistoryRequest.sinceIndex }
+                    : {}),
+                ...((mutationHistoryRequest.from != undefined || mutationHistoryRequest.to != undefined)
+                    ? {
+                        timeFrame: {
+                            from: mutationHistoryRequest.from ? EvitaValueConverter.convertOffsetDateTime(mutationHistoryRequest.from) : undefined,
+                            to: mutationHistoryRequest.to ? EvitaValueConverter.convertOffsetDateTime(mutationHistoryRequest.to) : undefined
+                        }
+                    }
+                    : {}),
                 content: GrpcChangeCaptureContent.CHANGE_BODY,
                 criteria: this.mutationHistoryConverterProvider().convertMutationHistoryRequest(mutationHistoryRequest)
-            } as GetMutationsHistoryPageRequest
+            } as GetMutationsHistoryPageRequest;
+
 
             const response: GetMutationsHistoryPageResponse = await this.evitaSessionClientProvider().getMutationsHistoryPage(request, this._callMetadata)
+            const captures = response.changeCapture.map(i => this.mutationHistoryConverterProvider().convertGrpcMutationHistory(i))
 
-            console.log(response)
-            const captures = response.changeCapture.map(i => this.mutationHistoryConverterProvider()
-                .convertGrpcMutationHistory(i))
+            const catalogVersionIdList = [...new Set(
+                captures
+                    .filter(i => i.version != undefined)
+                    .map(i => i.version.toString())
+            )];
 
-            console.log(captures)
+            let transactionCaptures:ChangeCatalogCapture[] = [];
+            if (mutationHistoryRequest.loadTransaction) {
+                const transactionRequest: GetTransactionOverviewRequest = {catalogVersion: catalogVersionIdList} as GetTransactionOverviewRequest
+                const transactionResponse: GetTransactionOverviewResponse = await this.evitaSessionClientProvider().getTransactionOverview(transactionRequest, this._callMetadata)
+                transactionCaptures = transactionResponse.transactionOverviews.map(i => this.convertGrpcTransactionOverview(i));
+            }
 
-            return ImmutableList(captures)
-
+            return ImmutableList([...transactionCaptures, ...captures])
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
         }
+    }
+
+    // todo move me to a separate class
+    private convertGrpcTransactionOverview(grpcTransactionOverview: GrpcTransactionOverview): ChangeCatalogCapture {
+
+
+        const mutation =  new TransactionMutation(
+            EvitaValueConverter.convertGrpcUuid(grpcTransactionOverview.transactionId!).toString(),
+            Number(grpcTransactionOverview.catalogVersion),
+            grpcTransactionOverview.transactionChanges.reduce((acc, i) => acc + i.mutationCount, 0),
+            Number(grpcTransactionOverview.transactionChanges.reduce((acc, i) => acc + Number(i.walSizeInBytes), 0)),
+            EvitaValueConverter.convertGrpcOffsetDateTime(grpcTransactionOverview.commitTimestamp!)
+        )
+
+        return new ChangeCatalogCapture(
+            Number(grpcTransactionOverview.catalogVersion),
+             0,
+            CatalogSchemaConverter.toCaptureArea(GrpcChangeCaptureArea.INFRASTRUCTURE),
+            undefined,
+            undefined,
+            Operation.Transaction,
+            mutation,
+            EvitaValueConverter.convertGrpcOffsetDateTime(grpcTransactionOverview.commitTimestamp!)
+        )
+
     }
 
     /**

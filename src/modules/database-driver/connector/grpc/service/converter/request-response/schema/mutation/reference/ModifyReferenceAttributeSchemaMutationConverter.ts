@@ -13,6 +13,7 @@ import {
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 
 export class ModifyReferenceAttributeSchemaMutationConverter implements SchemaMutationConverter<ModifyReferenceAttributeSchemaMutation, GrpcModifyReferenceAttributeSchemaMutation> {
+    public static readonly INSTANCE = new ModifyReferenceAttributeSchemaMutationConverter()
 
     convert(mutation: GrpcModifyReferenceAttributeSchemaMutation): ModifyReferenceAttributeSchemaMutation {
 

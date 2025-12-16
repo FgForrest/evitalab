@@ -13,6 +13,8 @@ import type {
 import type { AttributeKey } from '@/modules/database-driver/request-response/data/mutation/attribute/AttributeKey.ts'
 
 export class ReferenceAttributeMutation extends ReferenceMutation {
+    static readonly TYPE = 'referenceAttributeMutation' as const
+
     readonly attributeMutation: AttributeMutation
     readonly attributeKey: AttributeKey
     readonly comparableKey: ReferenceKeyWithAttributeKey

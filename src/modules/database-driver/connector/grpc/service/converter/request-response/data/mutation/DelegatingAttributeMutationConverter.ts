@@ -19,17 +19,10 @@ import type { Message } from '@bufbuild/protobuf'
 
 export class DelegatingAttributeMutationConverter {
 
-        private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, new () => AttributeMutationConverter<AttributeMutation, Message>>([
-        ['applyDeltaAttributeMutation',
-            ApplyDeltaAttributeMutationConverter
-        ],
-        ['upsertAttributeMutation',
-            UpsertAttributeMutationConverter
-        ],
-        ['removeAttributeMutation',
-            RemoveAttributeMutationConverter
-        ]
-
+    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, AttributeMutationConverter<AttributeMutation, Message>>([
+        ['applyDeltaAttributeMutation', ApplyDeltaAttributeMutationConverter.INSTANCE],
+        ['upsertAttributeMutation', UpsertAttributeMutationConverter.INSTANCE],
+        ['removeAttributeMutation', RemoveAttributeMutationConverter.INSTANCE]
     ])
 
     static convert(mutation: GrpcAttributeMutation | undefined): AttributeMutation {
@@ -37,12 +30,11 @@ export class DelegatingAttributeMutationConverter {
             throw new UnexpectedError('Unknown mutation type: ' + mutation?.mutation.case)
         }
 
-        const ConverterClass = DelegatingAttributeMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
-        if (!ConverterClass) {
+        const converter = DelegatingAttributeMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
+        if (!converter) {
             throw new UnexpectedError('Unknown mutation type: ' + mutation.mutation.case)
         }
 
-        const converter = new ConverterClass()
         return converter.convert(mutation.mutation.value)
     }
 }

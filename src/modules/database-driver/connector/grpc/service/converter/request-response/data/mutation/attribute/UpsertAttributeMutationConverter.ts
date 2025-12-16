@@ -10,6 +10,7 @@ import type {
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
 
 export class UpsertAttributeMutationConverter extends AttributeMutationConverter<UpsertAttributeMutation, GrpcUpsertAttributeMutation> {
+    public static readonly INSTANCE = new UpsertAttributeMutationConverter()
 
     convert(mutation: GrpcUpsertAttributeMutation): UpsertAttributeMutation {
         const key = AttributeMutationConverter.buildAttributeKey(mutation.attributeName, mutation.attributeLocale)

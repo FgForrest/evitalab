@@ -9,6 +9,7 @@ import type {
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
 
 export class RemoveAttributeSchemaMutationConverter implements SchemaMutationConverter<RemoveAttributeSchemaMutation, GrpcRemoveAttributeSchemaMutation> {
+    public static readonly INSTANCE = new RemoveAttributeSchemaMutationConverter()
 
     convert(mutation: GrpcRemoveAttributeSchemaMutation): RemoveAttributeSchemaMutation {
         return new RemoveAttributeSchemaMutation(mutation.name)

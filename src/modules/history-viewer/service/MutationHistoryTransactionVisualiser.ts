@@ -9,14 +9,13 @@ import {
     MutationHistoryVisualisationContext
 } from '@/modules/history-viewer/model/MutationHistoryVisualisationContext.ts'
 import {
-    Action,
     MetadataGroup,
     MetadataItem, metadataItemCreatedIdentifier, metadataItemIoFetchCountIdentifier, MetadataItemSeverity,
     MutationHistoryItemVisualisationDefinition
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
 import { CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
 import { TransactionMutation } from '@/modules/database-driver/request-response/transaction/TransactionMutation.ts'
-import { formatCount } from '@/utils/string.ts'
+import { formatByteSize, formatCount } from '@/utils/string.ts'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime.ts'
 import type {
     MutationHistoryMetadataItemContext
@@ -27,44 +26,40 @@ import type {
  */
 export class MutationHistoryTransactionVisualiser extends MutationVisualiser<ChangeCatalogCapture> {
 
-    private readonly workspaceService: WorkspaceService
-    private readonly evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory
 
-    constructor(workspaceService: WorkspaceService, evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory) {
+
+    constructor() {
         super()
-        this.workspaceService = workspaceService
-        this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
+
     }
 
-    canVisualise(trafficRecord: ChangeCatalogCapture): boolean {
-        return  trafficRecord.area == CaptureArea.Infrastructure // todo pfi: better condition
+    canVisualise(changeCatalogCapture: ChangeCatalogCapture): boolean {
+        return changeCatalogCapture.area == CaptureArea.Infrastructure // todo pfi: better condition
     }
 
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
         const visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined = ctx.getVisualisedSessionRecord(mutationHistory.version)
 
-        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
-            mutationHistory,
-            i18n.global.t('mutationHistoryViewer.record.type.transaction.title', { version: mutationHistory.version }),
-            undefined,
-            this.constructMetadata(mutationHistory, visualisedSessionRecord),
-            ImmutableList()
-        )
+        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-graph-outline', i18n.global.t('mutationHistoryViewer.record.type.transaction.title', { version: mutationHistory.version }), undefined, this.constructMetadata(mutationHistory), ImmutableList())
 
 
         ctx.addVisualisedSessionRecord(mutationHistory.version, visualisedRecord)
         ctx.addRootVisualisedRecord(visualisedRecord)
+        // Attach any pending data items that arrived without transaction
+        ctx.attachPendingChildren(mutationHistory.version, visualisedRecord)
     }
 
-    private constructMetadata(mutationHistory: ChangeCatalogCapture,
-                              visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
+    private constructMetadata(mutationHistory: ChangeCatalogCapture): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
 
+        if (mutationHistory.body instanceof TransactionMutation) {
+            defaultMetadata.push(MutationHistoryTransactionVisualiser.commitTimestamp((mutationHistory.body.commitTimestamp)))
+        }
+
         defaultMetadata.push(MetadataItem.area(mutationHistory.area))
-        defaultMetadata.push(MetadataItem.operation(mutationHistory.operation))
+        defaultMetadata.push(MetadataItem.entityType(mutationHistory.operation))
         if (mutationHistory.body instanceof TransactionMutation) {
             defaultMetadata.push(MutationHistoryTransactionVisualiser.mutationCount((mutationHistory.body.mutationCount)))
-            defaultMetadata.push(MutationHistoryTransactionVisualiser.commitTimestamp((mutationHistory.body.commitTimestamp)))
             defaultMetadata.push(MutationHistoryTransactionVisualiser.transactionId((mutationHistory.body.transactionId)))
             defaultMetadata.push(MutationHistoryTransactionVisualiser.walSizeInBytes((mutationHistory.body.walSizeInBytes)))
         }
@@ -92,26 +87,26 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
         )
     }
 
-    static walSizeInBytes(ioFetchCount: number): MetadataItem {
+    static walSizeInBytes(wallSizeInBytes: number): MetadataItem {
         return new MetadataItem(
             metadataItemIoFetchCountIdentifier,
             'mdi-folder-zip-outline',
             i18n.global.t('mutationHistoryViewer.record.type.transaction.walSizeInBytes.tooltip'),
             i18n.global.t(
                 'mutationHistoryViewer.record.type.transaction.walSizeInBytes.value',
-                { count: formatCount(ioFetchCount) }
+                { wallSizeInBytes: formatByteSize(wallSizeInBytes) }
             )
         )
     }
 
-    static mutationCount(ioFetchCount: number): MetadataItem {
+    static mutationCount(mutationCount: number): MetadataItem {
         return new MetadataItem(
             metadataItemIoFetchCountIdentifier,
             'mdi-download-network-outline',
             i18n.global.t('mutationHistoryViewer.record.type.transaction.mutationCount.tooltip'),
             i18n.global.t(
                 'mutationHistoryViewer.record.type.transaction.mutationCount.value',
-                { count: formatCount(ioFetchCount) }
+                { count: formatCount(mutationCount) }
             )
         )
     }
@@ -126,7 +121,7 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
             undefined,
             (ctx: MutationHistoryMetadataItemContext): void => {
                 navigator.clipboard.writeText(`${created.toString()}`).then(() => {
-                    ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.type.transaction.commitTimestamp.notification.copiedToClipboard'))
+                        ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.type.transaction.commitTimestamp.notification.copiedToClipboard'))
                         .then()
                 }).catch(() => {
                     ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
@@ -136,21 +131,4 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
         )
     }
 
-    private constructActions(ctx: MutationHistoryVisualisationContext,
-                             trafficRecord: ChangeCatalogCapture): ImmutableList<Action> {
-        const actions: Action[] = []
-
-        actions.push(new Action(
-            i18n.global.t('trafficViewer.recordHistory.record.type.enrichment.action.query'),
-            'mdi-play',
-            () => this.workspaceService.createTab(
-                this.evitaQLConsoleTabFactory.createNew(
-                    ctx.catalogName,
-                    new EvitaQLConsoleTabData('')
-                )
-            )
-        ))
-
-        return ImmutableList(actions)
-    }
 }

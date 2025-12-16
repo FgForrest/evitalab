@@ -14,6 +14,7 @@ import type {
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/SortableAttributeCompoundSchemaMutation.ts'
 
 export class SetSortableAttributeCompoundIndexedMutationConverter implements SchemaMutationConverter<SetSortableAttributeCompoundIndexedMutation, GrpcSetSortableAttributeCompoundIndexedMutation>, SortableAttributeCompoundSchemaMutation {
+    public static readonly INSTANCE = new SetSortableAttributeCompoundIndexedMutationConverter()
 
     convert(mutation: GrpcSetSortableAttributeCompoundIndexedMutation): SetSortableAttributeCompoundIndexedMutation {
         const indexedInScopes = mutation.indexedInScopes.map(EntityConverter.convertEntityScope)

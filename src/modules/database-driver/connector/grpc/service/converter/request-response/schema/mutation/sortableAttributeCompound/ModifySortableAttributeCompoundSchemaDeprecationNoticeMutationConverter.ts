@@ -9,6 +9,7 @@ import type {
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
 
 export class ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter implements SchemaMutationConverter<ModifySortableAttributeCompoundSchemaDeprecationNoticeMutation, GrpcModifySortableAttributeCompoundSchemaDeprecationNoticeMutation> {
+    public static readonly INSTANCE = new ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter()
 
     convert(mutation: GrpcModifySortableAttributeCompoundSchemaDeprecationNoticeMutation): ModifySortableAttributeCompoundSchemaDeprecationNoticeMutation {
         return new ModifySortableAttributeCompoundSchemaDeprecationNoticeMutation(

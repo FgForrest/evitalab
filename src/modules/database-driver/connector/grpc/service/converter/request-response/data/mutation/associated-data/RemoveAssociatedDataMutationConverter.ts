@@ -9,6 +9,7 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/data/mutation/associated-data/AssociatedDataMutationConverter.ts'
 
 export class RemoveAssociatedDataMutationConverter extends AssociatedDataMutationConverter<RemoveAssociatedDataMutation, GrpcRemoveAssociatedDataMutation> {
+    public static readonly INSTANCE = new RemoveAssociatedDataMutationConverter()
 
     convert(mutation: GrpcRemoveAssociatedDataMutation): RemoveAssociatedDataMutation {
         const key = AssociatedDataMutationConverter.buildAssociatedDataKey(mutation.associatedDataName, mutation.associatedDataLocale)

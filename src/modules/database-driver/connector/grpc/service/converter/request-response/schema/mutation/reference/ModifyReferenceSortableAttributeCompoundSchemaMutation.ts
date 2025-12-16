@@ -12,6 +12,7 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/DelegatingSortableAttributeCompoundSchemaMutationConverter.ts'
 
 export class ModifyReferenceSortableAttributeCompoundSchemaMutationConverter implements SchemaMutationConverter<ModifyReferenceSortableAttributeCompoundSchemaMutation, GrpcModifyReferenceSortableAttributeCompoundSchemaMutation> {
+    public static readonly INSTANCE = new ModifyReferenceSortableAttributeCompoundSchemaMutationConverter()
 
     convert(mutation: GrpcModifyReferenceSortableAttributeCompoundSchemaMutation): ModifyReferenceSortableAttributeCompoundSchemaMutation {
         return new ModifyReferenceSortableAttributeCompoundSchemaMutation(

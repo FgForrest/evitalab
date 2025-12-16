@@ -189,6 +189,7 @@ function closePropertyDetail(): void {
                         <EntityGridCell
                             v-for="(propertyValue, propertyKey) in internalItem.columns"
                             :key="propertyKey"
+                            :property-key='internalItem.columns["primaryKey"].value()'
                             :property-descriptor="entityPropertyDescriptorIndex.get(propertyKey as string)"
                             :property-value="propertyValue"
                             @click="handlePropertyClicked(index, propertyKey as string, propertyValue)"

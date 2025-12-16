@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 /**
- * Lists traffic recording history
+ * Lists mutation history
  */
 
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
@@ -45,6 +45,9 @@ class StartRecordsPointer {
 class RecordsPointer {
     private _sinceSessionSequenceId: number = 1
     private _sinceRecordSessionOffset: number = 0
+    private _page: number = 1
+    private _hasPointer: boolean = false
+    private _lastFetchedCount: number | undefined = undefined
 
     get sinceSessionSequenceId(): number {
         return this._sinceSessionSequenceId
@@ -54,14 +57,43 @@ class RecordsPointer {
         return this._sinceRecordSessionOffset
     }
 
+    get hasPointer(): boolean {
+        return this._hasPointer
+    }
+
     reset(startPointer?: StartRecordsPointer): void {
         this._sinceSessionSequenceId = startPointer?.sinceSessionSequenceId || 1
         this._sinceRecordSessionOffset = startPointer?.sinceRecordSessionOffset || 0
+        this._page = 1
+        this._hasPointer = startPointer != undefined
     }
 
     move(sinceSessionSequenceId: number, sinceRecordSessionOffset: number) {
         this._sinceSessionSequenceId = sinceSessionSequenceId
         this._sinceRecordSessionOffset = sinceRecordSessionOffset
+        this._hasPointer = true
+    }
+
+    get page(): number {
+        return this._page
+    }
+
+    nextPage(): void {
+        this._page = this._page + 1
+        this._hasPointer = true
+    }
+
+    setPage(page: number): void {
+        this._page = page
+        this._hasPointer = true
+    }
+
+    setLastFetchedCount(count: number): void {
+        this._lastFetchedCount = count
+    }
+
+    get lastFetchedCount(): number | undefined {
+        return this._lastFetchedCount
     }
 }
 
@@ -92,19 +124,74 @@ const fetchingNewRecordsWhenThereArentAny = ref<boolean>(false)
 
 
 const nextPageRequest = computed<MutationHistoryRequest>(() => {
-    return new MutationHistoryRequest(props.criteria.from, props.criteria.to, props.criteria.entityPrimaryKey, undefined)
+    const infraType = props.criteria.areaType === 'dataSite' ? 'DATA_SITE'
+        : props.criteria.areaType === 'schemaSite' ? 'SCHEMA_SITE'
+        : undefined
+    // Initial load: do not send since*/page
+    if (!nextPagePointer.value.hasPointer) {
+        return new MutationHistoryRequest(
+            props.criteria.from,
+            props.criteria.to,
+            props.criteria.operationList,
+            props.criteria.containerNameList,
+            props.criteria.containerTypeList,
+            props.criteria.entityPrimaryKey,
+            props.criteria.entityType,
+            infraType,
+            undefined,
+            undefined,
+            1,
+            props.criteria.mutableFilters
+        )
+    }
+    // Subsequent loads: anchor by sinceVersion, paginate by page
+    return new MutationHistoryRequest(
+        props.criteria.from,
+        props.criteria.to,
+        props.criteria.operationList,
+        props.criteria.containerNameList,
+        props.criteria.containerTypeList,
+        props.criteria.entityPrimaryKey,
+        props.criteria.entityType,
+        infraType,
+        nextPagePointer.value.sinceSessionSequenceId,
+        undefined,
+        nextPagePointer.value.page,
+        props.criteria.mutableFilters
+    )
 })
 const lastRecordRequest = computed<MutationHistoryRequest>(() => {
-    return new MutationHistoryRequest(props.criteria.from, props.criteria.to, props.criteria.entityPrimaryKey, undefined)
+    const infraType = props.criteria.areaType === 'dataSite' ? 'DATA_SITE'
+        : props.criteria.areaType === 'schemaSite' ? 'SCHEMA_SITE'
+        : undefined
+    return new MutationHistoryRequest(
+        props.criteria.from,
+        props.criteria.to,
+        props.criteria.operationList,
+        props.criteria.containerNameList,
+        props.criteria.containerTypeList,
+        props.criteria.entityPrimaryKey,
+        props.criteria.entityType,
+        infraType,
+        undefined,
+        undefined,
+        1,
+        props.criteria.mutableFilters
+    )
 })
 
 async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) => void }): Promise<void> {
     try {
+        // advance page for subsequent loads before fetching
+        if (nextPagePointer.value.hasPointer) {
+            nextPagePointer.value.nextPage()
+        }
         const fetchedRecords: ImmutableList<ChangeCatalogCapture> = await fetchRecords()
         fetchError.value = undefined
 
+        nextPagePointer.value.setLastFetchedCount(fetchedRecords.size)
         if (fetchedRecords.size === 0) {
-            await toaster.info(t('trafficViewer.recordHistory.list.notification.noNewerRecords'))
+            await toaster.info(t('mutationHistoryViewer.list.notification.noNewerRecords'))
             done('ok')
             return
         }
@@ -127,6 +214,7 @@ async function reloadHistory(): Promise<void> {
 
     try {
         const fetchedRecords: ImmutableList<ChangeCatalogCapture> = await fetchRecords()
+        nextPagePointer.value.setLastFetchedCount(fetchedRecords.size)
         if (fetchedRecords.size === 0) {
             return
         }
@@ -144,7 +232,8 @@ async function tryReloadHistoryForPossibleNewRecords(): Promise<void> {
     await reloadHistory()
     fetchingNewRecordsWhenThereArentAny.value = false
     if (history.value.length === 0) {
-        await toaster.info(t('trafficViewer.recordHistory.list.notification.noNewerRecords'))
+        await toaster.info(t('mutationHistoryViewer.list.notification.noNewerRecords'))
+        nextPagePointer.value.setLastFetchedCount(0)
         return
     }
 }
@@ -158,12 +247,17 @@ async function fetchRecords(): Promise<ImmutableList<ChangeCatalogCapture>> {
 }
 
 function moveNextPagePointer(fetchedRecords: ImmutableList<ChangeCatalogCapture>): void {
-    const lastFetchedRecord: ChangeCatalogCapture = fetchedRecords.last()!
-    // if (lastFetchedRecord.recordSessionOffset < (lastFetchedRecord.sessionRecordsCount - 1)) {
-    //     nextPagePointer.value.move(lastFetchedRecord.sessionSequenceOrder, lastFetchedRecord.recordSessionOffset + 1)
-    // } else {
-    //     nextPagePointer.value.move(lastFetchedRecord.sessionSequenceOrder + 1n, 0)
-    // }
+    if (fetchedRecords.size === 0) return
+
+    // Initialize anchor (sinceVersion) to newest boundary when not set yet
+    if (!nextPagePointer.value.hasPointer) {
+        const newestVersion: number = fetchedRecords.get(0)!.version
+        nextPagePointer.value.move(newestVersion + 1, 0)
+        nextPagePointer.value.setPage(1)
+        return
+    }
+
+    // For subsequent loads, page is advanced before fetch in loadNextHistory
 }
 
 function pushNewRecords(newRecords: ImmutableList<ChangeCatalogCapture>): void {
@@ -196,7 +290,7 @@ async function moveStartPointerToNewest(): Promise<void> {
         const latestRecords: ImmutableList<ChangeCatalogCapture> = await mutationHistoryViewerService.getMutationHistoryList(
             props.dataPointer.catalogName,
             lastRecordRequest.value,
-            1
+            limit
         )
         if (latestRecords.size === 0) {
             startPointer.value = undefined
@@ -208,7 +302,7 @@ async function moveStartPointerToNewest(): Promise<void> {
         }
     } catch (e: any) {
         await toaster.error(t(
-            'trafficViewer.recordHistory.notification.couldNotLoadLatestRecording',
+            'mutationHistoryViewer.notification.couldNotLoadLatestRecording',
             { reason: e.message }
         ))
         emit('update:startPointerActive', false)
@@ -220,8 +314,6 @@ function removeStartPointer(): void {
     startPointer.value = undefined
     emit('update:startPointerActive', false)
 }
-
-tryReloadHistoryForPossibleNewRecords()
 
 
 defineExpose<{
@@ -250,9 +342,9 @@ defineExpose<{
                 <VListItemDivider v-if="index < history.length - 1"/>
             </template>
 
-            <template #load-more="{ props }">
-                <VBtn v-bind="props">
-                    {{ t('trafficViewer.recordHistory.list.button.loadMore') }}
+            <template #load-more="{ props }" >
+                <VBtn v-bind="props" v-if="nextPagePointer.lastFetchedCount == undefined || nextPagePointer.lastFetchedCount >= limit " >
+                    {{ t('mutationHistoryViewer.list.button.loadMore') }}
                 </VBtn>
             </template>
         </VInfiniteScroll>
@@ -262,11 +354,11 @@ defineExpose<{
     <VMissingDataIndicator
         v-else
         icon="mdi-record-circle-outline"
-        :title="t('trafficViewer.recordHistory.list.info.noRecords', { catalogName: dataPointer.catalogName })"
+        :title="t('mutationHistoryViewer.list.info.noRecords', { catalogName: dataPointer.catalogName })"
     >
         <template #actions>
             <VBtn :loading="fetchingNewRecordsWhenThereArentAny" @click="tryReloadHistoryForPossibleNewRecords">
-                {{ t('trafficViewer.recordHistory.button.reloadRecordHistory') }}
+                {{ t('mutationHistoryViewer.list.button.reloadRecordHistory') }}
             </VBtn>
         </template>
     </VMissingDataIndicator>

@@ -25,12 +25,19 @@ import { Command } from '@/modules/keymap/model/Command.ts'
 import ShareTabButton from '@/modules/workspace/tab/component/ShareTabButton.vue'
 import { MutationHistoryViewerTabData } from '@/modules/history-viewer/model/MutationHistoryViewerTabData.ts'
 import { TabType } from '@/modules/workspace/tab/model/TabType.ts'
-import StartPointerButton from '@/modules/traffic-viewer/components/StartPointerButton.vue'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
+import StartPointerButton from '@/modules/history-viewer/component/StartPointerButton.vue'
+import {
+    CatalogSchemaConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
+import { ContainerType } from '@/modules/database-driver/data-type/ContainerType.ts'
+import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
+import { GrpcChangeCaptureContainerType } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 
 const keymap: Keymap = useKeymap()
 const { t } = useI18n()
 
+const workspaceService: WorkspaceService = useWorkspaceService()
 const props = defineProps<TabComponentProps<MutationHistoryViewerTabParams, MutationHistoryViewerTabData>>()
 const emit = defineEmits<TabComponentEvents>()
 defineExpose<TabComponentExpose>({
@@ -58,9 +65,17 @@ const historyListRef = ref<InstanceType<typeof MutationHistory> | undefined>()
 const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
     props.data.from,
     props.data.to,
-    props.data.entityPrimaryKey
+    props.data.entityPrimaryKey,
+    props.data.operationList,
+    props.data.containerNameList,
+    props.data.containerTypeList,
+    props.data.entityType,
+    props.data.areaType ?? 'both',
+    props.data.mutableFilters
 ))
 provideHistoryCriteria(criteria)
+
+
 
 const initialized = ref<boolean>(false)
 const historyListLoading = ref<boolean>(false)
@@ -73,6 +88,12 @@ const currentData = computed<MutationHistoryViewerTabData>(() => {
         criteria.value.from,
         criteria.value.to,
         criteria.value.entityPrimaryKey,
+        criteria.value.operationList,
+        criteria.value.containerNameList,
+        criteria.value.containerTypeList,
+        criteria.value.entityType,
+        criteria.value.areaType ?? 'both',
+        criteria.value.mutableFilters
     )
 })
 watch(currentData, (data) => {
@@ -82,7 +103,7 @@ watch(currentData, (data) => {
 watch(
     historyListRef,
     () => {
-        if (!initialized.value && historyListRef.value != undefined ) {
+        if (!initialized.value && historyListRef.value != undefined) {
             reloadHistoryList()
             initialized.value = true
         }
@@ -122,11 +143,55 @@ async function reloadHistoryList(): Promise<void> {
     await historyListRef.value?.reload()
     historyListLoading.value = false
 }
+
+const titleDetails: List<string> = List.of(
+    props.params.dataPointer.catalogName,
+    t('mutationHistoryViewer.title'),
+    `${currentData.value.entityType}: ${currentData.value.entityPrimaryKey}`,
+    ...(!!currentData.value?.containerNameList?.length && CatalogSchemaConverter.toContainerTypes(currentData.value.containerTypeList).contains(ContainerType.Attribute)
+        ? [t(`mutationHistoryViewer.toolbar.attributes`, {"containerNameList": currentData.value.containerNameList?.join(', ') }) ]
+        : []),
+    ...(CatalogSchemaConverter.toContainerTypes(currentData.value.containerTypeList).contains(ContainerType.Price)
+        ? [t(`mutationHistoryViewer.toolbar.price`)]
+        : []),
+    ...(!!currentData.value?.containerNameList?.length && CatalogSchemaConverter.toContainerTypes(currentData.value.containerTypeList).contains(ContainerType.Reference)
+        ? [t(`mutationHistoryViewer.toolbar.reference`, {"referenceName": currentData.value?.containerNameList[0]})]
+        : []),
+    ...(CatalogSchemaConverter.toContainerTypes(currentData.value.containerTypeList).contains(ContainerType.AssociatedData)
+        ? [t(`mutationHistoryViewer.toolbar.associatedData`)]
+        : []),
+    t('mutationHistoryViewer.toolbar.history')
+)
+
+const openMutationHistoryByAttribute = () => {
+    const entityPrimaryKey = props.data.entityPrimaryKey
+
+
+    workspaceService.createTab(
+        workspaceService.mutationHistoryViewerTabFactory.createNew(
+            props.params.dataPointer.catalogName,
+            new MutationHistoryViewerTabData(
+                undefined,
+                undefined,
+                entityPrimaryKey,
+                undefined,
+                undefined,
+                [GrpcChangeCaptureContainerType.CONTAINER_ENTITY],
+                props.data.entityType,
+                'dataSite',
+                false
+            )
+        )
+    )
+}
+
+
 </script>
 
 <template>
     <div class="mutation-history-viewer">
         <VTabToolbar
+            v-if="criteria.mutableFilters"
             :prepend-icon="MutationHistoryViewerTabDefinition.icon()"
             :title="title"
             :extension-height="64"
@@ -164,6 +229,23 @@ async function reloadHistoryList(): Promise<void> {
                 />
             </template>
         </VTabToolbar>
+<!--        todo pfi: fix height of the toolbar -->
+        <VTabToolbar
+            v-else
+            :prepend-icon="MutationHistoryViewerTabDefinition.icon()"
+            :title=titleDetails
+        >
+            <template #append>
+                <VBtn icon density="compact" v-if="data.containerTypeList?.some(i => i !== GrpcChangeCaptureContainerType.CONTAINER_ENTITY) && !data.mutableFilters" @click="openMutationHistoryByAttribute">
+                    <VIcon>mdi-table</VIcon>
+                    <VActionTooltip activator="parent" >
+                        {{JSON.stringify(data)}}
+                        {{ t('mutationHistoryViewer.toolbar.entity') }}
+                    </VActionTooltip>
+                </VBtn>
+            </template>
+        </VTabToolbar>
+
 
         <VSheet class="mutation-history-viewer__body">
             <MutationHistory

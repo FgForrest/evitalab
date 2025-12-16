@@ -12,6 +12,7 @@ import type {
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/data/mutation/EntityMutationConverter.ts'
 
 export class EntityUpsertMutationConverter implements EntityMutationConverter<EntityUpsertMutation, GrpcEntityUpsertMutation> {
+    public static readonly INSTANCE = new EntityUpsertMutationConverter()
 
     convert(mutation: GrpcEntityUpsertMutation): EntityUpsertMutation {
         return new EntityUpsertMutation(

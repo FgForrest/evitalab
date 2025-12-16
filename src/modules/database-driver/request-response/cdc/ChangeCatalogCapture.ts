@@ -1,6 +1,7 @@
 import  { type CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
 import  { type Operation } from '@/modules/database-driver/request-response/cdc/Operation.ts'
 import type { Mutation } from '@/modules/database-driver/request-response/Mutation.ts'
+import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime.ts'
 
 export class ChangeCatalogCapture  {
     /** The version of the catalog where the operation was performed */
@@ -18,8 +19,10 @@ export class ChangeCatalogCapture  {
     /** Optional body of the operation when it is requested by the ChangeSystemCaptureRequest content */
     body: Mutation | undefined; // todo pfi: change it to CatalogBoundMutation
 
+    commitTimestamp: OffsetDateTime | undefined
 
-    constructor(version: number, index: number, area: CaptureArea, entityType: string | undefined, entityPrimaryKey: number | undefined, operation: Operation, body: Mutation | undefined) {
+
+    constructor(version: number, index: number, area: CaptureArea, entityType: string | undefined, entityPrimaryKey: number | undefined, operation: Operation, body: Mutation | undefined, commitTimestamp: OffsetDateTime | undefined) {
         this.version = version
         this.index = index
         this.area = area
@@ -27,5 +30,6 @@ export class ChangeCatalogCapture  {
         this.entityPrimaryKey = entityPrimaryKey
         this.operation = operation
         this.body = body
+        this.commitTimestamp = commitTimestamp
     }
 }

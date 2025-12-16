@@ -7,6 +7,8 @@ import type { Range } from '@/modules/database-driver/data-type/Range.ts'
 import Number = types.Number
 
 export class ApplyDeltaAttributeMutation<T extends Number> extends AttributeSchemaEvolvingMutation {
+    static readonly TYPE = 'applyDeltaAttributeMutation' as const
+
     readonly delta: T
     readonly requiredRangeAfterApplication: Range<T>|undefined
 

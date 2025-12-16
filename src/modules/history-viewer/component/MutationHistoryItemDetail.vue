@@ -5,6 +5,8 @@ import {
     type MutationHistoryItemVisualisationDefinition
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
 import RecordMetadata from '@/modules/history-viewer/component/RecordMetadata.vue'
+import { JfrViewerTabDefinition } from '@/modules/jfr-viewer/model/JfrViewerTabDefinition.ts'
+import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 
 const props = defineProps<{
     definition: MutationHistoryItemVisualisationDefinition
@@ -18,11 +20,27 @@ function callAction(action: Action): void {
 </script>
 
 <template>
-    <VListItem>
+    <VListItem >
         <template #title>
-            <strong>{{ definition.title }}</strong>
-            <span v-if="definition.details != undefined" class="text-subtitle-1 ml-2">{{ definition.details }}</span>
+                <strong>
+                    <VIcon class="mr-1">{{ definition.icon }}</VIcon>
+                    {{ definition.title }}
+                </strong>
+
+                <VTooltip v-if="definition.details && definition.details.length >= 100">
+                    <template #activator="{ props }">
+          <span v-bind="props" class="text-subtitle-1 ml-2 cursor-help">
+            {{ definition.details.substring(0, 100) }}
+          </span>
+                    </template>
+                    {{ definition.details }}
+                </VTooltip>
+
+                <span v-else-if="definition.details" class="text-subtitle-1 ml-2">
+        {{ definition.details }}
+      </span>
         </template>
+
         <template v-if="definition.metadata.length > 0" #subtitle>
             <RecordMetadata :metadata="definition.metadata" />
         </template>

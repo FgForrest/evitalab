@@ -10,6 +10,7 @@ import type {
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 
 export class ModifyAttributeSchemaDeprecationNoticeMutationConverter implements SchemaMutationConverter<ModifyAttributeSchemaDeprecationNoticeMutation, GrpcModifyAttributeSchemaDeprecationNoticeMutation> {
+    public static readonly INSTANCE = new ModifyAttributeSchemaDeprecationNoticeMutationConverter()
 
     convert(mutation: GrpcModifyAttributeSchemaDeprecationNoticeMutation): ModifyAttributeSchemaDeprecationNoticeMutation {
 

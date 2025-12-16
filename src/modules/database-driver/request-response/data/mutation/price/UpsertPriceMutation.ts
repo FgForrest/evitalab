@@ -5,6 +5,8 @@ import type { PriceKey } from '@/modules/database-driver/request-response/data/m
 
 export class UpsertPriceMutation extends PriceMutation
 {
+    static readonly TYPE = 'upsertPriceMutation' as const
+
     readonly innerRecordId: number|undefined // todo pfi: not sure about the undefined
     readonly priceWithoutTax: BigDecimal
     readonly taxRate: BigDecimal

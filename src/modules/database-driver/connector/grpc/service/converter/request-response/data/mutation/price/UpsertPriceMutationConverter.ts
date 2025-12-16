@@ -9,6 +9,7 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
 
 export class UpsertPriceMutationConverter extends PriceMutationConverter<UpsertPriceMutation, GrpcUpsertPriceMutation> {
+    public static readonly INSTANCE = new UpsertPriceMutationConverter()
 
     convert(mutation: GrpcUpsertPriceMutation): UpsertPriceMutation {
         if (!mutation.priceWithoutTax || !mutation.taxRate || !mutation.priceWithTax) {

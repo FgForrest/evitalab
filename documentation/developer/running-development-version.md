@@ -1,6 +1,6 @@
 # Running development version
 
-To development evitaLab you need to know how to run it in the development environment.
+To develop evitaLab, you need to know how to run it in the development environment.
 
 Before you start, make sure you have [Node.js](https://nodejs.org/en/) installed in the version specified in `.nvmrc` and [Yarn](https://yarnpkg.com/)
 package manager installed.
@@ -28,3 +28,5 @@ in the `.env.local` file by modifying the `VITE_DEV_CONNECTION` variable. Right 
 
 - `DEMO` - connects to the evitaDB Demo server
 - `LOCAL` - connects to a local evitaDB server running on the default port 5555
+
+To build the production version of evitaLab, check out the [building from source section](building-from-source.md).

@@ -12,6 +12,7 @@ import {
 } from '@/modules/database-driver/request-response/schema/mutation/entity/DisallowEvolutionModeInEntitySchemaMutation.ts'
 
 export class DisallowEvolutionModeInEntitySchemaMutationConverter implements SchemaMutationConverter<DisallowEvolutionModeInEntitySchemaMutation, GrpcDisallowEvolutionModeInEntitySchemaMutation> {
+    public static readonly INSTANCE = new DisallowEvolutionModeInEntitySchemaMutationConverter()
 
     convert(mutation: GrpcDisallowEvolutionModeInEntitySchemaMutation): DisallowEvolutionModeInEntitySchemaMutation {
         return new DisallowEvolutionModeInEntitySchemaMutation(

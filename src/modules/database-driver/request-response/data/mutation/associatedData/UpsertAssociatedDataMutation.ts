@@ -4,11 +4,11 @@ import {
 import type {
     AssociatedDataKey
 } from '@/modules/database-driver/request-response/data/mutation/associatedData/AssociatedDataKey.ts'
-import type { Locale } from '@/modules/database-driver/data-type/Locale.ts'
 
 export class UpsertAssociatedDataMutation extends AssociatedDataMutation {
+    static readonly TYPE = 'upsertAssociatedDataMutation' as const
 
-    private readonly value: any;
+    readonly value: any;
 
     constructor(associatedDataKey: AssociatedDataKey, value: any) {
         super(associatedDataKey)

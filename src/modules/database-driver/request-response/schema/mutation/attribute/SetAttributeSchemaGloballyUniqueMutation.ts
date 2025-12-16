@@ -4,6 +4,8 @@ import type {
 } from '@/modules/database-driver/request-response/schema/mutation/attribute/ScopedGlobalAttributeUniquenessType.ts'
 
 export class SetAttributeSchemaGloballyUniqueMutation {
+    static readonly TYPE = 'setAttributeSchemaGloballyUniqueMutation' as const
+
     readonly name: string
     readonly uniqueGloballyInScopes: ImmutableList<ScopedGlobalAttributeUniquenessType>
 
