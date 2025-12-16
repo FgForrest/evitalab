@@ -1,4 +1,6 @@
 export class ModifyAttributeSchemaDescriptionMutation {
+    static readonly TYPE = 'modifyAttributeSchemaDescriptionMutation' as const
+
     readonly name: string
     readonly description: string|undefined
 

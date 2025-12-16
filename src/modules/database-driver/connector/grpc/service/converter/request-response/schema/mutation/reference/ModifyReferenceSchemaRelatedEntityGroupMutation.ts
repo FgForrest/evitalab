@@ -9,6 +9,7 @@ import type {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcReferenceSchemaMutations_pb.ts'
 
 export class ModifyReferenceSchemaRelatedEntityGroupMutationConverter implements SchemaMutationConverter<ModifyReferenceSchemaRelatedEntityGroupMutation, GrpcModifyReferenceSchemaRelatedEntityGroupMutation> {
+    public static readonly INSTANCE = new ModifyReferenceSchemaRelatedEntityGroupMutationConverter()
 
     convert(mutation: GrpcModifyReferenceSchemaRelatedEntityGroupMutation): ModifyReferenceSchemaRelatedEntityGroupMutation {
         return new ModifyReferenceSchemaRelatedEntityGroupMutation(

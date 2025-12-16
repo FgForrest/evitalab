@@ -9,6 +9,7 @@ import type {
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
 
 export class ModifySortableAttributeCompoundSchemaDescriptionMutationConverter implements SchemaMutationConverter<ModifySortableAttributeCompoundSchemaDescriptionMutation, GrpcModifySortableAttributeCompoundSchemaDescriptionMutation> {
+    public static readonly INSTANCE = new ModifySortableAttributeCompoundSchemaDescriptionMutationConverter()
 
     convert(mutation: GrpcModifySortableAttributeCompoundSchemaDescriptionMutation): ModifySortableAttributeCompoundSchemaDescriptionMutation {
         return new ModifySortableAttributeCompoundSchemaDescriptionMutation(

@@ -25,6 +25,7 @@ import { List as ImmutableList } from 'immutable'
 import { ScopesConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScopesConverter.ts'
 
 export class CreateGlobalAttributeSchemaMutationConverter implements SchemaMutationConverter<CreateGlobalAttributeSchemaMutation, GrpcCreateGlobalAttributeSchemaMutation> {
+    public static readonly INSTANCE = new CreateGlobalAttributeSchemaMutationConverter()
 
     convert(mutation: GrpcCreateGlobalAttributeSchemaMutation): CreateGlobalAttributeSchemaMutation {
         if (mutation.type == undefined) {

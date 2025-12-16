@@ -8,18 +8,24 @@ import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/Entity
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { useDataLocale, usePriceType } from '@/modules/entity-viewer/viewer/component/dependencies'
+import { useDataLocale, usePriceType, useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { isLocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
 import { isTypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue.ts'
 import type { Predecessor } from '@/modules/database-driver/data-type/Predecessor.ts'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema.ts'
+import { MutationHistoryViewerTabData } from '@/modules/history-viewer/model/MutationHistoryViewerTabData.ts'
+import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
+import { GrpcChangeCaptureContainerType } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 
+const tabProps = useTabProps()
+const workspaceService: WorkspaceService = useWorkspaceService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
+    propertyKey: number,
     propertyDescriptor: EntityPropertyDescriptor | undefined,
     propertyValue: EntityPropertyValue | EntityPropertyValue[] | undefined
 }>()
@@ -29,6 +35,38 @@ const emit = defineEmits<{
 const dataLocale = useDataLocale()
 const priceType = usePriceType()
 const parent = ref()
+
+function useKeyPress(targetKey: string) {
+    const isPressed = ref(false)
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key.toLowerCase() === targetKey.toLowerCase()) {
+            isPressed.value = true
+        }
+    }
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+        if (e.key.toLowerCase() === targetKey.toLowerCase()) {
+            isPressed.value = false
+        }
+    }
+
+    onMounted(() => {
+        window.addEventListener('keydown', handleKeyDown)
+        window.addEventListener('keyup', handleKeyUp)
+    })
+
+    onBeforeUnmount(() => {
+        window.removeEventListener('keydown', handleKeyDown)
+        window.removeEventListener('keyup', handleKeyUp)
+    })
+
+    return isPressed
+}
+
+const isLPressed = useKeyPress('l')
+const isEPressed = useKeyPress('e')
+
 
 const printablePropertyValue = computed<string>(() => toPrintablePropertyValue(props.propertyValue))
 const prependIcon = computed<string | undefined>(() => {
@@ -140,12 +178,84 @@ function handleClick(e: MouseEvent): void {
 
     if (e.shiftKey && e.button === 1) {
         copyValue(true)
+    } else if (isLPressed.value && e.button === 1) {
+        openMutationHistoryByAttribute()
+    } else if (isEPressed.value && e.button === 1) {
+        openMutationHistoryByEntity()
     } else if (e.button === 1) {
         copyValue(false)
     } else if (e.button === 0) {
         emit('click')
     }
 }
+
+
+const openMutationHistoryByEntity = () => {
+    const entityPrimaryKey = props.propertyKey
+    workspaceService.createTab(
+        workspaceService.mutationHistoryViewerTabFactory.createNew(
+            tabProps.params.dataPointer.catalogName,
+            new MutationHistoryViewerTabData(
+                undefined,
+                undefined,
+                entityPrimaryKey,
+                undefined,
+                undefined,
+                [GrpcChangeCaptureContainerType.CONTAINER_ENTITY],
+                tabProps.params.dataPointer.entityType,
+                'dataSite',
+                false
+            )
+        )
+    )
+}
+
+function resolveContainerTypeList(schema: EntityPropertyType) {
+    if (schema === EntityPropertyType.References || schema === EntityPropertyType.ReferenceAttributes) { // todo - zde si nejsem jistý
+        return GrpcChangeCaptureContainerType.CONTAINER_REFERENCE
+    } else if (schema === EntityPropertyType.Attributes) {
+        return GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE
+    } else if (schema === EntityPropertyType.Entity) {
+        return GrpcChangeCaptureContainerType.CONTAINER_ENTITY
+    } else if (schema === EntityPropertyType.Prices) {
+        return GrpcChangeCaptureContainerType.CONTAINER_PRICE
+    } else if (schema === EntityPropertyType.AssociatedData) {
+        return GrpcChangeCaptureContainerType.CONTAINER_ASSOCIATED_DATA
+    } else {
+        return undefined
+    }
+}
+
+const openMutationHistoryByAttribute = () => {
+    const entityPrimaryKey = props.propertyKey
+
+
+    if (props.propertyDescriptor?.type === undefined || props.propertyDescriptor?.type === EntityPropertyType.Entity) {
+        return;
+    }
+
+
+    workspaceService.createTab(
+        workspaceService.mutationHistoryViewerTabFactory.createNew(
+            tabProps.params.dataPointer.catalogName,
+            new MutationHistoryViewerTabData(
+                undefined,
+                undefined,
+                entityPrimaryKey,
+                undefined,
+                [props.propertyDescriptor?.schema?.name],
+                [resolveContainerTypeList(props.propertyDescriptor?.type)],
+                tabProps.params.dataPointer.entityType,
+                'dataSite',
+                false
+            )
+        )
+    )
+}
+
+
+
+
 </script>
 
 <template>
@@ -172,15 +282,31 @@ function handleClick(e: MouseEvent): void {
                         :interactive="true">
                         <div>
                             <VChip class="chip" size="small">
+                                <span>{{ t('command.entityViewer.entityGrid.entityGridCell.entityHistory') }}</span>
+                                <span class="text-disabled ml-1">
+                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.entityHistoryDescription')
+                                    }})
+                                </span>
+                            </VChip>
+                            <VChip  class="chip" size="small">
+                                <span>{{ t('command.entityViewer.entityGrid.entityGridCell.attributeHistory') }}</span>
+                                 <span class="text-disabled ml-1">
+                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.attributeHistoryDescription')
+                                     }})
+                                </span>
+                            </VChip>
+                            <VChip class="chip" size="small">
                                 <span>{{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTip') }}</span>
                                 <span class="text-disabled ml-1">
-                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTipDescription') }})
+                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTipDescription')
+                                    }})
                                 </span>
                             </VChip>
                             <VChip class="chip" size="small">
                                 <span>{{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTip') }}</span>
                                 <span class="text-disabled ml-1">
-                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTipDescription') }})
+                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTipDescription')
+                                    }})
                                 </span>
                             </VChip>
                         </div>
@@ -237,7 +363,8 @@ hr {
 
     border-radius: 9999px;
 }
- p{
-     margin: 10px;
- }
+
+p {
+    margin: 10px;
+}
 </style>

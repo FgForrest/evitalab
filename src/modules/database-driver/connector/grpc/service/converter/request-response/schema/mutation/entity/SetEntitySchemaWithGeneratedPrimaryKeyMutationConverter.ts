@@ -9,6 +9,7 @@ import type {
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
 
 export class SetEntitySchemaWithGeneratedPrimaryKeyMutationConverter implements SchemaMutationConverter<SetEntitySchemaWithGeneratedPrimaryKeyMutation, GrpcSetEntitySchemaWithGeneratedPrimaryKeyMutation> {
+    public static readonly INSTANCE = new SetEntitySchemaWithGeneratedPrimaryKeyMutationConverter()
 
     convert(mutation: GrpcSetEntitySchemaWithGeneratedPrimaryKeyMutation): SetEntitySchemaWithGeneratedPrimaryKeyMutation {
         return new SetEntitySchemaWithGeneratedPrimaryKeyMutation(mutation.withGeneratedPrimaryKey)

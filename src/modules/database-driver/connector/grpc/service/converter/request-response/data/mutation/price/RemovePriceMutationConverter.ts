@@ -7,6 +7,7 @@ import {
 import type { GrpcRemovePriceMutation } from '@/modules/database-driver/connector/grpc/gen/GrpcPriceMutations_pb.ts'
 
 export class RemovePriceMutationConverter extends PriceMutationConverter<RemovePriceMutation, GrpcRemovePriceMutation> {
+    public static readonly INSTANCE = new RemovePriceMutationConverter()
 
     convert(mutation: GrpcRemovePriceMutation): RemovePriceMutation {
         return new RemovePriceMutation(

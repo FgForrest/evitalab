@@ -12,6 +12,7 @@ import { EntityConverter } from '@/modules/database-driver/connector/grpc/servic
 import { List as ImmutableList } from 'immutable'
 
 export class SetReferenceSchemaFacetedMutationConverter implements SchemaMutationConverter<SetReferenceSchemaFacetedMutation, GrpcSetReferenceSchemaFacetedMutation> {
+    public static readonly INSTANCE = new SetReferenceSchemaFacetedMutationConverter()
 
     convert(mutation: GrpcSetReferenceSchemaFacetedMutation): SetReferenceSchemaFacetedMutation {
         const facetedInScopes = mutation.facetedInScopes.length === 0 ?

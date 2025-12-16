@@ -13,6 +13,7 @@ import {
 } from '@/modules/database-driver/request-response/schema/mutation/entity/AllowEvolutionModeInEntitySchemaMutation.ts'
 
 export class AllowEvolutionModeInEntitySchemaMutationConverter implements SchemaMutationConverter<AllowEvolutionModeInEntitySchemaMutation, GrpcAllowEvolutionModeInEntitySchemaMutation> {
+    public static readonly INSTANCE = new AllowEvolutionModeInEntitySchemaMutationConverter()
 
     convert(mutation: GrpcAllowEvolutionModeInEntitySchemaMutation): AllowEvolutionModeInEntitySchemaMutation {
         return new AllowEvolutionModeInEntitySchemaMutation(

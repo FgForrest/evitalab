@@ -50,50 +50,37 @@ import {
     SetEntityScopeMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/data/mutation/entity/SetEntityScopeMutationConverter.ts'
 
-
-function getKeyFromConverterName(converter: any): string {
-    return converter.name
-        .replace(/Converter$/, '') // Remove 'Converter' suffix
-        .replace(/([A-Z])/g, (match: string, p1: string, offset: number) =>
-            offset === 0 ? p1.toLowerCase() : p1
-        ); // Convert first letter to lowercase, keep others as-is
-}
-
 export class DelegatingLocalMutationConverter {
 
-
-    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>(
-        [
-            ApplyDeltaAttributeMutationConverter,
-            UpsertAttributeMutationConverter,
-            RemoveAttributeMutationConverter,
-            UpsertAssociatedDataMutationConverter,
-            RemoveAssociatedDataMutationConverter,
-            UpsertPriceMutationConverter,
-            RemovePriceMutationConverter,
-            SetPriceInnerRecordHandlingMutationConverter,
-            SetParentMutationConverter,
-            RemoveParentMutationConverter,
-            InsertReferenceMutationConverter,
-            RemoveReferenceMutationConverter,
-            SetReferenceGroupMutationConverter,
-            RemoveReferenceGroupMutationConverter,
-            ReferenceAttributeMutationConverter,
-            SetEntityScopeMutationConverter
-        ].map(converter => [getKeyFromConverterName(converter), converter])
-    );
+    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([
+        ['applyDeltaAttributeMutation', ApplyDeltaAttributeMutationConverter.INSTANCE],
+        ['upsertAttributeMutation', UpsertAttributeMutationConverter.INSTANCE],
+        ['removeAttributeMutation', RemoveAttributeMutationConverter.INSTANCE],
+        ['upsertAssociatedDataMutation', UpsertAssociatedDataMutationConverter.INSTANCE],
+        ['removeAssociatedDataMutation', RemoveAssociatedDataMutationConverter.INSTANCE],
+        ['upsertPriceMutation', UpsertPriceMutationConverter.INSTANCE],
+        ['removePriceMutation', RemovePriceMutationConverter.INSTANCE],
+        ['setPriceInnerRecordHandlingMutation', SetPriceInnerRecordHandlingMutationConverter.INSTANCE],
+        ['setParentMutation', SetParentMutationConverter.INSTANCE],
+        ['removeParentMutation', RemoveParentMutationConverter.INSTANCE],
+        ['insertReferenceMutation', InsertReferenceMutationConverter.INSTANCE],
+        ['removeReferenceMutation', RemoveReferenceMutationConverter.INSTANCE],
+        ['setReferenceGroupMutation', SetReferenceGroupMutationConverter.INSTANCE],
+        ['removeReferenceGroupMutation', RemoveReferenceGroupMutationConverter.INSTANCE],
+        ['referenceAttributeMutation', ReferenceAttributeMutationConverter.INSTANCE],
+        ['setEntityScopeMutation', SetEntityScopeMutationConverter.INSTANCE]
+    ]);
 
     static convert(mutation: GrpcLocalMutation | undefined): LocalMutation {
         if (!mutation?.mutation?.case) {
             throw new UnexpectedError('Unknown mutation type: ' + mutation?.mutation.case)
         }
 
-        const ConverterClass = DelegatingLocalMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
-        if (!ConverterClass) {
+        const converter = DelegatingLocalMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
+        if (!converter) {
             throw new UnexpectedError('Unknown mutation type: ' + mutation.mutation.case)
         }
 
-        const converter = new ConverterClass()
         return converter.convert(mutation.mutation.value)
     }
 }

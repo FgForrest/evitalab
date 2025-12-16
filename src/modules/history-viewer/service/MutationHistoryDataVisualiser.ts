@@ -1,8 +1,7 @@
 import { i18n } from '@/vue-plugins/i18n'
 import { List as ImmutableList } from 'immutable'
-import { EvitaQLConsoleTabData } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabData'
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
-import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
+import { getMutationType, getMutationOperationType } from '@/modules/database-driver/request-response/utils/MutationTypeHelper'
 import { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
 import { MutationVisualiser } from '@/modules/history-viewer/service/MutationVisualiser.ts'
 import {
@@ -11,7 +10,9 @@ import {
 import {
     Action,
     MetadataGroup,
-    MetadataItem, metadataItemSessionIdIdentifier, MetadataItemSeverity,
+    MetadataItem, metadataItemCreatedIdentifier,
+    metadataItemSessionIdIdentifier,
+    MetadataItemSeverity,
     MutationHistoryItemVisualisationDefinition
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
 import { CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
@@ -33,13 +34,32 @@ import { PriceMutation } from '@/modules/database-driver/request-response/data/m
 import {
     RemovePriceMutation
 } from '@/modules/database-driver/request-response/data/mutation/price/RemovePriceMutation.ts'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 import type { DateTimeRange } from '@/modules/database-driver/data-type/DateTimeRange.ts'
-import { ReferenceKey } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceKey.ts'
 import {
     InsertReferenceMutation
 } from '@/modules/database-driver/request-response/data/mutation/reference/InsertReferenceMutation.ts'
-import type { Cardinality } from '@/modules/database-driver/request-response/schema/Cardinality.ts'
+import { Cardinality } from '@/modules/database-driver/request-response/schema/Cardinality.ts'
+import { MutationHistoryViewerTabFactory } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
+import { MutationHistoryViewerTabData } from '@/modules/history-viewer/model/MutationHistoryViewerTabData.ts'
+import { GrpcChangeCaptureContainerType } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
+import {
+    CatalogSchemaConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
+import { ContainerType } from '@/modules/database-driver/data-type/ContainerType.ts'
+import {
+    AssociatedDataMutation
+} from '@/modules/database-driver/request-response/data/mutation/associatedData/AssociatedDataMutation.ts'
+import {
+    UpsertAssociatedDataMutation
+} from '@/modules/database-driver/request-response/data/mutation/associatedData/UpsertAssociatedDataMutation.ts'
+import {
+    SetPriceInnerRecordHandlingMutation
+} from '@/modules/database-driver/request-response/data/mutation/price/SetPriceInnerRecordHandlingMutation.ts'
+import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime.ts'
+import type {
+    MutationHistoryMetadataItemContext
+} from '@/modules/history-viewer/model/MutationHistoryMetadataItemContext.ts'
+import type { MutationHistoryCriteria } from '../model/MutationHistoryCriteria'
 
 /**
  * Visualises entity enrichment container.
@@ -47,89 +67,157 @@ import type { Cardinality } from '@/modules/database-driver/request-response/sch
 export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCatalogCapture> {
 
     private readonly workspaceService: WorkspaceService
-    private readonly evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory
+    private readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
 
-    constructor(workspaceService: WorkspaceService, evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory) {
+    constructor(workspaceService: WorkspaceService, mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory) {
         super()
         this.workspaceService = workspaceService
-        this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
+        this.mutationHistoryViewerTabFactory = mutationHistoryViewerTabFactory
     }
 
-    canVisualise(trafficRecord: ChangeCatalogCapture): boolean {
-        return trafficRecord.area == CaptureArea.Data
+    canVisualise(changeCatalogCapture: ChangeCatalogCapture): boolean {
+        return changeCatalogCapture.area == CaptureArea.Data
     }
 
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
         const visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined = ctx.getVisualisedSessionRecord(mutationHistory.version)
+        const entityOperationType = mutationHistory.operation
+
 
         // entity
-        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
-            mutationHistory,
-            i18n.global.t('mutationHistoryViewer.record.type.entity.title', { entityType: mutationHistory.entityType }),
-            `(PK ${mutationHistory.entityPrimaryKey?.toString()})`,
-            this.constructEntityMetadata(mutationHistory, visualisedSessionRecord),
-            ImmutableList() // this.constructActions(ctx, mutationHistory)
-        )
+        // const entityActions: Immutable.List<Action> = ctx.historyCriteria.mutableFilters ?
+        //     this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_ENTITY], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.entity.action.open') :
+        //     this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_CATALOG], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.transaction.action.open')
 
+        let visualisedRecord: MutationHistoryItemVisualisationDefinition | undefined
+        if (ctx.historyCriteria.containerTypeList?.some(i => i === GrpcChangeCaptureContainerType.CONTAINER_ENTITY) || ctx.historyCriteria.containerTypeList?.length === 0) {
+            const entityActions: Immutable.List<Action> = ctx.historyCriteria.mutableFilters ?
+                this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_ENTITY], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.entity.action.open') : ImmutableList()
+            visualisedRecord = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-table', i18n.global.t(`mutationHistoryViewer.record.type.entity.title-${entityOperationType}`, { entityType: mutationHistory.entityType }), `(PK ${mutationHistory.entityPrimaryKey?.toString()})`, this.constructEntityMetadata(mutationHistory, ctx.historyCriteria), entityActions)
+        }
+
+        const mutations = mutationHistory.body instanceof EntityUpsertMutation ?
+            (mutationHistory.body as EntityUpsertMutation).localMutations :
+            [mutationHistory.body]
 
         // entity attributes
-        for (let attributeMutation of (mutationHistory.body as EntityUpsertMutation).localMutations) {
+        for (let attributeMutation of mutations) {
+            if (entityOperationType === 'remove') {
+                break
+            }
 
-            if (attributeMutation instanceof ReferenceMutation) { // todo pfi: fix this ugly code
+            let attributeMutationVisualised: MutationHistoryItemVisualisationDefinition
+            if (attributeMutation instanceof ReferenceMutation) {
 
                 const referenceName = attributeMutation?.referenceKey.referenceName
                 const attributeValue = attributeMutation?.referenceKey.primaryKey.toString()
-                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
-                    mutationHistory,
-                    i18n.global.t('mutationHistoryViewer.record.type.attribute.reference.title', { referenceName: referenceName }),
-                    `(FK ${attributeValue})`,
-                    this.constructReferenceMetadata(attributeMutation, visualisedSessionRecord),
-                    ImmutableList() // this.constructActions(ctx, mutationHistory)
-                )
-                visualisedRecord.addChild(attributeMutationVisualised)
+                const metadata: MetadataGroup[] = this.constructReferenceMetadata(attributeMutation, ctx.historyCriteria, mutationHistory)
+
+                const actions: Immutable.List<Action> = (!ctx.historyCriteria.mutableFilters && CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Reference)) ?
+                    ImmutableList() :
+                    this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_REFERENCE], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, attributeMutation.referenceKey.referenceName, ctx, mutationHistory, 'mutationHistoryViewer.record.type.reference.action.open')
+
+
+                const title: string = i18n.global.t('mutationHistoryViewer.record.type.attribute.reference.title', { referenceName: referenceName })
+                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-link-variant', title, `(FK ${attributeValue})`, metadata, actions)
 
             } else if (attributeMutation instanceof PriceMutation) {
-                const attributeName = 'Price'
                 const attributeValue = attributeMutation instanceof UpsertPriceMutation ? i18n.global.t('mutationHistoryViewer.record.type.attribute.price.detail', {
+                    priceListId: attributeMutation.priceKey.priceId,
+                    priceListName: attributeMutation.priceKey.priceList,
+                    currency: attributeMutation.priceKey.currency,
                     priceWithoutTax: attributeMutation.priceWithoutTax,
                     priceWithTax: attributeMutation.priceWithTax,
                     taxRate: attributeMutation.taxRate
                 }) : ''
-                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
-                    mutationHistory,
-                    i18n.global.t('mutationHistoryViewer.record.type.attribute.price.title'),
-                    attributeValue,
-                    this.constructAttributePriceMetadata(attributeMutation, visualisedSessionRecord),
-                    ImmutableList() // this.constructActions(ctx, mutationHistory)
-                )
-                visualisedRecord.addChild(attributeMutationVisualised)
+                const actions: Immutable.List<Action> = (!ctx.historyCriteria.mutableFilters && CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Price)) ?
+                    ImmutableList() :
+                    this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_PRICE], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.attribute.action.open')
+                const metadata: MetadataGroup[] = this.constructAttributePriceMetadata(attributeMutation, ctx.historyCriteria, mutationHistory)
+                const title: string = i18n.global.t('mutationHistoryViewer.record.type.attribute.price.title')
+                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-currency-usd', title, attributeValue, metadata, actions)
+            } else if (attributeMutation instanceof AssociatedDataMutation) {
+                const type = getMutationOperationType(attributeMutation)
+                const title = i18n.global.t(`mutationHistoryViewer.record.type.attribute.associatedData.title-${type}`, { key: attributeMutation.associatedDataKey.associatedDataName })
+                const attributeValue = attributeMutation instanceof UpsertAssociatedDataMutation ? attributeMutation?.value?.toString() : ''
+
+                const actions: Immutable.List<Action> = (!ctx.historyCriteria.mutableFilters && CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.AssociatedData)) ?
+                    ImmutableList() :
+                    this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_ASSOCIATED_DATA], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.associatedData.action.open')
+
+                const metadata: MetadataGroup[] = this.constructAttributeMetadata(attributeMutation, ctx.historyCriteria, mutationHistory)
+                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-relation-one-to-one-or-many', title, attributeValue, metadata, actions)
+            } else if (attributeMutation instanceof SetPriceInnerRecordHandlingMutation) {
+                const attributeValue = (attributeMutation as SetPriceInnerRecordHandlingMutation).priceInnerRecordHandling.toString()
+
+                const actions = this.getAttributeAction(ctx, mutationHistory, undefined)
+                const metadata: MetadataGroup[] = this.constructAttributeMetadata(attributeMutation as LocalMutation, ctx.historyCriteria, mutationHistory)
+                const title: string = i18n.global.t(`mutationHistoryViewer.record.type.priceSettings.title`)
+                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', title, attributeValue, metadata, actions)
             } else {
                 const attributeName = (attributeMutation as AttributeMutation)?.attributeKey?.attributeName
-                const attributeValue = (attributeMutation as UpsertAttributeMutation)?.value?.toString()
-                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(
-                    mutationHistory,
-                    i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }),
-                    attributeValue,
-                    this.constructAttributeMetadata(attributeMutation, visualisedSessionRecord),
-                    ImmutableList() // this.constructActions(ctx, mutationHistory)
-                )
+                const attributeValue = attributeMutation instanceof SetPriceInnerRecordHandlingMutation ? (attributeMutation as SetPriceInnerRecordHandlingMutation).priceInnerRecordHandling.toString() : (attributeMutation as UpsertAttributeMutation)?.value?.toString()
+
+                const operationType = mutationHistory.operation
+                const actions = this.getAttributeAction(ctx, mutationHistory, attributeName)
+
+                const metadata: MetadataGroup[] = this.constructAttributeMetadata(attributeMutation as LocalMutation, ctx.historyCriteria, mutationHistory)
+                const title: string = i18n.global.t(`mutationHistoryViewer.record.type.attribute.title-${operationType}`, { attributeName: attributeName })
+                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', title, attributeValue, metadata, actions)
+            }
+            if (visualisedRecord != undefined) {
                 visualisedRecord.addChild(attributeMutationVisualised)
+            } else if (visualisedSessionRecord != undefined) {
+                visualisedSessionRecord.addChild(attributeMutationVisualised)
+            } else {
+                ctx.addRootVisualisedRecord(attributeMutationVisualised)
             }
 
         }
 
 
-        if (visualisedSessionRecord != undefined) {
-            visualisedSessionRecord.addChild(visualisedRecord)
-            return
+        if (visualisedRecord != undefined) {
+            if (visualisedSessionRecord != undefined) {
+                visualisedSessionRecord.addChild(visualisedRecord)
+                return
+            }
+
+            if (ctx.historyCriteria.mutableFilters) {
+                // If transaction not yet visualised, queue as pending child to be attached once transaction arrives
+                ctx.addPendingChild(mutationHistory.version, visualisedRecord)
+            } else {
+                ctx.addRootVisualisedRecord(visualisedRecord)
+            }
         }
-        console.error('Hey, some data without transaction') // todo pfi throw exception instead
-        ctx.addRootVisualisedRecord(visualisedRecord) // todo pfi: this should never happens - try it with pagination and filters and limits
+
     }
 
-    private constructEntityMetadata(mutationHistory: ChangeCatalogCapture,
-                                    visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
+    // todo: fix this ugly condition
+    private getAttributeAction(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture, attributeName: string | undefined): Immutable.List<Action> {
+        if (mutationHistory.entityPrimaryKey === undefined) {
+            return ImmutableList()
+        } else if (ctx.historyCriteria.mutableFilters) {
+            return this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, attributeName, ctx, mutationHistory, 'mutationHistoryViewer.record.type.attribute.action.open')
+        } else if (!ctx.historyCriteria.mutableFilters && (CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Attribute) ||
+            CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Price) ||
+            CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Reference) ||
+            CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.AssociatedData)
+        )) {
+            return ImmutableList()
+        } else {
+            return this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, attributeName, ctx, mutationHistory, 'mutationHistoryViewer.record.type.attribute.action.open')
+        }
+    }
+
+    private constructEntityMetadata(mutationHistory: ChangeCatalogCapture, historyCriteria: MutationHistoryCriteria): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
+
+        const entityTypes = CatalogSchemaConverter.toContainerTypes(historyCriteria.containerTypeList)
+
+        if (!historyCriteria.mutableFilters && mutationHistory.commitTimestamp && historyCriteria.containerTypeList && [ContainerType.Entity].some(type => entityTypes?.includes(type))) {
+            defaultMetadata.push(MutationHistoryDataVisualiser.timestamp(mutationHistory.commitTimestamp))
+        }
+
 
         defaultMetadata.push(MetadataItem.area(mutationHistory.area))
         defaultMetadata.push(MetadataItem.operation(mutationHistory.operation))
@@ -141,14 +229,16 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         return [MetadataGroup.default(defaultMetadata)]
     }
 
-    private constructAttributeMetadata(localMutation: LocalMutation,
-                                       visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
+    private constructAttributeMetadata(localMutation: LocalMutation, historyCriteria: MutationHistoryCriteria, mutationHistory: ChangeCatalogCapture): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
 
-        defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(localMutation.constructor.name))
+        const entityTypes = CatalogSchemaConverter.toContainerTypes(historyCriteria.containerTypeList)
 
-        // todo pfi fix
-        // console.log(localMutation)
+        if (!historyCriteria.mutableFilters && mutationHistory.commitTimestamp && historyCriteria.containerTypeList && [ContainerType.Price, ContainerType.Reference, ContainerType.AssociatedData, ContainerType.Attribute].some(type => entityTypes?.includes(type))) {
+            defaultMetadata.push(MutationHistoryDataVisualiser.timestamp(mutationHistory.commitTimestamp))
+        }
+
+        defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(getMutationType(localMutation)))
 
         if (localMutation instanceof UpsertAttributeMutation) {
             if (localMutation?.attributeKey?.locale) {
@@ -164,14 +254,18 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         return [MetadataGroup.default(defaultMetadata)]
     }
 
-    private constructAttributePriceMetadata(localMutation: PriceMutation,
-                                            visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
+    private constructAttributePriceMetadata(localMutation: PriceMutation, historyCriteria: MutationHistoryCriteria, mutationHistory: ChangeCatalogCapture): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
 
-        defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(localMutation.constructor.name))
+        const entityTypes = CatalogSchemaConverter.toContainerTypes(historyCriteria.containerTypeList)
 
-        // todo pfi fix
-        // console.log(localMutation)
+        if (!historyCriteria.mutableFilters && mutationHistory.commitTimestamp && historyCriteria.containerTypeList && [ContainerType.Price, ContainerType.Reference, ContainerType.AssociatedData, ContainerType.Attribute].some(type => entityTypes?.includes(type))) {
+            defaultMetadata.push(MutationHistoryDataVisualiser.timestamp(mutationHistory.commitTimestamp))
+        }
+
+
+        defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(getMutationType(localMutation)))
+
 
         if (localMutation instanceof UpsertPriceMutation) {
             defaultMetadata.push(MutationHistoryDataVisualiser.currency(localMutation.priceKey.currency))
@@ -252,12 +346,12 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
     }
 
 
-    static locale(sessionId: any): MetadataItem {
+    static locale(locale: any): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
-            'mdi-file-tree',
+            'mdi-translate',
             i18n.global.t('mutationHistoryViewer.record.type.attribute.locale.tooltip'),
-            sessionId?.toString(),
+            locale?.toString(),
             MetadataItemSeverity.Info,
             undefined,
             undefined
@@ -279,7 +373,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
     static referenceCardinality(referenceCardinality: Cardinality): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
-            'mdi-file-tree',
+            this.referenceCardinalityIcon(referenceCardinality),
             i18n.global.t('mutationHistoryViewer.record.type.attribute.referenceCardinality.tooltip'),
             referenceCardinality?.toString(),
             MetadataItemSeverity.Info,
@@ -288,7 +382,24 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         )
     }
 
-    static referenceEntityType(referenceEntityType: string|undefined): MetadataItem {
+    static referenceCardinalityIcon(referenceCardinality: Cardinality): string {
+        switch (referenceCardinality) {
+            case Cardinality.ExactlyOne:
+                return 'mdi-relation-one-to-one'
+            case Cardinality.OneOrMore:
+            case Cardinality.OneOrMoreWithDuplicates:
+                return 'mdi-relation-one-to-one-or-many'
+            case Cardinality.ZeroOrOne:
+                return 'mdi-relation-one-to-zero-or-one'
+            case Cardinality.ZeroOrMore:
+            case Cardinality.ZeroOrMoreWithDuplicates:
+                return 'mdi-relation-one-to-zero-or-many'
+            default:
+                return 'mdi-relation-one-to-one'
+        }
+    }
+
+    static referenceEntityType(referenceEntityType: string | undefined): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-file-tree',
@@ -312,11 +423,38 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         )
     }
 
+    static timestamp(created: OffsetDateTime): MetadataItem {
+        return new MetadataItem(
+            metadataItemCreatedIdentifier,
+            'mdi-clock-outline',
+            i18n.global.t('mutationHistoryViewer.record.timestamp.title'),
+            created.getPrettyPrintableString(),
+            MetadataItemSeverity.Info,
+            undefined,
+            (ctx: MutationHistoryMetadataItemContext): void => {
+                navigator.clipboard.writeText(`${created.toString()}`).then(() => {
+                    ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.timestamp.notification.copiedToClipboard'))
+                        .then()
+                }).catch(() => {
+                    ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
+                        .then()
+                })
+            }
+        )
+    }
 
-    private constructReferenceMetadata(referenceMutation: ReferenceMutation,
-                                       visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined): MetadataGroup[] {
+
+
+    private constructReferenceMetadata(referenceMutation: ReferenceMutation, historyCriteria: MutationHistoryCriteria, mutationHistory: ChangeCatalogCapture): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
-        defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(referenceMutation.constructor.name))
+
+        const entityTypes = CatalogSchemaConverter.toContainerTypes(historyCriteria.containerTypeList)
+
+        if (!historyCriteria.mutableFilters && mutationHistory.commitTimestamp && historyCriteria.containerTypeList && [ContainerType.Price, ContainerType.Reference, ContainerType.AssociatedData, ContainerType.Attribute].some(type => entityTypes?.includes(type))) {
+            defaultMetadata.push(MutationHistoryDataVisualiser.timestamp(mutationHistory.commitTimestamp))
+        }
+
+        defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(getMutationType(referenceMutation)))
         const referenceName = referenceMutation?.referenceKey.referenceName
         const attributeValue = referenceMutation?.referenceKey.primaryKey.toString()
         defaultMetadata.push(MutationHistoryDataVisualiser.relation(referenceName, attributeValue))
@@ -325,28 +463,33 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             defaultMetadata.push(MutationHistoryDataVisualiser.referenceEntityType(referenceMutation.referenceEntityType))
         }
 
-        // console.log(referenceMutation)
-
-
         return [MetadataGroup.default(defaultMetadata)]
     }
 
 
-    private constructActions(ctx: MutationHistoryVisualisationContext,
-                             trafficRecord: ChangeCatalogCapture): ImmutableList<Action> {
-        const actions: Action[] = []
-
-        actions.push(new Action(
-            i18n.global.t('trafficViewer.recordHistory.record.type.enrichment.action.query'),
-            'mdi-play',
-            () => this.workspaceService.createTab(
-                this.evitaQLConsoleTabFactory.createNew(
-                    ctx.catalogName,
-                    new EvitaQLConsoleTabData('')
+    private constructActions(containerType: GrpcChangeCaptureContainerType[], entityPrimaryKey: any, containerName: string | undefined, ctx: MutationHistoryVisualisationContext, cdc: ChangeCatalogCapture, buttonTitle: string): Immutable.List<Action> {
+        return ImmutableList([
+            new Action(
+                i18n.global.t(buttonTitle),
+                'mdi-open-in-new',
+                'icon',
+                () => this.workspaceService.createTab(
+                    this.mutationHistoryViewerTabFactory.createNew(
+                        ctx.catalogName,
+                        new MutationHistoryViewerTabData(
+                            undefined,
+                            undefined,
+                            entityPrimaryKey,
+                            undefined,
+                            containerName ? [containerName] : undefined,
+                            containerType,
+                            cdc.entityType,
+                            entityPrimaryKey ? 'dataSite' : 'both',
+                            false
+                        )
+                    )
                 )
             )
-        ))
-
-        return ImmutableList(actions)
+        ])
     }
 }

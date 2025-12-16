@@ -301,7 +301,7 @@ export class EvitaClientManagement {
                     if (chunkResponse.fileId == undefined) {
                         throw new UnexpectedError('No fileId was returned for uploaded chunk. Aborting...')
                     }
-                    uploadedFileId = this.evitaValueConverterProvider().convertGrpcUuid(chunkResponse.fileId)
+                    uploadedFileId = EvitaValueConverter.convertGrpcUuid(chunkResponse.fileId)
                 }
             }
 

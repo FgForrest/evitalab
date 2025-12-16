@@ -13,6 +13,7 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/CardinalityConvertor.ts'
 
 export class InsertReferenceMutationConverter implements LocalMutationConverter<InsertReferenceMutation, GrpcInsertReferenceMutation> {
+    public static readonly INSTANCE = new InsertReferenceMutationConverter()
 
     convert(mutation: GrpcInsertReferenceMutation): InsertReferenceMutation {
         return new InsertReferenceMutation(

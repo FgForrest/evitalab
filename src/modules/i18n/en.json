@@ -288,7 +288,11 @@
           "rawCopyToolTip": "Shift + Middle mouse button",
           "rawCopyToolTipDescription": "Copy raw value from cell",
           "copyValueToolTip": "Middle mouse button",
-          "copyValueToolTipDescription": "Copy value from cell"
+          "copyValueToolTipDescription": "Copy value from cell",
+          "entityHistory": "E + Middle mouse button",
+          "entityHistoryDescription": "Show entity history",
+          "attributeHistory": "L + Middle mouse button",
+          "attributeHistoryDescription": "Show attribute history"
         }
       }
     },
@@ -412,6 +416,7 @@
           "deactivateCatalog": "Deactivate catalog",
           "switchToMutable": "Switch to mutable",
           "switchToImmutable": "Switch to immutable",
+          "historySubheader": "History",
           "mutationHistoryViewer": "Mutation history"
         }
       },
@@ -1875,8 +1880,36 @@
   },
   "mutationHistoryViewer": {
     "title": "Mutation history",
+    "button": {
+      "reloadMutationHistory": "Reload record history",
+      "reloadRecordHistory": "Reload record history",
+      "moveStartPointerToNewest": "Load only records newer than now",
+      "removeStartPointer": "Load entire record history",
+      "modifyStartPointer": "Change start of loaded record history"
+    },
+    "list": {
+      "info": {
+        "noRecords": "There are no mutation history for defined filter."
+      },
+      "button": {
+        "loadMore": "Load more",
+        "reloadRecordHistory": "Reload record history",
+        "moveStartPointer": "Load only records newer than now"
+      },
+      "notification": {
+        "noNewerRecords": "No newer records exist."
+      }
+    },
     "definition": {
       "title": "Mutation history"
+    },
+    "toolbar": {
+      "attributes": "Attributes: {containerNameList}",
+      "entity": "Entity",
+      "history": "History",
+      "price": "Price",
+      "associatedData": "Associated data",
+      "reference": "Reference: {referenceName}"
     },
     "filter": {
       "label": "Filter",
@@ -1892,43 +1925,107 @@
           "hint": "To",
           "label": "To"
         },
-        "mutationTypes": {
-          "hint": "To",
-          "valueDescriptor": "To"
+        "mutationOperation": {
+          "label": "Mutation type",
+          "hint": "Mutation type",
+          "valueDescriptor": "Mutation operation",
+          "items": {
+            "UPSERT": "Upsert",
+            "REMOVE": "Remove"
+          }
+        },
+        "entityType": {
+          "hint": "Entity type",
+          "label": "Entity type"
+
+        },
+        "areaType": {
+          "hint": "Area scope",
+          "label": "Area",
+          "items": {
+            "both": "Both",
+            "dataSite": "Data site",
+            "schemaSite": "Schema site"
+          }
         },
         "entityPrimaryKey": {
           "hint": "Entity PK",
           "label": "Entity PK"
+        },
+        "containerName": {
+          "hint": "Container name(s)",
+          "label": "Container name"
+        },
+        "containerType": {
+          "hint": "Container type",
+          "label": "Container type",
+          "valueDescriptor": "{count} selected",
+          "items": {
+            "CONTAINER_CATALOG": "Catalog",
+            "CONTAINER_ATTRIBUTE": "Attribute",
+            "CONTAINER_ASSOCIATED_DATA": "Associated data",
+            "CONTAINER_PRICE": "Price",
+            "CONTAINER_REFERENCE": "Reference"
+          }
         }
       }
     },
     "record": {
+      "timestamp": {
+        "title": "Timestamp",
+        "notification": {
+          "copiedToClipboard": "Timestamp has been copied to clipboard"
+        }
+      },
       "type": {
+        "priceSettings": {
+          "title": "Price settings updated:"
+        },
         "transaction": {
           "title": "Transaction {version}",
+          "action": {
+            "open": "Transaction"
+          },
           "mutationCount": {
             "tooltip": "Mutation count",
             "value": "Mutation count {count}"
           },
           "walSizeInBytes": {
-            "tooltip": "WAL size in bytes",
-            "value": "WAL {count}"
+            "tooltip": "WAL size",
+            "value": "WAL {wallSizeInBytes}"
           },
           "commitTimestamp": {
-            "tooltip": "Commit timestamp"
+            "tooltip": "Commit timestamp",
+            "notification": {
+              "copiedToClipboard": "Commit timestamp has been copied to clipboard"
+            }
           },
           "transactionId": {
-            "tooltip": "Transaction ID"
+            "tooltip": "Transaction ID",
+            "notification": {
+              "copiedToClipboard": "Transaction ID has been copied to clipboard"
+            }
           }
         },
         "schema": {
           "title": "Schema: {entityType}"
         },
         "entity": {
-          "title": "Entity: {entityType}"
+          "title-upsert": "Upsert entity: {entityType}",
+          "title-remove": "Remove entity: {entityType}",
+          "action": {
+            "open": "Entity"
+          }
         },
         "area": {
           "tooltip": "Area"
+        },
+        "common": {
+          "metadata": {
+            "group": {
+              "default": "Default metadata"
+            }
+          }
         },
         "operation": {
           "tooltip": "Operation"
@@ -1945,8 +2042,28 @@
         "index": {
           "tooltip": "index"
         },
+        "reference": {
+          "action": {
+            "open": "Reference"
+          }
+        },
+        "price": {
+          "action": {
+            "open": "Attribute"
+          }
+        },
+        "associatedData": {
+          "action": {
+            "open": "Attribute"
+          }
+        },
         "attribute": {
+          "action": {
+            "open": "Attribute"
+          },
           "title": "Attribute: {attributeName}",
+          "title-upsert": "Upsert attribute: {attributeName}",
+          "title-remove": "Remove attribute: {attributeName}",
           "locale": {
             "tooltip": "Locale"
           },
@@ -1972,7 +2089,7 @@
             "title": "Validity"
           },
           "reference": {
-            "title": "Reference {referenceName} updated"
+            "title": "Reference: {referenceName}"
           },
           "referenceRelation": {
             "tooltip": "Reference relation"
@@ -1983,12 +2100,20 @@
           "referenceEntityType": {
             "tooltip": "Entity type"
           },
+          "associatedData": {
+            "title-upsert": "Upsert associated data: {key}",
+            "title-remove": "Remove associated data: {key}"
+          },
           "price": {
             "title": "Price updated:",
-            "detail": "Update price without tax {priceWithoutTax} / with tax {priceWithTax} / tax rate {taxRate}"
+            "detail": "Price ID: {priceListId} ({priceListName}), currency: {currency}, excl.tax:{priceWithoutTax}, incl tax.: {priceWithTax}, taxrate: {taxRate}"
           }
         }
       }
+    },
+    "notification": {
+      "couldNotLoadRecords": "Could not load traffic records: {reason}",
+      "couldNotLoadLatestRecording": "Could not load latest traffic record: {reason}"
     }
   },
   "relationViewer": {
@@ -2000,6 +2125,7 @@
       "zeroOrMore": "1:0…*"
     },
     "managedByEvita": "This entity is managed by evitaDB.",
-    "managedExternal": "This entity is managed externally."
+    "managedExternal": "This entity is managed externally.",
+    "cardinalityWithDuplicates": "Allows multiple relations with an identical referenced entity primary key. This may be necessary in cases where the distinguishing factor is a reference attribute value."
   }
 }

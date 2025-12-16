@@ -9,6 +9,7 @@ import type {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcAttributeSchemaMutations_pb.ts'
 
 export class SetAttributeSchemaNullableMutationConverter implements SchemaMutationConverter<SetAttributeSchemaNullableMutation, GrpcSetAttributeSchemaNullableMutation> {
+    public static readonly INSTANCE = new SetAttributeSchemaNullableMutationConverter()
 
     convert(mutation: GrpcSetAttributeSchemaNullableMutation): SetAttributeSchemaNullableMutation {
         return new SetAttributeSchemaNullableMutation(

@@ -6,7 +6,7 @@ import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { StringValue, Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp, file_google_protobuf_wrappers } from "@bufbuild/protobuf/wkt";
-import type { GrpcAttributeSpecialValue, GrpcAttributeUniquenessType, GrpcCatalogState, GrpcEmptyHierarchicalEntityBehaviour, GrpcEntityScope, GrpcEvitaAssociatedDataDataType_GrpcEvitaDataType, GrpcEvitaDataType, GrpcFacetStatisticsDepth, GrpcGlobalAttributeUniquenessType, GrpcHistogramBehavior, GrpcNamingConvention, GrpcOrderDirection, GrpcPriceContentMode, GrpcQueryPriceMode, GrpcReferenceIndexType, GrpcStatisticsBase, GrpcStatisticsType, GrpcTaskSimplifiedState, GrpcTaskTrait } from "./GrpcEnums_pb";
+import type { GrpcAttributeSpecialValue, GrpcAttributeUniquenessType, GrpcCatalogState, GrpcEmptyHierarchicalEntityBehaviour, GrpcEntityScope, GrpcEvitaAssociatedDataDataType_GrpcEvitaDataType, GrpcEvitaDataType, GrpcFacetStatisticsDepth, GrpcGlobalAttributeUniquenessType, GrpcNamingConvention, GrpcOrderDirection, GrpcPriceContentMode, GrpcQueryPriceMode, GrpcReferenceIndexType, GrpcStatisticsBase, GrpcStatisticsType, GrpcTaskSimplifiedState, GrpcTaskTrait, GrpcHistogramBehavior } from "./GrpcEnums_pb";
 import { file_GrpcEnums } from "./GrpcEnums_pb";
 import type { Message } from "@bufbuild/protobuf";
 

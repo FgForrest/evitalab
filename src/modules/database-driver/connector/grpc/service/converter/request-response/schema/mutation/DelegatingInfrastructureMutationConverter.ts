@@ -7,26 +7,11 @@ import type {
     GrpcInfrastructureMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcInfrastrutureMutation_pb.ts'
 
-
-function getKeyFromConverterName(converter: any): string {
-    // Handle both class constructors and instances
-    const name = typeof converter === 'function' ? converter.name : converter.constructor.name;
-
-    return name
-        .replace(/Converter$/, '') // Remove 'Converter' suffix
-        .replace(/([A-Z])/g, (match: string, p1: string, offset: number) =>
-            offset === 0 ? p1.toLowerCase() : p1
-        ); // Convert first letter to lowercase, keep others as-is
-}
-
 export class DelegatingInfrastructureMutationConverter {
 
-
-    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>(
-        [
-            TransactionMutationConverter.INSTANCE,
-        ].map(converter => [getKeyFromConverterName(converter), converter])
-    );
+    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([
+        ['transactionMutation', TransactionMutationConverter.INSTANCE]
+    ]);
 
     static convert(mutation: GrpcInfrastructureMutation | undefined): Mutation {
         if (!mutation?.mutation?.case) {

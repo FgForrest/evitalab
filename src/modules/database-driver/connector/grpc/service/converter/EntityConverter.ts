@@ -207,6 +207,8 @@ export class EntityConverter {
                 return PriceInnerRecordHandling.Sum
             case GrpcPriceInnerRecordHandling.UNKNOWN:
                 return PriceInnerRecordHandling.Unknown
+            default:
+                return PriceInnerRecordHandling.None
         }
     }
 

@@ -71,7 +71,7 @@ export class WorkspaceService {
     private readonly jfrViewerTabFactory: JfrViewerTabFactory
     private readonly trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory
     private readonly trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory
-    private readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
+    readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
 
     constructor(evitaLabConfig: EvitaLabConfig,
                 store: WorkspaceStore,
@@ -133,6 +133,7 @@ export class WorkspaceService {
         const tabRequestWithSameId: TabDefinition<any, any> | undefined = this.getTabDefinition(tabDefinition.id)
         if (tabRequestWithSameId == undefined) {
             this.store.tabDefinitions.push(tabDefinition)
+            this.store.tabData.set(tabDefinition.id, tabDefinition.initialData)
         }
         this.storeOpenedTabs()
     }
@@ -214,7 +215,7 @@ export class WorkspaceService {
                     case TabType.TrafficRecordHistoryViewer:
                         return this.trafficRecordHistoryViewerTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
                     case TabType.MutationHistoryViewer:
-                        return this.mutationHistoryViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
+                        return this.mutationHistoryViewerTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
                     default:
                         throw new UnexpectedError(`Unsupported stored tab type '${storedTabObject.tabType}'.`)
                 }

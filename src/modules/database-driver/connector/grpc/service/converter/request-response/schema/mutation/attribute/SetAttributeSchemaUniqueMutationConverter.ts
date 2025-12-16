@@ -18,6 +18,7 @@ import type {
 import { List as ImmutableList } from 'immutable'
 
 export class SetAttributeSchemaUniqueMutationConverter implements SchemaMutationConverter<SetAttributeSchemaUniqueMutation, GrpcSetAttributeSchemaUniqueMutation> {
+    public static readonly INSTANCE = new SetAttributeSchemaUniqueMutationConverter()
 
     convert(mutation: GrpcSetAttributeSchemaUniqueMutation): SetAttributeSchemaUniqueMutation {
         const uniqueInScopes = mutation.uniqueInScopes.length === 0 ?

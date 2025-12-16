@@ -9,6 +9,7 @@ import type {
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
 
 export class ModifyEntitySchemaDescriptionMutationConverter implements SchemaMutationConverter<ModifyEntitySchemaDescriptionMutation, GrpcModifyEntitySchemaDescriptionMutation> {
+    public static readonly INSTANCE = new ModifyEntitySchemaDescriptionMutationConverter()
 
     convert(mutation: GrpcModifyEntitySchemaDescriptionMutation): ModifyEntitySchemaDescriptionMutation {
         return new ModifyEntitySchemaDescriptionMutation(mutation.description)

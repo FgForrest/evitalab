@@ -5,6 +5,7 @@ import type {
 import { EntityRemoveMutation } from '@/modules/database-driver/request-response/data/mutation/EntityRemoveMutation.ts'
 
 export class EntityRemoveMutationConverter implements EntityMutationConverter<EntityRemoveMutation, GrpcEntityRemoveMutation> {
+    public static readonly INSTANCE = new EntityRemoveMutationConverter()
 
     convert(mutation: GrpcEntityRemoveMutation): EntityRemoveMutation {
         return new EntityRemoveMutation(

@@ -9,6 +9,7 @@ import type {
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
 
 export class SetAssociatedDataSchemaLocalizedMutationConverter implements SchemaMutationConverter<SetAssociatedDataSchemaLocalizedMutation, GrpcSetAssociatedDataSchemaLocalizedMutation> {
+    public static readonly INSTANCE = new SetAssociatedDataSchemaLocalizedMutationConverter()
 
     convert(mutation: GrpcSetAssociatedDataSchemaLocalizedMutation): SetAssociatedDataSchemaLocalizedMutation {
         return new SetAssociatedDataSchemaLocalizedMutation(

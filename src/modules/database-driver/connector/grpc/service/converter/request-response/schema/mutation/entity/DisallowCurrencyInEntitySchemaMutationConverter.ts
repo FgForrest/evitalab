@@ -12,6 +12,7 @@ import {
 } from '@/modules/database-driver/request-response/schema/mutation/entity/DisallowCurrencyInEntitySchemaMutation.ts'
 
 export class DisallowCurrencyInEntitySchemaMutationConverter implements SchemaMutationConverter<DisallowCurrencyInEntitySchemaMutation, GrpcDisallowCurrencyInEntitySchemaMutation> {
+    public static readonly INSTANCE = new DisallowCurrencyInEntitySchemaMutationConverter()
 
     convert(mutation: GrpcDisallowCurrencyInEntitySchemaMutation): DisallowCurrencyInEntitySchemaMutation {
         return new DisallowCurrencyInEntitySchemaMutation(

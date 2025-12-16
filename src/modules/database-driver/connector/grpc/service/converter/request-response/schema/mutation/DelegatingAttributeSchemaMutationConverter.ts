@@ -56,46 +56,46 @@ export class DelegatingAttributeSchemaMutationConverter {
 
     private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([ // todo pfi: replace any
         ['createAttributeSchemaMutation',
-            CreateAttributeSchemaMutationConverter
+            CreateAttributeSchemaMutationConverter.INSTANCE
         ],
         ['modifyAttributeSchemaDefaultValueMutation',
-            ModifyAttributeSchemaDefaultValueMutationConverter
+            ModifyAttributeSchemaDefaultValueMutationConverter.INSTANCE
         ],
         ['modifyAttributeSchemaDeprecationNoticeMutation',
-            ModifyAttributeSchemaDeprecationNoticeMutationConverter
+            ModifyAttributeSchemaDeprecationNoticeMutationConverter.INSTANCE
         ],
         ['modifyAttributeSchemaDescriptionMutation',
-            ModifyAttributeSchemaDescriptionMutationConverter
+            ModifyAttributeSchemaDescriptionMutationConverter.INSTANCE
         ],
         ['modifyAttributeSchemaNameMutation',
-            ModifyAttributeSchemaNameMutationConverter
+            ModifyAttributeSchemaNameMutationConverter.INSTANCE
         ],
         ['modifyAttributeSchemaTypeMutation',
-            ModifyAttributeSchemaTypeMutationConverter
+            ModifyAttributeSchemaTypeMutationConverter.INSTANCE
         ],
         ['removeAttributeSchemaMutation',
-            RemoveAttributeSchemaMutationConverter
+            RemoveAttributeSchemaMutationConverter.INSTANCE
         ],
         ['setAttributeSchemaFilterableMutation',
-            SetAttributeSchemaFilterableMutationConverter
+            SetAttributeSchemaFilterableMutationConverter.INSTANCE
         ],
         ['setAttributeSchemaLocalizedMutation',
-            SetAttributeSchemaLocalizedMutationConverter
+            SetAttributeSchemaLocalizedMutationConverter.INSTANCE
         ],
         ['setAttributeSchemaNullableMutation',
-            SetAttributeSchemaNullableMutationConverter
+            SetAttributeSchemaNullableMutationConverter.INSTANCE
         ],
         ['setAttributeSchemaRepresentativeMutation',
-            SetAttributeSchemaRepresentativeMutationConverter
+            SetAttributeSchemaRepresentativeMutationConverter.INSTANCE
         ],
         ['setAttributeSchemaSortableMutation',
-            SetAttributeSchemaSortableMutationConverter
+            SetAttributeSchemaSortableMutationConverter.INSTANCE
         ],
         ['setAttributeSchemaUniqueMutation',
-            SetAttributeSchemaUniqueMutationConverter
+            SetAttributeSchemaUniqueMutationConverter.INSTANCE
         ],
         ['useGlobalAttributeSchemaMutation',
-            UseGlobalAttributeSchemaMutationConverter
+            UseGlobalAttributeSchemaMutationConverter.INSTANCE
         ]
     ])
 
@@ -104,12 +104,11 @@ export class DelegatingAttributeSchemaMutationConverter {
             throw new UnexpectedError('Unknown mutation type: ' + mutation?.mutation.case)
         }
 
-        const ConverterClass = DelegatingAttributeSchemaMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
-        if (!ConverterClass) {
+        const converter = DelegatingAttributeSchemaMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
+        if (!converter) {
             throw new UnexpectedError('Unknown mutation type: ' + mutation.mutation.case)
         }
 
-        const converter = new ConverterClass()
         return converter.convert(mutation.mutation.value)
     }
 }

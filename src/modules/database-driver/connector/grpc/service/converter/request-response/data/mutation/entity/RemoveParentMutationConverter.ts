@@ -7,6 +7,7 @@ import type {
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/data/mutation/LocalMutationConverter.ts'
 
 export class RemoveParentMutationConverter implements LocalMutationConverter<RemoveParentMutation, GrpcRemoveParentMutation> {
+    public static readonly INSTANCE = new RemoveParentMutationConverter()
 
     convert(mutation: GrpcRemoveParentMutation): RemoveParentMutation {
         return new RemoveParentMutation()

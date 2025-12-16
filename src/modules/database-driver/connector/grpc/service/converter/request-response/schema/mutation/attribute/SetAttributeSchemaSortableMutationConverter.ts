@@ -12,6 +12,7 @@ import { EntityConverter } from '@/modules/database-driver/connector/grpc/servic
 import { List as ImmutableList } from 'immutable'
 
 export class SetAttributeSchemaSortableMutationConverter implements SchemaMutationConverter<SetAttributeSchemaSortableMutation, GrpcSetAttributeSchemaSortableMutation> {
+    public static readonly INSTANCE = new SetAttributeSchemaSortableMutationConverter()
 
     convert(mutation: GrpcSetAttributeSchemaSortableMutation): SetAttributeSchemaSortableMutation {
         const sortableInScopes = mutation.sortableInScopes.length === 0 ?

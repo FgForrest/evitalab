@@ -1,39 +1,73 @@
-import { TrafficRecordHistoryDataPointer } from '@/modules/traffic-viewer/model/TrafficRecordHistoryDataPointer'
-import {
-    TrafficRecordVisualisationDefinition
-} from '@/modules/traffic-viewer/model/TrafficRecordVisualisationDefinition'
-import { Uuid } from '@/modules/database-driver/data-type/Uuid'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { List as ImmutableList } from 'immutable'
 import type {
     MutationHistoryItemVisualisationDefinition
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
+import type { MutationHistoryCriteria } from '@/modules/history-viewer/model/MutationHistoryCriteria.ts'
+import {
+    CatalogSchemaConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
+import { ContainerType } from '@/modules/database-driver/data-type/ContainerType.ts'
+import {
+    ReferenceMutation
+} from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceMutation.ts'
 
 /**
- * Generic context for record visualisation
+ * Generic context for mutation history visualisation
  */
 export class MutationHistoryVisualisationContext {
 
     readonly catalogName: string
+    readonly historyCriteria: MutationHistoryCriteria
 
-    private rootVisualisedRecords: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
-    private visualisedSessionRecordsIndex: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
-    private visualisedSourceQueryRecordsIndex: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
+    private readonly rootVisualisedRecords: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
+    private readonly visualisedSessionRecordsIndex: Map<string, MutationHistoryItemVisualisationDefinition> = new Map()
+    private readonly pendingChildrenIndex: Map<string, MutationHistoryItemVisualisationDefinition[]> = new Map()
 
-    constructor(catalogName: string) {
+    constructor(catalogName: string, historyCriteria: MutationHistoryCriteria) {
         this.catalogName = catalogName
+        this.historyCriteria = historyCriteria
     }
 
     getVisualisedRecords(): ImmutableList<MutationHistoryItemVisualisationDefinition> {
-        return ImmutableList(this.rootVisualisedRecords.values())
+
+        const entityTypes = CatalogSchemaConverter.toContainerTypes(this.historyCriteria.containerTypeList)
+
+
+        if (entityTypes.contains(ContainerType.Entity)) {
+            const filtered = Array.from(this.rootVisualisedRecords.values())
+
+            return ImmutableList(filtered)
+        } else if (!this.historyCriteria.mutableFilters && [ContainerType.Price, ContainerType.Reference, ContainerType.AssociatedData, ContainerType.Attribute].some(type => entityTypes.includes(type))) {
+            const filtered = Array.from(this.rootVisualisedRecords.values());
+                // .filter(v => v.children.size > 0)
+
+            // const v = filtered.flatMap(v => Array.from(v.children))
+
+            return ImmutableList(filtered)
+        } else {
+            const filtered = Array.from(this.rootVisualisedRecords.values())
+                .filter(v => v.children.size > 0)
+
+            return ImmutableList(filtered)
+        }
     }
 
     // todo pfi: consultation required
     addRootVisualisedRecord(record: MutationHistoryItemVisualisationDefinition): void {
-        if (this.rootVisualisedRecords.has(record.source.version.toString())) {
-            // throw new UnexpectedError(`There is already mutation history record with transaction ID '${sessionId.toString()}'`)
+
+        if (record.source.body instanceof ReferenceMutation) {
+            if (this.rootVisualisedRecords.has(record.source.version.toString() + record.source.body.referenceKey.primaryKey + record.source.body.referenceKey.referenceName)) {
+                // throw new UnexpectedError(`There is already mutation history record with transaction ID '${sessionId.toString()}'`)
+            } else {
+                this.rootVisualisedRecords.set(record.source.version.toString() + record.source.body.referenceKey.primaryKey, record)
+            }
         } else {
-            this.rootVisualisedRecords.set(record.source.version.toString(), record)
+
+            if (this.rootVisualisedRecords.has(record.source.version.toString())) {
+                // throw new UnexpectedError(`There is already mutation history record with transaction ID '${sessionId.toString()}'`)
+            } else {
+                this.rootVisualisedRecords.set(record.source.version.toString(), record)
+            }
         }
 
     }
@@ -50,14 +84,22 @@ export class MutationHistoryVisualisationContext {
         }
     }
 
-    getVisualisedSourceQueryRecord(sourceQueryId: string): MutationHistoryItemVisualisationDefinition | undefined {
-        return this.visualisedSourceQueryRecordsIndex.get(sourceQueryId)
+    addPendingChild(transactionId: number, record: MutationHistoryItemVisualisationDefinition): void {
+        const key = transactionId.toString()
+        const arr = this.pendingChildrenIndex.get(key) || []
+        arr.push(record)
+        this.pendingChildrenIndex.set(key, arr)
     }
 
-    addVisualisedSourceQueryRecord(sourceQueryId: string, record: MutationHistoryItemVisualisationDefinition): void {
-        if (this.visualisedSourceQueryRecordsIndex.has(sourceQueryId)) {
-            throw new UnexpectedError(`There is already source query record with ID '${sourceQueryId}'`)
+    attachPendingChildren(transactionId: number, transactionRecord: MutationHistoryItemVisualisationDefinition): void {
+        const key = transactionId.toString()
+        const arr = this.pendingChildrenIndex.get(key)
+        if (arr && arr.length > 0) {
+            for (const child of arr) {
+                transactionRecord.addChild(child)
+            }
+            this.pendingChildrenIndex.delete(key)
         }
-        this.visualisedSourceQueryRecordsIndex.set(sourceQueryId, record)
     }
+
 }

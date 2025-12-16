@@ -12,6 +12,7 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter.ts'
 
 export class SetPriceInnerRecordHandlingMutationConverter implements LocalMutationConverter<SetPriceInnerRecordHandlingMutation, GrpcSetPriceInnerRecordHandlingMutation> {
+    public static readonly INSTANCE = new SetPriceInnerRecordHandlingMutationConverter()
 
     convert(mutation: GrpcSetPriceInnerRecordHandlingMutation): SetPriceInnerRecordHandlingMutation {
         if (mutation.priceInnerRecordHandling === GrpcPriceInnerRecordHandling.UNKNOWN) { // todo pfi : in origin code was "UNRECOGNIZED"

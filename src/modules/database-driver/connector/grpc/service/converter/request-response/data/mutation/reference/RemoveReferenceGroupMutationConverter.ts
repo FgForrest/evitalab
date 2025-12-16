@@ -10,6 +10,7 @@ import {
 } from '@/modules/database-driver/request-response/data/mutation/reference/RemoveReferenceGroupMutation.ts'
 
 export class RemoveReferenceGroupMutationConverter implements LocalMutationConverter<RemoveReferenceGroupMutation, GrpcRemoveReferenceGroupMutation> {
+    public static readonly INSTANCE = new RemoveReferenceGroupMutationConverter()
 
     convert(mutation: GrpcRemoveReferenceGroupMutation): RemoveReferenceGroupMutation {
         return new RemoveReferenceGroupMutation(

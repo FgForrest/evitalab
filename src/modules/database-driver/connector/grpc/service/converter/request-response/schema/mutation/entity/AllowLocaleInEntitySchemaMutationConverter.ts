@@ -14,6 +14,7 @@ import type {
 
 
 export class AllowLocaleInEntitySchemaMutationConverter implements SchemaMutationConverter<AllowLocaleInEntitySchemaMutation, GrpcAllowLocaleInEntitySchemaMutation> {
+    public static readonly INSTANCE = new AllowLocaleInEntitySchemaMutationConverter()
 
     convert(mutation: GrpcAllowLocaleInEntitySchemaMutation): AllowLocaleInEntitySchemaMutation {
         return new AllowLocaleInEntitySchemaMutation(

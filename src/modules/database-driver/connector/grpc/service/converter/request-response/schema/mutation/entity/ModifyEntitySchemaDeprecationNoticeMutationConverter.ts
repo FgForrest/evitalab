@@ -9,6 +9,7 @@ import {
 } from '@/modules/database-driver/request-response/schema/mutation/entity/ModifyEntitySchemaDeprecationNoticeMutation.ts'
 
 export class ModifyEntitySchemaDeprecationNoticeMutationConverter implements SchemaMutationConverter<ModifyEntitySchemaDeprecationNoticeMutation, GrpcModifyEntitySchemaDeprecationNoticeMutation> {
+    public static readonly INSTANCE = new ModifyEntitySchemaDeprecationNoticeMutationConverter()
 
     convert(mutation: GrpcModifyEntitySchemaDeprecationNoticeMutation): ModifyEntitySchemaDeprecationNoticeMutation {
         return new ModifyEntitySchemaDeprecationNoticeMutation(mutation.deprecationNotice)

@@ -1,4 +1,6 @@
 export class ModifyEntitySchemaNameMutation {
+    static readonly TYPE = 'modifyEntitySchemaNameMutation' as const
+
     readonly name: string
     readonly newName: string
     readonly overwriteTarget: boolean

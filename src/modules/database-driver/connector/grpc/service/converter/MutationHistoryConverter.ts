@@ -1,7 +1,6 @@
 import {
-    GrpcChangeCaptureArea,
-    GrpcChangeCaptureContainerType,
-    type GrpcChangeCaptureCriteria,
+    GrpcChangeCaptureArea, GrpcChangeCaptureContainerType,
+    type GrpcChangeCaptureCriteria, GrpcChangeCaptureOperation,
     type GrpcChangeCatalogCapture
 } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
@@ -27,6 +26,7 @@ import {
 import type {
     GrpcInfrastructureMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcInfrastrutureMutation_pb.ts'
+import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
 
 export class MutationHistoryConverter {
 
@@ -42,7 +42,7 @@ export class MutationHistoryConverter {
                 console.error(`Issue with ${changeCapture.body}`)
                 mutation = undefined
             } else if (CatalogSchemaConverter.toCaptureArea(changeCapture.area) == CaptureArea.Infrastructure && changeCapture.body.value) {
-                mutation = DelegatingInfrastructureMutationConverter.convert(changeCapture.body.value as GrpcInfrastructureMutation);
+                mutation = DelegatingInfrastructureMutationConverter.convert(changeCapture.body.value as GrpcInfrastructureMutation)
             } else if (changeCapture.body.case == 'schemaMutation') {
                 mutation = DelegatingEntitySchemaMutationConverter.convert(changeCapture.body.value)
             } else if (changeCapture.body.case == 'entityMutation') {
@@ -62,44 +62,66 @@ export class MutationHistoryConverter {
             changeCapture.index || 0,
             CatalogSchemaConverter.toCaptureArea(changeCapture.area),
             changeCapture.entityType,
-            changeCapture.entityPrimaryKey,
+            changeCapture.entityPrimaryKey !== undefined ? changeCapture.entityPrimaryKey : (changeCapture.body.case === 'entityMutation' ? changeCapture.body.value?.mutation?.value?.entityPrimaryKey : undefined),
             CatalogSchemaConverter.toOperation(changeCapture.operation),
-            mutation
+            mutation,
+            changeCapture.timestamp !== undefined ? EvitaValueConverter.convertGrpcOffsetDateTime(changeCapture.timestamp) : undefined
         )
 
 
     }
 
+    // todo : fix me
+    toContainerType(input: GrpcChangeCaptureContainerType[]): GrpcChangeCaptureContainerType[] {
+        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureContainerType[it as any] : it)
+    }
+
+    // todo : fix me
+    toMutationType(input: GrpcChangeCaptureOperation[]): number[] {
+        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureOperation[it as any] : it)
+    }
 
     convertMutationHistoryRequest(mutationHistoryRequest: MutationHistoryRequest): GrpcChangeCaptureCriteria[] {
-        console.log(mutationHistoryRequest)
-        return [
+        const criteria: GrpcChangeCaptureCriteria[] = []
 
-            {
-                area: GrpcChangeCaptureArea.INFRASTRUCTURE
-            },
-            {
-                area: GrpcChangeCaptureArea.DATA,
-                site: {
-                    value: {
-                        entityType: mutationHistoryRequest.entityType,
-                        entityPrimaryKey: mutationHistoryRequest.entityPrimaryKey,
-                        containerType: [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
-                    },
-                    case: 'dataSite'
-                }
-            },
-            {
-                site: {
-                    value: {
-                        entityType: mutationHistoryRequest.entityType,
-                        containerType: [GrpcChangeCaptureContainerType.CONTAINER_ENTITY]
-                    },
-                    case: 'schemaSite'
+
+
+        const dataSite: GrpcChangeCaptureCriteria = {
+            area: GrpcChangeCaptureArea.DATA,
+            site: {
+                value: {
+                    entityType: mutationHistoryRequest.entityType,
+                    entityPrimaryKey: mutationHistoryRequest.entityPrimaryKey,
+                    containerType: this.toContainerType(mutationHistoryRequest.containerTypeList) as number[],
+                    operation: this.toMutationType(mutationHistoryRequest.operationList),
+                    containerName: [...mutationHistoryRequest.containerNameList]
                 },
-                area: GrpcChangeCaptureArea.SCHEMA
+                case: 'dataSite'
             }
-        ]
+        }
+        const schemaSite: GrpcChangeCaptureCriteria = {
+            area: GrpcChangeCaptureArea.SCHEMA,
+            site: {
+                value: {
+                    entityType: mutationHistoryRequest.entityType,
+                    containerType: this.toContainerType(mutationHistoryRequest.containerTypeList) as number[],
+                    operation: mutationHistoryRequest.operationList
+                },
+                case: 'schemaSite'
+            }
+        }
+
+
+        if (mutationHistoryRequest.infrastructureAreaType === 'DATA_SITE') {
+            criteria.push(dataSite)
+        } else if (mutationHistoryRequest.infrastructureAreaType === 'SCHEMA_SITE') {
+            criteria.push(schemaSite)
+        } else {
+            // both
+            criteria.push(dataSite)
+            criteria.push(schemaSite)
+        }
+        return criteria
     }
 
 }

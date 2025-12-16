@@ -7,6 +7,7 @@ import {
 import type { GrpcSetParentMutation } from '@/modules/database-driver/connector/grpc/gen/GrpcEntityMutations_pb.ts'
 
 export class SetParentMutationConverter implements LocalMutationConverter<SetParentMutation, GrpcSetParentMutation> {
+    public static readonly INSTANCE = new SetParentMutationConverter()
 
     convert(mutation: GrpcSetParentMutation): SetParentMutation {
         return new SetParentMutation(mutation.primaryKey)

@@ -1,4 +1,6 @@
 export class SetAttributeSchemaNullableMutation {
+    static readonly TYPE = 'setAttributeSchemaNullableMutation' as const
+
     readonly name: string
     readonly nullable: boolean
 

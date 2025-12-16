@@ -21,6 +21,7 @@ import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/se
 import { List as ImmutableList } from 'immutable'
 
 export class CreateAttributeSchemaMutationConverter implements SchemaMutationConverter<CreateAttributeSchemaMutation, GrpcCreateAttributeSchemaMutation> {
+    public static readonly INSTANCE = new CreateAttributeSchemaMutationConverter()
 
     convert(mutation: GrpcCreateAttributeSchemaMutation): CreateAttributeSchemaMutation {
         if (mutation.type == undefined) {

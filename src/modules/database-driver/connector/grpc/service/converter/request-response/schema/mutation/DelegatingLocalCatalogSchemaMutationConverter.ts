@@ -57,52 +57,40 @@ import type {
     LocalCatalogSchemaMutation
 } from '@/modules/database-driver/request-response/schema/mutation/LocalCatalogSchemaMutation.ts'
 
-
-function getKeyFromConverterName(converter: any): string {
-    return converter.name
-        .replace(/Converter$/, '') // Remove 'Converter' suffix
-        .replace(/([A-Z])/g, (match: string, p1: string, offset: number) =>
-            offset === 0 ? p1.toLowerCase() : p1
-        ); // Convert first letter to lowercase, keep others as-is
-}
-
 export class DelegatingLocalCatalogSchemaMutationConverter {
 
-
-    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>(
-        [
-            CreateGlobalAttributeSchemaMutationConverter,
-            ModifyAttributeSchemaDefaultValueMutationConverter,
-            ModifyAttributeSchemaDeprecationNoticeMutationConverter,
-            ModifyAttributeSchemaDescriptionMutationConverter,
-            ModifyAttributeSchemaNameMutationConverter,
-            ModifyAttributeSchemaTypeMutationConverter,
-            RemoveAttributeSchemaMutationConverter,
-            SetAttributeSchemaFilterableMutationConverter,
-            SetAttributeSchemaGloballyUniqueMutationConverter,
-            SetAttributeSchemaLocalizedMutationConverter,
-            SetAttributeSchemaNullableMutationConverter,
-            SetAttributeSchemaRepresentativeMutationConverter,
-            SetAttributeSchemaSortableMutationConverter,
-            // entity schema mutations
-            CreateEntitySchemaMutationConverter,
-            ModifyEntitySchemaMutationConverter,
-            ModifyEntitySchemaNameMutationConverter,
-            RemoveEntitySchemaMutationConverter
-        ].map(converter => [getKeyFromConverterName(converter), converter])
-    );
+    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([
+        // attribute schema mutations
+        ['createGlobalAttributeSchemaMutation', CreateGlobalAttributeSchemaMutationConverter.INSTANCE],
+        ['modifyAttributeSchemaDefaultValueMutation', ModifyAttributeSchemaDefaultValueMutationConverter.INSTANCE],
+        ['modifyAttributeSchemaDeprecationNoticeMutation', ModifyAttributeSchemaDeprecationNoticeMutationConverter.INSTANCE],
+        ['modifyAttributeSchemaDescriptionMutation', ModifyAttributeSchemaDescriptionMutationConverter.INSTANCE],
+        ['modifyAttributeSchemaNameMutation', ModifyAttributeSchemaNameMutationConverter.INSTANCE],
+        ['modifyAttributeSchemaTypeMutation', ModifyAttributeSchemaTypeMutationConverter.INSTANCE],
+        ['removeAttributeSchemaMutation', RemoveAttributeSchemaMutationConverter.INSTANCE],
+        ['setAttributeSchemaFilterableMutation', SetAttributeSchemaFilterableMutationConverter.INSTANCE],
+        ['setAttributeSchemaGloballyUniqueMutation', SetAttributeSchemaGloballyUniqueMutationConverter.INSTANCE],
+        ['setAttributeSchemaLocalizedMutation', SetAttributeSchemaLocalizedMutationConverter.INSTANCE],
+        ['setAttributeSchemaNullableMutation', SetAttributeSchemaNullableMutationConverter.INSTANCE],
+        ['setAttributeSchemaRepresentativeMutation', SetAttributeSchemaRepresentativeMutationConverter.INSTANCE],
+        ['setAttributeSchemaSortableMutation', SetAttributeSchemaSortableMutationConverter.INSTANCE],
+        // entity schema mutations
+        ['createEntitySchemaMutation', CreateEntitySchemaMutationConverter.INSTANCE],
+        ['modifyEntitySchemaMutation', ModifyEntitySchemaMutationConverter.INSTANCE],
+        ['modifyEntitySchemaNameMutation', ModifyEntitySchemaNameMutationConverter.INSTANCE],
+        ['removeEntitySchemaMutation', RemoveEntitySchemaMutationConverter.INSTANCE]
+    ]);
 
     static convert(mutation: GrpcLocalCatalogSchemaMutation | undefined): LocalCatalogSchemaMutation {
         if (!mutation?.mutation?.case) {
             throw new UnexpectedError('Unknown mutation type: ' + mutation?.mutation.case)
         }
 
-        const ConverterClass = DelegatingLocalCatalogSchemaMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
-        if (!ConverterClass) {
+        const converter = DelegatingLocalCatalogSchemaMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)
+        if (!converter) {
             throw new UnexpectedError('Unknown mutation type: ' + mutation.mutation.case)
         }
 
-        const converter = new ConverterClass()
         return converter.convert(mutation.mutation.value)
     }
 }

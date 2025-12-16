@@ -11,6 +11,7 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 import { ScalarConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScalarConverter.ts'
 
 export class CreateAssociatedDataSchemaMutationConverter implements SchemaMutationConverter<CreateAssociatedDataSchemaMutation, GrpcCreateAssociatedDataSchemaMutation> {
+    public static readonly INSTANCE = new CreateAssociatedDataSchemaMutationConverter()
 
     convert(mutation: GrpcCreateAssociatedDataSchemaMutation): CreateAssociatedDataSchemaMutation {
         if (mutation.type == undefined) {

@@ -1,4 +1,6 @@
 export class ModifyAttributeSchemaTypeMutation {
+    static readonly TYPE = 'modifyAttributeSchemaTypeMutation' as const
+
     readonly name: string
     readonly type: any
     readonly indexedDecimalPlaces: number
