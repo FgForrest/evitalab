@@ -55,11 +55,9 @@ export class EvitaValueConverter {
         if (value?.value.case == 'primitiveValue') {
             return EvitaValueConverter.convertGrpcValue(value.value.value, valueCase);
         } else if (value?.value.case == 'root') {
-            // return toComplexObject(value.getRoot());
-            throw new UnexpectedError("PFI todo");
+            return EvitaValueConverter.convertGrpcValue(value.value.value, valueCase);
         } else if (value?.value.case == 'jsonValue') {
-            // return ComplexDataObjectConverter.convertJsonToComplexDataObject(value.getJsonValue());
-            throw new UnexpectedError("PFI todo");
+            return JSON.parse(value?.value?.value)
         } else {
             throw new UnexpectedError("Unknown value type.");
         }

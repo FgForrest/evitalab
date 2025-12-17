@@ -93,7 +93,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         if (ctx.historyCriteria.containerTypeList?.some(i => i === GrpcChangeCaptureContainerType.CONTAINER_ENTITY) || ctx.historyCriteria.containerTypeList?.length === 0) {
             const entityActions: Immutable.List<Action> = ctx.historyCriteria.mutableFilters ?
                 this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_ENTITY], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.entity.action.open') : ImmutableList()
-            visualisedRecord = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-table', i18n.global.t(`mutationHistoryViewer.record.type.entity.title-${entityOperationType}`, { entityType: mutationHistory.entityType }), `(PK ${mutationHistory.entityPrimaryKey?.toString()})`, this.constructEntityMetadata(mutationHistory, ctx.historyCriteria), entityActions)
+            visualisedRecord = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-table', i18n.global.t(`mutationHistoryViewer.record.type.entity.title-${entityOperationType}`, { entityType: mutationHistory.entityType }), `(PK ${mutationHistory.entityPrimaryKey?.toString()})`, undefined, this.constructEntityMetadata(mutationHistory, ctx.historyCriteria), entityActions)
         }
 
         const mutations = mutationHistory.body instanceof EntityUpsertMutation ?
@@ -119,7 +119,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
 
                 const title: string = i18n.global.t('mutationHistoryViewer.record.type.attribute.reference.title', { referenceName: referenceName })
-                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-link-variant', title, `(FK ${attributeValue})`, metadata, actions)
+                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-link-variant', title, `(FK ${attributeValue})`, undefined, metadata, actions)
 
             } else if (attributeMutation instanceof PriceMutation) {
                 const attributeValue = attributeMutation instanceof UpsertPriceMutation ? i18n.global.t('mutationHistoryViewer.record.type.attribute.price.detail', {
@@ -135,25 +135,26 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                     this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_PRICE], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.attribute.action.open')
                 const metadata: MetadataGroup[] = this.constructAttributePriceMetadata(attributeMutation, ctx.historyCriteria, mutationHistory)
                 const title: string = i18n.global.t('mutationHistoryViewer.record.type.attribute.price.title')
-                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-currency-usd', title, attributeValue, metadata, actions)
+                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-currency-usd', title, attributeValue, undefined, metadata, actions)
             } else if (attributeMutation instanceof AssociatedDataMutation) {
                 const type = getMutationOperationType(attributeMutation)
                 const title = i18n.global.t(`mutationHistoryViewer.record.type.attribute.associatedData.title-${type}`, { key: attributeMutation.associatedDataKey.associatedDataName })
-                const attributeValue = attributeMutation instanceof UpsertAssociatedDataMutation ? attributeMutation?.value?.toString() : ''
+                const attributeValue = attributeMutation instanceof UpsertAssociatedDataMutation ? JSON.stringify(attributeMutation?.value) : ''
+                const attributeTooltip = attributeMutation instanceof UpsertAssociatedDataMutation && typeof  attributeMutation.value === 'object' ? JSON.stringify(attributeMutation?.value, null, 2) : undefined
 
                 const actions: Immutable.List<Action> = (!ctx.historyCriteria.mutableFilters && CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.AssociatedData)) ?
                     ImmutableList() :
                     this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_ASSOCIATED_DATA], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, undefined, ctx, mutationHistory, 'mutationHistoryViewer.record.type.associatedData.action.open')
 
                 const metadata: MetadataGroup[] = this.constructAttributeMetadata(attributeMutation, ctx.historyCriteria, mutationHistory)
-                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-relation-one-to-one-or-many', title, attributeValue, metadata, actions)
+                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-relation-one-to-one-or-many', title, attributeValue, attributeTooltip, metadata, actions)
             } else if (attributeMutation instanceof SetPriceInnerRecordHandlingMutation) {
                 const attributeValue = (attributeMutation as SetPriceInnerRecordHandlingMutation).priceInnerRecordHandling.toString()
 
                 const actions = this.getAttributeAction(ctx, mutationHistory, undefined)
                 const metadata: MetadataGroup[] = this.constructAttributeMetadata(attributeMutation as LocalMutation, ctx.historyCriteria, mutationHistory)
                 const title: string = i18n.global.t(`mutationHistoryViewer.record.type.priceSettings.title`)
-                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', title, attributeValue, metadata, actions)
+                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', title, attributeValue, undefined, metadata, actions)
             } else {
                 const attributeName = (attributeMutation as AttributeMutation)?.attributeKey?.attributeName
                 const attributeValue = attributeMutation instanceof SetPriceInnerRecordHandlingMutation ? (attributeMutation as SetPriceInnerRecordHandlingMutation).priceInnerRecordHandling.toString() : (attributeMutation as UpsertAttributeMutation)?.value?.toString()
@@ -163,7 +164,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
                 const metadata: MetadataGroup[] = this.constructAttributeMetadata(attributeMutation as LocalMutation, ctx.historyCriteria, mutationHistory)
                 const title: string = i18n.global.t(`mutationHistoryViewer.record.type.attribute.title-${operationType}`, { attributeName: attributeName })
-                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', title, attributeValue, metadata, actions)
+                attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', title, attributeValue, undefined, metadata, actions)
             }
             if (visualisedRecord != undefined) {
                 visualisedRecord.addChild(attributeMutationVisualised)
