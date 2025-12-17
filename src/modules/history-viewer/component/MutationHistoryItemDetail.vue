@@ -27,13 +27,14 @@ function callAction(action: Action): void {
                     {{ definition.title }}
                 </strong>
 
-                <VTooltip v-if="definition.details && definition.details.length >= 100">
+                <VTooltip v-if="(definition.details && definition.tooltip) || (definition.details && definition.details.length >= 100)">
                     <template #activator="{ props }">
-          <span v-bind="props" class="text-subtitle-1 ml-2 cursor-help">
-            {{ definition.details.substring(0, 100) }}
-          </span>
+                      <span v-bind="props" class="text-subtitle-1 ml-2 cursor-help">
+                        {{ definition.details.substring(0, 100) }}
+                      </span>
                     </template>
-                    {{ definition.details }}
+                    <pre v-if="definition.tooltip">{{ definition.tooltip }}</pre>
+                    <span v-else>{{ definition.details }}</span>
                 </VTooltip>
 
                 <span v-else-if="definition.details" class="text-subtitle-1 ml-2">
