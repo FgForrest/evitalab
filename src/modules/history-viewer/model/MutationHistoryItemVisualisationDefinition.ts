@@ -15,6 +15,7 @@ export class MutationHistoryItemVisualisationDefinition {
     readonly icon: string|undefined
     readonly title: string
     readonly details?: string
+    readonly tooltip?: string
     metadata: MetadataGroup[]
     readonly actions: ImmutableList<Action>
     private readonly _children: MutationHistoryItemVisualisationDefinition[] = []
@@ -23,10 +24,12 @@ export class MutationHistoryItemVisualisationDefinition {
                 icon: string | undefined,
                 title: string,
                 details: string | undefined,
+                tooltip: string | undefined,
                 metadata: MetadataGroup[], actions: Immutable.List<Action>) {
         this.source = source
         this.icon = icon
         this.title = title
+        this.tooltip = tooltip
         this.details = details
         this.metadata = metadata
         this.actions = actions

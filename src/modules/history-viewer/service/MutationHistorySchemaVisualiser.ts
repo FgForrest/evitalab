@@ -36,14 +36,14 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
         const visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined = ctx.getVisualisedSessionRecord(mutationHistory.version)
 
-        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-table', i18n.global.t('mutationHistoryViewer.record.type.schema.title', { entityType: mutationHistory.entityType }), undefined, this.constructMetadata(mutationHistory), ImmutableList())
+        const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-table', i18n.global.t('mutationHistoryViewer.record.type.schema.title', { entityType: mutationHistory.entityType }), undefined, undefined, this.constructMetadata(mutationHistory), ImmutableList())
 
 
         // entity attributes
         if ((mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations) {
             for (let schemaMutation of (mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations) {
                 const attributeName = getMutationType(schemaMutation)
-                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }), JSON.stringify(schemaMutation), [], ImmutableList())
+                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }), JSON.stringify(schemaMutation), undefined, [], ImmutableList())
                 visualisedRecord.addChild(attributeMutationVisualised)
             }
         }
