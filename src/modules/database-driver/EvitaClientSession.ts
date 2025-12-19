@@ -351,7 +351,8 @@ export class EvitaClientSession {
                 .getCatalogVersionAt({}, this._callMetadata)
 
             return new CatalogVersionAtResponse(
-                BigInt(result.version),
+                BigInt(result.startVersion),
+                BigInt(result.endVersion),
                 EvitaValueConverter.convertGrpcOffsetDateTime(result.introducedAt!)
             )
         } catch (e) {
