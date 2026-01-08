@@ -12,8 +12,10 @@ export const fallbackTaskIcon: string = 'mdi-cog-outline'
  * Maps task type to a icon
  */
 export const taskTypeToIconMapping: ImmutableMap<string, string> = ImmutableMap([
-    [backupTaskName, 'mdi-cloud-download-outline'],
-    [fullBackupTaskName, 'mdi-cloud-download-outline'],
+    ['BackupTask', 'mdi-cloud-download-outline'],
+    ['SystemBackupTask', 'mdi-cloud-download-outline'],
+    ['FullBackupTask', 'mdi-cloud-download-outline'],
+    ['SystemFullBackupTask', 'mdi-cloud-download-outline'],
     [restoreTaskName, 'mdi-cloud-upload-outline'],
     [jfrRecorderTaskName, 'mdi-record-circle-outline']
 ])

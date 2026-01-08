@@ -24,7 +24,7 @@ import { BackupViewerTabDefinition } from '@/modules/backup-viewer/model/BackupV
 import { fullBackupTaskName } from '@/modules/backup-viewer/model/FullBackupTask.ts'
 
 const shownTaskStates: TaskState[] = [TaskState.WaitingForPrecondition, TaskState.Running, TaskState.Queued, TaskState.Failed]
-const shownTaskTypes: string[] = [backupTaskName, restoreTaskName, fullBackupTaskName]
+const shownTaskTypes: string[] = [...backupTaskName, restoreTaskName, ...fullBackupTaskName]
 
 const { t } = useI18n()
 

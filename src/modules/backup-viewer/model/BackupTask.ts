@@ -1,4 +1,4 @@
 /**
- * Represents name of server task creating catalog backup
+ * Represents names of server tasks creating catalog backup
  */
-export const backupTaskName: string = 'BackupTask'
+export const backupTaskName: string[] = ['BackupTask', 'SystemBackupTask']

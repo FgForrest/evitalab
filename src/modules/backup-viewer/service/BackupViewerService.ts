@@ -68,7 +68,7 @@ export class BackupViewerService {
         return await this.evitaClient.management.listFilesToFetch(
             pageNumber,
             pageSize,
-            [backupTaskName, fullBackupTaskName],
+            [...backupTaskName, ...fullBackupTaskName],
         )
     }
 
