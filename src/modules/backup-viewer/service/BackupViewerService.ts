@@ -13,6 +13,8 @@ import { List as ImmutableList } from 'immutable'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { fullBackupTaskName } from '@/modules/backup-viewer/model/FullBackupTask.ts'
+import { systemBackupTaskName } from '@/modules/backup-viewer/model/SystemBackupTask.ts'
+import { systemFullBackupTaskName } from '@/modules/backup-viewer/model/SystemFullBackupTask.ts'
 
 export const backupViewerServiceInjectionKey: InjectionKey<BackupViewerService> = Symbol('backupViewerService')
 
@@ -68,7 +70,7 @@ export class BackupViewerService {
         return await this.evitaClient.management.listFilesToFetch(
             pageNumber,
             pageSize,
-            [backupTaskName, fullBackupTaskName],
+            [backupTaskName, systemBackupTaskName, fullBackupTaskName, systemFullBackupTaskName],
         )
     }
 
