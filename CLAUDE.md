@@ -112,3 +112,7 @@ workspaceService.createTab(tabDefinition)
 - Feature branches: Created from `dev` for each issue
 
 Use [conventional commits](https://www.conventionalcommits.org/) for commit messages - CI/CD depends on this for versioning.
+
+## External Documentation
+
+Always use Context7 MCP when you need library/API documentation, code generation, setup or configuration steps without being explicitly asked.
