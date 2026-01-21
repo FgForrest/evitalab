@@ -7,7 +7,7 @@
     "build": "vue-tsc --noEmit && vite build",
     "build-driver": "vue-tsc --noEmit && env VITE_RUN_MODE=\"DRIVER\" vite build",
     "preview": "vite preview --port 3000",
-    "lint": "eslint . --fix --ignore-path .gitignore",
+    "lint": "eslint . --fix",
     "test": "vitest"
   },
   "dependencies": {
