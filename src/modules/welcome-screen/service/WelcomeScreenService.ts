@@ -22,7 +22,7 @@ export class WelcomeScreenService {
      * Returns the latest evitaDB blog posts to display on news page.
      */
     getBlogPosts = async (): Promise<EvitaDBBlogPost[]> => {
-        let cachedBlogPosts: EvitaDBBlogPost[] | undefined = this.store.blogPosts as EvitaDBBlogPost[]
+        let cachedBlogPosts: EvitaDBBlogPost[] | undefined = this.store.blogPosts
         if (cachedBlogPosts == undefined || cachedBlogPosts.length === 0) {
             cachedBlogPosts = await this.evitaDBDocsClient.getBlogPosts()
             this.store.replaceBlogPosts(cachedBlogPosts)
@@ -32,5 +32,5 @@ export class WelcomeScreenService {
 }
 
 export const useWelcomeScreenManager = (): WelcomeScreenService => {
-    return mandatoryInject(welcomeScreenServiceInjectionKey) as WelcomeScreenService
+    return mandatoryInject(welcomeScreenServiceInjectionKey)
 }

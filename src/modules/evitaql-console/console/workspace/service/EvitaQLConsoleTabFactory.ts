@@ -90,5 +90,5 @@ export class EvitaQLConsoleTabFactory {
 }
 
 export const useEvitaQLConsoleTabFactory = (): EvitaQLConsoleTabFactory => {
-    return mandatoryInject(evitaQLConsoleTabFactoryInjectionKey) as EvitaQLConsoleTabFactory
+    return mandatoryInject(evitaQLConsoleTabFactoryInjectionKey)
 }

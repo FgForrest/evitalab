@@ -160,7 +160,7 @@ const tooltip = computed<string>(() => {
     ) {
         if (props.propertyValue instanceof NativeValue) {
             //Head
-            if (((props.propertyValue as NativeValue).value() as Predecessor).predecessorId === -1) {
+            if (((props.propertyValue).value() as Predecessor).predecessorId === -1) {
                 return 'Head of the list.'
             } else {
                 return 'Pointer to a previous entity in the list.'

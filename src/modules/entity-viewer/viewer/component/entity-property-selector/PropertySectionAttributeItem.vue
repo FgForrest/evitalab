@@ -38,7 +38,7 @@ const schema: ComputedRef<AttributeSchema> = computed(() => {
     return props.propertyDescriptor.schema
 })
 
-const flags: ComputedRef<List<Flag>> = computed(() => schema.value!.representativeFlags)
+const flags: ComputedRef<List<Flag>> = computed(() => schema.value.representativeFlags)
 
 function openSchema(): void {
     workspaceService.createTab(
@@ -46,7 +46,7 @@ function openSchema(): void {
             new EntityAttributeSchemaPointer(
                 tabProps.params.dataPointer.catalogName,
                 tabProps.params.dataPointer.entityType,
-                schema.value!.name
+                schema.value.name
             )
         )
     )

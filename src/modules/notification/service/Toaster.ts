@@ -24,5 +24,5 @@ export interface Toaster {
 }
 
 export const useToaster = (): Toaster => {
-    return mandatoryInject(toasterInjectionKey) as Toaster
+    return mandatoryInject(toasterInjectionKey)
 }

@@ -510,7 +510,7 @@ export class EvitaClientManagement {
      */
     async listJfrRecordingEventTypes(): Promise<EventType[]>{
         const result = await ky.get(this.evitaClientProvider().connection.observabilityUrl + '/getRecordingEventTypes')
-        return (await result.json()) as EventType[]
+        return (await result.json())
     }
 
     /**

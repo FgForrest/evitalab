@@ -248,5 +248,5 @@ export class SchemaViewerService {
 }
 
 export const useSchemaViewerService = (): SchemaViewerService => {
-    return mandatoryInject(schemaViewerServiceInjectionKey) as SchemaViewerService
+    return mandatoryInject(schemaViewerServiceInjectionKey)
 }

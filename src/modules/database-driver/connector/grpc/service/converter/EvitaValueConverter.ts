@@ -234,10 +234,10 @@ export class EvitaValueConverter {
         else
             return new DateTimeRange(
                 value.from != undefined
-                    ? EvitaValueConverter.convertGrpcOffsetDateTime(value.from!)
+                    ? EvitaValueConverter.convertGrpcOffsetDateTime(value.from)
                     : undefined,
                 value.to != undefined
-                    ? EvitaValueConverter.convertGrpcOffsetDateTime(value.to!)
+                    ? EvitaValueConverter.convertGrpcOffsetDateTime(value.to)
                     : undefined
             )
     }
@@ -397,10 +397,10 @@ export class EvitaValueConverter {
                 dateTimeRange.push(
                     new DateTimeRange(
                         grpcDateTimeRange.from != undefined
-                            ? EvitaValueConverter.convertGrpcOffsetDateTime(grpcDateTimeRange.from!)
+                            ? EvitaValueConverter.convertGrpcOffsetDateTime(grpcDateTimeRange.from)
                             : undefined,
                         grpcDateTimeRange.to != undefined
-                            ? EvitaValueConverter.convertGrpcOffsetDateTime(grpcDateTimeRange.to!)
+                            ? EvitaValueConverter.convertGrpcOffsetDateTime(grpcDateTimeRange.to)
                             : undefined
                     )
                 )

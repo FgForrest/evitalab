@@ -48,7 +48,7 @@ function initialize() {
     } else {
         pipeline = visualiserService.resolveRepresentativeAttributes(
             catalogPointer.catalogName,
-            props.referenceSchema.entityType as string
+            props.referenceSchema.entityType
         )
     }
 

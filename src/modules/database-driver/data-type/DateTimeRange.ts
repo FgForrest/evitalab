@@ -25,10 +25,10 @@ export class DateTimeRange extends Range<OffsetDateTime> {
             timeStyle: 'long',
         })
         const formattedFrom: string = this.from != undefined
-            ? offsetDateTimeFormatter.format(this.from.timestamp!.toDate())
+            ? offsetDateTimeFormatter.format(this.from.timestamp.toDate())
             : emptyRangeEndSymbol
         const formattedTo: string = this.to != undefined
-            ? offsetDateTimeFormatter.format(this.to.timestamp!.toDate())
+            ? offsetDateTimeFormatter.format(this.to.timestamp.toDate())
             : emptyRangeEndSymbol
         return `[${formattedFrom},${formattedTo}]`
     }

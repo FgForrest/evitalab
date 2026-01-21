@@ -37,5 +37,5 @@ export class JfrViewerService {
 }
 
 export const useJfrViewerService = (): JfrViewerService => {
-    return mandatoryInject(jfrViewerServiceInjectionKey) as JfrViewerService
+    return mandatoryInject(jfrViewerServiceInjectionKey)
 }

@@ -98,5 +98,5 @@ export class SchemaViewerTabFactory {
 }
 
 export const useSchemaViewerTabFactory = (): SchemaViewerTabFactory => {
-    return mandatoryInject(schemaViewerTabFactoryInjectionKey) as SchemaViewerTabFactory
+    return mandatoryInject(schemaViewerTabFactoryInjectionKey)
 }

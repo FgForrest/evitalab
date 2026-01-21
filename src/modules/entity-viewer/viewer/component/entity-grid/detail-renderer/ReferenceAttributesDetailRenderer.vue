@@ -72,7 +72,7 @@ const attributeDataType = computed<Scalar>(() => {
     if (isArray.value) {
         return (rawAttributeDataType.value as string).replace('Array', '') as Scalar
     } else {
-        return rawAttributeDataType.value as Scalar
+        return rawAttributeDataType.value
     }
 })
 
@@ -83,7 +83,7 @@ function openReference(primaryKey: number): void {
         parentReferenceSchema.value.entityType,
         new EntityViewerTabData(
             queryLanguage.value,
-            entityViewerService.buildReferencedEntityFilterBy(queryLanguage.value as QueryLanguage, [primaryKey]),
+            entityViewerService.buildReferencedEntityFilterBy(queryLanguage.value, [primaryKey]),
             undefined,
             dataLocale?.value
         ),

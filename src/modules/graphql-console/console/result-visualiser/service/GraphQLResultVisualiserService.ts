@@ -160,5 +160,5 @@ export class GraphQLResultVisualiserService extends JsonResultVisualiserService 
 }
 
 export const useGraphQLResultVisualiserService = (): GraphQLResultVisualiserService => {
-    return mandatoryInject(graphQLResultVisualiserServiceInjectionKey) as GraphQLResultVisualiserService
+    return mandatoryInject(graphQLResultVisualiserServiceInjectionKey)
 }

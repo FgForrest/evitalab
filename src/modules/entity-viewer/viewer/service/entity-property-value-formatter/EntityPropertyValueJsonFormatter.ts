@@ -12,7 +12,7 @@ export class EntityPropertyValueJsonFormatter implements EntityPropertyValueForm
         if (prettyPrint) {
             return JSON.stringify(parsedJson, null, 2)
         } else {
-            return value instanceof Array ? `[${value.map(it => it.toPreviewString()).join(', ')}]` : (value as EntityPropertyValue).toPreviewString()
+            return value instanceof Array ? `[${value.map(it => it.toPreviewString()).join(', ')}]` : (value).toPreviewString()
         }
     }
 

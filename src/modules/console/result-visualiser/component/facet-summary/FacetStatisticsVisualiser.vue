@@ -33,7 +33,7 @@ const facetStatistics = computed<VisualisedFacetStatistics | undefined>(() => {
     try {
         return visualiserService
             .getFacetSummaryService()
-            .resolveFacetStatistics(queryResult.value!, props.facetStatisticsResult, props.facetRepresentativeAttributes)
+            .resolveFacetStatistics(queryResult.value, props.facetStatisticsResult, props.facetRepresentativeAttributes)
     } catch (e: any) {
         toaster.error('Could not resolve facet statistics', e).then() // todo lho i18n
         return undefined

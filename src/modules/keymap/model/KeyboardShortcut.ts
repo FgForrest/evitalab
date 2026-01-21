@@ -71,7 +71,7 @@ export class KeyboardShortcut {
         if (!this.keymasterShortcutsResolved) {
             this.keymasterShortcuts = [this.baseShortcut, this.macShortcut]
                 .filter(shortcut => shortcut != undefined)
-                .map(shortcut => this.convertShortcutToKeymasterFormat(shortcut!))
+                .map(shortcut => this.convertShortcutToKeymasterFormat(shortcut))
                 .join(', ')
 
             this.keymasterShortcutsResolved = true

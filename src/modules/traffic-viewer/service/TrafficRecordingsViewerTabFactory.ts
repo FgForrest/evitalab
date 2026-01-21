@@ -48,5 +48,5 @@ export class TrafficRecordingsViewerTabFactory {
 }
 
 export function useTrafficRecordingsViewerTabFactory(): TrafficRecordingsViewerTabFactory {
-    return mandatoryInject(trafficRecordingsViewerTabFactoryInjectionKey) as TrafficRecordingsViewerTabFactory
+    return mandatoryInject(trafficRecordingsViewerTabFactoryInjectionKey)
 }

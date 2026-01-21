@@ -13,5 +13,5 @@ export class KeymapViewerTabFactory {
 }
 
 export const useKeymapViewerTabFactory = (): KeymapViewerTabFactory => {
-    return mandatoryInject(keymapViewerTabFactoryInjectionKey) as KeymapViewerTabFactory
+    return mandatoryInject(keymapViewerTabFactoryInjectionKey)
 }

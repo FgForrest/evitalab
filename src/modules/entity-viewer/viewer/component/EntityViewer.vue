@@ -54,7 +54,7 @@ const { t } = useI18n()
 
 const props = defineProps<TabComponentProps<EntityViewerTabParams, EntityViewerTabData>>()
 const emit = defineEmits<TabComponentEvents>()
-provideTabProps(props!)
+provideTabProps(props)
 defineExpose<TabComponentExpose>({
     path(): SubjectPath | undefined {
         const dataPointer: EntityViewerDataPointer = props.params.dataPointer

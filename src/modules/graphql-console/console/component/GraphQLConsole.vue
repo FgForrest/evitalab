@@ -256,7 +256,7 @@ async function executeQuery(): Promise<void> {
 function initializeSchemaEditor(): void {
     if (!schemaEditorInitialized.value) {
         if (graphQLSchema.value) {
-            schemaCode.value = printSchema(graphQLSchema.value as GraphQLSchema)
+            schemaCode.value = printSchema(graphQLSchema.value)
             schemaEditorInitialized.value = true
         } else {
             schemaCode.value = ''

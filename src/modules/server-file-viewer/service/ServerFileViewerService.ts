@@ -18,5 +18,5 @@ export class ServerFileViewerService {
 }
 
 export function useServerFileViewerService(): ServerFileViewerService {
-    return mandatoryInject(serverFileViewerServiceInjectionKey) as ServerFileViewerService
+    return mandatoryInject(serverFileViewerServiceInjectionKey)
 }

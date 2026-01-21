@@ -51,7 +51,7 @@ const properties = computed<Property[]>(() => {
     const properties: Property[] = []
 
     if (props.schema instanceof ReflectedReferenceSchema && props.schema.reflectedReferenceName) {
-        const reflectedRefenceSchema = props.schema as ReflectedReferenceSchema
+        const reflectedRefenceSchema = props.schema
         properties.push(new Property(
             t('schemaViewer.reference.label.reflectedReference'),
             new PropertyValue(new KeywordValue(t(props.schema.reflectedReferenceName)), undefined, () => {

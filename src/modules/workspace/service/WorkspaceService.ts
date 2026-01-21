@@ -278,7 +278,7 @@ export class WorkspaceService {
                 )
             })
             .filter(it => it != undefined)
-            .map(it => it as StoredTabObject)
+            .map(it => it)
             .map(it => it.toSerializable())
 
         this.labStorage.set(openedTabsStorageKey, tabsToStore)
@@ -395,17 +395,17 @@ export class WorkspaceService {
      * Returns editor status provided by some editor. If any.
      */
     get editorStatus(): EditorStatus {
-        return this.store.editorStatus as EditorStatus
+        return this.store.editorStatus
     }
 
     /**
      * Returns subject path status holding currently activate subject path.
      */
     get subjectPathStatus(): SubjectPathStatus {
-        return this.store.subjectPathStatus as SubjectPathStatus
+        return this.store.subjectPathStatus
     }
 }
 
 export const useWorkspaceService = (): WorkspaceService => {
-    return mandatoryInject(workspaceServiceInjectionKey) as WorkspaceService
+    return mandatoryInject(workspaceServiceInjectionKey)
 }

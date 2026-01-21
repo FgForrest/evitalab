@@ -32,7 +32,7 @@ async function backup(): Promise<boolean> {
         emit('backup')
 
         return true
-    } catch (e: any) {
+    } catch {
         return false
     }
 }

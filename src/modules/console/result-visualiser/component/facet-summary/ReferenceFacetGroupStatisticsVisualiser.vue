@@ -72,7 +72,7 @@ function initialize() {
 
             return visualiserService.resolveRepresentativeAttributes(
                 catalogPointer.catalogName,
-                props.referenceSchema.entityType as string
+                props.referenceSchema.entityType
             )
         })
         .then((representativeAttributes: string[]) => {

@@ -46,5 +46,5 @@ export class JfrViewerTabFactory {
 }
 
 export function useJfrViewerTabFactory(): JfrViewerTabFactory {
-    return mandatoryInject(jfrViewerTabFactoryInjectionKey) as JfrViewerTabFactory
+    return mandatoryInject(jfrViewerTabFactoryInjectionKey)
 }

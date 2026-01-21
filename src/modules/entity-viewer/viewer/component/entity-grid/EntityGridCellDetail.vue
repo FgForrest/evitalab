@@ -84,7 +84,7 @@ const componentDataType = computed<Scalar | ExtraEntityObjectType | undefined>((
     if (isArray.value) {
         return (rawDataType.value as string).replace('Array', '') as Scalar | ExtraEntityObjectType
     } else {
-        return rawDataType.value as Scalar | ExtraEntityObjectType
+        return rawDataType.value
     }
 })
 

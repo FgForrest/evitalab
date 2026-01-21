@@ -21,5 +21,5 @@ export class ErrorViewerTabFactory {
 }
 
 export const useErrorViewerTabFactory = (): ErrorViewerTabFactory => {
-    return mandatoryInject(errorViewerTabFactoryInjectionKey) as ErrorViewerTabFactory
+    return mandatoryInject(errorViewerTabFactoryInjectionKey)
 }

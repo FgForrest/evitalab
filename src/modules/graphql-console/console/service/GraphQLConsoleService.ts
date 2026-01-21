@@ -65,5 +65,5 @@ export class GraphQLConsoleService {
 }
 
 export const useGraphQLConsoleService = (): GraphQLConsoleService => {
-    return mandatoryInject(graphQLConsoleServiceInjectionKey) as GraphQLConsoleService
+    return mandatoryInject(graphQLConsoleServiceInjectionKey)
 }

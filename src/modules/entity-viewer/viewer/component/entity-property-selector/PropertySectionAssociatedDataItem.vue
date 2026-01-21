@@ -38,7 +38,7 @@ const schema: ComputedRef<AssociatedDataSchema> = computed(() => {
     return props.propertyDescriptor.schema
 })
 
-const flags: ComputedRef<List<Flag>> = computed(() => schema.value!.representativeFlags)
+const flags: ComputedRef<List<Flag>> = computed(() => schema.value.representativeFlags)
 
 function openSchema(): void {
     workspaceService.createTab(

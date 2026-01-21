@@ -41,5 +41,5 @@ export class EvitaQLConsoleService {
 }
 
 export const useEvitaQLConsoleService = (): EvitaQLConsoleService => {
-    return mandatoryInject(evitaQLConsoleServiceInjectionKey) as EvitaQLConsoleService
+    return mandatoryInject(evitaQLConsoleServiceInjectionKey)
 }

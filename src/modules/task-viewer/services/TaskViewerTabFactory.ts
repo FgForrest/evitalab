@@ -46,5 +46,5 @@ export class TaskViewerTabFactory {
 }
 
 export const useTaskViewerTabFactory = ():TaskViewerTabFactory => {
-    return mandatoryInject(taskViewerTabFactoryInjectionKey) as TaskViewerTabFactory
+    return mandatoryInject(taskViewerTabFactoryInjectionKey)
 }

@@ -262,5 +262,5 @@ export class CatalogItemService {
 }
 
 export function useCatalogItemService(): CatalogItemService {
-    return mandatoryInject(catalogItemServiceInjectionKey) as CatalogItemService
+    return mandatoryInject(catalogItemServiceInjectionKey)
 }

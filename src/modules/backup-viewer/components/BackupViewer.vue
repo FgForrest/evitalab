@@ -44,8 +44,8 @@ defineExpose<TabComponentExpose>({
     }
 })
 
-const taskListRef = ref<typeof TaskList>()
-const backupListRef = ref<typeof BackupList>()
+const taskListRef = ref<{ reload(manual: boolean): Promise<void> }>()
+const backupListRef = ref<{ reload(manual: boolean): Promise<void> }>()
 
 const title: List<string> = List.of(t('backupViewer.title'))
 
@@ -53,11 +53,11 @@ const backupsInPreparationPresent = ref<boolean>(false)
 
 function reloadBackups(): void {
     reloadTasks()
-    backupListRef.value?.reload(true)
+    void backupListRef.value?.reload(true)
 }
 
 function reloadTasks(): void {
-    taskListRef.value?.reload(true)
+    void taskListRef.value?.reload(true)
 }
 
 emit('ready')

@@ -73,7 +73,7 @@ const formattedValue = computed<string>(() => {
     ) {
         return props.value instanceof Array
             ? `[${props.value.map((it) => it.toPreviewString()).join(', ')}]`
-            : (props.value as EntityPropertyValue).toPreviewString()
+            : (props.value).toPreviewString()
     }
     try {
         switch (props.dataType) {
@@ -204,7 +204,7 @@ const formattedValue = computed<string>(() => {
                     ? `[${props.value
                           .map((it) => it.toPreviewString())
                           .join(', ')}]`
-                    : (props.value as EntityPropertyValue).toPreviewString()
+                    : (props.value).toPreviewString()
         }
     } catch (e) {
         console.error(e)

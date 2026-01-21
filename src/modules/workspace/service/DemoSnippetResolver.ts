@@ -64,7 +64,7 @@ export class DemoSnippetResolver {
 }
 
 export const useDemoSnippetResolver = (): DemoSnippetResolver => {
-    return mandatoryInject(demoSnippetResolverInjectionKey) as DemoSnippetResolver
+    return mandatoryInject(demoSnippetResolverInjectionKey)
 }
 
 /**

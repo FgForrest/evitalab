@@ -97,11 +97,11 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         }
 
         const mutations = mutationHistory.body instanceof EntityUpsertMutation ?
-            (mutationHistory.body as EntityUpsertMutation).localMutations :
+            (mutationHistory.body).localMutations :
             [mutationHistory.body]
 
         // entity attributes
-        for (let attributeMutation of mutations) {
+        for (const attributeMutation of mutations) {
             if (entityOperationType === 'remove') {
                 break
             }
@@ -149,7 +149,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                 const metadata: MetadataGroup[] = this.constructAttributeMetadata(attributeMutation, ctx.historyCriteria, mutationHistory)
                 attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-relation-one-to-one-or-many', title, attributeValue, attributeTooltip, metadata, actions)
             } else if (attributeMutation instanceof SetPriceInnerRecordHandlingMutation) {
-                const attributeValue = (attributeMutation as SetPriceInnerRecordHandlingMutation).priceInnerRecordHandling.toString()
+                const attributeValue = (attributeMutation).priceInnerRecordHandling.toString()
 
                 const actions = this.getAttributeAction(ctx, mutationHistory, undefined)
                 const metadata: MetadataGroup[] = this.constructAttributeMetadata(attributeMutation as LocalMutation, ctx.historyCriteria, mutationHistory)
@@ -157,7 +157,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                 attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', title, attributeValue, undefined, metadata, actions)
             } else {
                 const attributeName = (attributeMutation as AttributeMutation)?.attributeKey?.attributeName
-                const attributeValue = attributeMutation instanceof SetPriceInnerRecordHandlingMutation ? (attributeMutation as SetPriceInnerRecordHandlingMutation).priceInnerRecordHandling.toString() : (attributeMutation as UpsertAttributeMutation)?.value?.toString()
+                const attributeValue = attributeMutation instanceof SetPriceInnerRecordHandlingMutation ? (attributeMutation).priceInnerRecordHandling.toString() : (attributeMutation as UpsertAttributeMutation)?.value?.toString()
 
                 const operationType = mutationHistory.operation
                 const actions = this.getAttributeAction(ctx, mutationHistory, attributeName)

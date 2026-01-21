@@ -21,7 +21,7 @@ import { evitaLabConfigInjectionKey } from '@/modules/config/EvitaLabConfig'
 const app: App<Element> = createApp(Lab)
 
 // load Vue plugins
-loadFonts()
+void loadFonts()
     .then(async () => {
         app
             .use(vuetify)
@@ -41,6 +41,6 @@ loadFonts()
 
         const mounted: ComponentPublicInstance = app.mount('#app')
         if (moduleContextBuilder.inject(evitaLabConfigInjectionKey).runMode === LabRunMode.Driver) {
-            await mounted.$nextTick(()=>{ router.push("/"); })
+            await mounted.$nextTick(()=>{ void router.push("/"); })
         }
     })

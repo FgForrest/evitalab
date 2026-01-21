@@ -59,5 +59,5 @@ export class CollectionItemService {
 }
 
 export function useCollectionItemService(): CollectionItemService {
-    return mandatoryInject(collectionItemServiceInjectionKey) as CollectionItemService
+    return mandatoryInject(collectionItemServiceInjectionKey)
 }

@@ -66,7 +66,7 @@ const valueToRender = computed<ValueToRender>(() => {
             type: RendererType.Code,
             codeLanguage: EntityPropertyValueSupportedCodeLanguage.Raw
         } as CodeRenderer
-        valueToRender.value = new NativeValue(props.value instanceof Array ? `[${props.value.map(item => item.toPreviewString()).join(', ')}]` : (props.value as EntityPropertyValue).toPreviewString())
+        valueToRender.value = new NativeValue(props.value instanceof Array ? `[${props.value.map(item => item.toPreviewString()).join(', ')}]` : (props.value).toPreviewString())
     } else {
         switch (props.dataType) {
             case Scalar.String: {

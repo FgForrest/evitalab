@@ -26,7 +26,7 @@ import { GrpcChangeCaptureContent } from '@/modules/database-driver/connector/gr
 export const evitaClientInjectionKey: InjectionKey<EvitaClient> = Symbol('EvitaClient')
 
 export function useEvitaClient(): EvitaClient {
-    return mandatoryInject(evitaClientInjectionKey) as EvitaClient
+    return mandatoryInject(evitaClientInjectionKey)
 }
 
 /**

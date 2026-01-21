@@ -11,7 +11,7 @@ export function provideCatalogPointer(catalogPointer: CatalogPointer): void {
     provide(catalogPointerInjectionKey, catalogPointer)
 }
 export function useCatalogPointer(): CatalogPointer {
-    return mandatoryInject(catalogPointerInjectionKey) as CatalogPointer
+    return mandatoryInject(catalogPointerInjectionKey)
 }
 
 const visualiserServiceInjectionKey: InjectionKey<ResultVisualiserService> = Symbol('visualiserService')
@@ -19,7 +19,7 @@ export function provideVisualiserService(visualiserService: ResultVisualiserServ
     provide(visualiserServiceInjectionKey, visualiserService)
 }
 export function useVisualiserService(): ResultVisualiserService {
-    return mandatoryInject(visualiserServiceInjectionKey) as ResultVisualiserService
+    return mandatoryInject(visualiserServiceInjectionKey)
 }
 
 const rootEntitySchemaInjectionKey: InjectionKey<Ref<EntitySchema | undefined>> = Symbol('rootEntitySchema')
@@ -27,7 +27,7 @@ export function provideRootEntitySchema(entitySchema: Ref<EntitySchema | undefin
     provide(rootEntitySchemaInjectionKey, entitySchema)
 }
 export function useRootEntitySchema(): Ref<EntitySchema | undefined> {
-    return mandatoryInject(rootEntitySchemaInjectionKey) as Ref<EntitySchema | undefined>
+    return mandatoryInject(rootEntitySchemaInjectionKey)
 }
 
 const queryResultInjectionKey: InjectionKey<ComputedRef<Result | undefined>> = Symbol('queryResult')
@@ -35,5 +35,5 @@ export function provideQueryResult(queryResult: ComputedRef<Result | undefined>)
     provide(queryResultInjectionKey, queryResult)
 }
 export function useQueryResult(): ComputedRef<Result | undefined> {
-    return mandatoryInject(queryResultInjectionKey) as ComputedRef<Result | undefined>
+    return mandatoryInject(queryResultInjectionKey)
 }

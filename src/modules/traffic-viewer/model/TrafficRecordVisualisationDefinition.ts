@@ -228,7 +228,7 @@ export class Action {
     readonly icon: string
     readonly callback?: () => void
 
-    constructor(title: string, icon: string, callback?: (() => void) | undefined) {
+    constructor(title: string, icon: string, callback?: (() => void)  ) {
         this.title = title
         this.icon = icon
         this.callback = callback

@@ -80,7 +80,7 @@ watch(queries, (newValue) => {
             selectedQuery.value = undefined
         }
     } else {
-        if (selectedQuery.value != undefined && !newValue.includes(selectedQuery.value as string)) {
+        if (selectedQuery.value != undefined && !newValue.includes(selectedQuery.value)) {
             // selected query was removed
             if (newValue.length > 0) {
                 // pre-select next available query
@@ -97,7 +97,7 @@ const selectedQueryResult = computed<Result | undefined>(() => {
         return undefined
     }
     try {
-        return props.visualiserService.findQueryResult(props.result, selectedQuery.value as string)
+        return props.visualiserService.findQueryResult(props.result, selectedQuery.value)
     } catch (e: any) {
         toaster.error('Could not find query result', e).then() // todo lho i18n
         return undefined
@@ -115,7 +115,7 @@ watch(selectedQuery, async () => {
 
     try {
         selectedQueryEntitySchema.value = await props.visualiserService.getEntitySchemaForQuery(
-            selectedQuery.value as string,
+            selectedQuery.value,
             props.catalogPointer.catalogName
         )
     } catch (e: any) {
@@ -130,7 +130,7 @@ const visualiserTypes = computed<VisualiserType[]>(() => {
         return []
     }
     try {
-        return props.visualiserService.findVisualiserTypes(selectedQueryResult.value as Result)
+        return props.visualiserService.findVisualiserTypes(selectedQueryResult.value)
     } catch (e: any) {
         toaster.error('Could not find visualiser types', e).then() // todo lho i18n
         return []
@@ -143,7 +143,7 @@ watch(visualiserTypes, (newValue) => {
         return
     }
 
-    if (selectedVisualiserType.value != undefined && !newValue.map(it => it.value).includes(selectedVisualiserType.value as VisualiserTypeType)) {
+    if (selectedVisualiserType.value != undefined && !newValue.map(it => it.value).includes(selectedVisualiserType.value)) {
         // selected visualiser type was removed
         if (newValue.length > 0) {
             // pre-select next available visualiser type
@@ -160,7 +160,7 @@ const resultForVisualiser = computed<Result | undefined>(() => {
     }
     try {
         return props.visualiserService
-            .findResultForVisualiser(selectedQueryResult.value as Result, selectedVisualiserType.value as VisualiserTypeType)
+            .findResultForVisualiser(selectedQueryResult.value, selectedVisualiserType.value)
     } catch (e: any) {
         toaster.error('Could not find result', e).then() // todo lho i18n
         return undefined

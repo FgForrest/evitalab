@@ -45,5 +45,5 @@ export class MutationHistoryViewerService {
 }
 
 export function useMutationHistoryViewerService(): MutationHistoryViewerService {
-    return mandatoryInject(historyViewerServiceInjectionKey) as MutationHistoryViewerService
+    return mandatoryInject(historyViewerServiceInjectionKey)
 }

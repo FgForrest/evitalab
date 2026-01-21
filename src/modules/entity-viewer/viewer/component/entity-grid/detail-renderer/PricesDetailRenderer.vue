@@ -108,7 +108,7 @@ const prices = computed<EntityPrices>(() => {
         ).then()
         return new EntityPrices(undefined, [])
     }
-    return props.value as EntityPrices
+    return props.value
 })
 const filterData = computed<FilterData>(() => {
     const priceIds: number[] = []
@@ -157,7 +157,7 @@ watch([selectedPriceLists, selectedCurrencies], async () => {
         computedPriceForSale.value =
             await entityViewerService.computePriceForSale(
                 tabProps.params.dataPointer,
-                queryLanguage.value!,
+                queryLanguage.value,
                 (
                     selectedEntity[
                         EntityPropertyKey.entity(
@@ -210,9 +210,9 @@ const filteredAllPrices = computed<EntityPrice[]>(() => {
         filteredPrices.sort((a, b) => {
             if (computedPriceForSale.value != undefined) {
                 const aForSale: boolean =
-                    a.priceId === computedPriceForSale.value!.priceId
+                    a.priceId === computedPriceForSale.value.priceId
                 const bForSale: boolean =
-                    b.priceId === computedPriceForSale.value!.priceId
+                    b.priceId === computedPriceForSale.value.priceId
                 if (aForSale && !bForSale) {
                     return -1
                 }
@@ -243,15 +243,15 @@ async function preselectFilterFromQuery(): Promise<void> {
     return new Promise(() => {
         const priceLists: string | undefined =
             priceInPriceListsConstraintPattern
-                .get(queryLanguage.value!)!
+                .get(queryLanguage.value)!
                 .exec(queryFilter?.value || '')?.[1]
         const currency: string | undefined = priceInCurrencyConstraintPattern
-            .get(queryLanguage.value!)!
+            .get(queryLanguage.value)!
             .exec(queryFilter?.value || '')?.[1]
         if (priceLists != undefined) {
             const priceListsMatches: IterableIterator<RegExpMatchArray> =
                 priceLists.matchAll(
-                    constraintPriceListsPattern.get(queryLanguage.value!)!
+                    constraintPriceListsPattern.get(queryLanguage.value)!
                 )
             selectedPriceLists.value = Array.from(priceListsMatches).map(
                 (match) => match[1]

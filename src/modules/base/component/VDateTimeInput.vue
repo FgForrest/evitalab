@@ -90,7 +90,7 @@ const isoDate = computed<string | undefined>(() => {
     }
     return `${date.value.getFullYear()}-${String(date.value.getMonth() + 1).padStart(2, '0')}-${String(date.value.getDate()).padStart(2, '0')}`
 })
-watch(date, (newValue, oldValue) => {
+watch(date, (newValue) => {
     if (newValue != undefined) {
         currentStep.value = Step.Time
     }

@@ -35,7 +35,7 @@ const properties = computed<Property[]>(() => {
     properties.push(new Property(t('schemaViewer.attribute.label.type'), new PropertyValue(new KeywordValue(props.schema.type))))
     properties.push(new Property(t('schemaViewer.attribute.label.description'), new PropertyValue(props.schema.description)))
     properties.push(new Property(t('schemaViewer.attribute.label.deprecationNotice'), new PropertyValue(props.schema.deprecationNotice)))
-    if (entityAttribute) properties.push(new Property(t('schemaViewer.attribute.label.representative'), new PropertyValue((props.schema as EntityAttributeSchema).representative)))
+    if (entityAttribute) properties.push(new Property(t('schemaViewer.attribute.label.representative'), new PropertyValue((props.schema).representative)))
     properties.push(new Property(t('schemaViewer.attribute.label.sortable'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
         props.schema.sortableInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x), t(`schemaViewer.attribute.label.${x.toLowerCase()}`),
         props.schema.sortableInScopes.some(q => getEnumKeyByValue(EntityScope, q) === x) ? t('schemaViewer.attribute.tooltip.content', [

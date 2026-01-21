@@ -93,7 +93,7 @@ function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string,
             tabProps.params.dataPointer.entityType,
             new EntityViewerTabData(
                 queryLanguage?.value,
-                entityViewerService.buildParentEntityFilterBy(queryLanguage.value as QueryLanguage, (value as EntityReferenceValue).primaryKey),
+                entityViewerService.buildParentEntityFilterBy(queryLanguage.value, (value as EntityReferenceValue).primaryKey),
                 undefined,
                 dataLocale?.value
             ),
@@ -108,7 +108,7 @@ function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string,
             tabProps.params.dataPointer.entityType,
             new EntityViewerTabData(
                 queryLanguage.value,
-                entityViewerService.buildPredecessorEntityFilterBy(queryLanguage.value as QueryLanguage, (value as NativeValue).value() as number),
+                entityViewerService.buildPredecessorEntityFilterBy(queryLanguage.value, (value as NativeValue).value() as number),
                 undefined,
                 dataLocale?.value
             ),
@@ -122,7 +122,7 @@ function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string,
             new EntityViewerTabData(
                 queryLanguage.value,
                 entityViewerService.buildReferencedEntityFilterBy(
-                    queryLanguage.value as QueryLanguage,
+                    queryLanguage.value,
                     value instanceof Array
                         ? (value as EntityReferenceValue[]).map(it => it.primaryKey)
                         : [(value as EntityReferenceValue).primaryKey]

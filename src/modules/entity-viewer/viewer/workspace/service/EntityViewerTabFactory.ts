@@ -96,5 +96,5 @@ export class EntityViewerTabFactory {
 }
 
 export const useEntityViewerTabFactory = (): EntityViewerTabFactory => {
-    return mandatoryInject(entityViewerTabFactoryInjectionKey) as EntityViewerTabFactory
+    return mandatoryInject(entityViewerTabFactoryInjectionKey)
 }

@@ -105,5 +105,5 @@ export class BackupViewerService {
 }
 
 export const useBackupViewerService = (): BackupViewerService => {
-    return mandatoryInject(backupViewerServiceInjectionKey) as BackupViewerService
+    return mandatoryInject(backupViewerServiceInjectionKey)
 }

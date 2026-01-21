@@ -9,7 +9,7 @@ export function provideServerStatus(serverStatus: Ref<ServerStatus | undefined>)
     provide(serverStatusInjectionKey, serverStatus)
 }
 export function useServerStatus(): Ref<ServerStatus | undefined> {
-    return mandatoryInject(serverStatusInjectionKey) as Ref<ServerStatus | undefined>
+    return mandatoryInject(serverStatusInjectionKey)
 }
 
 const catalogInjectionKey: InjectionKey<Ref<CatalogStatistics | undefined>> = Symbol('catalog')

@@ -124,5 +124,5 @@ export class TrafficViewerService {
 }
 
 export function useTrafficViewerService(): TrafficViewerService {
-    return mandatoryInject(trafficViewerServiceInjectionKey) as TrafficViewerService
+    return mandatoryInject(trafficViewerServiceInjectionKey)
 }

@@ -41,7 +41,7 @@ const submitting = ref<boolean>(false)
 
 function cancel(): void {
     if (form.value != undefined) {
-        //@ts-ignore
+        // @ts-expect-error Vuetify form ref typing
         form.value.reset()
     }
     props.reset()
@@ -50,7 +50,7 @@ function cancel(): void {
 
 async function confirm(): Promise<void> {
     if (form.value != undefined) {
-        //@ts-ignore
+        // @ts-expect-error Vuetify form ref typing
         const { valid }: any = await form.value.validate()
         if (!valid) {
             return
@@ -63,7 +63,7 @@ async function confirm(): Promise<void> {
 
     if (result) {
         if (form.value != undefined) {
-            //@ts-ignore
+            // @ts-expect-error Vuetify form ref typing
             form.value.reset()
         }
         props.reset()
@@ -75,7 +75,7 @@ defineExpose<{
     validateForm: () => Promise<void>
 }>({
     validateForm: async () => {
-        //@ts-ignore
+        // @ts-expect-error Vuetify form ref typing
         await form.value?.validate()
     },
 })

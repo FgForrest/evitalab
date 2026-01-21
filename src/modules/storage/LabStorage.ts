@@ -43,5 +43,5 @@ export class LabStorage {
 }
 
 export const useLabStorage = (): LabStorage => {
-    return mandatoryInject(labStorageInjectionKey) as LabStorage
+    return mandatoryInject(labStorageInjectionKey)
 }

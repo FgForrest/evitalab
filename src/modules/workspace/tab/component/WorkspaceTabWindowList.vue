@@ -50,7 +50,7 @@ function moveTabCursor(diff: number) {
         return
     }
 
-    const currentTabIndex: number = workspaceService.getTabIndex(currentTabId.value as string)
+    const currentTabIndex: number = workspaceService.getTabIndex(currentTabId.value)
     let newTabIndex: number = currentTabIndex + diff
     if (newTabIndex < 0) {
         newTabIndex = tabDefinitions.value.length - 1
@@ -145,7 +145,7 @@ onMounted(() => {
     keymap.bindGlobal(Command.System_Editor_NextTab, () => moveTabCursor(1))
     keymap.bindGlobal(Command.System_Editor_CloseTab, () => {
         if (currentTabId.value != undefined) {
-            closeTab(currentTabId.value as string)
+            closeTab(currentTabId.value)
         }
     })
     keymap.bindGlobal(Command.System_Editor_CloseAllTabs, () => workspaceService.destroyAllTabs())

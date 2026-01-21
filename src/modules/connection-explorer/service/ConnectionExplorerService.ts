@@ -45,5 +45,5 @@ export class ConnectionExplorerService {
 }
 
 export function useConnectionExplorerService(): ConnectionExplorerService {
-    return mandatoryInject(connectionExplorerServiceInjectionKey) as ConnectionExplorerService
+    return mandatoryInject(connectionExplorerServiceInjectionKey)
 }

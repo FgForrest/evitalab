@@ -101,7 +101,7 @@ const selectedSystemRecordTypes = computed<ImmutableList<TrafficRecordType> | un
         return undefined
     }
     return ImmutableList([
-        ...(props.criteria.types.flatMap(userType => convertUserToSystemRecordType(userType)!))
+        ...(props.criteria.types.flatMap(userType => convertUserToSystemRecordType(userType)))
     ])
 })
 const nextPageRequest = computed<TrafficRecordingCaptureRequest>(() => {

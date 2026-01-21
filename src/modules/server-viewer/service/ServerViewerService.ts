@@ -22,5 +22,5 @@ export class ServerViewerService {
 }
 
 export const useServerViewerService = (): ServerViewerService => {
-    return mandatoryInject(serverViewerServiceInjectionKey) as ServerViewerService
+    return mandatoryInject(serverViewerServiceInjectionKey)
 }

@@ -446,5 +446,5 @@ export class EntityViewerService {
 }
 
 export const useEntityViewerService = (): EntityViewerService => {
-    return mandatoryInject(entityViewerServiceInjectionKey) as EntityViewerService
+    return mandatoryInject(entityViewerServiceInjectionKey)
 }

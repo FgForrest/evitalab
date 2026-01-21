@@ -41,7 +41,7 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
 
         // entity attributes
         if ((mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations) {
-            for (let schemaMutation of (mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations) {
+            for (const schemaMutation of (mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations) {
                 const attributeName = getMutationType(schemaMutation)
                 const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }), JSON.stringify(schemaMutation), undefined, [], ImmutableList())
                 visualisedRecord.addChild(attributeMutationVisualised)

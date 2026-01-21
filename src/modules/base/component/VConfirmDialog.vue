@@ -14,7 +14,7 @@ import { DangerousConfirmType } from '@/modules/base/model/dialog/DangerousConfi
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     modelValue: boolean,
     confirmIcon: string
 }>()

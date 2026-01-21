@@ -33,5 +33,5 @@ export class TaskViewerService {
 }
 
 export function useTaskViewerService(): TaskViewerService {
-    return mandatoryInject(taskViewerServiceInjectionKey) as TaskViewerService
+    return mandatoryInject(taskViewerServiceInjectionKey)
 }

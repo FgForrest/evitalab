@@ -154,7 +154,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
                 return attributeSchema.name
             })
             .filter(it => it != undefined)
-            .map(it => it as string)
+            .map(it => it)
 
         if (requiredAttributes.length > 0) {
             entityFetchRequires.push(`attributeContent(${requiredAttributes.map(it => `"${it}"`).join(',')})`)
@@ -182,7 +182,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
                 return associatedDataSchema.name
             })
             .filter(it => it != undefined)
-            .map(it => it as string)
+            .map(it => it)
 
         if (requiredAssociatedData.length > 0) {
             entityFetchRequires.push(`associatedDataContent(${requiredAssociatedData.map(it => `"${it}"`).join(',')})`)
@@ -245,7 +245,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
                     return attributeSchema.name
                 })
                 .filter(it => it != undefined)
-                .map(it => it as string)
+                .map(it => it)
 
             let requiredRepresentativeAttributes: string[] = []
             if (referenceSchema.referencedEntityTypeManaged) {

@@ -43,7 +43,7 @@ export class RangeValue {
             if (this.range == undefined) {
                 this.serializedRange = ['∞', '∞']
             } else if (this.range instanceof DateTimeRange) {
-                const dateTimeRange = this.range as DateTimeRange
+                const dateTimeRange = this.range
                 const values = dateTimeRange.getRangeValues()
                 this.serializedRange = [
                     this.formatPart(values[0]),
@@ -99,7 +99,7 @@ export class RangeValue {
                 )
             }
             throw new Error('Unaccepted type')
-        } catch (e) {
+        } catch {
             // not date time but long or BigDecimal
             return part.toString()
         }

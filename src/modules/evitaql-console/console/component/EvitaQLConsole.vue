@@ -141,7 +141,7 @@ const rawResult = computed<string>(() => {
     if (result.value == undefined) {
         return ''
     }
-    return JSON.stringify(JSON.parse(result.value!.rawResponse), null, 2)
+    return JSON.stringify(JSON.parse(result.value.rawResponse), null, 2)
 })
 const rawResultEditorRef = ref<
     InstanceType<typeof VPreviewEditor> | undefined

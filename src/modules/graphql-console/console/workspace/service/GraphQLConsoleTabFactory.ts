@@ -114,5 +114,5 @@ export class GraphQLConsoleTabFactory {
 }
 
 export const useGraphQLConsoleTabFactory = (): GraphQLConsoleTabFactory => {
-    return mandatoryInject(graphQLConsoleTabFactoryInjectionKey) as GraphQLConsoleTabFactory
+    return mandatoryInject(graphQLConsoleTabFactoryInjectionKey)
 }

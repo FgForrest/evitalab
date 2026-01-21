@@ -65,7 +65,7 @@ const rangeInfo = computed<RangeInfo>(() => {
             let rightRequestedThreshold: number | undefined = undefined
             if (leftRequestedThreshold != undefined) {
                 // there must be last requested bucket if there is first requested bucket, even if it's the same bucket
-                const rightRequestedIndex = props.histogram.buckets.findLastIndex((bucket) => bucket.requested ?? false)!
+                const rightRequestedIndex = props.histogram.buckets.findLastIndex((bucket) => bucket.requested ?? false)
                 if (rightRequestedIndex < props.histogram.buckets.size - 1) {
                     // todo lho fix nullable threshold
                     rightRequestedThreshold = props.histogram.buckets.get(rightRequestedIndex + 1)!.threshold!.toFloat()
@@ -106,7 +106,7 @@ const rangeInfo = computed<RangeInfo>(() => {
             let rightRequestedIndex: number | undefined = undefined
             if (leftRequestedIndex != undefined) {
                 // there must be last requested bucket if there is first requested bucket, even if it's the same bucket
-                rightRequestedIndex = props.histogram.buckets.findLastIndex((bucket) => bucket.requested ?? false)! + 1
+                rightRequestedIndex = props.histogram.buckets.findLastIndex((bucket) => bucket.requested ?? false) + 1
             }
 
             return new RangeInfo(

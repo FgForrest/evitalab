@@ -98,5 +98,5 @@ export class MutationHistoryViewerTabFactory {
 }
 
 export const useHistoryViewerTabFactory = (): MutationHistoryViewerTabFactory => {
-    return mandatoryInject(mutationHistoryViewerTabFactoryInjectionKey) as MutationHistoryViewerTabFactory
+    return mandatoryInject(mutationHistoryViewerTabFactoryInjectionKey)
 }

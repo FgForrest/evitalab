@@ -46,5 +46,5 @@ export class ServerViewerTabFactory {
 }
 
 export const useServerStatusTabFactory = (): ServerViewerTabFactory => {
-    return mandatoryInject(serverViewerTabFactoryInjectionKey) as ServerViewerTabFactory
+    return mandatoryInject(serverViewerTabFactoryInjectionKey)
 }

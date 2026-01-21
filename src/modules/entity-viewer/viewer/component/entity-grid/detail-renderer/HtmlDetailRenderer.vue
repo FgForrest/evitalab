@@ -20,10 +20,10 @@ const props = withDefaults(defineProps<{
 })
 
 const formattedValue = computed<string>(() => {
-    if (props.value instanceof Array || typeof (props.value as EntityPropertyValue).value() !== 'string') {
+    if (props.value instanceof Array || typeof (props.value).value() !== 'string') {
         return t('entityViewer.grid.htmlRenderer.placeholder.failedToRenderHtml')
     }
-    return DOMPurify.sanitize((props.value as EntityPropertyValue).toPreviewString())
+    return DOMPurify.sanitize((props.value).toPreviewString())
 })
 
 </script>

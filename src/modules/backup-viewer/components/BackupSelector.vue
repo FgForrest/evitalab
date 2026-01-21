@@ -10,8 +10,8 @@ import SnapshotBackupDialog from '@/modules/backup-viewer/components/SnapshotBac
 import PointInTimeBackupDialog from '@/modules/backup-viewer/components/PointInTimeBackupDialog.vue'
 import FullBackupDialog from '@/modules/backup-viewer/components/FullBackupDialog.vue'
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
-import { watch } from 'vue'
-import { CatalogState } from '@/modules/database-driver/request-response/CatalogState.ts'
+import { onUnmounted, ref, watch } from 'vue'
+import { getErrorMessage } from '@/utils/errorHandling'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -31,7 +31,7 @@ watch(
     () => props.modelValue,
     (newValue) => {
         if (newValue && availableCatalogsLoaded.value == false) {
-            loadAvailableCatalogs().then()
+            void loadAvailableCatalogs()
         }
     }
 )
@@ -55,10 +55,10 @@ async function loadAvailableCatalogs(): Promise<void> {
             .toArray()
 
         availableCatalogsLoaded.value = true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'backupViewer.backup.notification.couldNotLoadAvailableCatalogs',
-            { reason: e.message }
+            { reason: getErrorMessage(e) }
         ))
     }
 }

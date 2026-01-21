@@ -108,5 +108,5 @@ export class EvitaLabConfig {
 }
 
 export const useEvitaLabConfig = (): EvitaLabConfig => {
-    return mandatoryInject(evitaLabConfigInjectionKey) as EvitaLabConfig
+    return mandatoryInject(evitaLabConfigInjectionKey)
 }

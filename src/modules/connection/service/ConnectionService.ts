@@ -58,7 +58,7 @@ export class ConnectionService {
             evitaLabConfig.systemProperty(connectionSystemPropertyName)
         if (connectionSystemProperty != undefined) {
             try {
-                return Connection.fromJson(JSON.parse(connectionSystemProperty) as any)
+                return Connection.fromJson(JSON.parse(connectionSystemProperty))
             } catch (e) {
                 console.error('Failed to load preconfigured connections from system properties', e)
             }
@@ -109,5 +109,5 @@ export class ConnectionService {
 }
 
 export const useConnectionService = (): ConnectionService => {
-    return mandatoryInject(connectionServiceInjectionKey) as ConnectionService
+    return mandatoryInject(connectionServiceInjectionKey)
 }

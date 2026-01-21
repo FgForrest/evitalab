@@ -176,7 +176,7 @@ export class EvitaQLResultVisualiserService extends ResultVisualiserService {
             return undefined
         }
 
-        const entityResult: Entity = entityResultValue as Entity
+        const entityResult: Entity = entityResultValue
 
         const possibleAttributes: [any, boolean][] = []
 
@@ -252,5 +252,5 @@ export const useEvitaQLResultVisualiserService =
     (): EvitaQLResultVisualiserService => {
         return mandatoryInject(
             evitaQLResultVisualiserServiceInjectionKey
-        ) as EvitaQLResultVisualiserService
+        )
     }

@@ -81,9 +81,9 @@ export class TaskStatus {
             if (this.started == undefined) {
                 this._duration = undefined
             } else {
-                const startTime: number = Number(this.started.timestamp!.seconds) * 1000
+                const startTime: number = Number(this.started.timestamp.seconds) * 1000
                 const endTime: number = this.finished != null
-                    ? Number(this.finished.timestamp!.seconds) * 1000
+                    ? Number(this.finished.timestamp.seconds) * 1000
                     : DateTime.now().toMillis()
 
                 const duration: number = endTime - startTime

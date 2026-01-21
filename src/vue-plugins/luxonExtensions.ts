@@ -24,7 +24,7 @@ const LuxonExtensions: Plugin = {
         ): string {
             let duration = this.normalize();
             let durationUnits = [];
-            let precision =
+            const precision =
                 typeof opts.precision == 'object'
                     ? Duration.fromObject(opts.precision)
                     : Duration.fromMillis(0);
@@ -64,11 +64,11 @@ const LuxonExtensions: Plugin = {
             )
                 biggestUnitIndex = allUnits.indexOf('years');
 
-            for (let unit of allUnits.slice(biggestUnitIndex, smallestUnitIndex + 1)) {
+            for (const unit of allUnits.slice(biggestUnitIndex, smallestUnitIndex + 1)) {
                 const durationInUnit = remainingDuration.as(unit);
                 if (durationInUnit >= 1) {
                     durationUnits.push(unit);
-                    let tmp: any = {};
+                    const tmp: any = {};
                     tmp[unit] = Math.floor(remainingDuration.as(unit));
                     remainingDuration = remainingDuration
                         .minus(Duration.fromObject(tmp))

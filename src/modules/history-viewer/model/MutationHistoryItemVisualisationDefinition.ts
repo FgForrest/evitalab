@@ -191,7 +191,7 @@ export class Action {
     readonly buttonType: 'icon' | 'full' = 'icon'
     readonly callback?: () => void
 
-    constructor(title: string, icon: string, buttonType: 'icon' | 'full', callback?: (() => void) | undefined) {
+    constructor(title: string, icon: string, buttonType: 'icon' | 'full', callback?: (() => void)  ) {
         this.title = title
         this.icon = icon
         this.buttonType = buttonType

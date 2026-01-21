@@ -56,13 +56,13 @@ export class TaskStatusConverter {
             grpcTaskStatus.catalogName,
             EvitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.created!),
             grpcTaskStatus.issued != undefined
-                ? EvitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.issued!)
+                ? EvitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.issued)
                 : undefined,
             grpcTaskStatus.started != undefined
-                ? EvitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.started!)
+                ? EvitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.started)
                 : undefined,
             grpcTaskStatus.finished != undefined
-                ? EvitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.finished!)
+                ? EvitaValueConverter.convertGrpcOffsetDateTime(grpcTaskStatus.finished)
                 : undefined,
             grpcTaskStatus.progress,
             grpcTaskStatus.settings!,

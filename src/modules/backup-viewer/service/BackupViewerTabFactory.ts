@@ -47,5 +47,5 @@ export class BackupViewerTabFactory {
 }
 
 export const useBackupsTabFactory = (): BackupViewerTabFactory => {
-    return mandatoryInject(backupViewerTabFactoryInjectionKey) as BackupViewerTabFactory
+    return mandatoryInject(backupViewerTabFactoryInjectionKey)
 }

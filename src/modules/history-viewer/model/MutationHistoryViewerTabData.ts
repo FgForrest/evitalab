@@ -20,11 +20,11 @@ export class MutationHistoryViewerTabData implements TabData<MutationHistoryView
 
     constructor(from?: OffsetDateTime,
                 to?: OffsetDateTime,
-                entityPrimaryKey?: number | undefined,
-                operationList?: GrpcChangeCaptureOperation[] | undefined,
-                containerNameList?: string[] | undefined,
-                containerTypeList?: GrpcChangeCaptureContainerType[] | undefined,
-                entityType?: string | undefined,
+                entityPrimaryKey?: number  ,
+                operationList?: GrpcChangeCaptureOperation[]  ,
+                containerNameList?: string[]  ,
+                containerTypeList?: GrpcChangeCaptureContainerType[]  ,
+                entityType?: string  ,
                 areaType: 'both' | 'dataSite' | 'schemaSite' = 'both',
                 mutableFilters: boolean = true
     ) {

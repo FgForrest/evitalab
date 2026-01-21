@@ -293,5 +293,5 @@ export class Keymap {
 }
 
 export function useKeymap(): Keymap {
-    return mandatoryInject(keymapInjectionKey) as Keymap
+    return mandatoryInject(keymapInjectionKey)
 }

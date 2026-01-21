@@ -10,11 +10,11 @@ export class TransactionMutationConverter implements SchemaMutationConverter<Tra
 
     convert(mutation: GrpcTransactionMutation): TransactionMutation {
        return new TransactionMutation(
-           EvitaValueConverter.convertGrpcUuid(mutation.transactionId!).toString(),
+           EvitaValueConverter.convertGrpcUuid(mutation.transactionId).toString(),
            Number(mutation.version),
            mutation.mutationCount,
            Number(mutation.walSizeInBytes),
-           EvitaValueConverter.convertGrpcOffsetDateTime(mutation.commitTimestamp!)
+           EvitaValueConverter.convertGrpcOffsetDateTime(mutation.commitTimestamp)
 
        )
     }

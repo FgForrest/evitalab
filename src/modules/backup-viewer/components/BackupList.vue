@@ -8,6 +8,7 @@ import { BackupViewerService, useBackupViewerService } from '@/modules/backup-vi
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useI18n } from 'vue-i18n'
+import { getErrorMessage } from '@/utils/errorHandling'
 import ServerFileList from '@/modules/server-file-viewer/component/ServerFileList.vue'
 import RestoreBackupFileButton from '@/modules/backup-viewer/components/RestoreBackupFileButton.vue'
 
@@ -17,7 +18,7 @@ const backupViewerService: BackupViewerService = useBackupViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     backupsInPreparationPresent: boolean
 }>()
 const emit = defineEmits<{
@@ -58,10 +59,10 @@ async function loadBackupFiles(): Promise<boolean> {
             backupFilesLoaded.value = true
         }
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'backupViewer.notification.couldNotLoadBackupFiles',
-            { reason: e.message }
+            { reason: getErrorMessage(e) }
         ))
         return false
     }
@@ -81,7 +82,7 @@ async function reload(manual: boolean = false): Promise<void> {
             // requests additional reload in between
         } else {
             // set new timeout only for automatic reload or reload recovery
-            reloadTimeoutId = setTimeout(reload, reloadInterval)
+            reloadTimeoutId = setTimeout(() => void reload(), reloadInterval)
         }
         canReload = true
     } else {
@@ -90,8 +91,8 @@ async function reload(manual: boolean = false): Promise<void> {
     }
 }
 
-loadBackupFiles().then(() => {
-    reloadTimeoutId = setTimeout(reload, reloadInterval)
+void loadBackupFiles().then(() => {
+    reloadTimeoutId = setTimeout(() => void reload(), reloadInterval)
 })
 onUnmounted(() => clearInterval(reloadTimeoutId))
 

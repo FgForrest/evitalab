@@ -190,14 +190,14 @@ async function startRecording(): Promise<boolean> {
         const createdTask: TaskStatus = await trafficViewerService.startRecording(
             catalogName.value!,
             Number(samplingRate.value),
-            (maxDurationInMilliseconds.value != undefined && (maxDurationInMilliseconds.value as string).trim().length > 0)
+            (maxDurationInMilliseconds.value != undefined && (maxDurationInMilliseconds.value).trim().length > 0)
                 ? parseHumanDurationToMs(maxDurationInMilliseconds.value.trim())
                 : undefined,
             exportFile.value,
-            (exportFile.value && maxFileSizeInBytes.value != undefined && (maxFileSizeInBytes.value as string).trim().length > 0)
+            (exportFile.value && maxFileSizeInBytes.value != undefined && (maxFileSizeInBytes.value).trim().length > 0)
                 ? parseHumanByteSizeToBigInt(maxFileSizeInBytes.value.trim())[0]
                 : undefined,
-            (exportFile.value && chunkFileSizeInBytes.value != undefined && (chunkFileSizeInBytes.value as string).trim().length > 0)
+            (exportFile.value && chunkFileSizeInBytes.value != undefined && (chunkFileSizeInBytes.value).trim().length > 0)
                 ? parseHumanByteSizeToBigInt(chunkFileSizeInBytes.value.trim())[0]
                 : undefined
         )

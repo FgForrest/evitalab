@@ -181,7 +181,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                 return attributeSchema.name
             })
             .filter(it => it != undefined)
-            .map(it => it as string)
+            .map(it => it)
         if (requiredAttributes.length === 0) {
             return
         }
@@ -216,7 +216,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                 return associatedDataSchema.name
             })
             .filter(it => it != undefined)
-            .map(it => it as string)
+            .map(it => it)
         if (requiredAssociatedData.length === 0) {
             return
         }
@@ -293,7 +293,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                         .get(NamingConvention.CamelCase)
                 })
                 .filter(it => it != undefined)
-                .map(it => it as string)
+                .map(it => it)
 
             let requiredRepresentativeAttributes: string[] = []
             if (referenceSchema.referencedEntityTypeManaged) {

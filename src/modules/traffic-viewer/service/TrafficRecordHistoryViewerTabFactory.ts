@@ -96,5 +96,5 @@ export class TrafficRecordHistoryViewerTabFactory {
 }
 
 export function useTrafficRecordHistoryViewerTabFactory(): TrafficRecordHistoryViewerTabFactory {
-    return mandatoryInject(trafficRecordHistoryViewerTabFactoryInjectionKey) as TrafficRecordHistoryViewerTabFactory
+    return mandatoryInject(trafficRecordHistoryViewerTabFactoryInjectionKey)
 }
