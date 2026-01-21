@@ -14,6 +14,7 @@ export default tseslint.config(
       '.idea/**',
       '.vscode/**',
       '*.log*',
+      'src/modules/database-driver/connector/grpc/gen/**',
     ],
   },
   eslint.configs.recommended,
