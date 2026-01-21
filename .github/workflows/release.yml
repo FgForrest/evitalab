@@ -262,7 +262,7 @@ jobs:
             const { data: pullRequest } = await github.rest.pulls.create({
               owner: 'FgForrest',
               repo: 'evitaDB',
-              title: 'Update evitaLab to ${{ needs.build.outputs.released_version }}',
+              title: 'build: Update evitaLab to ${{ needs.build.outputs.released_version }}',
               head: branchName,
               base: 'dev',
               body: 'This PR updates embedded evitaLab with new released version.'
