@@ -43,6 +43,7 @@ import DeactivateCatalog from '@/modules/connection-explorer/component/Deactivat
 import MakeCatalogImmutable from '@/modules/connection-explorer/component/MakeCatalogImmutable.vue'
 import MakeCatalogMutable from '@/modules/connection-explorer/component/MakeCatalogMutable.vue'
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState.ts'
+import { getErrorMessage } from '@/utils/errorHandling'
 
 const catalogItemService: CatalogItemService = useCatalogItemService()
 const catalogItemMenuFactory: CatalogItemMenuFactory = useCatalogItemMenuFactory()
@@ -128,12 +129,12 @@ async function closeSharedSession(): Promise<void> {
             'explorer.catalog.notification.closedSharedSession',
             { catalogName: props.catalog.name }
         ))
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'explorer.catalog.notification.couldNotCloseSharedSession',
             {
                 catalogName: props.catalog.name,
-                reason: e.message
+                reason: getErrorMessage(e)
             }
         ))
     }
@@ -150,7 +151,7 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
     return await catalogItemMenuFactory.createItems(
         serverStatus.value,
         props.catalog,
-        () => closeSharedSession().then(),
+        () => void closeSharedSession(),
         () => showRenameCatalogDialog.value = true,
         () => showDuplicationCatalogDialog.value = true,
         () => showReplaceCatalogDialog.value = true,

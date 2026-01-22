@@ -20,7 +20,7 @@ import { bracketMatching, defaultHighlightStyle, indentOnInput, syntaxHighlighti
 import { autocompletion, closeBrackets, closeBracketsKeymap, completionKeymap } from '@codemirror/autocomplete'
 import { lintKeymap } from '@codemirror/lint'
 import { dracula } from '@ddietr/codemirror-themes/dracula'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, type ComponentPublicInstance } from 'vue'
 import { EditorView } from 'codemirror'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import { Command } from '@/modules/keymap/model/Command'
@@ -65,8 +65,9 @@ const extensions = computed<Extension[]>(() => [
     crosshairCursor(),
     codeMirrorKeymap.of([
         keymap.bindToCodeMirror(Command.InlineQueryEditor_OpenHistory, () => {
-            historyListButton.value?.$el?.click()
-            historyListButton.value?.$el?.focus()
+            const el = historyListButton.value?.$el as HTMLElement | undefined
+            el?.click()
+            el?.focus()
         }),
         ...closeBracketsKeymap,
         ...defaultKeymap,
@@ -102,9 +103,14 @@ function focus(): void {
     editorView.value?.focus()
 }
 
-const historyListButton = ref<any>()
+interface HistoryListItem {
+    title: string
+    value: string
+}
+
+const historyListButton = ref<ComponentPublicInstance | null>(null)
 const hasHistoryItems = computed<boolean>(() => props.historyRecords != undefined && props.historyRecords?.length > 0)
-const historyListItems = computed<any[]>(() => {
+const historyListItems = computed<HistoryListItem[]>(() => {
     if (props.historyRecords?.length === 0) {
         return [{
             title: 'Empty history',
@@ -122,7 +128,7 @@ function pickHistoryRecord(selected: unknown): void {
     if (selected instanceof Array && selected.length > 0) {
         const historyRecord: string = selected[0] as string
         emit('update:modelValue', historyRecord)
-        historyListButton.value?.$el?.click()
+        ;(historyListButton.value?.$el as HTMLElement | undefined)?.click()
         focus()
     }
 }

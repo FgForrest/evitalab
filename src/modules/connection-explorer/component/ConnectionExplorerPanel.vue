@@ -20,6 +20,7 @@ import {
 import {
     ConnectionExplorerPanelMenuFactory, useConnectionExplorerPanelMenuFactory
 } from '@/modules/connection-explorer/service/ConnectionExplorerPanelMenuFactory'
+import { getErrorMessage } from '@/utils/errorHandling'
 
 const connectionExplorerService: ConnectionExplorerService = useConnectionExplorerService()
 const connectionExplorerPanelMenuFactory: ConnectionExplorerPanelMenuFactory = useConnectionExplorerPanelMenuFactory()
@@ -75,10 +76,10 @@ async function loadServerStatus(): Promise<boolean> {
     try {
         serverStatus.value = await connectionExplorerService.getServerStatus()
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'explorer.connection.notification.couldNotLoadServerStatus',
-            { reason: e.message }
+            { reason: getErrorMessage(e) }
         ))
         return false
     }

@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import type { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics.ts'
 import { type Toaster, useToaster } from '@/modules/notification/service/Toaster.ts'
 import { CatalogItemService, useCatalogItemService } from '@/modules/connection-explorer/service/CatalogItemService.ts'
+import { getErrorMessage } from '@/utils/errorHandling'
 
 const props = defineProps<{
     modelValue: boolean
@@ -26,10 +27,10 @@ async function activateCatalog(): Promise<boolean> {
             catalogName: props.catalog.name
         }))
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t('explorer.catalog.activateCatalog.notification.couldNotActivateCatalog', {
             catalogName: props.catalog.name,
-            reason: e.message
+            reason: getErrorMessage(e)
         }))
         return false
     }
