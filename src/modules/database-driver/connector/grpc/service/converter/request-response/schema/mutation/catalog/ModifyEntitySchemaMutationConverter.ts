@@ -17,7 +17,7 @@ export class ModifyEntitySchemaMutationConverter implements SchemaMutationConver
     public static readonly INSTANCE = new ModifyEntitySchemaMutationConverter()
 
     convert(mutation: GrpcModifyEntitySchemaMutation): ModifyEntitySchemaMutation {
-        const entitySchemaMutations = mutation.entitySchemaMutations.map(DelegatingEntitySchemaMutationConverter.convert) // todo pfi: fix me
+        const entitySchemaMutations = mutation.entitySchemaMutations.map((m) => DelegatingEntitySchemaMutationConverter.convert(m)) // todo pfi: fix me
 
         return new ModifyEntitySchemaMutation(
             mutation.entityType,

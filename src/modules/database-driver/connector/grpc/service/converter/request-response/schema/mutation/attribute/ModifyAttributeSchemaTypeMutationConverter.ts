@@ -15,7 +15,7 @@ export class ModifyAttributeSchemaTypeMutationConverter implements SchemaMutatio
 
     convert(mutation: GrpcModifyAttributeSchemaTypeMutation): ModifyAttributeSchemaTypeMutation {
         if (mutation.type == undefined) {
-            throw new UnexpectedError('Unexpected type ' + mutation.type)
+            throw new UnexpectedError('Unexpected type: undefined')
         }
 
         return new ModifyAttributeSchemaTypeMutation(

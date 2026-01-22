@@ -16,7 +16,7 @@ export class ModifyCatalogSchemaMutationConverter implements SchemaMutationConve
     public static readonly INSTANCE = new ModifyCatalogSchemaMutationConverter()
 
     convert(mutation: GrpcModifyCatalogSchemaMutation): ModifyCatalogSchemaMutation {
-        const schemaMutations = mutation.schemaMutations.map(DelegatingLocalCatalogSchemaMutationConverter.convert)
+        const schemaMutations = mutation.schemaMutations.map((m) => DelegatingLocalCatalogSchemaMutationConverter.convert(m))
 
         return new ModifyCatalogSchemaMutation(
             mutation.catalogName,

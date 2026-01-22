@@ -7,7 +7,6 @@ import {
 import type {
     GrpcCreateAssociatedDataSchemaMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcAssociatedDataSchemaMutations_pb.ts'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 import { ScalarConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScalarConverter.ts'
 
 export class CreateAssociatedDataSchemaMutationConverter implements SchemaMutationConverter<CreateAssociatedDataSchemaMutation, GrpcCreateAssociatedDataSchemaMutation> {

@@ -14,7 +14,7 @@ export class SetEntitySchemaWithHierarchyMutationConverter implements SchemaMuta
     public static readonly INSTANCE = new SetEntitySchemaWithHierarchyMutationConverter()
 
     convert(mutation: GrpcSetEntitySchemaWithHierarchyMutation): SetEntitySchemaWithHierarchyMutation {
-        const indexedInScopes = mutation.indexedInScopes.map(EntityConverter.convertEntityScope)
+        const indexedInScopes = mutation.indexedInScopes.map((scope) => EntityConverter.convertEntityScope(scope))
 
         return new SetEntitySchemaWithHierarchyMutation(
             mutation.withHierarchy,

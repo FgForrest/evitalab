@@ -15,7 +15,7 @@ export class ModifyAssociatedDataSchemaTypeMutationConverter implements SchemaMu
 
     convert(mutation: GrpcModifyAssociatedDataSchemaTypeMutation): ModifyAssociatedDataSchemaTypeMutation {
         if (mutation.type == undefined) {
-            throw new UnexpectedError('Unexpected type ' + mutation.type)
+            throw new UnexpectedError('Unexpected type: undefined')
         }
 
         return new ModifyAssociatedDataSchemaTypeMutation(

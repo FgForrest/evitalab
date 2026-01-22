@@ -15,7 +15,7 @@ export class DisallowEvolutionModeInCatalogSchemaMutationConverter implements Sc
 
     convert(mutation: GrpcDisallowEvolutionModeInCatalogSchemaMutation): DisallowEvolutionModeInCatalogSchemaMutation {
         return new DisallowEvolutionModeInCatalogSchemaMutation(
-            Immutable.Set(mutation.evolutionModes.map(CatalogEvolutionModeConverter.convertCatalogEvolutionMode))
+            Immutable.Set(mutation.evolutionModes.map((mode) => CatalogEvolutionModeConverter.convertCatalogEvolutionMode(mode)))
         )
     }
 }

@@ -9,7 +9,8 @@ import type {
 export class RemoveParentMutationConverter implements LocalMutationConverter<RemoveParentMutation, GrpcRemoveParentMutation> {
     public static readonly INSTANCE = new RemoveParentMutationConverter()
 
-    convert(mutation: GrpcRemoveParentMutation): RemoveParentMutation {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    convert(_mutation: GrpcRemoveParentMutation): RemoveParentMutation {
         return new RemoveParentMutation()
     }
 }

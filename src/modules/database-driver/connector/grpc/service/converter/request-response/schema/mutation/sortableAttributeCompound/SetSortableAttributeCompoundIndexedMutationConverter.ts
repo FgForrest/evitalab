@@ -17,7 +17,7 @@ export class SetSortableAttributeCompoundIndexedMutationConverter implements Sch
     public static readonly INSTANCE = new SetSortableAttributeCompoundIndexedMutationConverter()
 
     convert(mutation: GrpcSetSortableAttributeCompoundIndexedMutation): SetSortableAttributeCompoundIndexedMutation {
-        const indexedInScopes = mutation.indexedInScopes.map(EntityConverter.convertEntityScope)
+        const indexedInScopes = mutation.indexedInScopes.map((scope) => EntityConverter.convertEntityScope(scope))
 
         return new SetSortableAttributeCompoundIndexedMutation(
             mutation.name,

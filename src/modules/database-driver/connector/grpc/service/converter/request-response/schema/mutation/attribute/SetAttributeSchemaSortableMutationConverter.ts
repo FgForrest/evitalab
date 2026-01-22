@@ -16,7 +16,7 @@ export class SetAttributeSchemaSortableMutationConverter implements SchemaMutati
 
     convert(mutation: GrpcSetAttributeSchemaSortableMutation): SetAttributeSchemaSortableMutation {
         const sortableInScopes = mutation.sortableInScopes.length === 0 ?
-            (mutation.sortable ? EntityScope.DefaultScopes : EntityScope.NoScope) : mutation.sortableInScopes.map(EntityConverter.convertEntityScope)
+            (mutation.sortable ? EntityScope.DefaultScopes : EntityScope.NoScope) : mutation.sortableInScopes.map((scope) => EntityConverter.convertEntityScope(scope))
 
         return new SetAttributeSchemaSortableMutation(
             mutation.name,

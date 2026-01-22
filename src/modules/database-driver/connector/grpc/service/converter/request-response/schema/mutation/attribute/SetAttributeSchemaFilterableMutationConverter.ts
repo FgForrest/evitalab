@@ -16,7 +16,7 @@ export class SetAttributeSchemaFilterableMutationConverter implements SchemaMuta
 
     convert(mutation: GrpcSetAttributeSchemaFilterableMutation): SetAttributeSchemaFilterableMutation {
         const filterableInScopes = mutation.filterableInScopes.length === 0 ?
-            (mutation.filterable ? EntityScope.DefaultScopes : EntityScope.NoScope) : mutation.filterableInScopes.map(EntityConverter.convertEntityScope)
+            (mutation.filterable ? EntityScope.DefaultScopes : EntityScope.NoScope) : mutation.filterableInScopes.map((scope) => EntityConverter.convertEntityScope(scope))
 
         return new SetAttributeSchemaFilterableMutation(
             mutation.name,

@@ -16,7 +16,7 @@ export class SetReferenceSchemaFacetedMutationConverter implements SchemaMutatio
 
     convert(mutation: GrpcSetReferenceSchemaFacetedMutation): SetReferenceSchemaFacetedMutation {
         const facetedInScopes = mutation.facetedInScopes.length === 0 ?
-            (mutation.faceted ? EntityScope.DefaultScopes : EntityScope.NoScope) : mutation.facetedInScopes.map(EntityConverter.convertEntityScope)
+            (mutation.faceted ? EntityScope.DefaultScopes : EntityScope.NoScope) : mutation.facetedInScopes.map((scope) => EntityConverter.convertEntityScope(scope))
 
         return new SetReferenceSchemaFacetedMutation(
             mutation.name,

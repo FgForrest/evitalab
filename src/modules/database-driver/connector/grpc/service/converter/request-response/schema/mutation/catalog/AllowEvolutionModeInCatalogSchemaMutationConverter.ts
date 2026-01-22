@@ -16,7 +16,7 @@ export class AllowEvolutionModeInCatalogSchemaMutationConverter implements Schem
 
     convert(mutation: GrpcAllowEvolutionModeInCatalogSchemaMutation): AllowEvolutionModeInCatalogSchemaMutation {
         return new AllowEvolutionModeInCatalogSchemaMutation(
-            ImmutableList(mutation.evolutionModes.map(CatalogEvolutionModeConverter.convertCatalogEvolutionMode))
+            ImmutableList(mutation.evolutionModes.map((mode) => CatalogEvolutionModeConverter.convertCatalogEvolutionMode(mode)))
         )
     }
 }

@@ -14,7 +14,7 @@ export class SetEntitySchemaWithPriceMutationConverter implements SchemaMutation
     public static readonly INSTANCE = new SetEntitySchemaWithPriceMutationConverter()
 
     convert(mutation: GrpcSetEntitySchemaWithPriceMutation): SetEntitySchemaWithPriceMutation {
-        const indexedInScopes = mutation.indexedInScopes.map(EntityConverter.convertEntityScope)
+        const indexedInScopes = mutation.indexedInScopes.map((scope) => EntityConverter.convertEntityScope(scope))
 
         return new SetEntitySchemaWithPriceMutation(
             mutation.withPrice,

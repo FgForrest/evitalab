@@ -27,7 +27,7 @@ export class CreateReferenceSchemaMutationConverter implements SchemaMutationCon
             mutation.indexedInScopes.map(scope => new ScopedReferenceIndexType(EntityConverter.convertEntityScope(scope), ReferenceIndexType.ForFiltering))
 
         const facetedInScopes = mutation.facetedInScopes.length === 0 ?
-            (mutation.faceted ? EntityScope.DefaultScopes : EntityScope.NoScope) : mutation.facetedInScopes.map(EntityConverter.convertEntityScope)
+            (mutation.faceted ? EntityScope.DefaultScopes : EntityScope.NoScope) : mutation.facetedInScopes.map((scope) => EntityConverter.convertEntityScope(scope))
 
         return new CreateReferenceSchemaMutation(
             mutation.name,

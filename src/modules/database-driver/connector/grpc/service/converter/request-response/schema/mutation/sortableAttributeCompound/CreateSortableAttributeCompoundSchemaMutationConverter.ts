@@ -17,7 +17,7 @@ export class CreateSortableAttributeCompoundSchemaMutationConverter implements S
     public static readonly INSTANCE = new CreateSortableAttributeCompoundSchemaMutationConverter()
 
     convert(mutation: GrpcCreateSortableAttributeCompoundSchemaMutation): CreateSortableAttributeCompoundSchemaMutation {
-        const indexedInScopes = mutation.indexedInScopes.map(EntityConverter.convertEntityScope)
+        const indexedInScopes = mutation.indexedInScopes.map((scope) => EntityConverter.convertEntityScope(scope))
         const attributeElements = EntitySchemaConverter.toAttributeElement(mutation.attributeElements)
 
         return new CreateSortableAttributeCompoundSchemaMutation(
