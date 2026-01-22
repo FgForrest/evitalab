@@ -26,7 +26,7 @@ const { t } = useI18n()
 
 const props = defineProps<{
     referenceSchema: ReferenceSchema
-    groupStatisticsResult: Result | undefined,
+    groupStatisticsResult: Result,
     groupRepresentativeAttributes: string[],
     facetRepresentativeAttributes: string[]
 }>()

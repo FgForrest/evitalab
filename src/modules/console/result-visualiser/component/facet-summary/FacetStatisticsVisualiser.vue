@@ -27,7 +27,7 @@ const props = defineProps<{
 }>()
 
 const visualiserService: ResultVisualiserService = useVisualiserService()
-const queryResult: ComputedRef<Result | undefined> = useQueryResult()
+const queryResult: ComputedRef<Result> = useQueryResult()
 
 const facetStatistics = computed<VisualisedFacetStatistics | undefined>(() => {
     try {

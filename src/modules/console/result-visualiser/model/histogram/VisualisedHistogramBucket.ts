@@ -1,6 +1,12 @@
 import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { HistogramBucket } from '@/modules/database-driver/request-response/data/HistogramBucket'
 
+interface HistogramBucketJson {
+    threshold?: string
+    occurrences?: number
+    requested?: boolean
+}
+
 /**
  * Single histogram bucket DTO ready for visualisation.
  */
@@ -25,7 +31,7 @@ export class VisualisedHistogramBucket {
         )
     }
 
-    static fromJson(json: any): VisualisedHistogramBucket {
+    static fromJson(json: HistogramBucketJson): VisualisedHistogramBucket {
         return new VisualisedHistogramBucket(
             json.threshold ? new BigDecimal(json.threshold) : undefined,
             json.occurrences,
