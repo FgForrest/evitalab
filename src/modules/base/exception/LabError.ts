@@ -5,8 +5,7 @@ export abstract class LabError extends Error {
      
     protected constructor(name: string,
                           title: string,
-                          detail?: string,
-                          _onClick?: () => boolean) {
+                          detail?: string) {
         super(title)
         this.name = name
         this._detail = detail

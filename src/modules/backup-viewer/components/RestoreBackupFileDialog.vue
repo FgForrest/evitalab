@@ -7,6 +7,7 @@ import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { ClassifierValidationErrorType } from '@/modules/database-driver/data-type/ClassifierValidationErrorType'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
+import { getErrorMessage } from '@/utils/errorHandling'
 
 const backupViewerService: BackupViewerService = useBackupViewerService()
 const toaster: Toaster = useToaster()
@@ -23,17 +24,17 @@ const emit = defineEmits<{
 
 
 const catalogNameRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value != undefined && value.trim().length > 0) return true
         return t('backupViewer.restore.form.catalogName.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         const classifierValidationResult : ClassifierValidationErrorType | undefined =
             await backupViewerService.isCatalogNameValid(value)
         if (classifierValidationResult == undefined) return true
         return t(`backupViewer.restore.form.catalogName.validations.${classifierValidationResult}`)
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         const available: boolean = await backupViewerService.isCatalogNameAvailable(value)
         if (available) return true
         return t('backupViewer.restore.form.catalogName.validations.notAvailable')
@@ -59,12 +60,12 @@ async function restore(): Promise<boolean> {
         ))
         emit('restore')
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'backupViewer.restore.notification.couldNotRestoreBackupFile',
             {
                 fileName: props.backupFile.name,
-                reason: e.message
+                reason: getErrorMessage(e)
             }
         ))
         return false

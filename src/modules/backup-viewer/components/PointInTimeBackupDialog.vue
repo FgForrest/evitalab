@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { DateTime } from 'luxon'
@@ -9,6 +9,7 @@ import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { CatalogVersionAtResponse } from '@/modules/database-driver/request-response/CatalogVersionAtResponse'
 import VDateTimeInput from '@/modules/base/component/VDateTimeInput.vue'
+import { getErrorMessage } from '@/utils/errorHandling'
 
 const backupViewerService: BackupViewerService = useBackupViewerService()
 const toaster: Toaster = useToaster()
@@ -63,10 +64,10 @@ async function loadMinimalDate(): Promise<void> {
 
         defaultTimeOffset.value = minimalBackupDate.introducedAt.offset
         defaultTimeOffsetLoaded.value = true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'backupViewer.backup.notification.couldNotLoadMinimalDate',
-            { reason: e.message }
+            { reason: getErrorMessage(e) }
         ))
     }
 }
@@ -92,12 +93,12 @@ async function backup(): Promise<boolean> {
         ))
         emit('backup')
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'backupViewer.backup.notification.couldNotRequestBackup',
             {
                 catalogName: catalogNameValue.value,
-                reason: e.message
+                reason: getErrorMessage(e)
             }
         ))
         return false

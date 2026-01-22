@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { BackupViewerService, useBackupViewerService } from '@/modules/backup-viewer/service/BackupViewerService.ts'
 import { type Toaster, useToaster } from '@/modules/notification/service/Toaster.ts'
 import { ref } from 'vue'
+import { getErrorMessage } from '@/utils/errorHandling'
 
 const props = defineProps<{
     catalogName: string,
@@ -36,12 +37,12 @@ async function backup(): Promise<boolean> {
         ))
         emit('backup')
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'backupViewer.backup.notification.couldNotRequestBackup',
             {
                 catalogName: catalogNameValue.value,
-                reason: e.message
+                reason: getErrorMessage(e)
             }
         ))
         return false
