@@ -13,55 +13,58 @@ export abstract class JsonResultVisualiserService extends ResultVisualiserServic
     /**
      * Resolves human-readable string representation of an entity.
      */
-    abstract resolveRepresentativeTitleForEntityResult(entityResult: Result | undefined, representativeAttributes: string[]): string | undefined
+    abstract resolveRepresentativeTitleForEntityResult(entityResult: Result, representativeAttributes: string[]): string | undefined
 
     findVisualiserTypes(queryResult: Result): VisualiserType[] {
         const visualiserTypes: VisualiserType[] = []
-
-        const extraResults = queryResult['extraResults']
+        const extraResults = (queryResult as { extraResults?: Record<string, unknown> })['extraResults']
         // todo lho i18n, sync with EvitaQLResultVisualiserService?
         if (extraResults) {
             if (extraResults['facetSummary']) {
-                visualiserTypes.push({
-                    title: 'Facet summary',
-                    value: VisualiserTypeType.FacetSummary
-                })
+                visualiserTypes.push(new VisualiserType(
+                    'Facet summary',
+                    VisualiserTypeType.FacetSummary
+                ))
             }
             if (extraResults['hierarchy']) {
-                visualiserTypes.push({
-                    title: 'Hierarchy',
-                    value: VisualiserTypeType.Hierarchy
-                })
+                visualiserTypes.push(new VisualiserType(
+                    'Hierarchy',
+                    VisualiserTypeType.Hierarchy
+                ))
             }
             if (extraResults['attributeHistogram']) {
-                visualiserTypes.push({
-                    title: 'Attribute histograms',
-                    value: VisualiserTypeType.AttributeHistograms
-                })
+                visualiserTypes.push(new VisualiserType(
+                    'Attribute histograms',
+                    VisualiserTypeType.AttributeHistograms
+                ))
             }
             if (extraResults['priceHistogram']) {
-                visualiserTypes.push({
-                    title: 'Price histogram',
-                    value: VisualiserTypeType.PriceHistogram
-                })
+                visualiserTypes.push(new VisualiserType(
+                    'Price histogram',
+                    VisualiserTypeType.PriceHistogram
+                ))
             }
         }
 
         return visualiserTypes
     }
 
-    findResultForVisualiser(queryResult: Result, visualiserType: VisualiserTypeType): Result | undefined {
-        switch (visualiserType) {
-            case VisualiserTypeType.FacetSummary:
-                return queryResult?.['extraResults']?.['facetSummary']
-            case VisualiserTypeType.Hierarchy:
-                return queryResult?.['extraResults']?.['hierarchy']
-            case VisualiserTypeType.AttributeHistograms:
-                return queryResult?.['extraResults']?.['attributeHistogram']
-            case VisualiserTypeType.PriceHistogram:
-                return queryResult?.['extraResults']?.['priceHistogram']
-            default:
-                return undefined
+    findResultForVisualiser(queryResult: Result, visualiserType: string): Result {
+        const extraResults = (queryResult as { extraResults?: Record<string, unknown> })['extraResults']
+        if (extraResults) {
+            switch (visualiserType as VisualiserTypeType) {
+                case VisualiserTypeType.FacetSummary:
+                    return extraResults['facetSummary']
+                case VisualiserTypeType.Hierarchy:
+                    return extraResults['hierarchy']
+                case VisualiserTypeType.AttributeHistograms:
+                    return extraResults['attributeHistogram']
+                case VisualiserTypeType.PriceHistogram:
+                    return extraResults['priceHistogram']
+                default:
+                    return undefined
+            }
         }
+        return undefined
     }
 }

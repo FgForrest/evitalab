@@ -92,7 +92,7 @@ watch(queries, (newValue) => {
     }
 }, { immediate: true })
 
-const selectedQueryResult = computed<Result | undefined>(() => {
+const selectedQueryResult = computed<Result>(() => {
     if (props.result == undefined || selectedQuery.value == undefined) {
         return undefined
     }
@@ -154,7 +154,7 @@ watch(visualiserTypes, (newValue) => {
     }
 }, { immediate: true })
 
-const resultForVisualiser = computed<Result | undefined>(() => {
+const resultForVisualiser = computed<Result>(() => {
     if (selectedQueryResult.value == undefined || selectedVisualiserType.value == undefined) {
         return undefined
     }

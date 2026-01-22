@@ -1,4 +1,4 @@
 /**
  * Represents query execution result object.
  */
-export type Result = any
+export type Result = unknown

@@ -102,12 +102,12 @@ export class EvitaQLResultVisualiserService extends ResultVisualiserService {
     findResultForVisualiser(
         queryResult: Result,
         visualiserType: string
-    ): Result | undefined {
+    ): Result {
         const res: ExtraResults | undefined = (
             queryResult as EvitaResponse
         ).extraResults
         if (res != undefined) {
-            switch (visualiserType) {
+            switch (visualiserType as VisualiserTypeType) {
                 case VisualiserTypeType.FacetSummary:
                     return res.facetGroupStatistics
                 case VisualiserTypeType.Hierarchy:
@@ -129,6 +129,7 @@ export class EvitaQLResultVisualiserService extends ResultVisualiserService {
     }
 
     findQueries(inputQuery: string, result: Result): string[] {
+        void result
         const entityType: string | undefined = this.collectionConstraintPattern.exec(inputQuery)?.[1]
         if (entityType == undefined) {
             throw new UnexpectedError('No entity type present in query.')
@@ -137,7 +138,8 @@ export class EvitaQLResultVisualiserService extends ResultVisualiserService {
         }
     }
 
-    findQueryResult(result: Result, query: string): Result | undefined {
+    findQueryResult(result: Result, query: string): Result {
+        void query
         return result
     }
 
@@ -178,7 +180,7 @@ export class EvitaQLResultVisualiserService extends ResultVisualiserService {
 
         const entityResult: Entity = entityResultValue
 
-        const possibleAttributes: [any, boolean][] = []
+        const possibleAttributes: [unknown, boolean][] = []
 
         entityResult.allAttributes.forEach(it => {
             // todo lho there can be legitimately more locales, we need to look for the entityLocaleEquals if there are multiple locales

@@ -30,7 +30,7 @@ export abstract class ResultVisualiserService {
     /**
      * Tries to find query result in the root result by selected query name.
      */
-    abstract findQueryResult(result: Result, query: string): Result | undefined
+    abstract findQueryResult(result: Result, query: string): Result
 
     /**
      * Returns entity schema for selected query.
@@ -45,7 +45,7 @@ export abstract class ResultVisualiserService {
     /**
      * Tries to find result-result-visualiser result in the root result by selected result-result-visualiser type.
      */
-    abstract findResultForVisualiser(queryResult: Result, visualiserType: string): Result | undefined
+    abstract findResultForVisualiser(queryResult: Result, visualiserType: string): Result
 
     abstract getFacetSummaryService(): FacetSummaryVisualiserService
 
@@ -61,7 +61,7 @@ export abstract class ResultVisualiserService {
     abstract resolveRepresentativeAttributes(catalogName: string, entityType: string): Promise<string[]>
 
     // todo lho refactor into common function
-    toPrintableAttributeValue(attributeValue: any): string | undefined {
+    toPrintableAttributeValue(attributeValue: unknown): string | undefined {
         if (attributeValue == undefined) {
             return undefined
         }
@@ -73,7 +73,7 @@ export abstract class ResultVisualiserService {
         } else if (attributeValue instanceof Object) {
             return JSON.stringify(attributeValue)
         } else {
-            return attributeValue.toString()
+            return String(attributeValue as string | number | boolean | symbol | bigint)
         }
     }
 }

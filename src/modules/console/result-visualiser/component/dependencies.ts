@@ -30,10 +30,10 @@ export function useRootEntitySchema(): Ref<EntitySchema | undefined> {
     return mandatoryInject(rootEntitySchemaInjectionKey)
 }
 
-const queryResultInjectionKey: InjectionKey<ComputedRef<Result | undefined>> = Symbol('queryResult')
-export function provideQueryResult(queryResult: ComputedRef<Result | undefined>): void {
+const queryResultInjectionKey: InjectionKey<ComputedRef<Result>> = Symbol('queryResult')
+export function provideQueryResult(queryResult: ComputedRef<Result>): void {
     provide(queryResultInjectionKey, queryResult)
 }
-export function useQueryResult(): ComputedRef<Result | undefined> {
+export function useQueryResult(): ComputedRef<Result> {
     return mandatoryInject(queryResultInjectionKey)
 }
