@@ -9,7 +9,7 @@ enum Side {
     Right = 'right'
 }
 
-const props = defineProps<{
+defineProps<{
     modelValue: any,
     side: 'left' | 'right'
 }>()

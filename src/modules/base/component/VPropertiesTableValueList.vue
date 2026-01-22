@@ -11,7 +11,7 @@ import VPropertiesTableValueItem from '@/modules/base/component/VPropertiesTable
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     property: Property,
     propertyValue: List<PropertyValue>
 }>()

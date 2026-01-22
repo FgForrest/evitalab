@@ -10,7 +10,8 @@ const minuteInMillis: number = 60 * 1000
 const secondInMillis: number = 1000
 
 const LuxonExtensions: Plugin = {
-    install(app: App, options: LuxonExtensionsOptions) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    install(_app: App, _options: LuxonExtensionsOptions) {
         // from https://github.com/moment/luxon/issues/1134#issuecomment-1282092129
         (Duration.prototype as any).__toHuman__ = Duration.prototype.toHuman;
         (Duration.prototype as any).toHuman = function (

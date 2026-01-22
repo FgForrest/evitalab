@@ -11,7 +11,7 @@ const catalogItemService: CatalogItemService = useCatalogItemService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     modelValue: boolean
 }>()
 

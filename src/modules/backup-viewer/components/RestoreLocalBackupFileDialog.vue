@@ -12,7 +12,7 @@ const backupViewerService: BackupViewerService = useBackupViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     modelValue: boolean
 }>()
 const emit = defineEmits<{

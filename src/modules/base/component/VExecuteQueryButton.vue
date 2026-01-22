@@ -10,7 +10,7 @@ const { t } = useI18n()
 /**
  * Pre-defined button to execute queries.
  */
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     loading?: boolean,
     command: Command,
     title: string

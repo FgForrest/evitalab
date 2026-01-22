@@ -2,7 +2,7 @@
 /**
  * Custom button for alternative action button in dialogs
  */
-const props = defineProps<{
+defineProps<{
     icon: string
 }>()
 const emit = defineEmits<{

@@ -2,6 +2,7 @@ export abstract class LabError extends Error {
 
     protected readonly _detail?: string | undefined
 
+     
     protected constructor(name: string,
                           title: string,
                           detail?: string,

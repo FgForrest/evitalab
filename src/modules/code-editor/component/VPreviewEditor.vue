@@ -27,7 +27,7 @@ const props = withDefaults(
     }
 )
 
-const _emit = defineEmits<{
+defineEmits<{
     (e: 'update:modelValue', value: string): void
 }>()
 

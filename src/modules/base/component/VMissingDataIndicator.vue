@@ -3,7 +3,7 @@
  * Informative component that is displayed when there is no data or argument.
  */
 
-const props = defineProps<{
+defineProps<{
     icon?: string,
     title?: string,
     color?: string
