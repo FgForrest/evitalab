@@ -9,6 +9,7 @@ import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { ClassifierValidationErrorType } from '@/modules/database-driver/data-type/ClassifierValidationErrorType'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
+import { getErrorMessage } from '@/utils/errorHandling'
 
 const collectionItemService: CollectionItemService = useCollectionItemService()
 const toaster: Toaster = useToaster()
@@ -23,17 +24,17 @@ const emit = defineEmits<{
 }>()
 
 const entityTypeRules = [
-    (value: string): any => {
+    (value: string): string | true => {
         if (value != undefined && value.trim().length > 0) return true
         return t('explorer.collection.create.form.entityType.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<string | true> => {
         const classifierValidationResult : ClassifierValidationErrorType | undefined =
             await collectionItemService.isEntityTypeValid(value)
         if (classifierValidationResult == undefined) return true
         return t(`explorer.collection.create.form.entityType.validations.${classifierValidationResult}`)
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<string | true> => {
         const available: boolean = await collectionItemService.isEntityTypeAvailable(props.catalogName, value)
         if (available) return true
         return t('explorer.collection.create.form.entityType.validations.notAvailable')
@@ -58,12 +59,12 @@ async function create(): Promise<boolean> {
             { entityType: entityType.value }
         ))
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'explorer.collection.create.notification.couldNotCreateCollection',
             {
                 entityType: entityType.value,
-                reason: e.message
+                reason: getErrorMessage(e)
             }
         ))
         return false

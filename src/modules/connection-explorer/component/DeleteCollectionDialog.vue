@@ -7,6 +7,7 @@ import {
     useCollectionItemService
 } from '@/modules/connection-explorer/service/CollectionItemService'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
+import { getErrorMessage } from '@/utils/errorHandling'
 
 const collectionItemService: CollectionItemService = useCollectionItemService()
 const toaster: Toaster = useToaster()
@@ -36,12 +37,12 @@ async function deleteCollection(): Promise<boolean> {
             ))
         }
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'explorer.collection.delete.notification.couldNotDeleteCollection',
             {
                 entityType: props.entityType,
-                reason: e.message
+                reason: getErrorMessage(e)
             }
         ))
         return false

@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import type { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics.ts'
 import { type Toaster, useToaster } from '@/modules/notification/service/Toaster.ts'
 import { CatalogItemService, useCatalogItemService } from '@/modules/connection-explorer/service/CatalogItemService.ts'
+import { getErrorMessage } from '@/utils/errorHandling'
 
 const props = defineProps<{
     modelValue: boolean
@@ -24,10 +25,10 @@ async function deactivateCatalog(): Promise<boolean> {
         catalogItemService.deactivateCatalogWithProgress(props.catalog)
         await toaster.info(t('explorer.catalog.deactivateCatalog.notification.catalogDeactivationStarted'))
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t('explorer.catalog.deactivateCatalog.notification.couldNotDeactivateCatalog', {
             catalogName: props.catalog.name,
-            reason: e.message
+            reason: getErrorMessage(e)
         }))
         return false
     }

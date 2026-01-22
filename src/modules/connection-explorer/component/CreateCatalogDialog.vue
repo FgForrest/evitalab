@@ -6,6 +6,7 @@ import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { ClassifierValidationErrorType } from '@/modules/database-driver/data-type/ClassifierValidationErrorType'
+import { getErrorMessage } from '@/utils/errorHandling'
 
 const catalogItemService: CatalogItemService = useCatalogItemService()
 const toaster: Toaster = useToaster()
@@ -20,17 +21,17 @@ const emit = defineEmits<{
 }>()
 
 const catalogNameRules = [
-    (value: string): any => {
+    (value: string): string | true => {
         if (value != undefined && value.trim().length > 0) return true
         return t('explorer.catalog.create.form.catalogName.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<string | true> => {
         const classifierValidationResult : ClassifierValidationErrorType | undefined =
             await catalogItemService.isCatalogNameValid(value)
         if (classifierValidationResult == undefined) return true
         return t(`explorer.catalog.create.form.catalogName.validations.${classifierValidationResult}`)
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<string | true> => {
         const available: boolean = await catalogItemService.isCatalogNameAvailable(value)
         if (available) return true
         return t('explorer.catalog.create.form.catalogName.validations.notAvailable')
@@ -52,12 +53,12 @@ async function create(): Promise<boolean> {
             { catalogName: catalogName.value }
         ))
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'explorer.catalog.create.notification.couldNotCreateCatalog',
             {
                 catalogName: catalogName.value,
-                reason: e.message
+                reason: getErrorMessage(e)
             }
         ))
         return false

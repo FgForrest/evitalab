@@ -89,10 +89,10 @@ async function loadCatalogs(): Promise<boolean> {
     try {
         catalogs.value = await connectionExplorerService.getCatalogs()
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'explorer.connection.notification.couldNotLoadCatalogs',
-            { reason: e.message }
+            { reason: getErrorMessage(e) }
         ))
         return false
     }
@@ -122,7 +122,7 @@ onUnmounted(() => {
     connectionExplorerService.unregisterCatalogChangeCallback(catalogChangeCallbackId)
 })
 
-load().then()
+void load()
 </script>
 
 <template>

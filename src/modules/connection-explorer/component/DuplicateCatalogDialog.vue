@@ -7,6 +7,7 @@ import { CatalogItemService, useCatalogItemService } from '@/modules/connection-
 import { computed } from 'vue'
 import { type Toaster, useToaster } from '@/modules/notification/service/Toaster.ts'
 import type { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics.ts'
+import { getErrorMessage } from '@/utils/errorHandling'
 
 const { t } = useI18n()
 const catalogItemService: CatalogItemService = useCatalogItemService()
@@ -24,17 +25,17 @@ const emit = defineEmits<{
 const duplicationCatalogName = ref<string>()
 
 const newNameRules = [
-    (value: string): any => {
+    (value: string): string | true => {
         if (value != undefined && value.trim().length > 0) return true
         return t('explorer.catalog.duplication.form.duplicationName.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<string | true> => {
         const classifierValidationResult : ClassifierValidationErrorType | undefined =
             await catalogItemService.isCatalogNameValid(value)
         if (classifierValidationResult == undefined) return true
         return t(`explorer.catalog.duplication.form.duplicationName.validations.${classifierValidationResult}`)
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<string | true> => {
         if (value === props.catalog.name) {
             return true
         }
@@ -52,19 +53,19 @@ async function duplicateCatalog():Promise<boolean> {
             catalogName: props.catalog.name
         }))
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'explorer.catalog.duplication.notification.couldNotDuplicateCatalog',
             {
                 catalogName: props.catalog.name,
-                reason: e.message
+                reason: getErrorMessage(e)
             }
         ))
         return false
     }
 }
 
-async function reset() {
+function reset(): void {
     duplicationCatalogName.value = ''
 }
 </script>

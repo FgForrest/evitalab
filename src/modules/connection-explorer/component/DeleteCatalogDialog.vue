@@ -4,6 +4,7 @@ import { CatalogItemService, useCatalogItemService } from '@/modules/connection-
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
+import { getErrorMessage } from '@/utils/errorHandling'
 
 const catalogItemService: CatalogItemService = useCatalogItemService()
 const toaster: Toaster = useToaster()
@@ -32,12 +33,12 @@ async function deleteCatalog(): Promise<boolean> {
             ))
         }
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'explorer.catalog.delete.notification.couldNotDeleteCatalog',
             {
                 catalogName: props.catalogName,
-                reason: e.message
+                reason: getErrorMessage(e)
             }
         ))
         return false
