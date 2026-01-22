@@ -35,14 +35,14 @@ const referencesWithGroupStatisticsResults = computed<[ReferenceSchema, Result[]
         return visualiserService
             .getFacetSummaryService()
             .findFacetGroupStatisticsByReferencesResults(props.facetSummaryResult, entitySchema.value!)
-    } catch (e: any) {
-        toaster.error('Could not find facet group statistics results', e).then() // todo lho i18n
+    } catch (e: unknown) {
+        void toaster.error('Could not find facet group statistics results', e) // todo lho i18n
         return []
     }
 })
 
 function getCountForReference(referenceSchema: ReferenceSchema, groupStatisticsResults: Result): number {
-    let results: any
+    let results: unknown
     if (referenceSchema.referencedGroupType != undefined) {
         results = groupStatisticsResults
 
@@ -54,7 +54,7 @@ function getCountForReference(referenceSchema: ReferenceSchema, groupStatisticsR
     if (results instanceof Array) {
         return results.length
     } else if (results instanceof List) {
-        return (results as List<any>).size
+        return (results as List<unknown>).size
     } else {
         throw new UnexpectedError('Expected array or list of items')
     }

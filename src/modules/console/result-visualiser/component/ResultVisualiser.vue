@@ -49,8 +49,8 @@ const selectedVisualiserType = ref<VisualiserTypeType | undefined>()
 const supportsMultipleQueries = computed<boolean>(() => {
     try {
         return props.visualiserService.supportsMultipleQueries()
-    } catch (e: any) {
-        toaster.error('Could resolve multiple queries support', e).then() // todo lho i18n
+    } catch (e: unknown) {
+        void toaster.error('Could resolve multiple queries support', e) // todo lho i18n
         return false
     }
 })
@@ -60,8 +60,8 @@ const queries = computed<string[]>(() => {
     }
     try {
         return props.visualiserService.findQueries(props.inputQuery, props.result)
-    } catch (e: any) {
-        toaster.error('Could not find queries', e).then() // todo lho i18n
+    } catch (e: unknown) {
+        void toaster.error('Could not find queries', e) // todo lho i18n
         return []
     }
 })
@@ -98,8 +98,8 @@ const selectedQueryResult = computed<Result | undefined>(() => {
     }
     try {
         return props.visualiserService.findQueryResult(props.result, selectedQuery.value)
-    } catch (e: any) {
-        toaster.error('Could not find query result', e).then() // todo lho i18n
+    } catch (e: unknown) {
+        void toaster.error('Could not find query result', e) // todo lho i18n
         return undefined
     }
 })
@@ -118,7 +118,7 @@ watch(selectedQuery, async () => {
             selectedQuery.value,
             props.catalogPointer.catalogName
         )
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error('Could not resolve entity schema', e) // todo lho i18n
     }
 }, { immediate: true })
@@ -131,8 +131,8 @@ const visualiserTypes = computed<VisualiserType[]>(() => {
     }
     try {
         return props.visualiserService.findVisualiserTypes(selectedQueryResult.value)
-    } catch (e: any) {
-        toaster.error('Could not find visualiser types', e).then() // todo lho i18n
+    } catch (e: unknown) {
+        void toaster.error('Could not find visualiser types', e) // todo lho i18n
         return []
     }
 })
@@ -161,8 +161,8 @@ const resultForVisualiser = computed<Result | undefined>(() => {
     try {
         return props.visualiserService
             .findResultForVisualiser(selectedQueryResult.value, selectedVisualiserType.value)
-    } catch (e: any) {
-        toaster.error('Could not find result', e).then() // todo lho i18n
+    } catch (e: unknown) {
+        void toaster.error('Could not find result', e) // todo lho i18n
         return undefined
     }
 })

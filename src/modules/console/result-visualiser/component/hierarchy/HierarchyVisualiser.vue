@@ -31,8 +31,8 @@ const referencesWithNamedHierarchiesResults = computed<[ReferenceSchema | undefi
     try {
         return  visualiserService.getHierarchyService()
             .findNamedHierarchiesByReferencesResults(props.hierarchyResult, entitySchema.value!)
-    } catch (e: any) {
-        toaster.error('', e).then()
+    } catch (e: unknown) {
+        void toaster.error('', e)
         return []
     }
 })

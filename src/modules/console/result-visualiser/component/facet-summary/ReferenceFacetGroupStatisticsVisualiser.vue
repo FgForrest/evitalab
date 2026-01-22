@@ -48,8 +48,8 @@ const facetStatisticsResults = computed<Result[]>(() => {
         return visualiserService
             .getFacetSummaryService()
             .findFacetStatisticsResults(props.groupStatisticsResults[0])
-    } catch (e: any) {
-        toaster.error('Could not find facet statistics results', e).then() // todo lho i18n
+    } catch (e: unknown) {
+        void toaster.error('Could not find facet statistics results', e) // todo lho i18n
         return []
     }
 })
@@ -79,8 +79,8 @@ function initialize() {
             facetRepresentativeAttributes.push(...representativeAttributes)
             initialized.value = true
         })
-        .catch((e) => {
-            toaster.error('Could not initialize facet groups statistics', e).then() // todo lho i18n
+        .catch((e: unknown) => {
+            void toaster.error('Could not initialize facet groups statistics', e) // todo lho i18n
         })
 }
 initialize()
