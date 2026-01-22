@@ -4,10 +4,11 @@ import {
     type GrpcChangeSystemCapture
 } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import { ChangeSystemCapture } from '@/modules/database-driver/request-response/cdc/ChangeSystemCapture.ts'
-import { ChangeCaptureOperation } from '@/modules/database-driver/request-response/cdc/ChangeCaptureOperation.ts'
+import { Operation } from '@/modules/database-driver/request-response/cdc/Operation.ts'
 import {
     type EngineMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/EngineMutationConverter.ts'
+import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
 
 export class ChangeSystemCaptureConverter {
     private readonly engineMutationConverter: EngineMutationConverter
@@ -21,18 +22,19 @@ export class ChangeSystemCaptureConverter {
             capture.version,
             capture.index,
             this.convertChangeCaptureOperation(capture.operation),
-            this.engineMutationConverter.convertEngineMutation(capture.systemMutation)
+            this.engineMutationConverter.convertEngineMutation(capture.systemMutation),
+            capture.timestamp ? EvitaValueConverter.convertGrpcOffsetDateTime(capture.timestamp) : undefined
         )
     }
 
-    convertChangeCaptureOperation(operation: GrpcChangeCaptureOperation): ChangeCaptureOperation {
+    convertChangeCaptureOperation(operation: GrpcChangeCaptureOperation): Operation {
         switch (operation) {
             case GrpcChangeCaptureOperation.REMOVE:
-                return ChangeCaptureOperation.Remove
+                return Operation.Remove
             case GrpcChangeCaptureOperation.UPSERT:
-                return ChangeCaptureOperation.Upsert
+                return Operation.Upsert
             case GrpcChangeCaptureOperation.TRANSACTION:
-                return ChangeCaptureOperation.Transaction
+                return Operation.Transaction
             default:
                 throw new Error(`Unsupported operation type: ${operation}`)
         }
