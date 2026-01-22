@@ -176,9 +176,9 @@ export class EvitaClient extends AbstractEvitaClient {
         catalogName: string,
         instanceType: GraphQLInstanceType,
         query: string,
-        variables: any = {}
+        variables: Record<string, unknown> = {}
     ): Promise<GraphQLResponse> {
-        let path
+        let path: string
         if (instanceType === GraphQLInstanceType.System) {
             path = 'system'
         } else {
@@ -189,28 +189,31 @@ export class EvitaClient extends AbstractEvitaClient {
                 case GraphQLInstanceType.Schema:
                     path = `${catalogName}/schema`
                     break
-                default: throw new UnexpectedError(`Unsupported GraphQL instance type '${instanceType}'.`)
+                default: {
+                    const exhaustiveCheck: never = instanceType
+                    throw new UnexpectedError(`Unsupported GraphQL instance type '${exhaustiveCheck as string}'.`)
+                }
             }
         }
 
         try {
-            return (
-                await this.httpApiClient.post(
-                    `${this.connection.graphQlUrl}/${path}`,
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-EvitaDB-ClientID': 'evitaLab-' + encodeURIComponent(this.evitaLabConfig.serverName)
-                        },
-                        body: JSON.stringify({
-                            query,
-                            variables
-                        })
-                    }
-                )
-                    .json()
-            ) as GraphQLResponse
-        } catch (e: any) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+            const response = await this.httpApiClient.post(
+                `${this.connection.graphQlUrl}/${path}`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-EvitaDB-ClientID': 'evitaLab-' + encodeURIComponent(this.evitaLabConfig.serverName)
+                    },
+                    body: JSON.stringify({
+                        query,
+                        variables
+                    })
+                }
+            )
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            return await response.json() as GraphQLResponse
+        } catch (e: unknown) {
             throw this.errorTransformer.transformError(e)
         }
     }

@@ -6,12 +6,13 @@ import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/
 
 export class DatabaseDriverModuleRegistrar implements ModuleRegistrar {
 
-    async register(builder: ModuleContextBuilder): Promise<void> {
+    register(builder: ModuleContextBuilder): Promise<void> {
         const evitaLabConfig: EvitaLabConfig = builder.inject(evitaLabConfigInjectionKey)
         const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
 
         const evitaClient: EvitaClient = new EvitaClient(evitaLabConfig, connectionService)
         builder.provide(evitaClientInjectionKey, evitaClient)
+        return Promise.resolve()
     }
 
 }

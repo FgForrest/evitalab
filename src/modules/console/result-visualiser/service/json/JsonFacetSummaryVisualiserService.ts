@@ -28,16 +28,17 @@ export abstract class JsonFacetSummaryVisualiserService<VS extends JsonResultVis
 
     findFacetGroupStatisticsByReferencesResults(facetSummaryResult: Result, entitySchema: EntitySchema): [ReferenceSchema, Result[]][] {
         const referencesWithGroups: [ReferenceSchema, Result[]][] = []
-        for (const referenceName of Object.keys(facetSummaryResult)) {
+        const facetSummary = facetSummaryResult as Record<string, unknown>
+        for (const referenceName of Object.keys(facetSummary)) {
             const referenceSchema: ReferenceSchema | undefined = entitySchema.references
                 .find(reference => reference.nameVariants
                     .get(NamingConvention.CamelCase) === referenceName)
             if (referenceSchema == undefined) {
                 throw new UnexpectedError(`Reference '${referenceName}' not found in entity '${entitySchema.name}'.`)
             }
-            const groups = facetSummaryResult[referenceName]
+            const groups = facetSummary[referenceName]
             if (groups instanceof Array) {
-                referencesWithGroups.push([referenceSchema, groups])
+                referencesWithGroups.push([referenceSchema, groups as Result[]])
             } else {
                 referencesWithGroups.push([referenceSchema, [groups]])
             }
@@ -46,13 +47,15 @@ export abstract class JsonFacetSummaryVisualiserService<VS extends JsonResultVis
     }
 
     resolveFacetGroupStatistics(groupStatisticsResult: Result, groupRepresentativeAttributes: string[]): VisualisedFacetGroupStatistics {
-        const count: number | undefined = groupStatisticsResult['count']
+        const stats = groupStatisticsResult as Record<string, unknown>
+        const count: number | undefined = stats['count'] as number | undefined
 
-        const groupEntityResult: Result | undefined = groupStatisticsResult['groupEntity']
+        const groupEntityResult = stats['groupEntity']
         if (!groupEntityResult) {
             return { count }
         }
-        const primaryKey: number | undefined = groupEntityResult['primaryKey']
+        const groupEntity = groupEntityResult as Record<string, unknown>
+        const primaryKey: number | undefined = groupEntity['primaryKey'] as number | undefined
         const title: string | undefined = this.visualiserService.resolveRepresentativeTitleForEntityResult(
             groupEntityResult,
             groupRepresentativeAttributes
@@ -62,33 +65,40 @@ export abstract class JsonFacetSummaryVisualiserService<VS extends JsonResultVis
     }
 
     findFacetStatisticsResults(groupStatisticsResult: Result): Result[] {
-        return groupStatisticsResult['facetStatistics'] || []
+        const stats = groupStatisticsResult as Record<string, unknown>
+        return (stats['facetStatistics'] as Result[]) || []
     }
 
     resolveFacetStatistics(queryResult: Result, facetStatisticsResult: Result, facetRepresentativeAttributes: string[]): VisualisedFacetStatistics {
-        const facetEntityResult: Result | undefined = facetStatisticsResult['facetEntity']
+        const facetStats = facetStatisticsResult as Record<string, unknown>
+        const facetEntityResult = facetStats['facetEntity']
 
-        const requested: boolean | undefined = facetStatisticsResult['requested']
+        const requested: boolean | undefined = facetStats['requested'] as boolean | undefined
 
-        const primaryKey: number | undefined = facetEntityResult?.['primaryKey']
+        const facetEntity = facetEntityResult as Record<string, unknown> | undefined
+        const primaryKey: number | undefined = facetEntity?.['primaryKey'] as number | undefined
         const title: string | undefined = this.visualiserService.resolveRepresentativeTitleForEntityResult(
             facetEntityResult,
             facetRepresentativeAttributes
         )
 
-        const numberOfEntities: number | undefined = queryResult['recordPage']?.['totalRecordCount'] ?? queryResult['recordStrip']?.['totalRecordCount']
+        const query = queryResult as Record<string, unknown>
+        const recordPage = query['recordPage'] as Record<string, unknown> | undefined
+        const recordStrip = query['recordStrip'] as Record<string, unknown> | undefined
+        const numberOfEntities: number | undefined = (recordPage?.['totalRecordCount'] ?? recordStrip?.['totalRecordCount']) as number | undefined
 
-        const impactResult: Result | undefined = facetStatisticsResult['impact']
+        const impactResult = facetStats['impact']
+        const impact = impactResult as Record<string, unknown> | undefined
         const impactDifference: string | undefined = (() => {
-            const difference: number | undefined = impactResult?.['difference']
+            const difference: number | undefined = impact?.['difference'] as number | undefined
             if (difference == undefined) {
                 return undefined
             }
 
             return `${difference > 0 ? '+' : ''}${difference}`
         })()
-        const impactMatchCount: number | undefined = impactResult?.['matchCount']
-        const count: number | undefined = facetStatisticsResult['count']
+        const impactMatchCount: number | undefined = impact?.['matchCount'] as number | undefined
+        const count: number | undefined = facetStats['count'] as number | undefined
 
         return new VisualisedFacetStatistics(requested, primaryKey, title, numberOfEntities, impactDifference, impactMatchCount, count)
     }
