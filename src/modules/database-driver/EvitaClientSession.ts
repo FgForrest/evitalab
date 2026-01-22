@@ -1,5 +1,5 @@
 import { List as ImmutableList } from 'immutable'
-import { Code, ConnectError } from '@connectrpc/connect'
+import { type CallOptions, Code, ConnectError } from '@connectrpc/connect'
 import type {
     EvitaSessionServiceClient,
     EvitaTrafficRecordingServiceClient
@@ -71,7 +71,6 @@ import type { TrafficRecord } from '@/modules/database-driver/request-response/t
 import { TransactionMutation } from '@/modules/database-driver/request-response/transaction/TransactionMutation.ts'
 import { Operation } from '@/modules/database-driver/request-response/cdc/Operation.ts'
 
-const sessionTimeout: number = 30 * 1000 // 30 seconds
 
 /**
  * Session are created by the clients to envelope a "piece of work" with evitaDB. In web environment it's a good idea
@@ -91,7 +90,7 @@ export class EvitaClientSession {
     private readonly _catalogState: CatalogState
     private _active: boolean = true
     private readonly _createdOn: number = Date.now()
-    private readonly _callMetadata: any
+    private readonly _callMetadata: CallOptions
 
     private readonly clientEntitySchemaAccessor: EntitySchemaAccessor
 
@@ -284,7 +283,7 @@ export class EvitaClientSession {
                     this._callMetadata
                 )
             if (response.renamed) {
-                this.schemaCache.removeLatestEntitySchema(entityType)
+                await this.schemaCache.removeLatestEntitySchema(entityType)
             }
 
             return response.renamed
@@ -305,7 +304,7 @@ export class EvitaClientSession {
                         this._callMetadata
                     )
             if (response.deleted) {
-                this.schemaCache.removeLatestEntitySchema(entityType)
+                await this.schemaCache.removeLatestEntitySchema(entityType)
             }
 
             return response.deleted
@@ -339,7 +338,7 @@ export class EvitaClientSession {
             }
 
             return this.responseConverterProvider().convert(queryResponse)
-        } catch (e: any) {
+        } catch (e: unknown) {
             throw this.errorTransformerProvider().transformError(e)
         }
     }

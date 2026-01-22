@@ -544,7 +544,7 @@ export class EvitaClientManagement {
                 response.catalogStatistics
                     .map((x) => this.catalogStatisticsConverterProvider().convert(x))
             )
-        } catch (e: any) {
+        } catch (e: unknown) {
             throw this.errorTransformer.transformError(e)
         }
     }
