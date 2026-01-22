@@ -26,10 +26,10 @@ async function makeCatalogImmutable(): Promise<boolean> {
             catalogName: props.catalog.name
         }))
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t('explorer.catalog.makeCatalogImmutable.notification.couldNotMakeCatalogImmutable', {
             catalogName: props.catalog.name,
-            reason: e.message
+            reason: e instanceof Error ? e.message : String(e)
         }))
         return false
     }

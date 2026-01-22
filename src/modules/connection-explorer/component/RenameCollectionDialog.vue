@@ -25,17 +25,17 @@ const emit = defineEmits<{
 }>()
 
 const newNameRules = [
-    (value: string): any => {
+    (value: string): string | boolean => {
         if (value != undefined && value.trim().length > 0) return true
         return t('explorer.collection.rename.form.newName.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<string | boolean> => {
         const classifierValidationResult : ClassifierValidationErrorType | undefined =
             await collectionItemService.isEntityTypeValid(value)
         if (classifierValidationResult == undefined) return true
         return t(`explorer.collection.rename.form.newName.validations.${classifierValidationResult}`)
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<string | boolean> => {
         if (value === props.entityType) {
             return true
         }
@@ -76,12 +76,12 @@ async function rename(): Promise<boolean> {
             ))
         }
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'explorer.collection.rename.notification.couldNotRenameCollection',
             {
                 entityType: props.entityType,
-                reason: e.message
+                reason: e instanceof Error ? e.message : String(e)
             }
         ))
         return false

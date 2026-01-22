@@ -25,12 +25,12 @@ async function switchCatalog(): Promise<boolean> {
             catalogName: props.catalog.name,
         }))
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'explorer.catalog.switchToAliveState.notification.couldNotSwitchCatalog',
             {
                 catalogName: props.catalog.name,
-                reason: e.message
+                reason: e instanceof Error ? e.message : String(e)
             }
         ))
         return false

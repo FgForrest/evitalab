@@ -21,17 +21,17 @@ const emit = defineEmits<{
 }>()
 
 const newNameRules = [
-    (value: string): any => {
+    (value: string): string | boolean => {
         if (value != undefined && value.trim().length > 0) return true
         return t('explorer.catalog.rename.form.newName.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<string | boolean> => {
         const classifierValidationResult: ClassifierValidationErrorType | undefined =
             await catalogItemService.isCatalogNameValid(value)
         if (classifierValidationResult == undefined) return true
         return t(`explorer.catalog.rename.form.newName.validations.${classifierValidationResult}`)
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<string | boolean> => {
         if (value === props.catalog.name) {
             return true
         }
@@ -55,12 +55,12 @@ async function rename(): Promise<boolean> {
             catalogName: props.catalog.name
         }))
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'explorer.catalog.rename.notification.couldNotRenameCatalog',
             {
                 catalogName: props.catalog.name,
-                reason: e.message
+                reason: e instanceof Error ? e.message : String(e)
             }
         ))
         return false

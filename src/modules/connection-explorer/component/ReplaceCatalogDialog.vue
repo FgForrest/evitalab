@@ -22,11 +22,11 @@ const emit = defineEmits<{
 
 
 const catalogNameToBeReplacedWithRules = [
-    (value: string): any => {
+    (value: string): string | boolean => {
         if (value != undefined && value.trim().length > 0) return true
         return t('explorer.catalog.replace.form.catalogNameToBeReplacedWith.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<string | boolean> => {
         if (value === props.catalog.name) {
             return true
         }
@@ -49,7 +49,7 @@ const catalogNameToBeReplacedWith = ref<string | undefined>()
 const changed = computed<boolean>(() =>
     catalogNameToBeReplacedWith.value != undefined && catalogNameToBeReplacedWith.value.length > 0)
 
-catalogItemService.getCatalogs()
+void catalogItemService.getCatalogs()
     .then((fetchedCatalogs) => {
         catalogs.value = fetchedCatalogs
             .filter(it => it.name !== props.catalog.name)
@@ -73,12 +73,12 @@ async function replace(): Promise<boolean> {
             catalogName: props.catalog.name
         }))
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'explorer.catalog.replace.notification.couldNotReplaceCatalog',
             {
                 catalogNameToBeReplaced: props.catalog.name,
-                reason: e.message
+                reason: e instanceof Error ? e.message : String(e)
             }
         ))
         return false
