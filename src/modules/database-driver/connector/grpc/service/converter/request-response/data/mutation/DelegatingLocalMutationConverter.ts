@@ -50,9 +50,13 @@ import {
     SetEntityScopeMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/data/mutation/entity/SetEntityScopeMutationConverter.ts'
 
+interface LocalMutationConverter {
+    convert(value: unknown): LocalMutation
+}
+
 export class DelegatingLocalMutationConverter {
 
-    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([
+    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, LocalMutationConverter>([
         ['applyDeltaAttributeMutation', ApplyDeltaAttributeMutationConverter.INSTANCE],
         ['upsertAttributeMutation', UpsertAttributeMutationConverter.INSTANCE],
         ['removeAttributeMutation', RemoveAttributeMutationConverter.INSTANCE],

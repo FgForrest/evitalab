@@ -9,5 +9,6 @@ import type {
  *
  * @author Lukáš Hornych, FG Forrest a.s. (c) 2023
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface LocalMutationConverter<J extends LocalMutation, G extends Message> extends MutationConverter<J, G> {
 }

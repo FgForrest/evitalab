@@ -87,7 +87,7 @@ export class ScopesConverter {
                 return GlobalAttributeUniquenessType.UniqueWithinCatalogLocale
             default:
                 throw new UnexpectedError(
-                    `Unsupported global attribute uniqueness type '${globalAttributeUniquenessType}'.`
+                    `Unsupported global attribute uniqueness type '${String(globalAttributeUniquenessType)}'.`
                 )
         }
     }

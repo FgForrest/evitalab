@@ -52,7 +52,7 @@ export class ServerStatusConverter {
             case GrpcHealthProblem.INPUT_QUEUES_OVERLOADED: return HealthProblem.InputQueuesOverloaded
             case GrpcHealthProblem.JAVA_INTERNAL_ERRORS: return HealthProblem.JavaInternalErrors
             default:
-                throw new UnexpectedError(`Unsupported health problem type '${grpcHealthProblem}'.`)
+                throw new UnexpectedError(`Unsupported health problem type '${String(grpcHealthProblem)}'.`)
         }
     }
 
@@ -64,7 +64,7 @@ export class ServerStatusConverter {
             case GrpcReadiness.API_STALLING: return Readiness.Stalling
             case GrpcReadiness.API_SHUTDOWN: return Readiness.Shutdown
             default:
-                throw new UnexpectedError(`Unsupported readiness type '${grpcReadiness}'.`)
+                throw new UnexpectedError(`Unsupported readiness type '${String(grpcReadiness)}'.`)
         }
     }
 

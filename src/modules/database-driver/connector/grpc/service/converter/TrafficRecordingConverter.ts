@@ -151,7 +151,7 @@ export class TrafficRecordingConverter {
             case TrafficRecordContent.Header: return GrpcTrafficRecordingContent.TRAFFIC_RECORDING_HEADER
             case TrafficRecordContent.Body: return GrpcTrafficRecordingContent.TRAFFIC_RECORDING_BODY
             default:
-                throw new UnexpectedError(`Unsupported traffic recording content '${trafficRecordingContent}'.`)
+                throw new UnexpectedError(`Unsupported traffic recording content '${String(trafficRecordingContent)}'.`)
         }
     }
 
@@ -174,7 +174,7 @@ export class TrafficRecordingConverter {
             case TrafficRecordType.Enrichment: return GrpcTrafficRecordingType.TRAFFIC_RECORDING_ENRICHMENT
             case TrafficRecordType.Mutation: return GrpcTrafficRecordingType.TRAFFIC_RECORDING_MUTATION
             default:
-                throw new UnexpectedError(`Unsupported traffic record type '${trafficRecordType}'.`)
+                throw new UnexpectedError(`Unsupported traffic record type '${String(trafficRecordType)}'.`)
         }
     }
 
@@ -189,7 +189,7 @@ export class TrafficRecordingConverter {
             case GrpcTrafficRecordingType.TRAFFIC_RECORDING_ENRICHMENT: return TrafficRecordType.Enrichment
             case GrpcTrafficRecordingType.TRAFFIC_RECORDING_MUTATION: return TrafficRecordType.Mutation
             default:
-                throw new UnexpectedError(`Unsupported gRPC traffic recording type '${grpcTrafficRecordType}'.`)
+                throw new UnexpectedError(`Unsupported gRPC traffic recording type '${String(grpcTrafficRecordType)}'.`)
         }
     }
 

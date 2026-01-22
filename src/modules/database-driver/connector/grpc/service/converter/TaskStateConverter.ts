@@ -37,7 +37,7 @@ export class TaskStateConverter {
             case TaskState.Running:
                 return GrpcTaskSimplifiedState.TASK_RUNNING
             default:
-                throw new UnexpectedError(`Unsupported task state '${state}'.`)
+                throw new UnexpectedError(`Unsupported task state '${String(state)}'.`)
         }
     }
 
@@ -54,7 +54,7 @@ export class TaskStateConverter {
             case GrpcTaskSimplifiedState.TASK_RUNNING:
                 return TaskState.Running
             default:
-                throw new UnexpectedError(`Unsupported task state '${state}'.`)
+                throw new UnexpectedError(`Unsupported task state '${String(state)}'.`)
         }
     }
 }

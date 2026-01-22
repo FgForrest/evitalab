@@ -1,5 +1,5 @@
 //todo: lho
-import type {
+import {
     RegisterSystemChangeCaptureResponse
 } from '@/modules/database-driver/request-response/cdc/RegisterSystemChangeCaptureResponse.ts'
 import type {
@@ -8,7 +8,7 @@ import type {
 import  {
     EvitaValueConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
-import type {
+import {
     ChangeSystemCaptureConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/ChangeSystemCaptureConverter.ts'
 
@@ -20,9 +20,11 @@ export class RegisterSystemChangeCaptureResponseConvertor {
         this.changeSystemCaptureConverter = changeSystemCaptureConverter
     }
     convertRegisterSystemChangeCaptureResponse(response: GrpcRegisterSystemChangeCaptureResponse): RegisterSystemChangeCaptureResponse {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         return new RegisterSystemChangeCaptureResponse(
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             this.evitaValueConverter.convertUuid(response.uuid),
-            response.capture
+            response.capture ? this.changeSystemCaptureConverter.convertChangeSystemCapture(response.capture) : undefined
         )
     }
 }

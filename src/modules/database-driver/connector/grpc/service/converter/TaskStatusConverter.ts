@@ -86,7 +86,7 @@ export class TaskStatusConverter {
                 this.serverFileConverter.convert(input as GrpcFile)
             )
             default:
-                throw new UnexpectedError(`Unsupported result type '${caseName}'.`)
+                throw new UnexpectedError(`Unsupported result type '${String(caseName)}'.`)
         }
     }
 
@@ -104,7 +104,7 @@ export class TaskStatusConverter {
             case GrpcTaskTrait.TASK_CAN_BE_CANCELLED: return TaskTrait.CanBeCancelled
             case GrpcTaskTrait.TASK_NEEDS_TO_BE_STOPPED: return TaskTrait.NeedsToBeStopped
             default:
-                throw new UnexpectedError(`Unsupported task trait '${grpcTaskTrait}'.`)
+                throw new UnexpectedError(`Unsupported task trait '${String(grpcTaskTrait)}'.`)
         }
     }
 }
