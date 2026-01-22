@@ -39,9 +39,9 @@ export const delegatingSchemaPathFactoryInjectionKey: InjectionKey<DelegatingSch
 /**
  * The main implementation of path factory for all schema pointers
  */
-export class DelegatingSchemaPathFactory implements SchemaPathFactory<any> {
+export class DelegatingSchemaPathFactory implements SchemaPathFactory<SchemaPointer> {
 
-    private readonly factories: SchemaPathFactory<any>[]
+    private readonly factories: SchemaPathFactory<SchemaPointer>[]
 
     constructor(workspaceService: WorkspaceService, schemaViewerTabFactory: SchemaViewerTabFactory) {
         this.factories = [
@@ -57,11 +57,11 @@ export class DelegatingSchemaPathFactory implements SchemaPathFactory<any> {
     }
 
     applies(schemaPointer: SchemaPointer): boolean {
-        return true
+        return !!schemaPointer
     }
 
-    resolvePath(connection: Connection, schemaPointer: any): SubjectPath {
-        const factory: SchemaPathFactory<any> | undefined = this.factories.find(factory =>
+    resolvePath(connection: Connection, schemaPointer: SchemaPointer): SubjectPath {
+        const factory: SchemaPathFactory<SchemaPointer> | undefined = this.factories.find(factory =>
             factory.applies(schemaPointer))
         if (factory == undefined) {
             throw new UnexpectedError('Missing factory for schema pointer.')

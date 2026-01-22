@@ -52,7 +52,14 @@ export class SchemaViewerTabFactory {
         const dto: SchemaViewerTabParamsDto = json as SchemaViewerTabParamsDto
 
         const schemaPointerType: SchemaPointerType = dto.schemaPointer.type
-        const schemaPointerParams: any = dto.schemaPointer.params
+        const schemaPointerParams = dto.schemaPointer.params as {
+            catalogName: string,
+            entityType: string,
+            attributeName: string,
+            referenceName: string,
+            associatedDataName: string,
+            sortableAttributeCompoundName: string
+        }
         let schemaPointer: SchemaPointer
         switch (schemaPointerType) {
             case SchemaPointerType.CatalogSchema:

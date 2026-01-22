@@ -28,7 +28,7 @@ import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 
 const keymap: Keymap = useKeymap()
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
-const schemaPathFactory: SchemaPathFactory<any> = useSchemaPathFactory()
+const schemaPathFactory: SchemaPathFactory<SchemaPointer> = useSchemaPathFactory()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
@@ -49,10 +49,10 @@ const schemaChangeCallbackId = schemaViewerService.registerSchemaChangeCallback(
     async () => await loadSchema()
 )
 
-const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | null>(null)
+const shareTabButtonRef = ref<{ share: () => void } | null>(null)
 
 const schemaLoaded = ref<boolean>(false)
-const schema = ref<any>()
+const schema = ref<unknown>()
 const reloadingSchema = ref<boolean>(false)
 const title = ref<ImmutableList<string>>()
 
@@ -73,8 +73,8 @@ async function loadTitle(): Promise<void> {
 async function loadSchema(): Promise<void> {
     try {
         schema.value = await schemaViewerService.getSchema(props.params.dataPointer)
-    } catch (e: any) {
-        await toaster.error('Could not load schema', e) // todo lho i18n
+    } catch (e: unknown) {
+        await toaster.error('Could not load schema', e as Error) // todo lho i18n
     }
 }
 
@@ -100,7 +100,7 @@ onUnmounted(() => {
     keymap.unbind(Command.SchemaViewer_ShareTab, props.id)
 })
 
-loadSchema().then(() => {
+void loadSchema().then(() => {
     schemaLoaded.value = true
     emit('ready')
 })
