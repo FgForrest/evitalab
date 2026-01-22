@@ -108,16 +108,16 @@ export class EntityConverter {
             [key: string]: GrpcLocalizedAttribute
         }
     ): Attributes {
-        const globalAttributes: ImmutableMap<string, any> = this.convertAttributeMap(grpcGlobalAttributes)
+        const globalAttributes: ImmutableMap<string, unknown> = this.convertAttributeMap(grpcGlobalAttributes)
 
-        const localizedAttributes: Map<string, ImmutableMap<string, any>> = new Map<string, ImmutableMap<string, any>>()
+        const localizedAttributes: Map<string, ImmutableMap<string, unknown>> = new Map<string, ImmutableMap<string, unknown>>()
         for (const locale in grpcLocalizedAttributes) {
             const attributesForLocale: GrpcLocalizedAttribute = grpcLocalizedAttributes[locale]
-            const convertedAttributes: ImmutableMap<string, any> = this.convertAttributeMap(attributesForLocale.attributes)
+            const convertedAttributes: ImmutableMap<string, unknown> = this.convertAttributeMap(attributesForLocale.attributes)
             localizedAttributes.set(locale, convertedAttributes)
         }
 
-        return new Attributes(globalAttributes, ImmutableMap<string, ImmutableMap<string, any>>(localizedAttributes))
+        return new Attributes(globalAttributes, ImmutableMap<string, ImmutableMap<string, unknown>>(localizedAttributes))
     }
 
     private convertAttributeMap(grpcAttributeMap: { [key: string]: GrpcEvitaValue }): ImmutableMap<string, any> {

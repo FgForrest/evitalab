@@ -462,7 +462,7 @@ export class CatalogSchemaConverter {
                     break
                 default:
                     throw new UnexpectedError(
-                        `Could not convert evolution mode '${grpcEvolutionMode}'.`
+                        `Could not convert evolution mode '${String(grpcEvolutionMode)}'.`
                     )
             }
         }
@@ -479,7 +479,7 @@ export class CatalogSchemaConverter {
                 return CaptureArea.Infrastructure
             default:
                 throw new UnexpectedError(
-                    `Unsupported cardinality '${cardinality}'.`
+                    `Unsupported cardinality '${String(cardinality)}'.`
                 )
         }
     }
@@ -494,7 +494,7 @@ export class CatalogSchemaConverter {
                 return Operation.Transaction
             default:
                 throw new UnexpectedError(
-                    `Unsupported operation '${operation}'.`
+                    `Unsupported operation '${String(operation)}'.`
                 )
         }
     }
@@ -528,13 +528,13 @@ export class CatalogSchemaConverter {
                 return ContainerType.Catalog
             default:
                 throw new UnexpectedError(
-                    `Unsupported container type '${containerType}'.`
+                    `Unsupported container type '${String(containerType)}'.`
                 )
         }
     }
 
     static toContainerType2(input: GrpcChangeCaptureContainerType[]): GrpcChangeCaptureContainerType[] {
-        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureContainerType[it as any] : it)
+        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureContainerType[it as keyof typeof GrpcChangeCaptureContainerType] : it)
     }
 
 
@@ -551,7 +551,7 @@ export class CatalogSchemaConverter {
                 return EntityExistence.MustNotExist
             default:
                 throw new UnexpectedError(
-                    `Unsupported entity existance '${entityExistence}'.`
+                    `Unsupported entity existance '${String(entityExistence)}'.`
                 )
         }
     }

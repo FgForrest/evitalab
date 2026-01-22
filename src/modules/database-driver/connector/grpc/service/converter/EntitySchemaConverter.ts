@@ -1,8 +1,6 @@
 import type {
-    GrpcAttributeElement,
-    GrpcReferenceSchema
+    GrpcAttributeElement
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchema_pb.ts'
-import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema.ts'
 import {
     AttributeElement
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema.ts'
@@ -39,7 +37,7 @@ export class EntitySchemaConverter {
                 return OrderBehaviour.NullsLast
             default:
                 throw new UnexpectedError(
-                    `Unsupported order behaviour '${orderBehaviour}'.`
+                    `Unsupported order behaviour '${String(orderBehaviour)}'.`
                 )
         }
     }
@@ -54,7 +52,7 @@ export class EntitySchemaConverter {
                 return OrderDirection.Desc
             default:
                 throw new UnexpectedError(
-                    `Unsupported order direction '${orderDirection}'.`
+                    `Unsupported order direction '${String(orderDirection)}'.`
                 )
         }
     }

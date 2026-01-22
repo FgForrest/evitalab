@@ -5,8 +5,8 @@ import {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import { ChangeSystemCapture } from '@/modules/database-driver/request-response/cdc/ChangeSystemCapture.ts'
 import { ChangeCaptureOperation } from '@/modules/database-driver/request-response/cdc/ChangeCaptureOperation.ts'
-import type {
-    EngineMutationConverter
+import {
+    type EngineMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/EngineMutationConverter.ts'
 
 export class ChangeSystemCaptureConverter {
@@ -33,6 +33,8 @@ export class ChangeSystemCaptureConverter {
                 return ChangeCaptureOperation.Upsert
             case GrpcChangeCaptureOperation.TRANSACTION:
                 return ChangeCaptureOperation.Transaction
+            default:
+                throw new Error(`Unsupported operation type: ${operation}`)
         }
     }
 }

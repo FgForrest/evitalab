@@ -54,7 +54,7 @@ export class CatalogStatisticsConverter {
                 return CatalogState.Inactive
             default:
                 throw new UnexpectedError(
-                    `Unsupported catalog state '${catalogState}'.`
+                    `Unsupported catalog state '${String(catalogState)}'.`
                 )
         }
     }

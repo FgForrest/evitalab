@@ -633,7 +633,7 @@ export class EvitaClientSession {
                 schemaRes.catalogSchema!,
                 this.clientEntitySchemaAccessor
             )
-        } catch (e: any) {
+        } catch (e: unknown) {
             throw this.errorTransformerProvider().transformError(e)
         }
     }

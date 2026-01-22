@@ -21,7 +21,7 @@ export class CardinalityConvertor {
                 return Cardinality.OneOrMoreWithDuplicates
             default:
                 throw new UnexpectedError(
-                    `Unsupported cardinality '${cardinality}'.`
+                    `Unsupported cardinality '${String(cardinality)}'.`
                 )        }
     }
 }

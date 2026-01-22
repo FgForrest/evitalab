@@ -16,7 +16,7 @@ export class AttributeUniquenessTypeConverter {
                 return AttributeUniquenessType.UniqueWithinCollectionLocale
             default:
                 throw new UnexpectedError(
-                    `Unsupported attribute uniqueness type '${attributeUniquenessType}'.`
+                    `Unsupported attribute uniqueness type '${String(attributeUniquenessType)}'.`
                 )
         }
     }

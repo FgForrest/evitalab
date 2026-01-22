@@ -157,7 +157,7 @@ export class EvitaSchemaCache {
             entityType,
             // we don't want to fetch schema if it is already not present, if not present, the latest version will be
             // fetched anyway
-            async (entityType: string) => undefined
+            () => undefined
         )
         return latestEntitySchema?.version
     }
