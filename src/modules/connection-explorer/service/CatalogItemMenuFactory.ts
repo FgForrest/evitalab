@@ -64,7 +64,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         this.mutationHistoryViewerTabFactory = mutationHistoryViewerTabFactory
     }
 
-    async createItems(
+    createItems(
         serverStatus?: ServerStatus,
         catalog?: CatalogStatistics,
         closeSharedSessionCallback?: () => void,
@@ -322,10 +322,10 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
             baseEnabledFunctions && serverWritable
         )
 
-        return items
+        return Promise.resolve(items)
     }
 
-    protected getItemTitle(itemType: CatalogMenuItemType): string {
+    protected getItemTitle = (itemType: CatalogMenuItemType): string => {
         return i18n.global.t(`explorer.catalog.menu.item.${itemType}`)
     }
 

@@ -67,7 +67,7 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
         this.backupViewerTabFactory = backupViewerTabFactory
     }
 
-    async createItems(
+    createItems(
         serverStatus?: ServerStatus,
         createCatalogCallback?: () => void,
         reloadStartedCallback?: () => void,
@@ -159,7 +159,7 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
                 if (reloadStartedCallback != undefined) {
                     reloadStartedCallback()
                 }
-                this.evitaClient.clearCache()
+                void this.evitaClient.clearCache()
                     .then(() => {
                         if (reloadFinishedCallback != undefined) {
                             reloadFinishedCallback()
@@ -193,10 +193,10 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
             },
             serverWritable
         )
-        return items
+        return Promise.resolve(items)
     }
 
-    protected getItemTitle(itemType: ConnectionMenuItemType): string {
+    protected getItemTitle = (itemType: ConnectionMenuItemType): string => {
         return i18n.global.t(`explorer.connection.menu.item.${itemType}`)
     }
 }

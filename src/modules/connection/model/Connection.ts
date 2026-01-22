@@ -5,6 +5,12 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 
 const hasher: HashObject = XXH.h64()
 
+export interface ConnectionJson {
+    id?: string
+    name: string
+    serverUrl: string
+}
+
 /**
  * Represents a connection to an evitaDB server. This allows the user to
  * fetch data from a specific evitaDB server.
@@ -32,7 +38,7 @@ export class Connection {
         this.serverUrl = this.validateAndNormalizeUrl(serverUrl)
     }
 
-    static fromJson(json: any): Connection {
+    static fromJson(json: ConnectionJson): Connection {
         return new Connection(
             json.id,
             json.name,
@@ -85,7 +91,7 @@ export class Connection {
     private validateAndNormalizeUrl(url: string): string {
         try {
             new URL(url)
-        } catch (e) {
+        } catch {
             throw new UnexpectedError('Server URL is not valid URL.')
         }
         return url.endsWith('/') ? url.substring(0, url.length - 1) : url

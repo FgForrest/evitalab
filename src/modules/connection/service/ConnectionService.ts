@@ -1,5 +1,5 @@
 import type { InjectionKey } from 'vue'
-import { Connection } from '@/modules/connection/model/Connection'
+import { Connection, type ConnectionJson } from '@/modules/connection/model/Connection'
 import type { ConnectionId } from '@/modules/connection/model/ConnectionId'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
@@ -58,7 +58,7 @@ export class ConnectionService {
             evitaLabConfig.systemProperty(connectionSystemPropertyName)
         if (connectionSystemProperty != undefined) {
             try {
-                return Connection.fromJson(JSON.parse(connectionSystemProperty))
+                return Connection.fromJson(JSON.parse(connectionSystemProperty) as ConnectionJson)
             } catch (e) {
                 console.error('Failed to load preconfigured connections from system properties', e)
             }
@@ -69,7 +69,7 @@ export class ConnectionService {
             evitaLabConfig.systemProperty(preconfiguredConnectionsSystemPropertyName)
         if (preconfiguredConnectionsSystemProperty != undefined) {
             try {
-                const preconfiguredConnections: Connection[] = (JSON.parse(preconfiguredConnectionsSystemProperty) as Array<any>)
+                const preconfiguredConnections: Connection[] = (JSON.parse(preconfiguredConnectionsSystemProperty) as ConnectionJson[])
                     .map(connection => Connection.fromJson(connection))
 
                 if (preconfiguredConnections.length == 0) {

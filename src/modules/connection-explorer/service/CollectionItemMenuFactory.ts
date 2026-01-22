@@ -40,7 +40,7 @@ export class CollectionItemMenuFactory extends MenuFactory<CollectionMenuItemTyp
         this.schemaViewerTabFactory = schemaViewerTabFactory
     }
 
-    async createItems(
+    createItems(
         serverStatus?: ServerStatus,
         catalog?: CatalogStatistics,
         entityCollection?: EntityCollectionStatistics,
@@ -107,10 +107,10 @@ export class CollectionItemMenuFactory extends MenuFactory<CollectionMenuItemTyp
             writeable
         )
 
-        return items
+        return Promise.resolve(items)
     }
 
-    protected getItemTitle(itemType: CollectionMenuItemType): string {
+    protected getItemTitle = (itemType: CollectionMenuItemType): string => {
         return i18n.global.t(`explorer.collection.menu.item.${itemType}`)
     }
 

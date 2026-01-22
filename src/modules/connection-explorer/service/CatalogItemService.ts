@@ -102,17 +102,17 @@ export class CatalogItemService {
                 }
 
                 await this.toaster.success(i18n.global.t('explorer.catalog.duplication.notification.catalogDuplicated'))
-            } catch (e: any) {
+            } catch (e: unknown) {
                 catalog.removeProgress(MutationProgressType.Duplication)
                 await this.toaster.error(i18n.global.t('explorer.catalog.duplication.notification.couldNotDuplicateCatalog',
                     {
                         catalogName: catalog.name,
-                        reason: e.message
+                        reason: e instanceof Error ? e.message : String(e)
                     }))
             }
         }
 
-        interval().then(async () => await this.evitaClient.management.clearCatalogStatisticsCache())
+        void interval().then(async () => await this.evitaClient.management.clearCatalogStatisticsCache())
     }
 
     renameCatalogWithProgress(catalog: CatalogStatistics, newCatalogName: string): void {
@@ -123,17 +123,17 @@ export class CatalogItemService {
                 }
 
                 await this.toaster.success(i18n.global.t('explorer.collection.rename.notification.collectionRenamed'))
-            } catch (e: any) {
+            } catch (e: unknown) {
                 catalog.removeProgress(MutationProgressType.Renaming)
                 await this.toaster.error(i18n.global.t('explorer.catalog.rename.notification.couldNotRenameCatalog',
                     {
                         catalogName: catalog.name,
-                        reason: e.message
+                        reason: e instanceof Error ? e.message : String(e)
                     }))
             }
         }
 
-        internal().then(async () => await this.evitaClient.management.clearCatalogStatisticsCache())
+        void internal().then(async () => await this.evitaClient.management.clearCatalogStatisticsCache())
     }
 
     activateCatalogWithProgress(catalog: CatalogStatistics): void {
@@ -144,16 +144,16 @@ export class CatalogItemService {
                 }
 
                 await this.toaster.success(i18n.global.t('explorer.catalog.activateCatalog.notification.catalogActivated'))
-            } catch (e: any) {
+            } catch (e: unknown) {
                 catalog.removeProgress(MutationProgressType.Activation)
                 await this.toaster.error(i18n.global.t('explorer.catalog.activateCatalog.notification.couldNotActivateCatalog', {
                     catalogName: catalog.name,
-                    reason: e.message
+                    reason: e instanceof Error ? e.message : String(e)
                 }))
             }
         }
 
-        internal().then(async () =>
+        void internal().then(async () =>
             await this.evitaClient.management.clearCatalogStatisticsCache()
         )
     }
@@ -166,16 +166,16 @@ export class CatalogItemService {
                 }
 
                 await this.toaster.success(i18n.global.t('explorer.catalog.deactivateCatalog.notification.catalogDeactivated'))
-            } catch (e: any) {
+            } catch (e: unknown) {
                 catalog.removeProgress(MutationProgressType.Deactivation)
                 await this.toaster.error(i18n.global.t('explorer.catalog.deactivateCatalog.notification.couldNotDeactivateCatalog', {
                     catalogName: catalog.name,
-                    reason: e.message
+                    reason: e instanceof Error ? e.message : String(e)
                 }))
             }
         }
 
-        internal().then(async () => await this.evitaClient.management.clearCatalogStatisticsCache())
+        void internal().then(async () => await this.evitaClient.management.clearCatalogStatisticsCache())
     }
 
     replaceCatalogWithProgress(catalog: CatalogStatistics, newCatalogName: string): void {
@@ -186,17 +186,17 @@ export class CatalogItemService {
                 }
 
                 await this.toaster.success(i18n.global.t('explorer.catalog.replace.notification.catalogReplaced'))
-            } catch (e: any) {
+            } catch (e: unknown) {
                 catalog.removeProgress(MutationProgressType.Replacing)
                 await this.toaster.error(i18n.global.t('explorer.catalog.replace.notification.couldNotReplaceCatalog',
                     {
                         catalogNameToBeReplaced: catalog.name,
-                        reason: e.message
+                        reason: e instanceof Error ? e.message : String(e)
                     }))
             }
         }
 
-        internal().then(async () => await this.evitaClient.clearCache())
+        void internal().then(async () => await this.evitaClient.clearCache())
     }
 
     makeCatalogMutableWithProgress(catalog: CatalogStatistics): void {
@@ -207,16 +207,16 @@ export class CatalogItemService {
                 }
 
                 await this.toaster.success(i18n.global.t('explorer.catalog.makeCatalogMutable.notification.catalogMadeAsMutable'))
-            } catch (e: any) {
+            } catch (e: unknown) {
                 catalog.removeProgress(MutationProgressType.Mutable)
                 await this.toaster.error(i18n.global.t('explorer.catalog.makeCatalogMutable.notification.couldNotMakeCatalogMutable', {
                     catalogName: catalog.name,
-                    reason: e.message
+                    reason: e instanceof Error ? e.message : String(e)
                 }))
             }
         }
 
-        internal().then(async () => await this.evitaClient.clearCache())
+        void internal().then(async () => await this.evitaClient.clearCache())
     }
 
     makeCatalogImmutableWithProgress(catalog: CatalogStatistics): void {
@@ -227,16 +227,16 @@ export class CatalogItemService {
                 }
 
                 await this.toaster.success(i18n.global.t('explorer.catalog.makeCatalogImmutable.notification.catalogMadeAsImmutable'))
-            } catch (e: any) {
+            } catch (e: unknown) {
                 catalog.removeProgress(MutationProgressType.Immutable)
                 await this.toaster.error(i18n.global.t('explorer.catalog.makeCatalogImmutable.notification.couldNotMakeCatalogImmutable', {
                     catalogName: catalog.name,
-                    reason: e.message
+                    reason: e instanceof Error ? e.message : String(e)
                 }))
             }
         }
 
-        internal().then(async () => await this.evitaClient.clearCache())
+        void internal().then(async () => await this.evitaClient.clearCache())
     }
 
     switchCatalogAliveWithProgress(catalog: CatalogStatistics): void {
@@ -247,17 +247,17 @@ export class CatalogItemService {
                 }
 
                 await this.toaster.success(i18n.global.t('explorer.catalog.switchToAliveState.notification.catalogSwitched'))
-            } catch (e: any) {
+            } catch (e: unknown) {
                 catalog.removeProgress(MutationProgressType.Alive)
                 await this.toaster.error(i18n.global.t('explorer.catalog.switchToAliveState.notification.couldNotSwitchCatalog',
                     {
                         catalogName: catalog.name,
-                        reason: e.message
+                        reason: e instanceof Error ? e.message : String(e)
                     }))
             }
         }
 
-        internal().then(async () => await this.evitaClient.clearCache())
+        void internal().then(async () => await this.evitaClient.clearCache())
     }
 }
 
