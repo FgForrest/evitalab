@@ -85,6 +85,12 @@ export function useService(): Service {
 
 For component tree injection, create a `dependencies.ts` file with `provideX`/`injectX` methods.
 
+### TypeScript Conventions
+
+- Don't use `type` for object shapes
+- Use `interface` for abstract types and contracts
+- Use `class` directly for DTO-like objects and data structures
+
 ### UI Components
 
 Use Vuetify components as the base. Custom components in `modules/base/component`:
