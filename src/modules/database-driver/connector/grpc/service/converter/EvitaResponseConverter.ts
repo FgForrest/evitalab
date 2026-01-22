@@ -51,7 +51,7 @@ export class EvitaResponseConverter {
                 )
             } catch (e) {
                 console.log(e)
-                return null as any
+                return PaginatedList.empty()
             }
 
         } else if(grpcRecordPage.chunk.case === 'stripList'){

@@ -9,7 +9,7 @@ import { LocalTime } from '@/modules/database-driver/data-type/LocalTime'
 import { OffsetDateTime, Timestamp } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { Predecessor } from '@/modules/database-driver/data-type/Predecessor'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
-import { List, List as ImmutableList } from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import type {
     GrpcBigDecimal,
     GrpcOffsetDateTime,
@@ -51,7 +51,7 @@ import type { Timestamp as GrpcTimestamp } from '@bufbuild/protobuf/wkt'
 export class EvitaValueConverter {
 
 
-    static convertGrpcAssociatedValue(value: GrpcEvitaAssociatedDataValue | undefined, valueCase: string | undefined): any {
+    static convertGrpcAssociatedValue(value: GrpcEvitaAssociatedDataValue | undefined, valueCase: string | undefined): unknown {
         if (value?.value.case == 'primitiveValue') {
             return EvitaValueConverter.convertGrpcValue(value.value.value, valueCase);
         } else if (value?.value.case == 'root') {
@@ -62,7 +62,7 @@ export class EvitaValueConverter {
             throw new UnexpectedError("Unknown value type.");
         }
     }
-    static convertGrpcValue(value: string | GrpcEvitaValue | GrpcDataItem | undefined, valueCase: string | undefined): any {
+    static convertGrpcValue(value: string | GrpcEvitaValue | GrpcDataItem | undefined, valueCase: string | undefined): unknown {
         if (typeof value === 'string') {
             return value
         } else if (value == undefined) {
@@ -219,7 +219,7 @@ export class EvitaValueConverter {
                         objectValue as GrpcOffsetDateTime
                     )
                 default:
-                    throw new UnexpectedError(`Unsupported evita data type '${val.type}'.`)
+                    throw new UnexpectedError(`Unsupported evita data type '${String(val.type)}'.`)
             }
         }
     }

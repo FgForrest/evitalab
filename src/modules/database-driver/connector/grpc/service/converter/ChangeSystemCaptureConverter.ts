@@ -36,7 +36,7 @@ export class ChangeSystemCaptureConverter {
             case GrpcChangeCaptureOperation.TRANSACTION:
                 return Operation.Transaction
             default:
-                throw new Error(`Unsupported operation type: ${operation}`)
+                throw new Error(`Unsupported operation type: ${String(operation)}`)
         }
     }
 }

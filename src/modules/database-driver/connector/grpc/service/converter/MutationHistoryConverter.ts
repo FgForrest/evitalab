@@ -39,7 +39,7 @@ export class MutationHistoryConverter {
 
             if (CatalogSchemaConverter.toCaptureArea(changeCapture.area) !== CaptureArea.Infrastructure &&
                 (!changeCapture.body?.value?.mutation || !changeCapture.body?.value?.mutation.case)) { // todo pfi: remove me?
-                console.error(`Issue with ${changeCapture.body}`)
+                console.error('Issue with changeCapture.body:', changeCapture.body)
                 mutation = undefined
             } else if (CatalogSchemaConverter.toCaptureArea(changeCapture.area) == CaptureArea.Infrastructure && changeCapture.body.value) {
                 mutation = DelegatingInfrastructureMutationConverter.convert(changeCapture.body.value as GrpcInfrastructureMutation)
@@ -73,12 +73,12 @@ export class MutationHistoryConverter {
 
     // todo : fix me
     toContainerType(input: GrpcChangeCaptureContainerType[]): GrpcChangeCaptureContainerType[] {
-        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureContainerType[it as any] : it)
+        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureContainerType[it as keyof typeof GrpcChangeCaptureContainerType] : it)
     }
 
     // todo : fix me
     toMutationType(input: GrpcChangeCaptureOperation[]): number[] {
-        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureOperation[it as any] : it)
+        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureOperation[it as keyof typeof GrpcChangeCaptureOperation] : it)
     }
 
     convertMutationHistoryRequest(mutationHistoryRequest: MutationHistoryRequest): GrpcChangeCaptureCriteria[] {

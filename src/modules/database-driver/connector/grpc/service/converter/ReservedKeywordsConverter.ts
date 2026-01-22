@@ -36,7 +36,7 @@ export class ReservedKeywordsConverter {
             case GrpcClassifierType.CLASSIFIER_TYPE_ASSOCIATED_DATA: return ClassifierType.AssociatedData
             case GrpcClassifierType.CLASSIFIER_TYPE_REFERENCE: return ClassifierType.Reference
             case GrpcClassifierType.CLASSIFIER_TYPE_REFERENCE_ATTRIBUTE: return ClassifierType.ReferenceAttribute
-            default: throw new UnexpectedError(`Unsupported classifier type '${grpcClassifierType}'.`)
+            default: throw new UnexpectedError(`Unsupported classifier type '${String(grpcClassifierType)}'.`)
         }
     }
 

@@ -97,7 +97,7 @@ export class ScalarConverter{
             case GrpcEvitaDataType.UUID_ARRAY:
                 return Scalar.UUIDArray
             default:
-                throw new UnexpectedError(`Unsupported scalar type '${scalar}'.`)
+                throw new UnexpectedError(`Unsupported scalar type '${String(scalar)}'.`)
         }
     }
     public static convertAssociatedDataScalar(scalar: GrpcEvitaAssociatedDataDataType_GrpcEvitaDataType): Scalar {
