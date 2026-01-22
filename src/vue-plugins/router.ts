@@ -43,9 +43,9 @@ export default router
 function resolveLabRunMode(): LabRunMode {
     // same as in EvitaLabConfig but this is resolved before loading EvitaLabConfig
     const rawRunMode: string | undefined = import.meta.env.VITE_RUN_MODE
-    if (rawRunMode == undefined || rawRunMode.trim() === '' || rawRunMode === LabRunMode.Standalone) {
+    if (rawRunMode == undefined || rawRunMode.trim() === '' || rawRunMode === (LabRunMode.Standalone as string)) {
         return LabRunMode.Standalone
-    } else if (rawRunMode === LabRunMode.Driver) {
+    } else if (rawRunMode === (LabRunMode.Driver as string)) {
         return LabRunMode.Driver
     } else {
         throw new Error(`Unsupported run mode ${rawRunMode}`)

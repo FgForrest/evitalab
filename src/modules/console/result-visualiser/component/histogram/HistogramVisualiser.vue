@@ -6,7 +6,7 @@ import HistogramChart from '@/modules/console/result-visualiser/component/histog
 import HistogramRange from '@/modules/console/result-visualiser/component/histogram/HistogramRange.vue'
 import HistogramInfo from '@/modules/console/result-visualiser/component/histogram/HistogramInfo.vue'
 
-const props = defineProps<{
+defineProps<{
     histogram: VisualisedHistogram
 }>()
 </script>

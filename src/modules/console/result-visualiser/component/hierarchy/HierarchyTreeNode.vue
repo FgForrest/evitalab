@@ -12,7 +12,7 @@ import VListItemLazyIterator from '@/modules/base/component/VListItemLazyIterato
 
 const nodeChildrenPageSize: number = 10
 
-const props = defineProps<{
+defineProps<{
     node: VisualisedHierarchyTreeNode,
     entityRepresentativeAttributes: string[]
 }>()

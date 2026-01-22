@@ -41,8 +41,8 @@ const groupStatistics = computed<VisualisedFacetGroupStatistics | undefined>(() 
         return visualiserService
             .getFacetSummaryService()
             .resolveFacetGroupStatistics(props.groupStatisticsResult, props.groupRepresentativeAttributes)
-    } catch (e: any) {
-        toaster.error('Could not resolve facet groups statistics', e).then() // todo lho i18n
+    } catch (e: unknown) {
+        void toaster.error('Could not resolve facet groups statistics', e instanceof Error ? e : undefined) // todo lho i18n
         return undefined
     }
 })
@@ -56,8 +56,8 @@ const facetStatisticsResults = computed<Result[]>(() => {
         return visualiserService
             .getFacetSummaryService()
             .findFacetStatisticsResults(props.groupStatisticsResult)
-    } catch (e: any) {
-        toaster.error('Could not find facet statistics results', e).then() // todo lho i18n
+    } catch (e: unknown) {
+        void toaster.error('Could not find facet statistics results', e instanceof Error ? e : undefined) // todo lho i18n
         return []
     }
 })
@@ -70,11 +70,12 @@ function initializeFacets(): void {
 
 async function copyPrimaryKey(): Promise<void> {
     if (groupStatistics.value?.primaryKey != undefined) {
-        navigator.clipboard.writeText(`${groupStatistics.value?.primaryKey}`).then(() => {
-            toaster.info(t('resultVisualizer.facetStatisticsVisualiser.notification.primaryKeyCopiedToClipboard')).then()
-        }).catch(() => {
-            toaster.error(t('common.notification.failedToCopyToClipboard')).then()
-        })
+        try {
+            await navigator.clipboard.writeText(`${groupStatistics.value?.primaryKey}`)
+            await toaster.info(t('resultVisualizer.facetStatisticsVisualiser.notification.primaryKeyCopiedToClipboard'))
+        } catch {
+            await toaster.error(t('common.notification.failedToCopyToClipboard'))
+        }
     }
 }
 
