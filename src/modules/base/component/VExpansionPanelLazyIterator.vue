@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T">
 /**
  * Allows pagination in form of a "show more" button for expansion panels.
  */
@@ -9,7 +9,7 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const props = defineProps<{
-    items: any[],
+    items: T[],
     page: number,
     pageSize: number
 }>()
@@ -20,7 +20,7 @@ const emit = defineEmits<{
 const lastPage = computed<number>(() => {
     return Math.ceil(props.items.length / props.pageSize)
 })
-const pageOfItems = computed<any[]>(() => {
+const pageOfItems = computed<T[]>(() => {
     return props.items.slice(0, props.page * props.pageSize)
 })
 </script>

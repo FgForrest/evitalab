@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T">
 /**
  * Allows pagination in form of a "show more" button for lists.
  */
@@ -12,7 +12,7 @@ const { t } = useI18n()
 
 // todo lho try to get rid of array support
 const props = defineProps<{
-    items: any[] | List<any>,
+    items: T[] | List<T>,
     page: number,
     pageSize: number
 }>()
@@ -33,7 +33,7 @@ const itemsSize = computed(() => {
 const lastPage = computed<number>(() => {
     return Math.ceil(itemsSize.value / props.pageSize)
 })
-const pageOfItems = computed<any[]>(() => {
+const pageOfItems = computed<T[]>(() => {
     if (props.items instanceof Array) {
         return props.items.slice(0, props.page * props.pageSize)
     } else if (props.items instanceof List) {

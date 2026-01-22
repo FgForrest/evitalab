@@ -14,7 +14,7 @@ type Flag = {
 const props = withDefaults(defineProps<{
     prependIcon: string,
     title: List<string>,
-    flags?: List<string>,
+    flags?: List<string | Flag>,
     extensionHeight?: string | number
 }>(), {
     flags: () => List(),
@@ -22,13 +22,13 @@ const props = withDefaults(defineProps<{
 })
 
 const normalizedFlags = computed<List<Flag>>(() => {
-    const normalizedFlags: List<Flag> = props.flags.map((flag: any) => {
+    const normalizedFlags: List<Flag> = props.flags.map((flag: string | Flag) => {
         if (typeof flag === 'string') {
             return {
                 title: flag,
             }
         } else {
-            return flag as Flag
+            return flag
         }
     })
     return normalizedFlags

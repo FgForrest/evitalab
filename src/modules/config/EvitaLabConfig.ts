@@ -64,9 +64,9 @@ export class EvitaLabConfig {
         // resolve run mode
         const rawRunMode: string | undefined = import.meta.env.VITE_RUN_MODE
         let runMode: LabRunMode
-        if (rawRunMode == undefined || rawRunMode.trim() === '' || rawRunMode === LabRunMode.Standalone) {
+        if (rawRunMode == undefined || rawRunMode.trim() === '' || rawRunMode === (LabRunMode.Standalone as string)) {
             runMode = LabRunMode.Standalone
-        } else if (rawRunMode === LabRunMode.Driver) {
+        } else if (rawRunMode === (LabRunMode.Driver as string)) {
             runMode = LabRunMode.Driver
         } else {
             throw new Error(`Unsupported run mode ${rawRunMode}`)

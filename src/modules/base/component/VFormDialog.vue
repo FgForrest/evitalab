@@ -48,10 +48,10 @@ function cancel(): void {
     emit('update:modelValue', false)
 }
 
-async function confirm(): Promise<void> {
+async function handleConfirm(): Promise<void> {
     if (form.value != undefined) {
-        // @ts-expect-error Vuetify form ref typing
-        const { valid }: any = await form.value.validate()
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Vuetify form ref typing
+        const { valid } = await (form.value.validate() as unknown as Promise<{ valid: boolean }>)
         if (!valid) {
             return
         }
@@ -75,7 +75,7 @@ defineExpose<{
     validateForm: () => Promise<void>
 }>({
     validateForm: async () => {
-        // @ts-expect-error Vuetify form ref typing
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Vuetify form ref typing
         await form.value?.validate()
     },
 })
@@ -129,7 +129,7 @@ defineExpose<{
                 :dangerous="dangerous"
                 :disabled="formValidationState === false || !changed"
                 :loading="submitting"
-                @confirm="confirm"
+                @confirm="handleConfirm"
             >
                 <slot name="confirm-button-body">
                     {{ t('common.button.confirm') }}

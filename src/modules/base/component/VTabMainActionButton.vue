@@ -12,7 +12,7 @@ withDefaults(defineProps<{
     disabled: false
 })
 const emit = defineEmits<{
-    (e: 'click', value: any): void
+    (e: 'click', value: MouseEvent): void
 }>()
 </script>
 
