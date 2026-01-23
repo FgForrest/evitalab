@@ -10,7 +10,7 @@ import type {
 import {
     ScopedGlobalAttributeUniquenessType
 } from '@/modules/database-driver/request-response/schema/mutation/attribute/ScopedGlobalAttributeUniquenessType.ts'
-import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { EntityScopeDefault } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { ScopesConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScopesConverter.ts'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter.ts'
 import { List as ImmutableList } from 'immutable'
@@ -20,7 +20,7 @@ export class SetAttributeSchemaGloballyUniqueMutationConverter implements Schema
 
     convert(mutation: GrpcSetAttributeSchemaGloballyUniqueMutation): SetAttributeSchemaGloballyUniqueMutation {
         const uniqueGloballyInScopes = mutation.uniqueGloballyInScopes.length === 0 ?
-            [new ScopedGlobalAttributeUniquenessType(EntityScope.DefaultScope, ScopesConverter.convertGlobalAttributeUniquenessType(mutation.uniqueGlobally))] :
+            [new ScopedGlobalAttributeUniquenessType(EntityScopeDefault, ScopesConverter.convertGlobalAttributeUniquenessType(mutation.uniqueGlobally))] :
             mutation.uniqueGloballyInScopes.map(it => new ScopedGlobalAttributeUniquenessType(EntityConverter.convertEntityScope(it.scope), ScopesConverter.convertGlobalAttributeUniquenessType(it.uniquenessType)))
 
         return new SetAttributeSchemaGloballyUniqueMutation(

@@ -7,7 +7,7 @@ import {
 import type {
     SchemaMutationConverter
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
-import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { EntityScopeDefaults, EntityScopeNone } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter.ts'
 import { List as ImmutableList } from 'immutable'
 
@@ -16,7 +16,7 @@ export class SetReferenceSchemaFacetedMutationConverter implements SchemaMutatio
 
     convert(mutation: GrpcSetReferenceSchemaFacetedMutation): SetReferenceSchemaFacetedMutation {
         const facetedInScopes = mutation.facetedInScopes.length === 0 ?
-            (mutation.faceted ? EntityScope.DefaultScopes : EntityScope.NoScope) : mutation.facetedInScopes.map((scope) => EntityConverter.convertEntityScope(scope))
+            (mutation.faceted ? EntityScopeDefaults : EntityScopeNone) : mutation.facetedInScopes.map((scope) => EntityConverter.convertEntityScope(scope))
 
         return new SetReferenceSchemaFacetedMutation(
             mutation.name,

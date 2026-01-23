@@ -10,7 +10,7 @@ import type {
 import {
     ScopedReferenceIndexType
 } from '@/modules/database-driver/request-response/schema/mutation/reference/ScopedReferenceIndexType.ts'
-import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { EntityScopeDefault, EntityScopeDefaults, EntityScopeNone } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { ReferenceIndexType } from '@/modules/database-driver/request-response/schema/ReferenceIndexType.ts'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter.ts'
 import { List as ImmutableList } from 'immutable'
@@ -23,11 +23,11 @@ export class CreateReferenceSchemaMutationConverter implements SchemaMutationCon
 
     convert(mutation: GrpcCreateReferenceSchemaMutation): CreateReferenceSchemaMutation {
         const indexedInScopes = mutation.indexedInScopes.length === 0 ?
-            (mutation.filterable ? [new ScopedReferenceIndexType(EntityScope.DefaultScope, ReferenceIndexType.ForFiltering)] : ScopedReferenceIndexType.Empty) :
+            (mutation.filterable ? [new ScopedReferenceIndexType(EntityScopeDefault, ReferenceIndexType.ForFiltering)] : ScopedReferenceIndexType.Empty) :
             mutation.indexedInScopes.map(scope => new ScopedReferenceIndexType(EntityConverter.convertEntityScope(scope), ReferenceIndexType.ForFiltering))
 
         const facetedInScopes = mutation.facetedInScopes.length === 0 ?
-            (mutation.faceted ? EntityScope.DefaultScopes : EntityScope.NoScope) : mutation.facetedInScopes.map((scope) => EntityConverter.convertEntityScope(scope))
+            (mutation.faceted ? EntityScopeDefaults : EntityScopeNone) : mutation.facetedInScopes.map((scope) => EntityConverter.convertEntityScope(scope))
 
         return new CreateReferenceSchemaMutation(
             mutation.name,

@@ -48,9 +48,9 @@ export class Reference {
         return this.referencedEntity.entityType
     }
 
-    attribute(attributeName: string): any | undefined
-    attribute(attributeName: string, locale?: Locale): any | undefined
-    attribute(attributeName: string, locale?: Locale): any | undefined {
+    attribute(attributeName: string): unknown
+    attribute(attributeName: string, locale?: Locale): unknown
+    attribute(attributeName: string, locale?: Locale): unknown {
         if (locale == undefined) {
             return this._attributes.attribute(attributeName)
         }

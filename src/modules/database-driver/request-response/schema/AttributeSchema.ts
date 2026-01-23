@@ -42,7 +42,7 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Loca
     /**
      * Default value is used when the entity is created without this attribute specified. Default values allow to pass non-null checks even if no attributes of such name are specified.
      */
-    readonly defaultValue: any | any[] | null
+    readonly defaultValue: unknown
     /**
      * When attribute is localized, it has to be ALWAYS used in connection with specific `Locale`.
      */
@@ -63,7 +63,7 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Loca
                 deprecationNotice: string | undefined,
                 type: Scalar,
                 nullable: boolean,
-                defaultValue: any | any[] | undefined,
+                defaultValue: unknown,
                 localized: boolean,
                 indexedDecimalPlaces: number,
                 sortableInScopes: List<EntityScope>,

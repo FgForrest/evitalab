@@ -8,9 +8,9 @@ import type {
 export class UpsertAssociatedDataMutation extends AssociatedDataMutation {
     static readonly TYPE = 'upsertAssociatedDataMutation' as const
 
-    readonly value: any;
+    readonly value: unknown;
 
-    constructor(associatedDataKey: AssociatedDataKey, value: any) {
+    constructor(associatedDataKey: AssociatedDataKey, value: unknown) {
         super(associatedDataKey)
         this.value = value
     }

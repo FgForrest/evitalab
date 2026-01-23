@@ -11,7 +11,7 @@ import {
     AttributeUniquenessTypeConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/AttributeUniquenessTypeConverter.ts'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter.ts'
-import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { EntityScopeDefault } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import type {
     SchemaMutationConverter
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
@@ -22,7 +22,7 @@ export class SetAttributeSchemaUniqueMutationConverter implements SchemaMutation
 
     convert(mutation: GrpcSetAttributeSchemaUniqueMutation): SetAttributeSchemaUniqueMutation {
         const uniqueInScopes = mutation.uniqueInScopes.length === 0 ?
-            [new ScopedAttributeUniquenessType(EntityScope.DefaultScope, AttributeUniquenessTypeConverter.convertAttributeUniquenessType(mutation.unique))] :
+            [new ScopedAttributeUniquenessType(EntityScopeDefault, AttributeUniquenessTypeConverter.convertAttributeUniquenessType(mutation.unique))] :
             mutation.uniqueInScopes.map(it => new ScopedAttributeUniquenessType(EntityConverter.convertEntityScope(it.scope), AttributeUniquenessTypeConverter.convertAttributeUniquenessType(it.uniquenessType)))
 
         return new SetAttributeSchemaUniqueMutation(

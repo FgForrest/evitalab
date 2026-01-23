@@ -7,7 +7,7 @@ import {
 import type {
     GrpcSetAttributeSchemaSortableMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcAttributeSchemaMutations_pb.ts'
-import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { EntityScopeDefaults, EntityScopeNone } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter.ts'
 import { List as ImmutableList } from 'immutable'
 
@@ -16,7 +16,7 @@ export class SetAttributeSchemaSortableMutationConverter implements SchemaMutati
 
     convert(mutation: GrpcSetAttributeSchemaSortableMutation): SetAttributeSchemaSortableMutation {
         const sortableInScopes = mutation.sortableInScopes.length === 0 ?
-            (mutation.sortable ? EntityScope.DefaultScopes : EntityScope.NoScope) : mutation.sortableInScopes.map((scope) => EntityConverter.convertEntityScope(scope))
+            (mutation.sortable ? EntityScopeDefaults : EntityScopeNone) : mutation.sortableInScopes.map((scope) => EntityConverter.convertEntityScope(scope))
 
         return new SetAttributeSchemaSortableMutation(
             mutation.name,

@@ -27,7 +27,7 @@ export class EntityAttributeSchema extends AttributeSchema {
                 deprecationNotice: string | undefined,
                 type: Scalar,
                 nullable: boolean,
-                defaultValue: any | any[] | undefined,
+                defaultValue: unknown,
                 localized: boolean,
                 indexedDecimalPlaces: number,
                 representative: boolean,

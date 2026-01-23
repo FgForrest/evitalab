@@ -35,7 +35,7 @@ export class GlobalAttributeSchema extends EntityAttributeSchema {
                 deprecationNotice: string | undefined,
                 type: Scalar,
                 nullable: boolean,
-                defaultValue: any,
+                defaultValue: unknown,
                 localized: boolean,
                 indexedDecimalPlaces: number,
                 representative: boolean,

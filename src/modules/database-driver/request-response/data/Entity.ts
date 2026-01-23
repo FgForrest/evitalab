@@ -59,9 +59,9 @@ export class Entity extends EntityReferenceWithParent {
         this.scope = scope
     }
 
-    attribute(attributeName: string): any | undefined
-    attribute(attributeName: string, locale?: Locale): any | undefined
-    attribute(attributeName: string, locale?: Locale): any | undefined {
+    attribute(attributeName: string): unknown
+    attribute(attributeName: string, locale?: Locale): unknown
+    attribute(attributeName: string, locale?: Locale): unknown {
         if (locale == undefined) {
             return this._attributes.attribute(attributeName)
         }
@@ -80,9 +80,9 @@ export class Entity extends EntityReferenceWithParent {
         return this._attributes.locales
     }
 
-    associatedData(associatedDataName: string): any | undefined
-    associatedData(associatedDataName: string, locale?: Locale): any | undefined
-    associatedData(associatedDataName: string, locale?: Locale): any | undefined {
+    associatedData(associatedDataName: string): unknown
+    associatedData(associatedDataName: string, locale?: Locale): unknown
+    associatedData(associatedDataName: string, locale?: Locale): unknown {
         if (locale == undefined) {
             return this._associatedData.associatedData(associatedDataName)
         }

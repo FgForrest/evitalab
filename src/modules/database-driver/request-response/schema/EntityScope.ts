@@ -10,24 +10,22 @@ export enum EntityScope {
     Archive='archive'
 }
 
-export namespace EntityScope {
-    /**
-     * Default scope to be used if not specified custom one.
-     */
-    export const DefaultScope:EntityScope = EntityScope.Live;
+/**
+ * Default scope to be used if not specified custom one.
+ */
+export const EntityScopeDefault: EntityScope = EntityScope.Live;
 
-    /**
-     * Default scopes to be used if not specified custom one.
-     */
-    export const DefaultScopes:EntityScope[] = [DefaultScope] as const;
+/**
+ * Default scopes to be used if not specified custom one.
+ */
+export const EntityScopeDefaults: EntityScope[] = [EntityScopeDefault] as const;
 
-    /**
-     * Empty array of scopes. Makes no sense in queries - filtering in no scope would always produce empty result.
-     * This constant is usually used when schema is defined and particular schema part should not be made indexed in
-     * any scope.
-     */
-    export const NoScope: EntityScope[] = [];
-}
+/**
+ * Empty array of scopes. Makes no sense in queries - filtering in no scope would always produce empty result.
+ * This constant is usually used when schema is defined and particular schema part should not be made indexed in
+ * any scope.
+ */
+export const EntityScopeNone: EntityScope[] = [];
 
 export const EntityScopeIcons: Record<EntityScope, string> = {
     [EntityScope.Live]: 'mdi-file-search-outline',

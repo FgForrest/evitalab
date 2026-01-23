@@ -6,9 +6,9 @@ import type { AttributeKey } from '@/modules/database-driver/request-response/da
 export class UpsertAttributeMutation extends AttributeSchemaEvolvingMutation {
     static readonly TYPE = 'upsertAttributeMutation' as const
 
-    public readonly value: any;
+    public readonly value: unknown;
 
-    constructor(attributeKey: AttributeKey, value: any) {
+    constructor(attributeKey: AttributeKey, value: unknown) {
         super(attributeKey)
         this.value = value
     }
