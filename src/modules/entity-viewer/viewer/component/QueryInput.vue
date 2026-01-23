@@ -64,7 +64,7 @@ const emit = defineEmits<{
 }>()
 const tabProps = useTabProps()
 
-const queryLanguageSelectorRef = ref<InstanceType<typeof QueryLanguageSelector> | undefined>()
+const queryLanguageSelectorRef = ref<InstanceType<typeof QueryLanguageSelector>>()
 
 // todo this approach to autocompletion in grid is temporary until i'm able to pass the entire query with cropped view
 const filterByInputView = ref<EditorView>()
@@ -108,10 +108,10 @@ function createOrderByLangSupportExtension(queryLanguage: QueryLanguage): Extens
     }
 }
 
-const dataLocaleSelectorRef = ref<InstanceType<typeof LocaleSelector> | undefined>()
+const dataLocaleSelectorRef = ref<InstanceType<typeof LocaleSelector>>()
 const supportsPrices = ref<boolean>(false)
-const priceTypeSelectorRef = ref<InstanceType<typeof PriceTypeSelector> | undefined>()
-entityViewerService.supportsPrices(tabProps.params.dataPointer)
+const priceTypeSelectorRef = ref<InstanceType<typeof PriceTypeSelector>>()
+void entityViewerService.supportsPrices(tabProps.params.dataPointer)
     .then(it => supportsPrices.value = it)
 
 const showPropertiesSelect = ref<boolean>(false)
@@ -127,21 +127,21 @@ async function executeQuery(): Promise<void> {
     try {
         workspaceService.addTabHistoryRecord(filterByHistoryKey.value, props.filterBy)
         workspaceService.addTabHistoryRecord(orderByHistoryKey.value, props.orderBy)
-    } catch (e: any) {
-        await toaster.error(t('entityViewer.queryInput.notification.failedToSaveQueryToHistory', e))
+    } catch (e: unknown) {
+        await toaster.error(t('entityViewer.queryInput.notification.failedToSaveQueryToHistory', String(e)))
     }
     emit('executeQuery')
 }
 
 onMounted(() => {
     // register grid specific keyboard shortcuts
-    keymap.bind(Command.EntityViewer_ExecuteQuery, tabProps.id, () => executeQuery())
-    keymap.bind(Command.EntityViewer_ChangeQueryLanguage, tabProps.id, () => queryLanguageSelectorRef.value?.focus())
-    keymap.bind(Command.EntityViewer_FilterBy, tabProps.id, () => filterByInputView.value?.focus())
-    keymap.bind(Command.EntityViewer_OrderBy, tabProps.id, () => orderByInputView.value?.focus())
-    keymap.bind(Command.EntityViewer_ChangeDataLocale, tabProps.id, () => dataLocaleSelectorRef.value?.focus())
-    keymap.bind(Command.EntityViewer_ChangePriceType, tabProps.id, () => priceTypeSelectorRef.value?.focus())
-    keymap.bind(Command.EntityViewer_OpenPropertySelector, tabProps.id, () => showPropertiesSelect.value = true)
+    keymap.bind(Command.EntityViewer_ExecuteQuery, tabProps.id, () => void executeQuery())
+    keymap.bind(Command.EntityViewer_ChangeQueryLanguage, tabProps.id, () => { queryLanguageSelectorRef.value?.focus() })
+    keymap.bind(Command.EntityViewer_FilterBy, tabProps.id, () => { filterByInputView.value?.focus() })
+    keymap.bind(Command.EntityViewer_OrderBy, tabProps.id, () => { orderByInputView.value?.focus() })
+    keymap.bind(Command.EntityViewer_ChangeDataLocale, tabProps.id, () => { dataLocaleSelectorRef.value?.focus() })
+    keymap.bind(Command.EntityViewer_ChangePriceType, tabProps.id, () => { priceTypeSelectorRef.value?.focus() })
+    keymap.bind(Command.EntityViewer_OpenPropertySelector, tabProps.id, () => { showPropertiesSelect.value = true })
 })
 onUnmounted(() => {
     // unregister grid specific keyboard shortcuts

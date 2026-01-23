@@ -13,7 +13,7 @@ import { List } from 'immutable'
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     selected: string | undefined,
     dataLocales: List<string>
 }>()
@@ -37,8 +37,9 @@ function handleDataLocaleSelect(selected: unknown[]) {
 }
 
 function focus(): void {
-    dataLocaleButtonRef.value?.$el?.click()
-    dataLocaleButtonRef.value?.$el?.focus()
+    const el = dataLocaleButtonRef.value?.$el as HTMLElement | undefined
+    el?.click()
+    el?.focus()
 }
 
 defineExpose<{

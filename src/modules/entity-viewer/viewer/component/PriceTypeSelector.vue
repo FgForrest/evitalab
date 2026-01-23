@@ -13,12 +13,17 @@ import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 
 const { t } = useI18n()
 
-const priceTypes: any[] = [
+interface PriceTypeOption {
+    title: string
+    value: QueryPriceMode
+}
+
+const priceTypes: PriceTypeOption[] = [
     { title: t(`entityViewer.priceTypeSelector.${QueryPriceMode.WithTax}`), value: QueryPriceMode.WithTax },
     { title: t(`entityViewer.priceTypeSelector.${QueryPriceMode.WithoutTax}`), value: QueryPriceMode.WithoutTax }
-];
+]
 
-const props = defineProps<{
+defineProps<{
     selected: QueryPriceMode
 }>()
 const emit = defineEmits<{
@@ -37,8 +42,9 @@ function handlePriceTypeSelect(selected: unknown[]) {
 }
 
 function focus(): void {
-    priceTypeButtonRef.value?.$el?.click()
-    priceTypeButtonRef.value?.$el?.focus()
+    const el = priceTypeButtonRef.value?.$el as HTMLElement | undefined
+    el?.click()
+    el?.focus()
 }
 
 defineExpose<{
