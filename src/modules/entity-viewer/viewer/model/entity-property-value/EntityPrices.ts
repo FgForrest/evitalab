@@ -24,7 +24,7 @@ export class EntityPrices extends EntityPropertyValue {
         return this.prices.length
     }
 
-    value(): any {
+    value(): EntityPrices {
         return this
     }
 
@@ -36,7 +36,7 @@ export class EntityPrices extends EntityPropertyValue {
         return serializeJsonWithBigInt(this.toRawRepresentation())
     }
 
-    toRawRepresentation(): any {
+    toRawRepresentation(): object {
         return {
             priceForSale: this.priceForSale?.toRawRepresentation(),
             prices: this.prices.map(x => x.toRawRepresentation()),

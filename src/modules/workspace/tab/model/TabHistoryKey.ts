@@ -7,8 +7,10 @@ const hasher: XXH.HashObject = XXH.h64()
 /**
  * History key for uniquely identifying a tab section's execution history (e.g., executed queries).
  * Key is serialized as a stringified hash that can be directly used in {@link Map}.
+ * The generic type parameter R represents the type of history records associated with this key.
  */
-export class TabHistoryKey {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class TabHistoryKey<R = unknown> {
     readonly hash: string;
 
     constructor(connection: Connection, tabType: TabType, sectionPath: string[]) {

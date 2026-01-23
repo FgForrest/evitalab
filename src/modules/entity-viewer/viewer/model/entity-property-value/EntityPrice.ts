@@ -8,6 +8,18 @@ import { DateTimeRange } from '@/modules/database-driver/data-type/DateTimeRange
 import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { Price } from '@/modules/database-driver/request-response/data/Price'
 
+interface EntityPriceJson {
+    priceId: number | undefined
+    priceList: string
+    currency: Currency
+    innerRecordId: number | undefined
+    sellable: boolean | undefined
+    validity: DateTimeRange | undefined
+    priceWithoutTax: BigDecimal
+    priceWithTax: BigDecimal
+    taxRate: BigDecimal
+}
+
 /**
  * Represents a single entity price.
  */
@@ -58,8 +70,9 @@ export class EntityPrice extends EntityPropertyValue {
         )
     }
 
-    static fromJson(json: any): EntityPrice {
-        return new EntityPrice(json.priceId,
+    static fromJson(json: EntityPriceJson): EntityPrice {
+        return new EntityPrice(
+            json.priceId,
             json.priceList,
             json.currency,
             json.innerRecordId,
@@ -67,10 +80,11 @@ export class EntityPrice extends EntityPropertyValue {
             json.validity,
             json.priceWithoutTax,
             json.priceWithTax,
-            json.taxRate)
+            json.taxRate
+        )
     }
 
-    value(): any {
+    value(): EntityPrice {
         return this
     }
 
@@ -82,7 +96,7 @@ export class EntityPrice extends EntityPropertyValue {
         return JSON.stringify(this.toRawRepresentation())
     }
 
-    toRawRepresentation(): any {
+    toRawRepresentation(): object {
         return {
             priceId: this.priceId,
             priceList: this.priceList,

@@ -30,7 +30,7 @@ type supportedValueType =
     | Locale
     | Currency
     | undefined
-    | Range<any>
+    | Range<unknown>
 export class NativeValue extends EntityPropertyValue {
     readonly delegate: supportedValueType
 
@@ -86,11 +86,11 @@ export class NativeValue extends EntityPropertyValue {
         return this.toPreviewString()
     }
 
-    toRawRepresentation(): any {
+    toRawRepresentation(): supportedValueType {
         return this.delegate
     }
 
-    isPrettyPrintable(obj: any): obj is PrettyPrintable {
+    isPrettyPrintable(obj: object): obj is PrettyPrintable {
         return 'getPrettyPrintableString' in obj
     }
 }

@@ -27,7 +27,7 @@ export class EntityPropertyKey {
     private constructor(type: EntityPropertyType, names: string[] = []) {
         this.type = type
         if (names.length > 2) {
-            throw new UnexpectedError(`Cannot create entity property key with more than two names: ${names}`)
+            throw new UnexpectedError(`Cannot create entity property key with more than two names: ${names.join(', ')}`)
         }
         this.names = names
     }

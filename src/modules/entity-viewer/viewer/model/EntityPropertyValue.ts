@@ -14,7 +14,7 @@ export abstract class EntityPropertyValue {
     /**
      * Returns the raw value of the entity property value.
      */
-    abstract value(): any | any[] | undefined
+    abstract value(): unknown
 
     /**
      * Returns true if the raw entity property value is missing.
@@ -28,7 +28,7 @@ export abstract class EntityPropertyValue {
     abstract toPreviewString(context?: EntityPropertyValuePreviewStringContext): string
 
     abstract toRawString(): string
-    abstract toRawRepresentation(): any
+    abstract toRawRepresentation(): unknown
 
     /** Add documentation */
     toPrettyPrintString(context?: EntityPropertyValuePreviewStringContext): string {
