@@ -9,21 +9,21 @@ import { Locale } from '@/modules/database-driver/data-type/Locale'
  * memory space for data that will never be used in search queries.
  */
 export class Attributes {
-    private readonly globalAttributes: Map<string, any>
-    private readonly localizedAttributes: Map<string, Map<string, any>>
+    private readonly globalAttributes: Map<string, unknown>
+    private readonly localizedAttributes: Map<string, Map<string, unknown>>
 
     private _allAttributes?: List<AttributeValue> = undefined
     private _names?: Set<string> = undefined
     private _locales?: Set<Locale> = undefined
 
-    constructor(globalAttributes: Map<string, any>, localizedAttributes: Map<string, Map<string, any>>){
+    constructor(globalAttributes: Map<string, unknown>, localizedAttributes: Map<string, Map<string, unknown>>){
         this.globalAttributes = globalAttributes
         this.localizedAttributes = localizedAttributes
     }
 
-    attribute(attributeName: string): any | undefined
-    attribute(attributeName: string, locale?: Locale): any | undefined
-    attribute(attributeName: string, locale?: Locale): any | undefined {
+    attribute(attributeName: string): unknown
+    attribute(attributeName: string, locale?: Locale): unknown
+    attribute(attributeName: string, locale?: Locale): unknown {
         if (locale == undefined) {
             return this.globalAttributes.get(attributeName)
         }

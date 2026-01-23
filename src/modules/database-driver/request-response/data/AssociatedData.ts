@@ -9,21 +9,21 @@ import { Locale } from '@/modules/database-driver/data-type/Locale'
  * binary arrays representing entire files (i.e. pictures, documents).
  */
 export class AssociatedData {
-    private readonly globalAssociatedData: Map<string, any>
-    private readonly localizedAssociatedData: Map<string, Map<string, any>>
+    private readonly globalAssociatedData: Map<string, unknown>
+    private readonly localizedAssociatedData: Map<string, Map<string, unknown>>
 
     private _allAssociatedData?: List<AssociatedDataValue> = undefined
     private _names?: Set<string> = undefined
     private _locales?: Set<Locale> = undefined
 
-    constructor(globalAssociatedData: Map<string, any>, localizedAssociatedData: Map<string, Map<string, any>>){
+    constructor(globalAssociatedData: Map<string, unknown>, localizedAssociatedData: Map<string, Map<string, unknown>>){
         this.globalAssociatedData = globalAssociatedData
         this.localizedAssociatedData = localizedAssociatedData
     }
 
-    associatedData(associatedDataName: string): any | undefined
-    associatedData(associatedDataName: string, locale?: Locale): any | undefined
-    associatedData(associatedDataName: string, locale?: Locale): any | undefined {
+    associatedData(associatedDataName: string): unknown
+    associatedData(associatedDataName: string, locale?: Locale): unknown
+    associatedData(associatedDataName: string, locale?: Locale): unknown {
         if (locale == undefined) {
             return this.globalAssociatedData.get(associatedDataName)
         }
