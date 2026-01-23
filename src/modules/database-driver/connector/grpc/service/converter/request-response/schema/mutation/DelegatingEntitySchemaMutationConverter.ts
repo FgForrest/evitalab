@@ -174,10 +174,14 @@ import {
 import {
     ModifyEntitySchemaMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/catalog/ModifyEntitySchemaMutationConverter.ts'
+import type {
+    SchemaMutationConverter
+} from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
+import type { Message } from '@bufbuild/protobuf'
 
 export class DelegatingEntitySchemaMutationConverter {
 
-    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([
+    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, SchemaMutationConverter<SchemaMutation, Message>>([
         // associated data schema mutations
         ['createAssociatedDataSchemaMutation', CreateAssociatedDataSchemaMutationConverter.INSTANCE],
         ['modifyAssociatedDataSchemaDeprecationNoticeMutation', ModifyAssociatedDataSchemaDeprecationNoticeMutationConverter.INSTANCE],

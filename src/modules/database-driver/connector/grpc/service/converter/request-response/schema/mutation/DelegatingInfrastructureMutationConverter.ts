@@ -6,10 +6,15 @@ import type { Mutation } from '@/modules/database-driver/request-response/Mutati
 import type {
     GrpcInfrastructureMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcInfrastrutureMutation_pb.ts'
+import type {
+    SchemaMutationConverter
+} from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
+import type { SchemaMutation } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutation.ts'
+import type { Message } from '@bufbuild/protobuf'
 
 export class DelegatingInfrastructureMutationConverter {
 
-    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([
+    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, SchemaMutationConverter<SchemaMutation, Message>>([
         ['transactionMutation', TransactionMutationConverter.INSTANCE]
     ]);
 

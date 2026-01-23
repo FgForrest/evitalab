@@ -21,11 +21,15 @@ import {
 import type {
     ReferenceSortableAttributeCompoundSchemaMutation
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/ReferenceSortableAttributeCompoundSchemaMutation.ts'
-
+import type {
+    SchemaMutationConverter
+} from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
+import type { SchemaMutation } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutation.ts'
+import type { Message } from '@bufbuild/protobuf'
 
 export class DelegatingSortableAttributeCompoundSchemaMutationConverter {
 
-    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([ // todo pfi: replace any
+    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, SchemaMutationConverter<SchemaMutation, Message>>([
         ['createSortableAttributeCompoundSchemaMutation',
             CreateSortableAttributeCompoundSchemaMutationConverter.INSTANCE
         ],

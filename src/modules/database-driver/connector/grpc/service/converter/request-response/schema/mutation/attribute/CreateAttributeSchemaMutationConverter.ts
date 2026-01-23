@@ -25,7 +25,7 @@ export class CreateAttributeSchemaMutationConverter implements SchemaMutationCon
 
     convert(mutation: GrpcCreateAttributeSchemaMutation): CreateAttributeSchemaMutation {
         if (mutation.type == undefined) {
-            throw new UnexpectedError('Unexpected type ' + mutation.type)
+            throw new UnexpectedError('Unexpected type: ' + String(mutation.type))
         }
 
         const uniqueInScopes = mutation.uniqueInScopes.length === 0 ?
@@ -33,10 +33,10 @@ export class CreateAttributeSchemaMutationConverter implements SchemaMutationCon
             mutation.uniqueInScopes.map(it => new ScopedAttributeUniquenessType(EntityConverter.convertEntityScope(it.scope), AttributeUniquenessTypeConverter.convertAttributeUniquenessType(it.uniquenessType)))
 
         const filterableInScopes = mutation.filterableInScopes.length === 0 ?
-            (mutation.filterable ? EntityScope.DefaultScopes : EntityScope.NoScope) : mutation.filterableInScopes.map(EntityConverter.convertEntityScope)
+            (mutation.filterable ? EntityScope.DefaultScopes : EntityScope.NoScope) : mutation.filterableInScopes.map(scope => EntityConverter.convertEntityScope(scope))
 
         const sortableInScopes = mutation.sortableInScopes.length === 0 ?
-            (mutation.sortable ? EntityScope.DefaultScopes : EntityScope.NoScope) : mutation.sortableInScopes.map(EntityConverter.convertEntityScope)
+            (mutation.sortable ? EntityScope.DefaultScopes : EntityScope.NoScope) : mutation.sortableInScopes.map(scope => EntityConverter.convertEntityScope(scope))
 
         return new CreateAttributeSchemaMutation(
             mutation.name,

@@ -56,10 +56,16 @@ import type {
 import type {
     LocalCatalogSchemaMutation
 } from '@/modules/database-driver/request-response/schema/mutation/LocalCatalogSchemaMutation.ts'
+import type {
+    SchemaMutationConverter
+} from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
+import type { SchemaMutation } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutation.ts'
+import type { Message } from '@bufbuild/protobuf'
+
 
 export class DelegatingLocalCatalogSchemaMutationConverter {
 
-    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([
+    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, SchemaMutationConverter<SchemaMutation, Message>>([
         // attribute schema mutations
         ['createGlobalAttributeSchemaMutation', CreateGlobalAttributeSchemaMutationConverter.INSTANCE],
         ['modifyAttributeSchemaDefaultValueMutation', ModifyAttributeSchemaDefaultValueMutationConverter.INSTANCE],
