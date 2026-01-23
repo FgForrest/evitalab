@@ -1,6 +1,6 @@
 export class ModifyCatalogSchemaDescriptionMutation {
-    readonly description: string|unknown
-    constructor(description: string|unknown) {
+    readonly description: string | undefined
+    constructor(description: string | undefined) {
         this.description = description
     }
 }

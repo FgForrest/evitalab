@@ -4,9 +4,9 @@ export class ModifyAttributeSchemaDefaultValueMutation implements SchemaMutation
     static readonly TYPE = 'modifyAttributeSchemaDefaultValueMutation' as const
 
     readonly name: string
-    readonly defaultValue: any
+    readonly defaultValue: unknown
 
-    constructor(name: string, defaultValue: any) {
+    constructor(name: string, defaultValue: unknown) {
         this.name = name
         this.defaultValue = defaultValue
     }

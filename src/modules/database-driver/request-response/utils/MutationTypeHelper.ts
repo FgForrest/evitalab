@@ -23,21 +23,22 @@ import { RemoveReferenceMutation } from '../data/mutation/reference/RemoveRefere
  * const mutation = new UpsertAttributeMutation(...)
  * getMutationType(mutation) // Returns: 'upsertAttributeMutation'
  */
-export function getMutationType(mutation: LocalMutation | SchemaMutation | any): string {
+export function getMutationType(mutation: LocalMutation | SchemaMutation): string {
+    const mutationObj = mutation as { constructor?: { TYPE?: string; name?: string } }
     // Check if class has static TYPE constant
-    if (mutation?.constructor && 'TYPE' in mutation.constructor) {
-        return mutation.constructor.TYPE
+    if (mutationObj.constructor && 'TYPE' in mutationObj.constructor) {
+        return mutationObj.constructor.TYPE as string
     }
 
     // Fallback for classes without TYPE constant (development only - will break in production)
     if (import.meta.env.DEV) {
         console.warn(
-            `Mutation class ${mutation?.constructor?.name || 'unknown'} is missing static TYPE constant. ` +
+            `Mutation class ${mutationObj.constructor?.name ?? 'unknown'} is missing static TYPE constant. ` +
             'Add a static readonly TYPE field to ensure minification compatibility.'
         )
     }
 
-    return mutation?.constructor?.name || 'UnknownMutation'
+    return mutationObj.constructor?.name ?? 'UnknownMutation'
 }
 
 /**
