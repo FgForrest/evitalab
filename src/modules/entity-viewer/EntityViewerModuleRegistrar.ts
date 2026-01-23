@@ -16,7 +16,7 @@ import {
 
 export class EntityViewerModuleRegistrar implements ModuleRegistrar {
 
-    async register(builder: ModuleContextBuilder): Promise<void> {
+    register(builder: ModuleContextBuilder): void {
         const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
 
         builder.provide(

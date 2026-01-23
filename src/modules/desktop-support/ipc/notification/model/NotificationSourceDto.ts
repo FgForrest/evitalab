@@ -3,4 +3,4 @@
  */
 export type NotificationSourceDto = {
     readonly type: string
-} & Record<string, any>
+} & Record<string, unknown>

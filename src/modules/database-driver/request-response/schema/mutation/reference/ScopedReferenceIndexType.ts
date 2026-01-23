@@ -2,6 +2,8 @@ import { type EntityScope } from '@/modules/database-driver/request-response/sch
 import { type ReferenceIndexType } from '@/modules/database-driver/request-response/schema/ReferenceIndexType.ts'
 
 export class ScopedReferenceIndexType {
+    static readonly Empty: ScopedReferenceIndexType[] = []
+
     readonly scope: EntityScope
     readonly indexType: ReferenceIndexType
 
@@ -9,11 +11,4 @@ export class ScopedReferenceIndexType {
         this.scope = scope
         this.indexType = indexType
     }
-}
-
-
-export namespace ScopedReferenceIndexType {
-
-    export const Empty:ScopedReferenceIndexType[] = [];
-
 }

@@ -27,7 +27,7 @@ export function getMutationType(mutation: LocalMutation | SchemaMutation): strin
     const mutationObj = mutation as { constructor?: { TYPE?: string; name?: string } }
     // Check if class has static TYPE constant
     if (mutationObj.constructor && 'TYPE' in mutationObj.constructor) {
-        return mutationObj.constructor.TYPE as string
+        return mutationObj.constructor.TYPE
     }
 
     // Fallback for classes without TYPE constant (development only - will break in production)

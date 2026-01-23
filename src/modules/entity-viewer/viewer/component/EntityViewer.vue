@@ -48,6 +48,13 @@ import { EntityViewerTabDefinition } from '@/modules/entity-viewer/viewer/worksp
 import { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
+interface GridHeader {
+    key: string
+    title: string
+    sortable: boolean
+    descriptor: EntityPropertyDescriptor
+}
+
 const entityViewerService: EntityViewerService = useEntityViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -80,7 +87,7 @@ const entitySchemaChangedCallbackId: string = entityViewerService.registerEntity
     async () => await reloadEntityPropertyDescriptors()
 )
 
-let gridHeaders: Map<string, any> = new Map<string, any>()
+let gridHeaders: Map<string, GridHeader> = new Map<string, GridHeader>()
 let dataLocales: ImmutableList<string> = ImmutableList()
 
 // dynamic user data
@@ -94,7 +101,7 @@ watch(selectedQueryLanguage, (newValue, oldValue) => {
     filterByCode.value = ''
     orderByCode.value = ''
 
-    executeQueryAutomatically()
+    void executeQueryAutomatically()
 })
 
 const loading = ref<boolean>(false)
@@ -107,28 +114,28 @@ provideQueryFilter(lastAppliedFilterByCode)
 const orderByCode = ref<string>(props.data.orderBy ? props.data.orderBy : '')
 const selectedScopes = ref<SelectedScope[]>(props.data.selectedScopes ? props.data.selectedScopes : [new SelectedScope(EntityScope.Live, true), new SelectedScope(EntityScope.Archive, false)])
 provideScopes(selectedScopes)
-watch(selectedScopes, () => executeQueryManually())
+watch(selectedScopes, () => void executeQueryManually())
 
 const selectedDataLocale = ref<string | undefined>(props.data.dataLocale ? props.data.dataLocale : undefined)
 provideDataLocale(selectedDataLocale)
-watch(selectedDataLocale, () => executeQueryAutomatically())
+watch(selectedDataLocale, () => void executeQueryAutomatically())
 
 const selectedPriceType = ref<QueryPriceMode>(props.data.priceType ? props.data.priceType : QueryPriceMode.WithTax)
-watch(selectedPriceType, () => executeQueryAutomatically())
+watch(selectedPriceType, () => void executeQueryAutomatically())
 providePriceType(selectedPriceType)
 
 const displayedEntityProperties = ref<EntityPropertyKey[]>([])
 watch(displayedEntityProperties, (newValue, oldValue) => {
-    updateDisplayedGridHeaders()
+    void updateDisplayedGridHeaders()
 
     // re-fetch entities only if new properties were added, only in such case there could be missing data when displaying
     // the new properties
     if (newValue.length > oldValue.length) {
-        executeQueryAutomatically()
+        void executeQueryAutomatically()
     }
 })
 
-const displayedGridHeaders = ref<any[]>([])
+const displayedGridHeaders = ref<GridHeader[]>([])
 const resultEntities = ref<FlatEntity[]>([])
 const totalResultCount = ref<number>(0)
 
@@ -173,18 +180,18 @@ onBeforeMount(() => {
             emit('ready')
 
             if (props.params.executeOnOpen) {
-                executeQueryAutomatically()
+                void executeQueryAutomatically()
             }
         })
-        .catch(error => {
-            toaster.error('Could not initialize entity viewer', error).then() // todo lho i18n
+        .catch((error: unknown) => {
+            void toaster.error('Could not initialize entity viewer', error instanceof Error ? error : undefined) // todo lho i18n
         })
 })
 
 async function reloadEntityPropertyDescriptors(): Promise<void> {
     entityPropertyDescriptors = await entityViewerService.getEntityPropertyDescriptors(props.params.dataPointer)
     entityPropertyDescriptorIndex.value = constructEntityPropertyDescriptorIndex(entityPropertyDescriptors)
-    gridHeaders = await initializeGridHeaders(entityPropertyDescriptors)
+    gridHeaders = initializeGridHeaders(entityPropertyDescriptors)
 
     // remove selected properties which are not available anymore
     const removeDisplayProperties: string[] = []
@@ -213,8 +220,8 @@ function constructEntityPropertyDescriptorIndex(entityPropertyDescriptors: Entit
     return ImmutableMap(entityPropertyDescriptorIndexBuilder)
 }
 
-async function initializeGridHeaders(entityPropertyDescriptors: EntityPropertyDescriptor[]): Promise<Map<string, any>> {
-    const gridHeaders: Map<string, any> = new Map<string, any>()
+function initializeGridHeaders(entityPropertyDescriptors: EntityPropertyDescriptor[]): Map<string, GridHeader> {
+    const gridHeaders: Map<string, GridHeader> = new Map<string, GridHeader>()
     for (const propertyDescriptor of entityPropertyDescriptors) {
         gridHeaders.set(
             propertyDescriptor.key.toString(),
@@ -240,8 +247,10 @@ async function initializeGridHeaders(entityPropertyDescriptors: EntityPropertyDe
     return gridHeaders
 }
 
-async function updateDisplayedGridHeaders(): Promise<void> {
-    displayedGridHeaders.value = displayedEntityProperties.value.map(propertyKey => gridHeaders.get(propertyKey.toString()))
+function updateDisplayedGridHeaders(): void {
+    displayedGridHeaders.value = displayedEntityProperties.value
+        .map(propertyKey => gridHeaders.get(propertyKey.toString()))
+        .filter((header): header is GridHeader => header !== undefined)
 
     // sort grid headers by entity properties order
     displayedGridHeaders.value.sort((a, b) => {
@@ -270,10 +279,10 @@ function preselectEntityProperties(): void {
             || []
 
         if (notFoundProperties.length > 0) {
-            toaster.info(t(
+            void toaster.info(t(
                 'entityViewer.grid.notification.failedToFindRequestedProperties',
                 { keys: notFoundProperties.map(it => `'${it}'`).join(', ') }
-            )).then()
+            ))
         }
     } else {
         // preselect default properties
@@ -292,14 +301,14 @@ function preselectEntityProperties(): void {
 async function gridUpdated({ page, itemsPerPage, sortBy }: {
     page: number,
     itemsPerPage: number,
-    sortBy: any[]
+    sortBy: { key: string; order: string }[]
 }): Promise<void> {
     pageNumber.value = page
     pageSize.value = itemsPerPage
     try {
         orderByCode.value = await entityViewerService.buildOrderByFromGridColumns(props.params.dataPointer, selectedQueryLanguage.value, sortBy)
-    } catch (error: any) {
-        await toaster.error('Could not build orderBy', error) // todo lho i18n
+    } catch (error: unknown) {
+        await toaster.error('Could not build orderBy', error instanceof Error ? error : undefined) // todo lho i18n
     }
 
     await executeQueryAutomatically()
@@ -352,8 +361,8 @@ async function executeQuery(): Promise<void> {
         totalResultCount.value = result.totalEntitiesCount
 
         lastAppliedFilterByCode.value = filterByCode.value
-    } catch (error: any) {
-        await toaster.error(t('entityViewer.notification.couldNotExecuteQuery'), error)
+    } catch (error: unknown) {
+        await toaster.error(t('entityViewer.notification.couldNotExecuteQuery'), error instanceof Error ? error : undefined)
     }
 
     loading.value = false
