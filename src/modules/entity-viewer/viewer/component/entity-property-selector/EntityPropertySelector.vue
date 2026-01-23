@@ -190,8 +190,7 @@ function togglePropertySectionSelection(sectionType: EntityPropertyType, newSele
 
         emit('update:selected', newSelected)
     } else {
-        toaster.error(t('entityViewer.propertySelector.notification.invalidPropertySectionSelection'))
-            .then()
+        void toaster.error(t('entityViewer.propertySelector.notification.invalidPropertySectionSelection'))
     }
 }
 

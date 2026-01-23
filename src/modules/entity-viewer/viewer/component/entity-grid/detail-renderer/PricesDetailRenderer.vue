@@ -10,8 +10,6 @@ import {
     EntityViewerService,
     useEntityViewerService,
 } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
-import { useToaster } from '@/modules/notification/service/Toaster'
-import type { Toaster } from '@/modules/notification/service/Toaster'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { PriceInnerRecordHandling } from '@/modules/entity-viewer/viewer/model/PriceInnerRecordHandling'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
@@ -65,7 +63,6 @@ type FilterData = {
 }
 
 const entityViewerService: EntityViewerService = useEntityViewerService()
-const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = withDefaults(
@@ -83,15 +80,13 @@ const queryFilter = useQueryFilter()
 const selectedEntity = useSelectedEntity()
 
 const priceInnerRecordHandling = computed<PriceInnerRecordHandling>(() => {
-    return (
-        (
-            selectedEntity[
-                EntityPropertyKey.entity(
-                    StaticEntityProperties.PriceInnerRecordHandling
-                ).toString()
-            ] as EntityPropertyValue
-        )?.value() ?? PriceInnerRecordHandling.Unknown
-    )
+    const entityProperty = selectedEntity[
+        EntityPropertyKey.entity(
+            StaticEntityProperties.PriceInnerRecordHandling
+        ).toString()
+    ] as EntityPropertyValue | undefined
+    const rawValue = entityProperty?.value() as PriceInnerRecordHandling | undefined
+    return rawValue ?? PriceInnerRecordHandling.Unknown
 })
 const entityPricingProperties = computed<Property[]>(() => [
     new Property(
@@ -103,9 +98,8 @@ const entityPricingProperties = computed<Property[]>(() => [
 ])
 const prices = computed<EntityPrices>(() => {
     if (!(props.value instanceof EntityPrices)) {
-        toaster.error(
-            t('entityViewer.grid.priceRenderer.notification.invalidPricesObject')
-        ).then()
+        // Note: This error should never happen in normal usage
+        console.error('Invalid prices object provided to PricesDetailRenderer')
         return new EntityPrices(undefined, [])
     }
     return props.value
@@ -263,9 +257,9 @@ async function preselectFilterFromQuery(): Promise<void> {
     })
 }
 watch(queryFilter, () => {
-    preselectFilterFromQuery()
+    void preselectFilterFromQuery()
 })
-preselectFilterFromQuery()
+void preselectFilterFromQuery()
 </script>
 
 <template>

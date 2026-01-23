@@ -108,7 +108,7 @@ const formattedValue = computed<string>(() => {
             case Scalar.UUID:
                 return (
                     '`' +
-                    (props.value as EntityPropertyValue).value().toString() +
+                    String((props.value as EntityPropertyValue).value()) +
                     '`'
                 )
             case Scalar.OffsetDateTime:
@@ -116,9 +116,7 @@ const formattedValue = computed<string>(() => {
                     '📅 `' +
                     offsetDateTimeFormatter.format(
                         new Date(
-                            (props.value as EntityPropertyValue)
-                                .value()
-                                .toString()
+                            String((props.value as EntityPropertyValue).value())
                         )
                     ) +
                     '`'
@@ -128,9 +126,7 @@ const formattedValue = computed<string>(() => {
                     '📅 `' +
                     localDateTimeFormatter.format(
                         new Date(
-                            (props.value as EntityPropertyValue)
-                                .value()
-                                .toString()
+                            String((props.value as EntityPropertyValue).value())
                         )
                     ) +
                     '`'
@@ -140,9 +136,7 @@ const formattedValue = computed<string>(() => {
                     '📅 `' +
                     localDateFormatter.format(
                         new Date(
-                            (props.value as EntityPropertyValue)
-                                .value()
-                                .toString()
+                            String((props.value as EntityPropertyValue).value())
                         )
                     ) +
                     '`'
@@ -153,9 +147,7 @@ const formattedValue = computed<string>(() => {
                     localTimeFormatter.format(
                         new Date(
                             '1970-01-01' +
-                                (props.value as EntityPropertyValue)
-                                    .value()
-                                    .toString()
+                                String((props.value as EntityPropertyValue).value())
                         )
                     ) +
                     '`'
@@ -172,19 +164,19 @@ const formattedValue = computed<string>(() => {
             case Scalar.Locale:
                 return (
                     '🌐 `' +
-                    (props.value as EntityPropertyValue).value().toString() +
+                    String((props.value as EntityPropertyValue).value()) +
                     '`'
                 )
             case Scalar.Currency:
                 return (
                     '💰 `' +
-                    (props.value as EntityPropertyValue).value().toString() +
+                    String((props.value as EntityPropertyValue).value()) +
                     '`'
                 )
             case Scalar.Predecessor:
                 return (
                     '↻ `' +
-                    (props.value as EntityPropertyValue).value().toString() +
+                    String((props.value as EntityPropertyValue).value()) +
                     '`'
                 )
             case Scalar.ComplexDataObject:
@@ -228,21 +220,21 @@ function prettyPrintRangeValue(
     }
 }
 
-function handleActionClick(action: any) {
-    const foundedAction = menuItems.value?.get(action as MarkdownDetailRendererMenuItemType)
+function handleActionClick(action: MarkdownDetailRendererMenuItemType) {
+    const foundedAction = menuItems.value?.get(action)
     if (foundedAction && foundedAction instanceof MenuAction) {
         (foundedAction as MenuAction<MarkdownDetailRendererMenuItemType>).execute()
     }
 }
 
 function copyRenderedValue() {
-    navigator.clipboard
+    void navigator.clipboard
         .writeText(formattedValue.value)
         .then(() => {
-            toaster.info(t('common.notification.copiedToClipboard')).then()
+            void toaster.info(t('common.notification.copiedToClipboard'))
         })
         .catch(() => {
-            toaster.error(t('common.notification.failedToCopyToClipboard')).then()
+            void toaster.error(t('common.notification.failedToCopyToClipboard'))
         })
 }
 

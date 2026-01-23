@@ -61,13 +61,14 @@ watch(
 const formattedValue = computed<string>(() => {
     try {
         return entityViewerService.formatEntityPropertyValue(props.value, props.codeLanguage, prettyPrint.value)
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error(e)
+        const errorMessage = e instanceof Error ? e.message : ''
         return t(
             'entityViewer.grid.codeRenderer.placeholder.failedToFormatValue',
             {
                 codeLanguage: props.codeLanguage,
-                message: e?.message ? `${e.message}.` : ''
+                message: errorMessage ? `${errorMessage}.` : ''
             }
         )
     }
@@ -84,24 +85,23 @@ const codeBlockExtensions = computed<Extension[]>(() => {
         case EntityPropertyValueSupportedCodeLanguage.Xml:
             return [xml()]
         default:
-            toaster.error(t('entityViewer.grid.codeRenderer.notification.unsupportedCodeLanguage'))
-                .then()
+            void toaster.error(t('entityViewer.grid.codeRenderer.notification.unsupportedCodeLanguage'))
             return []
     }
 })
 
-function handleActionClick(action: any) {
-    const foundedAction = menuItems.value?.get(action as CodeDetailRendererMenuItemType)
+function handleActionClick(action: CodeDetailRendererMenuItemType) {
+    const foundedAction = menuItems.value?.get(action)
     if (foundedAction && foundedAction instanceof MenuAction) {
         (foundedAction as MenuAction<CodeDetailRendererMenuItemType>).execute()
     }
 }
 
 function copyRenderedValue() {
-    navigator.clipboard.writeText(formattedValue.value).then(() => {
-        toaster.info(t('common.notification.copiedToClipboard')).then()
+    void navigator.clipboard.writeText(formattedValue.value).then(() => {
+        void toaster.info(t('common.notification.copiedToClipboard'))
     }).catch(() => {
-        toaster.error(t('common.notification.failedToCopyToClipboard')).then()
+        void toaster.error(t('common.notification.failedToCopyToClipboard'))
     })
 }
 
