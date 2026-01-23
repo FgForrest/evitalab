@@ -7,16 +7,17 @@ import {
     GraphQLResultVisualiserService,
     graphQLResultVisualiserServiceInjectionKey
 } from '@/modules/graphql-console/console/result-visualiser/service/GraphQLResultVisualiserService'
-import {
-    GraphQLConsoleTabFactory,
-    graphQLConsoleTabFactoryInjectionKey
-} from '@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFactory'
+// GraphQLConsoleTabFactory is commented out due to circular dependency - see todo below
+// import {
+//     GraphQLConsoleTabFactory,
+//     graphQLConsoleTabFactoryInjectionKey
+// } from '@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFactory'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
 
 export class GraphQLConsoleModuleRegistrar implements ModuleRegistrar {
 
-    async register(builder: ModuleContextBuilder): Promise<void> {
+    register(builder: ModuleContextBuilder): void {
         const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
 
         builder.provide(

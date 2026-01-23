@@ -3,12 +3,17 @@
  * Query history listing for EvitaQL console.
  */
 
-import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { computed } from 'vue'
 import type {
     EvitaQLConsoleHistoryRecord
 } from '@/modules/evitaql-console/console/history/model/EvitaQLConsoleHistoryRecord'
 import HistoryComponent from '@/modules/history-component/HistoryComponent.vue'
+
+interface HistoryListItem {
+    key: string
+    preview: string[]
+    value: EvitaQLConsoleHistoryRecord
+}
 
 const props = defineProps<{
     items: EvitaQLConsoleHistoryRecord[]
@@ -18,7 +23,7 @@ const emit = defineEmits<{
     (e: 'update:clearHistory'): void
 }>()
 
-const historyListItems = computed<any[]>(() => {
+const historyListItems = computed<HistoryListItem[]>(() => {
     return props.items.map((record: EvitaQLConsoleHistoryRecord) => {
         return {
             key: record[0],

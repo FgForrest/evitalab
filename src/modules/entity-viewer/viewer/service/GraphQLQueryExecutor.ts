@@ -10,10 +10,54 @@ import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-propert
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { EntityReferenceValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceValue'
 import { EntityPrices } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrices'
-import { EntityPrice } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrice'
+import { EntityPrice, EntityPriceJson } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrice'
 import { QueryError } from '@/modules/database-driver/exception/QueryError'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
+
+/**
+ * Represents attribute values in GraphQL response
+ */
+type GraphQLAttributes = Record<string, unknown>
+
+/**
+ * Represents associated data in GraphQL response
+ */
+type GraphQLAssociatedData = Record<string, unknown>
+
+/**
+ * Represents a referenced entity in GraphQL response
+ */
+interface GraphQLReferencedEntity {
+    [EntityPropertyType.Attributes]?: GraphQLAttributes
+    [key: string]: unknown
+}
+
+/**
+ * Represents a reference in GraphQL response
+ */
+interface GraphQLReference {
+    referencedPrimaryKey: number
+    referencedEntity?: GraphQLReferencedEntity
+    [EntityPropertyType.Attributes]?: GraphQLAttributes
+}
+
+/**
+ * Represents an entity in GraphQL response
+ */
+interface GraphQLEntity {
+    [StaticEntityProperties.PrimaryKey]?: number
+    [StaticEntityProperties.Version]?: number
+    [StaticEntityProperties.Scope]?: string
+    [StaticEntityProperties.Locales]?: string[]
+    [StaticEntityProperties.PriceInnerRecordHandling]?: string
+    [EntityPropertyType.Attributes]?: GraphQLAttributes
+    [EntityPropertyType.AssociatedData]?: GraphQLAssociatedData
+    [EntityPropertyType.Prices]?: EntityPriceJson[]
+    parents?: GraphQLEntity[]
+    priceForSale?: EntityPriceJson
+    [key: string]: unknown
+}
 
 
 /**
@@ -37,16 +81,17 @@ export class GraphQLQueryExecutor extends QueryExecutor {
             throw new QueryError(result.errors)
         }
 
+        const recordPage = (result?.data as Record<string, { recordPage?: { data?: GraphQLEntity[]; totalRecordCount?: number } }> | undefined)?.q?.recordPage
         return {
-            entities: result?.data?.q?.recordPage?.data.map((entity: any) => this.flattenEntity(dataPointer, entity)) || [],
-            totalEntitiesCount: result?.data?.q?.recordPage?.totalRecordCount || 0
+            entities: recordPage?.data?.map((entity: GraphQLEntity) => this.flattenEntity(dataPointer, entity)) || [],
+            totalEntitiesCount: recordPage?.totalRecordCount || 0
         }
     }
 
     /**
      * Converts original rich entity into simplified flat entity that is displayable in table
      */
-    private flattenEntity(dataPointer: EntityViewerDataPointer, entity: any): FlatEntity {
+    private flattenEntity(dataPointer: EntityViewerDataPointer, entity: GraphQLEntity): FlatEntity {
         const flattenedProperties: (WritableEntityProperty | undefined)[] = []
 
         flattenedProperties.push([EntityPropertyKey.entity(StaticEntityProperties.PrimaryKey), this.wrapRawValueIntoNativeValue(entity[StaticEntityProperties.PrimaryKey])])
@@ -65,20 +110,20 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         return this.createFlatEntity(flattenedProperties)
     }
 
-    private flattenParent(dataPointer: EntityViewerDataPointer, entity: any): WritableEntityProperty | undefined {
-        const parentEntities: any[] | undefined = entity['parents']
+    private flattenParent(_dataPointer: EntityViewerDataPointer, entity: GraphQLEntity): WritableEntityProperty | undefined {
+        const parentEntities: GraphQLEntity[] | undefined = entity['parents']
         if (!parentEntities || parentEntities.length == 0) {
             return undefined
         }
         if (parentEntities.length > 1) {
             throw new UnexpectedError(`There are more than one parent entity.`)
         }
-        const parentEntity: any = parentEntities[0]
+        const parentEntity: GraphQLEntity = parentEntities[0]
 
-        const parentPrimaryKey: number = parentEntity[StaticEntityProperties.PrimaryKey]
+        const parentPrimaryKey: number = parentEntity[StaticEntityProperties.PrimaryKey] ?? 0
 
         const representativeAttributes: (NativeValue | NativeValue[])[] = []
-        const attributes = parentEntity[EntityPropertyType.Attributes] || {}
+        const attributes: GraphQLAttributes = parentEntity[EntityPropertyType.Attributes] || {}
         for (const attributeName in attributes) {
             representativeAttributes.push(this.wrapRawValueIntoNativeValue(attributes[attributeName]))
         }
@@ -87,10 +132,10 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         return [EntityPropertyKey.entity(StaticEntityProperties.ParentPrimaryKey), parentReference]
     }
 
-    private flattenAttributes(entity: any): WritableEntityProperty[] {
+    private flattenAttributes(entity: GraphQLEntity): WritableEntityProperty[] {
         const flattenedAttributes: WritableEntityProperty[] = []
 
-        const attributes = entity[EntityPropertyType.Attributes] || {}
+        const attributes: GraphQLAttributes = entity[EntityPropertyType.Attributes] || {}
         for (const attributeName in attributes) {
             flattenedAttributes.push([EntityPropertyKey.attributes(attributeName), this.wrapRawValueIntoNativeValue(attributes[attributeName])])
         }
@@ -98,10 +143,10 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         return flattenedAttributes
     }
 
-    private flattenAssociatedData(entity: any): WritableEntityProperty[] {
+    private flattenAssociatedData(entity: GraphQLEntity): WritableEntityProperty[] {
         const flattenedAssociatedData: WritableEntityProperty[] = []
 
-        const associatedData = entity[EntityPropertyType.AssociatedData] || {}
+        const associatedData: GraphQLAssociatedData = entity[EntityPropertyType.AssociatedData] || {}
         for (const associatedDataName in associatedData) {
             flattenedAssociatedData.push([EntityPropertyKey.associatedData(associatedDataName), this.wrapRawValueIntoNativeValue(associatedData[associatedDataName])])
         }
@@ -109,9 +154,9 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         return flattenedAssociatedData
     }
 
-    private flattenPrices(entity: any): WritableEntityProperty | undefined {
-        const priceForSale: any | undefined = entity['priceForSale']
-        const prices: any[] | undefined = entity[EntityPropertyType.Prices]
+    private flattenPrices(entity: GraphQLEntity): WritableEntityProperty | undefined {
+        const priceForSale: EntityPriceJson | undefined = entity['priceForSale']
+        const prices: EntityPriceJson[] | undefined = entity[EntityPropertyType.Prices]
         if (priceForSale == undefined && prices == undefined) {
             return undefined
         }
@@ -123,12 +168,12 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         return [EntityPropertyKey.prices(), entityPrices]
     }
 
-    private flattenReferences(entity: any): WritableEntityProperty[] {
+    private flattenReferences(entity: GraphQLEntity): WritableEntityProperty[] {
         const flattenedReferences: WritableEntityProperty[] = []
 
-        const references = Object.keys(entity).filter((it: string) => it.startsWith('reference_'))
-        for (const referenceAlias of references) {
-            const referencesOfName = entity[referenceAlias]
+        const referenceKeys = Object.keys(entity).filter((it: string) => it.startsWith('reference_'))
+        for (const referenceAlias of referenceKeys) {
+            const referencesOfName = entity[referenceAlias] as GraphQLReference | GraphQLReference[] | undefined
             if (referencesOfName == undefined) {
                 continue
             }
@@ -167,11 +212,11 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         return flattenedReferences
     }
 
-    private resolveReferenceRepresentativeValue(reference: any): EntityReferenceValue {
+    private resolveReferenceRepresentativeValue(reference: GraphQLReference): EntityReferenceValue {
         const referencedPrimaryKey: number = reference['referencedPrimaryKey']
         const representativeAttributes: (NativeValue | NativeValue[])[] = []
 
-        const attributes = reference['referencedEntity']?.[EntityPropertyType.Attributes] || {}
+        const attributes: GraphQLAttributes = reference['referencedEntity']?.[EntityPropertyType.Attributes] || {}
         for (const attributeName in attributes) {
             representativeAttributes.push(this.wrapRawValueIntoNativeValue(attributes[attributeName]))
         }
@@ -179,11 +224,11 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         return new EntityReferenceValue(referencedPrimaryKey, representativeAttributes.flat())
     }
 
-    private flattenAttributesForSingleReference(reference: any): [string, EntityReferenceValue][] {
+    private flattenAttributesForSingleReference(reference: GraphQLReference): [string, EntityReferenceValue][] {
         const referencedPrimaryKey: number = reference['referencedPrimaryKey']
         const flattenedAttributes: [string, EntityReferenceValue][] = []
 
-        const attributes = reference[EntityPropertyType.Attributes] || {}
+        const attributes: GraphQLAttributes = reference[EntityPropertyType.Attributes] || {}
         for (const attributeName in attributes) {
             const wrappedValue: NativeValue | NativeValue[] = this.wrapRawValueIntoNativeValue(attributes[attributeName])
             flattenedAttributes.push([attributeName, new EntityReferenceValue(referencedPrimaryKey, wrappedValue instanceof Array ? wrappedValue : [wrappedValue])])

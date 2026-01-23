@@ -8,7 +8,7 @@ export class EntityPropertyValueJsonFormatter implements EntityPropertyValueForm
 
     format(value: EntityPropertyValue | EntityPropertyValue[], prettyPrint: boolean = false): string {
         // validates that it's a valid JSON and parses it if needed
-        const parsedJson = value instanceof Array ? value.map(it => this.parseValueIntoJson(it.value())) : this.parseValueIntoJson(value.value())
+        const parsedJson: unknown = value instanceof Array ? value.map(it => this.parseValueIntoJson(it.value())) : this.parseValueIntoJson(value.value())
         if (prettyPrint) {
             return JSON.stringify(parsedJson, null, 2)
         } else {
@@ -16,17 +16,17 @@ export class EntityPropertyValueJsonFormatter implements EntityPropertyValueForm
         }
     }
 
-    private parseValueIntoJson(value: any): any {
+    private parseValueIntoJson(value: unknown): unknown {
         if (value instanceof Object) {
             return value
-        } else if(typeof value === 'string') {
+        } else if (typeof value === 'string') {
             try {
-                return JSON.parse(value)
-            } catch(_e: unknown){
-                return JSON.parse(`"${value}"`)
+                return JSON.parse(value) as unknown
+            } catch {
+                return JSON.parse(`"${value}"`) as unknown
             }
         } else {
-            return JSON.parse(value.toString())
+            return JSON.parse(String(value)) as unknown
         }
     }
 }

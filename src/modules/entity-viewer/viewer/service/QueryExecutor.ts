@@ -3,7 +3,7 @@ import type { QueryResult } from '@/modules/entity-viewer/viewer/model/QueryResu
 import type { WritableEntityProperty } from '@/modules/entity-viewer/viewer/model/WritableEntityProperty'
 import type { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
-import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue'
+import { NativeValue, type SupportedValueType } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue'
 import { List } from 'immutable'
 
 /**
@@ -38,11 +38,11 @@ export abstract class QueryExecutor {
      * @param value a raw entity property value
      * @protected
      */
-    protected wrapRawValueIntoNativeValue(value: any | undefined): NativeValue | NativeValue[] {
+    protected wrapRawValueIntoNativeValue(value: SupportedValueType | SupportedValueType[]): NativeValue | NativeValue[] {
         if (value instanceof Array) {
             return value.map(item => new NativeValue(item))
-        } else if(value instanceof List) {
-            return (value as List<any>).map(x => new NativeValue(x)).toArray();
+        } else if (value instanceof List) {
+            return (value as List<SupportedValueType>).map(x => new NativeValue(x)).toArray()
         } else {
             return new NativeValue(value)
         }

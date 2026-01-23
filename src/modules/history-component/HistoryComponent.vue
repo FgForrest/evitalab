@@ -1,11 +1,18 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { GraphQLConsoleHistoryRecord } from '../graphql-console/console/history/model/GraphQLConsoleHistoryRecord';
 import type { EvitaQLConsoleHistoryRecord } from '../evitaql-console/console/history/model/EvitaQLConsoleHistoryRecord';
 const { t } = useI18n()
 
+interface HistoryListItem {
+    key: string
+    preview: string[]
+    value: GraphQLConsoleHistoryRecord | EvitaQLConsoleHistoryRecord
+}
+
 const props = defineProps<{
-    items: any[],
+    items: HistoryListItem[],
 }>()
 
 const emit = defineEmits<{
@@ -13,16 +20,15 @@ const emit = defineEmits<{
     (e: 'update:clearHistory'): void
 }>()
 
-const historyListRef = ref<HTMLElement | undefined>()
+const historyListRef = ref<{ $el?: HTMLElement } | undefined>()
 
 /**
  * Focuses the first item in the history list.
  */
 function focus() {
-    // @ts-ignore
-    let firstItem = historyListRef.value?.$el?.querySelector('.v-list-item');
+    const firstItem = historyListRef.value?.$el?.querySelector('.v-list-item') as HTMLElement | null
     if (firstItem) {
-        firstItem.focus();
+        firstItem.focus()
     }
 }
 

@@ -15,7 +15,7 @@ export class EntityViewerTabDefinition extends TabDefinition<EntityViewerTabPara
             undefined,
             title,
             EntityViewerTabDefinition.icon(),
-            markRaw(EntityViewer as DefineComponent<any, any, any>),
+            markRaw(EntityViewer as DefineComponent<object, object, object>),
             params,
             initialData
         )

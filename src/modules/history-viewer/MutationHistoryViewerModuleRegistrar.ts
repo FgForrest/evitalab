@@ -13,7 +13,6 @@ import {
     MutationHistoryTransactionVisualiser
 } from '@/modules/history-viewer/service/MutationHistoryTransactionVisualiser.ts'
 import {
-    EvitaQLConsoleTabFactory,
     evitaQLConsoleTabFactoryInjectionKey
 } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory.ts'
 import { type WorkspaceService, workspaceServiceInjectionKey } from '@/modules/workspace/service/WorkspaceService.ts'
@@ -24,10 +23,10 @@ import {
 } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
 
 export class MutationHistoryViewerModuleRegistrar implements ModuleRegistrar {
-    async register(builder: ModuleContextBuilder): Promise<void> {
+    register(builder: ModuleContextBuilder): void {
         const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
         const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
-        const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory = builder.inject(evitaQLConsoleTabFactoryInjectionKey)
+        builder.inject(evitaQLConsoleTabFactoryInjectionKey) // Ensure dependency is injected
         const mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory = builder.inject(mutationHistoryViewerTabFactoryInjectionKey)
 
         const mutationHistoryViewerService: MutationHistoryViewerService = new MutationHistoryViewerService(

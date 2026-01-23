@@ -15,7 +15,7 @@ export class ErrorViewerTabDefinition extends TabDefinition<ErrorViewerTabParams
             undefined,
             title,
             ErrorViewerTabDefinition.icon(),
-            markRaw(ErrorViewer as DefineComponent<any, any, any>),
+            markRaw(ErrorViewer as DefineComponent<object, object, object>),
             params,
             new VoidTabData()
         )

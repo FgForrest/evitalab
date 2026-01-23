@@ -15,7 +15,7 @@ export class EvitaQLConsoleTabDefinition extends TabDefinition<EvitaQLConsoleTab
             undefined,
             title,
             EvitaQLConsoleTabDefinition.icon(),
-            markRaw(EvitaQLConsole as DefineComponent<any, any, any>),
+            markRaw(EvitaQLConsole as DefineComponent<object, object, object>),
             params,
             initialData
         )

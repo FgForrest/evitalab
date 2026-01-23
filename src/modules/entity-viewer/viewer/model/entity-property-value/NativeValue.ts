@@ -16,7 +16,7 @@ import { Attributes } from '@/modules/database-driver/request-response/data/Attr
  * Represents a single entity property value that is a scalar (native to JavaScript). Cannot be an array, each array item
  * must be wrapped in a separate {@link NativeValue} instance.
  */
-type supportedValueType =
+export type SupportedValueType =
     | string
     | LocalDateTime
     | OffsetDateTime
@@ -32,14 +32,14 @@ type supportedValueType =
     | undefined
     | Range<unknown>
 export class NativeValue extends EntityPropertyValue {
-    readonly delegate: supportedValueType
+    readonly delegate: SupportedValueType
 
-    constructor(delegate: supportedValueType) {
+    constructor(delegate: SupportedValueType) {
         super()
         this.delegate = delegate
     }
 
-    value(): supportedValueType {
+    value(): SupportedValueType {
         return this.delegate
     }
 
@@ -86,7 +86,7 @@ export class NativeValue extends EntityPropertyValue {
         return this.toPreviewString()
     }
 
-    toRawRepresentation(): supportedValueType {
+    toRawRepresentation(): SupportedValueType {
         return this.delegate
     }
 

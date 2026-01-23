@@ -8,7 +8,7 @@ import { DateTimeRange } from '@/modules/database-driver/data-type/DateTimeRange
 import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { Price } from '@/modules/database-driver/request-response/data/Price'
 
-interface EntityPriceJson {
+export interface EntityPriceJson {
     priceId: number | undefined
     priceList: string
     currency: Currency

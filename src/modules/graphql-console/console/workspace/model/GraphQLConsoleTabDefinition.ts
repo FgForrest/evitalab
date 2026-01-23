@@ -15,7 +15,7 @@ export class GraphQLConsoleTabDefinition extends TabDefinition<GraphQLConsoleTab
             undefined,
             title,
             GraphQLConsoleTabDefinition.icon(),
-            markRaw(GraphQLConsole as DefineComponent<any, any, any>),
+            markRaw(GraphQLConsole as DefineComponent<object, object, object>),
             params,
             initialData
         )
