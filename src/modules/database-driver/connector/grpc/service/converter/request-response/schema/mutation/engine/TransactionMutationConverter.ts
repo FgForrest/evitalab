@@ -1,4 +1,4 @@
-import type { GrpcTransactionMutation } from '@/modules/database-driver/connector/grpc/gen/GrpcEngineMutation_pb.ts'
+import type { GrpcTransactionMutation } from '@/modules/database-driver/connector/grpc/gen/GrpcInfrastrutureMutation_pb.ts'
 import type {
     SchemaMutationConverter
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
@@ -10,12 +10,11 @@ export class TransactionMutationConverter implements SchemaMutationConverter<Tra
 
     convert(mutation: GrpcTransactionMutation): TransactionMutation {
        return new TransactionMutation(
-           EvitaValueConverter.convertGrpcUuid(mutation.transactionId).toString(),
+           EvitaValueConverter.convertGrpcUuid(mutation.transactionId!).toString(),
            Number(mutation.version),
            mutation.mutationCount,
            Number(mutation.walSizeInBytes),
-           EvitaValueConverter.convertGrpcOffsetDateTime(mutation.commitTimestamp)
-
+           EvitaValueConverter.convertGrpcOffsetDateTime(mutation.commitTimestamp!)
        )
     }
 }

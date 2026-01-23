@@ -1,7 +1,7 @@
 import { OffsetDateTime } from "./OffsetDateTime"
 import { Range } from "./Range"
 
-const emptyRangeEndSymbol: any = '∞'
+const emptyRangeEndSymbol: string = '∞'
 
 /**
  * Range type that envelopes {@link OffsetDateTime} types.
@@ -50,6 +50,8 @@ export class DateTimeRange extends Range<OffsetDateTime> {
     }
 
     override toString():string{
-        return `[${this.from ?? emptyRangeEndSymbol},${this.to ?? emptyRangeEndSymbol}]`
+        const fromStr: string = this.from?.toString() ?? emptyRangeEndSymbol
+        const toStr: string = this.to?.toString() ?? emptyRangeEndSymbol
+        return `[${fromStr},${toStr}]`
     }
 }
