@@ -43,10 +43,10 @@ const entityViewerTabFactory: EntityViewerTabFactory = useEntityViewerTabFactory
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const pageSizeOptions: any[] = [10, 25, 50, 100, 250, 500, 1000].map(it => ({ title: it.toString(10), value: it }))
+const pageSizeOptions: { title: string; value: number }[] = [10, 25, 50, 100, 250, 500, 1000].map(it => ({ title: it.toString(10), value: it }))
 
 const props = defineProps<{
-    displayedGridHeaders: any[],
+    displayedGridHeaders: unknown[],
     loading: boolean,
     resultEntities: FlatEntity[],
     totalResultCount: number,
@@ -54,7 +54,7 @@ const props = defineProps<{
     pageSize: number
 }>()
 const emit = defineEmits<{
-    (e: 'gridUpdated', value: { page: number, itemsPerPage: number, sortBy: any[] }): void
+    (e: 'gridUpdated', value: { page: number, itemsPerPage: number, sortBy: unknown[] }): void
 }>()
 const tabProps = useTabProps()
 const entityPropertyDescriptorIndex = useEntityPropertyDescriptorIndex()
@@ -69,8 +69,7 @@ const propertyDetailValue = ref<EntityPropertyValue | EntityPropertyValue[] | un
 function getPropertyDescriptor(key: string): EntityPropertyDescriptor | undefined {
     const descriptor = entityPropertyDescriptorIndex.value.get(key)
     if (descriptor == undefined) {
-        toaster.error(t('entityViewer.grid.notification.failedToFindProperty', { key }))
-            .then()
+        void toaster.error(t('entityViewer.grid.notification.failedToFindProperty', { key }))
     }
     return descriptor
 }
@@ -85,7 +84,7 @@ function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string,
         return
     } else if (propertyDescriptor &&
         propertyDescriptor.type === EntityPropertyType.Entity &&
-        propertyDescriptor.key.name === StaticEntityProperties.ParentPrimaryKey) {
+        (propertyDescriptor.key.name as StaticEntityProperties) === StaticEntityProperties.ParentPrimaryKey) {
         // we want to open parent entity in appropriate new grid
         workspaceService.createTab(entityViewerTabFactory.createNew(
             tabProps.params.dataPointer.catalogName,

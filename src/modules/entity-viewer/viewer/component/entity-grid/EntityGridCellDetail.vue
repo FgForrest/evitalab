@@ -57,7 +57,7 @@ const globalOutputFormat = ref<EntityPropertyValueDesiredOutputFormat>(EntityPro
 
 const rawDataType = computed<Scalar | ExtraEntityObjectType | undefined>(() => {
     if (props.propertyDescriptor?.type === EntityPropertyType.Entity) {
-        const propertyName = props.propertyDescriptor.key.name
+        const propertyName = props.propertyDescriptor.key.name as StaticEntityProperties
         switch (propertyName) {
             case StaticEntityProperties.PrimaryKey: return Scalar.Integer
             case StaticEntityProperties.Version: return Scalar.Integer

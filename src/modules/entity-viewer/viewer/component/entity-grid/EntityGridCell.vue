@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useToaster } from '@/modules/notification/service/Toaster'
@@ -70,7 +70,7 @@ const isEPressed = useKeyPress('e')
 
 const printablePropertyValue = computed<string>(() => toPrintablePropertyValue(props.propertyValue))
 const prependIcon = computed<string | undefined>(() => {
-    if (props.propertyDescriptor?.type === EntityPropertyType.Entity && props.propertyDescriptor?.key.name === StaticEntityProperties.ParentPrimaryKey) {
+    if (props.propertyDescriptor?.type === EntityPropertyType.Entity && (props.propertyDescriptor?.key.name as StaticEntityProperties) === StaticEntityProperties.ParentPrimaryKey) {
         return 'mdi-open-in-new'
     } else if (props.propertyDescriptor?.schema != undefined &&
         isTypedSchema(props.propertyDescriptor.schema) &&
@@ -136,18 +136,18 @@ function copyValue(raw: boolean): void {
                 value = entityValue.toRawString()
             }
 
-            navigator.clipboard.writeText(value).then(() => {
-                toaster.info(t('common.notification.copiedToClipboard')).then()
+            void navigator.clipboard.writeText(value).then(() => {
+                void toaster.info(t('common.notification.copiedToClipboard'))
             }).catch(() => {
-                toaster.error(t('common.notification.failedToCopyToClipboard')).then()
+                void toaster.error(t('common.notification.failedToCopyToClipboard'))
             })
         }
     } else {
         if (printablePropertyValue.value) {
-            navigator.clipboard.writeText(printablePropertyValue.value).then(() => {
-                toaster.info(t('common.notification.copiedToClipboard')).then()
+            void navigator.clipboard.writeText(printablePropertyValue.value).then(() => {
+                void toaster.info(t('common.notification.copiedToClipboard'))
             }).catch(() => {
-                toaster.error(t('common.notification.failedToCopyToClipboard')).then()
+                void toaster.error(t('common.notification.failedToCopyToClipboard'))
             })
         }
     }

@@ -58,8 +58,10 @@ const flags = computed<ToolbarFlag[]>(() => {
     return flags
 })
 
-type ShareTabButtonType = InstanceType<typeof ShareTabButton> | undefined
-const shareTabButtonRef = ref<ShareTabButtonType>()
+interface ShareTabButtonExposed {
+    share: () => void
+}
+const shareTabButtonRef = ref<ShareTabButtonExposed>()
 
 onMounted(() => {
     // register grid specific keyboard shortcuts

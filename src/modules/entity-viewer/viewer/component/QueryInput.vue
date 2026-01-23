@@ -64,7 +64,10 @@ const emit = defineEmits<{
 }>()
 const tabProps = useTabProps()
 
-const queryLanguageSelectorRef = ref<InstanceType<typeof QueryLanguageSelector>>()
+interface FocusableComponent {
+    focus: () => void
+}
+const queryLanguageSelectorRef = ref<FocusableComponent>()
 
 // todo this approach to autocompletion in grid is temporary until i'm able to pass the entire query with cropped view
 const filterByInputView = ref<EditorView>()
@@ -108,9 +111,9 @@ function createOrderByLangSupportExtension(queryLanguage: QueryLanguage): Extens
     }
 }
 
-const dataLocaleSelectorRef = ref<InstanceType<typeof LocaleSelector>>()
+const dataLocaleSelectorRef = ref<FocusableComponent>()
 const supportsPrices = ref<boolean>(false)
-const priceTypeSelectorRef = ref<InstanceType<typeof PriceTypeSelector>>()
+const priceTypeSelectorRef = ref<FocusableComponent>()
 void entityViewerService.supportsPrices(tabProps.params.dataPointer)
     .then(it => supportsPrices.value = it)
 

@@ -5,12 +5,18 @@
 
 import { computed } from 'vue'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
+import type { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
+
+interface GridColumn {
+    title: string
+    descriptor?: EntityPropertyDescriptor
+}
 
 const props = defineProps<{
-    column: any,
-    isSorted: (column: any) => boolean,
-    getSortIcon: (column: any) => any,
-    toggleSort: (column: any) => void
+    column: GridColumn,
+    isSorted: (column: GridColumn) => boolean,
+    getSortIcon: (column: GridColumn) => string | undefined,
+    toggleSort: (column: GridColumn) => void
 }>()
 
 const prependIcon = computed<string | undefined>(() => {
