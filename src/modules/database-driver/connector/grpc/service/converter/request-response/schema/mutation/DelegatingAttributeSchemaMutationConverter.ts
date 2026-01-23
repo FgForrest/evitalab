@@ -1,6 +1,3 @@
-import type {
-    GrpcAttributeSchemaMutation
-} from '@/modules/database-driver/connector/grpc/gen/GrpcAttributeSchemaMutations_pb.ts'
 import {
     CreateAttributeSchemaMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/attribute/CreateAttributeSchemaMutationConverter.ts'
@@ -50,11 +47,15 @@ import type {
 import type {
     SortableAttributeCompoundSchemaMutation
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/SortableAttributeCompoundSchemaMutation.ts'
-
+import type {
+    SchemaMutationConverter
+} from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
+import type { SchemaMutation } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutation.ts'
+import type { Message } from '@bufbuild/protobuf'
 
 export class DelegatingAttributeSchemaMutationConverter {
 
-    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([ // todo pfi: replace any
+    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, SchemaMutationConverter<SchemaMutation, Message>>([
         ['createAttributeSchemaMutation',
             CreateAttributeSchemaMutationConverter.INSTANCE
         ],
