@@ -6,7 +6,7 @@ import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/Entity
  */
 export class EntityPropertyValueRawFormatter implements EntityPropertyValueFormatter {
 
-    format(value: EntityPropertyValue | EntityPropertyValue[], prettyPrint: boolean = false): string {
+    format(value: EntityPropertyValue | EntityPropertyValue[], _prettyPrint: boolean = false): string {
         return value instanceof Array ? `[${value.map(it => it.toPreviewString()).join(', ')}]` : (value).toPreviewString()
     }
 }

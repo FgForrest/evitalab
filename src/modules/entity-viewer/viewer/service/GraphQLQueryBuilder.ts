@@ -129,7 +129,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
             .filter(({ type }) => type === EntityPropertyType.Entity)
             .map(({ name }) => name)
             .forEach(it => {
-                if (it === StaticEntityProperties.ParentPrimaryKey) {
+                if (it === (StaticEntityProperties.ParentPrimaryKey as string)) {
                     const representativeAttributes: AttributeSchema[] = Array.from(
                         entitySchema.attributes
                             .values() || []

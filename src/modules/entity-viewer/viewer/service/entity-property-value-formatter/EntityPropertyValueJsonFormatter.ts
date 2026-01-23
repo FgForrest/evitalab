@@ -22,7 +22,7 @@ export class EntityPropertyValueJsonFormatter implements EntityPropertyValueForm
         } else if(typeof value === 'string') {
             try {
                 return JSON.parse(value)
-            } catch(e: any){
+            } catch(_e: unknown){
                 return JSON.parse(`"${value}"`)
             }
         } else {

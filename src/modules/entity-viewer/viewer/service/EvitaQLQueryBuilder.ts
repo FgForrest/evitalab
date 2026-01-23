@@ -119,7 +119,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
             .filter(({ type }) => type === EntityPropertyType.Entity)
             .map(({ name }) => name)
             .forEach(it => {
-                if (it === StaticEntityProperties.ParentPrimaryKey) {
+                if (it === (StaticEntityProperties.ParentPrimaryKey as string)) {
                     const requiredRepresentativeAttributes: string[] = this.findRepresentativeAttributes(entitySchema, dataLocale)
                         .map(attributeSchema => attributeSchema.name)
 
@@ -192,7 +192,7 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
     private buildPriceFetchRequires(requiredData: EntityPropertyKey[], entityFetchRequires: string[]): void {
         if (requiredData.find(({ type }) => type === EntityPropertyType.Prices) != undefined) {
             entityFetchRequires.push('priceContentAll()')
-        } else if (requiredData.find(it => it.type === EntityPropertyType.Entity && it.name === StaticEntityProperties.PriceInnerRecordHandling) != undefined) {
+        } else if (requiredData.find(it => it.type === EntityPropertyType.Entity && it.name === (StaticEntityProperties.PriceInnerRecordHandling as string)) != undefined) {
             entityFetchRequires.push('priceContentRespectingFilter()')
         }
     }

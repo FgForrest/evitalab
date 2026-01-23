@@ -4,11 +4,6 @@ import {
     evitaQLConsoleServiceInjectionKey
 } from '@/modules/evitaql-console/console/service/EvitaQLConsoleService'
 import {
-    EvitaQLConsoleTabFactory,
-    evitaQLConsoleTabFactoryInjectionKey
-} from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
-import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
-import {
     EvitaQLResultVisualiserService,
     evitaQLResultVisualiserServiceInjectionKey
 } from '@/modules/evitaql-console/console/result-visualiser/service/EvitaQLResultVisualiserService'
@@ -18,7 +13,7 @@ import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/
 // todo docs
 export class EvitaQLConsoleModuleRegistrar implements ModuleRegistrar {
 
-    async register(builder: ModuleContextBuilder): Promise<void> {
+    register(builder: ModuleContextBuilder): void {
         const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
 
         builder.provide(
