@@ -1,11 +1,11 @@
 import { BigDecimal } from "./BigDecimal";
-import type { PrettyPrintable } from "./PrettyPrintable";
 import { Range } from "./Range";
+import type { PrettyPrintable } from '@/modules/database-driver/data-type/PrettyPrintable.ts'
 
 /**
  * Specialized {@link Range} for {@link BigDecimal}.
  */
-export class BigDecimalNumberRange extends Range<BigDecimal> {
+export class BigDecimalNumberRange extends Range<BigDecimal> implements PrettyPrintable {
 
     constructor(from: BigDecimal | undefined, to: BigDecimal | undefined){
         super(from, to)

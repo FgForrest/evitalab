@@ -8,7 +8,7 @@ const hasher: XXH.HashObject = XXH.h64()
  * History key for uniquely identifying a tab section's execution history (e.g., executed queries).
  * Key is serialized as a stringified hash that can be directly used in {@link Map}.
  */
-export class TabHistoryKey<R> {
+export class TabHistoryKey {
     readonly hash: string;
 
     constructor(connection: Connection, tabType: TabType, sectionPath: string[]) {

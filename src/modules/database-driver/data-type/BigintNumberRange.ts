@@ -1,10 +1,10 @@
 import { Range } from "./Range";
-import type { PrettyPrintable } from "./PrettyPrintable";
+import type { PrettyPrintable } from '@/modules/database-driver/data-type/PrettyPrintable.ts'
 
 /**
  * Specialized {@link Range} for {@link bigint}.
  */
-export class BigintNumberRange extends Range<bigint> {
+export class BigintNumberRange extends Range<bigint> implements PrettyPrintable {
 
     constructor(from?: bigint, to?: bigint){
         super(from, to)

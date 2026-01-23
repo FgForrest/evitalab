@@ -57,7 +57,7 @@ export class AssociatedData {
     get names(): Set<string> {
         if (this._names == undefined) {
             const allNames: string[] = [...this.globalAssociatedData.keys()]
-            for (const [_, associatedData] of this.localizedAssociatedData) {
+            for (const [, associatedData] of this.localizedAssociatedData) {
                 allNames.push(...associatedData.keys())
             }
             this._names = Set.of(...allNames)
@@ -77,7 +77,7 @@ export class AssociatedData {
 
     toString(): string {
         const resultStrings: string[] = []
-        for(const [_, value] of this.globalAssociatedData){
+        for(const [, value] of this.globalAssociatedData){
             resultStrings.push(String(value));
         }
         return resultStrings.join(';')

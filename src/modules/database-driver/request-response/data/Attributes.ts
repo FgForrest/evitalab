@@ -57,7 +57,7 @@ export class Attributes {
     get names(): Set<string> {
         if (this._names == undefined) {
             const allNames: string[] = [...this.globalAttributes.keys()]
-            for (const [_, attributes] of this.localizedAttributes) {
+            for (const [, attributes] of this.localizedAttributes) {
                 allNames.push(...attributes.keys())
             }
             this._names = Set.of(...allNames)
@@ -77,7 +77,7 @@ export class Attributes {
 
     toString(): string {
         const resultStrings: string[] = []
-        for(const [_, value] of this.globalAttributes){
+        for(const [, value] of this.globalAttributes){
             resultStrings.push(String(value));
         }
         return resultStrings.join(';')
