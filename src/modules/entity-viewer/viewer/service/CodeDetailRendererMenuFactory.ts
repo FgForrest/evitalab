@@ -3,7 +3,6 @@ import {
     CodeDetailRendererMenuItemType
 } from '@/modules/entity-viewer/viewer/model/entity-grid/detail-renderer/CodeDetailRendererMenuItemType'
 import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
-import { MenuAction } from '@/modules/base/model/menu/MenuAction'
 import {
     EntityPropertyValueSupportedCodeLanguage
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValueSupportedCodeLanguage'
@@ -29,12 +28,12 @@ export class CodeDetailRendererMenuFactory extends MenuFactory<CodeDetailRendere
         super()
     }
 
-    async createItems(
+    createItems(
         codeLanguage?: EntityPropertyValueSupportedCodeLanguage,
         prettyPrint?: boolean,
         copyRenderedValueCallback?: () => void,
         prettyPrintCallback?: () => void,
-    ): Promise<Map<CodeDetailRendererMenuItemType, MenuItem<CodeDetailRendererMenuItemType>>> {
+    ): Map<CodeDetailRendererMenuItemType, MenuItem<CodeDetailRendererMenuItemType>> {
         if (codeLanguage == undefined) throw new Error('Code language is required.')
         if (prettyPrint == undefined) throw new Error('Pretty print value is required.')
         if (copyRenderedValueCallback == undefined) throw new Error('Copy rendered value callback is required.')

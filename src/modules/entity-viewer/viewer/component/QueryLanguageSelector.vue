@@ -15,6 +15,7 @@ const emit = defineEmits<{
 }>()
 
 const queryLanguagesButtonRef = ref<InstanceType<typeof VBtn> | undefined>()
+type ButtonElement = HTMLButtonElement | undefined
 
 const items: MenuAction<QueryLanguage>[] = createItems()
 
@@ -24,8 +25,9 @@ const selectedIcon = computed<string>(() => {
 })
 
 function focus(): void {
-    queryLanguagesButtonRef.value?.$el?.click()
-    queryLanguagesButtonRef.value?.$el?.focus()
+    const el = queryLanguagesButtonRef.value?.$el as ButtonElement
+    el?.click()
+    el?.focus()
 }
 
 function createItems(): MenuAction<QueryLanguage>[] {

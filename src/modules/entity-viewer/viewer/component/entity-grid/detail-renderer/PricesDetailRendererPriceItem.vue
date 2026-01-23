@@ -13,7 +13,7 @@ import { usePriceType } from '@/modules/entity-viewer/viewer/component/dependenc
 
 const { t } = useI18n()
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     price: EntityPrice
     priceForSale?: boolean
     virtualPriceForSale?: boolean

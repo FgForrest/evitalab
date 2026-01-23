@@ -61,7 +61,7 @@ const menuItemList: ComputedRef<MenuItem<MarkdownDetailRendererMenuItemType>[]> 
     })
 watch(
     prettyPrint,
-    async () => menuItems.value = await createMenuItems(),
+    () => { menuItems.value = createMenuItems() },
     { immediate: true }
 )
 
@@ -246,13 +246,12 @@ function copyRenderedValue() {
         })
 }
 
-async function createMenuItems(): Promise<Map<MarkdownDetailRendererMenuItemType, MenuItem<MarkdownDetailRendererMenuItemType>>> {
-    return await markdownDetailRendererMenuFactory.createItems(
+function createMenuItems(): Map<MarkdownDetailRendererMenuItemType, MenuItem<MarkdownDetailRendererMenuItemType>> {
+    return markdownDetailRendererMenuFactory.createItems(
         prettyPrint.value,
         () => copyRenderedValue(),
         () => prettyPrint.value = !prettyPrint.value,
     )
-
 }
 </script>
 

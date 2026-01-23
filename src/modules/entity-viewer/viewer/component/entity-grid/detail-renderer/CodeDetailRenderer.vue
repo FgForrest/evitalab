@@ -54,7 +54,7 @@ const menuItemList: ComputedRef<MenuItem<CodeDetailRendererMenuItemType>[]> = co
 })
 watch(
     [() => props.codeLanguage, prettyPrint],
-    async () => menuItems.value = await createMenuItems(),
+    () => { menuItems.value = createMenuItems() },
     { immediate: true }
 )
 
@@ -105,8 +105,8 @@ function copyRenderedValue() {
     })
 }
 
-async function createMenuItems(): Promise<Map<CodeDetailRendererMenuItemType, MenuItem<CodeDetailRendererMenuItemType>>> {
-    return await codeDetailRendererMenuFactory.createItems(
+function createMenuItems(): Map<CodeDetailRendererMenuItemType, MenuItem<CodeDetailRendererMenuItemType>> {
+    return codeDetailRendererMenuFactory.createItems(
         props.codeLanguage,
         prettyPrint.value,
         () => copyRenderedValue(),

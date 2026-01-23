@@ -12,7 +12,6 @@ import { EntityViewerService, useEntityViewerService } from '@/modules/entity-vi
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import type { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
-import { QueryLanguage } from '@/modules/entity-viewer/viewer/model/QueryLanguage'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'

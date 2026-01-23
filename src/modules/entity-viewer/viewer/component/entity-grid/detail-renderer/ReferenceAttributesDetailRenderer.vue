@@ -14,7 +14,6 @@ import {
     useEntityViewerTabFactory
 } from '@/modules/entity-viewer/viewer/workspace/service/EntityViewerTabFactory'
 import { EntityViewerTabData } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabData'
-import { QueryLanguage } from '@/modules/entity-viewer/viewer/model/QueryLanguage'
 import EntityGridCellDetailValueListItem
     from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridCellDetailValueListItem.vue'
 import {

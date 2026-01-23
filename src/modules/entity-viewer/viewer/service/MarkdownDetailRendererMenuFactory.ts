@@ -25,11 +25,11 @@ export class MarkdownDetailRendererMenuFactory extends MenuFactory<MarkdownDetai
         super()
     }
 
-    async createItems(
+    createItems(
         prettyPrint?: boolean,
         copyRenderedValueCallback?: () => void,
         prettyPrintCallback?: () => void,
-    ): Promise<Map<MarkdownDetailRendererMenuItemType, MenuItem<MarkdownDetailRendererMenuItemType>>> {
+    ): Map<MarkdownDetailRendererMenuItemType, MenuItem<MarkdownDetailRendererMenuItemType>> {
         if (prettyPrint == undefined) throw new Error('Pretty print value is required.')
         if (copyRenderedValueCallback == undefined) throw new Error('Copy rendered value callback is required.')
         if (prettyPrintCallback == undefined) throw new Error('Pretty print callback is required.')

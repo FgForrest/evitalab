@@ -1,13 +1,21 @@
 <script setup lang="ts">
-const props = withDefaults(defineProps<{
-    actions?: any[]
+interface ActionItem {
+    value: unknown
+    title: string
+    props: {
+        prependIcon: string
+    }
+}
+
+withDefaults(defineProps<{
+    actions?: ActionItem[]
     fillSpace?: boolean
 }>(), {
     actions: () => [],
     fillSpace: true
 })
 const emit = defineEmits<{
-    (e: 'click:action', value: any): void
+    (e: 'click:action', value: unknown): void
 }>()
 </script>
 

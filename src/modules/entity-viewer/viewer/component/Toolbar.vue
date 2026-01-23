@@ -19,7 +19,7 @@ import { getEnumKeyByValue } from '@/utils/enum.ts'
 const keymap: Keymap = useKeymap()
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     icon: string,
     currentData: EntityViewerTabData,
     title: List<string>,
@@ -32,8 +32,13 @@ const tabProps = useTabProps()
 const dataLocale = useDataLocale()
 const layers = useLayer()
 
-const flags = computed<any>(() => {
-    const flags: any[] = []
+interface ToolbarFlag {
+    title: string
+    prependIcon: string
+}
+
+const flags = computed<ToolbarFlag[]>(() => {
+    const flags: ToolbarFlag[] = []
     if (dataLocale?.value != undefined) {
         flags.push({
             title: dataLocale.value,
@@ -53,11 +58,12 @@ const flags = computed<any>(() => {
     return flags
 })
 
-const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
+type ShareTabButtonType = InstanceType<typeof ShareTabButton> | undefined
+const shareTabButtonRef = ref<ShareTabButtonType>()
 
 onMounted(() => {
     // register grid specific keyboard shortcuts
-    keymap.bind(Command.EntityViewer_ShareTab, tabProps.id, () => shareTabButtonRef.value?.share())
+    keymap.bind(Command.EntityViewer_ShareTab, tabProps.id, () => { shareTabButtonRef.value?.share() })
 })
 onUnmounted(() => {
     // unregister grid specific keyboard shortcuts

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
-import { watch } from 'vue'
 
 const { t } = useI18n()
 
@@ -15,8 +15,8 @@ const emit = defineEmits<{
     (e: 'update:selected', value: SelectedScope[]): void
 }>()
 
-const liveSelection = ref<boolean>(props.selectedScope.find(x => x.scope === EntityScope.Live)?.value!)
-const archiveSelection = ref<boolean>(props.selectedScope.find(x => x.scope === EntityScope.Archive)?.value!)
+const liveSelection = ref<boolean>(props.selectedScope.find(x => x.scope === EntityScope.Live)?.value ?? false)
+const archiveSelection = ref<boolean>(props.selectedScope.find(x => x.scope === EntityScope.Archive)?.value ?? false)
 
 watch(liveSelection, () => {
     updatedSelection()

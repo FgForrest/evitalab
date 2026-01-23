@@ -10,7 +10,7 @@ import {
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     modelValue: EntityPropertyValueDesiredOutputFormat
 }>()
 const emit = defineEmits<{
