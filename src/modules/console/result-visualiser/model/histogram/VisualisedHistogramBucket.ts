@@ -31,11 +31,12 @@ export class VisualisedHistogramBucket {
         )
     }
 
-    static fromJson(json: HistogramBucketJson): VisualisedHistogramBucket {
+    static fromJson(json: unknown): VisualisedHistogramBucket {
+        const typedJson = json as HistogramBucketJson
         return new VisualisedHistogramBucket(
-            json.threshold ? new BigDecimal(json.threshold) : undefined,
-            json.occurrences,
-            json.requested
+            typedJson.threshold ? new BigDecimal(typedJson.threshold) : undefined,
+            typedJson.occurrences,
+            typedJson.requested
         )
     }
 }
