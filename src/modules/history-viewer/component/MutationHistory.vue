@@ -200,7 +200,7 @@ async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) 
         pushNewRecords(fetchedRecords)
         await processRecords()
         done('ok')
-    } catch (e: any) {
+    } catch (e: unknown) {
         handleRecordFetchError(e)
         done('error')
     }
@@ -222,7 +222,7 @@ async function reloadHistory(): Promise<void> {
         moveNextPagePointer(fetchedRecords)
         pushNewRecords(fetchedRecords)
         await processRecords()
-    } catch (e: any) {
+    } catch (e: unknown) {
         handleRecordFetchError(e)
     }
 }
@@ -270,19 +270,19 @@ async function processRecords(): Promise<void> {
     // note: we compute the history manually here because for some reason, computed ref wasn't working
     try {
         history.value = (await mutationHistoryViewerService.processRecords(props.dataPointer.catalogName, props.criteria, records)).toArray()
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error(e)
     }
 }
 
-function handleRecordFetchError(e: any): void {
+function handleRecordFetchError(e: unknown): void {
     if (e instanceof ConnectError && e.code === Code.InvalidArgument) {
 // todp pfi: do I need to fix this?
     }
-    toaster.error(t(
+    void toaster.error(t(
         'mutationHistoryViewer.notification.couldNotLoadRecords',
-        { reason: e.message }
-    )).then()
+        { reason: e instanceof Error ? e.message : String(e) }
+    ))
 }
 
 async function moveStartPointerToNewest(): Promise<void> {
@@ -300,10 +300,10 @@ async function moveStartPointerToNewest(): Promise<void> {
             startPointer.value = new StartRecordsPointer(latestRecord.version + 1)
             emit('update:startPointerActive', true)
         }
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'mutationHistoryViewer.notification.couldNotLoadLatestRecording',
-            { reason: e.message }
+            { reason: e instanceof Error ? e.message : String(e) }
         ))
         emit('update:startPointerActive', false)
     }

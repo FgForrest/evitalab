@@ -59,7 +59,6 @@ import {
 import {
     GraphQLConsoleTabDefinition
 } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
-import { command } from 'keymaster'
 
 enum EditorTabType {
     Query = 'query',
@@ -133,7 +132,7 @@ function pickHistoryRecord(record: GraphQLConsoleHistoryRecord): void {
     queryCode.value = record[1] || ''
     variablesCode.value = record[2] || ''
     editorTab.value = EditorTabType.Query
-    setTimeout(() => queryEditorRef.value?.focus())
+    setTimeout(() => { queryEditorRef.value?.focus() })
 }
 function clearHistory(): void {
     workspaceService.clearTabHistory(historyKey.value)
@@ -176,17 +175,17 @@ onBeforeMount(() => {
             emit('ready')
 
             if (props.params.executeOnOpen) {
-                executeQuery()
+                void executeQuery()
             }
         })
-        .catch(error => {
-            toaster.error('Could get GraphQL Schema', error).then() // todo lho i18n
+        .catch((error: unknown) => {
+            void toaster.error('Could get GraphQL Schema', error instanceof Error ? error : undefined) // todo lho i18n
         })
 })
 onMounted(() => {
     // register console specific keyboard shortcuts
     keymap.bind(Command.GraphQLConsole_ExecuteQuery, props.id, executeQuery)
-    keymap.bind(Command.GraphQLConsole_ShareTab, props.id, () => shareTabButtonRef.value?.share())
+    keymap.bind(Command.GraphQLConsole_ShareTab, props.id, () => { void shareTabButtonRef.value?.share() })
     keymap.bind(Command.GraphQLConsole_Query_QueryEditor, props.id, () => {
         editorTab.value = EditorTabType.Query
         focusQueryEditor()
@@ -234,8 +233,8 @@ onUnmounted(() => {
 async function executeQuery(): Promise<void> {
     try {
         workspaceService.addTabHistoryRecord(historyKey.value, createGraphQLConsoleHistoryRecord(queryCode.value, variablesCode.value))
-    } catch (e: any) {
-        await toaster.error(t('graphQLConsole.notification.failedToSaveQueryToHistory', e))
+    } catch (e: unknown) {
+        await toaster.error(t('graphQLConsole.notification.failedToSaveQueryToHistory'), e instanceof Error ? e : undefined)
     }
 
     loading.value = true
@@ -247,9 +246,9 @@ async function executeQuery(): Promise<void> {
         if (resultTab.value === ResultTabType.Raw) {
             focusRawResultEditor()
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         loading.value = false
-        await toaster.error('Could not execute query', error) // todo lho i18n
+        await toaster.error('Could not execute query', error instanceof Error ? error : undefined) // todo lho i18n
     }
 }
 
@@ -265,22 +264,22 @@ function initializeSchemaEditor(): void {
 }
 
 function focusQueryEditor(): void {
-    setTimeout(() => queryEditorRef.value?.focus())
+    setTimeout(() => { queryEditorRef.value?.focus() })
 }
 function focusVariablesEditor(): void {
-    setTimeout(() => variablesEditorRef.value?.focus())
+    setTimeout(() => { variablesEditorRef.value?.focus() })
 }
 function focusHistory(): void {
-    setTimeout(() => historyRef.value?.focus())
+    setTimeout(() => { historyRef.value?.focus() })
 }
 function focusSchemaEditor(): void {
-    setTimeout(() => schemaEditorRef.value?.focus())
+    setTimeout(() => { schemaEditorRef.value?.focus() })
 }
 function focusRawResultEditor(): void {
-    setTimeout(() => rawResultEditorRef.value?.focus())
+    setTimeout(() => { rawResultEditorRef.value?.focus() })
 }
 function focusResultVisualiser(): void {
-    setTimeout(() => resultVisualiserRef.value?.focus())
+    setTimeout(() => { resultVisualiserRef.value?.focus() })
 }
 </script>
 

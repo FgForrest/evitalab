@@ -165,9 +165,9 @@ watch(currentData, (data) => {
 onMounted(() => {
     // register console specific keyboard shortcuts
     keymap.bind(Command.EvitaQLConsole_ExecuteQuery, props.id, executeQuery)
-    keymap.bind(Command.EvitaQLConsole_ShareTab, props.id, () =>
-        shareTabButtonRef.value?.share()
-    )
+    keymap.bind(Command.EvitaQLConsole_ShareTab, props.id, () => {
+        void shareTabButtonRef.value?.share()
+    })
     keymap.bind(Command.EvitaQLConsole_Query_QueryEditor, props.id, () => {
         editorTab.value = EditorTabType.Query
         focusQueryEditor()
@@ -215,10 +215,10 @@ async function executeQuery(): Promise<void> {
                 variablesCode.value
             )
         )
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(
             t('evitaQLConsole.notification.failedToSaveQueryToHistory'),
-            e
+            e instanceof Error ? e : undefined
         )
     }
 
@@ -235,32 +235,32 @@ async function executeQuery(): Promise<void> {
         if (resultTab.value === ResultTabType.Raw) {
             focusRawResultEditor()
         }
-    } catch (error: any) {
-        await toaster.error('Could not execute query', error) // todo lho i18n
+    } catch (error: unknown) {
+        await toaster.error('Could not execute query', error instanceof Error ? error : undefined) // todo lho i18n
         loading.value = false
     }
 }
 
 function focusQueryEditor(): void {
-    setTimeout(() => queryEditorRef.value?.focus())
+    setTimeout(() => { queryEditorRef.value?.focus() })
 }
 function focusVariablesEditor(): void {
-    setTimeout(() => variablesEditorRef.value?.focus())
+    setTimeout(() => { variablesEditorRef.value?.focus() })
 }
 function focusHistory(): void {
-    setTimeout(() => historyRef.value?.focus())
+    setTimeout(() => { historyRef.value?.focus() })
 }
 function focusRawResultEditor(): void {
-    setTimeout(() => rawResultEditorRef.value?.focus())
+    setTimeout(() => { rawResultEditorRef.value?.focus() })
 }
 function focusResultVisualiser(): void {
-    setTimeout(() => resultVisualiserRef.value?.focus())
+    setTimeout(() => { resultVisualiserRef.value?.focus() })
 }
 
 emit('ready')
 
 if (props.params.executeOnOpen) {
-    executeQuery()
+    void executeQuery()
 }
 </script>
 
