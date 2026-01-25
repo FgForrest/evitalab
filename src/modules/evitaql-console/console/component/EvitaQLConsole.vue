@@ -100,9 +100,19 @@ const title: List<string> = List.of(props.params.dataPointer.catalogName)
 const editorTab = ref<EditorTabType>(EditorTabType.Query)
 const resultTab = ref<ResultTabType>(ResultTabType.Raw)
 
-const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
+interface ShareTabButtonExpose {
+    share: () => void
+}
+interface EditorExpose {
+    focus: () => void
+}
+interface HistoryExpose {
+    focus: () => void
+}
 
-const queryEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
+const shareTabButtonRef = ref<ShareTabButtonExpose | undefined>()
+
+const queryEditorRef = ref<EditorExpose | undefined>()
 const queryCode = ref<string>(
     props.data.query
         ? props.data.query
@@ -112,13 +122,13 @@ const queryCode = ref<string>(
 )
 const queryExtensions: Extension[] = [evitaQL()]
 
-const variablesEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
+const variablesEditorRef = ref<EditorExpose | undefined>()
 const variablesCode = ref<string>(
     props.data.variables ? props.data.variables : '{\n  \n}'
 )
 const variablesExtensions: Extension[] = [json()]
 
-const historyRef = ref<InstanceType<typeof EvitaQLConsoleHistory> | undefined>()
+const historyRef = ref<HistoryExpose | undefined>()
 const historyKey = computed<EvitaQLConsoleHistoryKey>(() =>
     createEvitaQLConsoleHistoryKey(props.params.dataPointer)
 )
@@ -143,15 +153,11 @@ const rawResult = computed<string>(() => {
     }
     return JSON.stringify(JSON.parse(result.value.rawResponse), null, 2)
 })
-const rawResultEditorRef = ref<
-    InstanceType<typeof VPreviewEditor> | undefined
->()
+const rawResultEditorRef = ref<EditorExpose | undefined>()
 const result = ref<EvitaResponse>()
 const resultExtensions: Extension[] = [json()]
 
-const resultVisualiserRef = ref<
-    InstanceType<typeof ResultVisualiser> | undefined
->()
+const resultVisualiserRef = ref<EditorExpose | undefined>()
 
 const loading = ref<boolean>(false)
 
@@ -164,7 +170,7 @@ watch(currentData, (data) => {
 
 onMounted(() => {
     // register console specific keyboard shortcuts
-    keymap.bind(Command.EvitaQLConsole_ExecuteQuery, props.id, executeQuery)
+    keymap.bind(Command.EvitaQLConsole_ExecuteQuery, props.id, () => void executeQuery())
     keymap.bind(Command.EvitaQLConsole_ShareTab, props.id, () => {
         void shareTabButtonRef.value?.share()
     })

@@ -29,9 +29,9 @@ export class EvitaQLConsoleService {
            )
             const cleanedString = result.rawResponse.replace(/"?\$typeName"?\s*:\s*".*?",?\s*/g, '');
            result = new EvitaResponse(result.recordPage, result.extraResults, cleanedString);
-        } catch (e: any) {
-            if (e.name === 'QueryError') {
-                result = e.error
+        } catch (e: unknown) {
+            if (e instanceof Error && e.name === 'QueryError' && 'error' in e) {
+                result = (e as Error & { error: EvitaResponse }).error
             } else {
                 throw e
             }
