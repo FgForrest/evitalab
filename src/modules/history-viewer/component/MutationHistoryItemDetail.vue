@@ -6,7 +6,7 @@ import {
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
 import RecordMetadata from '@/modules/history-viewer/component/RecordMetadata.vue'
 
-const props = defineProps<{
+defineProps<{
     definition: MutationHistoryItemVisualisationDefinition
 }>()
 

@@ -9,7 +9,7 @@ const jfrViewerService: JfrViewerService = useJfrViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     modelValue: boolean
 }>()
 const emit = defineEmits<{
@@ -27,10 +27,11 @@ async function stopRecording(): Promise<boolean> {
             await toaster.info(t('jfrViewer.stopRecording.notification.recordingNotStopped'))
         }
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
+        const error = e as Error
         await toaster.error(t(
             'jfrViewer.stopRecording.notification.couldNotStopRecording',
-            { reason: e.message }
+            { reason: error.message }
         ))
         return false
     }

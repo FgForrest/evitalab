@@ -10,7 +10,7 @@ import AttributeElementListItem
 import type { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer.ts'
 import { useI18n } from 'vue-i18n'
 
-const props = defineProps<{
+defineProps<{
     dataPointer: SchemaViewerDataPointer
     attributes: List<AttributeElement>
 }>()

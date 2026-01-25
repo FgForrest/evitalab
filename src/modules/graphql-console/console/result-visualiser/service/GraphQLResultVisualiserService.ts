@@ -14,9 +14,7 @@ import type { InjectionKey } from 'vue'
 import {
     JsonResultVisualiserService
 } from '@/modules/console/result-visualiser/service/json/JsonResultVisualiserService'
-import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import type { Result } from '@/modules/console/result-visualiser/model/Result'
-import { Connection } from '@/modules/connection/model/Connection'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
@@ -99,7 +97,7 @@ export class GraphQLResultVisualiserService extends JsonResultVisualiserService 
             return undefined
         }
 
-        const possibleAttributes: [any, boolean][] = []
+        const possibleAttributes: [unknown, boolean][] = []
         const attributes = entityResult['attributes'] || {}
         for (const attributeName in attributes) {
             possibleAttributes.push([attributes[attributeName], representativeAttributes.includes(attributeName)])

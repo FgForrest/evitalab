@@ -10,7 +10,7 @@ import type {
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
 import MutationHistoryItemDetail from '@/modules/history-viewer/component/MutationHistoryItemDetail.vue'
 
-const props = withDefaults(
+withDefaults(
     defineProps<{
         visualisationDefinition: MutationHistoryItemVisualisationDefinition,
         hasParent?: boolean
