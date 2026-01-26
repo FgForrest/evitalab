@@ -60,6 +60,14 @@ import {
     GraphQLConsoleTabDefinition
 } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
 
+interface FocusableComponent {
+    focus(): void
+}
+
+interface ShareableComponent {
+    share(): Promise<void>
+}
+
 enum EditorTabType {
     Query = 'query',
     Variables = 'variables',
@@ -107,7 +115,7 @@ const title: ImmutableList<string> = (() => {
 const editorTab = ref<EditorTabType>(EditorTabType.Query)
 const resultTab = ref<ResultTabType>(ResultTabType.Raw)
 
-const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
+const shareTabButtonRef = ref<ShareableComponent>()
 
 const graphQLSchema = ref<GraphQLSchema>()
 const graphQLSchemaChangeCallbackId = graphQLConsoleService.registerGraphQLSchemaChangeCallback(
@@ -115,15 +123,15 @@ const graphQLSchemaChangeCallbackId = graphQLConsoleService.registerGraphQLSchem
     async () => await loadGraphQLSchema()
 )
 
-const queryEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
+const queryEditorRef = ref<FocusableComponent>()
 const queryCode = ref<string>(props.data.query ? props.data.query : t('graphQLConsole.placeholder.writeQuery', { catalogName: props.params.dataPointer.catalogName }))
 const queryExtensions = ref<Extension[]>()
 
-const variablesEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
+const variablesEditorRef = ref<FocusableComponent>()
 const variablesCode = ref<string>(props.data.variables ? props.data.variables : '{\n  \n}')
 const variablesExtensions: Extension[] = [json()]
 
-const historyRef = ref<InstanceType<typeof GraphQLConsoleHistory> | undefined>()
+const historyRef = ref<FocusableComponent>()
 const historyKey = computed<GraphQLConsoleHistoryKey>(() => createGraphQLConsoleHistoryKey(props.params.dataPointer))
 const historyRecords = computed<GraphQLConsoleHistoryRecord[]>(() => {
     return [...workspaceService.getTabHistoryRecords(historyKey.value)].reverse()
@@ -138,17 +146,17 @@ function clearHistory(): void {
     workspaceService.clearTabHistory(historyKey.value)
 }
 
-const schemaEditorRef = ref<InstanceType<typeof VPreviewEditor> | undefined>()
+const schemaEditorRef = ref<FocusableComponent>()
 const schemaEditorInitialized = ref<boolean>(false)
 const schemaCode = ref<string>('')
 const schemaExtensions: Extension[] = [graphql()]
 
 const lastAppliedQueryCode = ref<string>('')
-const rawResultEditorRef = ref<InstanceType<typeof VPreviewEditor> | undefined>()
+const rawResultEditorRef = ref<FocusableComponent>()
 const resultCode = ref<string>('')
 const resultExtensions: Extension[] = [json()]
 
-const resultVisualiserRef = ref<InstanceType<typeof ResultVisualiser> | undefined>()
+const resultVisualiserRef = ref<FocusableComponent>()
 const supportsVisualisation = computed<boolean>(() => {
     return props.params.dataPointer.instanceType === GraphQLInstanceType.Data
 })
@@ -184,7 +192,7 @@ onBeforeMount(() => {
 })
 onMounted(() => {
     // register console specific keyboard shortcuts
-    keymap.bind(Command.GraphQLConsole_ExecuteQuery, props.id, executeQuery)
+    keymap.bind(Command.GraphQLConsole_ExecuteQuery, props.id, () => { void executeQuery() })
     keymap.bind(Command.GraphQLConsole_ShareTab, props.id, () => { void shareTabButtonRef.value?.share() })
     keymap.bind(Command.GraphQLConsole_Query_QueryEditor, props.id, () => {
         editorTab.value = EditorTabType.Query
@@ -239,7 +247,7 @@ async function executeQuery(): Promise<void> {
 
     loading.value = true
     try {
-        resultCode.value = await graphQLConsoleService.executeGraphQLQuery(props.params.dataPointer, queryCode.value, JSON.parse(variablesCode.value))
+        resultCode.value = await graphQLConsoleService.executeGraphQLQuery(props.params.dataPointer, queryCode.value, JSON.parse(variablesCode.value) as object)
         loading.value = false
         lastAppliedQueryCode.value = queryCode.value
 
