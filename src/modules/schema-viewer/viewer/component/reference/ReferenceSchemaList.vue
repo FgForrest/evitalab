@@ -9,7 +9,7 @@ import { ReferenceSchema } from '@/modules/database-driver/request-response/sche
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     dataPointer: SchemaViewerDataPointer,
     references: List<ReferenceSchema>
 }>()

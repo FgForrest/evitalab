@@ -86,7 +86,7 @@ const properties = computed<Property[]>(() => {
             new PropertyValue(
                 props.schema.referencedGroupType ? new KeywordValue(props.schema.referencedGroupType, undefined, t('schemaViewer.reference.label.groupManagedByEvita')) : undefined,
                 undefined,
-                item => {
+                () => {
                     workspaceService.createTab(schemaViewerTabFactory.createNew(
                         new EntitySchemaPointer(
                             props.dataPointer.schemaPointer.catalogName,
@@ -99,7 +99,7 @@ const properties = computed<Property[]>(() => {
     } else {
         properties.push(new Property(
             t('schemaViewer.reference.label.referencedGroup'),
-            new PropertyValue(new KeywordValue(props.schema.referencedGroupType, t('schemaViewer.reference.label.groupManagedExternal')) ? new KeywordValue(props.schema.referencedGroupType, undefined, t('schemaViewer.reference.label.groupManagedExternal')) : undefined)
+            new PropertyValue(props.schema.referencedGroupType ? new KeywordValue(props.schema.referencedGroupType, undefined, t('schemaViewer.reference.label.groupManagedExternal')) : undefined)
         ))
     }
 
@@ -120,13 +120,17 @@ const properties = computed<Property[]>(() => {
     return properties
 })
 
-!props.schema.referencedEntityTypeManaged ?
-    localEntityTypeNameVariants() :
-    getEntityTypeNameVariants().then(() => loadedEntityNameVariants.value = true)
+if (!props.schema.referencedEntityTypeManaged) {
+    localEntityTypeNameVariants()
+} else {
+    void getEntityTypeNameVariants().then(() => loadedEntityNameVariants.value = true)
+}
 
-!props.schema.referencedGroupTypeManaged ?
-    localReferenceGroupType() :
-    getGroupTypeNameVariants().then(() => loadedReferencedGroupType.value = true)
+if (!props.schema.referencedGroupTypeManaged) {
+    localReferenceGroupType()
+} else {
+    void getGroupTypeNameVariants().then(() => loadedReferencedGroupType.value = true)
+}
 
 function localReferenceGroupType() {
     groupTypeNameVariants.value = props.schema.groupTypeNameVariants

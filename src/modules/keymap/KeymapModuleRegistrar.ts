@@ -4,7 +4,7 @@ import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 
 export class KeymapModuleRegistrar implements ModuleRegistrar {
 
-    async register(builder: ModuleContextBuilder): Promise<void> {
+    register(builder: ModuleContextBuilder): void {
         builder.provide(
             keymapInjectionKey,
             new Keymap()

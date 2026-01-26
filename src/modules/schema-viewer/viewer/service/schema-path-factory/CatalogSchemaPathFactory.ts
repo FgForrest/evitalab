@@ -20,6 +20,7 @@ export class CatalogSchemaPathFactory extends AbstractSchemaPathFactory<CatalogS
         return schemaPointer instanceof CatalogSchemaPointer
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected resolvePathItems(schemaPointer: CatalogSchemaPointer): SubjectPathItem[] {
         return []
     }

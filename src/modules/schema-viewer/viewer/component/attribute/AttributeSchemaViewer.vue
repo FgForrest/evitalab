@@ -2,7 +2,6 @@
 
 import { useI18n } from 'vue-i18n'
 import { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer'
-import { GlobalAttributeSchema } from '@/modules/database-driver/request-response/schema/GlobalAttributeSchema'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { Property } from '@/modules/base/model/properties-table/Property'
@@ -26,7 +25,6 @@ const props = defineProps<{
 
 const keys = ref<string[]>([getEnumKeyByValue(EntityScope, EntityScope.Live), getEnumKeyByValue(EntityScope, EntityScope.Archive)])
 
-const globalAttribute = props.schema instanceof GlobalAttributeSchema
 const entityAttribute = props.schema instanceof EntityAttributeSchema
 
 const properties = computed<Property[]>(() => {
