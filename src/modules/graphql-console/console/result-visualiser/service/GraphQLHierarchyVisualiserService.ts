@@ -28,19 +28,21 @@ export class GraphQLHierarchyVisualiserService extends JsonHierarchyVisualiserSe
         let currentLevel: number = -1
         const nodesStack: VisualisedHierarchyTreeNode[] = []
         for (const nodeResult of namedHierarchyResult) {
-            const level: number = nodeResult['level'] || 1
+            const nodeResultObj = nodeResult as Record<string, unknown>
+            const level: number = (nodeResultObj['level'] as number) || 1
 
-            const nodeEntity: Result | undefined = nodeResult['entity']
-            const primaryKey: number | undefined = nodeEntity?.['primaryKey']
+            const nodeEntity: Result = nodeResultObj['entity']
+            const nodeEntityObj = nodeEntity as Record<string, unknown> | undefined
+            const primaryKey: number | undefined = nodeEntityObj?.['primaryKey'] as number | undefined
             // only root nodes should display parents, we know parents in nested nodes from the direct parent in the tree
-            const parentPrimaryKey: number | undefined = level === 1 ? nodeEntity?.['parentPrimaryKey'] : undefined
+            const parentPrimaryKey: number | undefined = level === 1 ? nodeEntityObj?.['parentPrimaryKey'] as number | undefined : undefined
             const title: string | undefined = this.visualiserService.resolveRepresentativeTitleForEntityResult(
                 nodeEntity,
                 entityRepresentativeAttributes
             )
-            const requested: boolean | undefined = nodeResult['requested']
-            const childrenCount: number | undefined = nodeResult['childrenCount']
-            const queriedEntityCount: number | undefined = nodeResult['queriedEntityCount']
+            const requested: boolean | undefined = nodeResultObj['requested'] as boolean | undefined
+            const childrenCount: number | undefined = nodeResultObj['childrenCount'] as number | undefined
+            const queriedEntityCount: number | undefined = nodeResultObj['queriedEntityCount'] as number | undefined
 
             if (level <= currentLevel) {
                 // flush lower nodes as well as previous neighbour of the current node
@@ -82,7 +84,7 @@ export class GraphQLHierarchyVisualiserService extends JsonHierarchyVisualiserSe
             trees.push(prevNode)
         } else {
             // todo lho this shouldn't be needed
-            // @ts-ignore
+            // @ts-expect-error - accessing children directly
             stack.at(-1).children.push(prevNode)
         }
     }

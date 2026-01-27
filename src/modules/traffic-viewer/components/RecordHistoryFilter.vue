@@ -29,7 +29,7 @@ const trafficViewerService: TrafficViewerService = useTrafficViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const userTrafficRecordTypeItems: any[] = Object.values(UserTrafficRecordType).map(type => {
+const userTrafficRecordTypeItems: { value: UserTrafficRecordType, title: string }[] = Object.values(UserTrafficRecordType).map(type => {
     return {
         value: type,
         title: t(`trafficViewer.recordHistory.filter.form.types.type.${type}`)
@@ -95,7 +95,7 @@ watch(sessionId, async (newValue) => {
     }
 })
 const sessionIdRules = [
-    (value: string): any => {
+    (value: string): true | string => {
         if (value == undefined || value === '') {
             return true
         }
@@ -109,14 +109,14 @@ const sessionIdRules = [
 
 const longerThan = ref<string | undefined>(criteria.value.longerThanInHumanFormat || '')
 const longerThanRules = [
-    (value: string): any => {
+    (value: string): true | string => {
         if (value == undefined || value === '') {
             return true
         }
         let duration: bigint
         try {
             duration = parseHumanDurationToMs(value.trim())
-        } catch (e) {
+        } catch {
             return t('trafficViewer.recordHistory.filter.form.longerThan.validations.notNumber')
         }
         if (duration < 0 || duration > Number.MAX_SAFE_INTEGER) {
@@ -137,14 +137,14 @@ watch(longerThan, async (newValue) => {
 
 const fetchingMoreBytesThan = ref<string>(criteria.value.fetchingMoreBytesThanInHumanFormat || '')
 const fetchingMoreBytesThanRules = [
-    (value: string): any => {
+    (value: string): true | string => {
         if (value == undefined || value === '') {
             return true
         }
         let number: number
         try {
             number = parseHumanByteSizeToNumber(value.trim())[0]
-        } catch (e) {
+        } catch {
             return t('trafficViewer.recordHistory.filter.form.fetchingMoreBytesThan.validations.notByteSize')
         }
         if (number < 0 || number > Number.MAX_SAFE_INTEGER) {
@@ -192,14 +192,14 @@ async function assertFormValidated(): Promise<boolean> {
         throw new UnexpectedError('Missing form reference.')
     }
 
-    //@ts-ignore
-    const { valid }: any = await form.value.validate()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Vuetify form ref typing
+    const { valid } = await (form.value.validate() as unknown as Promise<{ valid: boolean }>)
     return valid
 }
 
 async function applyChangedCriteria(): Promise<void> {
-    //@ts-ignore
-    const { valid }: any = await form.value.validate()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Vuetify form ref typing
+    const { valid } = await (form.value!.validate() as unknown as Promise<{ valid: boolean }>)
     if (!valid) {
         await toaster.error(t('trafficViewer.recordHistory.filter.notification.invalidFilter'))
         return

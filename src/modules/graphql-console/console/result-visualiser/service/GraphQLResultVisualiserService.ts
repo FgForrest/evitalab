@@ -58,7 +58,8 @@ export class GraphQLResultVisualiserService extends JsonResultVisualiserService 
         if (result == undefined) {
             return []
         }
-        const dataResult: Result | undefined = result['data']
+        const resultObj = result as Record<string, unknown>
+        const dataResult = resultObj['data'] as Record<string, unknown> | undefined
         if (dataResult == undefined) {
             return []
         }
@@ -66,8 +67,9 @@ export class GraphQLResultVisualiserService extends JsonResultVisualiserService 
         return Object.keys(dataResult)
     }
 
-    findQueryResult(result: Result, query: string): Result | undefined {
-        const dataResult: Result | undefined = result['data']
+    findQueryResult(result: Result, query: string): Result {
+        const resultObj = result as Record<string, unknown>
+        const dataResult = resultObj['data'] as Record<string, unknown> | undefined
         if (dataResult == undefined) {
             return undefined
         }
@@ -92,13 +94,14 @@ export class GraphQLResultVisualiserService extends JsonResultVisualiserService 
         return entitySchema
     }
 
-    resolveRepresentativeTitleForEntityResult(entityResult: Result | undefined, representativeAttributes: string[]): string | undefined {
+    resolveRepresentativeTitleForEntityResult(entityResult: Result, representativeAttributes: string[]): string | undefined {
         if (!entityResult) {
             return undefined
         }
 
         const possibleAttributes: [unknown, boolean][] = []
-        const attributes = entityResult['attributes'] || {}
+        const entityResultObj = entityResult as Record<string, unknown>
+        const attributes = (entityResultObj['attributes'] || {}) as Record<string, unknown>
         for (const attributeName in attributes) {
             possibleAttributes.push([attributes[attributeName], representativeAttributes.includes(attributeName)])
         }

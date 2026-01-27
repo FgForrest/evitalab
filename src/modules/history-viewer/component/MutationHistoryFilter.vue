@@ -191,14 +191,14 @@ async function assertFormValidated(): Promise<boolean> {
         throw new UnexpectedError('Missing form reference.')
     }
 
-    //@ts-ignore
-    const { valid }: any = await form.value.validate()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Vuetify form ref typing
+    const { valid } = await (form.value.validate() as unknown as Promise<{ valid: boolean }>)
     return valid
 }
 
 async function applyChangedCriteria(): Promise<void> {
-    //@ts-ignore
-    const { valid }: any = await form.value.validate()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Vuetify form ref typing
+    const { valid } = await (form.value!.validate() as unknown as Promise<{ valid: boolean }>)
     if (!valid) {
         await toaster.error(t('mutationHistoryViewer.recordHistory.filter.notification.invalidFilter'))
         return
