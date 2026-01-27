@@ -60,8 +60,12 @@ const title: List<string> = List.of(
     t('mutationHistoryViewer.title')
 )
 
-const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
-const historyListRef = ref<InstanceType<typeof MutationHistory> | undefined>()
+const shareTabButtonRef = ref<{ share(): void } | undefined>()
+const historyListRef = ref<{
+    moveStartPointerToNewest(): Promise<void>
+    removeStartPointer(): void
+    reload(): Promise<void>
+} | undefined>()
 const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
     props.data.from,
     props.data.to,
@@ -104,7 +108,7 @@ watch(
     historyListRef,
     () => {
         if (!initialized.value && historyListRef.value != undefined) {
-            reloadHistoryList()
+            void reloadHistoryList()
             initialized.value = true
         }
     },
@@ -116,8 +120,8 @@ onBeforeMount(() => {
 onMounted(() => {
     // register viewer specific keyboard shortcuts
     keymap.bind(Command.MutationHistoryViewer_ShareTab, props.id, () => shareTabButtonRef.value?.share())
-    keymap.bind(Command.MutationHistoryViewer_ReloadRecordHistory, props.id, async () => await reloadHistoryList())
-    keymap.bind(Command.MutationHistoryViewer_MoveStartPointer, props.id, async () => await moveStartPointerToNewest())
+    keymap.bind(Command.MutationHistoryViewer_ReloadRecordHistory, props.id, () => { void reloadHistoryList() })
+    keymap.bind(Command.MutationHistoryViewer_MoveStartPointer, props.id, () => { void moveStartPointerToNewest() })
 })
 onUnmounted(() => {
     // unregister console specific keyboard shortcuts
