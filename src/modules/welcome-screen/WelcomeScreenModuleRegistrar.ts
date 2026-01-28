@@ -12,7 +12,7 @@ import { EvitaDBDocsClient } from '@/modules/welcome-screen/service/EvitaDBDocsC
 // todo docs
 export class WelcomeScreenModuleRegistrar implements ModuleRegistrar {
 
-    async register(builder: ModuleContextBuilder): Promise<void> {
+    register(builder: ModuleContextBuilder): void {
         const welcomeScreenStore: WelcomeScreenStore = useWelcomeScreenStore()
 
         const evitaLabConfig: EvitaLabConfig = builder.inject(evitaLabConfigInjectionKey)

@@ -2,7 +2,7 @@ import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { TrafficRecordingsViewerTabParams } from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabParams'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import { markRaw } from 'vue'
-import type { DefineComponent } from 'vue'
+import type { Component } from 'vue'
 import TrafficRecordingsViewer from '@/modules/traffic-viewer/components/TrafficRecordingsViewer.vue'
 
 export class TrafficRecordingsViewerTabDefinition extends TabDefinition<TrafficRecordingsViewerTabParams, VoidTabData> {
@@ -12,7 +12,7 @@ export class TrafficRecordingsViewerTabDefinition extends TabDefinition<TrafficR
             undefined,
             title,
             TrafficRecordingsViewerTabDefinition.icon(),
-            markRaw(TrafficRecordingsViewer as DefineComponent<any, any, any>),
+            markRaw(TrafficRecordingsViewer as Component),
             params,
             new VoidTabData()
         )

@@ -30,7 +30,7 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
     }
 
     canVisualise(changeCatalogCapture: ChangeCatalogCapture): boolean {
-        return changeCatalogCapture.area == CaptureArea.Schema
+        return changeCatalogCapture.area === CaptureArea.Schema
     }
 
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
@@ -40,8 +40,9 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
 
 
         // entity attributes
-        if ((mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations) {
-            for (const schemaMutation of (mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations) {
+        const bodyMutation = mutationHistory.body as ModifyEntitySchemaMutation | undefined
+        if (bodyMutation?.schemaMutations) {
+            for (const schemaMutation of bodyMutation.schemaMutations) {
                 const attributeName = getMutationType(schemaMutation)
                 const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }), JSON.stringify(schemaMutation), undefined, [], ImmutableList())
                 visualisedRecord.addChild(attributeMutationVisualised)
@@ -82,12 +83,12 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
     }
 
 
-    static mutationType(mutationType: any): MetadataItem {
+    static mutationType(mutationType: string): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-file-tree',
             i18n.global.t('mutationHistoryViewer.record.type.attribute.mutationType.tooltip'),
-            mutationType?.toString(),
+            mutationType,
             MetadataItemSeverity.Info,
             undefined,
             undefined

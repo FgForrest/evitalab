@@ -102,7 +102,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
         // entity attributes
         for (const attributeMutation of mutations) {
-            if (entityOperationType === 'remove') {
+            if (entityOperationType as string === 'remove') {
                 break
             }
 
@@ -277,9 +277,9 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             defaultMetadata.push(MutationHistoryDataVisualiser.validityFromTo(localMutation.validity))
 
         } else if (localMutation instanceof RemovePriceMutation) {
-
+            // No additional metadata needed for remove mutation
         } else {
-            console.error(`Not implemented price mutation ${localMutation}`)
+            console.error('Not implemented price mutation', localMutation)
         }
 
 
@@ -298,48 +298,48 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         )
     }
 
-    static indexed(currency: any): MetadataItem {
+    static indexed(indexed: boolean): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-flash',
             i18n.global.t('mutationHistoryViewer.record.type.attribute.indexed.tooltip'),
-            currency?.toString(),
+            String(indexed),
             MetadataItemSeverity.Info,
             undefined,
             undefined
         )
     }
 
-    static priceId(currency: any): MetadataItem {
+    static priceId(priceId: number): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-identifier',
             i18n.global.t('mutationHistoryViewer.record.type.attribute.priceId.tooltip'),
-            currency?.toString(),
+            String(priceId),
             MetadataItemSeverity.Info,
             undefined,
             undefined
         )
     }
 
-    static priceList(currency: any): MetadataItem {
+    static priceList(priceList: string): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-currency-usd',
             i18n.global.t('mutationHistoryViewer.record.type.attribute.priceList.tooltip'),
-            currency?.toString(),
+            priceList,
             MetadataItemSeverity.Info,
             undefined,
             undefined
         )
     }
 
-    static currency(currency: any): MetadataItem {
+    static currency(currency: string): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-cash',
             i18n.global.t('mutationHistoryViewer.record.type.attribute.currency.tooltip'),
-            currency?.toString(),
+            currency,
             MetadataItemSeverity.Info,
             undefined,
             undefined
@@ -347,24 +347,24 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
     }
 
 
-    static locale(locale: any): MetadataItem {
+    static locale(locale: string): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-translate',
             i18n.global.t('mutationHistoryViewer.record.type.attribute.locale.tooltip'),
-            locale?.toString(),
+            locale,
             MetadataItemSeverity.Info,
             undefined,
             undefined
         )
     }
 
-    static mutationType(sessionId: any): MetadataItem {
+    static mutationType(mutationType: string): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-file-tree',
             i18n.global.t('mutationHistoryViewer.record.type.attribute.mutationType.tooltip'),
-            sessionId?.toString(),
+            mutationType,
             MetadataItemSeverity.Info,
             undefined,
             undefined
@@ -412,7 +412,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         )
     }
 
-    static relation(referenceName: string, referenceId: any): MetadataItem {
+    static relation(referenceName: string, referenceId: string): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-file-tree',
@@ -433,12 +433,10 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             MetadataItemSeverity.Info,
             undefined,
             (ctx: MutationHistoryMetadataItemContext): void => {
-                navigator.clipboard.writeText(`${created.toString()}`).then(() => {
-                    ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.timestamp.notification.copiedToClipboard'))
-                        .then()
+                void navigator.clipboard.writeText(`${created.toString()}`).then(() => {
+                    void ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.timestamp.notification.copiedToClipboard'))
                 }).catch(() => {
-                    ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
-                        .then()
+                    void ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
                 })
             }
         )
@@ -468,7 +466,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
     }
 
 
-    private constructActions(containerType: GrpcChangeCaptureContainerType[], entityPrimaryKey: any, containerName: string | undefined, ctx: MutationHistoryVisualisationContext, cdc: ChangeCatalogCapture, buttonTitle: string): Immutable.List<Action> {
+    private constructActions(containerType: GrpcChangeCaptureContainerType[], entityPrimaryKey: number | undefined, containerName: string | undefined, ctx: MutationHistoryVisualisationContext, cdc: ChangeCatalogCapture, buttonTitle: string): Immutable.List<Action> {
         return ImmutableList([
             new Action(
                 i18n.global.t(buttonTitle),

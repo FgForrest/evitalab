@@ -60,7 +60,7 @@ import {
 
 export class WorkspaceModuleRegistrar implements ModuleRegistrar {
 
-    async register(builder: ModuleContextBuilder): Promise<void> {
+    register(builder: ModuleContextBuilder): void {
         const workspaceStore: WorkspaceStore = useWorkspaceStore()
 
         const evitaLabConfig: EvitaLabConfig = builder.inject(evitaLabConfigInjectionKey)

@@ -1,5 +1,5 @@
 import { markRaw } from 'vue'
-import type { DefineComponent, Raw } from 'vue'
+import type { Component, Raw } from 'vue'
 import type { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 import EntitySchemaViewer from '@/modules/schema-viewer/viewer/component/entity/EntitySchemaViewer.vue'
 import { SchemaType } from '@/modules/schema-viewer/viewer/model/SchemaType'
@@ -16,8 +16,8 @@ export class EntitySchemaPointer implements SchemaPointer {
         this.entityType = entityName
     }
 
-    get component(): Raw<DefineComponent<any, any, any>> {
-        return markRaw(EntitySchemaViewer as DefineComponent<any, any, any>)
+    get component(): Raw<Component> {
+        return markRaw(EntitySchemaViewer as Component)
     }
 
     get schemaName(): string {

@@ -1,4 +1,4 @@
-import type { DefineComponent, Raw } from 'vue'
+import type { Component, Raw } from 'vue'
 import { SchemaType } from '@/modules/schema-viewer/viewer/model/SchemaType'
 
 /**
@@ -24,5 +24,5 @@ export interface SchemaPointer {
     /**
      * Returns component that will be used to render this schema.
      */
-    get component(): Raw<DefineComponent<any, any, any>>
+    get component(): Raw<Component>
 }

@@ -2,7 +2,7 @@ import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import { ServerViewerTabParams } from './ServerViewerTabParams'
 import { markRaw } from 'vue'
-import type { DefineComponent } from 'vue'
+import type { Component } from 'vue'
 import ServerViewer from '@/modules/server-viewer/component/ServerViewer.vue'
 
 export class ServerViewerTabDefinition extends TabDefinition<ServerViewerTabParams, VoidTabData> {
@@ -11,7 +11,7 @@ export class ServerViewerTabDefinition extends TabDefinition<ServerViewerTabPara
             undefined,
             title,
             ServerViewerTabDefinition.icon(),
-            markRaw(ServerViewer as DefineComponent<any, any, any>),
+            markRaw(ServerViewer as Component),
             params,
             new VoidTabData()
         )

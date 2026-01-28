@@ -35,7 +35,7 @@ import {
 import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
 
 export class TrafficViewerModuleRegistrar implements ModuleRegistrar {
-    async register(builder: ModuleContextBuilder): Promise<void> {
+    register(builder: ModuleContextBuilder): void {
         const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
         const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
         const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory = builder.inject(evitaQLConsoleTabFactoryInjectionKey)

@@ -2,7 +2,7 @@ import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { TrafficRecordHistoryViewerTabParams } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabParams'
 import { TrafficRecordHistoryViewerTabData } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabData'
 import { markRaw } from 'vue'
-import type { DefineComponent } from 'vue'
+import type { Component } from 'vue'
 import TrafficRecordHistoryViewer from '@/modules/traffic-viewer/components/TrafficRecordHistoryViewer.vue'
 
 export class TrafficRecordHistoryViewerTabDefinition extends TabDefinition<TrafficRecordHistoryViewerTabParams, TrafficRecordHistoryViewerTabData> {
@@ -14,7 +14,7 @@ export class TrafficRecordHistoryViewerTabDefinition extends TabDefinition<Traff
             undefined,
             title,
             TrafficRecordHistoryViewerTabDefinition.icon(),
-            markRaw(TrafficRecordHistoryViewer as DefineComponent<any, any, any>),
+            markRaw(TrafficRecordHistoryViewer as Component),
             params,
             data,
         )

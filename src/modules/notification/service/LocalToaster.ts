@@ -35,37 +35,40 @@ export class LocalToaster implements Toaster {
                 type,
                 icon: `mdi ${icon}`,
                 onClick: clickCallback != undefined
-                    ? (closeToast: Function) => clickCallback(() => closeToast())
+                    ? (closeToast: () => void) => clickCallback(() => closeToast())
                     : undefined
             }
         )
     }
 
-    async success(title: string, clickCallback?: ToastClickCallback): Promise<void> {
+    success(title: string, clickCallback?: ToastClickCallback): Promise<void> {
         this.addNotification(
             TYPE.SUCCESS,
             title,
             'mdi-check-circle-outline',
             clickCallback
         )
+        return Promise.resolve()
     }
 
-    async info(title: string, clickCallback?: ToastClickCallback): Promise<void> {
+    info(title: string, clickCallback?: ToastClickCallback): Promise<void> {
         this.addNotification(
             TYPE.INFO,
             title,
             'mdi-information-outline',
             clickCallback
         )
+        return Promise.resolve()
     }
 
-    async warning(title: string, clickCallback?: ToastClickCallback): Promise<void> {
+    warning(title: string, clickCallback?: ToastClickCallback): Promise<void> {
         this.addNotification(
             TYPE.WARNING,
             title,
             'mdi-alert-outline',
             clickCallback
         )
+        return Promise.resolve()
     }
 
     async error(title: string, error?: Error): Promise<void> {

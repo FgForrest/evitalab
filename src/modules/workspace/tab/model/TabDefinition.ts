@@ -1,4 +1,4 @@
-import type { DefineComponent, Raw } from 'vue'
+import type { Component, Raw } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
 import type { TabData } from '@/modules/workspace/tab/model/TabData'
@@ -7,12 +7,12 @@ import type { TabComponentProps } from '@/modules/workspace/tab/model/TabCompone
 /**
  * Definition to instantiate a new workspace tab from.
  */
-export abstract class TabDefinition<PARAMS extends TabParams<any>, DATA extends TabData<any>> {
+export abstract class TabDefinition<PARAMS extends TabParams<unknown>, DATA extends TabData<unknown>> {
 
     readonly id: string
     readonly title: string
     readonly icon: string
-    readonly component: Raw<DefineComponent<any, any, any>>
+    readonly component: Raw<Component>
     readonly params: PARAMS
     readonly initialData: DATA
 
@@ -24,7 +24,7 @@ export abstract class TabDefinition<PARAMS extends TabParams<any>, DATA extends 
     protected constructor(id: string | undefined,
                           title: string,
                           icon: string,
-                          component: Raw<DefineComponent<any, any, any>>,
+                          component: Raw<Component>,
                           params: PARAMS,
                           initialData: DATA) {
         this.id = id == undefined ? uuidv4() : id

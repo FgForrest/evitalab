@@ -198,7 +198,7 @@ async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) 
 
         moveNextPagePointer(fetchedRecords)
         pushNewRecords(fetchedRecords)
-        await processRecords()
+        processRecords()
         done('ok')
     } catch (e: unknown) {
         handleRecordFetchError(e)
@@ -221,7 +221,7 @@ async function reloadHistory(): Promise<void> {
 
         moveNextPagePointer(fetchedRecords)
         pushNewRecords(fetchedRecords)
-        await processRecords()
+        processRecords()
     } catch (e: unknown) {
         handleRecordFetchError(e)
     }
@@ -266,10 +266,10 @@ function pushNewRecords(newRecords: ImmutableList<ChangeCatalogCapture>): void {
     }
 }
 
-async function processRecords(): Promise<void> {
+function processRecords(): void {
     // note: we compute the history manually here because for some reason, computed ref wasn't working
     try {
-        history.value = (await mutationHistoryViewerService.processRecords(props.dataPointer.catalogName, props.criteria, records)).toArray()
+        history.value = mutationHistoryViewerService.processRecords(props.dataPointer.catalogName, props.criteria, records).toArray()
     } catch (e: unknown) {
         console.error(e)
     }

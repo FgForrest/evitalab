@@ -4,7 +4,7 @@ import { TaskViewerService, taskViewerServiceInjectionKey } from "./services/Tas
 import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
 
 export class TaskViewerModuleRegistrar implements ModuleRegistrar {
-    async register(builder: ModuleContextBuilder): Promise<void> {
+    register(builder: ModuleContextBuilder): void {
         const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
         const taskViewerService: TaskViewerService = new TaskViewerService(evitaClient)
         builder.provide(taskViewerServiceInjectionKey, taskViewerService)

@@ -207,9 +207,9 @@ export class Keymap {
      */
     private getCurrentSystemType(): SystemType {
         let platform: string = ''
-        // @ts-ignore
-        platform = navigator['userAgentData']?.platform
-        if (platform == undefined) {
+        const nav = navigator as Navigator & { userAgentData?: { platform?: string } }
+        platform = nav.userAgentData?.platform ?? ''
+        if (platform === '') {
             platform = navigator.platform
         }
 

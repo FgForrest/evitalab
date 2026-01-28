@@ -1,5 +1,5 @@
 import { markRaw } from 'vue'
-import type { DefineComponent } from 'vue'
+import type { Component } from 'vue'
 import SchemaViewer from '@/modules/schema-viewer/viewer/component/SchemaViewer.vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { SchemaViewerTabParams } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabParams'
@@ -15,7 +15,7 @@ export class SchemaViewerTabDefinition extends TabDefinition<SchemaViewerTabPara
             undefined,
             title,
             SchemaViewerTabDefinition.icon(),
-            markRaw(SchemaViewer as DefineComponent<any, any, any>),
+            markRaw(SchemaViewer as Component),
             params,
             new VoidTabData()
         )

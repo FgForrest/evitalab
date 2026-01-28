@@ -8,7 +8,7 @@ import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/
 
 export class ServerFileViewerModuleRegistrar implements ModuleRegistrar {
 
-    async register(builder: ModuleContextBuilder): Promise<void> {
+    register(builder: ModuleContextBuilder): void {
         const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
         const serverFileViewerService: ServerFileViewerService = new ServerFileViewerService(evitaClient)
         builder.provide(serverFileViewerServiceInjectionKey, serverFileViewerService)

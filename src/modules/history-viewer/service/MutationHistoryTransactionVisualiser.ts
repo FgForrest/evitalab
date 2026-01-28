@@ -31,7 +31,7 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
     }
 
     canVisualise(changeCatalogCapture: ChangeCatalogCapture): boolean {
-        return changeCatalogCapture.area == CaptureArea.Infrastructure // todo pfi: better condition
+        return changeCatalogCapture.area === CaptureArea.Infrastructure // todo pfi: better condition
     }
 
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
@@ -71,12 +71,10 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
             MetadataItemSeverity.Info,
             undefined,
             (ctx: MutationHistoryMetadataItemContext): void => {
-                navigator.clipboard.writeText(`${created}`).then(() => {
-                    ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.type.transaction.transactionId.notification.copiedToClipboard'))
-                        .then()
+                void navigator.clipboard.writeText(`${created}`).then(() => {
+                    void ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.type.transaction.transactionId.notification.copiedToClipboard'))
                 }).catch(() => {
-                    ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
-                        .then()
+                    void ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
                 })
             }
         )
@@ -115,12 +113,10 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
             MetadataItemSeverity.Info,
             undefined,
             (ctx: MutationHistoryMetadataItemContext): void => {
-                navigator.clipboard.writeText(`${created.toString()}`).then(() => {
-                        ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.type.transaction.commitTimestamp.notification.copiedToClipboard'))
-                        .then()
+                void navigator.clipboard.writeText(`${created.toString()}`).then(() => {
+                    void ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.type.transaction.commitTimestamp.notification.copiedToClipboard'))
                 }).catch(() => {
-                    ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
-                        .then()
+                    void ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
                 })
             }
         )

@@ -46,13 +46,11 @@ export class MutationHistoryRequest {
         this.loadTransaction = loadTransaction ?? true
     }
 
-    // todo : fix me
     toContainerType(input: GrpcChangeCaptureContainerType[]): GrpcChangeCaptureContainerType[] {
-        return input.map(it => GrpcChangeCaptureContainerType[it.toString() as any])
+        return input.map(it => GrpcChangeCaptureContainerType[it.toString() as keyof typeof GrpcChangeCaptureContainerType])
     }
 
-    // todo : fix me
     toMutationType(input: GrpcChangeCaptureOperation[]): GrpcChangeCaptureOperation[] {
-        return input.map(it => GrpcChangeCaptureOperation[it.toString() as any])
+        return input.map(it => GrpcChangeCaptureOperation[it.toString() as keyof typeof GrpcChangeCaptureOperation])
     }
 }

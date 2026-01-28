@@ -35,10 +35,10 @@ export class MutationHistoryViewerService {
         )
     }
 
-    async processRecords(catalogName: string,
-                         historyCriteria: MutationHistoryCriteria,
-                         records: ChangeCatalogCapture[]): Promise<ImmutableList<MutationHistoryItemVisualisationDefinition>> {
-        return await this.visualisationProcessor.process(catalogName, historyCriteria, records)
+    processRecords(catalogName: string,
+                   historyCriteria: MutationHistoryCriteria,
+                   records: ChangeCatalogCapture[]): ImmutableList<MutationHistoryItemVisualisationDefinition> {
+        return this.visualisationProcessor.process(catalogName, historyCriteria, records)
     }
 
 

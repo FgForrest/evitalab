@@ -15,15 +15,15 @@ import {
  */
 export class MutationHistoryVisualisationProcessor {
 
-    private readonly visualisers: ImmutableList<MutationVisualiser<any>>
+    private readonly visualisers: ImmutableList<MutationVisualiser<ChangeCatalogCapture>>
 
-    constructor(visualisers: ImmutableList<MutationVisualiser<any>>) {
+    constructor(visualisers: ImmutableList<MutationVisualiser<ChangeCatalogCapture>>) {
         this.visualisers = visualisers
     }
 
-    async process(catalogName: string,
-                  historyCriteria: MutationHistoryCriteria,
-                  records: ChangeCatalogCapture[]): Promise<ImmutableList<MutationHistoryItemVisualisationDefinition>> {
+    process(catalogName: string,
+            historyCriteria: MutationHistoryCriteria,
+            records: ChangeCatalogCapture[]): ImmutableList<MutationHistoryItemVisualisationDefinition> {
 
 
         const visualisationContext: MutationHistoryVisualisationContext = new MutationHistoryVisualisationContext(catalogName, historyCriteria)
