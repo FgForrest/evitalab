@@ -51,7 +51,7 @@ async function loadRecordings(): Promise<boolean> {
         }
         return true
     } catch (e: unknown) {
-        const error = e as Error
+        const error = e instanceof Error ? e : new Error(String(e))
         await toaster.error(t(
             'jfrViewer.notification.couldNotLoadRecordings',
             { reason: error.message }

@@ -41,12 +41,13 @@ async function deleteFile(): Promise<boolean> {
         }
         emit('delete')
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
+        const error = e instanceof Error ? e : new Error(String(e))
         await toaster.error(t(
             'serverFileViewer.delete.notification.couldNotDeleteFile',
             {
                 fileName: props.file.name,
-                reason: e.message
+                reason: error.message
             }
         ))
         return false

@@ -11,14 +11,18 @@ import { ServerStatus } from '@/modules/database-driver/request-response/status/
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     serverStatus: ServerStatus
 }>()
 
-const runtimeConfigurationRef = ref<typeof OpenRuntimeConfigurationButton>()
+interface ReloadableComponent {
+    reload(): Promise<boolean | undefined>
+}
+
+const runtimeConfigurationRef = ref<ReloadableComponent>()
 
 defineExpose<{
-    reload(): Promise<void>
+    reload(): Promise<boolean | undefined>
 }>({
     reload: () => runtimeConfigurationRef.value?.reload()
 })

@@ -42,12 +42,13 @@ async function cancelTask(): Promise<void> {
         }
         // visualize the cancel until the next full reload
         props.task.cancelRequested()
-    } catch (e: any) {
+    } catch (e: unknown) {
+        const error = e instanceof Error ? e : new Error(String(e))
         await toaster.error(t(
             'taskViewer.tasksVisualizer.notification.couldNotCancelTask',
             {
                 taskName: props.task.taskName,
-                reason: e.message
+                reason: error.message
             }
         ))
     }

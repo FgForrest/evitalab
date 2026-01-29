@@ -43,16 +43,17 @@ async function loadRuntimeConfiguration(reload: boolean = false): Promise<boolea
             runtimeConfigurationLoaded.value = true
         }
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
+        const error = e instanceof Error ? e : new Error(String(e))
         await toaster.error(t(
             'serverViewer.serverStatus.runtimeConfiguration.notification.couldNotLoadConfiguration',
-            { reason: e.message }
+            { reason: error.message }
         ))
         return false
     }
 }
 
-loadRuntimeConfiguration().then()
+void loadRuntimeConfiguration()
 
 defineExpose<{
     reload(): Promise<boolean>

@@ -7,16 +7,20 @@ import { ServerStatus } from '@/modules/database-driver/request-response/status/
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     serverStatus: ServerStatus
 }>()
 
-const dialogRef = ref<typeof RuntimeConfigurationDialog>()
+interface ReloadableDialog {
+    reload(): Promise<boolean>
+}
+
+const dialogRef = ref<ReloadableDialog>()
 
 const showRuntimeConfigurationDialog = ref<boolean>(false)
 
 defineExpose<{
-    reload(): Promise<boolean>
+    reload(): Promise<boolean | undefined>
 }>({
     reload: () => dialogRef.value?.reload()
 })

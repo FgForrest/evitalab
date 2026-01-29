@@ -59,7 +59,7 @@ export class SchemaViewerService {
         } else if (schemaPointer instanceof SortableAttributeCompoundSchemaPointer) {
             return this.getSortableCompoundSchemaFromPointer(schemaPointer)
         } else {
-            throw new UnexpectedError(`Unsupported type of schema ${schemaPointer}`)
+            throw new UnexpectedError(`Unsupported type of schema '${schemaPointer.schemaName}'`)
         }
     }
 
@@ -87,7 +87,7 @@ export class SchemaViewerService {
                 callback
             )
         } else {
-            throw new UnexpectedError(`Unsupported type of schema ${schemaPointer}`)
+            throw new UnexpectedError(`Unsupported type of schema '${schemaPointer.schemaName}'`)
         }
     }
 
@@ -115,7 +115,7 @@ export class SchemaViewerService {
                 id
             )
         } else {
-            throw new UnexpectedError(`Unsupported type of schema ${schemaPointer}`)
+            throw new UnexpectedError(`Unsupported type of schema '${schemaPointer.schemaName}'`)
         }
     }
 
@@ -136,7 +136,7 @@ export class SchemaViewerService {
         ) {
             await this.evitaClient.clearSchemaCache(schemaPointer.catalogName, schemaPointer.entityType)
         } else {
-            throw new UnexpectedError(`Unsupported type of schema ${schemaPointer}`)
+            throw new UnexpectedError(`Unsupported type of schema '${schemaPointer.schemaName}'`)
         }
     }
 

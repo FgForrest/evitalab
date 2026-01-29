@@ -88,10 +88,11 @@ async function loadTaskStatuses(): Promise<boolean> {
             loadedTaskStatuses.value = true
         }
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
+        const error = e instanceof Error ? e : new Error(String(e))
         await toaster.error(t(
             'taskViewer.tasksVisualizer.notification.couldNotLoadTaskStatuses',
-            { reason: e.message }
+            { reason: error.message }
         ))
         return false
     }
@@ -111,7 +112,7 @@ async function reload(manual: boolean = false): Promise<void> {
             // requests additional reload in between
         } else {
             // set new timeout only for automatic reload or reload recovery
-            reloadTimeoutId = setTimeout(reload, 2000)
+            reloadTimeoutId = setTimeout(() => void reload(), 2000)
         }
         canReload = true
     } else {
@@ -120,8 +121,8 @@ async function reload(manual: boolean = false): Promise<void> {
     }
 }
 
-loadTaskStatuses().then(() => {
-    reloadTimeoutId = setTimeout(reload, 2000)
+void loadTaskStatuses().then(() => {
+    reloadTimeoutId = setTimeout(() => void reload(), 2000)
 })
 onUnmounted(() => clearTimeout(reloadTimeoutId))
 

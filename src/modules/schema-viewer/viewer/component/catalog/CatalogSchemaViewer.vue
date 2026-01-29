@@ -60,7 +60,10 @@ schemaViewerService
         catalogId.value = x.catalogId
         loaded.value = true
     })
-    .catch((e) => toaster.error('Could not load catalog', e)) // todo lho i18n
+    .catch((e: unknown) => {
+        const error = e instanceof Error ? e : undefined
+        void toaster.error('Could not load catalog', error) // todo lho i18n
+    })
 
 props.schema
     .entitySchemas()
@@ -68,7 +71,7 @@ props.schema
         entitySchemas.value = x
         loadedSchemas.value = true
     })
-    .catch()
+    .catch(() => { /* ignore */ })
 
 const properties = computed<Property[]>(() => [
     new Property(

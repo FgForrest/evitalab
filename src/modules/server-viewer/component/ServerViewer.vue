@@ -45,7 +45,11 @@ defineExpose<TabComponentExpose>({
 const initialized = ref<boolean>(false)
 const title: List<string> = List.of(t('serverViewer.title'))
 
-const detailRef = ref<typeof ServerStatusComponent>()
+interface ReloadableComponent {
+    reload(): Promise<boolean | undefined>
+}
+
+const detailRef = ref<ReloadableComponent>()
 
 const serverStatus = ref<ServerStatus>()
 const serverStatusLoaded = ref<boolean>(false)
@@ -57,10 +61,11 @@ async function loadServerStatus(): Promise<boolean> {
             serverStatusLoaded.value = true
         }
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
+        const error = e instanceof Error ? e : new Error(String(e))
         await toaster.error(t(
             'serverViewer.notification.couldNotLoad',
-            { reason: e.message }
+            { reason: error.message }
         ))
         return false
     }
@@ -74,14 +79,14 @@ async function reload(manual: boolean = false): Promise<void> {
     }
 
     const loadedStatus: boolean = await loadServerStatus()
-    const detailReloaded: boolean = await detailRef.value?.reload()
+    const detailReloaded: boolean = (await detailRef.value?.reload()) ?? false
     if (loadedStatus && detailReloaded) {
         if (manual && canReload) {
             // do nothing if the reloading process is working and user
             // requests additional reload in between
         } else {
             // set new timeout only for automatic reload or reload recovery
-            reloadTimeoutId = setTimeout(reload, reloadInterval)
+            reloadTimeoutId = setTimeout(() => void reload(), reloadInterval)
         }
         canReload = true
     } else {
@@ -90,7 +95,7 @@ async function reload(manual: boolean = false): Promise<void> {
     }
 }
 
-loadServerStatus().then((loaded) => {
+void loadServerStatus().then((loaded) => {
     if (!loaded) {
         return
     }
@@ -98,7 +103,7 @@ loadServerStatus().then((loaded) => {
     initialized.value = true
     emit('ready')
 
-    reloadTimeoutId = setTimeout(reload, reloadInterval)
+    reloadTimeoutId = setTimeout(() => void reload(), reloadInterval)
 })
 
 onUnmounted(() => clearInterval(reloadTimeoutId))

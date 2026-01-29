@@ -5,5 +5,5 @@ import { SchemaPointerType } from '@/modules/schema-viewer/viewer/model/SchemaPo
  */
 export type SchemaPointerDto = {
     readonly type: SchemaPointerType
-    readonly params: any
+    readonly params: Record<string, string>
 }

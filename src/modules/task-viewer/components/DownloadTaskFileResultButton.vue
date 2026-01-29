@@ -15,13 +15,13 @@ const props = defineProps<{
 }>()
 
 function onCouldNotDownloadResultFile(e: Error): void {
-    toaster.error(t(
+    void toaster.error(t(
         'taskViewer.tasksVisualizer.task.notification.couldNotDownloadResultFile',
         {
             taskName: props.task.taskName,
             reason: e.message
         }
-    )).then()
+    ))
 }
 </script>
 

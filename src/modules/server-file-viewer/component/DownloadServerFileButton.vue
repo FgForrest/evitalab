@@ -14,13 +14,13 @@ const props = defineProps<{
 }>()
 
 function onCouldNotDownloadResultFile(e: Error): void {
-    toaster.error(t(
+    void toaster.error(t(
         'serverFileViewer.list.item.notification.couldNotDownloadFile',
         {
             fileName: props.file.name,
             reason: e.message
         }
-    )).then()
+    ))
 }
 </script>
 

@@ -34,12 +34,16 @@ defineExpose<TabComponentExpose>({
 
 const title: List<string> = List.of(t('taskViewer.title'))
 
-const taskListRef = ref<typeof TaskList>()
+interface ReloadableComponent {
+    reload(manual: boolean): Promise<void>
+}
+
+const taskListRef = ref<ReloadableComponent>()
 
 const reloadingTasks = ref<boolean>(false)
 function reloadTasks(): void {
     reloadingTasks.value = true
-    taskListRef.value?.reload(true)
+    void taskListRef.value?.reload(true)
     reloadingTasks.value = false
 }
 

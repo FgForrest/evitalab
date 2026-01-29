@@ -8,7 +8,7 @@ import { TextTaskResult } from '@/modules/database-driver/request-response/task/
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     task: TaskStatus
 }>()
 

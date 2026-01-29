@@ -40,8 +40,12 @@ defineExpose<TabComponentExpose>({
     }
 })
 
-const taskListRef = ref<typeof TaskList>()
-const recordingListRef = ref<typeof RecordingList>()
+interface ReloadableComponent {
+    reload(manual: boolean): Promise<void>
+}
+
+const taskListRef = ref<ReloadableComponent>()
+const recordingListRef = ref<ReloadableComponent>()
 
 const title: List<string> = List.of(t('jfrViewer.title'))
 
@@ -49,11 +53,11 @@ const recordingsInPreparationPresent = ref<boolean>(false)
 
 function reloadRecordings(): void {
     reloadTasks()
-    recordingListRef.value?.reload(true)
+    void recordingListRef.value?.reload(true)
 }
 
 function reloadTasks(): void {
-    taskListRef.value?.reload(true)
+    void taskListRef.value?.reload(true)
 }
 
 emit('ready')
