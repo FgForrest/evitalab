@@ -130,7 +130,7 @@ export class MetadataItem {
             'mdi-timer-outline',
             i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.duration'),
             // note: typescript cannot comprehend that there is luxon extensions that overrides it...
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
             (duration as any).toShortHuman(),
             durationIndicator
         )

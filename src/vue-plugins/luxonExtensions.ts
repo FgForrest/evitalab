@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any */
 import { Duration } from 'luxon'
 import type { DurationLikeObject, DurationUnit, ToHumanDurationOptions } from 'luxon'
 import type { App, Plugin } from 'vue'
@@ -14,6 +15,7 @@ const LuxonExtensions: Plugin = {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     install(_app: App, _options: LuxonExtensionsOptions) {
         // from https://github.com/moment/luxon/issues/1134#issuecomment-1282092129
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         (Duration.prototype as any).__toHuman__ = Duration.prototype.toHuman;
         (Duration.prototype as any).toHuman = function (
             opts: ToHumanDurationOptions & {

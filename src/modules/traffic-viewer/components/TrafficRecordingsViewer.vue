@@ -49,13 +49,11 @@ const recordingsInPreparationPresent = ref<boolean>(false)
 
 function reloadRecordings(): void {
     reloadTasks()
-    // @ts-expect-error template ref type not inferred
-    recordingListRef.value?.reload(true)
+    void (recordingListRef.value as unknown as { reload(manual: boolean): Promise<void> } | undefined)?.reload(true)
 }
 
 function reloadTasks(): void {
-    // @ts-expect-error template ref type not inferred
-    taskListRef.value?.reload(true)
+    void (taskListRef.value as unknown as { reload(manual: boolean): Promise<void> } | undefined)?.reload(true)
 }
 
 emit('ready')

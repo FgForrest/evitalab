@@ -44,7 +44,7 @@ const availableLabelNames = ref<string[]>([])
 async function loadLabelNames(searchedLabelName?: string): Promise<void> {
     availableLabelNames.value = (await props.labelNamesProvider(searchedLabelName || '')).toArray()
 }
-loadLabelNames('').then()
+void loadLabelNames('')
 
 const newLabelName = ref<string | undefined>(undefined)
 

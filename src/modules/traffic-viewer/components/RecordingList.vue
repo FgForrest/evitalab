@@ -49,10 +49,10 @@ async function loadRecordings(): Promise<boolean> {
             recordingsLoaded.value = true
         }
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'trafficViewer.recordings.notification.couldNotLoadRecordings',
-            { reason: e.message }
+            { reason: e instanceof Error ? e.message : String(e) }
         ))
         return false
     }
@@ -72,7 +72,7 @@ async function reload(manual: boolean = false): Promise<void> {
             // requests additional reload in between
         } else {
             // set new timeout only for automatic reload or reload recovery
-            reloadTimeoutId = setTimeout(reload, 5000)
+            reloadTimeoutId = setTimeout(() => void reload(), 5000)
         }
         canReload = true
     } else {
@@ -81,8 +81,8 @@ async function reload(manual: boolean = false): Promise<void> {
     }
 }
 
-loadRecordings().then(() => {
-    reloadTimeoutId = setTimeout(reload, 5000)
+void loadRecordings().then(() => {
+    reloadTimeoutId = setTimeout(() => void reload(), 5000)
 })
 onUnmounted(() => clearInterval(reloadTimeoutId))
 

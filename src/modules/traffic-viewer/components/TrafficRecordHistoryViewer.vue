@@ -88,7 +88,7 @@ watch(
     historyListRef,
     () => {
         if (!initialized.value && historyListRef.value != undefined ) {
-            reloadHistoryList()
+            void reloadHistoryList()
             initialized.value = true
         }
     },
@@ -99,9 +99,9 @@ onBeforeMount(() => {
 })
 onMounted(() => {
     // register viewer specific keyboard shortcuts
-    keymap.bind(Command.TrafficRecordHistoryViewer_ShareTab, props.id, () => shareTabButtonRef.value?.share())
-    keymap.bind(Command.TrafficRecordHistoryViewer_ReloadRecordHistory, props.id, async () => await reloadHistoryList())
-    keymap.bind(Command.TrafficRecordHistoryViewer_MoveStartPointer, props.id, async () => await moveStartPointerToNewest())
+    keymap.bind(Command.TrafficRecordHistoryViewer_ShareTab, props.id, () => (shareTabButtonRef.value as unknown as { share(): void })?.share())
+    keymap.bind(Command.TrafficRecordHistoryViewer_ReloadRecordHistory, props.id, () => void reloadHistoryList())
+    keymap.bind(Command.TrafficRecordHistoryViewer_MoveStartPointer, props.id, () => void moveStartPointerToNewest())
 })
 onUnmounted(() => {
     // unregister console specific keyboard shortcuts
@@ -112,19 +112,19 @@ onUnmounted(() => {
 
 async function moveStartPointerToNewest(): Promise<void> {
     historyStartPointerLoading.value = true
-    await historyListRef.value?.moveStartPointerToNewest()
+    await (historyListRef.value as unknown as { moveStartPointerToNewest(): Promise<void> } | undefined)?.moveStartPointerToNewest()
     historyStartPointerLoading.value = false
 }
 
 function removeStartPointer(): void {
     historyStartPointerLoading.value = true
-    historyListRef.value?.removeStartPointer()
+    ;(historyListRef.value as unknown as { removeStartPointer(): void } | undefined)?.removeStartPointer()
     historyStartPointerLoading.value = false
 }
 
 async function reloadHistoryList(): Promise<void> {
     historyListLoading.value = true
-    await historyListRef.value?.reload()
+    await (historyListRef.value as unknown as { reload(): Promise<void> } | undefined)?.reload()
     historyListLoading.value = false
 }
 </script>

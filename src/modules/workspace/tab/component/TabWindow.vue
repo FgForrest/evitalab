@@ -36,8 +36,8 @@ function handleDataUpdated(data: TabData<TabDataDto>): void {
 function updateComponentPath(): void {
     if (componentReady.value &&
         componentInstance.value != undefined &&
-        'path' in componentInstance.value &&
-        typeof componentInstance.value.path === 'function') {
+        'path' in (componentInstance.value as Record<string, unknown>) &&
+        typeof (componentInstance.value as Record<string, unknown>).path === 'function') {
         const path: SubjectPath | undefined = (componentInstance.value as { path: () => SubjectPath | undefined }).path()
         if (path != undefined) {
             workspaceService.subjectPathStatus.definePath(props.id, path)

@@ -30,7 +30,7 @@ watch(
     () => props.modelValue,
     (newValue) => {
         if (newValue) {
-            loadAvailableCatalogs().then()
+            void loadAvailableCatalogs()
         }
     }
 )
@@ -45,9 +45,8 @@ const maxDurationInMilliseconds = ref<string | undefined>(undefined)
 const exportFile = ref<boolean>(false)
 watch(
     exportFile,
-    async () => {
-        // @ts-expect-error template ref type not inferred
-        await formDialog.value.validateForm()
+    () => {
+        void (formDialog.value as unknown as { validateForm(): Promise<void> })?.validateForm()
     }
 )
 const maxFileSizeInBytes = ref<string | undefined>(undefined)
@@ -74,18 +73,18 @@ const chunkFileSizeInBytesRounded = computed<boolean>(() => {
 })
 
 const catalogNameRules = [
-    (value: string): any => {
+    (value: string): string | boolean => {
         if (value != undefined && value.trim().length > 0) return true
         return t('trafficViewer.recordings.startRecording.form.catalogName.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<string | boolean> => {
         const available: boolean = await trafficViewerService.isCatalogExists(value)
         if (available) return true
         return t('trafficViewer.recordings.startRecording.form.catalogName.validations.notExists')
     }
 ]
 const samplingRateRules = [
-    (value: string): any => {
+    (value: string): string | boolean => {
         if (value == undefined || value === '') {
             return t('trafficViewer.recordings.startRecording.form.samplingRate.validations.required')
         }
@@ -100,7 +99,7 @@ const samplingRateRules = [
     }
 ]
 const maxDurationInMillisecondsRules = [
-    (value: string): any => {
+    (value: string): string | boolean => {
         if (value == undefined || value === '') {
             return true
         }
@@ -118,7 +117,7 @@ const maxDurationInMillisecondsRules = [
     }
 ]
 const maxFileSizeInBytesRules = [
-    (value: string): any => {
+    (value: string): string | boolean => {
         if (!exportFile.value) {
             return true
         }
@@ -138,7 +137,7 @@ const maxFileSizeInBytesRules = [
     }
 ]
 const chunkFileSizeInBytesRules = [
-    (value: string): any => {
+    (value: string): string | boolean => {
         if (!exportFile.value) {
             return true
         }
@@ -167,10 +166,10 @@ async function loadAvailableCatalogs(): Promise<void> {
             .map(it => it.name)
             .toArray()
         availableCatalogsLoaded.value = true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'backupViewer.backup.notification.couldNotLoadAvailableCatalogs',
-            { reason: e.message }
+            { reason: e instanceof Error ? e.message : String(e) }
         ))
     }
 }
@@ -203,10 +202,10 @@ async function startRecording(): Promise<boolean> {
         await toaster.success(t('trafficViewer.recordings.startRecording.notification.recordingStarted'))
         emit('start', createdTask)
         return true
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'trafficViewer.recordings.startRecording.notification.couldNotStartRecording',
-            { reason: e.message }
+            { reason: e instanceof Error ? e.message : String(e) }
         ))
         return false
     }

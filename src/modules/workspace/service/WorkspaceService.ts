@@ -3,6 +3,7 @@ import LZString from 'lz-string'
 import type { WorkspaceStore } from '@/modules/workspace/store/workspaceStore'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import type { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
 import { LabStorage } from '@/modules/storage/LabStorage'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
@@ -106,11 +107,11 @@ export class WorkspaceService {
         this.mutationHistoryViewerTabFactory = historyViewerTabFactory
     }
 
-    getTabDefinitions(): TabDefinition<any, any>[] {
+    getTabDefinitions(): TabDefinition<TabParams<unknown>, TabData<unknown>>[] {
         return this.store.tabDefinitions
     }
 
-    getTabDefinition(id: string): TabDefinition<any, any> | undefined {
+    getTabDefinition(id: string): TabDefinition<TabParams<unknown>, TabData<unknown>> | undefined {
         return this.getTabDefinitions().find(it => it.id === id)
     }
 
@@ -121,16 +122,16 @@ export class WorkspaceService {
     /**
      * Finds newly created tab that hasn't been marked as visited yet.
      */
-    getTheNewTab(): TabDefinition<any, any> | undefined {
+    getTheNewTab(): TabDefinition<TabParams<unknown>, TabData<unknown>> | undefined {
         return this.getTabDefinitions().find(it => it.new)
     }
 
     /**
      * Create new tab from definition
      */
-    createTab(tabDefinition: TabDefinition<any, any>): void {
+    createTab(tabDefinition: TabDefinition<TabParams<unknown>, TabData<unknown>>): void {
         // tab definitions may share static ID to indicate only one such tab can be opened at a time
-        const tabRequestWithSameId: TabDefinition<any, any> | undefined = this.getTabDefinition(tabDefinition.id)
+        const tabRequestWithSameId: TabDefinition<TabParams<unknown>, TabData<unknown>> | undefined = this.getTabDefinition(tabDefinition.id)
         if (tabRequestWithSameId == undefined) {
             this.store.tabDefinitions.push(tabDefinition)
             this.store.tabData.set(tabDefinition.id, tabDefinition.initialData)
@@ -139,7 +140,7 @@ export class WorkspaceService {
     }
 
     markTabAsVisited(tabId: string): void {
-        const tabDefinition: TabDefinition<any, any> | undefined = this.getTabDefinition(tabId)
+        const tabDefinition: TabDefinition<TabParams<unknown>, TabData<unknown>> | undefined = this.getTabDefinition(tabId)
         if (tabDefinition) {
             tabDefinition.new = false
         }
@@ -150,7 +151,7 @@ export class WorkspaceService {
      *@param tabId
      * @param updatedData
      */
-    replaceTabData(tabId: string, updatedData: TabData<any>): void {
+    replaceTabData(tabId: string, updatedData: TabData<unknown>): void {
         this.store.tabData.set(tabId, updatedData)
         this.storeOpenedTabs()
     }
@@ -270,7 +271,7 @@ export class WorkspaceService {
                     return undefined
                 }
 
-                const tabData: TabData<any> | undefined = this.store.tabData.get(tabRequest.id)
+                const tabData: TabData<unknown> | undefined = this.store.tabData.get(tabRequest.id)
                 return new StoredTabObject(
                     tabType,
                     tabRequest.params.toSerializable(),
@@ -289,7 +290,7 @@ export class WorkspaceService {
      * @param historyKey
      */
     getTabHistoryRecords<R>(historyKey: TabHistoryKey<R>): R[] {
-        return this.store.tabHistory.get(historyKey.toString()) ?? []
+        return (this.store.tabHistory.get(historyKey.toString()) ?? []) as R[]
     }
 
     /**
@@ -300,7 +301,7 @@ export class WorkspaceService {
     addTabHistoryRecord<R>(historyKey: TabHistoryKey<R>, record: R): void {
         const serializedHistoryKey: string = historyKey.toString()
 
-        let records: any[] | undefined = this.store.tabHistory.get(serializedHistoryKey)
+        let records: unknown[] | undefined = this.store.tabHistory.get(serializedHistoryKey)
         if (records == undefined) {
             records = []
             this.store.tabHistory.set(serializedHistoryKey, records)
@@ -310,7 +311,7 @@ export class WorkspaceService {
         if (record instanceof Array) {
             let emptyParts: number = 0
             for (let i = 1; i < record.length; i++) {
-                const part: any = record[i]
+                const part: unknown = record[i]
                 if (part == undefined || part === '') {
                     emptyParts += 1
                 }
@@ -325,13 +326,13 @@ export class WorkspaceService {
         }
 
         // ignore duplicate records
-        const lastRecord: any = records.at(-1)
+        const lastRecord: unknown = records.at(-1)
         if (lastRecord != undefined) {
             if (record instanceof Array) {
                 let equalParts: number = 0
                 for (let i = 1; i < record.length; i++) {
-                    const recordPart: any = record[i]
-                    const lastRecordPart: any = lastRecord[i]
+                    const recordPart: unknown = record[i]
+                    const lastRecordPart: unknown = (lastRecord as unknown[])[i]
                     if (recordPart === lastRecordPart) {
                         equalParts += 1
                     }
@@ -358,7 +359,7 @@ export class WorkspaceService {
      * Clears all tab history for this key
      * @param historyKey
      */
-    clearTabHistory(historyKey: TabHistoryKey<any>): void {
+    clearTabHistory(historyKey: TabHistoryKey<unknown>): void {
         this.store.tabHistory.delete(historyKey.toString())
     }
 
@@ -372,7 +373,8 @@ export class WorkspaceService {
         if (serializedTabHistory == undefined) {
             return false
         }
-        const tabHistory: Map<string, any[]> = new Map(JSON.parse(LZString.decompressFromEncodedURIComponent(serializedTabHistory)))
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        const tabHistory: Map<string, unknown[]> = new Map(JSON.parse(LZString.decompressFromEncodedURIComponent(serializedTabHistory)))
         if (tabHistory.size === 0) {
             return false
         }

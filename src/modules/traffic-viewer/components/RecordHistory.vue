@@ -158,7 +158,7 @@ async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) 
         pushNewRecords(fetchedRecords)
         await processRecords()
         done('ok')
-    } catch (e: any) {
+    } catch (e: unknown) {
         handleRecordFetchError(e)
         done('error')
     }
@@ -179,7 +179,7 @@ async function reloadHistory(): Promise<void> {
         moveNextPagePointer(fetchedRecords)
         pushNewRecords(fetchedRecords)
         await processRecords()
-    } catch (e: any) {
+    } catch (e: unknown) {
         handleRecordFetchError(e)
     }
 }
@@ -222,7 +222,7 @@ async function processRecords(): Promise<void> {
     history.value = (await trafficViewerService.processRecords(props.dataPointer.catalogName, props.criteria, records)).toArray()
 }
 
-function handleRecordFetchError(e: any): void {
+function handleRecordFetchError(e: unknown): void {
     if (e instanceof ConnectError && e.code === Code.InvalidArgument) {
         // todo lho rework when connect library can provide metadata
         if (e.message.toLowerCase().includes('no on-demand traffic recording has been started')) {
@@ -234,10 +234,11 @@ function handleRecordFetchError(e: any): void {
             return
         }
     }
-    toaster.error(t(
+    const message = e instanceof Error ? e.message : String(e)
+    void toaster.error(t(
         'trafficViewer.recordHistory.notification.couldNotLoadRecords',
-        { reason: e.message }
-    )).then()
+        { reason: message }
+    ))
 }
 
 async function moveStartPointerToNewest(): Promise<void> {
@@ -256,10 +257,10 @@ async function moveStartPointerToNewest(): Promise<void> {
             startPointer.value = new StartRecordsPointer(latestRecord.sessionSequenceOrder + 1n)
             emit('update:startPointerActive', true)
         }
-    } catch (e: any) {
+    } catch (e: unknown) {
         await toaster.error(t(
             'trafficViewer.recordHistory.notification.couldNotLoadLatestRecording',
-            { reason: e.message }
+            { reason: e instanceof Error ? e.message : String(e) }
         ))
         emit('update:startPointerActive', false)
     }

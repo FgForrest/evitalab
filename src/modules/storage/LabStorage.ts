@@ -30,6 +30,7 @@ export class LabStorage {
     }
 
     get<V>(key: string, def?: V): V {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return this.storage.get(key) || def
     }
 

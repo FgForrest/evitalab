@@ -27,6 +27,7 @@ export class EvitaDBDocsClient {
 
     async getBlogPosts(): Promise<EvitaDBBlogPost[]> {
         try {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
             const rssResponse: string = await this.httpClient.get('https://evitadb.io/rss.xml').text()
             const rss: Document = new window.DOMParser().parseFromString(rssResponse, 'text/xml')
 
