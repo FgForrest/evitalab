@@ -41,23 +41,23 @@ export class SharedTabResolver {
         this.trafficRecordHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
     }
 
-    async resolve(shareTabObject: ShareTabObject): Promise<TabDefinition<any, any>> {
+    resolve(shareTabObject: ShareTabObject): TabDefinition<any, any> {
         try {
             switch (shareTabObject.tabType as string) {
                 case 'data-grid':
                 case 'dataGrid':
-                case TabType.EntityViewer:
+                case TabType.EntityViewer as string:
                     return this.entityViewerTabFactory.restoreFromJson(shareTabObject.tabParams, shareTabObject.tabData)
                 case 'evitaql-console':
-                case TabType.EvitaQLConsole:
+                case TabType.EvitaQLConsole as string:
                     return this.evitaQLConsoleTabFactory.restoreFromJson(shareTabObject.tabParams, shareTabObject.tabData)
                 case 'graphql-console':
-                case TabType.GraphQLConsole:
+                case TabType.GraphQLConsole as string:
                     return this.graphQLConsoleTabFactory.restoreFromJson(shareTabObject.tabParams, shareTabObject.tabData)
                 case 'schema-viewer':
-                case TabType.SchemaViewer:
+                case TabType.SchemaViewer as string:
                     return this.schemaViewerTabFactory.restoreFromJson(shareTabObject.tabParams)
-                case TabType.TrafficRecordHistoryViewer:
+                case TabType.TrafficRecordHistoryViewer as string:
                     return this.trafficRecordHistoryViewerTabFactory.restoreFromJson(shareTabObject.tabParams, shareTabObject.tabData)
                 default:
                     throw new UnexpectedError(`Unsupported shared tab type '${shareTabObject.tabType}'.`)
@@ -73,7 +73,7 @@ export class SharedTabResolver {
                         const newTabParams: TabParamsDtoWithConnection = JSON.parse(JSON.stringify(tabParams))
                         newTabParams.connectionId = newConnectionId
 
-                        return await this.resolve(new ShareTabObject(
+                        return this.resolve(new ShareTabObject(
                             shareTabObject.tabType,
                             newTabParams,
                             shareTabObject.tabData

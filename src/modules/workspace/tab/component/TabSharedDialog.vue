@@ -60,7 +60,7 @@ async function acceptSharedTab(): Promise<void> {
     }
 
     try {
-        const sharedTabRequest: TabDefinition<any, any> = await sharedTabResolver.resolve(sharedTab.value)
+        const sharedTabRequest: TabDefinition<any, any> = sharedTabResolver.resolve(sharedTab.value)
         workspaceService.createTab(sharedTabRequest)
 
         sharedTabResolved()

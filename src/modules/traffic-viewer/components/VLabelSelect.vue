@@ -66,7 +66,7 @@ const displayedLabels = computed<string>(() => {
     if (props.modelValue.length === 0) {
         return ''
     }
-    //@ts-ignore
+    // @ts-expect-error i18n pluralization overload not typed
     return t('trafficViewer.recordHistory.filter.form.labels.displayedLabels', props.modelValue.length, { count: props.modelValue.length })
 })
 

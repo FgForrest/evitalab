@@ -53,8 +53,8 @@ const title: List<string> = List.of(
     t('trafficViewer.recordHistory.title')
 )
 
-const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
-const historyListRef = ref<InstanceType<typeof RecordHistory> | undefined>()
+const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton>>()
+const historyListRef = ref<InstanceType<typeof RecordHistory>>()
 const criteria = ref<TrafficRecordHistoryCriteria>(new TrafficRecordHistoryCriteria(
     props.data.since,
     props.data.types,

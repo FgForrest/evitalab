@@ -6,7 +6,7 @@ import {
 } from '@/modules/traffic-viewer/model/TrafficRecordVisualisationDefinition'
 import RecordMetadata from '@/modules/traffic-viewer/components/RecordMetadata.vue'
 
-const props = defineProps<{
+defineProps<{
     definition: TrafficRecordVisualisationDefinition
 }>()
 

@@ -94,7 +94,7 @@ async function resolveDemoCodeSnippet(urlSearchParams: URLSearchParams): Promise
     }
 }
 
-async function hasSharedTab(urlSearchParams: URLSearchParams): Promise<boolean> {
+function hasSharedTab(urlSearchParams: URLSearchParams): boolean {
     const sharedTabSerialized: string | null = urlSearchParams.get('sharedTab')
     return sharedTabSerialized != undefined
 }

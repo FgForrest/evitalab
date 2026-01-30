@@ -59,7 +59,7 @@ export class SourceQueryStatisticsContainerVisualiser extends TrafficRecordVisua
             i18n.global.t('trafficViewer.recordHistory.record.type.sourceQueryStatistics.metadata.item.returnedRecordCount.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.sourceQueryStatistics.metadata.item.returnedRecordCount.value',
-                //@ts-ignore
+                // @ts-expect-error i18n pluralization overload not typed
                 trafficRecord.returnedRecordCount,
                 { named: { count: formatCount(trafficRecord.returnedRecordCount) } }
             )
@@ -70,7 +70,7 @@ export class SourceQueryStatisticsContainerVisualiser extends TrafficRecordVisua
             i18n.global.t('trafficViewer.recordHistory.record.type.sourceQueryStatistics.metadata.item.totalRecordCount.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.sourceQueryStatistics.metadata.item.totalRecordCount.value',
-                //@ts-ignore
+                // @ts-expect-error i18n pluralization overload not typed
                 trafficRecord.totalRecordCount,
                 { named: { count: formatCount(trafficRecord.totalRecordCount) } }
             )

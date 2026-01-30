@@ -188,33 +188,33 @@ export class WorkspaceService {
                 switch (storedTabObject.tabType as string) {
                     case 'data-grid':
                     case 'dataGrid':
-                    case TabType.EntityViewer:
+                    case TabType.EntityViewer as string:
                         return this.entityViewerTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
                     case 'evitaql-console':
-                    case TabType.EvitaQLConsole:
+                    case TabType.EvitaQLConsole as string:
                         return this.evitaQLConsoleTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
                     case 'graphql-console':
-                    case TabType.GraphQLConsole:
+                    case TabType.GraphQLConsole as string:
                         return this.graphQLConsoleTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
                     case 'schema-viewer':
-                    case TabType.SchemaViewer:
+                    case TabType.SchemaViewer as string:
                         return this.schemaViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
-                    case TabType.KeymapViewer:
+                    case TabType.KeymapViewer as string:
                         return this.keymapViewerTabFactory.createNew()
                     case 'serverStatus':
-                    case TabType.ServerViewer:
+                    case TabType.ServerViewer as string:
                         return this.serverViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
-                    case TabType.TaskViewer:
+                    case TabType.TaskViewer as string:
                         return this.taskViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
-                    case TabType.BackupViewer:
+                    case TabType.BackupViewer as string:
                         return this.backupViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
-                    case TabType.JfrViewer:
+                    case TabType.JfrViewer as string:
                         return this.jfrViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
-                    case TabType.TrafficRecordingsViewer:
+                    case TabType.TrafficRecordingsViewer as string:
                         return this.trafficRecordingsViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
-                    case TabType.TrafficRecordHistoryViewer:
+                    case TabType.TrafficRecordHistoryViewer as string:
                         return this.trafficRecordHistoryViewerTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
-                    case TabType.MutationHistoryViewer:
+                    case TabType.MutationHistoryViewer as string:
                         return this.mutationHistoryViewerTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
                     default:
                         throw new UnexpectedError(`Unsupported stored tab type '${storedTabObject.tabType}'.`)
@@ -310,7 +310,7 @@ export class WorkspaceService {
         if (record instanceof Array) {
             let emptyParts: number = 0
             for (let i = 1; i < record.length; i++) {
-                const part: any | undefined = record[i]
+                const part: any = record[i]
                 if (part == undefined || part === '') {
                     emptyParts += 1
                 }
@@ -325,13 +325,13 @@ export class WorkspaceService {
         }
 
         // ignore duplicate records
-        const lastRecord: any | undefined = records.at(-1)
+        const lastRecord: any = records.at(-1)
         if (lastRecord != undefined) {
             if (record instanceof Array) {
                 let equalParts: number = 0
                 for (let i = 1; i < record.length; i++) {
-                    const recordPart: any | undefined = record[i]
-                    const lastRecordPart: any | undefined = lastRecord[i]
+                    const recordPart: any = record[i]
+                    const lastRecordPart: any = lastRecord[i]
                     if (recordPart === lastRecordPart) {
                         equalParts += 1
                     }

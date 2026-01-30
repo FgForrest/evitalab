@@ -48,7 +48,7 @@ const pageCount = computed<number>(() => {
 })
 
 const taskStatuses = ref<PaginatedList<TaskStatus>>()
-watch(taskStatuses, async (newValue) => {
+watch(taskStatuses, (newValue) => {
     if (newValue != undefined && newValue.data.size > 0) {
         emit('update:activeJobsPresent', true)
     } else {

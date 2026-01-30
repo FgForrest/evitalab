@@ -5,7 +5,7 @@ import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 
 export class StorageModuleRegistrar implements ModuleRegistrar {
 
-    async register(builder: ModuleContextBuilder): Promise<void> {
+    register(builder: ModuleContextBuilder): void {
         const evitaLabConfig: EvitaLabConfig = builder.inject(evitaLabConfigInjectionKey)
 
         builder.provide(

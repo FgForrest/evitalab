@@ -69,7 +69,7 @@ export class SessionCloseContainerVisualiser extends TrafficRecordVisualiser<Ses
             i18n.global.t('trafficViewer.recordHistory.record.type.sessionClose.metadata.item.trafficRecordCount.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.sessionClose.metadata.item.trafficRecordCount.value',
-                // @ts-ignore
+                // @ts-expect-error i18n pluralization overload not typed
                 trafficRecord.trafficRecordCount,
                 { named: { count: formatCount(trafficRecord.trafficRecordCount) } }
             ),
@@ -80,7 +80,7 @@ export class SessionCloseContainerVisualiser extends TrafficRecordVisualiser<Ses
             i18n.global.t('trafficViewer.recordHistory.record.type.sessionClose.metadata.item.queryCount.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.sessionClose.metadata.item.queryCount.value',
-                // @ts-ignore
+                // @ts-expect-error i18n pluralization overload not typed
                 trafficRecord.queryCount,
                 { named: { count: formatCount(trafficRecord.queryCount) } }
             ),
@@ -91,7 +91,7 @@ export class SessionCloseContainerVisualiser extends TrafficRecordVisualiser<Ses
             i18n.global.t('trafficViewer.recordHistory.record.type.sessionClose.metadata.item.entityFetchCount.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.sessionClose.metadata.item.entityFetchCount.value',
-                // @ts-ignore
+                // @ts-expect-error i18n pluralization overload not typed
                 trafficRecord.entityFetchCount,
                 { named: { count: formatCount(trafficRecord.entityFetchCount) } }
             ),
@@ -102,7 +102,7 @@ export class SessionCloseContainerVisualiser extends TrafficRecordVisualiser<Ses
             i18n.global.t('trafficViewer.recordHistory.record.type.sessionClose.metadata.item.mutationCount.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.sessionClose.metadata.item.mutationCount.value',
-                // @ts-ignore
+                // @ts-expect-error i18n pluralization overload not typed
                 trafficRecord.mutationCount,
                 { named: { count: formatCount(trafficRecord.mutationCount) } }
             ),

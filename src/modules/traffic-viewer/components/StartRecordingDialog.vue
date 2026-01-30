@@ -13,7 +13,6 @@ import {
 } from '@/utils/number'
 import { parseHumanDurationToMs } from '@/utils/duration'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
-import { CatalogState } from '@/modules/database-driver/request-response/CatalogState.ts'
 
 const trafficViewerService: TrafficViewerService = useTrafficViewerService()
 const toaster: Toaster = useToaster()
@@ -39,7 +38,7 @@ watch(
 const availableCatalogs = ref<string[]>([])
 const availableCatalogsLoaded = ref<boolean>(false)
 
-const formDialog = ref<InstanceType<typeof VFormDialog> | null>()
+const formDialog = ref<InstanceType<typeof VFormDialog>>()
 const catalogName = ref<string | undefined>(undefined)
 const samplingRate = ref<string>('100')
 const maxDurationInMilliseconds = ref<string | undefined>(undefined)
@@ -47,7 +46,7 @@ const exportFile = ref<boolean>(false)
 watch(
     exportFile,
     async () => {
-        //@ts-ignore
+        // @ts-expect-error template ref type not inferred
         await formDialog.value.validateForm()
     }
 )
@@ -58,7 +57,7 @@ const maxFileSizeInBytesRounded = computed<boolean>(() => {
     }
     try {
         return parseHumanByteSizeToBigInt(maxFileSizeInBytes.value)[1]
-    } catch (e) {
+    } catch {
         return false
     }
 })
@@ -69,7 +68,7 @@ const chunkFileSizeInBytesRounded = computed<boolean>(() => {
     }
     try {
         return parseHumanByteSizeToBigInt(chunkFileSizeInBytes.value)[1]
-    } catch (e) {
+    } catch {
         return false
     }
 })
@@ -109,7 +108,7 @@ const maxDurationInMillisecondsRules = [
         let duration: bigint
         try {
             duration = parseHumanDurationToMs(value.trim())
-        } catch (e) {
+        } catch {
             return t('trafficViewer.recordings.startRecording.form.maxDurationInMilliseconds.validations.notDuration')
         }
         if (duration < 0 || duration > int64MaxValue) {
@@ -129,7 +128,7 @@ const maxFileSizeInBytesRules = [
         let number: bigint
         try {
             number = parseHumanByteSizeToBigInt(value)[0]
-        } catch (e) {
+        } catch {
             return t('trafficViewer.recordings.startRecording.form.maxFileSizeInBytes.validations.notByteSize')
         }
         if (number < 0 || number > int64MaxValue) {
@@ -149,7 +148,7 @@ const chunkFileSizeInBytesRules = [
         let number: bigint
         try {
             number = parseHumanByteSizeToBigInt(value)[0]
-        } catch (e) {
+        } catch {
             return t('trafficViewer.recordings.startRecording.form.chunkFileSizeInBytes.validations.notByteSize')
         }
         if (number < 0 || number > int64MaxValue) {

@@ -16,6 +16,7 @@ export abstract class TrafficRecordVisualiser<R extends TrafficRecord> {
      * Can be overridden for doing some preparation work for the entire history
      * before actual visualisation
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     prepare(ctx: TrafficRecordPreparationContext, trafficRecord: R): void {
         // do nothing by default
     }

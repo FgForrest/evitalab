@@ -95,7 +95,7 @@ export class QueryContainerVisualiser extends TrafficRecordVisualiser<QueryConta
             i18n.global.t('trafficViewer.recordHistory.record.type.query.metadata.item.primaryKeys.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.query.metadata.item.primaryKeys.value',
-                // @ts-ignore
+                // @ts-expect-error i18n pluralization overload not typed
                 trafficRecord.primaryKeys.size,
                 { named: { count: formatCount(trafficRecord.primaryKeys.size) } }
             )
@@ -106,7 +106,7 @@ export class QueryContainerVisualiser extends TrafficRecordVisualiser<QueryConta
             i18n.global.t('trafficViewer.recordHistory.record.type.query.metadata.item.totalRecordCount.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.query.metadata.item.totalRecordCount.value',
-                // @ts-ignore
+                // @ts-expect-error i18n pluralization overload not typed
                 trafficRecord.totalRecordCount,
                 { named: { count: formatCount(trafficRecord.totalRecordCount) } }
             )
