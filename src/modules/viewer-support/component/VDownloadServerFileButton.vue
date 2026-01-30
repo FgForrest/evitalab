@@ -40,8 +40,8 @@ async function download(): Promise<void> {
         link.download = props.file.name
         document.body.appendChild(link)
         link.click()
-    } catch (e: any) {
-        emit('error', e)
+    } catch (e: unknown) {
+        emit('error', e instanceof Error ? e : new Error(String(e)))
     }
 
     state.value = State.Downloaded

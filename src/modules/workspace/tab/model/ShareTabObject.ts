@@ -14,7 +14,7 @@ export class ShareTabObject extends SerializableTabObject {
     }
 
     static fromLinkParam(param: string): ShareTabObject {
-        const json: any = JSON.parse(LZString.decompressFromEncodedURIComponent(param))
+        const json = JSON.parse(LZString.decompressFromEncodedURIComponent(param)) as { tabType: TabType, tabParams: TabParamsDto, tabData?: TabDataDto }
         return new ShareTabObject(json.tabType, json.tabParams, json.tabData)
     }
 

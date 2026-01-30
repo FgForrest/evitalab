@@ -14,7 +14,7 @@ defineProps<{
 
 const blogPosts = ref<EvitaDBBlogPost[]>([])
 
-welcomeScreenManager.getBlogPosts().then((posts) => {
+void welcomeScreenManager.getBlogPosts().then((posts) => {
     blogPosts.value = posts
 })
 </script>

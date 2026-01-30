@@ -8,6 +8,8 @@ import { ConnectionService, useConnectionService } from '@/modules/connection/se
 import { Connection } from '@/modules/connection/model/Connection'
 import type { SharedTabTroubleshooterCallback } from '@/modules/workspace/tab/service/SharedTabTroubleshooterCallback'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
+import type { TabData } from '@/modules/workspace/tab/model/TabData'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 
@@ -24,7 +26,7 @@ const props = withDefaults(defineProps<{
     troubleshooterCallback: undefined
 })
 const emit = defineEmits<{
-    (e: 'resolve', value: TabDefinition<any, any>): void,
+    (e: 'resolve', value: TabDefinition<TabParams<unknown>, TabData<unknown>>): void,
     (e: 'reject'): void
 }>()
 
@@ -64,11 +66,11 @@ async function accept(): Promise<boolean> {
         throw new Error('Cannot accept shared tab without troubleshooter callback.')
     }
     try {
-        const sharedTabRequest: TabDefinition<any, any> = await props.troubleshooterCallback(newConnectionId.value!)
+        const sharedTabRequest = await props.troubleshooterCallback(newConnectionId.value!)
         emit('resolve', sharedTabRequest)
         return true
-    } catch (e: any) {
-        await toaster.error('Could not resolve shared tab', e)
+    } catch (e: unknown) {
+        await toaster.error('Could not resolve shared tab', e instanceof Error ? e : undefined)
         return false
     }
 }

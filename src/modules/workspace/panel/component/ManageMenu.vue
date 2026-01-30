@@ -92,7 +92,7 @@ function openKeymap() {
     workspaceService.createTab(keymapViewerTabFactory.createNew())
 }
 
-function handleOptionClick(selected: any): void {
+function handleOptionClick(selected: unknown[]): void {
     if (selected.length > 0) {
         const option: ManageOptionType = selected[0] as ManageOptionType
         switch (option) {
@@ -121,7 +121,7 @@ function handleOptionClick(selected: any): void {
                 window.open('https://github.com/FgForrest/evitaDB/issues', '_blank');
                 break
             default:
-                toaster.error(`Unknown manage option ${selected[0]}`).then()
+                void toaster.error(`Unknown manage option ${String(selected[0])}`)
         }
     }
 }

@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, type Component } from 'vue'
 import type { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
+import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
+import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
 import TabLoadingScreen from '@/modules/workspace/tab/component/TabLoadingScreen.vue'
 import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
@@ -10,8 +13,8 @@ const workspaceService: WorkspaceService = useWorkspaceService()
 
 const props = defineProps<{
     id: string,
-    component: any,
-    componentProps: TabComponentProps<any, any>
+    component: Component,
+    componentProps: TabComponentProps<TabParams<TabParamsDto>, TabData<TabDataDto>>
 }>()
 
 const componentReady = ref<boolean>(false)
@@ -25,7 +28,7 @@ function handleReady(): void {
     updateComponentPath()
 }
 
-function handleDataUpdated(data: TabData<any>): void {
+function handleDataUpdated(data: TabData<TabDataDto>): void {
     workspaceService.replaceTabData(props.id, data)
     updateComponentPath()
 }
@@ -33,8 +36,9 @@ function handleDataUpdated(data: TabData<any>): void {
 function updateComponentPath(): void {
     if (componentReady.value &&
         componentInstance.value != undefined &&
-        componentInstance.value.path != undefined) {
-        const path: SubjectPath | undefined = componentInstance.value.path()
+        'path' in componentInstance.value &&
+        typeof componentInstance.value.path === 'function') {
+        const path: SubjectPath | undefined = (componentInstance.value as { path: () => SubjectPath | undefined }).path()
         if (path != undefined) {
             workspaceService.subjectPathStatus.definePath(props.id, path)
         }

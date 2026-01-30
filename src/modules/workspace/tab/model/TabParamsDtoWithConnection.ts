@@ -12,6 +12,6 @@ export interface TabParamsDtoWithConnection extends TabParamsDto {
     readonly connectionName: string | undefined
 }
 
-export function isTabParamsDtoWithConnection(dto: any): dto is TabParamsDtoWithConnection {
-    return typeof dto.connectionId === 'string'
+export function isTabParamsDtoWithConnection(dto: TabParamsDto): dto is TabParamsDtoWithConnection {
+    return 'connectionId' in dto && typeof (dto as TabParamsDtoWithConnection).connectionId === 'string'
 }

@@ -8,6 +8,8 @@ import { useI18n } from 'vue-i18n'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
 import type { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
+import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
 import ShareTabDialog from '@/modules/workspace/tab/component/ShareTabDialog.vue'
 import { Command } from '@/modules/keymap/model/Command'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
@@ -16,8 +18,8 @@ const { t } = useI18n()
 
 const props = withDefaults(defineProps<{
     tabType: TabType,
-    tabParams: TabParams<any>,
-    tabData: TabData<any> | undefined,
+    tabParams: TabParams<TabParamsDto>,
+    tabData: TabData<TabDataDto> | undefined,
     disabled?: boolean
     command: Command
 }>(), {

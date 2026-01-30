@@ -1,4 +1,4 @@
-export function getEnumKeyByValue<T extends Record<string, any>>(
+export function getEnumKeyByValue<T extends Record<string, string | number>>(
     enumObj: T,
     value: string
 ): string {

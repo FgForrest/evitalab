@@ -3,6 +3,8 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
+import type { TabData } from '@/modules/workspace/tab/model/TabData'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import { DemoSnippetResolver, useDemoSnippetResolver } from '@/modules/workspace/service/DemoSnippetResolver'
@@ -24,10 +26,10 @@ const demoCodeSnippetResolver: DemoSnippetResolver = useDemoSnippetResolver()
 
 const showSharedTabDialog = ref<boolean>(false)
 
-const tabDefinitions = ref<TabDefinition<any, any>[]>(workspaceService.getTabDefinitions())
+const tabDefinitions = ref(workspaceService.getTabDefinitions())
 watch(tabDefinitions, () => {
     // switch to newly opened tab
-    const newTab: TabDefinition<any, any> | undefined = workspaceService.getTheNewTab()
+    const newTab = workspaceService.getTheNewTab()
     if (newTab) {
         currentTabId.value = newTab.id
         workspaceService.markTabAsVisited(newTab.id)
@@ -81,7 +83,7 @@ function closeTab(tabId: string): void {
 /**
  * open demo code snippet if requested
  */
-async function resolveDemoCodeSnippet(urlSearchParams: URLSearchParams): Promise<TabDefinition<any, any> | undefined> {
+async function resolveDemoCodeSnippet(urlSearchParams: URLSearchParams): Promise<TabDefinition<TabParams<unknown>, TabData<unknown>> | undefined> {
     const demoSnippetRequestSerialized: string | null = urlSearchParams.get('demoSnippetRequest')
     if (demoSnippetRequestSerialized == undefined) {
         return undefined
@@ -89,8 +91,8 @@ async function resolveDemoCodeSnippet(urlSearchParams: URLSearchParams): Promise
 
     try {
         return await demoCodeSnippetResolver.resolve(demoSnippetRequestSerialized)
-    } catch (e: any) {
-        await toaster.error('Could not resolve demo code snippet', e) // todo lho i18n
+    } catch (e: unknown) {
+        await toaster.error('Could not resolve demo code snippet', e instanceof Error ? e : undefined) // todo lho i18n
     }
 }
 
@@ -114,18 +116,18 @@ function restorePreviousSession(): void {
         }
 
         if (sessionRestored) {
-            toaster.info('Your last session has been restored.').then()
+            void toaster.info('Your last session has been restored.')
         }
     } catch (e) {
         console.error(e)
-        toaster.warning('Failed to fully restore your last session.').then()
+        void toaster.warning('Failed to fully restore your last session.')
     }
 }
 
 // initialize the editor
 if (evitaLabConfig.playgroundMode) {
     const urlSearchParams: URLSearchParams = new URLSearchParams(document.location.search)
-    resolveDemoCodeSnippet(urlSearchParams)
+    void resolveDemoCodeSnippet(urlSearchParams)
         .then(tabDefinition => {
             if (tabDefinition != undefined) {
                 workspaceService.createTab(tabDefinition)

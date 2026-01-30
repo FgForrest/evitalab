@@ -48,7 +48,7 @@ export class EvitaDBDocsClient {
             // we need only 2 latest blog posts
             blogPosts.reverse().splice(2)
             return blogPosts
-        } catch (e: any) {
+        } catch (e: unknown) {
             throw this.handleCallError(e, undefined)
         }
     }
@@ -64,20 +64,21 @@ export class EvitaDBDocsClient {
     /**
      * Translates HTTP errors into specific lab errors.
      */
-    protected handleCallError(e: any, connection?: Connection): LabError {
-        if (e.name === 'HTTPError') {
-            const statusCode: number = e.response.status
+    protected handleCallError(e: unknown, connection?: Connection): LabError {
+        const err = e as { name?: string; message?: string; response?: { status: number } }
+        if (err.name === 'HTTPError') {
+            const statusCode: number = err.response?.status ?? 0
             if (statusCode >= 500) {
                 return new EvitaDBInstanceServerError(connection)
             } else {
-                return new UnexpectedError(e.message)
+                return new UnexpectedError(err.message ?? 'Unknown HTTP error')
             }
-        } else if (e.name === 'TimeoutError') {
+        } else if (err.name === 'TimeoutError') {
             return new TimeoutError(connection)
-        } else if (e.name === 'TypeError' && e.message === 'Failed to fetch') {
+        } else if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
             return new EvitaDBInstanceNetworkError(connection)
         } else {
-            return new UnexpectedError(e.message)
+            return new UnexpectedError(err.message ?? 'Unknown error')
         }
     }
 }

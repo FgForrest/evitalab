@@ -3,6 +3,7 @@ import type { DurationLikeObject, DurationUnit, ToHumanDurationOptions } from 'l
 import type { App, Plugin } from 'vue'
 import { round } from '@/utils/number'
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface LuxonExtensionsOptions {}
 
 const hourInMillis: number = 60 * 60 * 1000

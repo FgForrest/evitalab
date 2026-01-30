@@ -49,8 +49,8 @@ export class SessionCloseContainerVisualiser extends TrafficRecordVisualiser<Ses
                               originalFinishedStatus: MetadataItem | undefined): MetadataItem[] {
         const defaultMetadata: MetadataItem[] = []
 
-        const finishedWithError: string = [originalFinishedStatus, trafficRecord.finishedWithError]
-            .filter(status => status != undefined)
+        const finishedWithError: string = [originalFinishedStatus?.value, trafficRecord.finishedWithError]
+            .filter((status): status is string => status != undefined)
             .join('; ')
 
         defaultMetadata.push(MetadataItem.finishedStatus(finishedWithError.length > 0 ? finishedWithError : undefined))

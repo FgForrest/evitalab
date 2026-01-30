@@ -34,7 +34,7 @@ const emit = defineEmits<{
     (e: 'update:showPanel', value: boolean): void
 }>()
 
-function selectConnection(item: any): void {
+function selectConnection(item: { id: unknown, value: boolean, path: string }): void {
     if (!item.value) {
         emit('update:showPanel', false)
     } else {

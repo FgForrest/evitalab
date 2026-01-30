@@ -8,6 +8,8 @@ import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/work
 import { GraphQLConsoleTabFactory } from '@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFactory'
 import { SchemaViewerTabFactory } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
 import { mandatoryInject } from '@/utils/reactivity'
+import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
+import type { TabData } from '@/modules/workspace/tab/model/TabData'
 import { TrafficRecordHistoryViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
 import type { ConnectionId } from '@/modules/connection/model/ConnectionId'
 import {
@@ -41,7 +43,7 @@ export class SharedTabResolver {
         this.trafficRecordHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
     }
 
-    resolve(shareTabObject: ShareTabObject): TabDefinition<any, any> {
+    resolve(shareTabObject: ShareTabObject): TabDefinition<TabParams<unknown>, TabData<unknown>> {
         try {
             switch (shareTabObject.tabType as string) {
                 case 'data-grid':
@@ -64,13 +66,14 @@ export class SharedTabResolver {
             }
         } catch (e) {
             if (e instanceof ConnectionNotFoundError && isTabParamsDtoWithConnection(shareTabObject.tabParams)) {
-                const tabParams: any = shareTabObject.tabParams
+                const tabParams: TabParamsDtoWithConnection = shareTabObject.tabParams
                 const connectionName: string | undefined = tabParams.connectionName
 
                 throw new InvalidConnectionInSharedTabError(
                     connectionName,
-                    async (newConnectionId: ConnectionId): Promise<TabDefinition<any, any>> => {
-                        const newTabParams: TabParamsDtoWithConnection = JSON.parse(JSON.stringify(tabParams))
+                    // eslint-disable-next-line @typescript-eslint/require-await
+                    async (newConnectionId: ConnectionId): Promise<TabDefinition<TabParams<unknown>, TabData<unknown>>> => {
+                        const newTabParams: TabParamsDtoWithConnection = JSON.parse(JSON.stringify(tabParams)) as TabParamsDtoWithConnection
                         newTabParams.connectionId = newConnectionId
 
                         return this.resolve(new ShareTabObject(

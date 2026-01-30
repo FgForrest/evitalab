@@ -86,12 +86,10 @@ export class MetadataItem {
             MetadataItemSeverity.Info,
             undefined,
             (ctx: TrafficRecordMetadataItemContext): void => {
-                navigator.clipboard.writeText(`${sessionId.toString()}`).then(() => {
-                    ctx.toaster.info(i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.sessionId.notification.copiedToClipboard'))
-                        .then()
+                void navigator.clipboard.writeText(`${sessionId.toString()}`).then(() => {
+                    void ctx.toaster.info(i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.sessionId.notification.copiedToClipboard'))
                 }).catch(() => {
-                    ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
-                        .then()
+                    void ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
                 })
             }
         )
@@ -106,12 +104,10 @@ export class MetadataItem {
             MetadataItemSeverity.Info,
             undefined,
             (ctx: TrafficRecordMetadataItemContext): void => {
-                navigator.clipboard.writeText(`${created.toString()}`).then(() => {
-                    ctx.toaster.info(i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.created.notification.copiedToClipboard'))
-                        .then()
+                void navigator.clipboard.writeText(`${created.toString()}`).then(() => {
+                    void ctx.toaster.info(i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.created.notification.copiedToClipboard'))
                 }).catch(() => {
-                    ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
-                        .then()
+                    void ctx.toaster.error(i18n.global.t('common.notification.failedToCopyToClipboard'))
                 })
             }
         )
@@ -134,8 +130,8 @@ export class MetadataItem {
             'mdi-timer-outline',
             i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.duration'),
             // note: typescript cannot comprehend that there is luxon extensions that overrides it...
-            // @ts-expect-error luxon extension type not recognized
-            duration.toShortHuman(),
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument
+            (duration as any).toShortHuman(),
             durationIndicator
         )
     }

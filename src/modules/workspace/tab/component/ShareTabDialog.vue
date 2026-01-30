@@ -11,6 +11,8 @@ import type { Toaster } from '@/modules/notification/service/Toaster'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
 import type { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
+import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
 import { ShareTabObject } from '@/modules/workspace/tab/model/ShareTabObject'
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
 import VRejectDialogButton from '@/modules/base/component/VRejectDialogButton.vue'
@@ -33,8 +35,8 @@ const { t } = useI18n()
 const props = defineProps<{
     modelValue: boolean,
     tabType: TabType,
-    tabParams: TabParams<any>,
-    tabData: TabData<any> | undefined
+    tabParams: TabParams<TabParamsDto>,
+    tabData: TabData<TabDataDto> | undefined
 }>()
 
 const emit = defineEmits<{
@@ -63,10 +65,10 @@ function cancel(): void {
 }
 
 function copyLink(): void {
-    navigator.clipboard.writeText(link.value).then(() => {
-        toaster.info(t('tabShare.shareDialog.notification.linkCopied')).then()
+    void navigator.clipboard.writeText(link.value).then(() => {
+        void toaster.info(t('tabShare.shareDialog.notification.linkCopied'))
     }).catch(() => {
-        toaster.error(t('common.notification.failedToCopyToClipboard')).then()
+        void toaster.error(t('common.notification.failedToCopyToClipboard'))
     })
 
     emit('update:modelValue', false)

@@ -9,6 +9,8 @@ import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/work
 import { EvitaQLConsoleTabData } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabData'
 import { GraphQLConsoleTabData } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabData'
 import { mandatoryInject } from '@/utils/reactivity'
+import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
+import type { TabData } from '@/modules/workspace/tab/model/TabData'
 
 const demoCatalog: string = 'evita'
 const baseCodeSnippetUrl: string = 'https://raw.githubusercontent.com/FgForrest/evitaDB'
@@ -31,7 +33,7 @@ export class DemoSnippetResolver {
     /**
      * Resolves input request into tab request.
      */
-    async resolve(requestSerialized: string): Promise<TabDefinition<any, any>> {
+    async resolve(requestSerialized: string): Promise<TabDefinition<TabParams<unknown>, TabData<unknown>>> {
         const request: DemoSnippetRequest = JSON.parse(atob(requestSerialized)) as DemoSnippetRequest
 
         const codeSnippetUrl: string = `${baseCodeSnippetUrl}/${request.branch}/${request.path}`

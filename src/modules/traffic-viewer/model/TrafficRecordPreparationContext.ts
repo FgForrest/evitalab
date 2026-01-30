@@ -38,7 +38,7 @@ export class TrafficRecordPreparationContext {
     sessionStartRecordVisited(sessionId: Uuid): void {
         const serializedSessionId: string = sessionId.toString()
         if (this.visitedSessionStartRecordsIndex.includes(serializedSessionId)) {
-            throw new UnexpectedError(`Session start record with ID '${sessionId}' already visited. This is weird.`)
+            throw new UnexpectedError(`Session start record with ID '${sessionId.toString()}' already visited. This is weird.`)
         }
         this.visitedSessionStartRecordsIndex.push(serializedSessionId)
     }
