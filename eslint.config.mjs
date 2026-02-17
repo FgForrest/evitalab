@@ -2,7 +2,6 @@ import eslint from '@eslint/js'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 import pluginVue from 'eslint-plugin-vue'
-import autoImportGlobals from './.eslintrc-auto-import.json' with { type: 'json' }
 
 export default tseslint.config(
   {
@@ -27,8 +26,7 @@ export default tseslint.config(
       sourceType: 'module',
       globals: {
         ...globals.browser,
-        ...globals.node,
-        ...autoImportGlobals.globals,
+        ...globals.node
       },
       parserOptions: {
         parser: tseslint.parser,
