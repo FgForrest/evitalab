@@ -9,7 +9,7 @@ import { VueRouterAutoImports } from 'unplugin-vue-router'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 
 // Utilities
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig, loadEnv, UserConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
 import XXH, { HashObject } from 'xxhashjs'
 import { OutputOptions } from 'rollup'
@@ -33,6 +33,8 @@ export default defineConfig(({ mode }) => {
         outputOptions = {
             inlineDynamicImports: true
         }
+    } else {
+        throw new Error(`Unsupported lab run mode ${labRunMode}`)
     }
 
     return {
@@ -114,7 +116,7 @@ export default defineConfig(({ mode }) => {
                 },
             },
         },
-    }
+    } as UserConfig
 })
 
 function resolveLabRunMode(env: Record<string, string>): string {

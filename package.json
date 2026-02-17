@@ -4,10 +4,10 @@
   "scripts": {
     "dev": "vite",
     "dev-driver": "env VITE_RUN_MODE=\"DRIVER\" vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vue-tsc --noEmit --project tsconfig.app.json && vue-tsc --noEmit --project tsconfig.node.json && vite build",
     "build-driver": "vue-tsc --noEmit && env VITE_RUN_MODE=\"DRIVER\" vite build",
     "preview": "vite preview --port 3000",
-    "lint": "eslint . --fix",
+    "lint": "vue-tsc --noEmit --project tsconfig.app.json && vue-tsc --noEmit --project tsconfig.node.json && eslint . --fix",
     "test": "vitest"
   },
   "dependencies": {
