@@ -1,7 +1,7 @@
 import type { ToastClickCallback, Toaster } from '@/modules/notification/service/Toaster'
-import type { ToastInterface } from 'vue-toastification/src/ts/interface'
+import type { ToastInterface } from 'vue-toastification'
 import type { ToastOptions } from 'vue-toastification/dist/types/types'
-import { TYPE } from 'vue-toastification/src/ts/constants'
+import { TYPE } from 'vue-toastification'
 import { v4 as uuidv4 } from 'uuid'
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { LabError } from '@/modules/base/exception/LabError'
@@ -37,7 +37,7 @@ export class LocalToaster implements Toaster {
                 onClick: clickCallback != undefined
                     ? (closeToast: Function) => clickCallback(() => closeToast())
                     : undefined
-            }
+            } as ToastOptions
         )
     }
 

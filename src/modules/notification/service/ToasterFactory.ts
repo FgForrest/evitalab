@@ -6,7 +6,7 @@ import { ConnectionService } from '@/modules/connection/service/ConnectionServic
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { ErrorViewerTabFactory } from '@/modules/error-viewer/viewer/workspace/service/ErrorViewerTabFactory'
 import { LocalToaster } from '@/modules/notification/service/LocalToaster'
-import type { ToastInterface } from 'vue-toastification/src/ts/interface'
+import type { ToastInterface } from 'vue-toastification'
 import { useToast as baseUseToast } from 'vue-toastification'
 
 /**
