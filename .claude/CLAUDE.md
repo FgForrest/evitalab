@@ -90,6 +90,11 @@ For component tree injection, create a `dependencies.ts` file with `provideX`/`i
 - Don't use `type` for object shapes
 - Use `interface` for abstract types and contracts
 - Use `class` directly for DTO-like objects and data structures
+- use strict typing
+- document classes
+- prefer immutable classes for data structures
+- limit lines to 100 characters
+- add line comments to complex logic
 
 ### UI Components
 
