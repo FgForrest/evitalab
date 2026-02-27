@@ -27,7 +27,6 @@
 
     // Additional strictness
     "strict": true,
-    "erasableSyntaxOnly": true,
     "noUncheckedSideEffectImports": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitReturns": true,

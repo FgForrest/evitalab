@@ -22,7 +22,7 @@ yarn dev-driver
 yarn build                  # Standalone mode
 yarn build-driver           # Driver mode for Desktop app
 
-# Lint with auto-fix
+# Lint (eslint and typescript) with auto-fix
 yarn lint
 
 # Run tests
