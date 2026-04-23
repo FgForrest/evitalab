@@ -17,12 +17,14 @@ export class MultiValueFlagValue {
      */
     readonly description?: string
     readonly icon?: string
+    readonly descriptionMarkup?: string
 
-    constructor(value: boolean, valueSpecification: string, description?: string, icon: string | undefined = undefined) {
+    constructor(value: boolean, valueSpecification: string, description?: string, icon: string | undefined = undefined, descriptionMarkup?: string) {
         this.value = value
         this.valueSpecification = valueSpecification
         this.description = description
         this.icon = icon
+        this.descriptionMarkup = descriptionMarkup
     }
 
     toString() {

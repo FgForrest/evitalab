@@ -72,8 +72,13 @@ const props =
     >
         {{ propertyValue.value.valueSpecification }}
 
-        <VTooltip v-if="propertyValue.value.description" activator="parent">
-            {{ propertyValue.value.description }}
+        <VTooltip v-if="propertyValue.value.description || propertyValue.value.descriptionMarkup" activator="parent">
+            <template v-if="propertyValue.value.descriptionMarkup">
+                <VMarkdown :source="propertyValue.value.descriptionMarkup" />
+            </template>
+            <template v-else>
+                {{ propertyValue.value.description }}
+            </template>
         </VTooltip>
     </VChip>
 

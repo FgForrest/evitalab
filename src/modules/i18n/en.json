@@ -1113,6 +1113,8 @@
         "referencedEntityManaged": "Referenced entity managed",
         "referencedGroup": "Referenced group",
         "faceted": "Faceted",
+        "bucketed": "Bucketed",
+        "partial": "partial",
         "referencedEntityNameVariants": "Referenced entity",
         "referencedGroupNameVariants": "Referenced group",
         "indexed": {
@@ -1134,7 +1136,15 @@
           "forFiltering": "Reference has only basic index available that is necessary for ReferenceHaving constraint interpretation.",
           "forFilteringAndPartitioning": "Reference has basic index available and also partitioning indexes for the main entity type."
         },
-        "faceted": "Special facet index is maintained for this reference allowing interpretation of FacetHaving filtering and FacetSummary requirement constraints."
+        "faceted": "Special facet index is maintained for this reference allowing interpretation of FacetHaving filtering and FacetSummary requirement constraints.",
+        "facetPartialExpression": "Facet partially using expression:",
+        "bucketed": "Bucketed histogram index is maintained for this reference, enabling histogram computation over filtered results.",
+        "bucketedPartialExpression": "Bucket partially using expression:"
+      },
+      "histogramDefinitions": {
+        "title": "Histogram indexes",
+        "liveScope": "In Live scope",
+        "archiveScope": "In Archive scope"
       },
       "reflected": {
         "reflectedReferences": "Reflected by"
