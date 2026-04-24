@@ -1,79 +1,18 @@
-import type {
-    FacetSummaryVisualiserService
-} from '@/modules/console/result-visualiser/service/FacetSummaryVisualiserService'
-import type { HierarchyVisualiserService } from '@/modules/console/result-visualiser/service/HierarchyVisualiserService'
-import type {
-    AttributeHistogramsVisualiserService
-} from '@/modules/console/result-visualiser/service/AttributeHistogramsVisualiserService'
-import type {
-    PriceHistogramVisualiserService
-} from '@/modules/console/result-visualiser/service/PriceHistogramVisualiserService'
-import type { Result } from '@/modules/console/result-visualiser/model/Result'
-import { VisualiserType } from '@/modules/console/result-visualiser/model/VisualiserType'
-import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
+import type { ResultAnalyzer } from './ResultAnalyzer'
+import type { FacetSummaryResultParser } from './FacetSummaryResultParser'
+import type { HierarchyResultParser } from './HierarchyResultParser'
+import type { AttributeHistogramsResultParser } from './AttributeHistogramsResultParser'
+import type { PriceHistogramResultParser } from './PriceHistogramResultParser'
 
 /**
- * Service for visualising raw JSON results from query executions of specific query language into interactive GUI.
+ * Bundles a {@link ResultAnalyzer} with per-type result parsers.
+ * Provided to {@link ResultVisualiser} component as a single prop.
+ * Each query language module creates its own instance with language-specific implementations.
  */
-export abstract class ResultVisualiserService {
-
-    /**
-     * Whether the query language supports multiple queries in one query execution.
-     */
-    abstract supportsMultipleQueries(): boolean
-
-    /**
-     * Tries to find queries in the root result.
-     */
-    abstract findQueries(inputQuery: string, result: Result): string[]
-
-    /**
-     * Tries to find query result in the root result by selected query name.
-     */
-    abstract findQueryResult(result: Result, query: string): Result | undefined
-
-    /**
-     * Returns entity schema for selected query.
-     */
-    abstract getEntitySchemaForQuery(query: string, catalogName: string): Promise<EntitySchema | undefined>
-
-    /**
-     * Tries to find result-result-visualiser types in the root result.
-     */
-    abstract findVisualiserTypes(queryResult: Result): VisualiserType[]
-
-    /**
-     * Tries to find result-result-visualiser result in the root result by selected result-result-visualiser type.
-     */
-    abstract findResultForVisualiser(queryResult: Result, visualiserType: string): Result | undefined
-
-    abstract getFacetSummaryService(): FacetSummaryVisualiserService
-
-    abstract getHierarchyService(): HierarchyVisualiserService
-
-    abstract getAttributeHistogramsService(): AttributeHistogramsVisualiserService
-
-    abstract getPriceHistogramService(): PriceHistogramVisualiserService
-
-    /**
-     * Resolves representative attributes for the given entity type.
-     */
-    abstract resolveRepresentativeAttributes(catalogName: string, entityType: string): Promise<string[]>
-
-    // todo lho refactor into common function
-    toPrintableAttributeValue(attributeValue: any): string | undefined {
-        if (attributeValue == undefined) {
-            return undefined
-        }
-        if (attributeValue instanceof Array) {
-            if (attributeValue.length === 0) {
-                return undefined
-            }
-            return `[${attributeValue.map(it => this.toPrintableAttributeValue(it)).join(', ')}]`
-        } else if (attributeValue instanceof Object) {
-            return JSON.stringify(attributeValue)
-        } else {
-            return attributeValue.toString()
-        }
-    }
+export interface ResultVisualiserService {
+    readonly resultAnalyzer: ResultAnalyzer<unknown>
+    readonly facetSummaryParser: FacetSummaryResultParser<unknown>
+    readonly hierarchyParser: HierarchyResultParser<unknown>
+    readonly attributeHistogramsParser: AttributeHistogramsResultParser<unknown>
+    readonly priceHistogramParser: PriceHistogramResultParser<unknown>
 }

@@ -18,7 +18,7 @@ import {
     useGraphQLConsoleService
 } from '@/modules/graphql-console/console/service/GraphQLConsoleService'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
-import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
+import type { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
 import {
     useGraphQLResultVisualiserService
 } from '@/modules/graphql-console/console/result-visualiser/service/GraphQLResultVisualiserService'
