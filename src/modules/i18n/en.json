@@ -838,6 +838,18 @@
         "noSelectedData": "Select what to visualise"
       }
     },
+    "referenceSummaryVisualiser": {
+      "placeholder": {
+        "noGroups": "No reference summary groups found."
+      },
+      "label": {
+        "facetStatisticsSection": "Facet statistics",
+        "histogramStatisticsSection": "Histogram statistics"
+      },
+      "help": {
+        "histogramIndexCount": "The number of fetched histogram indexes in this group."
+      }
+    },
     "facetStatisticsVisualiser": {
       "placeholder": {
         "noGroups": "No facet summary groups found."

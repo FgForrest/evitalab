@@ -79,6 +79,9 @@ export class GraphQLResultAnalyzer implements ResultAnalyzer {
             if (extraResults['facetSummary']) {
                 visualiserTypes.push(new VisualiserType('Facet summary', VisualiserTypeType.FacetSummary))
             }
+            if (extraResults['referenceSummary']) {
+                visualiserTypes.push(new VisualiserType('Reference summary', VisualiserTypeType.ReferenceSummary))
+            }
             if (extraResults['hierarchy']) {
                 visualiserTypes.push(new VisualiserType('Hierarchy', VisualiserTypeType.Hierarchy))
             }

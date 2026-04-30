@@ -68,6 +68,9 @@ export class EvitaQLResultAnalyzer implements ResultAnalyzer<EvitaResponse> {
             if (extraResults.facetGroupStatistics != undefined) {
                 visualiserTypes.push(new VisualiserType('Facet summary', VisualiserTypeType.FacetSummary))
             }
+            if (extraResults.referenceGroupStatistics != undefined) {
+                visualiserTypes.push(new VisualiserType('Reference summary', VisualiserTypeType.ReferenceSummary))
+            }
             if (extraResults.hierarchy != undefined || extraResults.selfHierarchy != undefined) {
                 visualiserTypes.push(new VisualiserType('Hierarchy', VisualiserTypeType.Hierarchy))
             }

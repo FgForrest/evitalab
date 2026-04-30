@@ -1,5 +1,6 @@
 import type { ResultAnalyzer } from './ResultAnalyzer'
 import type { FacetSummaryResultParser } from './FacetSummaryResultParser'
+import type { ReferenceSummaryResultParser } from './ReferenceSummaryResultParser'
 import type { HierarchyResultParser } from './HierarchyResultParser'
 import type { AttributeHistogramsResultParser } from './AttributeHistogramsResultParser'
 import type { PriceHistogramResultParser } from './PriceHistogramResultParser'
@@ -12,6 +13,7 @@ import type { PriceHistogramResultParser } from './PriceHistogramResultParser'
 export interface ResultVisualiserService {
     readonly resultAnalyzer: ResultAnalyzer<unknown>
     readonly facetSummaryParser: FacetSummaryResultParser<unknown>
+    readonly referenceSummaryParser: ReferenceSummaryResultParser<unknown>
     readonly hierarchyParser: HierarchyResultParser<unknown>
     readonly attributeHistogramsParser: AttributeHistogramsResultParser<unknown>
     readonly priceHistogramParser: PriceHistogramResultParser<unknown>

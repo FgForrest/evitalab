@@ -13,11 +13,14 @@ import { VisualiserType } from '@/modules/console/result-visualiser/model/Visual
 import { VisualiserTypeType } from '@/modules/console/result-visualiser/model/VisualiserTypeType'
 import { AnalyzedResult, AnalyzedQuery } from '@/modules/console/result-visualiser/model/AnalyzedResult'
 import type { VisualisedFacetSummary } from '@/modules/console/result-visualiser/model/facet-summary/VisualisedFacetSummary'
+import type { VisualisedReferenceSummary } from '@/modules/console/result-visualiser/model/reference-summary/VisualisedReferenceSummary'
 import type { VisualisedHierarchyResult } from '@/modules/console/result-visualiser/model/hierarchy/VisualisedHierarchyResult'
 import type { VisualisedAttributeHistograms } from '@/modules/console/result-visualiser/model/histogram/VisualisedAttributeHistograms'
 import type { VisualisedHistogram } from '@/modules/console/result-visualiser/model/histogram/VisualisedHistogram'
 import FacetSummaryVisualiser
     from '@/modules/console/result-visualiser/component/facet-summary/FacetSummaryVisualiser.vue'
+import ReferenceSummaryVisualiser
+    from '@/modules/console/result-visualiser/component/reference-summary/ReferenceSummaryVisualiser.vue'
 import HierarchyVisualiser from '@/modules/console/result-visualiser/component/hierarchy/HierarchyVisualiser.vue'
 import AttributeHistogramsVisualiser
     from '@/modules/console/result-visualiser/component/histogram/AttributeHistogramsVisualiser.vue'
@@ -114,6 +117,7 @@ watch(visualiserTypes, (newValue) => {
 }, { immediate: true })
 
 const parsedFacetSummary = ref<VisualisedFacetSummary | undefined>()
+const parsedReferenceSummary = ref<VisualisedReferenceSummary | undefined>()
 const parsedHierarchy = ref<VisualisedHierarchyResult | undefined>()
 const parsedAttributeHistograms = ref<VisualisedAttributeHistograms | undefined>()
 const parsedPriceHistogram = ref<VisualisedHistogram | undefined>()
@@ -121,6 +125,7 @@ const parsingResult = ref<boolean>(false)
 
 watch([selectedVisualiserType, selectedQuery], async () => {
     parsedFacetSummary.value = undefined
+    parsedReferenceSummary.value = undefined
     parsedHierarchy.value = undefined
     parsedAttributeHistograms.value = undefined
     parsedPriceHistogram.value = undefined
@@ -135,6 +140,10 @@ watch([selectedVisualiserType, selectedQuery], async () => {
         switch (selectedVisualiserType.value) {
             case VisualiserTypeType.FacetSummary:
                 parsedFacetSummary.value = await props.visualiserService.facetSummaryParser
+                    .parse(queryResult, query.entitySchema!, props.catalogPointer.catalogName)
+                break
+            case VisualiserTypeType.ReferenceSummary:
+                parsedReferenceSummary.value = await props.visualiserService.referenceSummaryParser
                     .parse(queryResult, query.entitySchema!, props.catalogPointer.catalogName)
                 break
             case VisualiserTypeType.Hierarchy:
@@ -205,6 +214,10 @@ defineExpose<{
         <FacetSummaryVisualiser
             v-if="selectedVisualiserType == VisualiserTypeType.FacetSummary && parsedFacetSummary != undefined"
             :facet-summary="parsedFacetSummary"
+        />
+        <ReferenceSummaryVisualiser
+            v-if="selectedVisualiserType == VisualiserTypeType.ReferenceSummary && parsedReferenceSummary != undefined"
+            :reference-summary="parsedReferenceSummary"
         />
         <HierarchyVisualiser
             v-if="selectedVisualiserType == VisualiserTypeType.Hierarchy && parsedHierarchy != undefined"
