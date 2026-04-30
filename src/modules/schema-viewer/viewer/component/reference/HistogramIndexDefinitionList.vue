@@ -33,8 +33,21 @@ const archiveDefinitions = computed<Map<string, HistogramIndexDefinition>>(() =>
                     v-for="[name, definition] in liveDefinitions"
                     :key="name"
                 >
-                    <span>{{ definition.nameOfTheIndex }}</span>
-                    <code v-if="definition.valueExpression" class="ml-2">{{ definition.valueExpression }}</code>
+                    <div class="item-body" >
+                        <VListItemTitle>
+                            <span class="mr-5">
+                                {{ definition.nameOfTheIndex }}
+                            </span>
+                        </VListItemTitle>
+                        <VChipGroup>
+                            <VChip>
+                                {{ definition.valueExpression }}
+                                <VTooltip activator="parent">
+                                    {{ t('schemaViewer.reference.histogramDefinitions.valueExpressionTooltip') }}
+                                </VTooltip>
+                            </VChip>
+                        </VChipGroup>
+                    </div>
                 </VListItem>
             </VList>
         </template>
@@ -48,10 +61,30 @@ const archiveDefinitions = computed<Map<string, HistogramIndexDefinition>>(() =>
                     v-for="[name, definition] in archiveDefinitions"
                     :key="name"
                 >
-                    <span>{{ definition.nameOfTheIndex }}</span>
-                    <code v-if="definition.valueExpression" class="ml-2">{{ definition.valueExpression }}</code>
+                    <div class="item-body" >
+                        <VListItemTitle>
+                            <span class="mr-5">
+                                {{ definition.nameOfTheIndex }}
+                            </span>
+                        </VListItemTitle>
+                        <VChipGroup>
+                            <VChip>
+                                {{ definition.valueExpression }}
+                                <VTooltip activator="parent">
+                                    {{ t('schemaViewer.reference.histogramDefinitions.valueExpressionTooltip') }}
+                                </VTooltip>
+                            </VChip>
+                        </VChipGroup>
+                    </div>
                 </VListItem>
             </VList>
         </template>
     </SchemaContainerSection>
 </template>
+
+<style lang="scss" scoped>
+.item-body {
+    display: flex;
+    align-items: center;
+}
+</style>

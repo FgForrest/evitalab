@@ -1158,7 +1158,8 @@
       "histogramDefinitions": {
         "title": "Histogram indexes",
         "liveScope": "In Live scope",
-        "archiveScope": "In Archive scope"
+        "archiveScope": "In Archive scope",
+        "valueExpressionTooltip": "Expression by which the histogram index retrieves values for the histogram"
       },
       "reflected": {
         "reflectedReferences": "Reflected by"
