@@ -258,7 +258,7 @@ export class ReferenceSchema extends AbstractSchema {
                 representativeFlags.push(new Flag(
                     ReferenceSchemaFlag.Bucketed,
                     bucketedScopes,
-                    t('schemaViewer.reference.tooltip.content', [
+                    t('schemaViewer.reference.tooltip.bucketedContent', [
                         '',
                         bucketedScopes
                             .map(s => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, s).toLowerCase()}`))
