@@ -25,6 +25,9 @@ import type {
 import type {
     GrpcCurrency,
     GrpcLocale,
+    GrpcScopedBucketedPartially,
+    GrpcScopedFacetedPartially,
+    GrpcScopedHistogramIndexDefinition,
     GrpcScopedReferenceIndexType
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
@@ -64,6 +67,13 @@ import {
     ScopedReferenceIndexType
 } from '@/modules/database-driver/request-response/schema/mutation/reference/ScopedReferenceIndexType.ts'
 import { ContainerType } from '@/modules/database-driver/data-type/ContainerType.ts'
+import { ScopedExpression } from '@/modules/database-driver/request-response/schema/ScopedExpression.ts'
+import {
+    ScopedHistogramIndexDefinition
+} from '@/modules/database-driver/request-response/schema/ScopedHistogramIndexDefinition.ts'
+import {
+    HistogramIndexDefinition
+} from '@/modules/database-driver/request-response/schema/HistogramIndexDefinition.ts'
 
 
 export class CatalogSchemaConverter {
@@ -293,6 +303,9 @@ export class CatalogSchemaConverter {
                 ),
                 this.convertScopedIndexTypes(referenceSchema.scopedIndexTypes),
                 ScopesConverter.convertEntityScopes(referenceSchema.facetedInScopes),
+                this.convertScopedExpressions(referenceSchema.facetedPartially),
+                this.convertScopedHistogramIndexDefinitions(referenceSchema.bucketed),
+                this.convertScopedExpressions(referenceSchema.bucketedPartially),
                 referenceSchema.reflectedReferenceName,
                 referenceSchema.descriptionInherited,
                 referenceSchema.deprecationNoticeInherited,
@@ -320,9 +333,38 @@ export class CatalogSchemaConverter {
                     referenceSchema.sortableAttributeCompounds
                 ),
                 this.convertScopedIndexTypes(referenceSchema.scopedIndexTypes),
-                ScopesConverter.convertEntityScopes(referenceSchema.facetedInScopes)
+                ScopesConverter.convertEntityScopes(referenceSchema.facetedInScopes),
+                this.convertScopedExpressions(referenceSchema.facetedPartially),
+                this.convertScopedHistogramIndexDefinitions(referenceSchema.bucketed),
+                this.convertScopedExpressions(referenceSchema.bucketedPartially)
             )
         }
+    }
+
+    private convertScopedExpressions(
+        scoped: GrpcScopedFacetedPartially[] | GrpcScopedBucketedPartially[]
+    ): ImmutableList<ScopedExpression> {
+        return ImmutableList(scoped.map(x =>
+            new ScopedExpression(
+                ScopesConverter.convertEntityScope(x.scope),
+                x.expression
+            )
+        ))
+    }
+
+    private convertScopedHistogramIndexDefinitions(
+        defs: GrpcScopedHistogramIndexDefinition[]
+    ): ImmutableList<ScopedHistogramIndexDefinition> {
+        return ImmutableList(defs.map(x =>
+            new ScopedHistogramIndexDefinition(
+                ScopesConverter.convertEntityScope(x.scope),
+                new HistogramIndexDefinition(
+                    x.nameOfTheIndex,
+                    MapUtil.getNamingMap(x.nameVariants),
+                    x.valueExpression
+                )
+            )
+        ))
     }
 
     private convertScopedIndexTypes(scopeType: GrpcScopedReferenceIndexType[]): ImmutableList<ScopedReferenceIndexType> {

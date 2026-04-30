@@ -2,6 +2,7 @@ import type {
     GrpcExtraResults,
     GrpcFacetGroupStatistics,
     GrpcFacetStatistics,
+    GrpcReferenceGroupStatistics,
     GrpcHierarchy,
     GrpcHistogram,
     GrpcHistogram_GrpcBucket,
@@ -14,6 +15,7 @@ import { Histogram } from '@/modules/database-driver/request-response/data/Histo
 import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { HistogramBucket } from '@/modules/database-driver/request-response/data/HistogramBucket'
 import { FacetGroupStatistics } from '@/modules/database-driver/request-response/data/FacetGroupStatistics'
+import { ReferenceGroupStatistics } from '@/modules/database-driver/request-response/data/ReferenceGroupStatistics'
 import { FacetStatistics } from '@/modules/database-driver/request-response/data/FacetStatistics'
 import type { GrpcEntityReference } from '@/modules/database-driver/connector/grpc/gen/GrpcEntity_pb'
 import { EntityReference } from '@/modules/database-driver/request-response/data/EntityReference'
@@ -34,6 +36,7 @@ export class ExtraResultConverter {
         return new ExtraResults(
             this.convertAttributeHistogram(entity.attributeHistogram),
             this.convertFacetGroupStatistics(entity.facetGroupStatistics),
+            this.convertReferenceGroupStatistics(entity.referenceGroupStatistics),
             this.convertHierarchy(entity.hierarchy),
             this.convertHistogram(entity.priceHistogram),
             this.convertSelfHierarchy(entity.selfHierarchy)
@@ -99,6 +102,46 @@ export class ExtraResultConverter {
             )
         }
         return newFacetGroupStatistics.length === 0 ? undefined : ImmutableList(newFacetGroupStatistics)
+    }
+
+    convertReferenceGroupStatistics(
+        referenceGroupStatistics: GrpcReferenceGroupStatistics[]
+    ): ImmutableList<ReferenceGroupStatistics> | undefined {
+        const newReferenceGroupStatistics: ReferenceGroupStatistics[] = []
+        for (const refGroupStatistic of referenceGroupStatistics) {
+            const histogramStatistics = new Map<string, Histogram>()
+            for (const histogramName in refGroupStatistic.histogramStatistics) {
+                const grpcHistogram = refGroupStatistic.histogramStatistics[histogramName]
+                histogramStatistics.set(
+                    histogramName,
+                    new Histogram(
+                        grpcHistogram.overallCount,
+                        this.convertHistogramBuckets(grpcHistogram.buckets),
+                        new BigDecimal(grpcHistogram.min?.valueString!),
+                        new BigDecimal(grpcHistogram.max?.valueString!)
+                    )
+                )
+            }
+            newReferenceGroupStatistics.push(
+                new ReferenceGroupStatistics(
+                    refGroupStatistic.referenceName,
+                    refGroupStatistic.count,
+                    this.convertFacetStatistics(
+                        refGroupStatistic.facetStatistics
+                    ),
+                    this.convertEntityReference(
+                        refGroupStatistic.groupEntityReference
+                    ),
+                    refGroupStatistic.groupEntity
+                        ? this.entityConverter.convert(
+                              refGroupStatistic.groupEntity
+                          )
+                        : undefined,
+                    ImmutableMap(histogramStatistics)
+                )
+            )
+        }
+        return newReferenceGroupStatistics.length === 0 ? undefined : ImmutableList(newReferenceGroupStatistics)
     }
 
     convertFacetStatistics(

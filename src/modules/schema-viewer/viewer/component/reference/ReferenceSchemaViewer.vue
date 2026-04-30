@@ -26,12 +26,14 @@ import RelationViewer from '@/modules/schema-viewer/viewer/component/reference/r
 import { MultiValueFlagValue } from '@/modules/base/model/properties-table/MultiValueFlagValue.ts'
 import { getEnumKeyByValue } from '@/utils/enum.ts'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { ReferenceIndexType } from '@/modules/database-driver/request-response/schema/ReferenceIndexType.ts'
+import HistogramIndexDefinitionList from '@/modules/schema-viewer/viewer/component/reference/HistogramIndexDefinitionList.vue'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
 const { t } = useI18n()
-const keys = ref<string[]>([getEnumKeyByValue(EntityScope, EntityScope.Live), getEnumKeyByValue(EntityScope, EntityScope.Archive)])
+const scopes = [EntityScope.Live, EntityScope.Archive] as const
 
 const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
@@ -46,6 +48,11 @@ const loadedReferencedGroupType = ref<boolean>()
 const groupTypeNameVariants = ref<ImmutableMap<NamingConvention, string> | undefined>()
 const loadedReflectedReferences = ref<boolean>()
 const reflectedReferences = ref<ImmutableList<ReflectedReferenceSchema>>()
+
+const hasHistogramDefinitions = computed(() =>
+    props.schema.isBucketedInScope(EntityScope.Live) ||
+    props.schema.isBucketedInScope(EntityScope.Archive)
+)
 
 const properties = computed<Property[]>(() => {
     const properties: Property[] = []
@@ -103,19 +110,65 @@ const properties = computed<Property[]>(() => {
         ))
     }
 
-    properties.push(new Property(t('schemaViewer.reference.label.indexed.title'), ImmutableList(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
-        props.schema.scopedIndexTypes.some(y => getEnumKeyByValue(EntityScope, y.scope) === x), t(`schemaViewer.reference.label.${x.toLowerCase()}`) + (() => {
-        const list = props.schema.scopedIndexTypes
-            .filter(q => getEnumKeyByValue(EntityScope, q.scope) == x)
-            .map(z => t(`schemaViewer.reference.label.indexed.${z.indexType}`))
-            .join(' ')
-        return list ? ` (${list})` : ''
-    })(), props.schema.scopedIndexTypes
-            .filter(q => getEnumKeyByValue(EntityScope, q.scope) == x)
+    properties.push(new Property(t('schemaViewer.reference.label.indexed.title'), ImmutableList(scopes.map(s => new PropertyValue(new MultiValueFlagValue(
+        props.schema.isIndexedInScope(s),
+        t(`schemaViewer.reference.label.${getEnumKeyByValue(EntityScope, s).toLowerCase()}`) + (() => {
+            const list = props.schema.scopedIndexTypes
+                .filter(q => q.scope === s && q.indexType !== ReferenceIndexType.None)
+                .map(z => t(`schemaViewer.reference.label.indexed.${z.indexType}`))
+                .join(' ')
+            return list ? ` (${list})` : ''
+        })(),
+        props.schema.scopedIndexTypes
+            .filter(q => q.scope === s && q.indexType !== ReferenceIndexType.None)
             .map(z => t(`schemaViewer.reference.tooltip.indexedTooltip.${z.indexType}`))
-            .join(' ')))))))
-    properties.push(new Property(t('schemaViewer.reference.label.faceted'), ImmutableList(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
-        props.schema.facetedInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x), t(`schemaViewer.reference.label.${x.toLowerCase()}`), t('schemaViewer.reference.tooltip.faceted'), props.schema.facetedInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x) ? 'mdi-check' : 'mdi-close'))))))
+            .join(' ')
+    ))))))
+    properties.push(
+        new Property(
+            t('schemaViewer.reference.label.faceted'),
+            ImmutableList(
+                scopes.map(s => {
+                    const faceted = props.schema.isFacetedInScope(s)
+                    const partialExpression = props.schema.getFacetedPartiallyInScope(s)
+                    const isPartial = faceted && partialExpression != null && partialExpression.trim() !== ''
+                    const scopeLabel = t(`schemaViewer.reference.label.${getEnumKeyByValue(EntityScope, s).toLowerCase()}`)
+                    return new PropertyValue(
+                        new MultiValueFlagValue(
+                            faceted,
+                            isPartial ? `${scopeLabel} (${t('schemaViewer.reference.label.partial')})` : scopeLabel,
+                            isPartial ? undefined : t('schemaViewer.reference.tooltip.faceted'),
+                            faceted ? 'mdi-check' : 'mdi-close',
+                            isPartial ? `${t('schemaViewer.reference.tooltip.faceted')}\n\n${t('schemaViewer.reference.tooltip.facetPartialExpression')}\n\n\`${partialExpression}\`` : undefined
+                        )
+                    )
+                })
+            )
+        )
+    )
+
+    properties.push(
+        new Property(
+            t('schemaViewer.reference.label.bucketed'),
+            ImmutableList(
+                scopes.map(s => {
+                    const bucketed = props.schema.isBucketedInScope(s)
+                    const partialExpression = props.schema.getBucketedPartiallyInScope(s)
+                    const isPartial = bucketed && partialExpression != null && partialExpression.trim() !== ''
+                    const scopeLabel = t(`schemaViewer.reference.label.${getEnumKeyByValue(EntityScope, s).toLowerCase()}`)
+                    return new PropertyValue(
+                        new MultiValueFlagValue(
+                            bucketed,
+                            isPartial ? `${scopeLabel} (${t('schemaViewer.reference.label.partial')})` : scopeLabel,
+                            isPartial ? undefined : t('schemaViewer.reference.tooltip.bucketed'),
+                            bucketed ? 'mdi-check' : 'mdi-close',
+                            isPartial ? `${t('schemaViewer.reference.tooltip.bucketed')}\n\n${t('schemaViewer.reference.tooltip.bucketedPartialExpression')}\n\n\`${partialExpression}\`` : undefined
+                        )
+                    )
+                })
+            )
+        )
+    )
 
     return properties
 })
@@ -197,6 +250,11 @@ onMounted(async () => {
                     v-if="schema.attributes && schema.attributes.size > 0"
                     :data-pointer="dataPointer"
                     :attributes="ImmutableList(schema.attributes.values())"
+                />
+
+                <HistogramIndexDefinitionList
+                    v-if="hasHistogramDefinitions"
+                    :schema="schema"
                 />
 
                 <ReflectedReferenceList

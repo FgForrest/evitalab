@@ -18,6 +18,10 @@ import { EntityScope } from '@/modules/database-driver/request-response/schema/E
 import {
     ScopedReferenceIndexType
 } from '@/modules/database-driver/request-response/schema/mutation/reference/ScopedReferenceIndexType.ts'
+import { ScopedExpression } from '@/modules/database-driver/request-response/schema/ScopedExpression.ts'
+import {
+    ScopedHistogramIndexDefinition
+} from '@/modules/database-driver/request-response/schema/ScopedHistogramIndexDefinition.ts'
 
 export class ReflectedReferenceSchema extends ReferenceSchema {
     /**
@@ -70,6 +74,9 @@ export class ReflectedReferenceSchema extends ReferenceSchema {
                 sortableAttributeCompounds: SortableAttributeCompoundSchema[],
                 scopedIndexTypes: List<ScopedReferenceIndexType>,
                 facetedInScopes: List<EntityScope>,
+                facetedPartiallyInScopes: List<ScopedExpression>,
+                histogramIndexDefinitions: List<ScopedHistogramIndexDefinition>,
+                bucketedPartiallyInScopes: List<ScopedExpression>,
                 reflectedReferenceName: string,
                 descriptionInherited: boolean,
                 deprecationNoticeInherited: boolean,
@@ -79,7 +86,8 @@ export class ReflectedReferenceSchema extends ReferenceSchema {
                 attributeInheritanceBehavior: AttributeInheritanceBehavior,
                 attributeInheritanceFilter: string[]) {
         super(name, nameVariants, description, deprecationNotice, entityType, referencedEntityTypeManaged,
-            entityTypeNameVariants, referencedGroupType, referencedGroupTypeManaged, groupTypeNameVariants, cardinality, attributes, sortableAttributeCompounds, scopedIndexTypes, facetedInScopes)
+            entityTypeNameVariants, referencedGroupType, referencedGroupTypeManaged, groupTypeNameVariants, cardinality, attributes, sortableAttributeCompounds, scopedIndexTypes, facetedInScopes,
+            facetedPartiallyInScopes, histogramIndexDefinitions, bucketedPartiallyInScopes)
         this.reflectedReferenceName = reflectedReferenceName
         this.descriptionInherited = descriptionInherited
         this.deprecationNoticeInherited = deprecationNoticeInherited

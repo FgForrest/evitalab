@@ -17,7 +17,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file GrpcExtraResults.proto.
  */
 export const file_GrpcExtraResults: GenFile = /*@__PURE__*/
-  fileDesc("ChZHcnBjRXh0cmFSZXN1bHRzLnByb3RvEiVpby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkIv8CCg1HcnBjSGlzdG9ncmFtEkIKA21pbhgBIAEoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0JpZ0RlY2ltYWwSQgoDbWF4GAIgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQmlnRGVjaW1hbBIUCgxvdmVyYWxsQ291bnQYAyABKAUSUAoHYnVja2V0cxgEIAMoCzI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpc3RvZ3JhbS5HcnBjQnVja2V0Gn4KCkdycGNCdWNrZXQSSAoJdGhyZXNob2xkGAIgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQmlnRGVjaW1hbBITCgtvY2N1cnJlbmNlcxgDIAEoBRIRCglyZXF1ZXN0ZWQYBCABKAgivQIKGEdycGNGYWNldEdyb3VwU3RhdGlzdGljcxIVCg1yZWZlcmVuY2VOYW1lGAEgASgJElgKFGdyb3VwRW50aXR5UmVmZXJlbmNlGAIgASgLMjouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5UmVmZXJlbmNlEkwKC2dyb3VwRW50aXR5GAMgASgLMjcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU2VhbGVkRW50aXR5Eg0KBWNvdW50GAQgASgFElMKD2ZhY2V0U3RhdGlzdGljcxgFIAMoCzI6LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZhY2V0U3RhdGlzdGljcyLPAgoTR3JwY0ZhY2V0U3RhdGlzdGljcxJYChRmYWNldEVudGl0eVJlZmVyZW5jZRgBIAEoCzI6LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVJlZmVyZW5jZRJMCgtmYWNldEVudGl0eRgCIAEoCzI3LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1NlYWxlZEVudGl0eRIRCglyZXF1ZXN0ZWQYAyABKAgSDQoFY291bnQYBCABKAUSKwoGaW1wYWN0GAUgASgLMhsuZ29vZ2xlLnByb3RvYnVmLkludDMyVmFsdWUSLwoKbWF0Y2hDb3VudBgGIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQzMlZhbHVlEhAKCGhhc1NlbnNlGAcgASgIItABCg1HcnBjSGllcmFyY2h5ElYKCWhpZXJhcmNoeRgBIAMoCzJDLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpZXJhcmNoeS5IaWVyYXJjaHlFbnRyeRpnCg5IaWVyYXJjaHlFbnRyeRILCgNrZXkYASABKAkSRAoFdmFsdWUYAiABKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNMZXZlbEluZm9zOgI4ASJaCg5HcnBjTGV2ZWxJbmZvcxJICgpsZXZlbEluZm9zGAEgAygLMjQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTGV2ZWxJbmZvIvICCg1HcnBjTGV2ZWxJbmZvElMKD2VudGl0eVJlZmVyZW5jZRgBIAEoCzI6LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVJlZmVyZW5jZRJHCgZlbnRpdHkYAiABKAsyNy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTZWFsZWRFbnRpdHkSNwoScXVlcmllZEVudGl0eUNvdW50GAMgASgLMhsuZ29vZ2xlLnByb3RvYnVmLkludDMyVmFsdWUSMgoNY2hpbGRyZW5Db3VudBgEIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQzMlZhbHVlEkMKBWl0ZW1zGAUgAygLMjQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTGV2ZWxJbmZvEhEKCXJlcXVlc3RlZBgGIAEoCCLlAQoSR3JwY1F1ZXJ5VGVsZW1ldHJ5EkgKCW9wZXJhdGlvbhgBIAEoDjI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1F1ZXJ5UGhhc2USEQoFc3RhcnQYAiABKANCAjABEkgKBXN0ZXBzGAMgAygLMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUXVlcnlUZWxlbWV0cnkSEQoJYXJndW1lbnRzGAQgAygJEhUKCXNwZW50VGltZRgFIAEoA0ICMAEigAYKEEdycGNFeHRyYVJlc3VsdHMSawoSYXR0cmlidXRlSGlzdG9ncmFtGAEgAygLMk8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXh0cmFSZXN1bHRzLkF0dHJpYnV0ZUhpc3RvZ3JhbUVudHJ5EkwKDnByaWNlSGlzdG9ncmFtGAIgASgLMjQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjSGlzdG9ncmFtEl0KFGZhY2V0R3JvdXBTdGF0aXN0aWNzGAMgAygLMj8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRmFjZXRHcm91cFN0YXRpc3RpY3MSSwoNc2VsZkhpZXJhcmNoeRgEIAEoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpZXJhcmNoeRJZCgloaWVyYXJjaHkYBSADKAsyRi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFeHRyYVJlc3VsdHMuSGllcmFyY2h5RW50cnkSUQoOcXVlcnlUZWxlbWV0cnkYBiABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNRdWVyeVRlbGVtZXRyeRpvChdBdHRyaWJ1dGVIaXN0b2dyYW1FbnRyeRILCgNrZXkYASABKAkSQwoFdmFsdWUYAiABKAsyNC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNIaXN0b2dyYW06AjgBGmYKDkhpZXJhcmNoeUVudHJ5EgsKA2tleRgBIAEoCRJDCgV2YWx1ZRgCIAEoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpZXJhcmNoeToCOAFC/AEKKWNvbS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkQhVHcnBjRXh0cmFSZXN1bHRzUHJvdG9QAaICBUlFRUdHqgIlSW8uRXZpdGFkYi5FeHRlcm5hbEFwaS5HcnBjLkdlbmVyYXRlZMoCJUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWTiAjFJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVkXEdQQk1ldGFkYXRh6gIpSW86OkV2aXRhZGI6OkV4dGVybmFsQXBpOjpHcnBjOjpHZW5lcmF0ZWRiBnByb3RvMw", [file_google_protobuf_wrappers, file_GrpcEntity, file_GrpcEvitaDataTypes, file_GrpcEnums]);
+  fileDesc("ChZHcnBjRXh0cmFSZXN1bHRzLnByb3RvEiVpby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkIv4ECg1HcnBjSGlzdG9ncmFtEkIKA21pbhgBIAEoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0JpZ0RlY2ltYWwSQgoDbWF4GAIgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQmlnRGVjaW1hbBIUCgxvdmVyYWxsQ291bnQYAyABKAUSUAoHYnVja2V0cxgEIAMoCzI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpc3RvZ3JhbS5HcnBjQnVja2V0ElQKE21pblJlZmVyZW5jZWRFbnRpdHkYBSABKAsyNy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTZWFsZWRFbnRpdHkSVAoTbWF4UmVmZXJlbmNlZEVudGl0eRgGIAEoCzI3LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1NlYWxlZEVudGl0eRrQAQoKR3JwY0J1Y2tldBJICgl0aHJlc2hvbGQYAiABKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNCaWdEZWNpbWFsEhMKC29jY3VycmVuY2VzGAMgASgFEhEKCXJlcXVlc3RlZBgEIAEoCBJQChFyZWxhdGl2ZUZyZXF1ZW5jeRgFIAEoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0JpZ0RlY2ltYWwirgQKHEdycGNSZWZlcmVuY2VHcm91cFN0YXRpc3RpY3MSFQoNcmVmZXJlbmNlTmFtZRgBIAEoCRJYChRncm91cEVudGl0eVJlZmVyZW5jZRgCIAEoCzI6LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVJlZmVyZW5jZRJMCgtncm91cEVudGl0eRgDIAEoCzI3LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1NlYWxlZEVudGl0eRINCgVjb3VudBgEIAEoBRJTCg9mYWNldFN0YXRpc3RpY3MYBSADKAsyOi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGYWNldFN0YXRpc3RpY3MSeQoTaGlzdG9ncmFtU3RhdGlzdGljcxgGIAMoCzJcLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1JlZmVyZW5jZUdyb3VwU3RhdGlzdGljcy5IaXN0b2dyYW1TdGF0aXN0aWNzRW50cnkacAoYSGlzdG9ncmFtU3RhdGlzdGljc0VudHJ5EgsKA2tleRgBIAEoCRJDCgV2YWx1ZRgCIAEoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpc3RvZ3JhbToCOAEiwQIKGEdycGNGYWNldEdyb3VwU3RhdGlzdGljcxIVCg1yZWZlcmVuY2VOYW1lGAEgASgJElgKFGdyb3VwRW50aXR5UmVmZXJlbmNlGAIgASgLMjouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5UmVmZXJlbmNlEkwKC2dyb3VwRW50aXR5GAMgASgLMjcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU2VhbGVkRW50aXR5Eg0KBWNvdW50GAQgASgFElMKD2ZhY2V0U3RhdGlzdGljcxgFIAMoCzI6LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZhY2V0U3RhdGlzdGljczoCGAEizwIKE0dycGNGYWNldFN0YXRpc3RpY3MSWAoUZmFjZXRFbnRpdHlSZWZlcmVuY2UYASABKAsyOi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlSZWZlcmVuY2USTAoLZmFjZXRFbnRpdHkYAiABKAsyNy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTZWFsZWRFbnRpdHkSEQoJcmVxdWVzdGVkGAMgASgIEg0KBWNvdW50GAQgASgFEisKBmltcGFjdBgFIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQzMlZhbHVlEi8KCm1hdGNoQ291bnQYBiABKAsyGy5nb29nbGUucHJvdG9idWYuSW50MzJWYWx1ZRIQCghoYXNTZW5zZRgHIAEoCCLQAQoNR3JwY0hpZXJhcmNoeRJWCgloaWVyYXJjaHkYASADKAsyQy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNIaWVyYXJjaHkuSGllcmFyY2h5RW50cnkaZwoOSGllcmFyY2h5RW50cnkSCwoDa2V5GAEgASgJEkQKBXZhbHVlGAIgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTGV2ZWxJbmZvczoCOAEiWgoOR3JwY0xldmVsSW5mb3MSSAoKbGV2ZWxJbmZvcxgBIAMoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0xldmVsSW5mbyLyAgoNR3JwY0xldmVsSW5mbxJTCg9lbnRpdHlSZWZlcmVuY2UYASABKAsyOi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlSZWZlcmVuY2USRwoGZW50aXR5GAIgASgLMjcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU2VhbGVkRW50aXR5EjcKEnF1ZXJpZWRFbnRpdHlDb3VudBgDIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQzMlZhbHVlEjIKDWNoaWxkcmVuQ291bnQYBCABKAsyGy5nb29nbGUucHJvdG9idWYuSW50MzJWYWx1ZRJDCgVpdGVtcxgFIAMoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0xldmVsSW5mbxIRCglyZXF1ZXN0ZWQYBiABKAgi5QEKEkdycGNRdWVyeVRlbGVtZXRyeRJICglvcGVyYXRpb24YASABKA4yNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNRdWVyeVBoYXNlEhEKBXN0YXJ0GAIgASgDQgIwARJICgVzdGVwcxgDIAMoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1F1ZXJ5VGVsZW1ldHJ5EhEKCWFyZ3VtZW50cxgEIAMoCRIVCglzcGVudFRpbWUYBSABKANCAjABIusGChBHcnBjRXh0cmFSZXN1bHRzEmsKEmF0dHJpYnV0ZUhpc3RvZ3JhbRgBIAMoCzJPLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V4dHJhUmVzdWx0cy5BdHRyaWJ1dGVIaXN0b2dyYW1FbnRyeRJMCg5wcmljZUhpc3RvZ3JhbRgCIAEoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpc3RvZ3JhbRJhChRmYWNldEdyb3VwU3RhdGlzdGljcxgDIAMoCzI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZhY2V0R3JvdXBTdGF0aXN0aWNzQgIYARJLCg1zZWxmSGllcmFyY2h5GAQgASgLMjQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjSGllcmFyY2h5ElkKCWhpZXJhcmNoeRgFIAMoCzJGLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V4dHJhUmVzdWx0cy5IaWVyYXJjaHlFbnRyeRJRCg5xdWVyeVRlbGVtZXRyeRgGIAEoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1F1ZXJ5VGVsZW1ldHJ5EmUKGHJlZmVyZW5jZUdyb3VwU3RhdGlzdGljcxgHIAMoCzJDLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1JlZmVyZW5jZUdyb3VwU3RhdGlzdGljcxpvChdBdHRyaWJ1dGVIaXN0b2dyYW1FbnRyeRILCgNrZXkYASABKAkSQwoFdmFsdWUYAiABKAsyNC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNIaXN0b2dyYW06AjgBGmYKDkhpZXJhcmNoeUVudHJ5EgsKA2tleRgBIAEoCRJDCgV2YWx1ZRgCIAEoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpZXJhcmNoeToCOAFC/AEKKWNvbS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkQhVHcnBjRXh0cmFSZXN1bHRzUHJvdG9QAaICBUlFRUdHqgIlSW8uRXZpdGFkYi5FeHRlcm5hbEFwaS5HcnBjLkdlbmVyYXRlZMoCJUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWTiAjFJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVkXEdQQk1ldGFkYXRh6gIpSW86OkV2aXRhZGI6OkV4dGVybmFsQXBpOjpHcnBjOjpHZW5lcmF0ZWRiBnByb3RvMw", [file_google_protobuf_wrappers, file_GrpcEntity, file_GrpcEvitaDataTypes, file_GrpcEnums]);
 
 /**
  * Histogram can be computed only for numeric based properties. It visualises which property values are more common
@@ -63,6 +63,22 @@ export type GrpcHistogram = Message<"io.evitadb.externalApi.grpc.generated.GrpcH
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcHistogram.GrpcBucket buckets = 4;
    */
   buckets: GrpcHistogram_GrpcBucket[];
+
+  /**
+   * Referenced entity whose value anchors the minimum bucket of the histogram. Populated only for
+   * reference-scope histograms when an entity fetch is requested for the associated reference.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcSealedEntity minReferencedEntity = 5;
+   */
+  minReferencedEntity?: GrpcSealedEntity;
+
+  /**
+   * Referenced entity whose value anchors the maximum bucket of the histogram. Populated only for
+   * reference-scope histograms when an entity fetch is requested for the associated reference.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcSealedEntity maxReferencedEntity = 6;
+   */
+  maxReferencedEntity?: GrpcSealedEntity;
 };
 
 /**
@@ -99,6 +115,17 @@ export type GrpcHistogram_GrpcBucket = Message<"io.evitadb.externalApi.grpc.gene
    * @generated from field: bool requested = 4;
    */
   requested: boolean;
+
+  /**
+   * Relative frequency value used for visualization purposes.
+   * For standard histograms: percentage of total occurrences (0-100).
+   * For equalized histograms: normalized value density (0-100) accounting for both
+   * occurrences and bucket width, scaled so all buckets sum to 100. Higher values
+   * indicate denser data concentration in this bucket.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcBigDecimal relativeFrequency = 5;
+   */
+  relativeFrequency?: GrpcBigDecimal;
 };
 
 /**
@@ -109,9 +136,68 @@ export const GrpcHistogram_GrpcBucketSchema: GenMessage<GrpcHistogram_GrpcBucket
   messageDesc(file_GrpcExtraResults, 0, 0);
 
 /**
+ * This DTO contains information about single reference group and statistics of the references that relates to it.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcReferenceGroupStatistics
+ */
+export type GrpcReferenceGroupStatistics = Message<"io.evitadb.externalApi.grpc.generated.GrpcReferenceGroupStatistics"> & {
+  /**
+   * Contains name of the facet group.
+   *
+   * @generated from field: string referenceName = 1;
+   */
+  referenceName: string;
+
+  /**
+   * Contains referenced entity reference representing this group.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntityReference groupEntityReference = 2;
+   */
+  groupEntityReference?: GrpcEntityReference;
+
+  /**
+   * Contains referenced entity representing this group.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcSealedEntity groupEntity = 3;
+   */
+  groupEntity?: GrpcSealedEntity;
+
+  /**
+   * Contains number of distinct entities in the response that possess any reference in this group.
+   *
+   * @generated from field: int32 count = 4;
+   */
+  count: number;
+
+  /**
+   * Contains statistics of individual facets.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcFacetStatistics facetStatistics = 5;
+   */
+  facetStatistics: GrpcFacetStatistics[];
+
+  /**
+   * Contains named histogram statistics for this reference group. Each histogram index defined on the
+   * reference schema produces a separate histogram entry keyed by the histogram index name.
+   *
+   * @generated from field: map<string, io.evitadb.externalApi.grpc.generated.GrpcHistogram> histogramStatistics = 6;
+   */
+  histogramStatistics: { [key: string]: GrpcHistogram };
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcReferenceGroupStatistics.
+ * Use `create(GrpcReferenceGroupStatisticsSchema)` to create a new message.
+ */
+export const GrpcReferenceGroupStatisticsSchema: GenMessage<GrpcReferenceGroupStatistics> = /*@__PURE__*/
+  messageDesc(file_GrpcExtraResults, 1);
+
+/**
  * This DTO contains information about single facet group and statistics of the facets that relates to it.
+ * TOBEDONE: remove when FacetSummary constraint is removed
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcFacetGroupStatistics
+ * @deprecated
  */
 export type GrpcFacetGroupStatistics = Message<"io.evitadb.externalApi.grpc.generated.GrpcFacetGroupStatistics"> & {
   /**
@@ -153,9 +239,10 @@ export type GrpcFacetGroupStatistics = Message<"io.evitadb.externalApi.grpc.gene
 /**
  * Describes the message io.evitadb.externalApi.grpc.generated.GrpcFacetGroupStatistics.
  * Use `create(GrpcFacetGroupStatisticsSchema)` to create a new message.
+ * @deprecated
  */
 export const GrpcFacetGroupStatisticsSchema: GenMessage<GrpcFacetGroupStatistics> = /*@__PURE__*/
-  messageDesc(file_GrpcExtraResults, 1);
+  messageDesc(file_GrpcExtraResults, 2);
 
 /**
  * This DTO contains information about single facet statistics of the entities that are present in the response.
@@ -222,7 +309,7 @@ export type GrpcFacetStatistics = Message<"io.evitadb.externalApi.grpc.generated
  * Use `create(GrpcFacetStatisticsSchema)` to create a new message.
  */
 export const GrpcFacetStatisticsSchema: GenMessage<GrpcFacetStatistics> = /*@__PURE__*/
-  messageDesc(file_GrpcExtraResults, 2);
+  messageDesc(file_GrpcExtraResults, 3);
 
 /**
  * Contains list of statistics for the single level (probably root or whatever is filtered by the query) of
@@ -244,7 +331,7 @@ export type GrpcHierarchy = Message<"io.evitadb.externalApi.grpc.generated.GrpcH
  * Use `create(GrpcHierarchySchema)` to create a new message.
  */
 export const GrpcHierarchySchema: GenMessage<GrpcHierarchy> = /*@__PURE__*/
-  messageDesc(file_GrpcExtraResults, 3);
+  messageDesc(file_GrpcExtraResults, 4);
 
 /**
  * This DTO represents a wrapper for array of statistics for the single hierarchy level of inner entities.
@@ -265,7 +352,7 @@ export type GrpcLevelInfos = Message<"io.evitadb.externalApi.grpc.generated.Grpc
  * Use `create(GrpcLevelInfosSchema)` to create a new message.
  */
 export const GrpcLevelInfosSchema: GenMessage<GrpcLevelInfos> = /*@__PURE__*/
-  messageDesc(file_GrpcExtraResults, 4);
+  messageDesc(file_GrpcExtraResults, 5);
 
 /**
  * This DTO represents single hierarchical entity in the statistics tree. It contains identification of the entity,
@@ -325,7 +412,7 @@ export type GrpcLevelInfo = Message<"io.evitadb.externalApi.grpc.generated.GrpcL
  * Use `create(GrpcLevelInfoSchema)` to create a new message.
  */
 export const GrpcLevelInfoSchema: GenMessage<GrpcLevelInfo> = /*@__PURE__*/
-  messageDesc(file_GrpcExtraResults, 5);
+  messageDesc(file_GrpcExtraResults, 6);
 
 /**
  * This DTO contains detailed information about query processing time and its decomposition to single operations.
@@ -374,7 +461,7 @@ export type GrpcQueryTelemetry = Message<"io.evitadb.externalApi.grpc.generated.
  * Use `create(GrpcQueryTelemetrySchema)` to create a new message.
  */
 export const GrpcQueryTelemetrySchema: GenMessage<GrpcQueryTelemetry> = /*@__PURE__*/
-  messageDesc(file_GrpcExtraResults, 6);
+  messageDesc(file_GrpcExtraResults, 7);
 
 /**
  * This DTO contains extra results that are computed based on the query results.
@@ -421,8 +508,10 @@ export type GrpcExtraResults = Message<"io.evitadb.externalApi.grpc.generated.Gr
   /**
    * Contains a collection of FacetGroupStatistics DTOs where each of them contains information about single facet group
    * (if they belong in one) and statistics of the facets that relates to it.
+   * deprecated renamed to `referenceGroupStatistics`
    *
-   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcFacetGroupStatistics facetGroupStatistics = 3;
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcFacetGroupStatistics facetGroupStatistics = 3 [deprecated = true];
+   * @deprecated
    */
   facetGroupStatistics: GrpcFacetGroupStatistics[];
 
@@ -449,6 +538,14 @@ export type GrpcExtraResults = Message<"io.evitadb.externalApi.grpc.generated.Gr
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcQueryTelemetry queryTelemetry = 6;
    */
   queryTelemetry?: GrpcQueryTelemetry;
+
+  /**
+   * Contains a collection of ReferenceGroupStatistics DTOs where each of them contains information about single reference group
+   * (if they belong in one) and statistics of the references that relates to it.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcReferenceGroupStatistics referenceGroupStatistics = 7;
+   */
+  referenceGroupStatistics: GrpcReferenceGroupStatistics[];
 };
 
 /**
@@ -456,5 +553,5 @@ export type GrpcExtraResults = Message<"io.evitadb.externalApi.grpc.generated.Gr
  * Use `create(GrpcExtraResultsSchema)` to create a new message.
  */
 export const GrpcExtraResultsSchema: GenMessage<GrpcExtraResults> = /*@__PURE__*/
-  messageDesc(file_GrpcExtraResults, 7);
+  messageDesc(file_GrpcExtraResults, 8);
 

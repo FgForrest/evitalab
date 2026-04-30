@@ -1,61 +1,46 @@
 <script setup lang="ts">
 /**
- * Visualises raw JSON hierarchies.
+ * Visualises fully resolved hierarchy extra results as expansion panels grouped by reference.
  */
-
-import { computed } from 'vue'
-import type { Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useToaster } from '@/modules/notification/service/Toaster'
-import type { Toaster } from '@/modules/notification/service/Toaster'
-import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
-import type { Result } from '@/modules/console/result-visualiser/model/Result'
-import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
+import { VisualisedHierarchyResult, VisualisedReferenceHierarchy } from '@/modules/console/result-visualiser/model/hierarchy/VisualisedHierarchyResult'
+import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import NamedHierarchiesVisualiser
     from '@/modules/console/result-visualiser/component/hierarchy/NamedHierarchiesVisualiser.vue'
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
-import { useRootEntitySchema, useVisualiserService } from '@/modules/console/result-visualiser/component/dependencies'
-import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 
-const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    hierarchyResult: Result,
+    hierarchyResult: VisualisedHierarchyResult,
+    entitySchema: EntitySchema | undefined
 }>()
 
-const visualiserService: ResultVisualiserService = useVisualiserService()
-const entitySchema: Ref<EntitySchema | undefined> = useRootEntitySchema()
-
-const referencesWithNamedHierarchiesResults = computed<[ReferenceSchema | undefined, Result][]>(() => {
-    try {
-        return  visualiserService.getHierarchyService()
-            .findNamedHierarchiesByReferencesResults(props.hierarchyResult, entitySchema.value!)
-    } catch (e: any) {
-        toaster.error('', e).then()
-        return []
-    }
-})
-
-function getPanelKey(referenceSchema: ReferenceSchema | undefined): string {
-    if (referenceSchema == undefined) {
+function getPanelKey(referenceHierarchy: VisualisedReferenceHierarchy): string {
+    if (referenceHierarchy.referenceSchema == undefined) {
         return 'self'
     }
-    return referenceSchema.name
+    return referenceHierarchy.referenceSchema.name
+}
+
+function getPanelTitle(referenceHierarchy: VisualisedReferenceHierarchy): string {
+    if (referenceHierarchy.referenceSchema == undefined) {
+        return `${props.entitySchema?.name ?? 'Self'} (self)`
+    }
+    return referenceHierarchy.referenceSchema.name
 }
 </script>
 
 <template>
-    <VExpansionPanels v-if="referencesWithNamedHierarchiesResults && referencesWithNamedHierarchiesResults.length > 0">
-        <VExpansionPanel v-for="referenceWithNamedHierarchResult in referencesWithNamedHierarchiesResults" :key="getPanelKey(referenceWithNamedHierarchResult[0])">
+    <VExpansionPanels v-if="hierarchyResult.references.length > 0">
+        <VExpansionPanel v-for="referenceHierarchy in hierarchyResult.references" :key="getPanelKey(referenceHierarchy)">
             <VExpansionPanelTitle class="d-flex">
                 <VIcon class="mr-8">mdi-link-variant</VIcon>
-                {{ referenceWithNamedHierarchResult[0]?.name ?? `${entitySchema!.name} (self)` }} ({{ Object.values(referenceWithNamedHierarchResult[1]).length }})
+                {{ getPanelTitle(referenceHierarchy) }} ({{ referenceHierarchy.namedHierarchies.length }})
             </VExpansionPanelTitle>
             <VExpansionPanelText>
                 <NamedHierarchiesVisualiser
-                    :reference-schema="referenceWithNamedHierarchResult[0]"
-                    :named-hierarchies-result="referenceWithNamedHierarchResult[1]"
+                    :reference-hierarchy="referenceHierarchy"
                 />
             </VExpansionPanelText>
         </VExpansionPanel>
