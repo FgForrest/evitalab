@@ -1,120 +1,63 @@
 <script setup lang="ts">
 /**
- * Visualises raw JSON facet group statistics of a single reference
+ * Visualises facet group statistics for a single reference. Renders grouped facets with
+ * expandable group headers or flat facet lists for ungrouped references.
  */
 import { computed, ref } from 'vue'
-import { useToaster } from '@/modules/notification/service/Toaster'
-import type { Toaster } from '@/modules/notification/service/Toaster'
-import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
-import type { Result } from '@/modules/console/result-visualiser/model/Result'
-import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
+import { VisualisedReferenceFacets } from '@/modules/console/result-visualiser/model/facet-summary/VisualisedFacetSummary'
+import { VisualisedFacetStatistics } from '@/modules/console/result-visualiser/model/facet-summary/VisualisedFacetStatistics'
 import VListItemLazyIterator from '@/modules/base/component/VListItemLazyIterator.vue'
 import FacetGroupStatisticsVisualiser
     from '@/modules/console/result-visualiser/component/facet-summary/FacetGroupStatisticsVisualiser.vue'
 import FacetStatisticsVisualiser
     from '@/modules/console/result-visualiser/component/facet-summary/FacetStatisticsVisualiser.vue'
-import { useCatalogPointer, useVisualiserService } from '@/modules/console/result-visualiser/component/dependencies'
-import { CatalogPointer } from '@/modules/viewer-support/model/CatalogPointer'
 
 const statisticsPageSize: number = 10
 
-const toaster: Toaster = useToaster()
-
 const props = defineProps<{
-    groupStatisticsResults: Result[],
-    referenceSchema: ReferenceSchema
+    referenceFacets: VisualisedReferenceFacets
 }>()
 
-const visualiserService: ResultVisualiserService = useVisualiserService()
-const catalogPointer: CatalogPointer = useCatalogPointer()
-
-const initialized = ref<boolean>(false)
 const groupStatisticsResultsPage = ref<number>(1)
-const groupRepresentativeAttributes: string[] = []
-const facetRepresentativeAttributes: string[] = []
 
 const isGroupedFacets = computed<boolean>(() => {
-    return props.referenceSchema.referencedGroupType != undefined
+    return props.referenceFacets.referenceSchema.referencedGroupType != undefined
 })
 
-const facetStatisticsResults = computed<Result[]>(() => {
-    if (isGroupedFacets.value) {
-        return []
-    }
-    if (props.groupStatisticsResults.length === 0) {
-        return []
-    }
-    try {
-        return visualiserService
-            .getFacetSummaryService()
-            .findFacetStatisticsResults(props.groupStatisticsResults[0])
-    } catch (e: any) {
-        toaster.error('Could not find facet statistics results', e).then() // todo lho i18n
-        return []
-    }
+const ungroupedFacets = computed<VisualisedFacetStatistics[]>(() => {
+    if (isGroupedFacets.value) return []
+    if (props.referenceFacets.groups.length === 0) return []
+    return props.referenceFacets.groups[0].facets
 })
 const facetStatisticsResultsPage = ref<number>(1)
-
-function initialize() {
-    let pipeline: Promise<string[]>
-    if (!props.referenceSchema.referencedGroupTypeManaged) {
-        pipeline = new Promise(resolve => resolve([]))
-    } else {
-        pipeline = visualiserService.resolveRepresentativeAttributes(
-            catalogPointer.catalogName,
-            props.referenceSchema.referencedGroupType as string
-        )
-    }
-
-    pipeline
-        .then((representativeAttributes: string[]) => {
-            groupRepresentativeAttributes.push(...representativeAttributes)
-
-            return visualiserService.resolveRepresentativeAttributes(
-                catalogPointer.catalogName,
-                props.referenceSchema.entityType as string
-            )
-        })
-        .then((representativeAttributes: string[]) => {
-            facetRepresentativeAttributes.push(...representativeAttributes)
-            initialized.value = true
-        })
-        .catch((e) => {
-            toaster.error('Could not initialize facet groups statistics', e).then() // todo lho i18n
-        })
-}
-initialize()
 </script>
 
 <template>
-    <VList v-if="initialized" density="compact">
+    <VList density="compact">
         <template v-if="isGroupedFacets">
             <VListItemLazyIterator
-                :items="groupStatisticsResults"
+                :items="referenceFacets.groups"
                 v-model:page="groupStatisticsResultsPage"
                 :page-size="statisticsPageSize"
             >
-                <template #item="{ item: groupStatisticsResult }">
+                <template #item="{ item: facetGroup }">
                     <FacetGroupStatisticsVisualiser
-                        :reference-schema="referenceSchema"
-                        :group-statistics-result="groupStatisticsResult"
-                        :group-representative-attributes="groupRepresentativeAttributes"
-                        :facet-representative-attributes="facetRepresentativeAttributes"
+                        :reference-schema="referenceFacets.referenceSchema"
+                        :facet-group="facetGroup"
                     />
                 </template>
             </VListItemLazyIterator>
         </template>
         <template v-else>
             <VListItemLazyIterator
-                :items="facetStatisticsResults"
+                :items="ungroupedFacets"
                 v-model:page="facetStatisticsResultsPage"
                 :page-size="statisticsPageSize"
             >
-                <template #item="{ item: facetStatisticsResult }">
+                <template #item="{ item: facetStatistics }">
                     <FacetStatisticsVisualiser
-                        :reference-schema="referenceSchema"
-                        :facet-statistics-result="facetStatisticsResult"
-                        :facet-representative-attributes="facetRepresentativeAttributes"
+                        :reference-schema="referenceFacets.referenceSchema"
+                        :facet-statistics="facetStatistics"
                     />
                 </template>
             </VListItemLazyIterator>

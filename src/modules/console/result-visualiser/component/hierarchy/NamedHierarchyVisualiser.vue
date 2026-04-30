@@ -1,48 +1,26 @@
 <script setup lang="ts">
 /**
- * Visualises raw JSON statistics of a single hierarchy.
+ * Visualises a single named hierarchy with node count, requested node info, and expandable tree.
  */
-
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useToaster } from '@/modules/notification/service/Toaster'
-import type { Toaster } from '@/modules/notification/service/Toaster'
-import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
-import type { Result } from '@/modules/console/result-visualiser/model/Result'
-import { VisualisedNamedHierarchy } from '@/modules/console/result-visualiser/model/hierarchy/VisualisedNamedHierarchy'
+import { VisualisedNamedHierarchyEntry } from '@/modules/console/result-visualiser/model/hierarchy/VisualisedHierarchyResult'
 import VMarkdown from '@/modules/base/component/VMarkdown.vue'
 import VListItemLazyIterator from '@/modules/base/component/VListItemLazyIterator.vue'
 import HierarchyTreeNode from '@/modules/console/result-visualiser/component/hierarchy/HierarchyTreeNode.vue'
-import { useVisualiserService } from '@/modules/console/result-visualiser/component/dependencies'
 
 const namedHierarchyTreesPageSize: number = 10
 
-const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
-    name: string
-    namedHierarchyResult: Result,
-    entityRepresentativeAttributes: string[]
+    namedHierarchyEntry: VisualisedNamedHierarchyEntry
 }>()
 
-const visualiserService: ResultVisualiserService = useVisualiserService()
-
-const namedHierarchy = computed<VisualisedNamedHierarchy | undefined>(() => {
-    try {
-        return visualiserService
-            .getHierarchyService()
-            .resolveNamedHierarchy(props.namedHierarchyResult, props.entityRepresentativeAttributes)
-    } catch (e: any) {
-        toaster.error('Could not resolve hierarchy', e).then() // todo lho i18n
-        return undefined
-    }
-})
 const namedHierarchyTreesPage = ref<number>(1)
 
 const initialized = ref<boolean>(false)
 function initialize(): void {
-    // todo lho this makes quick hide of the facet group, it looks weird
     initialized.value = !initialized.value
 }
 
@@ -57,22 +35,22 @@ function initialize(): void {
                 </template>
                 <template #title>
                     <VListItemTitle class="named-hierarchy-title">
-                        <span>{{ name }}</span>
+                        <span>{{ namedHierarchyEntry.name }}</span>
 
                         <VLazy>
                             <VChipGroup>
                                 <VChip prepend-icon="mdi-file-tree">
                                     <span>
-                                        {{ namedHierarchy?.count }}
+                                        {{ namedHierarchyEntry.hierarchy.count }}
                                         <VTooltip activator="parent">
                                             <span>{{ t('resultVisualizer.hierarchyVisualiser.help.nodeCountProperty') }}</span>
                                         </VTooltip>
                                     </span>
                                 </VChip>
 
-                                <VChip v-if="namedHierarchy?.requestedNode" prepend-icon="mdi-target">
-                                    {{ namedHierarchy?.requestedNode?.primaryKey != undefined ? `${namedHierarchy?.requestedNode?.primaryKey}: ` : '' }}
-                                    {{ namedHierarchy?.requestedNode?.title }}
+                                <VChip v-if="namedHierarchyEntry.hierarchy.requestedNode" prepend-icon="mdi-target">
+                                    {{ namedHierarchyEntry.hierarchy.requestedNode?.primaryKey != undefined ? `${namedHierarchyEntry.hierarchy.requestedNode?.primaryKey}: ` : '' }}
+                                    {{ namedHierarchyEntry.hierarchy.requestedNode?.title }}
                                     <VTooltip activator="parent">
                                         <VMarkdown :source="t('resultVisualizer.hierarchyVisualiser.help.requestedNode')" />
                                     </VTooltip>
@@ -84,16 +62,15 @@ function initialize(): void {
             </VListItem>
         </template>
 
-        <template v-if="initialized && namedHierarchy">
+        <template v-if="initialized && namedHierarchyEntry.hierarchy">
             <VListItemLazyIterator
-                :items="namedHierarchy.trees"
+                :items="namedHierarchyEntry.hierarchy.trees"
                 v-model:page="namedHierarchyTreesPage"
                 :page-size="namedHierarchyTreesPageSize"
             >
                 <template #item="{ item: tree }">
                     <HierarchyTreeNode
                         :node="tree"
-                        :entity-representative-attributes="entityRepresentativeAttributes"
                     />
                 </template>
             </VListItemLazyIterator>

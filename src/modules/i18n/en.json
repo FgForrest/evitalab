@@ -838,6 +838,18 @@
         "noSelectedData": "Select what to visualise"
       }
     },
+    "referenceSummaryVisualiser": {
+      "placeholder": {
+        "noGroups": "No reference summary groups found."
+      },
+      "label": {
+        "facetStatisticsSection": "Facet statistics",
+        "histogramStatisticsSection": "Histogram statistics"
+      },
+      "help": {
+        "histogramIndexCount": "The number of fetched histogram indexes in this group."
+      }
+    },
     "facetStatisticsVisualiser": {
       "placeholder": {
         "noGroups": "No facet summary groups found."
@@ -983,7 +995,8 @@
         "referenceSchema": {
           "external": "external",
           "indexed": "indexed",
-          "faceted": "faceted"
+          "faceted": "faceted",
+          "bucketed": "bucketed"
         },
         "reflectedReferenceSchema": {
           "reflectedReference": "reflected"
@@ -1113,6 +1126,8 @@
         "referencedEntityManaged": "Referenced entity managed",
         "referencedGroup": "Referenced group",
         "faceted": "Faceted",
+        "bucketed": "Bucketed",
+        "partial": "partial",
         "referencedEntityNameVariants": "Referenced entity",
         "referencedGroupNameVariants": "Referenced group",
         "indexed": {
@@ -1129,12 +1144,22 @@
       "tooltip": {
         "content": "The reference is {0} indexed within the {1} scope.",
         "facetedContent": "The reference {0} provide facets within the {1} scope.",
+        "bucketedContent": "The reference {0} has bucketed histogram index within the {1} scope.",
         "indexedTooltip": {
           "none": "Reference has no index available.",
           "forFiltering": "Reference has only basic index available that is necessary for ReferenceHaving constraint interpretation.",
           "forFilteringAndPartitioning": "Reference has basic index available and also partitioning indexes for the main entity type."
         },
-        "faceted": "Special facet index is maintained for this reference allowing interpretation of FacetHaving filtering and FacetSummary requirement constraints."
+        "faceted": "Special facet index is maintained for this reference allowing interpretation of FacetHaving filtering and FacetSummary requirement constraints.",
+        "facetPartialExpression": "Faceted partially using expression:",
+        "bucketed": "Bucketed histogram index is maintained for this reference, enabling histogram computation over filtered results.",
+        "bucketedPartialExpression": "Bucketed partially using expression:"
+      },
+      "histogramDefinitions": {
+        "title": "Histogram indexes",
+        "liveScope": "In Live scope",
+        "archiveScope": "In Archive scope",
+        "valueExpressionTooltip": "Expression by which the histogram index retrieves values for the histogram"
       },
       "reflected": {
         "reflectedReferences": "Reflected by"

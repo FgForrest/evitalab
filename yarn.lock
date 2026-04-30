@@ -687,10 +687,10 @@
     "@lezer/highlight" "^1.0.0"
     "@lezer/lr" "^1.4.0"
 
-"@lukashornych/codemirror-lang-evitaql@^1.4.1":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@lukashornych/codemirror-lang-evitaql/-/codemirror-lang-evitaql-1.4.1.tgz#76a3e4114bb4039647c0e0ba78d0e55a3d2d7a12"
-  integrity sha512-hI2qkRhJrgH2rXlIolXKDO/xYBAkkVCX3RyDcIhMJBs4bxoNg4XW2eSuSg86/XHrYtvhDIj8YfUC0K5vhXos0Q==
+"@lukashornych/codemirror-lang-evitaql@^1.5.1":
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/@lukashornych/codemirror-lang-evitaql/-/codemirror-lang-evitaql-1.5.1.tgz#44bbb3759a4455a3cdc59002dcc1be2d776e09f4"
+  integrity sha512-fKhCCaER+q232TP42AxU2xKrUwbStwv2ALBz2tl3SF2P9YpXzADhmcNQuc2U8R0NwbG02BgslXrnF5Yuhj40WA==
   dependencies:
     "@codemirror/autocomplete" "^6.18.6"
     "@codemirror/language" "^6.11.1"

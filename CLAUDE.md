@@ -105,6 +105,10 @@ Implement `TabDefinition` interface, create a factory class, then use:
 workspaceService.createTab(tabDefinition)
 ```
 
+## Documentation
+
+Document every new Vue component, class, type, interface, and so on.
+
 ## Git Workflow
 
 - `master`: Released versions only

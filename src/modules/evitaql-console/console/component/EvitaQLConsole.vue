@@ -18,7 +18,7 @@ import {
     useEvitaQLConsoleService
 } from '@/modules/evitaql-console/console/service/EvitaQLConsoleService'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
-import { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
+import type { ResultVisualiserService } from '@/modules/console/result-visualiser/service/ResultVisualiserService'
 import {
     useEvitaQLResultVisualiserService
 } from '@/modules/evitaql-console/console/result-visualiser/service/EvitaQLResultVisualiserService'

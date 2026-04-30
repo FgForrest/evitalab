@@ -7,10 +7,6 @@ import {
     GraphQLResultVisualiserService,
     graphQLResultVisualiserServiceInjectionKey
 } from '@/modules/graphql-console/console/result-visualiser/service/GraphQLResultVisualiserService'
-import {
-    GraphQLConsoleTabFactory,
-    graphQLConsoleTabFactoryInjectionKey
-} from '@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFactory'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
 
