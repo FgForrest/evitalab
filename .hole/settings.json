@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "setup": {
+      "script": ".hole/setup.sh"
+    }
+  },
+  "libraries": {
+    "$HOME/www/oss/evita/evitaDB": "$HOME/www/oss/evita/evitaDB"
+  },
+  "files": {
+    "include": {
+      "$HOME/www/oss/evita/evitaDB/data": "/evita-data"
+    }
+  },
+  "network": {
+    "domainWhitelist": [
+      "mcp.context7.com",
+      "registry-1.docker.io",
+      "auth.docker.io",
+      "production.cloudflare.docker.com",
+      "production.cloudfront.docker.com",
+      "mcp-proxy.anthropic.com",
+      "registry.npmjs.org",
+      "github.com",
+      "raw.githubusercontent.com",
+      "evitadb.io",
+      "registry.yarnpkg.com"
+    ]
+  }
+}

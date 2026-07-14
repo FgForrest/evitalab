@@ -21,6 +21,7 @@ implementation or things like that. Keep only language-specific documentation in
 
 ## Technology stack
 
+- Yarn
 - Vue.js 3
 - TypeScript 5
 - Vite 7
@@ -30,6 +31,8 @@ implementation or things like that. Keep only language-specific documentation in
 ## Building
 
 ### evitaLab - Vite + Vue + TypeScript
+
+**Package manager is yarn. Never run `npm install`, `npm ci`, or `npx` in this repo** — npm may write `package-lock.json`, which diverges from `yarn.lock`. If yarn looks broken, fix it (proxy allowlist / corepack / missing binary); do not fall back to npm.
 
 ```bash
 # Install dependencies

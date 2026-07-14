@@ -28,6 +28,11 @@ between two backends **once per session**:
   `env VITE_DEV_CONNECTION=LOCAL VITE_DEV_LOCAL_URL=http://<docker-host>:5555 yarn dev`.
 - On task completion (or when explicitly asked to clean up), stop **and remove**
   the container: `scripts/evitadb-server.sh stop`.
+- **Package manager is yarn. Never run `npm install`, `npm ci`, or `npx` in this
+  repo.** Only `yarn install [--frozen-lockfile]`, `yarn add`, `yarn dev`, etc.
+  If yarn appears broken, diagnose (proxy allowlist, corepack, missing binary)
+  and fix it — do not fall back to npm, as npm may write `package-lock.json`
+  which diverges from `yarn.lock`.
 
 ## Workflow
 
@@ -37,8 +42,8 @@ If the plan does not already record a backend decision for this session, ask
 the user exactly:
 
 > Does this task touch an unreleased evitaDB feature/API? If yes I'll spin up
-> a local Dockerized evitaDB (`latest` tag). If no I'll use the demo server.
-> [Y = LOCAL / N = DEMO]
+> a local Dockerized evitaDB (`canary` tag = `dev` branch). If no I'll use the
+> demo server. [Y = LOCAL / N = DEMO]
 
 Persist the answer to the current plan file under a heading like
 `## evitaDB backend for this session`.
