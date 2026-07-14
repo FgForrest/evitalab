@@ -4,11 +4,16 @@
   "scripts": {
     "dev": "vite",
     "dev-driver": "env VITE_RUN_MODE=\"DRIVER\" vite",
+    "dev:with-evitadb": "./scripts/evitadb-server.sh start && env VITE_DEV_CONNECTION=LOCAL vite",
     "build": "vue-tsc --noEmit && vite build",
     "build-driver": "vue-tsc --noEmit && env VITE_RUN_MODE=\"DRIVER\" vite build",
     "preview": "vite preview --port 3000",
     "lint": "eslint . --fix --ignore-path .gitignore",
-    "test": "vitest"
+    "test": "vitest",
+    "evitadb:start": "./scripts/evitadb-server.sh start",
+    "evitadb:stop": "./scripts/evitadb-server.sh stop",
+    "evitadb:status": "./scripts/evitadb-server.sh status",
+    "evitadb:logs": "./scripts/evitadb-server.sh logs -f"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.5.2",

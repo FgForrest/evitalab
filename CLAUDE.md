@@ -4,9 +4,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-evitaLab is the official web-based GUI client for evitaDB e-commerce database. It's a Vue.js SPA that allows users to browse entities, execute queries (GraphQL/evitaQL), inspect schemas, manage server connections, and more.
+evitaLab (or "lab" for short) is the official web-based GUI client for evitaDB e-commerce database. It's a Vue.js SPA that allows users to 
+browse entities, execute queries (GraphQL/evitaQL), inspect schemas, manage server connections, and more.
 
-## Development Commands
+## Documentation
+
+There is developer documentation in documentation/developer directory, you should use it to understand the project 
+structure and implemented functionalities. When implementing or changing any functionality, it HAS TO BE REFLECTED 
+in the documentation files.
+
+### Source code pollution
+
+Don't overcommend the source code itself in the source code files, focus it mainly into either /documentation 
+directories. If you comment the code, don't mention anything from the implementation plans, like mention Phases of 
+implementation or things like that. Keep only language-specific documentation in the source code files.
+
+## Technology stack
+
+- Vue.js 3
+- TypeScript 5
+- Vite 7
+- Vitest 3
+- Pinia 3
+
+## Building
+
+### evitaLab - Vite + Vue + TypeScript
 
 ```bash
 # Install dependencies
@@ -15,14 +38,14 @@ yarn install
 # Run development server (localhost:3000/lab)
 yarn dev
 
-# Run in driver mode for evitaLab Desktop (localhost:3000)
+# Run in driver mode for evitaLab Desktop app (localhost:3000)
 yarn dev-driver
 
 # Build for production
 yarn build                  # Standalone mode
 yarn build-driver           # Driver mode for Desktop app
 
-# Lint with auto-fix
+# Code Lint with auto-fix
 yarn lint
 
 # Run tests
@@ -30,6 +53,46 @@ yarn test
 ```
 
 **Environment Configuration:** Set `VITE_DEV_CONNECTION` in `.env.local` to `DEMO` (default) or `LOCAL` to change the dev connection target.
+
+### evitaDB server
+
+evitaLab needs a running evitaDB backend to verify changes. Two options:
+
+- **DEMO** (`https://demo.evitadb.io`) — cheap, quick. Use for evitaLab-only work (UI, refactors, bugfixes not tied to evitaDB API changes). This is the `.env.local` default.
+- **LOCAL** — a Dockerized `evitadb/evitadb:<tag>` container managed by `scripts/evitadb-server.sh`. Use when the task depends on an unreleased evitaDB feature. Default tag `canary` = evitaDB `dev` branch. Pass `--tag <version>` for pinned versions (no auto-resolution).
+
+Yarn shortcuts: `yarn evitadb:start | evitadb:stop | evitadb:status | evitadb:logs`, or `yarn dev:with-evitadb` to launch both.
+
+Networking: Docker runs on a sidecar daemon. `evitadb-server.sh` auto-detects the docker-host hostname from `DOCKER_HOST` (e.g. `tcp://docker:2375` → the container is reachable at `docker:5555`); on a native host with a Unix socket it falls back to `localhost:5555`. The `LOCAL` connection URL is overridable via `VITE_DEV_LOCAL_URL` (never mutate `.env.local` in agent flows — use inline env vars instead).
+
+**Agent workflow:** the skill `.claude/skills/evitadb-server/SKILL.md` codifies the decision (ask once per session — DEMO or LOCAL?), the startup / readiness probe, and the cleanup (stop + remove container on task completion). Invoke it before running `yarn dev` for any task that verifies UI behavior.
+
+## Browser Automation
+
+Use agent-browser for web automation. Run agent-browser --help for all commands.
+
+Core workflow:
+
+1. agent-browser open <url> - Navigate to page
+2. agent-browser snapshot -i - Get interactive elements with refs (@e1, @e2)
+3. agent-browser click @e1 / fill @e2 "text" - Interact using refs
+4. Re-snapshot after page changes
+
+Mandatory advisor calls (cost discipline)
+
+ALWAYS call advisor() BEFORE:
+
+- Invoking /batch or any skill that spawns multiple parallel Agent calls
+- Spawning 3+ Agent tool calls in a single turn
+- Committing to a multi-hour delegation plan (10+ work units)
+- Any action that crosses multiple repositories
+
+Non-negotiable. A 30-second advisor call is cheaper than a failed 90M-token orchestration. Advisor sees the full transcript and will flag memory-rule violations, cost concerns, and fan-out mistakes before they happen.
+
+## Planning
+
+Always create a detailed plan of implementation or fix if asked for issue analysis. Always store the plan in Markdown file 
+inside this project.
 
 ## Architecture
 

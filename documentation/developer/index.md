@@ -14,3 +14,4 @@ For more indepth knowledge, check these sections:
 - [Codebase architecture](architecture.md)
 - [Developer toolkit](toolkit.md)
 - [Guidelines](guidelines.md)
+- [evitaDB server](evitadb-server.md)

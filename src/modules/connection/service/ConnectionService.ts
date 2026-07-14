@@ -95,10 +95,11 @@ export class ConnectionService {
                     'https://demo.evitadb.io'
                 )
             } else if (devConnection === 'LOCAL') {
+                const localUrl: string = import.meta.env.VITE_DEV_LOCAL_URL || 'http://localhost:5555'
                 return new Connection(
                     'dev-localhost',
                     'Localhost (dev)',
-                    'http://localhost:5555'
+                    localUrl
                 )
             }
         }
