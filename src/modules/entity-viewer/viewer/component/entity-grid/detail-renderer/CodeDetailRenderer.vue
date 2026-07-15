@@ -28,6 +28,7 @@ import {
     useCodeDetailRendererMenuFactory
 } from '@/modules/entity-viewer/viewer/service/CodeDetailRendererMenuFactory'
 import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
+import { copyToClipboard } from '@/utils/clipboard'
 
 const toaster: Toaster = useToaster()
 const entityViewerService: EntityViewerService = useEntityViewerService()
@@ -98,7 +99,7 @@ function handleActionClick(action: any) {
 }
 
 function copyRenderedValue() {
-    navigator.clipboard.writeText(formattedValue.value).then(() => {
+    copyToClipboard(formattedValue.value).then(() => {
         toaster.info(t('common.notification.copiedToClipboard')).then()
     }).catch(() => {
         toaster.error(t('common.notification.failedToCopyToClipboard')).then()

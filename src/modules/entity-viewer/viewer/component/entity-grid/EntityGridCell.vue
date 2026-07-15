@@ -18,6 +18,7 @@ import { ReferenceSchema } from '@/modules/database-driver/request-response/sche
 import { MutationHistoryViewerTabData } from '@/modules/history-viewer/model/MutationHistoryViewerTabData.ts'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
 import { GrpcChangeCaptureContainerType } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
+import { copyToClipboard } from '@/utils/clipboard'
 
 const tabProps = useTabProps()
 const workspaceService: WorkspaceService = useWorkspaceService()
@@ -136,7 +137,7 @@ function copyValue(raw: boolean): void {
                 value = entityValue.toRawString()
             }
 
-            navigator.clipboard.writeText(value).then(() => {
+            copyToClipboard(value).then(() => {
                 toaster.info(t('common.notification.copiedToClipboard')).then()
             }).catch(() => {
                 toaster.error(t('common.notification.failedToCopyToClipboard')).then()
@@ -144,7 +145,7 @@ function copyValue(raw: boolean): void {
         }
     } else {
         if (printablePropertyValue.value) {
-            navigator.clipboard.writeText(printablePropertyValue.value).then(() => {
+            copyToClipboard(printablePropertyValue.value).then(() => {
                 toaster.info(t('common.notification.copiedToClipboard')).then()
             }).catch(() => {
                 toaster.error(t('common.notification.failedToCopyToClipboard')).then()

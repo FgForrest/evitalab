@@ -20,6 +20,7 @@ import {
     MarkdownDetailRendererMenuFactory,
     useMarkdownDetailRendererMenuFactory
 } from '@/modules/entity-viewer/viewer/service/MarkdownDetailRendererMenuFactory'
+import { copyToClipboard } from '@/utils/clipboard'
 
 const markdownDetailRendererMenuFactory: MarkdownDetailRendererMenuFactory = useMarkdownDetailRendererMenuFactory()
 const toaster: Toaster = useToaster()
@@ -236,8 +237,7 @@ function handleActionClick(action: any) {
 }
 
 function copyRenderedValue() {
-    navigator.clipboard
-        .writeText(formattedValue.value)
+    copyToClipboard(formattedValue.value)
         .then(() => {
             toaster.info(t('common.notification.copiedToClipboard')).then()
         })

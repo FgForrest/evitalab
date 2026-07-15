@@ -6,6 +6,7 @@ import { TrafficRecord } from '@/modules/database-driver/request-response/traffi
 import { TrafficRecordMetadataItemContext } from '@/modules/traffic-viewer/model/TrafficRecordMetadataItemContext'
 import { formatByteSize, formatCount } from '@/utils/string'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
+import { copyToClipboard } from '@/utils/clipboard'
 
 /**
  * Defines how a particular traffic record should be displayed in UI
@@ -86,7 +87,7 @@ export class MetadataItem {
             MetadataItemSeverity.Info,
             undefined,
             (ctx: TrafficRecordMetadataItemContext): void => {
-                navigator.clipboard.writeText(`${sessionId.toString()}`).then(() => {
+                copyToClipboard(`${sessionId.toString()}`).then(() => {
                     ctx.toaster.info(i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.sessionId.notification.copiedToClipboard'))
                         .then()
                 }).catch(() => {
@@ -106,7 +107,7 @@ export class MetadataItem {
             MetadataItemSeverity.Info,
             undefined,
             (ctx: TrafficRecordMetadataItemContext): void => {
-                navigator.clipboard.writeText(`${created.toString()}`).then(() => {
+                copyToClipboard(`${created.toString()}`).then(() => {
                     ctx.toaster.info(i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.created.notification.copiedToClipboard'))
                         .then()
                 }).catch(() => {

@@ -12,6 +12,7 @@ import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { ApiType } from '@/modules/database-driver/request-response/status/ApiType'
 import { ApiStatus } from '@/modules/database-driver/request-response/status/ApiStatus'
+import { copyToClipboard } from '@/utils/clipboard'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -48,7 +49,7 @@ const baseProperties = computed<Property[]>(() => [
                     new KeywordValue(baseUrl),
                     undefined,
                     (item) => {
-                        navigator.clipboard.writeText(item!).then(() => {
+                        copyToClipboard(item!).then(() => {
                             toaster.info(t('common.notification.copiedToClipboard')).then()
                         }).catch(() => {
                             toaster.error(t('common.notification.failedToCopyToClipboard')).then()
@@ -70,7 +71,7 @@ const endpoints = computed<Property[]>(() => {
                         new KeywordValue(url),
                         undefined,
                         (item) => {
-                            navigator.clipboard.writeText(item!).then(() => {
+                            copyToClipboard(item!).then(() => {
                                 toaster.info(t('common.notification.copiedToClipboard')).then()
                             }).catch(() => {
                                 toaster.error(t('common.notification.failedToCopyToClipboard')).then()
