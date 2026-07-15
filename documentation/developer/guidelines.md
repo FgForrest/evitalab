@@ -1,25 +1,49 @@
 # Guidelines
 
-Basic rules
-Each module should respect the vertical slice architecture.
-We are also big fans of immutability (where it makes sense) in Domain-Driver-Design, so we try to build the codebase using
-these practices.
+Rules and conventions for writing evitaLab code. Each module respects the **vertical slice
+architecture** — a feature's components, models and services live together in its module
+(see [module catalog](modules/index.md)). We are big fans of **immutability** (where it makes
+sense) and Domain-Driven Design, and we try to build the codebase using these practices.
+
+## TypeScript conventions
+
+- **Explicit types everywhere** — declare types for variables, parameters and return values even
+  when inferable (`const catalog: CatalogStatistics = ...`). This is the prevailing codebase style.
+- Prefer `undefined` over `null`; check with `== undefined`.
+- Domain model classes are immutable: `readonly` properties, initialization in the constructor,
+  [Immutable.js](https://immutable-js.com/) collections (`List`, `Map`, `Set`) instead of mutable
+  arrays/maps in models and service APIs.
+- Use evitaLab data types (`modules/database-driver/data-type/`) for evitaDB values — never raw
+  strings/numbers for `BigDecimal`, date-times, locales, currencies, UUIDs etc.
+- Enums are string-valued (`enum TabType { EntityViewer = 'entityViewer', ... }`).
+- Errors extend `LabError` (`modules/base/exception/`); throw `UnexpectedError` for "should not
+  happen" states.
+- Every class, interface, type and Vue component gets a short JSDoc block describing its purpose.
+  Do **not** put implementation-plan commentary into source files — extended documentation belongs
+  in `documentation/`.
+
+## Naming conventions
+
+- Classes/services/models: `PascalCase`, one class per file, file named after the class.
+- Injectable service pattern: `MyService` + `myServiceInjectionKey` + `useMyService()`.
+- Tab classes: `<Feature>TabDefinition/TabParams/TabParamsDto/TabData/TabDataDto/TabFactory`.
+- Shared Vue components: `V` prefix (`VLabDialog`); feature components without prefix.
+- i18n keys: camelCase, namespaced per module (see [i18n](i18n.md)).
 
 ## Code architecture
 
 ### Component structure
 
-We use the [Single-File Components](https://vuejs.org/guide/scaling-up/sfc.html) and
-[Composition API](https://vuejs.org/api/composition-api-setup.html#composition-api-setup) with the following order for
-better orientation:
+We use [Single-File Components](https://vuejs.org/guide/scaling-up/sfc.html) with the
+[Composition API](https://vuejs.org/api/composition-api-setup.html) and section order:
 
-- `script`
+- `script` (setup)
 - `template`
 - `style`
 
 ### Component setup structure
 
-Each `setup` portion of a component should follow ordering:
+Each `setup` portion of a component should follow this ordering:
 
 - imports
 - component constants
@@ -27,103 +51,109 @@ Each `setup` portion of a component should follow ordering:
 - props/emit definition
 - refs/computed/functions
 
-Complex components that access data should adhere to the [Model-View-ViewModel architecture](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel),
-preferably in conjunction with the [mediator pattern](https://en.wikipedia.org/wiki/Mediator_pattern) in the form of
-custom service for the component to abstract access to generic services.
+### MVVM for complex components
+
+Complex components that access data should adhere to the
+[Model-View-ViewModel architecture](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel),
+preferably in conjunction with the [mediator pattern](https://en.wikipedia.org/wiki/Mediator_pattern):
+a custom injectable service for the component (or component tree) abstracts access to generic
+services (`EvitaClient`, `WorkspaceService`, …). Components hold only view state; queries, data
+transformation and orchestration belong to the service. Example: `EntityViewerService` mediates
+between the entity viewer components and query builders/executors.
 
 ![Component-service hierarchy](assets/component-service-hierarchy.svg)
 
 ### Dependency injection
 
-Each service that should be injectable should export an injection key:
+Each injectable service exports an injection key and a helper:
 
 ```ts
 export const serviceInjectionKey: InjectionKey<Service> = Symbol('service')
-```
 
-and helper method for injecting the service into a component:
-
-```ts
 export function useService(): Service {
     return mandatoryInject(serviceInjectionKey)
 }
 ```
 
-For component tree dependency injection a `dependecies.ts` file should be created where the components for a feature are
-places with proper injection keys and `provideX` and `injectX` methods so that the keys are not spread across components.
+- The `Symbol` description must be globally unique (enforced at bootstrap).
+- Services are constructed and provided in the module's `ModuleRegistrar`
+  (see [architecture](architecture.md#module-registration-and-dependency-injection)).
+- Constructor injection only — services receive their dependencies as constructor arguments.
+- For **component-tree** DI (parent component providing context to descendants), create a
+  `dependencies.ts` file next to the components with `provideX`/`injectX` functions wrapping the
+  keys, so keys are not spread across components (examples:
+  `modules/entity-viewer/viewer/component/dependencies.ts`,
+  `modules/traffic-viewer/components/dependencies.ts`).
+
+### Where logic belongs
+
+- Components: rendering + small UI logic.
+- Feature services: feature business logic, calls to `EvitaClient`.
+- `EvitaClient`/driver: all server communication (see [database driver](database-driver.md)).
+- Use the client directly in a component only for truly tiny logic.
 
 ## UI
 
-### Base UI components
+Use Vuetify components as the base and the custom component set documented in
+[UI components](ui-components.md) — dialogs (`VLabDialog`/`VFormDialog`), tab toolbars
+(`VTabToolbar`), properties tables, lazy iterators, tree items, markdown, code editors, etc.
 
-#### Dialogs
+Key rules:
 
-Use `VLabDialog` for each new dialog that you are creating. Alternatively, use `VFormDialog` for form dialogs 
-
-There are also helper components for dialogs:
-
-- VAlternativeActionDialogButton
-- VCancelDialogButton
-- VConfirmDialogButton
-
-#### Tab windows
-
-All tab windows must fill all available space.
-
-Use `VTabToolbar` for toolbars within tab window content.
-
-#### Lists
-
-Use `VListItemDivider` for delimiting list items in **each** non-menu lists.
-
-Use `VListItemLazyIterator` if you need client-side with "load next" pagination for lists. Usually useful for
-optimizing GUI rendering for lots of components.
-
-#### Expansion panels
-
-Use `VExpansionPanelLazyIterator` if you need client-side with "load next" pagination for expansion panels. Usually useful for
-optimizing GUI rendering for lots of components.
-
-#### Markdown
-
-Use `VMarkdown` for rendering markdown texts.
-
-#### Properties
-
-Use `VPropertiesTable` for displaying properties of object etc.
-
-#### Trees
-
-Use `VTreeViewItem` and `VTreeViewEmptyItem` for constructing tree menu structures.
-
-#### Code editor
-
-Use `VQueryEditor`, `VInlineQueryEditor` or `VPreviewEditor` for code/text editor behaviour.
-
-Use `VExecuteQueryButton` as special button for executing queries in conjunction with query editor.
-
-#### Date and time
-
-Primarily use Vuetify date and time components. For datetime component, use the custom `VDateTimeInput`.
-
-## Toast notifications
-
-For toast notifications, inject `useToaster()`. It provides methods for different types of notifications.
-
-### Error handling
-
-All service/EvitaClient calls in a component must be wrapped in a try-catch clause so that the component can react 
-accordingly to any errors. Usually it means calling `toaster.error(...)` and providing some default values or fallback
-logic for the component.
+- All tab windows must fill all available space.
+- Use `VListItemDivider` in every non-menu list.
+- Use lazy iterators (`VListItemLazyIterator`, `VExpansionPanelLazyIterator`) for potentially long
+  lists.
+- Use `mdi-*` icons; keep the icon of a feature consistent across menu items, tabs and toolbars.
 
 ### Forms
 
-We use the built-in Vuetify [forms](https://vuetifyjs.com/en/components/forms/). For forms in dialogs, check `VFormDialog`.
+We use built-in Vuetify [forms](https://vuetifyjs.com/en/components/forms/) with built-in
+[validation rules](https://vuetifyjs.com/en/components/forms/#rules). For forms in dialogs use
+`VFormDialog`, which already handles validation, submit state and reset.
 
-#### Validations
+## Error handling
 
-We use the built-in Vuetify [validation rules](https://vuetifyjs.com/en/components/forms/#rules). In the `VFormDialog`,
-there is already built-in logic for proper validation.
+All service/`EvitaClient` calls in a component must be wrapped in try-catch so the component can
+react to errors — usually by calling `toaster.error(...)` and providing fallback values:
+
+```ts
+const toaster: Toaster = useToaster()
+
+try {
+    catalogs.value = await evitaClient.getCatalogNames()
+} catch (e: any) {
+    await toaster.error(t('explorer.notification.couldNotLoadCatalogs'), e)
+    catalogs.value = Set()
+}
+```
+
+- Toast titles come from i18n; pass the caught error as the second argument (the toaster can open
+  the error-viewer tab with details).
+- Services generally let errors propagate to the calling component; the driver already transforms
+  transport errors into `LabError` types.
+- Never swallow errors silently.
+
+## Localization
+
+All user-facing strings go through vue-i18n — no hardcoded texts in templates. See
+[i18n](i18n.md) for key structure and usage patterns.
+
+## Asynchronicity
+
+- Service methods talking to the server are `async`; avoid fire-and-forget — `await` and handle
+  errors.
+- Long-running server operations report progress via async iterables or `TaskStatus` polling
+  (see [database driver](database-driver.md#long-running-operations)).
+- Register/unregister change callbacks symmetrically in `onMounted`/`onUnmounted` (same for
+  `Keymap.bind`/`unbind`).
+
+## Documentation
+
+Document every new Vue component, class, type and interface with JSDoc. Any new or changed
+functionality **must be reflected** in `documentation/developer/` (this directory) — new modules
+belong in the [module catalog](modules/index.md), new shared components in
+[UI components](ui-components.md), new recipes in [recipes](recipes.md).
 
 ## Git
 
@@ -131,21 +161,17 @@ there is already built-in logic for proper validation.
 
 We use 3 types of branches:
 
-- `master`
-- `dev`
-- feature branches
+- `master` — released versions only
+- `dev` — current development; target of feature branches
+- feature branches — created from `dev` for each issue (bug fix or feature)
 
-The `master` branch is for the released versions of the evitaLab only. The `dev` branch is where the current unreleased
-code is at, and to where the feature branches are merged into. Finally, feature branches are created for each issues
-to fix a bug or create new feature. These are then merged into the `dev` branch for eventual release.
-
-When fixing a bug or creating new feature, **always** create new feature branch from the `dev` branch. Or for hotfixes,
-create new bug fixing branch from the `master`, but such branch cannot do more than fix a bug in non-breaking way.
+For hotfixes, a bug-fixing branch may be created from `master`, but it must not do more than fix a
+bug in a non-breaking way.
 
 ### Commits
 
-We use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) for Git commit messages and pull requests
-for 2 reasons:
+We use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages
+and pull requests:
 
-- the commits are more transparent
-- we have GitHub CI/CD hooked onto it, to automatically build and version the evitaLab
+- commits are more transparent,
+- GitHub CI/CD derives versions from them (see [build & tooling](build-and-tooling.md)).
