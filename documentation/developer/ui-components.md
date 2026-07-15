@@ -3,7 +3,9 @@
 evitaLab uses [Vuetify](https://vuetifyjs.com/) as the base component framework, with a dark-only
 custom theme and opinionated defaults configured in `src/vue-plugins/vuetify.ts`. On top of that,
 custom components extend the standard set. **Always prefer an existing custom component over a raw
-Vuetify equivalent when one exists for the use case.**
+Vuetify equivalent when one exists for the use case.** For how these components are composed into
+consistent pages (layout anatomy, color roles, icon vocabulary, interaction patterns), see the
+[design language](design-language.md).
 
 Custom shared components live in:
 

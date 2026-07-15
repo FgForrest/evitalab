@@ -22,6 +22,8 @@ Recommended reading order for anyone (human or AI agent) new to the codebase:
 3. [Database driver](database-driver.md) — `EvitaClient`, sessions, internal model, caching
 4. [Workspace and tabs](workspace-and-tabs.md) — the tab framework every feature plugs into
 5. [UI components](ui-components.md) — custom component catalog and theming
+6. [Design language](design-language.md) — visual & interaction conventions for building new
+   pages consistently
 
 ## Writing code
 

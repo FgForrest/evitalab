@@ -20,6 +20,7 @@ it covers the architecture, all modules, custom components, conventions and step
 - [database driver](documentation/developer/database-driver.md) — `EvitaClient`, sessions, internal model, caching
 - [workspace & tabs](documentation/developer/workspace-and-tabs.md) — the tab framework every feature plugs into
 - [UI components](documentation/developer/ui-components.md) — custom component catalog and theming
+- [design language](documentation/developer/design-language.md) — visual & interaction conventions for building new pages
 - [guidelines](documentation/developer/guidelines.md) — coding conventions, error handling, git workflow
 - [recipes](documentation/developer/recipes.md) — step-by-step: new service/module/tab/dialog/shortcut, calling evitaDB, pre-PR checklist
 - [i18n](documentation/developer/i18n.md), [testing](documentation/developer/testing.md), [build & tooling](documentation/developer/build-and-tooling.md)
