@@ -6,7 +6,8 @@
 import { Pane, Splitpanes } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 
-import type { Extension } from '@codemirror/state'
+import { Compartment, type Extension } from '@codemirror/state'
+import { EditorView } from 'codemirror'
 import { graphql } from 'cm6-graphql'
 import { json } from '@codemirror/lang-json'
 
@@ -118,7 +119,13 @@ const graphQLSchemaChangeCallbackId = graphQLConsoleService.registerGraphQLSchem
 
 const queryEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
 const queryCode = ref<string>(props.data.query ? props.data.query : t('graphQLConsole.placeholder.writeQuery', { catalogName: props.params.dataPointer.catalogName }))
-const queryExtensions = ref<Extension[]>()
+// GraphQL language support is swapped in place through a CodeMirror compartment so the
+// editor's extensions array reference stays stable; reassigning it would force the editor
+// to fully remount on every schema (re)load.
+const queryEditorView = ref<EditorView>()
+const queryLanguageCompartment = new Compartment()
+let queryLanguageExtension: Extension = []
+const queryExtensions: Extension[] = [queryLanguageCompartment.of([])]
 
 const variablesEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
 const variablesCode = ref<string>(props.data.variables ? props.data.variables : '{\n  \n}')
@@ -166,8 +173,22 @@ watch(currentData, (data) => {
 
 async function loadGraphQLSchema(): Promise<void> {
     const schema: GraphQLSchema = await graphQLConsoleService.getGraphQLSchema(props.params.dataPointer)
-    queryExtensions.value = graphql(schema)
+    queryLanguageExtension = graphql(schema)
+    applyQueryLanguage()
 }
+
+/**
+ * Reconfigures the query editor's language compartment with the currently loaded GraphQL
+ * schema. Safe to call before the editor exists (no-op until its view is available).
+ */
+function applyQueryLanguage(): void {
+    queryEditorView.value?.dispatch({
+        effects: queryLanguageCompartment.reconfigure(queryLanguageExtension)
+    })
+}
+
+// apply the already-loaded language once the editor view becomes available
+watch(queryEditorView, () => applyQueryLanguage())
 
 onBeforeMount(() => {
     loadGraphQLSchema()
@@ -352,6 +373,7 @@ function focusResultVisualiser(): void {
                                 ref="queryEditorRef"
                                 v-model="queryCode"
                                 :additional-extensions="queryExtensions"
+                                @update:editor="queryEditorView = $event.view"
                             />
                         </VWindowItem>
 

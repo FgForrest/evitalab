@@ -71,14 +71,26 @@ CodeMirror 6 wrappers — never instantiate CodeMirror directly:
 
 | Component | Use for |
 |-----------|---------|
-| `VQueryEditor` | Full-size query editor (`modelValue`, `additionalExtensions?` for language support, `placeholder?`) |
-| `VInlineQueryEditor` | Single-line/inline editor variant |
+| `VQueryEditor` | Full-size query editor (`modelValue`, `additionalExtensions?` for language support, `placeholder?`; emits `update:editor` with the CodeMirror `ViewUpdate` so callers can reach the `EditorView`) |
+| `VInlineQueryEditor` | Single-line/inline editor variant (also emits `update:editor`) |
 | `VPreviewEditor` | Read-only code/text preview |
 | `VPreviewEditorDialog` | Preview editor in a dialog |
 
 Language support: evitaQL via `@lukashornych/codemirror-lang-evitaql`, GraphQL via `cm6-graphql`,
 JSON/XML/YAML via `@codemirror/lang-*`. Editors integrate with the workspace status bar through
 `extension/workspaceStatusBarIntegration.ts` (cursor position display).
+
+> **Changing extensions at runtime — use a `Compartment`, don't reassign the array.**
+> To swap language support (or any extension) after mount, keep the `additionalExtensions`
+> array reference **stable** and wrap the changing part in a CodeMirror `Compartment`, then
+> `view.dispatch({ effects: compartment.reconfigure(...) })` using the `EditorView` obtained
+> from the `update:editor` event. See `QueryInput.vue` and `GraphQLConsole.vue`.
+>
+> Do **not** reassign `additionalExtensions` to a new array to apply changes: vue-codemirror
+> reconfigures its own extensions compartment when the `extensions` prop changes, but a
+> changing reference previously also drove a manual full-remount hack in these wrappers that
+> duplicated CodeMirror's dynamically-appended panels (e.g. the find/replace toolbar rendered
+> twice). That hack has been removed — the compartment approach is the supported way.
 
 ## Date & time
 
