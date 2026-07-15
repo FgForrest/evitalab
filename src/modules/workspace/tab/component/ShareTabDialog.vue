@@ -19,6 +19,7 @@ import { EvitaLabConfig, useEvitaLabConfig } from '@/modules/config/EvitaLabConf
 import { LabRunMode } from '@/LabRunMode'
 import { ConnectionService, useConnectionService } from '@/modules/connection/service/ConnectionService'
 import { Connection } from '@/modules/connection/model/Connection'
+import { copyToClipboard } from '@/utils/clipboard'
 
 /**
  * Smallest possible number of characters in a URL valid across all browser. Usually browser support more characters.
@@ -63,7 +64,7 @@ function cancel(): void {
 }
 
 function copyLink(): void {
-    navigator.clipboard.writeText(link.value).then(() => {
+    copyToClipboard(link.value).then(() => {
         toaster.info(t('tabShare.shareDialog.notification.linkCopied')).then()
     }).catch(() => {
         toaster.error(t('common.notification.failedToCopyToClipboard')).then()

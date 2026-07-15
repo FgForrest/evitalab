@@ -16,6 +16,7 @@ import {
     MutationHistoryItemVisualisationDefinition
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
 import { CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
+import { copyToClipboard } from '@/utils/clipboard.ts'
 import type {
     AttributeMutation
 } from '@/modules/database-driver/request-response/data/mutation/attribute/AttributeMutation.ts'
@@ -433,7 +434,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             MetadataItemSeverity.Info,
             undefined,
             (ctx: MutationHistoryMetadataItemContext): void => {
-                navigator.clipboard.writeText(`${created.toString()}`).then(() => {
+                copyToClipboard(`${created.toString()}`).then(() => {
                     ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.timestamp.notification.copiedToClipboard'))
                         .then()
                 }).catch(() => {

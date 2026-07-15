@@ -20,6 +20,7 @@ import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTi
 import type {
     MutationHistoryMetadataItemContext
 } from '@/modules/history-viewer/model/MutationHistoryMetadataItemContext.ts'
+import { copyToClipboard } from '@/utils/clipboard.ts'
 
 /**
  * Visualises entity enrichment container.
@@ -76,7 +77,7 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
             MetadataItemSeverity.Info,
             undefined,
             (ctx: MutationHistoryMetadataItemContext): void => {
-                navigator.clipboard.writeText(`${created}`).then(() => {
+                copyToClipboard(`${created}`).then(() => {
                     ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.type.transaction.transactionId.notification.copiedToClipboard'))
                         .then()
                 }).catch(() => {
@@ -120,7 +121,7 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
             MetadataItemSeverity.Info,
             undefined,
             (ctx: MutationHistoryMetadataItemContext): void => {
-                navigator.clipboard.writeText(`${created.toString()}`).then(() => {
+                copyToClipboard(`${created.toString()}`).then(() => {
                         ctx.toaster.info(i18n.global.t('mutationHistoryViewer.record.type.transaction.commitTimestamp.notification.copiedToClipboard'))
                         .then()
                 }).catch(() => {

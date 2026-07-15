@@ -127,8 +127,9 @@ Global Vue plugin configuration lives in `src/vue-plugins/`:
 
 `src/utils/` contains generic, module-independent helpers: `reactivity.ts` (`mandatoryInject`),
 `object.ts`, `string.ts`, `text.ts`, `number.ts`, `bigint.ts`, `enum.ts`, `uuid.ts`,
-`dateTime.ts`, `duration.ts`, `GroupByUtil.ts`, `JsonUtil.ts`. Prefer extending these over
-introducing new ad-hoc helpers inside modules.
+`dateTime.ts`, `duration.ts`, `GroupByUtil.ts`, `JsonUtil.ts`, `clipboard.ts` (`copyToClipboard` —
+Clipboard API with a `document.execCommand('copy')` fallback for insecure/non-localhost origins).
+Prefer extending these over introducing new ad-hoc helpers inside modules.
 
 ## Auto-generated files
 

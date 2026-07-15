@@ -10,6 +10,7 @@ import {
     VisualisedFacetStatistics
 } from '@/modules/console/result-visualiser/model/facet-summary/VisualisedFacetStatistics'
 import VMarkdown from '@/modules/base/component/VMarkdown.vue'
+import { copyToClipboard } from '@/utils/clipboard'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -21,7 +22,7 @@ const props = defineProps<{
 
 async function copyPrimaryKey(): Promise<void> {
     if (props.facetStatistics.primaryKey != undefined) {
-        navigator.clipboard.writeText(`${props.facetStatistics.primaryKey}`).then(() => {
+        copyToClipboard(`${props.facetStatistics.primaryKey}`).then(() => {
             toaster.info(t('resultVisualizer.facetStatisticsVisualiser.notification.primaryKeyCopiedToClipboard')).then()
         }).catch(() => {
             toaster.error(t('common.notification.failedToCopyToClipboard')).then()
