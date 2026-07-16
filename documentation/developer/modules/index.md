@@ -57,12 +57,12 @@ User-facing features. Each one typically contributes one or more tab types and/o
 | Module | Purpose |
 |--------|---------|
 | `welcome-screen` | Landing screen (standalone mode), including its own Pinia store (`welcomeScreenStore`) |
-| `connection-explorer` | Left panel tree — catalogs and collections of the connected server, incl. catalog/collection management actions (create, rename, drop, …) |
+| `connection-explorer` | Left panel tree — catalogs and collections of the connected server, incl. catalog/collection management actions (create, rename, drop, …). When the server is unreachable at load, the panel disables its server-related menu actions and runs a silent 5 s retry loop that recovers on its own (repopulating status + catalogs, re-enabling the actions) once the server responds again — no manual **Reload** or page refresh needed. Catalog loading is gated on server reachability: when the server status reports the server is unreachable the panel skips the catalog fetch entirely, so clicking **Reload** against a down server shows a single server-status error rather than one failure per cleared cache. |
 | `entity-viewer` | Grid-based entity browser. Builds and executes queries in evitaQL or GraphQL (`QueryBuilder`/`QueryExecutor` abstraction), renders entity properties with formatters, property selector, price renderer |
 | `evitaql-console` | Console tab for executing evitaQL queries, with history and result visualisation |
 | `graphql-console` | Console tab for executing GraphQL queries against catalog data/schema/system APIs, with history and result visualisation |
 | `schema-viewer` | Browsing catalog/entity/attribute/reference/… schemas, with deep-linkable schema paths (`schema-path-factory`) |
-| `server-viewer` | Server status/details view |
+| `server-viewer` | Server status/details view. Its 5 s poll force-refreshes server metadata through the cache (`getServerStatus(forceRefresh: true)`) so stats advance instead of returning a frozen cached value; each successful refresh also fires the server-status callbacks, keeping the connection panel's menu in sync without its own polling. When a poll fails (server went down while the tab is open) the body swaps the stat tiles for an "unavailable" indicator instead of showing stale data, and keeps polling silently so it recovers on its own once the server is back; the manual reload button still surfaces the error via a toast. |
 | `server-file-viewer` | Listing and downloading files exposed by the server |
 | `backup-viewer` | Catalog backup & restore management |
 | `task-viewer` | Server background task monitoring |

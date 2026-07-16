@@ -38,7 +38,7 @@ async function loadRuntimeConfiguration(reload: boolean = false): Promise<boolea
     }
 
     try {
-        runtimeConfiguration.value = await serverViewerService.getRuntimeConfiguration()
+        runtimeConfiguration.value = await serverViewerService.getRuntimeConfiguration(reload)
         if (!runtimeConfigurationLoaded.value) {
             runtimeConfigurationLoaded.value = true
         }

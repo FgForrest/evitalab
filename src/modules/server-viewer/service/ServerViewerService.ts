@@ -12,12 +12,16 @@ export class ServerViewerService {
         this.evitaClient = evitaClient
     }
 
-    async getServerStatus(): Promise<ServerStatus> {
-        return await this.evitaClient.management.getServerStatus()
+    async getServerStatus(forceRefresh: boolean = false): Promise<ServerStatus> {
+        return forceRefresh
+            ? await this.evitaClient.management.refreshServerStatus()
+            : await this.evitaClient.management.getServerStatus()
     }
 
-    async getRuntimeConfiguration(): Promise<string> {
-        return await this.evitaClient.management.getConfiguration()
+    async getRuntimeConfiguration(forceRefresh: boolean = false): Promise<string> {
+        return forceRefresh
+            ? await this.evitaClient.management.refreshConfiguration()
+            : await this.evitaClient.management.getConfiguration()
     }
 }
 
