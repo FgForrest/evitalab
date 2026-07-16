@@ -118,6 +118,25 @@ export class CatalogSchemaConverter {
         const scalar = ScalarConverter.convertScalar(attribute.type)
         const nameVariants = MapUtil.getNamingMap(attribute.nameVariant)
         if (attribute.schemaType === GrpcAttributeSchemaType.ENTITY_SCHEMA) {
+            return new EntityAttributeSchema(
+                attribute.name,
+                nameVariants,
+                attribute.description ?? undefined,
+                attribute.deprecationNotice ?? undefined,
+                scalar,
+                attribute.nullable,
+                EvitaValueConverter.convertGrpcValue(
+                    attribute.defaultValue,
+                    attribute.defaultValue?.value.case
+                ),
+                attribute.localized,
+                attribute.indexedDecimalPlaces,
+                attribute.representative,
+                ScopesConverter.convertEntityScopes(attribute.sortableInScopes),
+                ScopesConverter.convertEntityScopes(attribute.filterableInScopes),
+                ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes)
+            )
+        } else if (attribute.schemaType === GrpcAttributeSchemaType.REFERENCE_SCHEMA) {
             return new AttributeSchema(
                 attribute.name,
                 nameVariants,
@@ -135,31 +154,12 @@ export class CatalogSchemaConverter {
                 ScopesConverter.convertEntityScopes(attribute.filterableInScopes),
                 ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes)
             )
-        } else if (attribute.schemaType === GrpcAttributeSchemaType.REFERENCE_SCHEMA) {
-            return new EntityAttributeSchema(
-                attribute.name,
-                nameVariants,
-                attribute.description,
-                attribute.deprecationNotice,
-                scalar,
-                attribute.nullable,
-                EvitaValueConverter.convertGrpcValue(
-                    attribute.defaultValue,
-                    attribute.defaultValue?.value.case
-                ),
-                attribute.localized,
-                attribute.indexedDecimalPlaces,
-                attribute.representative,
-                ScopesConverter.convertEntityScopes(attribute.sortableInScopes),
-                ScopesConverter.convertEntityScopes(attribute.filterableInScopes),
-                ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes)
-            )
         } else if (attribute.schemaType === GrpcAttributeSchemaType.GLOBAL_SCHEMA) {
             return new GlobalAttributeSchema(
                 attribute.name,
                 MapUtil.getNamingMap(attribute.nameVariant),
-                attribute.description,
-                attribute.deprecationNotice,
+                attribute.description ?? undefined,
+                attribute.deprecationNotice ?? undefined,
                 ScalarConverter.convertScalar(attribute.type),
                 attribute.nullable,
                 EvitaValueConverter.convertGrpcValue(

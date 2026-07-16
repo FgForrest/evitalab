@@ -80,6 +80,19 @@ recordings, CDC, server files, …), which mostly mirrors evitaDB's data model. 
   they are regenerated from the evitaDB repo (see `buf.gen.yaml`; agents can use the
   `generate-evitadb-client` skill).
 
+### Attribute schema model mapping
+
+`CatalogSchemaConverter.convertAttributeSchema` picks the internal attribute-schema class from the
+gRPC `GrpcAttributeSchemaType` discriminator — the mapping must stay in sync with evitaDB's model
+(a swap here silently drops or fabricates the `representative` property and hits the wrong
+`representativeFlags` implementation):
+
+| `GrpcAttributeSchemaType` | Internal class | Has `representative` |
+|---|---|---|
+| `ENTITY_SCHEMA` | `EntityAttributeSchema` | yes |
+| `REFERENCE_SCHEMA` | `AttributeSchema` (base) | no |
+| `GLOBAL_SCHEMA` | `GlobalAttributeSchema` | yes (+ global uniqueness) |
+
 ## Caching & change callbacks
 
 Schemas, server status, configuration and catalog statistics are cached client-side. When a UI
