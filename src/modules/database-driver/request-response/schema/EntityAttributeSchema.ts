@@ -1,15 +1,12 @@
 import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { NamingConvention } from '../NamingConvetion'
-import { AttributeSchema, AttributeSchemaFlag } from '@/modules/database-driver/request-response/schema/AttributeSchema'
+import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
-import { EntityScope, EntityScopeIcons } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import type {
     ScopedAttributeUniquenessType
 } from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
 import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
-import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType.ts'
-import { useI18n } from 'vue-i18n'
-import { getEnumKeyByValue } from '@/utils/enum.ts'
 
 /**
  * evitaLab's representation of a single evitaDB entity attribute schema independent of specific evitaDB version
@@ -39,37 +36,12 @@ export class EntityAttributeSchema extends AttributeSchema {
         this.representative = representative
     }
 
-    get representativeFlags(): ImmutableList<Flag> {
-        if (this._representativeFlags == undefined) {
-            const representativeFlags: Flag[] = []
-            const { t } = useI18n()
-
-            representativeFlags.push(new Flag(this.formatDataTypeForFlag(this.type)))
-
-            if (this.representative) {
-                representativeFlags.push(new Flag(EntityAttributeSchemaFlag.Representative))
-            }
-
-            for (const uniqueness of this.uniqueInScopes) {
-                if (uniqueness.uniquenessType === AttributeUniquenessType.UniqueWithinCollection)
-                    representativeFlags.push(new Flag(AttributeSchemaFlag.Unique, this.uniqueInScopes.map(x => x.scope).toArray()))
-                else if (uniqueness.uniquenessType === AttributeUniquenessType.UniqueWithinCollectionLocale)
-                    representativeFlags.push(new Flag(AttributeSchemaFlag.UniquePerLocale, this.uniqueInScopes.map(x => x.scope).toArray()))
-            }
-
-            if (this.sortableInScopes.size > 0) {
-                representativeFlags.push(new Flag(AttributeSchemaFlag.Sortable, this.sortableInScopes.map(x => EntityScopeIcons[x]).toArray(), t('schemaViewer.attribute.tooltip.content', [t('schemaViewer.tooltip.sorted'), this.sortableInScopes.map(z => t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
-            }
-            if (this.localized) {
-                representativeFlags.push(new Flag(AttributeSchemaFlag.Localized))
-            }
-            if (this.nullable) {
-                representativeFlags.push(new Flag(AttributeSchemaFlag.Nullable))
-            }
-
-            this._representativeFlags = ImmutableList(representativeFlags)
+    protected prefixFlags(): Flag[] {
+        const flags: Flag[] = []
+        if (this.representative) {
+            flags.push(new Flag(EntityAttributeSchemaFlag.Representative))
         }
-        return this._representativeFlags
+        return flags
     }
 }
 
