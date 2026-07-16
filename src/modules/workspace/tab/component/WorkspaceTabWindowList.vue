@@ -12,6 +12,7 @@ import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import TabWindow from '@/modules/workspace/tab/component/TabWindow.vue'
 import WelcomeScreen from '@/modules/welcome-screen/component/WelcomeScreen.vue'
 import TabSharedDialog from '@/modules/workspace/tab/component/TabSharedDialog.vue'
+import OpenSharedTabDialog from '@/modules/workspace/tab/component/OpenSharedTabDialog.vue'
 import { useI18n } from 'vue-i18n'
 import { EvitaLabConfig, useEvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 
@@ -23,6 +24,28 @@ const workspaceService: WorkspaceService = useWorkspaceService()
 const demoCodeSnippetResolver: DemoSnippetResolver = useDemoSnippetResolver()
 
 const showSharedTabDialog = ref<boolean>(false)
+const showOpenSharedTabDialog = ref<boolean>(false)
+
+const tabActions = [
+    {
+        title: t('tabShare.button.openSharedTab'),
+        value: 'openSharedTab',
+        props: {
+            prependIcon: 'mdi-share-variant'
+        }
+    }
+]
+
+function handleTabActionClick(selected: any[]): void {
+    if (selected.length === 0) {
+        return
+    }
+    switch (selected[0]) {
+        case 'openSharedTab':
+            showOpenSharedTabDialog.value = true
+            break
+    }
+}
 
 const tabDefinitions = ref<TabDefinition<any, any>[]>(workspaceService.getTabDefinitions())
 watch(tabDefinitions, () => {
@@ -160,7 +183,6 @@ onUnmounted(() => {
 
 <template>
     <VAppBar
-        v-if="tabDefinitions.length > 0"
         density="compact"
         elevation="0"
     >
@@ -198,6 +220,24 @@ onUnmounted(() => {
                 </VBtn>
             </VTab>
         </VTabs>
+
+        <VMenu>
+            <template #activator="{ props }">
+                <VBtn
+                    v-bind="props"
+                    icon
+                    density="compact"
+                    class="ml-1 mr-2"
+                >
+                    <VIcon>mdi-plus</VIcon>
+                    <VTooltip activator="parent">
+                        {{ t('tab.button.tabActions') }}
+                    </VTooltip>
+                </VBtn>
+            </template>
+
+            <VList :items="tabActions" @update:selected="handleTabActionClick" />
+        </VMenu>
     </VAppBar>
 
     <VMain
@@ -229,6 +269,7 @@ onUnmounted(() => {
     </VMain>
 
     <TabSharedDialog v-model="showSharedTabDialog" />
+    <OpenSharedTabDialog v-model="showOpenSharedTabDialog" />
 </template>
 
 <style scoped>

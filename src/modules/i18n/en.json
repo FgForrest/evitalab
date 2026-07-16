@@ -172,7 +172,8 @@
   },
   "tab": {
     "button": {
-      "closeTab": "Close tab"
+      "closeTab": "Close tab",
+      "tabActions": "Tab actions"
     },
     "placeholder": {
       "loading": "Loading, please wait ..."
@@ -180,7 +181,8 @@
   },
   "tabShare": {
     "button": {
-      "shareTab": "Share this tab"
+      "shareTab": "Share this tab",
+      "openSharedTab": "Open shared tab"
     },
     "tooltip": {
       "nonSharableTab": "Cannot share this tab because it is using a user-defined evitaDB connection. Only pre-configured connections can be shared."
@@ -210,16 +212,35 @@
     },
     "shareDialog": {
       "title": "Share this tab",
-      "text": "You can share this tab and its data with other users via a link. This link will open a new instance of evitaLab on their device and load this tab with the same query, which should give the same output as you see now.",
+      "text": "You can share this tab and its data with other users via a link. This link will open a new instance of evitaLab on their device and load this tab with the same query, which should give the same output as you see now. Alternatively, you can copy just the tab <em>hash</em> and let the recipient open it in a running evitaLab via the <em>+ &rarr; Open shared tab</em> action in the tab bar.",
       "notification": {
-        "linkCopied": "Link copied to clipboard."
+        "linkCopied": "Link copied to clipboard.",
+        "hashCopied": "Tab hash copied to clipboard."
       },
       "warning": {
         "sensitiveData": "Be <em>careful</em> if you have sensitive data in the query, you are giving them away embedded in the link. Once you send the link, you lose control over it and it can be opened by <em>anyone</em> who has access to this evitaLab instance.",
-        "linkMayNotWork": "The link may <em>not</em> work in certain browsers due to its length exceeding {{ urlCharacterLimit }} characters."
+        "linkTooLong": "The link is longer than {urlCharacterLimit} characters and would not work in browsers, therefore it cannot be copied. Copy the tab <em>hash</em> instead and open it in a running evitaLab via the <em>+ &rarr; Open shared tab</em> action in the tab bar."
       },
       "button": {
-        "copyLink": "Copy link"
+        "copyLink": "Copy link",
+        "copyHash": "Copy hash"
+      }
+    },
+    "openSharedDialog": {
+      "title": "Open shared tab",
+      "text": "Paste a shared tab hash or an entire shared tab link. evitaLab will open it as a new tab in this session, but will <em>not</em> execute the query automatically.",
+      "form": {
+        "hashOrUrl": {
+          "label": "Shared tab hash or link",
+          "placeholder": "Paste the hash or link here",
+          "validation": {
+            "required": "Hash or link is required.",
+            "invalid": "The pasted value is not a valid shared tab hash or link."
+          }
+        }
+      },
+      "button": {
+        "open": "Open tab"
       }
     }
   },
