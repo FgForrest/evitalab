@@ -61,8 +61,14 @@ Other useful `WorkspaceService` methods: `getTabDefinitions()`, `getTabDefinitio
   into `LabStorage`; `restoreTabsFromLastSession()` restores them on startup via the tab
   factories' `restoreFromJson()`. New tab types must be wired into the restore switch in
   `WorkspaceService`.
-- **Share links** use `ShareTabObject` (LZ-string-encoded tab type + DTOs in a URL param),
-  resolved on startup by `SharedTabResolver`.
+- **Share links** use `ShareTabObject` (LZ-string-encoded tab type + DTOs in the `?sharedTab=`
+  URL param — the *hash*), resolved on startup by `SharedTabResolver` (via `TabSharedDialog`).
+  When the resulting URL exceeds the browser-safe length (`urlCharacterLimit`, 2083 chars),
+  the share dialog (`ShareTabDialog`) blocks copying the link and offers *Copy hash* instead.
+  A running session can import a hash or link at any time through the tab bar's `+` →
+  *Open shared tab* action (`OpenSharedTabDialog`), which parses the input via
+  `ShareTabObject.fromLinkParamOrUrl()` (accepting a bare hash or a full URL) and resolves it
+  through the same `SharedTabResolver` (including the connection troubleshooter).
 - **Demo snippets** (`DemoSnippetRequest`, `DemoSnippetResolver`) open evitaQL/GraphQL examples
   from the evitaDB documentation in a console tab.
 - Restored/shared tabs never auto-execute queries (performance & safety) — factories set
