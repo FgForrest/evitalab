@@ -369,6 +369,9 @@ export class EvitaClient extends AbstractEvitaClient {
      */
     async clearCache(): Promise<void> {
         if (this._management != undefined) {
+            // refresh the server status first: it is the reachability signal consumers rely on to
+            // decide whether reloading catalog-level data is even worth attempting
+            await this.management.clearServerMetadataCache()
             await this.management.clearCatalogStatisticsCache()
         }
         // we need a new session if we want to load a new data

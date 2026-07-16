@@ -113,6 +113,24 @@ export class EvitaClientManagement {
     }
 
     /**
+     * Fetches fresh server status from the server, updates the server metadata cache and notifies
+     * registered server-status change callbacks. On fetch failure the exception propagates and the
+     * previously cached value is kept.
+     */
+    async refreshServerStatus(): Promise<ServerStatus> {
+        return await this.serverMetadataCache.refreshServerStatus()
+    }
+
+    /**
+     * Fetches fresh configuration from the server, updates the server metadata cache and notifies
+     * registered configuration change callbacks. On fetch failure the exception propagates and the
+     * previously cached value is kept.
+     */
+    async refreshConfiguration(): Promise<string> {
+        return await this.serverMetadataCache.refreshConfiguration()
+    }
+
+    /**
      * Registers a callback that will be called when the server status change.
      * @returns id of the callback
      */

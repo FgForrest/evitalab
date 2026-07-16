@@ -1199,6 +1199,9 @@
     "notification": {
       "couldNotLoad": "Could not load server status: {reason}"
     },
+    "unavailable": {
+      "title": "The server is currently unavailable. It may be down or unreachable. The viewer will refresh automatically once the server is back."
+    },
     "serverTitle": {
       "flags": {
         "version": "version: {version}",

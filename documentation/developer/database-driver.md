@@ -109,6 +109,32 @@ Mutating operations invalidate the relevant caches themselves (e.g. `renameCatal
 schema cache). If you add a new mutating call, make sure it clears affected caches
 (`clearSchemaCache`, `clearCatalogStatisticsCache`, `terminateSharedSession`, …).
 
+### Invalidation vs. refresh
+
+`EvitaServerMetadataCache` exposes two distinct ways to get fresh data, and they differ in when the
+change callbacks fire:
+
+- **`clear()`** (via `EvitaClientManagement.clearServerMetadataCache()`) — drops the cached server
+  status/configuration and immediately fires the change callbacks. The next read re-fetches. Note
+  that failed fetches are **not** sticky: when an accessor throws, nothing is cached, so the next
+  read simply tries again.
+- **`refreshServerStatus()` / `refreshConfiguration()`** (via the same-named
+  `EvitaClientManagement` wrappers) — fetch fresh data first, then swap the cached value and fire
+  the callbacks (fetch → swap → notify). On fetch failure the exception propagates and neither the
+  cached value nor the callbacks are touched. Prefer this over `clear()` for periodic polling: it
+  avoids the window in which concurrent readers would otherwise see an empty cache and double-fetch.
+  `ServerViewerService.getServerStatus(forceRefresh)` / `getRuntimeConfiguration(forceRefresh)` pick
+  between the cached read and the refresh path.
+
+`EvitaClient.clearCache()` clears **all** client caches — catalog statistics, sessions, schemas and
+now the server metadata cache too. It clears the **server metadata cache first**, so the
+server-status reachability signal is refreshed before the catalog-statistics cache; consumers
+reacting to the catalog change callback (e.g. the connection panel) can then check the server
+status and skip catalog reloads that would only fail against an unreachable server. Because it
+clears the server metadata cache, it also fires the server-status change callbacks, which is what
+re-enables the connection panel's server-related menu actions after the server recovers (see the
+connection-explorer module).
+
 ## Long-running operations
 
 Some server operations report progress as async iterables (e.g.
