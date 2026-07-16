@@ -102,10 +102,10 @@ function sharedTabResolved(): void {
 
         <template #default>
             <template v-if="hasSensitiveData">
-                <span v-html="t('tabShare.sharedDialog.text.withoutInitialData')" />
+                <span v-html="t('tabShare.sharedDialog.text.withInitialData')" />
             </template>
             <template v-else>
-                <span v-html="t('tabShare.sharedDialog.text.withInitialData')" />
+                <span v-html="t('tabShare.sharedDialog.text.withoutInitialData')" />
             </template>
 
             <VAlert

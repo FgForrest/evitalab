@@ -190,8 +190,8 @@
     "sharedDialog": {
       "title": "Shared tab found",
       "text": {
-        "withoutInitialData": "The URL contains an embedded query from an unknown source. Do you want to open it? If you accept, evitaLab will <em>open a new tab</em> with the query, but will <em>not</em> execute it automatically. You can still decide if you want to execute it. If you reject, the query in the URL will be <em>discarded</em>.",
-        "withInitialData": "The URL contains an embedded shared tab from an unknown source. Do you want to open it? If you accept it, evitaLab will <em>open a new tab</em> with the query. If you reject it, it will be <em>discarded</em>."
+        "withInitialData": "The URL contains an embedded query from an unknown source. Do you want to open it? If you accept, evitaLab will <em>open a new tab</em> with the query, but will <em>not</em> execute it automatically. You can still decide if you want to execute it. If you reject, the query in the URL will be <em>discarded</em>.",
+        "withoutInitialData": "The URL contains an embedded shared tab from an unknown source. Do you want to open it? If you accept it, evitaLab will <em>open a new tab</em> with the query. If you reject it, it will be <em>discarded</em>."
       },
       "warning": {
         "potentiallyUnsafe": "<em>Be careful!</em> The query in the URL may contain potentially malicious code."
