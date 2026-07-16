@@ -1082,7 +1082,9 @@
         "indexedDecimalPlaces": "Indexed decimal places",
         "attributes": "Attributes",
         "uniqueWithinCollection": "within collection",
-        "uniqueWithinLocaleOfCollection": "within locale of collection"
+        "uniqueWithinLocaleOfCollection": "within locale of collection",
+        "globallyUniqueWithinCatalog": "within catalog",
+        "globallyUniqueWithinLocaleOfCatalog": "within locale of catalog"
       },
       "tooltip": {
         "content": "The attribute can be {0} within the {1} scope.",
