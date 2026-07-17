@@ -7,7 +7,7 @@ import { EvitaDBInstanceServerError } from '@/modules/database-driver/exception/
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { TimeoutError } from '@/modules/database-driver/exception/TimeoutError'
 import { EvitaDBInstanceNetworkError } from '@/modules/database-driver/exception/EvitaDBInstanceNetworkError'
-import type { KyInstance } from 'ky/distribution/types/ky'
+import type { KyInstance } from 'ky'
 
 /**
  * HTTP client for evitaDB docs website. Should not be used directly in components, instead it should be used as a low level
