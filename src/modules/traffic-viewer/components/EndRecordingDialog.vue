@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { useI18n } from 'vue-i18n'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster, type Toaster } from '@/modules/notification/service/Toaster'
 import { TrafficViewerService, useTrafficViewerService } from '@/modules/traffic-viewer/service/TrafficViewerService'
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 

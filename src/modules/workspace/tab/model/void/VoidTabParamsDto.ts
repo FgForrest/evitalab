@@ -1,4 +1,4 @@
-import { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
+import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
 
 /**
  * Specific DTO for {@link VoidTabRequestComponentParams}.

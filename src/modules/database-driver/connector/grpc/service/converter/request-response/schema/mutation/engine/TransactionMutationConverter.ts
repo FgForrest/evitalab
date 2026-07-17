@@ -1,4 +1,4 @@
-import type { GrpcTransactionMutation } from '@/modules/database-driver/connector/grpc/gen/GrpcEngineMutation_pb.ts'
+import type { GrpcTransactionMutation } from '@/modules/database-driver/connector/grpc/gen/GrpcInfrastrutureMutation_pb.ts'
 import type {
     SchemaMutationConverter
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
