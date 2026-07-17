@@ -24,7 +24,7 @@ export class SessionCloseContainerVisualiser extends TrafficRecordVisualiser<Ses
         return trafficRecord instanceof SessionCloseContainer
     }
 
-    prepare(ctx: TrafficRecordPreparationContext, trafficRecord: SessionCloseContainer): void {
+    override prepare(ctx: TrafficRecordPreparationContext, trafficRecord: SessionCloseContainer): void {
         ctx.requestAdditionalSessionStartRecord(trafficRecord.sessionId, trafficRecord)
     }
 

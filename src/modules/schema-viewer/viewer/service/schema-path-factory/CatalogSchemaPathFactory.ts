@@ -20,7 +20,7 @@ export class CatalogSchemaPathFactory extends AbstractSchemaPathFactory<CatalogS
         return schemaPointer instanceof CatalogSchemaPointer
     }
 
-    protected resolvePathItems(schemaPointer: CatalogSchemaPointer): SubjectPathItem[] {
+    protected override resolvePathItems(schemaPointer: CatalogSchemaPointer): SubjectPathItem[] {
         return []
     }
 }

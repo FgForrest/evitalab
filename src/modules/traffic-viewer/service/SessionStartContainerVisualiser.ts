@@ -39,7 +39,7 @@ export class SessionStartContainerVisualiser extends TrafficRecordVisualiser<Ses
         return trafficRecord instanceof SessionStartContainer
     }
 
-    prepare(ctx: TrafficRecordPreparationContext, trafficRecord: SessionStartContainer): void {
+    override prepare(ctx: TrafficRecordPreparationContext, trafficRecord: SessionStartContainer): void {
         ctx.sessionStartRecordVisited(trafficRecord.sessionId)
     }
 

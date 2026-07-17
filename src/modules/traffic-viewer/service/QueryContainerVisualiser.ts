@@ -41,7 +41,7 @@ export class QueryContainerVisualiser extends TrafficRecordVisualiser<QueryConta
         return trafficRecord instanceof QueryContainer
     }
 
-    prepare(ctx: TrafficRecordPreparationContext, trafficRecord: QueryContainer): void {
+    override prepare(ctx: TrafficRecordPreparationContext, trafficRecord: QueryContainer): void {
         const sourceQueryId: string | undefined = this.resolveSourceQueryId(trafficRecord)
         if (sourceQueryId != undefined) {
             ctx.requestAdditionalSourceQueryRecord(sourceQueryId, trafficRecord)

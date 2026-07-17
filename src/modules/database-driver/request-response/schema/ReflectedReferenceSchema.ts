@@ -108,7 +108,7 @@ export class ReflectedReferenceSchema extends ReferenceSchema {
     }
 
 
-    get representativeFlags(): ImmutableList<Flag> {
+    override get representativeFlags(): ImmutableList<Flag> {
         const flags: Flag[] = super.representativeFlags.toArray()
         flags.push(new Flag(ReflectedReferenceSchemaFlag.ReflectedReference))
         if(this.attributeInheritanceBehavior != undefined && this.attributeInheritanceFilter) {

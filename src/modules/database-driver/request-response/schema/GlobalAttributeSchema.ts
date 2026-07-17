@@ -44,7 +44,7 @@ export class GlobalAttributeSchema extends EntityAttributeSchema {
         this.uniqueGloballyInScopes = uniqueGloballyInScopes
     }
 
-    protected uniquenessFlags(): Flag[] {
+    protected override uniquenessFlags(): Flag[] {
         const flags: Flag[] = []
         for (const flag of this.uniqueGloballyInScopes.groupBy(x => x.uniquenessType)) {
             if (flag[0] === GlobalAttributeUniquenessType.UniqueWithinCatalog) {
@@ -60,7 +60,7 @@ export class GlobalAttributeSchema extends EntityAttributeSchema {
         return [...flags, ...super.uniquenessFlags()]
     }
 
-    protected isImplicitlyFilterable(): boolean {
+    protected override isImplicitlyFilterable(): boolean {
         return super.isImplicitlyFilterable() || !this.uniqueGloballyInScopes.isEmpty()
     }
 }

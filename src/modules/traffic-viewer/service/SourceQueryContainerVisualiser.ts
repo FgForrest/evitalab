@@ -47,7 +47,7 @@ export class SourceQueryContainerVisualiser extends TrafficRecordVisualiser<Sour
         return trafficRecord instanceof SourceQueryContainer
     }
 
-    prepare(ctx: TrafficRecordPreparationContext, trafficRecord: SourceQueryContainer): void {
+    override prepare(ctx: TrafficRecordPreparationContext, trafficRecord: SourceQueryContainer): void {
         ctx.sourceQueryRecordVisited(trafficRecord.sourceQueryId.toString())
     }
 

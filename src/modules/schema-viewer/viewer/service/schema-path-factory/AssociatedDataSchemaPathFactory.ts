@@ -22,7 +22,7 @@ export class AssociatedDataSchemaPathFactory extends AbstractSchemaPathFactory<A
         return schemaPointer instanceof AssociatedDataSchemaPointer
     }
 
-    protected resolvePathItems(schemaPointer: AssociatedDataSchemaPointer): SubjectPathItem[] {
+    protected override resolvePathItems(schemaPointer: AssociatedDataSchemaPointer): SubjectPathItem[] {
         return [
             ...super.resolvePathItems(schemaPointer),
             SubjectPathItem.plain(i18n.global.t('schemaViewer.path.item.entities')),
