@@ -48,7 +48,7 @@ function cancel(): void {
     emit('update:modelValue', false)
 }
 
-async function confirm(): Promise<void> {
+async function handleConfirm(): Promise<void> {
     if (form.value != undefined) {
         //@ts-ignore
         const { valid }: any = await form.value.validate()
@@ -129,7 +129,7 @@ defineExpose<{
                 :dangerous="dangerous"
                 :disabled="formValidationState === false || !changed"
                 :loading="submitting"
-                @confirm="confirm"
+                @confirm="handleConfirm"
             >
                 <slot name="confirm-button-body">
                     {{ t('common.button.confirm') }}

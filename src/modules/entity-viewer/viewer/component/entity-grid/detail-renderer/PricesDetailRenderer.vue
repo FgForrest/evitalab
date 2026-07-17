@@ -10,8 +10,6 @@ import {
     EntityViewerService,
     useEntityViewerService,
 } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
-import { useToaster } from '@/modules/notification/service/Toaster'
-import type { Toaster } from '@/modules/notification/service/Toaster'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { PriceInnerRecordHandling } from '@/modules/entity-viewer/viewer/model/PriceInnerRecordHandling'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
@@ -65,7 +63,6 @@ type FilterData = {
 }
 
 const entityViewerService: EntityViewerService = useEntityViewerService()
-const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = withDefaults(
@@ -103,9 +100,8 @@ const entityPricingProperties = computed<Property[]>(() => [
 ])
 const prices = computed<EntityPrices>(() => {
     if (!(props.value instanceof EntityPrices)) {
-        toaster.error(
-            t('entityViewer.grid.priceRenderer.notification.invalidPricesObject')
-        ).then()
+        // computeds must stay side-effect-free; a toast here would re-fire on every re-evaluation
+        console.error(t('entityViewer.grid.priceRenderer.notification.invalidPricesObject'))
         return new EntityPrices(undefined, [])
     }
     return props.value as EntityPrices
