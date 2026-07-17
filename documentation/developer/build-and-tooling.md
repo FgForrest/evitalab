@@ -17,9 +17,11 @@ Reference of the build pipeline, environment variables and developer tooling. Fo
 | `yarn dev` | Dev server at `localhost:3000/lab` (standalone mode) |
 | `yarn dev-driver` | Dev server at `localhost:3000` in `DRIVER` run mode |
 | `yarn dev:with-evitadb` | Starts a local Dockerized evitaDB and dev server with `VITE_DEV_CONNECTION=LOCAL` |
-| `yarn build` / `yarn build-driver` | Type-check (`vue-tsc --noEmit`) + production build (standalone/driver) |
+| `yarn typecheck` | Whole-program type check (`vue-tsc -b --force`, covers the app project **and** `vite.config.mts`) |
+| `yarn build` / `yarn build-driver` | `yarn typecheck` + production build (standalone/driver) |
+| `yarn verify` | One-shot local pre-push gate: `yarn lint && yarn typecheck && yarn test` |
 | `yarn preview` | Serves the production build on port 3000 |
-| `yarn lint` | ESLint with auto-fix |
+| `yarn lint` | ESLint with auto-fix (flat config) |
 | `yarn test` | Vitest |
 | `yarn evitadb:start\|stop\|status\|logs` | Manage the local evitaDB container (`scripts/evitadb-server.sh`, see [evitaDB server](evitadb-server.md)) |
 
@@ -34,6 +36,20 @@ inline env vars):
 | `VITE_DEV_CONNECTION` | Dev connection target: `DEMO` (default, `https://demo.evitadb.io`) or `LOCAL` |
 | `VITE_DEV_LOCAL_URL` | Override for the `LOCAL` connection URL |
 | `VITE_BUILD_VERSION` | Build version; in CI populated from `EVITALAB_BUILD_VERSION` |
+
+## Type checking
+
+`yarn typecheck` runs `vue-tsc -b --force` against the solution-style root
+`tsconfig.json`, which references `tsconfig.app.json` (the `src/**` app) and
+`tsconfig.node.json` (`vite.config.mts`). `-b` (build mode) is required for a
+solution config — a plain `vue-tsc --noEmit` against the root would load
+`"files": []` and check **nothing**. `--force` avoids stale-`.tsbuildinfo` false
+greens. Both projects set `noEmit`-compatible options, so only `.tsbuildinfo`
+files are written (under `node_modules/.tmp/`).
+
+`yarn build` / `yarn build-driver` run `yarn typecheck` first, so a type error
+fails the build. Tests under `test/**` are **not** yet covered by any tsconfig
+(they are transpiled, not type-checked — a future hardening step).
 
 ## Vite configuration (`vite.config.mts`)
 
@@ -54,9 +70,18 @@ Generated `*.d.ts` files are committed but never edited manually.
 
 ## Linting
 
-ESLint (`.eslintrc.js`) with `eslint:recommended`, Vue 3 recommended and
-`@vue/eslint-config-typescript`, plus the generated auto-import config. Run `yarn lint` before
-committing.
+ESLint 9 **flat config** (`eslint.config.mjs`) built with
+`defineConfigWithVueTs` (`@vue/eslint-config-typescript` 14) + the
+`eslint-plugin-vue` `flat/essential` preset + `vueTsConfigs.recommended`. It
+bridges the generated `.eslintrc-auto-import.json` globals via
+`languageOptions.globals` and ignores `dist`, generated `*.d.ts`
+(`auto-imports`/`components`/`typed-router`) and the grpc `gen/` dir. Run
+`yarn lint` before committing.
+
+> The lint ruleset is not yet at zero — the codebase predates any working lint
+> gate (ESLint 9 silently ignored the old `.eslintrc.js`). High-volume rules
+> (`no-explicit-any`, `no-unused-vars`) are pending a burn-down before `yarn lint`
+> joins the CI gate.
 
 ## gRPC client generation
 
@@ -69,7 +94,7 @@ files.
 
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
-| `.github/workflows/dev.yml` | push to `dev` | Verify build: install (`yarn install --frozen-lockfile`), test, build |
+| `.github/workflows/dev.yml` | push to `dev` **and** pull requests targeting `dev` | Verify: install (`yarn install --frozen-lockfile`), `yarn typecheck`, `yarn test`, `yarn build` |
 | `.github/workflows/release.yml` | push to `master` | Resolves a calendar-semantic version from conventional commits (`semantic-calendar-version`), tests, builds **standalone** and **driver** dists, creates a GitHub release (release-drafter) with `dist-standalone` and `dist-driver` zip/tar.gz assets |
 
 Versioning depends on [conventional commits](https://www.conventionalcommits.org/) — this is why

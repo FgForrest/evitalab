@@ -22,6 +22,28 @@ sense) and Domain-Driven Design, and we try to build the codebase using these pr
   Do **not** put implementation-plan commentary into source files — extended documentation belongs
   in `documentation/`.
 
+### Fixing type errors — never weaken types to get to green
+
+`yarn typecheck` is a real gate at zero errors. When the compiler reports an
+error, fix the cause, do not silence the symptom:
+
+- **Forbidden by default:** `any`, `as unknown as X`, double casts, `!`
+  non-null assertions, `@ts-ignore`, `@ts-expect-error`, loosening a signature
+  to `object`/`Function`, or deleting a failing usage instead of understanding it.
+- When two types disagree, decide **which one tells the truth** and fix the
+  other. The grpc gen files (`connector/grpc/gen/`) are ground truth for wire
+  data; the model classes (`request-response/`) are ground truth for the internal
+  model. Never hand-edit the gen files — regenerate them.
+- `Ref<T>` vs `T` mismatches usually mean a missing `.value` — often a real
+  runtime bug, so verify the affected UI flow after fixing.
+- gRPC enum-name↔value mismatches: convert explicitly
+  (`GrpcEnum[name as keyof typeof GrpcEnum]`), never cast the array.
+- **Last resort only** (a genuinely-wrong upstream library typing): a single,
+  narrowly-scoped `@ts-expect-error` **with a comment naming the upstream issue**
+  — never bare, never `@ts-ignore`.
+- If a compiler-forced change alters a code path (added guard, `.value` unwrap,
+  enum conversion), add/extend a regression test under `test/`.
+
 ## Naming conventions
 
 - Classes/services/models: `PascalCase`, one class per file, file named after the class.
