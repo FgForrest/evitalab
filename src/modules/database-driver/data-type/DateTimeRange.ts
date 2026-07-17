@@ -12,7 +12,7 @@ export class DateTimeRange extends Range<OffsetDateTime> {
         super(from, to)
     }
 
-    protected assertValidity(from?: OffsetDateTime, to?: OffsetDateTime): void {
+    protected override assertValidity(from?: OffsetDateTime, to?: OffsetDateTime): void {
         super.assertValidity(from, to)
         if (from != undefined && to != undefined && from.toDateTime().toMillis() > to.toDateTime().toMillis()) {
             throw new Error(`Invalid range: from (${from.toString()}) cannot be greater than to (${to.toString()})`)

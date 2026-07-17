@@ -36,7 +36,7 @@ export class EntityAttributeSchema extends AttributeSchema {
         this.representative = representative
     }
 
-    protected prefixFlags(): Flag[] {
+    protected override prefixFlags(): Flag[] {
         const flags: Flag[] = []
         if (this.representative) {
             flags.push(new Flag(EntityAttributeSchemaFlag.Representative))

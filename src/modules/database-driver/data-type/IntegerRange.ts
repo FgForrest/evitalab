@@ -10,7 +10,7 @@ export class IntegerRange extends Range<number> implements PrettyPrintable {
         super(from, to);
     }
 
-    protected assertValidity(from?: number, to?: number): void {
+    protected override assertValidity(from?: number, to?: number): void {
         super.assertValidity(from, to)
         if (from != undefined && to != undefined && from > to) {
             throw new Error(`Invalid range: from (${from}) cannot be greater than to (${to})`);

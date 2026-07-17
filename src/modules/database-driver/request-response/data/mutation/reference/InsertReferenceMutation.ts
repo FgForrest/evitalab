@@ -12,7 +12,7 @@ import type {
 export class InsertReferenceMutation extends ReferenceMutation {
     static readonly TYPE = 'insertReferenceMutation' as const
 
-    readonly referenceKey: ReferenceKey
+    override readonly referenceKey: ReferenceKey
     readonly referenceCardinality: Cardinality
     readonly referenceEntityType: string|undefined
 

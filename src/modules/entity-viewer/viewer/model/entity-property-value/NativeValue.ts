@@ -47,7 +47,7 @@ export class NativeValue extends EntityPropertyValue {
         return this.delegate == undefined
     }
 
-    toPrettyPrintString(): string {
+    override toPrettyPrintString(): string {
         if(typeof this.delegate === 'bigint' || typeof this.delegate === 'boolean' || typeof this.delegate === 'number' || typeof this.delegate === 'string' || typeof this.delegate === 'symbol' || typeof this.delegate === 'undefined')
             return this.delegate?.toString() ?? ''
         if (this.isPrettyPrintable(this.delegate)) {
