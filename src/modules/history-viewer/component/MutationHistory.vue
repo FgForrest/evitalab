@@ -290,7 +290,7 @@ async function moveStartPointerToNewest(): Promise<void> {
         const latestRecords: ImmutableList<ChangeCatalogCapture> = await mutationHistoryViewerService.getMutationHistoryList(
             props.dataPointer.catalogName,
             lastRecordRequest.value,
-            limit
+            limit.value
         )
         if (latestRecords.size === 0) {
             startPointer.value = undefined

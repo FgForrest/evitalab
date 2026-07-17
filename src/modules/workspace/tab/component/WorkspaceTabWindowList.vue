@@ -36,8 +36,8 @@ const tabActions = [
     }
 ]
 
-function handleTabActionClick(selected: any[]): void {
-    if (selected.length === 0) {
+function handleTabActionClick(selected: unknown): void {
+    if (!Array.isArray(selected) || selected.length === 0) {
         return
     }
     switch (selected[0]) {

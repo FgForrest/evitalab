@@ -11,6 +11,7 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { useDataLocale, usePriceType, useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { isLocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
 import { isTypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
+import { isNamedSchema } from '@/modules/database-driver/request-response/schema/NamedSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue.ts'
 import type { Predecessor } from '@/modules/database-driver/data-type/Predecessor.ts'
@@ -235,6 +236,9 @@ const openMutationHistoryByAttribute = () => {
         return;
     }
 
+    const schema = props.propertyDescriptor.schema
+    const containerName: string | undefined = schema != undefined && isNamedSchema(schema) ? schema.name : undefined
+    const containerType = resolveContainerTypeList(props.propertyDescriptor.type)
 
     workspaceService.createTab(
         workspaceService.mutationHistoryViewerTabFactory.createNew(
@@ -244,8 +248,8 @@ const openMutationHistoryByAttribute = () => {
                 undefined,
                 entityPrimaryKey,
                 undefined,
-                [props.propertyDescriptor?.schema?.name],
-                [resolveContainerTypeList(props.propertyDescriptor?.type)],
+                containerName != undefined ? [containerName] : undefined,
+                containerType != undefined ? [containerType] : undefined,
                 tabProps.params.dataPointer.entityType,
                 'dataSite',
                 false

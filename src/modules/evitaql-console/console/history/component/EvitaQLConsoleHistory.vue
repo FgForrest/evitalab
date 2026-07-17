@@ -27,10 +27,23 @@ const historyListItems = computed<any[]>(() => {
         }
     })
 })
+
+const historyComponentRef = ref<InstanceType<typeof HistoryComponent> | undefined>()
+
+function focus(): void {
+    historyComponentRef.value?.focus()
+}
+
+defineExpose<{
+    focus: () => void
+}>({
+    focus
+})
 </script>
 
 <template>
-    <HistoryComponent :items="historyListItems"
+    <HistoryComponent ref="historyComponentRef"
+        :items="historyListItems"
         @select-history-record="(value: EvitaQLConsoleHistoryRecord) => emit('selectHistoryRecord', value)"
         @update:clear-history="emit('update:clearHistory')">
     </HistoryComponent>
