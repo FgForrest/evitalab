@@ -46,8 +46,9 @@ const visualiserTypesRef = ref<InstanceType<typeof VAutocomplete> | undefined>()
 const supportsMultipleQueries = computed<boolean>(() => {
     try {
         return props.visualiserService.resultAnalyzer.supportsMultipleQueries()
-    } catch (e: any) {
-        toaster.error('Could resolve multiple queries support', e).then()
+    } catch (e) {
+        // computeds must stay side-effect-free; a toast here would re-fire on every re-evaluation
+        console.error('Could not resolve multiple queries support', e)
         return false
     }
 })

@@ -44,6 +44,10 @@ export default defineConfigWithVueTs(
         name: 'app/rules',
         rules: {
             'vue/multi-word-component-names': 'off',
+            // empty marker / single-extend interfaces are an intentional pattern in the
+            // model layer (Mutation, EntityMutation, *Dto extends *); still flags the
+            // confusing `{}` object type-literal.
+            '@typescript-eslint/no-empty-object-type': ['error', { allowInterfaces: 'always' }],
         },
     },
 )

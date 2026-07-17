@@ -85,8 +85,8 @@ const codeBlockExtensions = computed<Extension[]>(() => {
         case EntityPropertyValueSupportedCodeLanguage.Xml:
             return [xml()]
         default:
-            toaster.error(t('entityViewer.grid.codeRenderer.notification.unsupportedCodeLanguage'))
-                .then()
+            // computeds must stay side-effect-free; a toast here would re-fire on every re-evaluation
+            console.error(t('entityViewer.grid.codeRenderer.notification.unsupportedCodeLanguage'))
             return []
     }
 })

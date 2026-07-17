@@ -34,6 +34,7 @@ export class LocalToaster implements Toaster {
                 type,
                 icon: `mdi ${icon}`,
                 onClick: clickCallback != undefined
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type -- closeToast is typed as Function by vue-toastification's ToastOptions.onClick
                     ? (closeToast: Function) => clickCallback(() => closeToast())
                     : undefined
             }

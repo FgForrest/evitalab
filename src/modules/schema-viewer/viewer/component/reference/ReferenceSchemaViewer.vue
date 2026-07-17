@@ -173,13 +173,17 @@ const properties = computed<Property[]>(() => {
     return properties
 })
 
-!props.schema.referencedEntityTypeManaged ?
-    localEntityTypeNameVariants() :
+if (!props.schema.referencedEntityTypeManaged) {
+    localEntityTypeNameVariants()
+} else {
     getEntityTypeNameVariants().then(() => loadedEntityNameVariants.value = true)
+}
 
-!props.schema.referencedGroupTypeManaged ?
-    localReferenceGroupType() :
+if (!props.schema.referencedGroupTypeManaged) {
+    localReferenceGroupType()
+} else {
     getGroupTypeNameVariants().then(() => loadedReferencedGroupType.value = true)
+}
 
 function localReferenceGroupType() {
     groupTypeNameVariants.value = props.schema.groupTypeNameVariants

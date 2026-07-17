@@ -290,7 +290,7 @@ export class EntityConverter {
                 : undefined,
             grpcPrice.indexed,
             grpcPrice.version,
-            new Currency(grpcPrice.currency?.code!)
+            new Currency(grpcPrice.currency!.code)
         )
     }
 }
