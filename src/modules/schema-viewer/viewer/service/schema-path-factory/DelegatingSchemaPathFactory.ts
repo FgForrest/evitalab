@@ -56,7 +56,7 @@ export class DelegatingSchemaPathFactory implements SchemaPathFactory<any> {
         ]
     }
 
-    applies(schemaPointer: SchemaPointer): boolean {
+    applies(_schemaPointer: SchemaPointer): boolean {
         return true
     }
 

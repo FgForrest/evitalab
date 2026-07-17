@@ -10,7 +10,7 @@ import {
 import RecordHistoryItemDetail from '@/modules/traffic-viewer/components/RecordHistoryItemDetail.vue'
 import VListItemDivider from '@/modules/base/component/VListItemDivider.vue'
 
-const props = withDefaults(
+withDefaults(
     defineProps<{
         visualisationDefinition: TrafficRecordVisualisationDefinition,
         hasParent?: boolean

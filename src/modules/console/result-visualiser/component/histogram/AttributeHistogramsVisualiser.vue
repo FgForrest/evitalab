@@ -9,7 +9,7 @@ import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicato
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     attributeHistograms: VisualisedAttributeHistograms
 }>()
 </script>

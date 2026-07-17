@@ -3,7 +3,7 @@
 import { Property } from '@/modules/base/model/properties-table/Property'
 import VPropertiesTable from '@/modules/base/component/VPropertiesTable.vue'
 
-const props = defineProps<{
+defineProps<{
     properties: Property[]
 }>()
 </script>

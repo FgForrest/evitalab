@@ -4,7 +4,6 @@
  */
 
 import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 import type {
     EvitaQLConsoleHistoryRecord
 } from '@/modules/evitaql-console/console/history/model/EvitaQLConsoleHistoryRecord'

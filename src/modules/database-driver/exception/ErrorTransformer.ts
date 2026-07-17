@@ -1,4 +1,3 @@
-import { LabError } from '@/modules/base/exception/LabError'
 import { Connection } from '@/modules/connection/model/Connection'
 import { ConnectError } from '@connectrpc/connect'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'

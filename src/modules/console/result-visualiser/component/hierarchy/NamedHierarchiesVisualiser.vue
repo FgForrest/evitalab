@@ -6,7 +6,7 @@ import { VisualisedReferenceHierarchy } from '@/modules/console/result-visualise
 import NamedHierarchyVisualiser
     from '@/modules/console/result-visualiser/component/hierarchy/NamedHierarchyVisualiser.vue'
 
-const props = defineProps<{
+defineProps<{
     referenceHierarchy: VisualisedReferenceHierarchy
 }>()
 </script>

@@ -19,7 +19,7 @@ import { getEnumKeyByValue } from '@/utils/enum.ts'
 const keymap: Keymap = useKeymap()
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     icon: string,
     currentData: EntityViewerTabData,
     title: List<string>,

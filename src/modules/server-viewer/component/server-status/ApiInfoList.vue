@@ -5,7 +5,7 @@ import ApiInfoListItem from '@/modules/server-viewer/component/server-status/Api
 import { ApiType } from '@/modules/database-driver/request-response/status/ApiType'
 import { ApiStatus } from '@/modules/database-driver/request-response/status/ApiStatus'
 
-const props = defineProps<{
+defineProps<{
     apis: ImmutableMap<ApiType, ApiStatus>
 }>()
 </script>

@@ -68,7 +68,6 @@ export class EvitaClientManagement {
     private readonly evitaClientProvider: () => EvitaClient
     private readonly evitaManagementClientProvider: () => EvitaManagementServiceClient
 
-    private readonly evitaValueConverterProvider: () => EvitaValueConverter
     private readonly catalogStatisticsConverterProvider: () => CatalogStatisticsConverter
     private readonly serverStatusConverterProvider: () => ServerStatusConverter
     private readonly reservedKeywordsConverterProvider: () => ReservedKeywordsConverter
@@ -79,7 +78,6 @@ export class EvitaClientManagement {
     constructor(errorTransformer: ErrorTransformer,
                 evitaClient: EvitaClient,
                 evitaManagementClientProvider: () => EvitaManagementServiceClient,
-                evitaValueConverterProvider: () => EvitaValueConverter,
                 catalogStatisticsConverterProvider: () => CatalogStatisticsConverter,
                 serverStatusConverterProvider: () => ServerStatusConverter,
                 reservedKeywordsConverterProvider: () => ReservedKeywordsConverter,
@@ -96,7 +94,6 @@ export class EvitaClientManagement {
         this.errorTransformer = errorTransformer
         this.evitaClientProvider = () => evitaClient
         this.evitaManagementClientProvider = evitaManagementClientProvider
-        this.evitaValueConverterProvider = evitaValueConverterProvider
         this.catalogStatisticsConverterProvider = catalogStatisticsConverterProvider
         this.serverStatusConverterProvider = serverStatusConverterProvider
         this.reservedKeywordsConverterProvider = reservedKeywordsConverterProvider

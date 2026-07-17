@@ -13,7 +13,7 @@ const trafficViewerService: TrafficViewerService = useTrafficViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     recordingsInPreparationPresent: boolean
 }>()
 

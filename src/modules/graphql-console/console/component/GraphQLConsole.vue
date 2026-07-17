@@ -60,7 +60,6 @@ import {
 import {
     GraphQLConsoleTabDefinition
 } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
-import { command } from 'keymaster'
 
 enum EditorTabType {
     Query = 'query',

@@ -13,7 +13,6 @@ import {
 } from '@/utils/number'
 import { parseHumanDurationToMs } from '@/utils/duration'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
-import { CatalogState } from '@/modules/database-driver/request-response/CatalogState.ts'
 
 const trafficViewerService: TrafficViewerService = useTrafficViewerService()
 const toaster: Toaster = useToaster()

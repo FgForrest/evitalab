@@ -1,6 +1,3 @@
-import type {
-    GrpcAttributeSchemaMutation
-} from '@/modules/database-driver/connector/grpc/gen/GrpcAttributeSchemaMutations_pb.ts'
 import {
     CreateAttributeSchemaMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/attribute/CreateAttributeSchemaMutationConverter.ts'
