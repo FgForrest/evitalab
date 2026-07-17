@@ -116,7 +116,7 @@ const longerThanRules = [
         let duration: bigint
         try {
             duration = parseHumanDurationToMs(value.trim())
-        } catch (e) {
+        } catch {
             return t('trafficViewer.recordHistory.filter.form.longerThan.validations.notNumber')
         }
         if (duration < 0 || duration > Number.MAX_SAFE_INTEGER) {
@@ -144,7 +144,7 @@ const fetchingMoreBytesThanRules = [
         let number: number
         try {
             number = parseHumanByteSizeToNumber(value.trim())[0]
-        } catch (e) {
+        } catch {
             return t('trafficViewer.recordHistory.filter.form.fetchingMoreBytesThan.validations.notByteSize')
         }
         if (number < 0 || number > Number.MAX_SAFE_INTEGER) {

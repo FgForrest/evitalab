@@ -69,7 +69,7 @@ export class ShareTabObject extends SerializableTabObject {
             if (hash != undefined && hash.length > 0) {
                 return hash
             }
-        } catch (e) {
+        } catch {
             // not a fully valid URL, fall through to the regex fallback
         }
 
@@ -92,7 +92,7 @@ export class ShareTabObject extends SerializableTabObject {
         let json: any
         try {
             json = JSON.parse(decompressed)
-        } catch (e) {
+        } catch {
             throw new UnexpectedError('The value is not a valid shared tab hash.')
         }
 

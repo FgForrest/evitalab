@@ -57,7 +57,7 @@ const maxFileSizeInBytesRounded = computed<boolean>(() => {
     }
     try {
         return parseHumanByteSizeToBigInt(maxFileSizeInBytes.value)[1]
-    } catch (e) {
+    } catch {
         return false
     }
 })
@@ -68,7 +68,7 @@ const chunkFileSizeInBytesRounded = computed<boolean>(() => {
     }
     try {
         return parseHumanByteSizeToBigInt(chunkFileSizeInBytes.value)[1]
-    } catch (e) {
+    } catch {
         return false
     }
 })
@@ -108,7 +108,7 @@ const maxDurationInMillisecondsRules = [
         let duration: bigint
         try {
             duration = parseHumanDurationToMs(value.trim())
-        } catch (e) {
+        } catch {
             return t('trafficViewer.recordings.startRecording.form.maxDurationInMilliseconds.validations.notDuration')
         }
         if (duration < 0 || duration > int64MaxValue) {
@@ -128,7 +128,7 @@ const maxFileSizeInBytesRules = [
         let number: bigint
         try {
             number = parseHumanByteSizeToBigInt(value)[0]
-        } catch (e) {
+        } catch {
             return t('trafficViewer.recordings.startRecording.form.maxFileSizeInBytes.validations.notByteSize')
         }
         if (number < 0 || number > int64MaxValue) {
@@ -148,7 +148,7 @@ const chunkFileSizeInBytesRules = [
         let number: bigint
         try {
             number = parseHumanByteSizeToBigInt(value)[0]
-        } catch (e) {
+        } catch {
             return t('trafficViewer.recordings.startRecording.form.chunkFileSizeInBytes.validations.notByteSize')
         }
         if (number < 0 || number > int64MaxValue) {

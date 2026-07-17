@@ -38,7 +38,7 @@ export class DemoSnippetResolver {
         let codeSnippetContent: string
         try {
             codeSnippetContent = await ky.get(codeSnippetUrl).text()
-        } catch (e) {
+        } catch {
             throw new UnexpectedError(`Cannot fetch demo code snippet '${request.path}' from GitHub from branch '${request.branch}'.`)
         }
 

@@ -85,7 +85,7 @@ export class Connection {
     private validateAndNormalizeUrl(url: string): string {
         try {
             new URL(url)
-        } catch (e) {
+        } catch {
             throw new UnexpectedError('Server URL is not valid URL.')
         }
         return url.endsWith('/') ? url.substring(0, url.length - 1) : url

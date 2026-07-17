@@ -38,7 +38,7 @@ const changed = computed<boolean>(() => hashOrUrl.value.trim().length > 0)
 const sharedTab = computed<ShareTabObject | undefined>(() => {
     try {
         return ShareTabObject.fromLinkParamOrUrl(hashOrUrl.value)
-    } catch (e) {
+    } catch {
         return undefined
     }
 })
@@ -55,7 +55,7 @@ const hashOrUrlRules = [
         try {
             ShareTabObject.fromLinkParamOrUrl(value)
             return true
-        } catch (e) {
+        } catch {
             return t('tabShare.openSharedDialog.form.hashOrUrl.validation.invalid')
         }
     }

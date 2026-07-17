@@ -48,6 +48,14 @@ export default defineConfigWithVueTs(
             // model layer (Mutation, EntityMutation, *Dto extends *); still flags the
             // confusing `{}` object type-literal.
             '@typescript-eslint/no-empty-object-type': ['error', { allowInterfaces: 'always' }],
+            // honor the `_` prefix convention for intentionally-unused bindings
+            // (matches TypeScript's noUnusedLocals/noUnusedParameters behavior)
+            '@typescript-eslint/no-unused-vars': ['error', {
+                argsIgnorePattern: '^_',
+                varsIgnorePattern: '^_',
+                caughtErrorsIgnorePattern: '^_',
+                destructuredArrayIgnorePattern: '^_',
+            }],
         },
     },
 )
