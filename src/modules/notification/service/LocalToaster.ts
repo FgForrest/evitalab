@@ -1,7 +1,6 @@
 import type { ToastClickCallback, Toaster } from '@/modules/notification/service/Toaster'
-import type { ToastInterface } from 'vue-toastification/src/ts/interface'
+import { TYPE, type ToastInterface } from 'vue-toastification'
 import type { ToastOptions } from 'vue-toastification/dist/types/types'
-import { TYPE } from 'vue-toastification/src/ts/constants'
 import { v4 as uuidv4 } from 'uuid'
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { LabError } from '@/modules/base/exception/LabError'
