@@ -38,22 +38,22 @@ export class OffsetDateTime implements PrettyPrintable {
 
     toDateTime(): DateTime {
         const dateTime: DateTime = DateTime.fromSeconds(Number(this.timestamp.seconds))
-        return dateTime.setZone(this.toLuxonZone())
+        return dateTime.setZone(toLuxonZone(this.offset))
     }
 
     toString(): string {
-        return DateTime.fromSeconds(Number(this.timestamp?.seconds), { zone: this.toLuxonZone() }).toISO({ includeOffset: true })!
+        return DateTime.fromSeconds(Number(this.timestamp?.seconds), { zone: toLuxonZone(this.offset) }).toISO({ includeOffset: true })!
     }
+}
 
-    /**
-     * Converts the stored ISO offset (e.g. `Z`, `+02:00`) into a zone specifier accepted by Luxon.
-     * Luxon does not recognize bare ISO offsets as zones, so they are normalized to the `UTC±HH:MM` form.
-     */
-    private toLuxonZone(): string {
-        return this.offset === 'Z' || this.offset === ''
-            ? 'UTC'
-            : `UTC${this.offset}`
-    }
+/**
+ * Converts the stored ISO offset (e.g. `Z`, `+02:00`) into a zone specifier accepted by Luxon.
+ * Luxon does not recognize bare ISO offsets as zones, so they are normalized to the `UTC±HH:MM` form.
+ */
+function toLuxonZone(offset: string): string {
+    return offset === 'Z' || offset === ''
+        ? 'UTC'
+        : `UTC${offset}`
 }
 
 export class Timestamp {
