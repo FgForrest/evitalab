@@ -173,7 +173,7 @@ watch([selectedPriceLists, selectedCurrencies], async () => {
 
 const filteredAllPrices = computed<EntityPrice[]>(() => {
     // note: originally we wanted to do server call here for filtering, but it seems to be really fast in browser (tested on hundreds of prices)
-    let filteredPrices: EntityPrice[] = prices.value.prices.filter((price) => {
+    const filteredPrices: EntityPrice[] = prices.value.prices.filter((price) => {
         if (price.priceId && price.priceList && price.currency) {
             if (
                 selectedPriceIds.value.length > 0 &&

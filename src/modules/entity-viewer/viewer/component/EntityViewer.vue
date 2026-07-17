@@ -71,7 +71,7 @@ defineExpose<TabComponentExpose>({
 // static data
 const title = ImmutableList.of(props.params.dataPointer.entityType)
 
-let sortedEntityPropertyKeys: string[] = []
+const sortedEntityPropertyKeys: string[] = []
 let entityPropertyDescriptors: EntityPropertyDescriptor[] = []
 const entityPropertyDescriptorIndex = ref<ImmutableMap<string, EntityPropertyDescriptor>>(ImmutableMap<string, EntityPropertyDescriptor>())
 provideEntityPropertyDescriptorIndex(entityPropertyDescriptorIndex)

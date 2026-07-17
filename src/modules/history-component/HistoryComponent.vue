@@ -20,7 +20,7 @@ const historyListRef = ref<HTMLElement | undefined>()
  */
 function focus() {
     // @ts-ignore
-    let firstItem = historyListRef.value?.$el?.querySelector('.v-list-item');
+    const firstItem = historyListRef.value?.$el?.querySelector('.v-list-item');
     if (firstItem) {
         firstItem.focus();
     }

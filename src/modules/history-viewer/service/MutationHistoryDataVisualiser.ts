@@ -102,7 +102,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             [mutationHistory.body]
 
         // entity attributes
-        for (let attributeMutation of mutations) {
+        for (const attributeMutation of mutations) {
             if (entityOperationType === 'remove') {
                 break
             }
