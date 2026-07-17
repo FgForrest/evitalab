@@ -5,7 +5,7 @@ import { ServerFile } from '@/modules/database-driver/request-response/server-fi
 import DeleteServerFileButton from '@/modules/server-file-viewer/component/DeleteServerFileButton.vue'
 import DownloadServerFileButton from '@/modules/server-file-viewer/component/DownloadServerFileButton.vue'
 
-const props = defineProps<{
+defineProps<{
     file: ServerFile
 }>()
 const emit = defineEmits<{

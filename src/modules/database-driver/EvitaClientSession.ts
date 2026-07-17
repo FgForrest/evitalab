@@ -32,7 +32,6 @@ import { CatalogState } from '@/modules/database-driver/request-response/Catalog
 import { CatalogVersionAtResponse } from '@/modules/database-driver/request-response/CatalogVersionAtResponse'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
 import { ErrorTransformer } from '@/modules/database-driver/exception/ErrorTransformer'
-import type { GrpcEntitySchema } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchema_pb'
 import {
     EvitaResponseConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/EvitaResponseConverter'
@@ -71,8 +70,6 @@ import type { TrafficRecord } from '@/modules/database-driver/request-response/t
 import { TransactionMutation } from '@/modules/database-driver/request-response/transaction/TransactionMutation.ts'
 import { Operation } from '@/modules/database-driver/request-response/cdc/Operation.ts'
 
-const sessionTimeout: number = 30 * 1000 // 30 seconds
-
 /**
  * Session are created by the clients to envelope a "piece of work" with evitaDB. In web environment it's a good idea
  * to have session per request, in batch processing it's recommended to keep session per "record page" or "transaction".
@@ -90,7 +87,6 @@ export class EvitaClientSession {
     private readonly _catalogName: string
     private readonly _catalogState: CatalogState
     private _active: boolean = true
-    private readonly _createdOn: number = Date.now()
     private readonly _callMetadata: any
 
     private readonly clientEntitySchemaAccessor: EntitySchemaAccessor
@@ -100,7 +96,6 @@ export class EvitaClientSession {
     private readonly errorTransformerProvider: () => ErrorTransformer
     private readonly evitaSessionClientProvider: () => EvitaSessionServiceClient
     private readonly evitaTrafficRecordingClientProvider: () => EvitaTrafficRecordingServiceClient
-    private readonly evitaValueConverterProvider: () => EvitaValueConverter
     private readonly catalogSchemaConverterProvider: () => CatalogSchemaConverter
     private readonly responseConverterProvider: () => EvitaResponseConverter
     private readonly taskStatusConverterProvider: () => TaskStatusConverter
@@ -115,7 +110,7 @@ export class EvitaClientSession {
                 errorTransformerProvider: () => ErrorTransformer,
                 evitaSessionClientProvider: () => EvitaSessionServiceClient,
                 evitaTrafficRecordingClientProvider: () => EvitaTrafficRecordingServiceClient,
-                evitaValueConverterProvider: () => EvitaValueConverter,
+                _evitaValueConverterProvider: () => EvitaValueConverter,
                 catalogSchemaConverterProvider: () => CatalogSchemaConverter,
                 responseConverterProvider: () => EvitaResponseConverter,
                 taskStatusConverterProvider: () => TaskStatusConverter,
@@ -132,7 +127,6 @@ export class EvitaClientSession {
 
         this.evitaSessionClientProvider = evitaSessionClientProvider
         this.evitaTrafficRecordingClientProvider = evitaTrafficRecordingClientProvider
-        this.evitaValueConverterProvider = evitaValueConverterProvider
         this.catalogSchemaConverterProvider = catalogSchemaConverterProvider
         this.responseConverterProvider = responseConverterProvider
 
@@ -666,37 +660,6 @@ export class EvitaClientSession {
         }
     }
 
-    private async loadEntitySchemas(): Promise<ImmutableList<EntitySchema>> {
-        try {
-            const entityTypesResponse: GrpcEntityTypesResponse =
-                await this.evitaSessionClientProvider().getAllEntityTypes({}, this._callMetadata)
-
-            const entitySchemas: EntitySchema[] = []
-            const entityTypes: string[] = entityTypesResponse.entityTypes
-            for (const type of entityTypes) {
-                const entitySchemaResult: GrpcEntitySchemaResponse =
-                    await this.evitaSessionClientProvider().getEntitySchema(
-                        {
-                            nameVariants: true,
-                            entityType: type
-                        },
-                        this._callMetadata
-                    )
-                const schema: GrpcEntitySchema | undefined = entitySchemaResult.entitySchema
-                if (schema != null) {
-                    entitySchemas.push(
-                        this.catalogSchemaConverterProvider().convertEntitySchema(
-                            schema
-                        )
-                    )
-                }
-            }
-
-            return ImmutableList(entitySchemas)
-        } catch (e) {
-            throw this.errorTransformerProvider().transformError(e)
-        }
-    }
 }
 
 class ClientEntitySchemaAccessor implements EntitySchemaAccessor {

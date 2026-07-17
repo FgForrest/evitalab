@@ -1,8 +1,6 @@
 import type {
-    GrpcAttributeElement,
-    GrpcReferenceSchema
+    GrpcAttributeElement
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchema_pb.ts'
-import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema.ts'
 import {
     AttributeElement
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema.ts'

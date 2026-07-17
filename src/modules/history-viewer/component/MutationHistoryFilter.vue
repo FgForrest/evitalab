@@ -10,10 +10,6 @@ import { useI18n } from 'vue-i18n'
 
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useToaster } from '@/modules/notification/service/Toaster'
-import {
-    MutationHistoryViewerService,
-    useMutationHistoryViewerService
-} from '@/modules/history-viewer/service/MutationHistoryViewerService.ts'
 import { MutationHistoryCriteria } from '@/modules/history-viewer/model/MutationHistoryCriteria.ts'
 import type { MutationHistoryDataPointer } from '@/modules/history-viewer/model/MutationHistoryDataPointer.ts'
 import type { DateTime } from 'luxon'
@@ -25,7 +21,6 @@ import {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import { useEvitaClient } from '@/modules/database-driver/EvitaClient'
 
-const mutationHistoryViewerService: MutationHistoryViewerService = useMutationHistoryViewerService()
 const evitaClient = useEvitaClient()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()

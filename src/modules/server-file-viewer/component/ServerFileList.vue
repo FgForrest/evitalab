@@ -4,7 +4,7 @@ import VListItemDivider from '@/modules/base/component/VListItemDivider.vue'
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import ServerFileListItem from '@/modules/server-file-viewer/component/ServerFileListItem.vue'
 
-const props = defineProps<{
+defineProps<{
     files: ServerFile[],
     pageNumber: number,
     pageSize: number,

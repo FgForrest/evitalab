@@ -93,7 +93,7 @@ const properties = computed<Property[]>(() => {
             new PropertyValue(
                 props.schema.referencedGroupType ? new KeywordValue(props.schema.referencedGroupType, undefined, t('schemaViewer.reference.label.groupManagedByEvita')) : undefined,
                 undefined,
-                item => {
+                _item => {
                     workspaceService.createTab(schemaViewerTabFactory.createNew(
                         new EntitySchemaPointer(
                             props.dataPointer.schemaPointer.catalogName,

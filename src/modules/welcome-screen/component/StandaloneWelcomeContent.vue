@@ -8,7 +8,7 @@ import { useI18n } from 'vue-i18n'
 const welcomeScreenManager: WelcomeScreenService = useWelcomeScreenManager()
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     version: string
 }>()
 

@@ -18,7 +18,7 @@ const priceTypes: any[] = [
     { title: t(`entityViewer.priceTypeSelector.${QueryPriceMode.WithoutTax}`), value: QueryPriceMode.WithoutTax }
 ];
 
-const props = defineProps<{
+defineProps<{
     selected: QueryPriceMode
 }>()
 const emit = defineEmits<{

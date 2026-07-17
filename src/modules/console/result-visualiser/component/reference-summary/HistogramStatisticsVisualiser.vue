@@ -6,7 +6,7 @@ import { VisualisedHistogramStatistics } from '@/modules/console/result-visualis
 import HistogramVisualiser
     from '@/modules/console/result-visualiser/component/histogram/HistogramVisualiser.vue'
 
-const props = defineProps<{
+defineProps<{
     histograms: VisualisedHistogramStatistics[]
 }>()
 </script>

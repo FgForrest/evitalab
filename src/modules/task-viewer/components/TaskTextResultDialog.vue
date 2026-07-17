@@ -6,11 +6,11 @@ import { TextTaskResult } from '@/modules/database-driver/request-response/task/
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     modelValue: boolean,
     result: TextTaskResult
 }>()
-const emit = defineEmits<{
+defineEmits<{
     (e: 'update:modelValue', value: boolean): void
 }>()
 </script>

@@ -8,7 +8,7 @@ import { TaskStatus } from '@/modules/database-driver/request-response/task/Task
 
 const { t } = useI18n()
 
-const props = withDefaults(
+withDefaults(
     defineProps<{
         disabled?: boolean
     }>(),

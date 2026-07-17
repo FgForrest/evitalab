@@ -7,7 +7,7 @@ import VListItemDivider from '@/modules/base/component/VListItemDivider.vue'
 import { List } from 'immutable'
 
 
-const props = defineProps<{
+defineProps<{
     filteredPropertyDescriptors: List<EntityPropertyDescriptor>,
     propertyDescriptors: List<EntityPropertyDescriptor>,
 }>()

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { VisualisedReferenceSummary, VisualisedReferenceStatistics } from '@/modules/console/result-visualiser/model/reference-summary/VisualisedReferenceSummary'
+import { VisualisedReferenceSummary } from '@/modules/console/result-visualiser/model/reference-summary/VisualisedReferenceSummary'
 import ReferenceGroupStatisticsListVisualiser
     from '@/modules/console/result-visualiser/component/reference-summary/ReferenceGroupStatisticsListVisualiser.vue'
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
@@ -8,7 +8,7 @@ import { VExpansionPanels, VExpansionPanel, VExpansionPanelTitle, VExpansionPane
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     referenceSummary: VisualisedReferenceSummary
 }>()
 </script>

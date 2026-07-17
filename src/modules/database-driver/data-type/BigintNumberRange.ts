@@ -1,5 +1,4 @@
 import { Range } from "./Range";
-import type { PrettyPrintable } from "./PrettyPrintable";
 
 /**
  * Specialized {@link Range} for {@link bigint}.

@@ -5,7 +5,7 @@ import { ServerStatus } from '@/modules/database-driver/request-response/status/
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     serverStatus: ServerStatus
 }>()
 </script>

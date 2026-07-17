@@ -65,7 +65,7 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         return this.createFlatEntity(flattenedProperties)
     }
 
-    private flattenParent(dataPointer: EntityViewerDataPointer, entity: any): WritableEntityProperty | undefined {
+    private flattenParent(_dataPointer: EntityViewerDataPointer, entity: any): WritableEntityProperty | undefined {
         const parentEntities: any[] | undefined = entity['parents']
         if (!parentEntities || parentEntities.length == 0) {
             return undefined

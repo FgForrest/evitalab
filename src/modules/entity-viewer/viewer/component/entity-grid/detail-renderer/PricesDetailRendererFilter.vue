@@ -8,7 +8,7 @@ import { EntityPrice } from '@/modules/entity-viewer/viewer/model/entity-propert
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     filterData: {
         priceIds: number[],
         priceLists: string[],

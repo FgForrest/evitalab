@@ -13,7 +13,7 @@ const namedHierarchyTreesPageSize: number = 10
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     namedHierarchyEntry: VisualisedNamedHierarchyEntry
 }>()
 

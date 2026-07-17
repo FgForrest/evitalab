@@ -25,7 +25,7 @@ export class GraphQLResultAnalyzer implements ResultAnalyzer {
         return true
     }
 
-    async analyze(inputQuery: string, rawResult: unknown, catalogName: string): Promise<AnalyzedResult> {
+    async analyze(_inputQuery: string, rawResult: unknown, catalogName: string): Promise<AnalyzedResult> {
         const result = rawResult as any
         if (result == undefined) {
             return new AnalyzedResult([])

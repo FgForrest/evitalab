@@ -3,7 +3,6 @@ import {
     CodeDetailRendererMenuItemType
 } from '@/modules/entity-viewer/viewer/model/entity-grid/detail-renderer/CodeDetailRendererMenuItemType'
 import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
-import { MenuAction } from '@/modules/base/model/menu/MenuAction'
 import {
     EntityPropertyValueSupportedCodeLanguage
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValueSupportedCodeLanguage'

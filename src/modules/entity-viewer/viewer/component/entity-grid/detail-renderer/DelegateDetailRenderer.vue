@@ -18,7 +18,7 @@ import HtmlDetailRenderer
     from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/HtmlDetailRenderer.vue'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     dataType?: Scalar | ExtraEntityObjectType | undefined,
     value: EntityPropertyValue | EntityPropertyValue[],
     outputFormat?: EntityPropertyValueDesiredOutputFormat,

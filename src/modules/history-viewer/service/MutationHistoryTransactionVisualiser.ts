@@ -1,8 +1,5 @@
 import { i18n } from '@/vue-plugins/i18n'
 import { List as ImmutableList } from 'immutable'
-import { EvitaQLConsoleTabData } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabData'
-import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
-import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
 import { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
 import { MutationVisualiser } from '@/modules/history-viewer/service/MutationVisualiser.ts'
 import {
@@ -39,8 +36,10 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
     }
 
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
-        const visualisedSessionRecord: MutationHistoryItemVisualisationDefinition | undefined = ctx.getVisualisedSessionRecord(mutationHistory.version)
-
+        // todo #354: unlike the sibling data/schema visualisers this one does not
+        //  de-duplicate against an already-visualised session record for the same
+        //  version before adding a new root record; a guard using
+        //  ctx.getVisualisedSessionRecord(mutationHistory.version) is likely missing.
         const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-graph-outline', i18n.global.t('mutationHistoryViewer.record.type.transaction.title', { version: mutationHistory.version }), undefined, undefined, this.constructMetadata(mutationHistory), ImmutableList())
 
 

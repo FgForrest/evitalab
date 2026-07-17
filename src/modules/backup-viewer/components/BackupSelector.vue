@@ -11,7 +11,6 @@ import PointInTimeBackupDialog from '@/modules/backup-viewer/components/PointInT
 import FullBackupDialog from '@/modules/backup-viewer/components/FullBackupDialog.vue'
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
 import { watch } from 'vue'
-import { CatalogState } from '@/modules/database-driver/request-response/CatalogState.ts'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
