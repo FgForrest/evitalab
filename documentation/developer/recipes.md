@@ -190,9 +190,10 @@ refs in the callback, and unregister in `onUnmounted` — see
 
 ## Checklist before opening a PR
 
-- [ ] `yarn lint` passes.
+- [ ] `yarn typecheck` passes (real whole-program check; keep it at zero errors).
 - [ ] `yarn test` passes (add unit tests for new pure logic; regression test for bug fixes).
-- [ ] `yarn build` (type-check) passes.
+- [ ] `yarn build` passes (runs `yarn typecheck`, then the production build).
+- [ ] `yarn lint` — run it and don't add new violations (the gate is not yet at zero, so it is not part of CI yet).
 - [ ] New classes/components have JSDoc; user-facing strings are localized.
 - [ ] `documentation/developer/` updated (module catalog, UI components, recipes as applicable).
 - [ ] Conventional-commit messages; feature branch off `dev`.
