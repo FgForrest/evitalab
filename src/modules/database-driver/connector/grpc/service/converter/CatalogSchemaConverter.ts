@@ -575,8 +575,8 @@ export class CatalogSchemaConverter {
         }
     }
 
-    static toContainerType2(input: GrpcChangeCaptureContainerType[]): GrpcChangeCaptureContainerType[] {
-        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureContainerType[it as any] : it)
+    static toContainerType2(input: (GrpcChangeCaptureContainerType | string)[]): GrpcChangeCaptureContainerType[] {
+        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureContainerType[it as keyof typeof GrpcChangeCaptureContainerType] : it)
     }
 
 
