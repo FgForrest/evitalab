@@ -81,7 +81,10 @@ function moveTabCursor(diff: number) {
     } else if (newTabIndex >= tabDefinitions.value.length) {
         newTabIndex = 0
     }
-    currentTabId.value = tabDefinitions.value[newTabIndex].id
+    const nextTab = tabDefinitions.value[newTabIndex]
+    if (nextTab != undefined) {
+        currentTabId.value = nextTab.id
+    }
 }
 
 function closeTab(tabId: string): void {
@@ -96,9 +99,15 @@ function closeTab(tabId: string): void {
     if (tabDefinitions.value.length === 0) {
         currentTabId.value = null
     } else if (closedTabIndex === prevTabIndex && closedTabIndex === prevTabsLength - 1) {
-        currentTabId.value = tabDefinitions.value[closedTabIndex - 1].id
+        const prevTab = tabDefinitions.value[closedTabIndex - 1]
+        if (prevTab != undefined) {
+            currentTabId.value = prevTab.id
+        }
     } else if (closedTabIndex === prevTabIndex && closedTabIndex < prevTabsLength - 1) {
-        currentTabId.value = tabDefinitions.value[closedTabIndex].id
+        const nextTab = tabDefinitions.value[closedTabIndex]
+        if (nextTab != undefined) {
+            currentTabId.value = nextTab.id
+        }
     }
 }
 

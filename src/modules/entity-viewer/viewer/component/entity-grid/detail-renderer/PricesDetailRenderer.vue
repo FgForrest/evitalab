@@ -150,20 +150,23 @@ watch([selectedPriceLists, selectedCurrencies], async () => {
         selectedPriceLists.value.length > 0 &&
         selectedCurrencies.value.length === 1
     ) {
-        computedPriceForSale.value =
-            await entityViewerService.computePriceForSale(
-                tabProps.params.dataPointer,
-                queryLanguage.value!,
-                (
-                    selectedEntity[
-                        EntityPropertyKey.entity(
-                            StaticEntityProperties.PrimaryKey
-                        ).toString()
-                    ] as NativeValue
-                ).value() as number,
-                selectedPriceLists.value,
-                selectedCurrencies.value[0]
-            )
+        const selectedCurrency: string | undefined = selectedCurrencies.value[0]
+        if (selectedCurrency != undefined) {
+            computedPriceForSale.value =
+                await entityViewerService.computePriceForSale(
+                    tabProps.params.dataPointer,
+                    queryLanguage.value!,
+                    (
+                        selectedEntity[
+                            EntityPropertyKey.entity(
+                                StaticEntityProperties.PrimaryKey
+                            ).toString()
+                        ] as NativeValue
+                    ).value() as number,
+                    selectedPriceLists.value,
+                    selectedCurrency
+                )
+        }
     }
 })
 
@@ -249,9 +252,9 @@ async function preselectFilterFromQuery(): Promise<void> {
                 priceLists.matchAll(
                     constraintPriceListsPattern.get(queryLanguage.value!)!
                 )
-            selectedPriceLists.value = Array.from(priceListsMatches).map(
-                (match) => match[1]
-            )
+            selectedPriceLists.value = Array.from(priceListsMatches)
+                .map((match) => match[1])
+                .filter((priceList): priceList is string => priceList != undefined)
         }
         if (currency != undefined) {
             selectedCurrencies.value = [currency]

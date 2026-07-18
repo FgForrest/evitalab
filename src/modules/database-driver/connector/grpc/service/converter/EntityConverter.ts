@@ -112,8 +112,7 @@ export class EntityConverter {
         const globalAttributes: ImmutableMap<string, EvitaValue> = this.convertAttributeMap(grpcGlobalAttributes)
 
         const localizedAttributes: Map<string, ImmutableMap<string, EvitaValue>> = new Map<string, ImmutableMap<string, EvitaValue>>()
-        for (const locale in grpcLocalizedAttributes) {
-            const attributesForLocale: GrpcLocalizedAttribute = grpcLocalizedAttributes[locale]
+        for (const [locale, attributesForLocale] of Object.entries(grpcLocalizedAttributes)) {
             const convertedAttributes: ImmutableMap<string, EvitaValue> = this.convertAttributeMap(attributesForLocale.attributes)
             localizedAttributes.set(locale, convertedAttributes)
         }
@@ -123,8 +122,7 @@ export class EntityConverter {
 
     private convertAttributeMap(grpcAttributeMap: { [key: string]: GrpcEvitaValue }): ImmutableMap<string, EvitaValue> {
         const attributeMap: Map<string, EvitaValue> = new Map<string, EvitaValue>()
-        for (const attributeName in grpcAttributeMap) {
-            const attributeValue: GrpcEvitaValue = grpcAttributeMap[attributeName]
+        for (const [attributeName, attributeValue] of Object.entries(grpcAttributeMap)) {
             if (attributeValue.value.value != undefined) {
                 attributeMap.set(
                     attributeName,
@@ -224,8 +222,7 @@ export class EntityConverter {
         const globalAssociatedData: ImmutableMap<string, EvitaValue> = this.convertAssociatedDataMap(grpcGlobalAssociatedData)
 
         const localizedAssociatedData: Map<string, ImmutableMap<string, EvitaValue>> = new Map<string, ImmutableMap<string, EvitaValue>>()
-        for (const locale in grpcLocalizedAssociatedData) {
-            const associatedDataForLocale: GrpcLocalizedAssociatedData = grpcLocalizedAssociatedData[locale]
+        for (const [locale, associatedDataForLocale] of Object.entries(grpcLocalizedAssociatedData)) {
             const convertedAssociatedData: ImmutableMap<string, EvitaValue> = this.convertAssociatedDataMap(associatedDataForLocale.associatedData)
             localizedAssociatedData.set(locale, convertedAssociatedData)
         }
@@ -237,8 +234,7 @@ export class EntityConverter {
         [key: string]: GrpcEvitaAssociatedDataValue
     }): ImmutableMap<string, EvitaValue> {
         const associatedDataMap: Map<string, EvitaValue> = new Map<string, EvitaValue>()
-        for (const associatedValueName in grpcAssociatedDataMap) {
-            const associatedDataValue = grpcAssociatedDataMap[associatedValueName]
+        for (const [associatedValueName, associatedDataValue] of Object.entries(grpcAssociatedDataMap)) {
             associatedDataMap.set(
                 associatedValueName,
                 this.convertAssociatedDataValue(associatedDataValue)

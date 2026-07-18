@@ -74,7 +74,10 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         if (parentEntities.length > 1) {
             throw new UnexpectedError(`There are more than one parent entity.`)
         }
-        const parentEntity: GraphQLResultNode = parentEntities[0]
+        const parentEntity: GraphQLResultNode | undefined = parentEntities[0]
+        if (parentEntity == undefined) {
+            return undefined
+        }
 
         const parentPrimaryKey: number = parentEntity[StaticEntityProperties.PrimaryKey]
 
@@ -134,6 +137,9 @@ export class GraphQLQueryExecutor extends QueryExecutor {
                 continue
             }
             const referenceName = referenceAlias.split('_')[1]
+            if (referenceName == undefined) {
+                continue
+            }
             if (referencesOfName instanceof Array) {
                 const representativeValues: EntityReferenceValue[] = referencesOfName
                     .map(referenceOfName => this.resolveReferenceRepresentativeValue(referenceOfName))

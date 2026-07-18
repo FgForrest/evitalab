@@ -11,10 +11,11 @@ export class EntityPropertyKey {
     readonly names: string[]
 
     get parentName(): string {
-        if (this.names.length < 2) {
+        const parentName: string | undefined = this.names[0]
+        if (this.names.length < 2 || parentName == undefined) {
             throw new UnexpectedError(`Parent name of entity property for type ${this.type} is not supported`)
         }
-        return this.names[0]
+        return parentName
     }
 
     get name(): string {

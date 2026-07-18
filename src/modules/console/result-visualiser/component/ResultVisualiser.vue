@@ -111,7 +111,10 @@ const visualiserTypes = computed<VisualiserType[]>(() => {
 watch(visualiserTypes, (newValue) => {
     if (newValue.length > 0) {
         if (selectedVisualiserType.value == undefined || !newValue.map(it => it.value).includes(selectedVisualiserType.value)) {
-            selectedVisualiserType.value = newValue[0].value
+            const firstType = newValue[0]
+            if (firstType != undefined) {
+                selectedVisualiserType.value = firstType.value
+            }
         }
     } else {
         selectedVisualiserType.value = undefined

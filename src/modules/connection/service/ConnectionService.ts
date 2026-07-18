@@ -74,11 +74,14 @@ export class ConnectionService {
 
                 if (preconfiguredConnections.length == 0) {
                     console.warn('Preconfigured connection property present, but empty list found. Trying default connection.')
-                } else if (preconfiguredConnections.length > 1) {
-                    console.warn('More than one preconfigured connection found. Using first one only.')
-                    return preconfiguredConnections[0]
                 } else {
-                    return preconfiguredConnections[0]
+                    if (preconfiguredConnections.length > 1) {
+                        console.warn('More than one preconfigured connection found. Using first one only.')
+                    }
+                    const firstConnection: Connection | undefined = preconfiguredConnections[0]
+                    if (firstConnection != undefined) {
+                        return firstConnection
+                    }
                 }
             } catch (e) {
                 console.error('Failed to load preconfigured connections from system properties', e)

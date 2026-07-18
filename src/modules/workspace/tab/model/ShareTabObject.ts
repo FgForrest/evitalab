@@ -74,10 +74,11 @@ export class ShareTabObject extends SerializableTabObject {
         }
 
         const match: RegExpMatchArray | null = input.match(/[?&]sharedTab=([^&#\s]+)/)
-        if (match == undefined || match[1].length === 0) {
+        const sharedTab: string | undefined = match?.[1]
+        if (sharedTab == undefined || sharedTab.length === 0) {
             throw new UnexpectedError('The link does not contain a shared tab.')
         }
-        return match[1]
+        return sharedTab
     }
 
     /**

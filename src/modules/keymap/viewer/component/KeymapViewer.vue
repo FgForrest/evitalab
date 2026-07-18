@@ -44,7 +44,10 @@ const allBindings: Map<Section, Map<Subsection, Property[]>> = new Map()
 keymap.prettyPrintAll().forEach((shortcut: string, command: Command) => {
     const parts: string[] = command.split('.')
 
-    const section: Section = parts[0]
+    const section: Section | undefined = parts[0]
+    if (section == undefined) {
+        return
+    }
     let sectionMap = allBindings.get(section)
     if (sectionMap == undefined) {
         sectionMap = new Map<Subsection, Property[]>()
@@ -63,7 +66,10 @@ keymap.prettyPrintAll().forEach((shortcut: string, command: Command) => {
             new PropertyValue(new KeywordValue(shortcut))
         ))
     } else if (parts.length === 3) {
-        const subsection: Subsection = parts[1]
+        const subsection: Subsection | undefined = parts[1]
+        if (subsection == undefined) {
+            return
+        }
         let subsectionList = sectionMap.get(subsection)
         if (subsectionList == undefined) {
             subsectionList = []
