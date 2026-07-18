@@ -1,3 +1,4 @@
+import type { GraphQLResultNode } from '@/modules/database-driver/connector/gql/model/GraphQLResultNode'
 import type { ResultAnalyzer } from '@/modules/console/result-visualiser/service/ResultAnalyzer'
 import { AnalyzedResult, AnalyzedQuery } from '@/modules/console/result-visualiser/model/AnalyzedResult'
 import { VisualiserType } from '@/modules/console/result-visualiser/model/VisualiserType'
@@ -26,7 +27,7 @@ export class GraphQLResultAnalyzer implements ResultAnalyzer {
     }
 
     async analyze(_inputQuery: string, rawResult: unknown, catalogName: string): Promise<AnalyzedResult> {
-        const result = rawResult as any
+        const result = rawResult as GraphQLResultNode
         if (result == undefined) {
             return new AnalyzedResult([])
         }
@@ -71,7 +72,7 @@ export class GraphQLResultAnalyzer implements ResultAnalyzer {
         return entitySchema
     }
 
-    private findVisualiserTypes(queryResult: any): VisualiserType[] {
+    private findVisualiserTypes(queryResult: GraphQLResultNode): VisualiserType[] {
         const visualiserTypes: VisualiserType[] = []
 
         const extraResults = queryResult['extraResults']

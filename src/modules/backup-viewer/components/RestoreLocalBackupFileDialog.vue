@@ -22,7 +22,7 @@ const emit = defineEmits<{
 }>()
 
 const backupFileRules = [
-    (value: File): any => {
+    (value: File): boolean | string => {
         if (value != undefined) {
             return true
         }
