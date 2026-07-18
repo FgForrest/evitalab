@@ -1,3 +1,4 @@
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import type { QueryResult } from '@/modules/entity-viewer/viewer/model/QueryResult'
 import type { WritableEntityProperty } from '@/modules/entity-viewer/viewer/model/WritableEntityProperty'
@@ -38,11 +39,11 @@ export abstract class QueryExecutor {
      * @param value a raw entity property value
      * @protected
      */
-    protected wrapRawValueIntoNativeValue(value: any | undefined): NativeValue | NativeValue[] {
+    protected wrapRawValueIntoNativeValue(value: EvitaValue | undefined): NativeValue | NativeValue[] {
         if (value instanceof Array) {
             return value.map(item => new NativeValue(item))
         } else if(value instanceof List) {
-            return (value as List<any>).map(x => new NativeValue(x)).toArray();
+            return (value as List<EvitaValue>).map(x => new NativeValue(x)).toArray();
         } else {
             return new NativeValue(value)
         }
