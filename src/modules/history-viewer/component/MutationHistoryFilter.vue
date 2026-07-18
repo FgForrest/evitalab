@@ -5,6 +5,7 @@
  */
 
 import VDateTimeInput from '@/modules/base/component/VDateTimeInput.vue'
+import type { VForm } from 'vuetify/components'
 import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -25,14 +26,14 @@ const evitaClient = useEvitaClient()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const userMutationHistoryMutationOperation: any[] = ['UPSERT', 'REMOVE'].map(type => {
+const userMutationHistoryMutationOperation: { value: string; title: string }[] = ['UPSERT', 'REMOVE'].map(type => {
     return {
         value: type,
         title: t(`mutationHistoryViewer.filter.form.mutationOperation.items.${type}`)
     }
 })
 
-const userMutationHistoryContainerType: any[] = [
+const userMutationHistoryContainerType: { value: string; title: string }[] = [
     'CONTAINER_CATALOG',
     'CONTAINER_ATTRIBUTE',
     'CONTAINER_ASSOCIATED_DATA',
@@ -72,7 +73,7 @@ watch(criteria.value, (newValue) => {
     criteriaChanged.value = true
 })
 
-const form = ref<HTMLFormElement | null>(null)
+const form = ref<InstanceType<typeof VForm> | null>(null)
 const formValidationState = ref<boolean | null>(null)
 
 const from = ref<DateTime | undefined>(criteria.value.from?.toDateTime())
@@ -120,7 +121,7 @@ watch(entityPrimaryKey, async (newValue) => {
 })
 
 const entityPrimaryKeyRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value == undefined || value === '') {
             return true
         }
@@ -191,14 +192,15 @@ async function assertFormValidated(): Promise<boolean> {
         throw new UnexpectedError('Missing form reference.')
     }
 
-    //@ts-ignore
-    const { valid }: any = await form.value.validate()
+    const { valid } = await form.value.validate()
     return valid
 }
 
 async function applyChangedCriteria(): Promise<void> {
-    //@ts-ignore
-    const { valid }: any = await form.value.validate()
+    if (form.value == undefined) {
+        throw new UnexpectedError('Missing form reference.')
+    }
+    const { valid } = await form.value.validate()
     if (!valid) {
         await toaster.error(t('mutationHistoryViewer.recordHistory.filter.notification.invalidFilter'))
         return
