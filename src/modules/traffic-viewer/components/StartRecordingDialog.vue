@@ -47,8 +47,7 @@ const exportFile = ref<boolean>(false)
 watch(
     exportFile,
     async () => {
-        //@ts-ignore
-        await formDialog.value.validateForm()
+        await formDialog.value?.validateForm()
     }
 )
 const maxFileSizeInBytes = ref<string | undefined>(undefined)

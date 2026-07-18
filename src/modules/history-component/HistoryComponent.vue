@@ -13,13 +13,12 @@ const emit = defineEmits<{
     (e: 'update:clearHistory'): void
 }>()
 
-const historyListRef = ref<HTMLElement | undefined>()
+const historyListRef = ref<ComponentPublicInstance | undefined>()
 
 /**
  * Focuses the first item in the history list.
  */
 function focus() {
-    // @ts-ignore
     const firstItem = historyListRef.value?.$el?.querySelector('.v-list-item');
     if (firstItem) {
         firstItem.focus();
