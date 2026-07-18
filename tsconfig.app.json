@@ -13,6 +13,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noUncheckedIndexedAccess": true,
+    // exactOptionalPropertyTypes intentionally omitted: it is not part of `strict`.
+    // Fully attempted 2026-07-18 (~190 errors); the .ts DTO half widens cleanly, but
+    // it structurally conflicts with Vuetify prop typing (`prop?: T`), forcing casts or
+    // `?? null` coercions at ~55 v-model/prop bindings with negative value. Revisit only
+    // if the UI layer stops modelling optionals as `prop?: T`.
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "baseUrl": ".",
     "paths": {
