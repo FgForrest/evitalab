@@ -28,8 +28,8 @@ import {
     SourceQueryStatisticsContainer
 } from '@/modules/database-driver/request-response/traffic-recording/SourceQueryStatisticsContainer'
 
-const additionSessionStartFetchRequestTypes: any = ImmutableList([TrafficRecordType.SessionStart])
-const additionSourceQueryFetchRequestTypes: any = ImmutableList([TrafficRecordType.SourceQuery, TrafficRecordType.SourceQueryStatistics])
+const additionSessionStartFetchRequestTypes: ImmutableList<TrafficRecordType> = ImmutableList([TrafficRecordType.SessionStart])
+const additionSourceQueryFetchRequestTypes: ImmutableList<TrafficRecordType> = ImmutableList([TrafficRecordType.SourceQuery, TrafficRecordType.SourceQueryStatistics])
 
 /**
  * Takes raw flat traffic records from server and processes them into visualisable tree structure.
@@ -37,9 +37,9 @@ const additionSourceQueryFetchRequestTypes: any = ImmutableList([TrafficRecordTy
 export class TrafficRecordHistoryVisualisationProcessor {
 
     private readonly evitaClient: EvitaClient
-    private readonly visualisers: ImmutableList<TrafficRecordVisualiser<any>>
+    private readonly visualisers: ImmutableList<TrafficRecordVisualiser<TrafficRecord>>
 
-    constructor(evitaClient: EvitaClient, visualisers: ImmutableList<TrafficRecordVisualiser<any>>) {
+    constructor(evitaClient: EvitaClient, visualisers: ImmutableList<TrafficRecordVisualiser<TrafficRecord>>) {
         this.evitaClient = evitaClient
         this.visualisers = visualisers
     }
