@@ -176,7 +176,7 @@ export class EvitaClient extends AbstractEvitaClient {
         catalogName: string,
         instanceType: GraphQLInstanceType,
         query: string,
-        variables: any = {}
+        variables: Record<string, unknown> = {}
     ): Promise<GraphQLResponse> {
         let path
         if (instanceType === GraphQLInstanceType.System) {
