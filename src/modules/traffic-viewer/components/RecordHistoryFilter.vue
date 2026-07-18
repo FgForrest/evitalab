@@ -5,6 +5,7 @@
  */
 
 import { TrafficRecordHistoryCriteria } from '@/modules/traffic-viewer/model/TrafficRecordHistoryCriteria'
+import type { VForm } from 'vuetify/components'
 import VDateTimeInput from '@/modules/base/component/VDateTimeInput.vue'
 import { DateTime } from 'luxon'
 import { ref, watch } from 'vue'
@@ -59,7 +60,7 @@ watch(criteria.value, (newValue) => {
     criteriaChanged.value = true
 })
 
-const form = ref<HTMLFormElement | null>(null)
+const form = ref<InstanceType<typeof VForm> | null>(null)
 const formValidationState = ref<boolean | null>(null)
 
 const since = ref<DateTime | undefined>(criteria.value.since?.toDateTime())
@@ -192,14 +193,15 @@ async function assertFormValidated(): Promise<boolean> {
         throw new UnexpectedError('Missing form reference.')
     }
 
-    //@ts-ignore
-    const { valid }: any = await form.value.validate()
+    const { valid } = await form.value.validate()
     return valid
 }
 
 async function applyChangedCriteria(): Promise<void> {
-    //@ts-ignore
-    const { valid }: any = await form.value.validate()
+    if (form.value == undefined) {
+        throw new UnexpectedError('Missing form reference.')
+    }
+    const { valid } = await form.value.validate()
     if (!valid) {
         await toaster.error(t('trafficViewer.recordHistory.filter.notification.invalidFilter'))
         return

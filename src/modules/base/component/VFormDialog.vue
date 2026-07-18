@@ -5,6 +5,7 @@
  */
 
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
+import type { VForm } from 'vuetify/components'
 import VRejectDialogButton from '@/modules/base/component/VRejectDialogButton.vue'
 import VConfirmDialogButton from '@/modules/base/component/VConfirmDialogButton.vue'
 import { ref } from 'vue'
@@ -35,13 +36,12 @@ const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void
 }>()
 
-const form = ref<HTMLFormElement | null>(null)
+const form = ref<InstanceType<typeof VForm> | null>(null)
 const formValidationState = ref<boolean | null>(null)
 const submitting = ref<boolean>(false)
 
 function cancel(): void {
     if (form.value != undefined) {
-        //@ts-ignore
         form.value.reset()
     }
     props.reset()
@@ -50,8 +50,7 @@ function cancel(): void {
 
 async function handleConfirm(): Promise<void> {
     if (form.value != undefined) {
-        //@ts-ignore
-        const { valid }: any = await form.value.validate()
+        const { valid } = await form.value.validate()
         if (!valid) {
             return
         }
@@ -63,7 +62,6 @@ async function handleConfirm(): Promise<void> {
 
     if (result) {
         if (form.value != undefined) {
-            //@ts-ignore
             form.value.reset()
         }
         props.reset()
@@ -75,7 +73,6 @@ defineExpose<{
     validateForm: () => Promise<void>
 }>({
     validateForm: async () => {
-        //@ts-ignore
         await form.value?.validate()
     },
 })
