@@ -333,7 +333,7 @@ export class EvitaClientSession {
             }
 
             return this.responseConverterProvider().convert(queryResponse)
-        } catch (e: any) {
+        } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
         }
     }
@@ -628,7 +628,7 @@ export class EvitaClientSession {
                 schemaRes.catalogSchema!,
                 this.clientEntitySchemaAccessor
             )
-        } catch (e: any) {
+        } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
         }
     }

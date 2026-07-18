@@ -210,7 +210,7 @@ export class EvitaClient extends AbstractEvitaClient {
                 )
                     .json()
             ) as GraphQLResponse
-        } catch (e: any) {
+        } catch (e) {
             throw this.errorTransformer.transformError(e)
         }
     }

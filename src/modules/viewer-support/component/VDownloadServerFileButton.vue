@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 /**
  * Universal button for downloading server files to user.
  */
@@ -19,7 +20,7 @@ const props = defineProps<{
     file: ServerFile
 }>()
 const emit = defineEmits<{
-    (e: 'error', value: Error): void
+    (e: 'error', value: Error | undefined): void
 }>()
 
 const state = ref<State>(State.CanBeDownloaded)
@@ -40,8 +41,8 @@ async function download(): Promise<void> {
         link.download = props.file.name
         document.body.appendChild(link)
         link.click()
-    } catch (e: any) {
-        emit('error', e)
+    } catch (e) {
+        emit('error', asError(e))
     }
 
     state.value = State.Downloaded

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 /**
  * Entities console. Allows to view entities of specified collection.
  */
@@ -298,8 +299,8 @@ async function gridUpdated({ page, itemsPerPage, sortBy }: {
     pageSize.value = itemsPerPage
     try {
         orderByCode.value = await entityViewerService.buildOrderByFromGridColumns(props.params.dataPointer, selectedQueryLanguage.value, sortBy)
-    } catch (error: any) {
-        await toaster.error('Could not build orderBy', error) // todo lho i18n
+    } catch (error) {
+        await toaster.error('Could not build orderBy', asError(error)) // todo lho i18n
     }
 
     await executeQueryAutomatically()
@@ -352,8 +353,8 @@ async function executeQuery(): Promise<void> {
         totalResultCount.value = result.totalEntitiesCount
 
         lastAppliedFilterByCode.value = filterByCode.value
-    } catch (error: any) {
-        await toaster.error(t('entityViewer.notification.couldNotExecuteQuery'), error)
+    } catch (error) {
+        await toaster.error(t('entityViewer.notification.couldNotExecuteQuery'), asError(error))
     }
 
     loading.value = false

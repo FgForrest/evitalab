@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
@@ -112,8 +113,8 @@ async function resolveDemoCodeSnippet(urlSearchParams: URLSearchParams): Promise
 
     try {
         return await demoCodeSnippetResolver.resolve(demoSnippetRequestSerialized)
-    } catch (e: any) {
-        await toaster.error('Could not resolve demo code snippet', e) // todo lho i18n
+    } catch (e) {
+        await toaster.error('Could not resolve demo code snippet', asError(e)) // todo lho i18n
     }
 }
 

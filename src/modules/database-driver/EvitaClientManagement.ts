@@ -559,7 +559,7 @@ export class EvitaClientManagement {
                 response.catalogStatistics
                     .map((x) => this.catalogStatisticsConverterProvider().convert(x))
             )
-        } catch (e: any) {
+        } catch (e) {
             throw this.errorTransformer.transformError(e)
         }
     }

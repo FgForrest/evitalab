@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { CatalogItemService, useCatalogItemService } from '@/modules/connection-explorer/service/CatalogItemService'
@@ -55,12 +56,12 @@ async function rename(): Promise<boolean> {
             catalogName: props.catalog.name
         }))
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'explorer.catalog.rename.notification.couldNotRenameCatalog',
             {
                 catalogName: props.catalog.name,
-                reason: e.message
+                reason: errorMessage(e)
             }
         ))
         return false

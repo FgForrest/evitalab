@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 /**
  * Entity property value renderer that tries to render the value in a code editor.
  */
@@ -62,13 +63,13 @@ watch(
 const formattedValue = computed<string>(() => {
     try {
         return entityViewerService.formatEntityPropertyValue(props.value, props.codeLanguage, prettyPrint.value)
-    } catch (e: any) {
+    } catch (e) {
         console.error(e)
         return t(
             'entityViewer.grid.codeRenderer.placeholder.failedToFormatValue',
             {
                 codeLanguage: props.codeLanguage,
-                message: e?.message ? `${e.message}.` : ''
+                message: errorMessage(e) ? `${errorMessage(e)}.` : ''
             }
         )
     }

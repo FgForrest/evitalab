@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { JfrViewerService, useJfrViewerService } from '@/modules/jfr-viewer/service/JfrViewerService'
 import { useI18n } from 'vue-i18n'
@@ -27,10 +28,10 @@ async function stopRecording(): Promise<boolean> {
             await toaster.info(t('jfrViewer.stopRecording.notification.recordingNotStopped'))
         }
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'jfrViewer.stopRecording.notification.couldNotStopRecording',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         return false
     }

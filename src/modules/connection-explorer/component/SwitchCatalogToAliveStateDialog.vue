@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import { useI18n } from 'vue-i18n'
 import { CatalogItemService, useCatalogItemService } from '@/modules/connection-explorer/service/CatalogItemService'
 import { useToaster } from '@/modules/notification/service/Toaster'
@@ -25,12 +26,12 @@ async function switchCatalog(): Promise<boolean> {
             catalogName: props.catalog.name,
         }))
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'explorer.catalog.switchToAliveState.notification.couldNotSwitchCatalog',
             {
                 catalogName: props.catalog.name,
-                reason: e.message
+                reason: errorMessage(e)
             }
         ))
         return false

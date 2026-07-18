@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 /**
  * Dialog window to accept or reject a shared tab.
  */
@@ -64,13 +65,13 @@ async function acceptSharedTab(): Promise<void> {
         workspaceService.createTab(sharedTabRequest)
 
         sharedTabResolved()
-    } catch (e: any) {
+    } catch (e) {
         if (e instanceof InvalidConnectionInSharedTabError) {
             showSharedTabTroubleshooter.value = true
             sharedTabOriginalConnectionName.value = e.originalConnectionName
             sharedTabTroubleshooterCallback.value = e.troubleshooterCallback
         } else {
-            await toaster.error('Could not resolve shared tab', e)
+            await toaster.error('Could not resolve shared tab', asError(e))
         }
     }
 }

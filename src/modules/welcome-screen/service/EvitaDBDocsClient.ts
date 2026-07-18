@@ -1,3 +1,4 @@
+import { errorMessage } from '@/utils/error'
 import type { EvitaDBBlogPost } from '@/modules/welcome-screen/model/EvitaDBBlogPost'
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 import ky from 'ky'
@@ -48,7 +49,7 @@ export class EvitaDBDocsClient {
             // we need only 2 latest blog posts
             blogPosts.reverse().splice(2)
             return blogPosts
-        } catch (e: any) {
+        } catch (e) {
             throw this.handleCallError(e, undefined)
         }
     }
@@ -70,14 +71,14 @@ export class EvitaDBDocsClient {
             if (statusCode >= 500) {
                 return new EvitaDBInstanceServerError(connection)
             } else {
-                return new UnexpectedError(e.message)
+                return new UnexpectedError(errorMessage(e))
             }
         } else if (e.name === 'TimeoutError') {
             return new TimeoutError(connection)
-        } else if (e.name === 'TypeError' && e.message === 'Failed to fetch') {
+        } else if (e.name === 'TypeError' && errorMessage(e) === 'Failed to fetch') {
             return new EvitaDBInstanceNetworkError(connection)
         } else {
-            return new UnexpectedError(e.message)
+            return new UnexpectedError(errorMessage(e))
         }
     }
 }

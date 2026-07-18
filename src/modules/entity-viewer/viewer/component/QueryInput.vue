@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 /**
  * Query input for the LabEditorDataGrid component.
  */
@@ -127,8 +128,8 @@ async function executeQuery(): Promise<void> {
     try {
         workspaceService.addTabHistoryRecord(filterByHistoryKey.value, props.filterBy)
         workspaceService.addTabHistoryRecord(orderByHistoryKey.value, props.orderBy)
-    } catch (e: any) {
-        await toaster.error(t('entityViewer.queryInput.notification.failedToSaveQueryToHistory', e))
+    } catch (e) {
+        await toaster.error(t('entityViewer.queryInput.notification.failedToSaveQueryToHistory'), asError(e))
     }
     emit('executeQuery')
 }

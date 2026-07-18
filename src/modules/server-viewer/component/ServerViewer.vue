@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import { List } from 'immutable'
@@ -55,11 +56,11 @@ async function loadServerStatus(silent: boolean = false, forceRefresh: boolean =
     try {
         serverStatus.value = await serverViewerService.getServerStatus(forceRefresh)
         return true
-    } catch (e: any) {
+    } catch (e) {
         if (!silent) {
             await toaster.error(t(
                 'serverViewer.notification.couldNotLoad',
-                { reason: e.message }
+                { reason: errorMessage(e) }
             ))
         }
         return false

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import { useI18n } from 'vue-i18n'
 import { CatalogItemService, useCatalogItemService } from '@/modules/connection-explorer/service/CatalogItemService'
 import { useToaster } from '@/modules/notification/service/Toaster'
@@ -32,12 +33,12 @@ async function deleteCatalog(): Promise<boolean> {
             ))
         }
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'explorer.catalog.delete.notification.couldNotDeleteCatalog',
             {
                 catalogName: props.catalogName,
-                reason: e.message
+                reason: errorMessage(e)
             }
         ))
         return false

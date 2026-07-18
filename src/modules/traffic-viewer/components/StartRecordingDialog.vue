@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import { useI18n } from 'vue-i18n'
 import { computed, ref, watch } from 'vue'
 import { useToaster } from '@/modules/notification/service/Toaster'
@@ -167,10 +168,10 @@ async function loadAvailableCatalogs(): Promise<void> {
             .map(it => it.name)
             .toArray()
         availableCatalogsLoaded.value = true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'backupViewer.backup.notification.couldNotLoadAvailableCatalogs',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
     }
 }
@@ -203,10 +204,10 @@ async function startRecording(): Promise<boolean> {
         await toaster.success(t('trafficViewer.recordings.startRecording.notification.recordingStarted'))
         emit('start', createdTask)
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'trafficViewer.recordings.startRecording.notification.couldNotStartRecording',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         return false
     }

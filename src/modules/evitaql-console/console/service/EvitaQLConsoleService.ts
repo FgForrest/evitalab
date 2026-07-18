@@ -3,6 +3,7 @@ import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
+import { QueryError } from '@/modules/database-driver/exception/QueryError'
 
 export const evitaQLConsoleServiceInjectionKey: InjectionKey<EvitaQLConsoleService> = Symbol('evitaQLConsoleService')
 
@@ -29,8 +30,8 @@ export class EvitaQLConsoleService {
            )
             const cleanedString = result.rawResponse.replace(/"?\$typeName"?\s*:\s*".*?",?\s*/g, '');
            result = new EvitaResponse(result.recordPage, result.extraResults, cleanedString);
-        } catch (e: any) {
-            if (e.name === 'QueryError') {
+        } catch (e) {
+            if (e instanceof QueryError) {
                 result = e.error
             } else {
                 throw e

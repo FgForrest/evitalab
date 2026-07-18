@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { BackupViewerService, useBackupViewerService } from '@/modules/backup-viewer/service/BackupViewerService'
@@ -68,10 +69,10 @@ async function restoreLocal(): Promise<boolean> {
         await toaster.success(t('backupViewer.restoreLocal.notification.restoreRequested'))
         emit('restore')
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'backupViewer.restoreLocal.notification.couldNotRestoreBackupFile',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         return false
     }

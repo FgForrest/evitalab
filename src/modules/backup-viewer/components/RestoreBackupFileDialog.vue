@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import { useI18n } from 'vue-i18n'
 import { computed, ref } from 'vue'
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
@@ -59,12 +60,12 @@ async function restore(): Promise<boolean> {
         ))
         emit('restore')
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'backupViewer.restore.notification.couldNotRestoreBackupFile',
             {
                 fileName: props.backupFile.name,
-                reason: e.message
+                reason: errorMessage(e)
             }
         ))
         return false
