@@ -16,20 +16,22 @@ export class ErrorTransformer {
         this.connection = connection
     }
 
-    transformError(e: any): Error {
+    transformError(e: unknown): Error {
         // todo lho rework
         if (e instanceof ConnectError) {
             return e
-        } else if (e.name === 'HTTPError') {
-            const statusCode: number = e.response.status
+        }
+        const err = e as { name?: string, response?: { status?: number } }
+        if (err.name === 'HTTPError') {
+            const statusCode: number = err.response?.status ?? 0
             if (statusCode >= 500) {
                 return new EvitaDBInstanceServerError(this.connection)
             } else {
                 return new UnexpectedError(errorMessage(e))
             }
-        } else if (e.name === 'TimeoutError') {
+        } else if (err.name === 'TimeoutError') {
             return new TimeoutError(this.connection)
-        } else if (e.name === 'TypeError' && errorMessage(e) === 'Failed to fetch') {
+        } else if (err.name === 'TypeError' && errorMessage(e) === 'Failed to fetch') {
             return new EvitaDBInstanceNetworkError(this.connection)
         } else {
             return new UnexpectedError(errorMessage(e))

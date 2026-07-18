@@ -229,7 +229,7 @@ function prettyPrintRangeValue(
     }
 }
 
-function handleActionClick(action: any) {
+function handleActionClick(action: unknown) {
     const foundedAction = menuItems.value?.get(action as MarkdownDetailRendererMenuItemType)
     if (foundedAction && foundedAction instanceof MenuAction) {
         (foundedAction as MenuAction<MarkdownDetailRendererMenuItemType>).execute()
