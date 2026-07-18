@@ -21,7 +21,7 @@ env:
 
 jobs:
   verify:
-    name: Verify (type-check, test and build)
+    name: Verify (lint, type-check, test and build)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -37,6 +37,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install -g yarn && yarn install --frozen-lockfile
+
+      - name: Lint
+        run: yarn lint:check
 
       - name: Type check
         run: yarn typecheck

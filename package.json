@@ -11,6 +11,7 @@
     "build-driver": "yarn typecheck && env VITE_RUN_MODE=\"DRIVER\" vite build",
     "preview": "vite preview --port 3000",
     "lint": "eslint . --fix",
+    "lint:check": "eslint .",
     "test": "vitest",
     "evitadb:start": "./scripts/evitadb-server.sh start",
     "evitadb:stop": "./scripts/evitadb-server.sh stop",
