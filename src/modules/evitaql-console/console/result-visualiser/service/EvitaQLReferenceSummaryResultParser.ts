@@ -116,7 +116,7 @@ export class EvitaQLReferenceSummaryResultParser implements ReferenceSummaryResu
     private resolveRepresentativeTitle(entity: Entity | undefined, representativeAttributes: string[]): string | undefined {
         if (!entity) return undefined
 
-        const possibleAttributes: { value: any; isRepresentative: boolean }[] = []
+        const possibleAttributes: { value: unknown; isRepresentative: boolean }[] = []
         entity.allAttributes.forEach(it => {
             possibleAttributes.push({
                 value: it.value,

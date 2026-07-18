@@ -1,4 +1,5 @@
 import { QueryExecutor } from '@/modules/entity-viewer/viewer/service/QueryExecutor'
+import type { GraphQLResultNode } from '@/modules/database-driver/connector/gql/model/GraphQLResultNode'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import type { QueryResult } from '@/modules/entity-viewer/viewer/model/QueryResult'
 import type { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
@@ -38,7 +39,7 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         }
 
         return {
-            entities: result?.data?.q?.recordPage?.data.map((entity: any) => this.flattenEntity(dataPointer, entity)) || [],
+            entities: result?.data?.q?.recordPage?.data.map((entity: GraphQLResultNode) => this.flattenEntity(dataPointer, entity)) || [],
             totalEntitiesCount: result?.data?.q?.recordPage?.totalRecordCount || 0
         }
     }
@@ -46,7 +47,7 @@ export class GraphQLQueryExecutor extends QueryExecutor {
     /**
      * Converts original rich entity into simplified flat entity that is displayable in table
      */
-    private flattenEntity(dataPointer: EntityViewerDataPointer, entity: any): FlatEntity {
+    private flattenEntity(dataPointer: EntityViewerDataPointer, entity: GraphQLResultNode): FlatEntity {
         const flattenedProperties: (WritableEntityProperty | undefined)[] = []
 
         flattenedProperties.push([EntityPropertyKey.entity(StaticEntityProperties.PrimaryKey), this.wrapRawValueIntoNativeValue(entity[StaticEntityProperties.PrimaryKey])])
@@ -65,15 +66,15 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         return this.createFlatEntity(flattenedProperties)
     }
 
-    private flattenParent(_dataPointer: EntityViewerDataPointer, entity: any): WritableEntityProperty | undefined {
-        const parentEntities: any[] | undefined = entity['parents']
+    private flattenParent(_dataPointer: EntityViewerDataPointer, entity: GraphQLResultNode): WritableEntityProperty | undefined {
+        const parentEntities: GraphQLResultNode[] | undefined = entity['parents']
         if (!parentEntities || parentEntities.length == 0) {
             return undefined
         }
         if (parentEntities.length > 1) {
             throw new UnexpectedError(`There are more than one parent entity.`)
         }
-        const parentEntity: any = parentEntities[0]
+        const parentEntity: GraphQLResultNode = parentEntities[0]
 
         const parentPrimaryKey: number = parentEntity[StaticEntityProperties.PrimaryKey]
 
@@ -87,7 +88,7 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         return [EntityPropertyKey.entity(StaticEntityProperties.ParentPrimaryKey), parentReference]
     }
 
-    private flattenAttributes(entity: any): WritableEntityProperty[] {
+    private flattenAttributes(entity: GraphQLResultNode): WritableEntityProperty[] {
         const flattenedAttributes: WritableEntityProperty[] = []
 
         const attributes = entity[EntityPropertyType.Attributes] || {}
@@ -98,7 +99,7 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         return flattenedAttributes
     }
 
-    private flattenAssociatedData(entity: any): WritableEntityProperty[] {
+    private flattenAssociatedData(entity: GraphQLResultNode): WritableEntityProperty[] {
         const flattenedAssociatedData: WritableEntityProperty[] = []
 
         const associatedData = entity[EntityPropertyType.AssociatedData] || {}
@@ -109,9 +110,9 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         return flattenedAssociatedData
     }
 
-    private flattenPrices(entity: any): WritableEntityProperty | undefined {
-        const priceForSale: any | undefined = entity['priceForSale']
-        const prices: any[] | undefined = entity[EntityPropertyType.Prices]
+    private flattenPrices(entity: GraphQLResultNode): WritableEntityProperty | undefined {
+        const priceForSale: GraphQLResultNode | undefined = entity['priceForSale']
+        const prices: GraphQLResultNode[] | undefined = entity[EntityPropertyType.Prices]
         if (priceForSale == undefined && prices == undefined) {
             return undefined
         }
@@ -123,7 +124,7 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         return [EntityPropertyKey.prices(), entityPrices]
     }
 
-    private flattenReferences(entity: any): WritableEntityProperty[] {
+    private flattenReferences(entity: GraphQLResultNode): WritableEntityProperty[] {
         const flattenedReferences: WritableEntityProperty[] = []
 
         const references = Object.keys(entity).filter((it: string) => it.startsWith('reference_'))
@@ -167,7 +168,7 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         return flattenedReferences
     }
 
-    private resolveReferenceRepresentativeValue(reference: any): EntityReferenceValue {
+    private resolveReferenceRepresentativeValue(reference: GraphQLResultNode): EntityReferenceValue {
         const referencedPrimaryKey: number = reference['referencedPrimaryKey']
         const representativeAttributes: (NativeValue | NativeValue[])[] = []
 
@@ -179,7 +180,7 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         return new EntityReferenceValue(referencedPrimaryKey, representativeAttributes.flat())
     }
 
-    private flattenAttributesForSingleReference(reference: any): [string, EntityReferenceValue][] {
+    private flattenAttributesForSingleReference(reference: GraphQLResultNode): [string, EntityReferenceValue][] {
         const referencedPrimaryKey: number = reference['referencedPrimaryKey']
         const flattenedAttributes: [string, EntityReferenceValue][] = []
 
