@@ -53,12 +53,13 @@ const props = withDefaults(
 const prettyPrint = ref<boolean>(true)
 
 const menuItems = ref<Map<MarkdownDetailRendererMenuItemType, MenuItem<MarkdownDetailRendererMenuItemType>>>()
-const menuItemList: ComputedRef<MenuItem<MarkdownDetailRendererMenuItemType>[]> =
+const menuItemList: ComputedRef<MenuAction<MarkdownDetailRendererMenuItemType>[]> =
     computed(() => {
         if (menuItems.value == undefined) {
             return []
         }
         return Array.from(menuItems.value.values())
+            .filter((item): item is MenuAction<MarkdownDetailRendererMenuItemType> => item instanceof MenuAction)
     })
 watch(
     prettyPrint,

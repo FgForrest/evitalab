@@ -288,15 +288,15 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
     }
 
     buildPrimaryKeyOrderBy(orderDirection: OrderDirection): string {
-        return `entityPrimaryKeyNatural(${orderDirection})`
+        return `entityPrimaryKeyNatural(${orderDirection.toUpperCase()})`
     }
 
     buildAttributeOrderBy(attributeSchema: AttributeSchema, orderDirection: OrderDirection): string {
-        return `attributeNatural("${attributeSchema.name}", ${orderDirection})`
+        return `attributeNatural("${attributeSchema.name}", ${orderDirection.toUpperCase()})`
     }
 
     buildReferenceAttributeOrderBy(referenceSchema: ReferenceSchema, attributeSchema: AttributeSchema, orderDirection: OrderDirection): string {
-        return `referenceProperty("${referenceSchema.name}", attributeNatural("${attributeSchema.name}", ${orderDirection}))`
+        return `referenceProperty("${referenceSchema.name}", attributeNatural("${attributeSchema.name}", ${orderDirection.toUpperCase()}))`
     }
 
     buildParentEntityFilterBy(parentPrimaryKey: number): string {

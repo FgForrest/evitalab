@@ -1,12 +1,14 @@
 import { test, expect, describe } from 'vitest'
 import { ShareTabObject } from '@/modules/workspace/tab/model/ShareTabObject'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
+import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
+import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
 
 function sampleShareTabObject(): ShareTabObject {
     return new ShareTabObject(
         TabType.EvitaQLConsole,
-        { connectionId: 'demo', catalogName: 'evita' } as any,
-        { query: 'query(collection("Product"))' } as any
+        { connectionId: 'demo', catalogName: 'evita' } as unknown as TabParamsDto,
+        { query: 'query(collection("Product"))' } as unknown as TabDataDto
     )
 }
 

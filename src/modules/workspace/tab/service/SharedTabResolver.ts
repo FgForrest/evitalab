@@ -1,6 +1,5 @@
 import type { InjectionKey } from 'vue'
 import { ShareTabObject } from '@/modules/workspace/tab/model/ShareTabObject'
-import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import type { AnyTabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'

@@ -108,7 +108,7 @@ The non-negotiable rules:
 
 - `master`: released versions only; `dev`: current development (target for PRs and feature branches)
 - Feature branches: created from `dev` for each issue
-- Use [conventional commits](https://www.conventionalcommits.org/) — CI/CD depends on this for versioning
+- Use [conventional commits](https://www.conventionalcommits.org/) — CI/CD depends on this for versioning, do not mentions any author, always use `Refs:` with number of current the issue by first number in the branch name, keep the descriptio coarse
 - Details: [guidelines — git](documentation/developer/guidelines.md#git)
 
 ## External Documentation
