@@ -28,14 +28,16 @@ const isGroupedFacets = computed<boolean>(() => {
 
 const ungroupedFacets = computed<VisualisedFacetStatistics[]>(() => {
     if (isGroupedFacets.value) return []
-    if (props.referenceStatistics.groups.length === 0) return []
-    return props.referenceStatistics.groups[0].facets
+    const firstGroup = props.referenceStatistics.groups[0]
+    if (firstGroup == undefined) return []
+    return firstGroup.facets
 })
 
 const ungroupedHistograms = computed<VisualisedHistogramStatistics[]>(() => {
     if (isGroupedFacets.value) return []
-    if (props.referenceStatistics.groups.length === 0) return []
-    return props.referenceStatistics.groups[0].histograms
+    const firstGroup = props.referenceStatistics.groups[0]
+    if (firstGroup == undefined) return []
+    return firstGroup.histograms
 })
 
 const hasUngroupedFacets = computed<boolean>(() => ungroupedFacets.value.length > 0)

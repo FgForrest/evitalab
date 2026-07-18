@@ -116,7 +116,10 @@ const LuxonExtensions: Plugin = {
 
             // if `durationUnits` is empty (i.e. duration is zero), then just shift to the smallest unit
             if (!durationUnits.length) {
-                durationUnits.push(allUnits[smallestUnitIndex]);
+                const smallestUnit = allUnits[smallestUnitIndex]
+                if (smallestUnit != undefined) {
+                    durationUnits.push(smallestUnit);
+                }
             }
 
             return duration.shiftTo(...durationUnits).__toHuman__!(opts);

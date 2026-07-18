@@ -41,7 +41,7 @@ export class EvitaQLFacetSummaryResultParser implements FacetSummaryResultParser
 
         const references: VisualisedReferenceFacets[] = []
 
-        for (const referenceName in groupsByReference) {
+        for (const [referenceName, groupOfGroups] of Object.entries(groupsByReference)) {
             const referenceSchema = entitySchema.references.get(referenceName)
             if (referenceSchema == undefined) {
                 throw new UnexpectedError(`Reference '${referenceName}' not found in entity '${entitySchema.name}'.`)
@@ -57,7 +57,6 @@ export class EvitaQLFacetSummaryResultParser implements FacetSummaryResultParser
                 referenceSchema.entityType as string
             )
 
-            const groupOfGroups: FacetGroupStatistics[] = groupsByReference[referenceName]
             const groups: VisualisedFacetGroup[] = groupOfGroups.map((groupStats: FacetGroupStatistics) => {
                 const groupStatistics = this.resolveGroupStatistics(groupStats, groupRepresentativeAttributes)
                 const facets = groupStats.facetStatistics.toArray().map((facetStats: FacetStatistics) =>

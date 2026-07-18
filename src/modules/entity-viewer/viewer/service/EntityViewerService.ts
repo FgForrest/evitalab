@@ -165,7 +165,11 @@ export class EntityViewerService {
         } else if (result.totalEntitiesCount != 1) {
             throw new UnexpectedError(`Expected 1 entity with price for sale, got ${result.totalEntitiesCount} entities.`)
         }
-        return (result.entities[0][EntityPropertyKey.prices().toString()] as EntityPrices | undefined)?.priceForSale
+        const firstEntity = result.entities[0]
+        if (firstEntity == undefined) {
+            return undefined
+        }
+        return (firstEntity[EntityPropertyKey.prices().toString()] as EntityPrices | undefined)?.priceForSale
     }
 
     /**

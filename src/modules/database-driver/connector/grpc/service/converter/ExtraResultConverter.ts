@@ -47,8 +47,7 @@ export class ExtraResultConverter {
         [key: string]: GrpcHistogram
     }): ImmutableMap<string, Histogram> | undefined {
         const newHistograms = new Map<string, Histogram>()
-        for (const histogramName in histograms) {
-            const histogram = histograms[histogramName]
+        for (const [histogramName, histogram] of Object.entries(histograms)) {
             newHistograms.set(
                 histogramName,
                 new Histogram(
@@ -110,8 +109,7 @@ export class ExtraResultConverter {
         const newReferenceGroupStatistics: ReferenceGroupStatistics[] = []
         for (const refGroupStatistic of referenceGroupStatistics) {
             const histogramStatistics = new Map<string, Histogram>()
-            for (const histogramName in refGroupStatistic.histogramStatistics) {
-                const grpcHistogram = refGroupStatistic.histogramStatistics[histogramName]
+            for (const [histogramName, grpcHistogram] of Object.entries(refGroupStatistic.histogramStatistics)) {
                 histogramStatistics.set(
                     histogramName,
                     new Histogram(
@@ -212,10 +210,8 @@ export class ExtraResultConverter {
             string,
             Hierarchy
         >()
-        for (const hierarchyName in hierarchy) {
-            const newHierarchyData = this.convertHierarchyAttribute(
-                hierarchy[hierarchyName]
-            )
+        for (const [hierarchyName, grpcHierarchy] of Object.entries(hierarchy)) {
+            const newHierarchyData = this.convertHierarchyAttribute(grpcHierarchy)
             newHierarchy.set(hierarchyName, newHierarchyData)
         }
         return newHierarchy.size === 0 ? undefined : ImmutableMap(newHierarchy)
@@ -224,10 +220,10 @@ export class ExtraResultConverter {
     convertHierarchyAttribute(hierarchy: GrpcHierarchy): Hierarchy {
         const levelInfos: Map<string, ImmutableList<LevelInfo>> = new Map()
         const hierarchyData = hierarchy.hierarchy
-        for (const levelInfoName in hierarchyData) {
+        for (const [levelInfoName, grpcLevelInfos] of Object.entries(hierarchyData)) {
             levelInfos.set(
                 levelInfoName,
-                this.convertLevelInfos(hierarchyData[levelInfoName])
+                this.convertLevelInfos(grpcLevelInfos)
             )
         }
         return new Hierarchy(ImmutableMap(levelInfos))

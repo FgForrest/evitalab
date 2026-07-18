@@ -258,7 +258,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                 }
             } else if (requiredDatum.type === EntityPropertyType.ReferenceAttributes) {
                 const referenceName = requiredDatum.names[0]
-                if (!requiredReferences.includes(referenceName)) {
+                if (referenceName != undefined && !requiredReferences.includes(referenceName)) {
                     requiredReferences.push(referenceName)
                 }
             }

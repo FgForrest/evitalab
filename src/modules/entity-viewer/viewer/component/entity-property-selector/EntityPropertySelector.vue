@@ -348,7 +348,7 @@ onUnmounted(() => {
                 <template v-if="(sectionedPropertyDescriptors.get(EntityPropertyType.Prices)?.length || 0) > 0 && (filteredSectionedPropertyDescriptors.get(EntityPropertyType.Prices)?.length || 0) > 0">
                     <VListItemDivider />
                     <PropertySectionPricesItem
-                        :property-descriptor="sectionedPropertyDescriptors.get(EntityPropertyType.Prices)![0]"
+                        :property-descriptor="sectionedPropertyDescriptors.get(EntityPropertyType.Prices)![0]!"
                         @change-state="(key, isSelected) => changeSelectedState(key, isSelected)"
                     />
                 </template>

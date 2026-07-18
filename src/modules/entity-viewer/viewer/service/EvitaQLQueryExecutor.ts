@@ -190,7 +190,7 @@ export class EvitaQLQueryExecutor extends QueryExecutor {
 
         for (const referenceName in grouped) { // by reference name
             if (Object.prototype.hasOwnProperty.call(grouped, referenceName)) {
-                const referenceGroup: Reference[] = grouped[referenceName]
+                const referenceGroup: Reference[] | undefined = grouped[referenceName]
                 if (referenceGroup == undefined) {
                     continue
                 }

@@ -17,8 +17,12 @@ export function parseHumanDurationToMs(humanDuration: string): bigint {
             throw new Error('Invalid duration format')
         }
 
-        const value: bigint = BigInt(match[1])
-        const unit: string = match[2]
+        const rawValue: string | undefined = match[1]
+        const unit: string | undefined = match[2]
+        if (rawValue == undefined || unit == undefined) {
+            throw new Error('Invalid duration format')
+        }
+        const value: bigint = BigInt(rawValue)
 
         switch (unit) {
             case 'h': durationInMs += value * hourInMs; break

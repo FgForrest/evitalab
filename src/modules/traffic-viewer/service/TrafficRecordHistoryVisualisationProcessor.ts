@@ -160,7 +160,7 @@ export class TrafficRecordHistoryVisualisationProcessor {
             }
 
             for (let i = startInsertingAt; i < records.length; i++) {
-                const record: TrafficRecord = records[i]
+                const record: TrafficRecord | undefined = records[i]
                 if (record == request.beforeRecord) {
                     records.splice(i, 0, sessionStartRecord)
                     startInsertingAt += 2 // we want to get pass the inserted and the "before" record as these are already processed
@@ -185,7 +185,7 @@ export class TrafficRecordHistoryVisualisationProcessor {
             // we need to iterate of records again everytime because there may be statistics container somewhere in the back
             // that need to be matched to records next to the opening source query containers
             for (let i = 0; i < records.length; i++) {
-                const record: TrafficRecord = records[i]
+                const record: TrafficRecord | undefined = records[i]
                 if (record == request.beforeRecord) {
                     records.splice(i, 0, sourceQueryRecord)
                     break
