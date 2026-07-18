@@ -1,3 +1,4 @@
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import { List, Map } from 'immutable'
 import { NamingConvention } from '../NamingConvetion'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
@@ -32,7 +33,7 @@ export class GlobalAttributeSchema extends EntityAttributeSchema {
                 deprecationNotice: string | undefined,
                 type: Scalar,
                 nullable: boolean,
-                defaultValue: any,
+                defaultValue: EvitaValue,
                 localized: boolean,
                 indexedDecimalPlaces: number,
                 representative: boolean,

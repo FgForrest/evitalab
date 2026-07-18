@@ -1,3 +1,4 @@
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import { List, Map } from 'immutable'
 import { NamingConvention } from '../NamingConvetion'
 import { AbstractSchema } from '@/modules/database-driver/request-response/schema/AbstractSchema'
@@ -43,7 +44,7 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Loca
     /**
      * Default value is used when the entity is created without this attribute specified. Default values allow to pass non-null checks even if no attributes of such name are specified.
      */
-    readonly defaultValue: any | any[] | null
+    readonly defaultValue: EvitaValue | EvitaValue[] | null
     /**
      * When attribute is localized, it has to be ALWAYS used in connection with specific `Locale`.
      */
@@ -64,7 +65,7 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Loca
                 deprecationNotice: string | undefined,
                 type: Scalar,
                 nullable: boolean,
-                defaultValue: any | any[] | undefined,
+                defaultValue: EvitaValue | EvitaValue[] | undefined,
                 localized: boolean,
                 indexedDecimalPlaces: number,
                 sortableInScopes: List<EntityScope>,

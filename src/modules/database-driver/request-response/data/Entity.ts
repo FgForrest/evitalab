@@ -1,5 +1,5 @@
-import { EntityReferenceWithParent } from './EntityReferenceWithParent'
 import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
+import { EntityReferenceWithParent } from './EntityReferenceWithParent'
 import { Attributes } from './Attributes'
 import { Price } from './Price'
 import { Reference } from './Reference'

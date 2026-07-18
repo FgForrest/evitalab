@@ -1,5 +1,5 @@
-import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
+import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { BigDecimalNumberRange } from '@/modules/database-driver/data-type/BigDecimalNumberRange'
 import { BigintNumberRange } from '@/modules/database-driver/data-type/BigintNumberRange'
 import { DateTimeRange } from '@/modules/database-driver/data-type/DateTimeRange'

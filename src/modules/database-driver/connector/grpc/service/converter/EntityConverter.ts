@@ -1,5 +1,5 @@
-import type { GrpcLocalizedAttribute } from '@/modules/database-driver/connector/grpc/gen/GrpcAttribute_pb'
 import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
+import type { GrpcLocalizedAttribute } from '@/modules/database-driver/connector/grpc/gen/GrpcAttribute_pb'
 import type {
     GrpcEntityReference,
     GrpcEntityReferenceWithParent,
