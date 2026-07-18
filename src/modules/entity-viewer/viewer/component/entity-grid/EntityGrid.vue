@@ -44,7 +44,7 @@ const entityViewerTabFactory: EntityViewerTabFactory = useEntityViewerTabFactory
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const pageSizeOptions: any[] = [10, 25, 50, 100, 250, 500, 1000].map(it => ({ title: it.toString(10), value: it }))
+const pageSizeOptions: { title: string; value: number }[] = [10, 25, 50, 100, 250, 500, 1000].map(it => ({ title: it.toString(10), value: it }))
 
 const props = defineProps<{
     displayedGridHeaders: any[],

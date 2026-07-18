@@ -13,7 +13,7 @@ import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 
 const { t } = useI18n()
 
-const priceTypes: any[] = [
+const priceTypes: { title: string; value: QueryPriceMode }[] = [
     { title: t(`entityViewer.priceTypeSelector.${QueryPriceMode.WithTax}`), value: QueryPriceMode.WithTax },
     { title: t(`entityViewer.priceTypeSelector.${QueryPriceMode.WithoutTax}`), value: QueryPriceMode.WithoutTax }
 ];

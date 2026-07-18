@@ -30,7 +30,7 @@ const trafficViewerService: TrafficViewerService = useTrafficViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const userTrafficRecordTypeItems: any[] = Object.values(UserTrafficRecordType).map(type => {
+const userTrafficRecordTypeItems: { value: UserTrafficRecordType; title: string }[] = Object.values(UserTrafficRecordType).map(type => {
     return {
         value: type,
         title: t(`trafficViewer.recordHistory.filter.form.types.type.${type}`)
