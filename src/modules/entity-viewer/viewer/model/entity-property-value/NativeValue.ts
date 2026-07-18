@@ -31,7 +31,7 @@ type supportedValueType =
     | Locale
     | Currency
     | undefined
-    | Range<any>
+    | Range<unknown>
 export class NativeValue extends EntityPropertyValue {
     readonly delegate: supportedValueType
 
@@ -91,7 +91,7 @@ export class NativeValue extends EntityPropertyValue {
         return this.delegate
     }
 
-    isPrettyPrintable(obj: any): obj is PrettyPrintable {
-        return 'getPrettyPrintableString' in obj
+    isPrettyPrintable(obj: unknown): obj is PrettyPrintable {
+        return obj != null && typeof obj === 'object' && 'getPrettyPrintableString' in obj
     }
 }
