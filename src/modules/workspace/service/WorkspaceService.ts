@@ -290,7 +290,7 @@ export class WorkspaceService {
     addTabHistoryRecord<R>(historyKey: TabHistoryKey<R>, record: R): void {
         const serializedHistoryKey: string = historyKey.toString()
 
-        let records: any[] | undefined = this.store.tabHistory.get(serializedHistoryKey)
+        let records: unknown[] | undefined = this.store.tabHistory.get(serializedHistoryKey)
         if (records == undefined) {
             records = []
             this.store.tabHistory.set(serializedHistoryKey, records)
@@ -300,7 +300,7 @@ export class WorkspaceService {
         if (record instanceof Array) {
             let emptyParts: number = 0
             for (let i = 1; i < record.length; i++) {
-                const part: any | undefined = record[i]
+                const part: unknown = record[i]
                 if (part == undefined || part === '') {
                     emptyParts += 1
                 }
@@ -315,13 +315,13 @@ export class WorkspaceService {
         }
 
         // ignore duplicate records
-        const lastRecord: any | undefined = records.at(-1)
+        const lastRecord: unknown = records.at(-1)
         if (lastRecord != undefined) {
             if (record instanceof Array) {
                 let equalParts: number = 0
                 for (let i = 1; i < record.length; i++) {
-                    const recordPart: any | undefined = record[i]
-                    const lastRecordPart: any | undefined = lastRecord[i]
+                    const recordPart: unknown = record[i]
+                    const lastRecordPart: unknown = (lastRecord as unknown[])[i]
                     if (recordPart === lastRecordPart) {
                         equalParts += 1
                     }
@@ -362,7 +362,7 @@ export class WorkspaceService {
         if (serializedTabHistory == undefined) {
             return false
         }
-        const tabHistory: Map<string, any[]> = new Map(JSON.parse(LZString.decompressFromEncodedURIComponent(serializedTabHistory)))
+        const tabHistory: Map<string, unknown[]> = new Map(JSON.parse(LZString.decompressFromEncodedURIComponent(serializedTabHistory)))
         if (tabHistory.size === 0) {
             return false
         }

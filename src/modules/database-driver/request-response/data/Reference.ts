@@ -1,3 +1,4 @@
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import { EntityReference } from './EntityReference'
 import { Attributes } from './Attributes'
 import { Cardinality } from '../schema/Cardinality'
@@ -48,9 +49,9 @@ export class Reference {
         return this.referencedEntity.entityType
     }
 
-    attribute(attributeName: string): any | undefined
-    attribute(attributeName: string, locale?: Locale): any | undefined
-    attribute(attributeName: string, locale?: Locale): any | undefined {
+    attribute(attributeName: string): EvitaValue | undefined
+    attribute(attributeName: string, locale?: Locale): EvitaValue | undefined
+    attribute(attributeName: string, locale?: Locale): EvitaValue | undefined {
         if (locale == undefined) {
             return this._attributes.attribute(attributeName)
         }
