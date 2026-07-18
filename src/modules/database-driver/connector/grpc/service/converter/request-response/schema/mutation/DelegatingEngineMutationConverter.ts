@@ -33,6 +33,7 @@ import {
 
 export class DelegatingEngineMutationConverter {
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- heterogeneous mutation-converter registry keyed by grpc oneof case
     private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([
         ['createCatalogSchemaMutation', CreateCatalogSchemaMutationConverter.INSTANCE],
         ['modifyCatalogSchemaNameMutation', ModifyCatalogSchemaNameMutationConverter.INSTANCE],

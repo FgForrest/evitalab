@@ -51,6 +51,7 @@ import type {
 
 export class DelegatingAttributeSchemaMutationConverter {
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- heterogeneous mutation-converter registry keyed by grpc oneof case
     private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([ // todo pfi: replace any
         ['createAttributeSchemaMutation',
             CreateAttributeSchemaMutationConverter.INSTANCE
