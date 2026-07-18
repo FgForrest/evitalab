@@ -30,17 +30,17 @@ const backupFileRules = [
     }
 ]
 const catalogNameRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value != undefined && value.trim().length > 0) return true
         return t('backupViewer.restoreLocal.form.catalogName.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         const classifierValidationResult : ClassifierValidationErrorType | undefined =
             await backupViewerService.isCatalogNameValid(value)
         if (classifierValidationResult == undefined) return true
         return t(`backupViewer.restoreLocal.form.catalogName.validations.${classifierValidationResult}`)
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         const available: boolean = await backupViewerService.isCatalogNameAvailable(value)
         if (available) return true
         return t('backupViewer.restoreLocal.form.catalogName.validations.notAvailable')

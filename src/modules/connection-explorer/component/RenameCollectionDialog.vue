@@ -26,17 +26,17 @@ const emit = defineEmits<{
 }>()
 
 const newNameRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value != undefined && value.trim().length > 0) return true
         return t('explorer.collection.rename.form.newName.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         const classifierValidationResult : ClassifierValidationErrorType | undefined =
             await collectionItemService.isEntityTypeValid(value)
         if (classifierValidationResult == undefined) return true
         return t(`explorer.collection.rename.form.newName.validations.${classifierValidationResult}`)
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         if (value === props.entityType) {
             return true
         }
