@@ -17,7 +17,7 @@ const emit = defineEmits<{
     (e: 'update:clearHistory'): void
 }>()
 
-const historyListItems = computed<any[]>(() => {
+const historyListItems = computed<{ key: string, preview: string[], value: EvitaQLConsoleHistoryRecord }[]>(() => {
     return props.items.map((record: EvitaQLConsoleHistoryRecord) => {
         return {
             key: record[0],

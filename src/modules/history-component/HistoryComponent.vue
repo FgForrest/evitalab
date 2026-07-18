@@ -5,7 +5,7 @@ import type { EvitaQLConsoleHistoryRecord } from '../evitaql-console/console/his
 const { t } = useI18n()
 
 const props = defineProps<{
-    items: any[],
+    items: { key: string, preview: string[], value: GraphQLConsoleHistoryRecord | EvitaQLConsoleHistoryRecord }[],
 }>()
 
 const emit = defineEmits<{
