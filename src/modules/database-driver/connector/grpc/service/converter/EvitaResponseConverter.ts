@@ -50,8 +50,8 @@ export class EvitaResponseConverter {
                     page.pageNumber
                 )
             } catch (e) {
-                console.log(e)
-                return null as any
+                console.error(e)
+                return PaginatedList.empty()
             }
 
         } else if(grpcRecordPage.chunk.case === 'stripList'){
