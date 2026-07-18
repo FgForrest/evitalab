@@ -32,7 +32,7 @@ export class EvitaQLConsoleService {
            result = new EvitaResponse(result.recordPage, result.extraResults, cleanedString);
         } catch (e) {
             if (e instanceof QueryError) {
-                result = e.error
+                result = e.error as EvitaResponse
             } else {
                 throw e
             }
