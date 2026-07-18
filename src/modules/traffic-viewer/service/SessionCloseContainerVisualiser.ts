@@ -69,7 +69,6 @@ export class SessionCloseContainerVisualiser extends TrafficRecordVisualiser<Ses
             i18n.global.t('trafficViewer.recordHistory.record.type.sessionClose.metadata.item.trafficRecordCount.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.sessionClose.metadata.item.trafficRecordCount.value',
-                // @ts-ignore
                 trafficRecord.trafficRecordCount,
                 { named: { count: formatCount(trafficRecord.trafficRecordCount) } }
             ),
@@ -80,7 +79,6 @@ export class SessionCloseContainerVisualiser extends TrafficRecordVisualiser<Ses
             i18n.global.t('trafficViewer.recordHistory.record.type.sessionClose.metadata.item.queryCount.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.sessionClose.metadata.item.queryCount.value',
-                // @ts-ignore
                 trafficRecord.queryCount,
                 { named: { count: formatCount(trafficRecord.queryCount) } }
             ),
@@ -91,7 +89,6 @@ export class SessionCloseContainerVisualiser extends TrafficRecordVisualiser<Ses
             i18n.global.t('trafficViewer.recordHistory.record.type.sessionClose.metadata.item.entityFetchCount.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.sessionClose.metadata.item.entityFetchCount.value',
-                // @ts-ignore
                 trafficRecord.entityFetchCount,
                 { named: { count: formatCount(trafficRecord.entityFetchCount) } }
             ),
@@ -102,7 +99,6 @@ export class SessionCloseContainerVisualiser extends TrafficRecordVisualiser<Ses
             i18n.global.t('trafficViewer.recordHistory.record.type.sessionClose.metadata.item.mutationCount.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.sessionClose.metadata.item.mutationCount.value',
-                // @ts-ignore
                 trafficRecord.mutationCount,
                 { named: { count: formatCount(trafficRecord.mutationCount) } }
             ),
