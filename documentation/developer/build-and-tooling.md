@@ -22,6 +22,7 @@ Reference of the build pipeline, environment variables and developer tooling. Fo
 | `yarn verify` | One-shot local pre-push gate: `yarn lint && yarn typecheck && yarn test` |
 | `yarn preview` | Serves the production build on port 3000 |
 | `yarn lint` | ESLint with auto-fix (flat config) |
+| `yarn lint:check` | ESLint **without** auto-fix — fails on any problem; used by CI |
 | `yarn test` | Vitest |
 | `yarn evitadb:start\|stop\|status\|logs` | Manage the local evitaDB container (`scripts/evitadb-server.sh`, see [evitaDB server](evitadb-server.md)) |
 
@@ -78,10 +79,13 @@ bridges the generated `.eslintrc-auto-import.json` globals via
 (`auto-imports`/`components`/`typed-router`) and the grpc `gen/` dir. Run
 `yarn lint` before committing.
 
-> The lint ruleset is not yet at zero — the codebase predates any working lint
-> gate (ESLint 9 silently ignored the old `.eslintrc.js`). High-volume rules
-> (`no-explicit-any`, `no-unused-vars`) are pending a burn-down before `yarn lint`
-> joins the CI gate.
+The lint ruleset is **green (zero problems)** and enforced in CI via
+`yarn lint:check` (non-fixing). Keep it there: prefer precise types or
+`unknown` + narrowing over `any`. There is a single justified
+`no-explicit-any` disable-block in
+`EntityGridColumnHeader.vue` for the Vuetify `#headers` slot bindings, whose
+types (`InternalDataTableHeader`, `IconValue`) are not exported through any
+resolvable Vuetify entry point.
 
 ## gRPC client generation
 
@@ -94,7 +98,7 @@ files.
 
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
-| `.github/workflows/dev.yml` | push to `dev` **and** pull requests targeting `dev` | Verify: install (`yarn install --frozen-lockfile`), `yarn typecheck`, `yarn test`, `yarn build` |
+| `.github/workflows/dev.yml` | push to `dev` **and** pull requests targeting `dev` | Verify: install (`yarn install --frozen-lockfile`), `yarn lint:check`, `yarn typecheck`, `yarn test`, `yarn build` |
 | `.github/workflows/release.yml` | push to `master` | Resolves a calendar-semantic version from conventional commits (`semantic-calendar-version`), tests, builds **standalone** and **driver** dists, creates a GitHub release (release-drafter) with `dist-standalone` and `dist-driver` zip/tar.gz assets |
 
 Versioning depends on [conventional commits](https://www.conventionalcommits.org/) — this is why
