@@ -82,12 +82,12 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
     }
 
 
-    static mutationType(mutationType: any): MetadataItem {
+    static mutationType(mutationType: unknown): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-file-tree',
             i18n.global.t('mutationHistoryViewer.record.type.attribute.mutationType.tooltip'),
-            mutationType?.toString(),
+            mutationType == undefined ? "" : String(mutationType),
             MetadataItemSeverity.Info,
             undefined,
             undefined

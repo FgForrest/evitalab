@@ -92,8 +92,8 @@ function openKeymap() {
     workspaceService.createTab(keymapViewerTabFactory.createNew())
 }
 
-function handleOptionClick(selected: any): void {
-    if (selected.length > 0) {
+function handleOptionClick(selected: unknown): void {
+    if (Array.isArray(selected) && selected.length > 0) {
         const option: ManageOptionType = selected[0] as ManageOptionType
         switch (option) {
             case ManageOptionType.Keymap:
