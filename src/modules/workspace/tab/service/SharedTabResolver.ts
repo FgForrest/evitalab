@@ -63,7 +63,7 @@ export class SharedTabResolver {
             }
         } catch (e) {
             if (e instanceof ConnectionNotFoundError && isTabParamsDtoWithConnection(shareTabObject.tabParams)) {
-                const tabParams: any = shareTabObject.tabParams as TabParamsDtoWithConnection
+                const tabParams: TabParamsDtoWithConnection = shareTabObject.tabParams as TabParamsDtoWithConnection
                 const connectionName: string | undefined = tabParams.connectionName
 
                 throw new InvalidConnectionInSharedTabError(

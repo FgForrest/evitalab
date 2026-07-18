@@ -87,7 +87,7 @@ export class EvitaClientSession {
     private readonly _catalogName: string
     private readonly _catalogState: CatalogState
     private _active: boolean = true
-    private readonly _callMetadata: any
+    private readonly _callMetadata: { headers: Record<string, string> }
 
     private readonly clientEntitySchemaAccessor: EntitySchemaAccessor
 

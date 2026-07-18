@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
 import { asError } from '@/utils/error'
 /**
  * Dialog to open a shared tab from a hash or share link pasted by the user into a running
@@ -44,7 +45,7 @@ const sharedTab = computed<ShareTabObject | undefined>(() => {
     }
 })
 const hasSensitiveData = computed<boolean>(() => {
-    const tabData: any = sharedTab.value?.tabData
+    const tabData: TabDataDto | undefined = sharedTab.value?.tabData
     return tabData != undefined && Object.keys(tabData).length > 0
 })
 
