@@ -135,7 +135,6 @@ export class MetadataItem {
             'mdi-timer-outline',
             i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.duration'),
             // note: typescript cannot comprehend that there is luxon extensions that overrides it...
-            // @ts-ignore
             duration.toShortHuman(),
             durationIndicator
         )
@@ -148,7 +147,6 @@ export class MetadataItem {
             i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.ioFetchedSizeBytes.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.common.metadata.item.ioFetchedSizeBytes.value',
-                // @ts-ignore
                 ioFetchedSizeBytes,
                 { named: { count: formatByteSize(ioFetchedSizeBytes) } }
             ),
