@@ -48,11 +48,12 @@ const props = withDefaults(defineProps<{
 const prettyPrint = ref<boolean>(true)
 
 const menuItems = ref<Map<CodeDetailRendererMenuItemType, MenuItem<CodeDetailRendererMenuItemType>>>()
-const menuItemList: ComputedRef<MenuItem<CodeDetailRendererMenuItemType>[]> = computed(() => {
+const menuItemList: ComputedRef<MenuAction<CodeDetailRendererMenuItemType>[]> = computed(() => {
     if (menuItems.value == undefined) {
         return []
     }
     return Array.from(menuItems.value.values())
+        .filter((item): item is MenuAction<CodeDetailRendererMenuItemType> => item instanceof MenuAction)
 })
 watch(
     [() => props.codeLanguage, prettyPrint],

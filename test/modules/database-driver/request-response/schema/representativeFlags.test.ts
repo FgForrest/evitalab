@@ -12,6 +12,7 @@ import { ScopedGlobalAttributeUniquenessType } from '../../../../../src/modules/
 import { GlobalAttributeUniquenessType } from '../../../../../src/modules/database-driver/request-response/schema/GlobalAttributeUniquenessType'
 import { CatalogSchemaConverter } from '../../../../../src/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter'
 import { GrpcAttributeSchemaType } from '../../../../../src/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
+import type { GrpcAttributeSchema } from '../../../../../src/modules/database-driver/connector/grpc/gen/GrpcEntitySchema_pb'
 
 const nameVariants = Map<NamingConvention, string>()
 
@@ -159,7 +160,7 @@ describe('implicit filterable due to uniqueness (restored pre-#233 rule)', () =>
 describe('CatalogSchemaConverter.convertAttributeSchema class mapping', () => {
     const converter = new CatalogSchemaConverter()
 
-    function grpcAttribute(schemaType: GrpcAttributeSchemaType): any {
+    function grpcAttribute(schemaType: GrpcAttributeSchemaType): GrpcAttributeSchema {
         return {
             name: 'a',
             schemaType,
@@ -176,11 +177,13 @@ describe('CatalogSchemaConverter.convertAttributeSchema class mapping', () => {
             filterableInScopes: [],
             uniqueInScopes: [],
             uniqueGloballyInScopes: []
-        }
+        } as unknown as GrpcAttributeSchema
     }
 
     function convert(schemaType: GrpcAttributeSchemaType): AttributeSchema {
-        return (converter as any).convertAttributeSchema(grpcAttribute(schemaType))
+        return (converter as unknown as {
+            convertAttributeSchema(attribute: GrpcAttributeSchema): AttributeSchema
+        }).convertAttributeSchema(grpcAttribute(schemaType))
     }
 
     test('ENTITY_SCHEMA maps to EntityAttributeSchema', () => {
