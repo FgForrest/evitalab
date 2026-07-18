@@ -74,18 +74,18 @@ const chunkFileSizeInBytesRounded = computed<boolean>(() => {
 })
 
 const catalogNameRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value != undefined && value.trim().length > 0) return true
         return t('trafficViewer.recordings.startRecording.form.catalogName.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         const available: boolean = await trafficViewerService.isCatalogExists(value)
         if (available) return true
         return t('trafficViewer.recordings.startRecording.form.catalogName.validations.notExists')
     }
 ]
 const samplingRateRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value == undefined || value === '') {
             return t('trafficViewer.recordings.startRecording.form.samplingRate.validations.required')
         }
@@ -100,7 +100,7 @@ const samplingRateRules = [
     }
 ]
 const maxDurationInMillisecondsRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value == undefined || value === '') {
             return true
         }
@@ -118,7 +118,7 @@ const maxDurationInMillisecondsRules = [
     }
 ]
 const maxFileSizeInBytesRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (!exportFile.value) {
             return true
         }
@@ -138,7 +138,7 @@ const maxFileSizeInBytesRules = [
     }
 ]
 const chunkFileSizeInBytesRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (!exportFile.value) {
             return true
         }

@@ -96,7 +96,7 @@ watch(sessionId, async (newValue) => {
     }
 })
 const sessionIdRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value == undefined || value === '') {
             return true
         }
@@ -110,7 +110,7 @@ const sessionIdRules = [
 
 const longerThan = ref<string | undefined>(criteria.value.longerThanInHumanFormat || '')
 const longerThanRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value == undefined || value === '') {
             return true
         }
@@ -138,7 +138,7 @@ watch(longerThan, async (newValue) => {
 
 const fetchingMoreBytesThan = ref<string>(criteria.value.fetchingMoreBytesThanInHumanFormat || '')
 const fetchingMoreBytesThanRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value == undefined || value === '') {
             return true
         }

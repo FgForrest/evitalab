@@ -23,11 +23,11 @@ const emit = defineEmits<{
 
 
 const catalogNameToBeReplacedWithRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value != undefined && value.trim().length > 0) return true
         return t('explorer.catalog.replace.form.catalogNameToBeReplacedWith.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         if (value === props.catalog.name) {
             return true
         }

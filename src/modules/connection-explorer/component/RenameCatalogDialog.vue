@@ -22,17 +22,17 @@ const emit = defineEmits<{
 }>()
 
 const newNameRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value != undefined && value.trim().length > 0) return true
         return t('explorer.catalog.rename.form.newName.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         const classifierValidationResult: ClassifierValidationErrorType | undefined =
             await catalogItemService.isCatalogNameValid(value)
         if (classifierValidationResult == undefined) return true
         return t(`explorer.catalog.rename.form.newName.validations.${classifierValidationResult}`)
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         if (value === props.catalog.name) {
             return true
         }
