@@ -279,7 +279,7 @@ export class WorkspaceService {
      * @param historyKey
      */
     getTabHistoryRecords<R>(historyKey: TabHistoryKey<R>): R[] {
-        return this.store.tabHistory.get(historyKey.toString()) ?? []
+        return (this.store.tabHistory.get(historyKey.toString()) ?? []) as R[]
     }
 
     /**

@@ -65,17 +65,18 @@ export class EvitaDBDocsClient {
     /**
      * Translates HTTP errors into specific lab errors.
      */
-    protected handleCallError(e: any, connection?: Connection): LabError {
-        if (e.name === 'HTTPError') {
-            const statusCode: number = e.response.status
+    protected handleCallError(e: unknown, connection?: Connection): LabError {
+        const err = e as { name?: string, response?: { status?: number } }
+        if (err.name === 'HTTPError') {
+            const statusCode: number = err.response?.status ?? 0
             if (statusCode >= 500) {
                 return new EvitaDBInstanceServerError(connection)
             } else {
                 return new UnexpectedError(errorMessage(e))
             }
-        } else if (e.name === 'TimeoutError') {
+        } else if (err.name === 'TimeoutError') {
             return new TimeoutError(connection)
-        } else if (e.name === 'TypeError' && errorMessage(e) === 'Failed to fetch') {
+        } else if (err.name === 'TypeError' && errorMessage(e) === 'Failed to fetch') {
             return new EvitaDBInstanceNetworkError(connection)
         } else {
             return new UnexpectedError(errorMessage(e))

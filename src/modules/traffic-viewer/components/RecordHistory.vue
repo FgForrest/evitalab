@@ -223,7 +223,7 @@ async function processRecords(): Promise<void> {
     history.value = (await trafficViewerService.processRecords(props.dataPointer.catalogName, props.criteria, records)).toArray()
 }
 
-function handleRecordFetchError(e: any): void {
+function handleRecordFetchError(e: unknown): void {
     if (e instanceof ConnectError && e.code === Code.InvalidArgument) {
         // todo lho rework when connect library can provide metadata
         if (errorMessage(e).toLowerCase().includes('no on-demand traffic recording has been started')) {

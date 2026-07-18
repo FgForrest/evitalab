@@ -13,7 +13,7 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     // tabs
     const tabDefinitions: Ref<AnyTabDefinition[]> = ref<AnyTabDefinition[]>([])
     const tabData: Ref<Map<string, AnyTabData>> = ref<Map<string, AnyTabData>>(new Map())
-    const tabHistory: Ref<Map<string, any[]>> = ref<Map<string, any[]>>(new Map())
+    const tabHistory: Ref<Map<string, unknown[]>> = ref<Map<string, unknown[]>>(new Map())
 
     // status bar
     const subjectPathStatus: Ref<SubjectPathStatus> = ref<SubjectPathStatus>(new SubjectPathStatus())

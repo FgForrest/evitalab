@@ -40,7 +40,7 @@ export class GraphQLConsoleService {
     /**
      * Executes user GraphQL query against a given evitaDB server and catalog.
      */
-    async executeGraphQLQuery(dataPointer: GraphQLConsoleDataPointer, query: string, variables?: object): Promise<string> {
+    async executeGraphQLQuery(dataPointer: GraphQLConsoleDataPointer, query: string, variables?: Record<string, unknown>): Promise<string> {
         const result: GraphQLResponse = await this.callGraphQLApi(
             dataPointer,
             query,
@@ -54,7 +54,7 @@ export class GraphQLConsoleService {
      */
     private async callGraphQLApi(dataPointer: GraphQLConsoleDataPointer,
                                  query: string,
-                                 variables: object = {}): Promise<GraphQLResponse> {
+                                 variables: Record<string, unknown> = {}): Promise<GraphQLResponse> {
         return await this.evitaClient.queryCatalogUsingGraphQL(
             dataPointer.catalogName,
             dataPointer.instanceType,

@@ -1,7 +1,7 @@
 import { OffsetDateTime } from "./OffsetDateTime"
 import { Range } from "./Range"
 
-const emptyRangeEndSymbol: any = '∞'
+const emptyRangeEndSymbol: string = '∞'
 
 /**
  * Range type that envelopes {@link OffsetDateTime} types.

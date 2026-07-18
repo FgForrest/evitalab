@@ -89,7 +89,7 @@ export class ShareTabObject extends SerializableTabObject {
             throw new UnexpectedError('The value is not a valid shared tab hash.')
         }
 
-        let json: any
+        let json: { tabType?: TabType, tabParams: TabParamsDto, tabData?: TabDataDto } | undefined
         try {
             json = JSON.parse(decompressed)
         } catch {
