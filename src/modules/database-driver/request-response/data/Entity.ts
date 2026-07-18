@@ -1,4 +1,5 @@
 import { EntityReferenceWithParent } from './EntityReferenceWithParent'
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import { Attributes } from './Attributes'
 import { Price } from './Price'
 import { Reference } from './Reference'
@@ -59,9 +60,9 @@ export class Entity extends EntityReferenceWithParent {
         this.scope = scope
     }
 
-    attribute(attributeName: string): any | undefined
-    attribute(attributeName: string, locale?: Locale): any | undefined
-    attribute(attributeName: string, locale?: Locale): any | undefined {
+    attribute(attributeName: string): EvitaValue | undefined
+    attribute(attributeName: string, locale?: Locale): EvitaValue | undefined
+    attribute(attributeName: string, locale?: Locale): EvitaValue | undefined {
         if (locale == undefined) {
             return this._attributes.attribute(attributeName)
         }
@@ -80,9 +81,9 @@ export class Entity extends EntityReferenceWithParent {
         return this._attributes.locales
     }
 
-    associatedData(associatedDataName: string): any | undefined
-    associatedData(associatedDataName: string, locale?: Locale): any | undefined
-    associatedData(associatedDataName: string, locale?: Locale): any | undefined {
+    associatedData(associatedDataName: string): EvitaValue | undefined
+    associatedData(associatedDataName: string, locale?: Locale): EvitaValue | undefined
+    associatedData(associatedDataName: string, locale?: Locale): EvitaValue | undefined {
         if (locale == undefined) {
             return this._associatedData.associatedData(associatedDataName)
         }

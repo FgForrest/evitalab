@@ -1,4 +1,5 @@
 import { Map, List, Set } from "immutable";
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import { AttributeValue } from '@/modules/database-driver/request-response/data/AttributeValue'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 
@@ -9,21 +10,21 @@ import { Locale } from '@/modules/database-driver/data-type/Locale'
  * memory space for data that will never be used in search queries.
  */
 export class Attributes {
-    private readonly globalAttributes: Map<string, any>
-    private readonly localizedAttributes: Map<string, Map<string, any>>
+    private readonly globalAttributes: Map<string, EvitaValue>
+    private readonly localizedAttributes: Map<string, Map<string, EvitaValue>>
 
     private _allAttributes?: List<AttributeValue> = undefined
     private _names?: Set<string> = undefined
     private _locales?: Set<Locale> = undefined
 
-    constructor(globalAttributes: Map<string, any>, localizedAttributes: Map<string, Map<string, any>>){
+    constructor(globalAttributes: Map<string, EvitaValue>, localizedAttributes: Map<string, Map<string, EvitaValue>>){
         this.globalAttributes = globalAttributes
         this.localizedAttributes = localizedAttributes
     }
 
-    attribute(attributeName: string): any | undefined
-    attribute(attributeName: string, locale?: Locale): any | undefined
-    attribute(attributeName: string, locale?: Locale): any | undefined {
+    attribute(attributeName: string): EvitaValue | undefined
+    attribute(attributeName: string, locale?: Locale): EvitaValue | undefined
+    attribute(attributeName: string, locale?: Locale): EvitaValue | undefined {
         if (locale == undefined) {
             return this.globalAttributes.get(attributeName)
         }
