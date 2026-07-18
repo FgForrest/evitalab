@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { useI18n } from 'vue-i18n'
@@ -67,8 +68,8 @@ async function accept(): Promise<boolean> {
         const sharedTabRequest: TabDefinition<any, any> = await props.troubleshooterCallback(newConnectionId.value!)
         emit('resolve', sharedTabRequest)
         return true
-    } catch (e: any) {
-        await toaster.error('Could not resolve shared tab', e)
+    } catch (e) {
+        await toaster.error('Could not resolve shared tab', asError(e))
         return false
     }
 }

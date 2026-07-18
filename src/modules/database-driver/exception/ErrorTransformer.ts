@@ -1,3 +1,4 @@
+import { errorMessage } from '@/utils/error'
 import { Connection } from '@/modules/connection/model/Connection'
 import { ConnectError } from '@connectrpc/connect'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
@@ -24,14 +25,14 @@ export class ErrorTransformer {
             if (statusCode >= 500) {
                 return new EvitaDBInstanceServerError(this.connection)
             } else {
-                return new UnexpectedError(e.message)
+                return new UnexpectedError(errorMessage(e))
             }
         } else if (e.name === 'TimeoutError') {
             return new TimeoutError(this.connection)
-        } else if (e.name === 'TypeError' && e.message === 'Failed to fetch') {
+        } else if (e.name === 'TypeError' && errorMessage(e) === 'Failed to fetch') {
             return new EvitaDBInstanceNetworkError(this.connection)
         } else {
-            return new UnexpectedError(e.message)
+            return new UnexpectedError(errorMessage(e))
         }
     }
 }

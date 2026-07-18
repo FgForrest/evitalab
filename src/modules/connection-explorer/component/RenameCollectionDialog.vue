@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n';
 import { ClassifierValidationErrorType } from '@/modules/database-driver/data-type/ClassifierValidationErrorType'
@@ -76,12 +77,12 @@ async function rename(): Promise<boolean> {
             ))
         }
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'explorer.collection.rename.notification.couldNotRenameCollection',
             {
                 entityType: props.entityType,
-                reason: e.message
+                reason: errorMessage(e)
             }
         ))
         return false

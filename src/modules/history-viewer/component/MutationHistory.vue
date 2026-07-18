@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 /**
  * Lists mutation history
@@ -200,7 +201,7 @@ async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) 
         pushNewRecords(fetchedRecords)
         await processRecords()
         done('ok')
-    } catch (e: any) {
+    } catch (e) {
         handleRecordFetchError(e)
         done('error')
     }
@@ -222,7 +223,7 @@ async function reloadHistory(): Promise<void> {
         moveNextPagePointer(fetchedRecords)
         pushNewRecords(fetchedRecords)
         await processRecords()
-    } catch (e: any) {
+    } catch (e) {
         handleRecordFetchError(e)
     }
 }
@@ -270,7 +271,7 @@ async function processRecords(): Promise<void> {
     // note: we compute the history manually here because for some reason, computed ref wasn't working
     try {
         history.value = (await mutationHistoryViewerService.processRecords(props.dataPointer.catalogName, props.criteria, records)).toArray()
-    } catch (e: any) {
+    } catch (e) {
         console.error(e)
     }
 }
@@ -281,7 +282,7 @@ function handleRecordFetchError(e: any): void {
     }
     toaster.error(t(
         'mutationHistoryViewer.notification.couldNotLoadRecords',
-        { reason: e.message }
+        { reason: errorMessage(e) }
     )).then()
 }
 
@@ -300,10 +301,10 @@ async function moveStartPointerToNewest(): Promise<void> {
             startPointer.value = new StartRecordsPointer(latestRecord.version + 1)
             emit('update:startPointerActive', true)
         }
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'mutationHistoryViewer.notification.couldNotLoadLatestRecording',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         emit('update:startPointerActive', false)
     }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import { SchemaViewerService, useSchemaViewerService } from '@/modules/schema-viewer/viewer/service/SchemaViewerService'
@@ -73,8 +74,8 @@ async function loadTitle(): Promise<void> {
 async function loadSchema(): Promise<void> {
     try {
         schema.value = await schemaViewerService.getSchema(props.params.dataPointer)
-    } catch (e: any) {
-        await toaster.error('Could not load schema', e) // todo lho i18n
+    } catch (e) {
+        await toaster.error('Could not load schema', asError(e)) // todo lho i18n
     }
 }
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 /**
  * Visualizes server tasks
  */
@@ -88,10 +89,10 @@ async function loadTaskStatuses(): Promise<boolean> {
             loadedTaskStatuses.value = true
         }
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'taskViewer.tasksVisualizer.notification.couldNotLoadTaskStatuses',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         return false
     }

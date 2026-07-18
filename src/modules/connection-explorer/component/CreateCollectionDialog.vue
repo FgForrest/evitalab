@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
@@ -58,12 +59,12 @@ async function create(): Promise<boolean> {
             { entityType: entityType.value }
         ))
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'explorer.collection.create.notification.couldNotCreateCollection',
             {
                 entityType: entityType.value,
-                reason: e.message
+                reason: errorMessage(e)
             }
         ))
         return false

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { CatalogItemService, useCatalogItemService } from '@/modules/connection-explorer/service/CatalogItemService'
@@ -52,12 +53,12 @@ async function create(): Promise<boolean> {
             { catalogName: catalogName.value }
         ))
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'explorer.catalog.create.notification.couldNotCreateCatalog',
             {
                 catalogName: catalogName.value,
-                reason: e.message
+                reason: errorMessage(e)
             }
         ))
         return false

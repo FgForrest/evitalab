@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
 import { useI18n } from 'vue-i18n'
@@ -50,10 +51,10 @@ async function loadRecordings(): Promise<boolean> {
             recordingsLoaded.value = true
         }
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'jfrViewer.notification.couldNotLoadRecordings',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         return false
     }

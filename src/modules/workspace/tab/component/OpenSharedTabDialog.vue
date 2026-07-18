@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 /**
  * Dialog to open a shared tab from a hash or share link pasted by the user into a running
  * evitaLab session. Resolution mirrors the URL-based shared tab flow (see TabSharedDialog):
@@ -73,8 +74,8 @@ async function openSharedTab(): Promise<boolean> {
     let shareTabObject: ShareTabObject
     try {
         shareTabObject = ShareTabObject.fromLinkParamOrUrl(hashOrUrl.value)
-    } catch (e: any) {
-        await toaster.error('Could not resolve shared tab', e)
+    } catch (e) {
+        await toaster.error('Could not resolve shared tab', asError(e))
         return false
     }
 
@@ -82,14 +83,14 @@ async function openSharedTab(): Promise<boolean> {
         const sharedTabRequest: TabDefinition<any, any> = await sharedTabResolver.resolve(shareTabObject)
         workspaceService.createTab(sharedTabRequest)
         return true
-    } catch (e: any) {
+    } catch (e) {
         if (e instanceof InvalidConnectionInSharedTabError) {
             showSharedTabTroubleshooter.value = true
             sharedTabOriginalConnectionName.value = e.originalConnectionName
             sharedTabTroubleshooterCallback.value = e.troubleshooterCallback
             return false
         } else {
-            await toaster.error('Could not resolve shared tab', e)
+            await toaster.error('Could not resolve shared tab', asError(e))
             return false
         }
     }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 /**
  * EvitaQL console. Allows to execute EvitaQL queries against a evitaDB instance.
  */
@@ -215,10 +216,10 @@ async function executeQuery(): Promise<void> {
                 variablesCode.value
             )
         )
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(
             t('evitaQLConsole.notification.failedToSaveQueryToHistory'),
-            e
+            asError(e)
         )
     }
 
@@ -235,8 +236,8 @@ async function executeQuery(): Promise<void> {
         if (resultTab.value === ResultTabType.Raw) {
             focusRawResultEditor()
         }
-    } catch (error: any) {
-        await toaster.error('Could not execute query', error) // todo lho i18n
+    } catch (error) {
+        await toaster.error('Could not execute query', asError(error)) // todo lho i18n
         loading.value = false
     }
 }

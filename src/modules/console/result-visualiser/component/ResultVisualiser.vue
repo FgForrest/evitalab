@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 /**
  * Main orchestrator for result visualisation. Analyzes raw query results, presents query and
  * visualiser type selectors, and delegates parsing + rendering to per-type child components.
@@ -68,9 +69,9 @@ watch([() => props.result, () => props.inputQuery], async () => {
             props.result,
             props.catalogPointer.catalogName
         )
-    } catch (e: any) {
+    } catch (e) {
         analyzedResult.value = undefined
-        toaster.error('Could not analyze result', e).then()
+        toaster.error('Could not analyze result', asError(e)).then()
     } finally {
         loading.value = false
     }
@@ -160,8 +161,8 @@ watch([selectedVisualiserType, selectedQuery], async () => {
                     .parse(queryResult)
                 break
         }
-    } catch (e: any) {
-        toaster.error('Could not parse result for visualisation', e).then()
+    } catch (e) {
+        toaster.error('Could not parse result for visualisation', asError(e)).then()
     } finally {
         parsingResult.value = false
     }

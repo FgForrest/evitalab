@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 /**
  * Lists traffic recording history
@@ -158,7 +159,7 @@ async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) 
         pushNewRecords(fetchedRecords)
         await processRecords()
         done('ok')
-    } catch (e: any) {
+    } catch (e) {
         handleRecordFetchError(e)
         done('error')
     }
@@ -179,7 +180,7 @@ async function reloadHistory(): Promise<void> {
         moveNextPagePointer(fetchedRecords)
         pushNewRecords(fetchedRecords)
         await processRecords()
-    } catch (e: any) {
+    } catch (e) {
         handleRecordFetchError(e)
     }
 }
@@ -225,18 +226,18 @@ async function processRecords(): Promise<void> {
 function handleRecordFetchError(e: any): void {
     if (e instanceof ConnectError && e.code === Code.InvalidArgument) {
         // todo lho rework when connect library can provide metadata
-        if (e.message.toLowerCase().includes('no on-demand traffic recording has been started')) {
+        if (errorMessage(e).toLowerCase().includes('no on-demand traffic recording has been started')) {
             fetchError.value = TrafficFetchErrorType.NoActiveTrafficRecording
             return
         }
-        if (e.message.toLowerCase().includes('issuing creation') || e.message.toLowerCase().includes('index is currently being build')) {
+        if (errorMessage(e).toLowerCase().includes('issuing creation') || errorMessage(e).toLowerCase().includes('index is currently being build')) {
             fetchError.value = TrafficFetchErrorType.IndexCreating
             return
         }
     }
     toaster.error(t(
         'trafficViewer.recordHistory.notification.couldNotLoadRecords',
-        { reason: e.message }
+        { reason: errorMessage(e) }
     )).then()
 }
 
@@ -256,10 +257,10 @@ async function moveStartPointerToNewest(): Promise<void> {
             startPointer.value = new StartRecordsPointer(latestRecord.sessionSequenceOrder + 1n)
             emit('update:startPointerActive', true)
         }
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'trafficViewer.recordHistory.notification.couldNotLoadLatestRecording',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         emit('update:startPointerActive', false)
     }

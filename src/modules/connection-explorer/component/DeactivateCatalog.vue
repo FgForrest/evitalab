@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { useI18n } from 'vue-i18n'
@@ -24,10 +25,10 @@ async function deactivateCatalog(): Promise<boolean> {
         catalogItemService.deactivateCatalogWithProgress(props.catalog)
         await toaster.info(t('explorer.catalog.deactivateCatalog.notification.catalogDeactivationStarted'))
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t('explorer.catalog.deactivateCatalog.notification.couldNotDeactivateCatalog', {
             catalogName: props.catalog.name,
-            reason: e.message
+            reason: errorMessage(e)
         }))
         return false
     }
