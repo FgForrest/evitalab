@@ -1,4 +1,5 @@
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 
 /**
  * Represents a pointer to a referenced entity in another grid.
@@ -13,7 +14,7 @@ export class EntityReferenceValue extends EntityPropertyValue {
         this.representativeAttributes = representativeAttributes
     }
 
-    value(): any {
+    value(): EvitaValue {
         return this
     }
 
@@ -25,7 +26,7 @@ export class EntityReferenceValue extends EntityPropertyValue {
         return JSON.stringify(this.toRawRepresentation())
     }
 
-    toRawRepresentation(): any {
+    toRawRepresentation(): EvitaValue {
         return {
             primaryKey: this.primaryKey,
             representativeAttributes: this.representativeAttributes.map(x => x.toRawRepresentation())
