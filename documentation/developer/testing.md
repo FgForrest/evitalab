@@ -32,6 +32,15 @@ test('Should parse human duration', () => {
 - Test names are human-readable sentences (`'Should parse human duration'`), typically one positive
   and one negative test per behaviour.
 
+## Type checking
+
+The test suite is type-checked, not just transpiled. `tsconfig.vitest.json` (a
+composite project covering `src/**` + `test/**`, extending `tsconfig.app.json`)
+is referenced from the root solution, so `yarn typecheck` (`vue-tsc -b`) and the
+CI typecheck step cover `test/**` under the same strict flags as the app. Tests
+must be at **zero** type errors. For test-only casts (private-method access,
+deliberately-invalid fixtures) prefer `as unknown as T` over `any`.
+
 ## What to test
 
 Current coverage focuses on pure logic: utilities, parsers, model helpers. When you add or fix

@@ -41,16 +41,24 @@ inline env vars):
 ## Type checking
 
 `yarn typecheck` runs `vue-tsc -b --force` against the solution-style root
-`tsconfig.json`, which references `tsconfig.app.json` (the `src/**` app) and
-`tsconfig.node.json` (`vite.config.mts`). `-b` (build mode) is required for a
+`tsconfig.json`, which references `tsconfig.app.json` (the `src/**` app),
+`tsconfig.node.json` (`vite.config.mts`) and `tsconfig.vitest.json` (the
+`test/**` suite — see [testing](testing.md)). `-b` (build mode) is required for a
 solution config — a plain `vue-tsc --noEmit` against the root would load
 `"files": []` and check **nothing**. `--force` avoids stale-`.tsbuildinfo` false
-greens. Both projects set `noEmit`-compatible options, so only `.tsbuildinfo`
+greens. All projects set `noEmit`-compatible options, so only `.tsbuildinfo`
 files are written (under `node_modules/.tmp/`).
 
+`tsconfig.app.json` enables the strict flags `noFallthroughCasesInSwitch`,
+`noImplicitOverride`, `noUnusedLocals`, `noUnusedParameters` and
+`noUncheckedIndexedAccess` (on top of `strict`). `exactOptionalPropertyTypes` is
+**deliberately not enabled** — it is not part of `strict` and structurally
+conflicts with Vuetify prop typing (`prop?: T`); the rationale is documented
+inline in `tsconfig.app.json`.
+
 `yarn build` / `yarn build-driver` run `yarn typecheck` first, so a type error
-fails the build. Tests under `test/**` are **not** yet covered by any tsconfig
-(they are transpiled, not type-checked — a future hardening step).
+fails the build. Both `src/**` and `test/**` are type-checked; keep the whole
+tree at **zero** errors — any new error is a real regression.
 
 ## Vite configuration (`vite.config.mts`)
 
