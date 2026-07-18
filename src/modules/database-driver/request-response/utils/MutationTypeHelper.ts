@@ -1,5 +1,5 @@
+import type { Mutation } from '../Mutation'
 import type { LocalMutation } from '../data/mutation/LocalMutation'
-import type { SchemaMutation } from '../schema/mutation/SchemaMutation'
 import { UpsertAttributeMutation } from '../data/mutation/attribute/UpsertAttributeMutation'
 import { UpsertAssociatedDataMutation } from '../data/mutation/associatedData/UpsertAssociatedDataMutation'
 import { UpsertPriceMutation } from '../data/mutation/price/UpsertPriceMutation'
@@ -23,10 +23,10 @@ import { RemoveReferenceMutation } from '../data/mutation/reference/RemoveRefere
  * const mutation = new UpsertAttributeMutation(...)
  * getMutationType(mutation) // Returns: 'upsertAttributeMutation'
  */
-export function getMutationType(mutation: LocalMutation | SchemaMutation | any): string {
+export function getMutationType(mutation: Mutation | undefined): string {
     // Check if class has static TYPE constant
     if (mutation?.constructor && 'TYPE' in mutation.constructor) {
-        return mutation.constructor.TYPE
+        return String((mutation.constructor as { TYPE: string }).TYPE)
     }
 
     // Fallback for classes without TYPE constant (development only - will break in production)
