@@ -32,7 +32,7 @@ export class Connection {
         this.serverUrl = this.validateAndNormalizeUrl(serverUrl)
     }
 
-    static fromJson(json: any): Connection {
+    static fromJson(json: { id: string, name: string, serverUrl: string }): Connection {
         return new Connection(
             json.id,
             json.name,
