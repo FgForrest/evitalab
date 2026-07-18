@@ -25,7 +25,7 @@ export class SchemaViewerTabParams implements TabParams<SchemaViewerTabParamsDto
 
     toSerializable(): SchemaViewerTabParamsDto {
         let schemaPointerType: SchemaPointerType
-        let schemaPointerParams: any
+        let schemaPointerParams: Record<string, unknown>
         const schemaPointer: SchemaPointer = this.dataPointer.schemaPointer
         if (schemaPointer instanceof CatalogSchemaPointer) {
             schemaPointerType = SchemaPointerType.CatalogSchema
