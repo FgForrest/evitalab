@@ -108,7 +108,7 @@ export function workspaceStatusBarIntegration(workspaceService: WorkspaceService
         }
     })
 
-    const destroyer: ViewPlugin<any> = ViewPlugin.fromClass(class {
+    const destroyer = ViewPlugin.fromClass(class {
         private editorRegistrationId: string | undefined = undefined
 
         constructor(view: EditorView) {
