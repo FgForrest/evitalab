@@ -10,11 +10,11 @@ enum Side {
 }
 
 defineProps<{
-    modelValue: any,
+    modelValue: unknown,
     side: 'left' | 'right'
 }>()
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: any): void
+    (e: 'update:modelValue', value: unknown): void
 }>()
 </script>
 
