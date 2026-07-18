@@ -1,4 +1,4 @@
-import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql'
+import { buildClientSchema, getIntrospectionQuery, GraphQLSchema, type IntrospectionQuery } from 'graphql'
 import { GraphQLConsoleDataPointer } from '@/modules/graphql-console/console/model/GraphQLConsoleDataPointer'
 import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
@@ -34,7 +34,7 @@ export class GraphQLConsoleService {
             getIntrospectionQuery()
         )
 
-        return buildClientSchema(introspectionSchema.data)
+        return buildClientSchema(introspectionSchema.data as IntrospectionQuery)
     }
 
     /**
