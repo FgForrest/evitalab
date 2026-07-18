@@ -92,7 +92,7 @@ const codeBlockExtensions = computed<Extension[]>(() => {
     }
 })
 
-function handleActionClick(action: any) {
+function handleActionClick(action: unknown) {
     const foundedAction = menuItems.value?.get(action as CodeDetailRendererMenuItemType)
     if (foundedAction && foundedAction instanceof MenuAction) {
         (foundedAction as MenuAction<CodeDetailRendererMenuItemType>).execute()

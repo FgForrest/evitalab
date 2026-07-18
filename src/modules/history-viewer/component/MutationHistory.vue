@@ -276,7 +276,7 @@ async function processRecords(): Promise<void> {
     }
 }
 
-function handleRecordFetchError(e: any): void {
+function handleRecordFetchError(e: unknown): void {
     if (e instanceof ConnectError && e.code === Code.InvalidArgument) {
 // todp pfi: do I need to fix this?
     }
