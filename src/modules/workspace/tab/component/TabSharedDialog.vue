@@ -6,7 +6,7 @@ import { asError } from '@/utils/error'
 
 import { useI18n } from 'vue-i18n'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
-import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import type { AnyTabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
 import VConfirmDialogButton from '@/modules/base/component/VConfirmDialogButton.vue'
 import { SharedTabResolver, useSharedTabResolver } from '@/modules/workspace/tab/service/SharedTabResolver'
@@ -61,7 +61,7 @@ async function acceptSharedTab(): Promise<void> {
     }
 
     try {
-        const sharedTabRequest: TabDefinition<any, any> = await sharedTabResolver.resolve(sharedTab.value)
+        const sharedTabRequest: AnyTabDefinition = await sharedTabResolver.resolve(sharedTab.value)
         workspaceService.createTab(sharedTabRequest)
 
         sharedTabResolved()
@@ -76,7 +76,7 @@ async function acceptSharedTab(): Promise<void> {
     }
 }
 
-function brokenSharedTabFixed(fixedSharedTabRequest: TabDefinition<any, any>): void {
+function brokenSharedTabFixed(fixedSharedTabRequest: AnyTabDefinition): void {
     workspaceService.createTab(fixedSharedTabRequest)
     sharedTabResolved()
 }

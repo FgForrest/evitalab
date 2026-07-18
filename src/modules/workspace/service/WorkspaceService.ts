@@ -1,25 +1,21 @@
 import type { InjectionKey } from 'vue'
 import LZString from 'lz-string'
 import type { WorkspaceStore } from '@/modules/workspace/store/workspaceStore'
-import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
-import type { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { AnyTabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import type { AnyTabData } from '@/modules/workspace/tab/model/TabData'
 import { LabStorage } from '@/modules/storage/LabStorage'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { StoredTabObject } from '@/modules/workspace/tab/model/StoredTabObject'
 import { TabHistoryKey } from '@/modules/workspace/tab/model/TabHistoryKey'
 import { GraphQLConsoleTabFactory } from '@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFactory'
-import {
-    GraphQLConsoleTabDefinition
-} from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
+import { GraphQLConsoleTabDefinition } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
 import { EntityViewerTabFactory } from '@/modules/entity-viewer/viewer/workspace/service/EntityViewerTabFactory'
 import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
 import { SchemaViewerTabFactory } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
 import { KeymapViewerTabFactory } from '@/modules/keymap/viewer/workspace/service/KeymapViewerTabFactory'
 import { EntityViewerTabDefinition } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabDefinition'
-import {
-    EvitaQLConsoleTabDefinition
-} from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabDefinition'
+import { EvitaQLConsoleTabDefinition } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabDefinition'
 import { SchemaViewerTabDefinition } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabDefinition'
 import { KeymapViewerTabDefinition } from '@/modules/keymap/viewer/workspace/model/KeymapViewerTabDefinition'
 import { mandatoryInject } from '@/utils/reactivity'
@@ -33,16 +29,10 @@ import { BackupViewerTabFactory } from '@/modules/backup-viewer/service/BackupVi
 import { JfrViewerTabFactory } from '@/modules/jfr-viewer/service/JfrViewerTabFactory'
 import { SubjectPathStatus } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathStatus'
 import { EditorStatus } from '@/modules/workspace/status-bar/model/editor-status/EditorStatus'
-import {
-    TrafficRecordingsViewerTabDefinition
-} from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabDefinition'
+import { TrafficRecordingsViewerTabDefinition } from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabDefinition'
 import { TrafficRecordingsViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordingsViewerTabFactory'
-import {
-    TrafficRecordHistoryViewerTabDefinition
-} from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabDefinition'
-import {
-    TrafficRecordHistoryViewerTabFactory
-} from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
+import { TrafficRecordHistoryViewerTabDefinition } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabDefinition'
+import { TrafficRecordHistoryViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 import type { MutationHistoryViewerTabFactory } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
 import { MutationHistoryViewerTabDefinition } from '@/modules/history-viewer/model/MutationHistoryViewerTabDefinition.ts'
@@ -106,11 +96,11 @@ export class WorkspaceService {
         this.mutationHistoryViewerTabFactory = historyViewerTabFactory
     }
 
-    getTabDefinitions(): TabDefinition<any, any>[] {
+    getTabDefinitions(): AnyTabDefinition[] {
         return this.store.tabDefinitions
     }
 
-    getTabDefinition(id: string): TabDefinition<any, any> | undefined {
+    getTabDefinition(id: string): AnyTabDefinition | undefined {
         return this.getTabDefinitions().find(it => it.id === id)
     }
 
@@ -121,16 +111,16 @@ export class WorkspaceService {
     /**
      * Finds newly created tab that hasn't been marked as visited yet.
      */
-    getTheNewTab(): TabDefinition<any, any> | undefined {
+    getTheNewTab(): AnyTabDefinition | undefined {
         return this.getTabDefinitions().find(it => it.new)
     }
 
     /**
      * Create new tab from definition
      */
-    createTab(tabDefinition: TabDefinition<any, any>): void {
+    createTab(tabDefinition: AnyTabDefinition): void {
         // tab definitions may share static ID to indicate only one such tab can be opened at a time
-        const tabRequestWithSameId: TabDefinition<any, any> | undefined = this.getTabDefinition(tabDefinition.id)
+        const tabRequestWithSameId: AnyTabDefinition | undefined = this.getTabDefinition(tabDefinition.id)
         if (tabRequestWithSameId == undefined) {
             this.store.tabDefinitions.push(tabDefinition)
             this.store.tabData.set(tabDefinition.id, tabDefinition.initialData)
@@ -139,7 +129,7 @@ export class WorkspaceService {
     }
 
     markTabAsVisited(tabId: string): void {
-        const tabDefinition: TabDefinition<any, any> | undefined = this.getTabDefinition(tabId)
+        const tabDefinition: AnyTabDefinition | undefined = this.getTabDefinition(tabId)
         if (tabDefinition) {
             tabDefinition.new = false
         }
@@ -150,7 +140,7 @@ export class WorkspaceService {
      *@param tabId
      * @param updatedData
      */
-    replaceTabData(tabId: string, updatedData: TabData<any>): void {
+    replaceTabData(tabId: string, updatedData: AnyTabData): void {
         this.store.tabData.set(tabId, updatedData)
         this.storeOpenedTabs()
     }
@@ -270,7 +260,7 @@ export class WorkspaceService {
                     return undefined
                 }
 
-                const tabData: TabData<any> | undefined = this.store.tabData.get(tabRequest.id)
+                const tabData: AnyTabData | undefined = this.store.tabData.get(tabRequest.id)
                 return new StoredTabObject(
                     tabType,
                     tabRequest.params.toSerializable(),
@@ -358,7 +348,7 @@ export class WorkspaceService {
      * Clears all tab history for this key
      * @param historyKey
      */
-    clearTabHistory(historyKey: TabHistoryKey<any>): void {
+    clearTabHistory(historyKey: TabHistoryKey<unknown>): void {
         this.store.tabHistory.delete(historyKey.toString())
     }
 

@@ -15,7 +15,7 @@ import { SharedTabResolver, useSharedTabResolver } from '@/modules/workspace/tab
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { ShareTabObject } from '@/modules/workspace/tab/model/ShareTabObject'
-import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import type { AnyTabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { InvalidConnectionInSharedTabError } from '@/modules/workspace/tab/error/InvalidConnectionInSharedTabError'
 import type { SharedTabTroubleshooterCallback } from '@/modules/workspace/tab/service/SharedTabTroubleshooterCallback'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
@@ -80,7 +80,7 @@ async function openSharedTab(): Promise<boolean> {
     }
 
     try {
-        const sharedTabRequest: TabDefinition<any, any> = await sharedTabResolver.resolve(shareTabObject)
+        const sharedTabRequest: AnyTabDefinition = await sharedTabResolver.resolve(shareTabObject)
         workspaceService.createTab(sharedTabRequest)
         return true
     } catch (e) {
@@ -96,7 +96,7 @@ async function openSharedTab(): Promise<boolean> {
     }
 }
 
-function brokenSharedTabFixed(fixedSharedTabRequest: TabDefinition<any, any>): void {
+function brokenSharedTabFixed(fixedSharedTabRequest: AnyTabDefinition): void {
     workspaceService.createTab(fixedSharedTabRequest)
     showSharedTabTroubleshooter.value = false
     reset()

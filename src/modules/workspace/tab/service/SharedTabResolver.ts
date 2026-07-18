@@ -1,6 +1,7 @@
 import type { InjectionKey } from 'vue'
 import { ShareTabObject } from '@/modules/workspace/tab/model/ShareTabObject'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import type { AnyTabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EntityViewerTabFactory } from '@/modules/entity-viewer/viewer/workspace/service/EntityViewerTabFactory'
@@ -10,9 +11,7 @@ import { SchemaViewerTabFactory } from '@/modules/schema-viewer/viewer/workspace
 import { mandatoryInject } from '@/utils/reactivity'
 import { TrafficRecordHistoryViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
 import type { ConnectionId } from '@/modules/connection/model/ConnectionId'
-import {
-    isTabParamsDtoWithConnection,
-} from '@/modules/workspace/tab/model/TabParamsDtoWithConnection'
+import { isTabParamsDtoWithConnection } from '@/modules/workspace/tab/model/TabParamsDtoWithConnection'
 import type { TabParamsDtoWithConnection } from '@/modules/workspace/tab/model/TabParamsDtoWithConnection'
 import { InvalidConnectionInSharedTabError } from '@/modules/workspace/tab/error/InvalidConnectionInSharedTabError'
 import { ConnectionNotFoundError } from '@/modules/connection/exception/ConnectionNotFoundError'
@@ -41,7 +40,7 @@ export class SharedTabResolver {
         this.trafficRecordHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
     }
 
-    async resolve(shareTabObject: ShareTabObject): Promise<TabDefinition<any, any>> {
+    async resolve(shareTabObject: ShareTabObject): Promise<AnyTabDefinition> {
         try {
             switch (shareTabObject.tabType as string) {
                 case 'data-grid':
@@ -69,7 +68,7 @@ export class SharedTabResolver {
 
                 throw new InvalidConnectionInSharedTabError(
                     connectionName,
-                    async (newConnectionId: ConnectionId): Promise<TabDefinition<any, any>> => {
+                    async (newConnectionId: ConnectionId): Promise<AnyTabDefinition> => {
                         const newTabParams: TabParamsDtoWithConnection = JSON.parse(JSON.stringify(tabParams))
                         newTabParams.connectionId = newConnectionId
 

@@ -1,13 +1,13 @@
 import type { Component, Raw } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
-import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
-import type { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { AnyTabParams } from '@/modules/workspace/tab/model/TabParams'
+import type { AnyTabData } from '@/modules/workspace/tab/model/TabData'
 import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 
 /**
  * Definition to instantiate a new workspace tab from.
  */
-export abstract class TabDefinition<PARAMS extends TabParams<any>, DATA extends TabData<any>> {
+export abstract class TabDefinition<PARAMS extends AnyTabParams, DATA extends AnyTabData> {
 
     readonly id: string
     readonly title: string
@@ -46,3 +46,10 @@ export abstract class TabDefinition<PARAMS extends TabParams<any>, DATA extends 
         }
     }
 }
+
+/**
+ * Existential alias for a tab definition of any concrete params/data type — used
+ * where tabs of differing types are handled uniformly (heterogeneous collections).
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- existential generic slots
+export type AnyTabDefinition = TabDefinition<any, any>

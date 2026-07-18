@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import type { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { AnyTabData } from '@/modules/workspace/tab/model/TabData'
 import TabLoadingScreen from '@/modules/workspace/tab/component/TabLoadingScreen.vue'
 import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
@@ -25,7 +25,7 @@ function handleReady(): void {
     updateComponentPath()
 }
 
-function handleDataUpdated(data: TabData<any>): void {
+function handleDataUpdated(data: AnyTabData): void {
     workspaceService.replaceTabData(props.id, data)
     updateComponentPath()
 }
