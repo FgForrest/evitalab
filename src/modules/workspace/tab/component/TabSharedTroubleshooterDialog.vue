@@ -8,7 +8,7 @@ import { computed, ref, watch } from 'vue'
 import { ConnectionService, useConnectionService } from '@/modules/connection/service/ConnectionService'
 import { Connection } from '@/modules/connection/model/Connection'
 import type { SharedTabTroubleshooterCallback } from '@/modules/workspace/tab/service/SharedTabTroubleshooterCallback'
-import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import type { AnyTabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 
@@ -25,7 +25,7 @@ const props = withDefaults(defineProps<{
     troubleshooterCallback: undefined
 })
 const emit = defineEmits<{
-    (e: 'resolve', value: TabDefinition<any, any>): void,
+    (e: 'resolve', value: AnyTabDefinition): void,
     (e: 'reject'): void
 }>()
 
@@ -65,7 +65,7 @@ async function accept(): Promise<boolean> {
         throw new Error('Cannot accept shared tab without troubleshooter callback.')
     }
     try {
-        const sharedTabRequest: TabDefinition<any, any> = await props.troubleshooterCallback(newConnectionId.value!)
+        const sharedTabRequest: AnyTabDefinition = await props.troubleshooterCallback(newConnectionId.value!)
         emit('resolve', sharedTabRequest)
         return true
     } catch (e) {

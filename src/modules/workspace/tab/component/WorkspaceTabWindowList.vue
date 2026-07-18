@@ -3,7 +3,7 @@ import { asError } from '@/utils/error'
 
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
-import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import type { AnyTabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import { DemoSnippetResolver, useDemoSnippetResolver } from '@/modules/workspace/service/DemoSnippetResolver'
@@ -48,10 +48,10 @@ function handleTabActionClick(selected: unknown): void {
     }
 }
 
-const tabDefinitions = ref<TabDefinition<any, any>[]>(workspaceService.getTabDefinitions())
+const tabDefinitions = ref<AnyTabDefinition[]>(workspaceService.getTabDefinitions())
 watch(tabDefinitions, () => {
     // switch to newly opened tab
-    const newTab: TabDefinition<any, any> | undefined = workspaceService.getTheNewTab()
+    const newTab: AnyTabDefinition | undefined = workspaceService.getTheNewTab()
     if (newTab) {
         currentTabId.value = newTab.id
         workspaceService.markTabAsVisited(newTab.id)
@@ -105,7 +105,7 @@ function closeTab(tabId: string): void {
 /**
  * open demo code snippet if requested
  */
-async function resolveDemoCodeSnippet(urlSearchParams: URLSearchParams): Promise<TabDefinition<any, any> | undefined> {
+async function resolveDemoCodeSnippet(urlSearchParams: URLSearchParams): Promise<AnyTabDefinition | undefined> {
     const demoSnippetRequestSerialized: string | null = urlSearchParams.get('demoSnippetRequest')
     if (demoSnippetRequestSerialized == undefined) {
         return undefined

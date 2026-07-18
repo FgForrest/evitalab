@@ -10,3 +10,10 @@ export interface TabParams<DTO extends TabParamsDto> {
      */
     toSerializable(): DTO
 }
+
+/**
+ * Existential alias for tab params of any concrete DTO type — used where tabs of
+ * differing types are handled uniformly (heterogeneous collections).
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- existential generic slot
+export type AnyTabParams = TabParams<any>
