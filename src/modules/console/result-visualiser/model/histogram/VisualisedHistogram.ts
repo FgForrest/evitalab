@@ -1,3 +1,4 @@
+import type { GraphQLResultNode } from '@/modules/database-driver/connector/gql/model/GraphQLResultNode'
 import {
     VisualisedHistogramBucket
 } from '@/modules/console/result-visualiser/model/histogram/VisualisedHistogramBucket'
@@ -36,8 +37,8 @@ export class VisualisedHistogram {
         )
     }
 
-    static fromJson(json: any): VisualisedHistogram {
-        const buckets = json.buckets.map((bucket: any) => VisualisedHistogramBucket.fromJson(bucket))
+    static fromJson(json: GraphQLResultNode): VisualisedHistogram {
+        const buckets = json.buckets.map((bucket: GraphQLResultNode) => VisualisedHistogramBucket.fromJson(bucket))
         return new VisualisedHistogram(
             json.min ? new BigDecimal(json.min) : undefined,
             json.max ? new BigDecimal(json.max) : undefined,
