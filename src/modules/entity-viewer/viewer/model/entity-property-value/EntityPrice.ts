@@ -1,3 +1,4 @@
+import type { GraphQLResultNode } from '@/modules/database-driver/connector/gql/model/GraphQLResultNode'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import type {
@@ -59,7 +60,7 @@ export class EntityPrice extends EntityPropertyValue {
         )
     }
 
-    static fromJson(json: any): EntityPrice {
+    static fromJson(json: GraphQLResultNode): EntityPrice {
         return new EntityPrice(json.priceId,
             json.priceList,
             json.currency,

@@ -20,7 +20,7 @@ const emit = defineEmits<{
 }>()
 
 const selectedTypesRules = [
-    (value: EventType[]): any => {
+    (value: EventType[]): boolean | string => {
         if (value != undefined && value.length > 0) return true
         return t('jfrViewer.startRecording.form.events.validations.required')
     }
