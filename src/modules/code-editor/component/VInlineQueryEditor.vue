@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ComponentPublicInstance } from 'vue'
 /**
  * Inline CodeMirror editor with content history support (e.g., for previously executed queries).
  */
@@ -93,9 +94,9 @@ function focus(): void {
     editorView.value?.focus()
 }
 
-const historyListButton = ref<any>()
+const historyListButton = ref<ComponentPublicInstance | undefined>()
 const hasHistoryItems = computed<boolean>(() => props.historyRecords != undefined && props.historyRecords?.length > 0)
-const historyListItems = computed<any[]>(() => {
+const historyListItems = computed<{ title: string, value: string }[]>(() => {
     if (props.historyRecords?.length === 0) {
         return [{
             title: 'Empty history',
