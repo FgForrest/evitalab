@@ -1,5 +1,5 @@
-import { List, Map, Set } from 'immutable'
 import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
+import { List, Map, Set } from 'immutable'
 import { AssociatedDataValue } from '@/modules/database-driver/request-response/data/AssociatedDataValue'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 
