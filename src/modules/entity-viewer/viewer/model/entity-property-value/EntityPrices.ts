@@ -1,4 +1,5 @@
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import { EntityPrice } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrice'
 import type {
     EntityPropertyValuePreviewStringContext
@@ -24,7 +25,7 @@ export class EntityPrices extends EntityPropertyValue {
         return this.prices.length
     }
 
-    value(): any {
+    value(): EvitaValue {
         return this
     }
 
@@ -36,7 +37,7 @@ export class EntityPrices extends EntityPropertyValue {
         return serializeJsonWithBigInt(this.toRawRepresentation())
     }
 
-    toRawRepresentation(): any {
+    toRawRepresentation(): EvitaValue {
         return {
             priceForSale: this.priceForSale?.toRawRepresentation(),
             prices: this.prices.map(x => x.toRawRepresentation()),

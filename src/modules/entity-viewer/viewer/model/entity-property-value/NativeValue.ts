@@ -1,4 +1,5 @@
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { LocalDateTime } from '@/modules/database-driver/data-type/LocalDateTime'
 import { Range } from '@/modules/database-driver/data-type/Range'
@@ -86,7 +87,7 @@ export class NativeValue extends EntityPropertyValue {
         return this.toPreviewString()
     }
 
-    toRawRepresentation(): any {
+    toRawRepresentation(): EvitaValue {
         return this.delegate
     }
 
