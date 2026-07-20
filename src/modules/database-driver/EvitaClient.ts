@@ -8,6 +8,8 @@ import { EvitaClientSession } from '@/modules/database-driver/EvitaClientSession
 import { Code, ConnectError } from '@connectrpc/connect'
 import { EvitaClientManagement } from '@/modules/database-driver/EvitaClientManagement'
 import { EvitaSchemaCache } from '@/modules/database-driver/EvitaSchemaCache'
+import { GraphQLSchemaCache } from '@/modules/database-driver/GraphQLSchemaCache'
+import { buildClientSchema, getIntrospectionQuery, GraphQLSchema, type IntrospectionQuery } from 'graphql'
 import { Set } from 'immutable'
 import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
@@ -41,6 +43,7 @@ export function useEvitaClient(): EvitaClient {
  */
 export class EvitaClient extends AbstractEvitaClient {
     private readonly schemaCache: Map<string, EvitaSchemaCache> = new Map()
+    private readonly graphQLSchemaCache: GraphQLSchemaCache = new GraphQLSchemaCache()
     private _management?: EvitaClientManagement
 
     /**
@@ -178,7 +181,8 @@ export class EvitaClient extends AbstractEvitaClient {
         catalogName: string,
         instanceType: GraphQLInstanceType,
         query: string,
-        variables: Record<string, unknown> = {}
+        variables: Record<string, unknown> = {},
+        signal?: AbortSignal
     ): Promise<GraphQLResponse> {
         let path
         if (instanceType === GraphQLInstanceType.System) {
@@ -207,7 +211,8 @@ export class EvitaClient extends AbstractEvitaClient {
                         body: JSON.stringify({
                             query,
                             variables
-                        })
+                        }),
+                        signal
                     }
                 )
                     .json()
@@ -215,6 +220,62 @@ export class EvitaClient extends AbstractEvitaClient {
         } catch (e) {
             throw this.errorTransformer.transformError(e)
         }
+    }
+
+    /**
+     * Returns the built GraphQL schema for a given GraphQL API instance. The schema is fetched through
+     * HTTP introspection only once per `(catalogName, instanceType)` and cached; subsequent calls reuse
+     * the cached {@link GraphQLSchema}. Pass a `signal` to bound (and genuinely cancel) the introspection
+     * request.
+     */
+    async getGraphQLSchema(
+        catalogName: string,
+        instanceType: GraphQLInstanceType,
+        signal?: AbortSignal
+    ): Promise<GraphQLSchema> {
+        return this.graphQLSchemaCache.getSchema(catalogName, instanceType, async () => {
+            const introspection: GraphQLResponse = await this.queryCatalogUsingGraphQL(
+                catalogName,
+                instanceType,
+                getIntrospectionQuery(),
+                {},
+                signal
+            )
+            return buildClientSchema(introspection.data as IntrospectionQuery)
+        })
+    }
+
+    /**
+     * Registers a callback invoked when the cached GraphQL schema of a given GraphQL API instance changes.
+     *
+     * @return a unique identifier that can be used to unregister the callback later
+     */
+    registerGraphQLSchemaChangedCallback(
+        catalogName: string,
+        instanceType: GraphQLInstanceType,
+        callback: () => Promise<void>
+    ): string {
+        return this.graphQLSchemaCache.registerGraphQLSchemaChangedCallback(catalogName, instanceType, callback)
+    }
+
+    /**
+     * Unregisters a previously registered GraphQL schema change callback.
+     */
+    unregisterGraphQLSchemaChangedCallback(
+        catalogName: string,
+        instanceType: GraphQLInstanceType,
+        id: string
+    ): void {
+        this.graphQLSchemaCache.unregisterGraphQLSchemaChangedCallback(catalogName, instanceType, id)
+    }
+
+    /**
+     * Clears the cached GraphQL schema for a single GraphQL API instance and fires its change callbacks,
+     * causing open consoles to reload just that schema. Touches nothing else (no entity caches, no
+     * catalog-schema callbacks) — used by the console's manual "Reload GraphQL schema" action.
+     */
+    async clearGraphQLSchemaCache(catalogName: string, instanceType: GraphQLInstanceType): Promise<void> {
+        await this.graphQLSchemaCache.clear(catalogName, instanceType)
     }
 
     async updateCatalog<T>(
@@ -383,6 +444,9 @@ export class EvitaClient extends AbstractEvitaClient {
         for (const cachedCatalog of cachedCatalogs) {
             await this.schemaCache.get(cachedCatalog)!.removeLatestCatalogSchema()
         }
+        // the GraphQL schema cache tracks its own (catalog, instanceType) keys that need not overlap
+        // with the internal schema cache above, so clear it through its own funnel
+        await this.graphQLSchemaCache.clearAll()
     }
 
     /**
@@ -393,6 +457,13 @@ export class EvitaClient extends AbstractEvitaClient {
      *                  entity type is cleared
      */
     async clearSchemaCache(catalogName: string, entityType?: string): Promise<void> {
+        // a catalog schema change also invalidates the derived GraphQL schemas; do this regardless of
+        // whether an internal (gRPC-model) cache exists for the catalog, because a GraphQL console may be
+        // the only consumer for it (introspection is a raw HTTP call, no EvitaSchemaCache is created)
+        if (entityType == undefined) {
+            await this.graphQLSchemaCache.clearForCatalog(catalogName)
+        }
+
         const schemaCacheForCatalog: EvitaSchemaCache | undefined = this.schemaCache.get(catalogName)
         if (schemaCacheForCatalog == undefined) {
             return

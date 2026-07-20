@@ -35,13 +35,38 @@ by convention):
 - Props: `TabComponentProps<PARAMS, DATA>` — created by `TabDefinition.componentProps()`.
 - Events (`TabComponentEvents`): emit `'ready'` once initialized, and `'update:data'` with a new
   `TabData` whenever user data changes (this keeps stored workspace state current — the workspace
-  listens and calls `WorkspaceService.replaceTabData()`).
+  listens and calls `WorkspaceService.replaceTabData()`). Optionally emit `'error', error?` when
+  initialization fails — see [loading, errors & retry](#loading-errors--retry).
 - Expose (`TabComponentExpose`): `path(): SubjectPath | undefined` — resource path shown in the
-  status bar when the tab is focused.
+  status bar when the tab is focused. Optionally `retry?(): void` — re-runs initialization on retry
+  (see below).
 - Tab components must fill all available space and use `VTabToolbar` for their toolbar
   (see [UI components](ui-components.md)).
 - If the tab supports keyboard shortcuts, bind them scoped to the tab id via the `Keymap` service
   and unbind on unmount (see [recipes](recipes.md#add-a-keyboard-shortcut)).
+
+### Loading, errors & retry
+
+`TabWindow` wraps every tab component and drives a small `loading → ready → failed` state machine
+around it, rendering `TabLoadingScreen` until the tab is ready:
+
+- **loading** — spinner shown until the tab emits `'ready'`.
+- **ready** — content shown (`@ready` flips it on).
+- **failed** — the tab emitted `'error'`; `TabLoadingScreen` switches to its error presentation with
+  a **Try again** button. Retry resets the state and calls the tab's `retry()` if it exposes one,
+  otherwise remounts the component (a `:key` bump) to re-run `onBeforeMount`.
+
+The framework holds **no timer and no `AbortController`** — a timeout is just one kind of `'error'`,
+and it belongs to the request, not the framework. A tab that wants a bounded init owns its own
+timeout: create an `AbortSignal.timeout(ms)`, thread it through the service/`EvitaClient` call into
+ky (which aborts the request on expiry), and `emit('error', asError(e))` on any rejection. This
+turns the previous "stuck forever behind the loading screen on a hung/failed init" behaviour into a
+retryable error state.
+
+The GraphQL console (`GraphQLConsole.vue`) is the reference example: it extracts its init into an
+`initialize()` used by both `onBeforeMount` and the exposed `retry()`, bounds schema introspection
+with `AbortSignal.timeout(15_000)`, and emits `'error'` on failure. Tabs that do neither behave
+exactly as before (they simply never leave the loading state until they emit `'ready'`).
 
 ### Opening tabs
 
