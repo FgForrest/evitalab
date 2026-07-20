@@ -113,7 +113,10 @@ the tab area.
   exposed `path()`.
 - **Editor status** (`EditorStatus`) — cursor position etc., integrated with CodeMirror editors via
   `modules/code-editor/extension/workspaceStatusBarIntegration.ts`.
-- `AutoRefresher.vue` — generic auto-refresh control used by some viewer tabs.
+- `ChangeStreamIndicator.vue` — right-most item; a health indicator for the system CDC stream fed by
+  `DataCacheRefresher` (`useDataCacheRefresher()`). Shows a check icon with the last-change date while
+  the stream is live and an alert icon (with a "reconnecting…" tooltip) while it is broken. See
+  [System CDC & DataCacheRefresher](database-driver.md#system-cdc--datacacherefresher).
 
 ## Adding a new tab type — checklist
 

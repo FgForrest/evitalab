@@ -9,6 +9,7 @@ import {
 } from '@/modules/database-driver/request-response/schema/mutation/engine/RestoreCatalogSchemaMutation.ts'
 
 export class RestoreCatalogSchemaMutationConverter implements SchemaMutationConverter<RestoreCatalogSchemaMutation, GrpcRestoreCatalogSchemaMutation> {
+    public static readonly INSTANCE = new RestoreCatalogSchemaMutationConverter()
 
     convert(mutation: GrpcRestoreCatalogSchemaMutation): RestoreCatalogSchemaMutation {
         return new RestoreCatalogSchemaMutation(mutation.catalogName)

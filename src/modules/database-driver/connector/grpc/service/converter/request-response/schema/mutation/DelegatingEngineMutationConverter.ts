@@ -1,8 +1,11 @@
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 import type {
-    GrpcEntitySchemaMutation
-} from '@/modules/database-driver/connector/grpc/gen/GrpcEntitySchemaMutation_pb.ts'
+    GrpcEngineMutation
+} from '@/modules/database-driver/connector/grpc/gen/GrpcEngineMutation_pb.ts'
 import type { SchemaMutation } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutation.ts'
+import {
+    RestoreCatalogSchemaMutationConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/engine/RestoreCatalogSchemaMutationConverter.ts'
 import {
     DuplicateCatalogMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/engine/DuplicateCatalogMutationConverter.ts'
@@ -43,10 +46,11 @@ export class DelegatingEngineMutationConverter {
         ['transactionMutation', TransactionMutationConverter.INSTANCE],
         ['setCatalogMutabilityMutation', SetCatalogMutabilityMutationConverter.INSTANCE],
         ['duplicateCatalogMutation', DuplicateCatalogMutationConverter.INSTANCE],
-        ['setCatalogStateMutation', SetCatalogStateMutationConverter.INSTANCE]
+        ['setCatalogStateMutation', SetCatalogStateMutationConverter.INSTANCE],
+        ['restoreCatalogSchemaMutation', RestoreCatalogSchemaMutationConverter.INSTANCE]
     ]);
 
-    static convert(mutation: GrpcEntitySchemaMutation | undefined): SchemaMutation {
+    static convert(mutation: GrpcEngineMutation | undefined): SchemaMutation {
         if (!mutation?.mutation?.case) {
             throw new UnexpectedError('Unknown mutation type: ' + mutation?.mutation.case)
         }

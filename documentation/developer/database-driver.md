@@ -148,6 +148,67 @@ clears the server metadata cache, it also fires the server-status change callbac
 re-enables the connection panel's server-related menu actions after the server recovers (see the
 connection-explorer module).
 
+## System CDC & DataCacheRefresher
+
+evitaLab keeps its client-side caches in sync with the server through a single always-open
+**system change-data-capture (CDC)** stream. Engine-level mutations (catalog
+create/drop/rename/state/mutability/schema changes) are pushed by the server and used to invalidate
+the corresponding caches, so the explorer panel, schema viewers and consoles refresh themselves
+without any extra plumbing — they just keep using the existing change callbacks above.
+
+### The typed stream API
+
+`EvitaClient.registerSystemChangeCapture(options?)` is an async generator yielding internal
+`RegisterSystemChangeCaptureResponse` objects (not raw gRPC types). It always requests the full
+change body (the body carries the catalog name needed for targeted invalidation). Options:
+
+- `sinceVersion?: bigint` / `sinceIndex?: number` — resume point (replays mutations missed during an
+  outage);
+- `signal?: AbortSignal` — cancel the stream deterministically.
+
+The protocol: the first response is an **acknowledgement** (with heartbeat info), then **change**
+responses (each carrying a `ChangeSystemCapture` whose `body` is the converted engine mutation) and
+periodic **heartbeat** responses (carrying `lastObservedVersion` and `millisToNextHeartbeat`). The
+stream is meant to be consumed by a single consumer — `DataCacheRefresher`.
+
+### DataCacheRefresher
+
+`DataCacheRefresher` (injectable, `useDataCacheRefresher()`) is constructed and `start()`-ed right
+after `EvitaClient` in `DatabaseDriverModuleRegistrar`. It guarantees **exactly one** open stream at
+a time via a single sequential loop, and it is fully self-healing:
+
+- stream creation/consumption failures never crash the app — every error is caught, the status flips
+  to `Broken`, and the loop reconnects with a capped backoff (5s → 10s → 20s → 60s);
+- normal stream completion is treated as a failure so the reconnect path runs;
+- a **heartbeat watchdog** (`setTimeout(abort, max(2 × millisToNextHeartbeat, 30s))`, reset on every
+  message) aborts zombie streams that neither error nor complete; when the server advertises
+  `millisToNextHeartbeat` the `2 × interval` term dominates, so the 30s floor only bites for a stream
+  that never sends a heartbeat at all — exactly the zombie case;
+- on reconnect it resumes from the last observed engine version (`sinceVersion`); if a resume attempt
+  is never acknowledged, it falls back to a fresh subscription plus a defensive
+  `clearCatalogStatisticsCache()`.
+
+There is **no notification toast** — the Toaster is not yet available during module registration, so
+the status-bar indicator (`ChangeStreamIndicator.vue`, fed by the refresher's reactive
+`streamStatus` / `lastChangeAt` refs) is the sole user-facing signal. Failures are `console.warn`-ed
+for diagnosability.
+
+Cache invalidation is coarse but cheap — it dispatches on the concrete class of the converted
+mutation `body`:
+
+| Engine mutation | Invalidation |
+|---|---|
+| `CreateCatalogSchemaMutation`, `DuplicateCatalogMutation`, `RestoreCatalogSchemaMutation` | `clearCatalogStatisticsCache()` |
+| `RemoveCatalogSchemaMutation` | `clearCatalogStatisticsCache()` + `clearSchemaCache(catalogName)` |
+| `ModifyCatalogSchemaNameMutation` | `clearCatalogStatisticsCache()` + `clearSchemaCache(oldName)` + `clearSchemaCache(newName)` |
+| `ModifyCatalogSchemaMutation` | `clearSchemaCache(catalogName)` + `clearCatalogStatisticsCache()` |
+| `MakeCatalogAliveMutation`, `SetCatalogStateMutation`, `SetCatalogMutabilityMutation` | `clearCatalogStatisticsCache()` |
+| `TransactionMutation` | none (no catalog reference) — updates `lastChangeAt` only |
+| unknown / header-only (`body == undefined`) | none — updates `lastChangeAt` only |
+
+Mutations performed by evitaLab itself are echoed back through the stream; because those operations
+already clear the relevant caches explicitly, the echoed invalidation is an idempotent no-op.
+
 ## Long-running operations
 
 Some server operations report progress as async iterables (e.g.

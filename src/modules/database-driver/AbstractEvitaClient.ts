@@ -40,6 +40,12 @@ import { ScopesConverter } from '@/modules/database-driver/connector/grpc/servic
 import {
     MutationHistoryConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/MutationHistoryConverter.ts'
+import {
+    ChangeSystemCaptureConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/ChangeSystemCaptureConverter.ts'
+import {
+    RegisterSystemChangeCaptureResponseConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/RegisterSystemChangeCaptureResponseConverter.ts'
 
 
 export type EvitaServiceClient = Client<typeof EvitaService>
@@ -82,6 +88,8 @@ export abstract class AbstractEvitaClient {
     private _taskStatusConverter?: TaskStatusConverter
     private _trafficRecordingConverter?: TrafficRecordingConverter
     private _mutationHistoryConverter?: MutationHistoryConverter
+    private _changeSystemCaptureConverter?: ChangeSystemCaptureConverter
+    private _registerSystemChangeCaptureResponseConverter?: RegisterSystemChangeCaptureResponseConverter
 
     protected constructor(evitaLabConfig: EvitaLabConfig,
                           connectionService: ConnectionService) {
@@ -246,5 +254,20 @@ export abstract class AbstractEvitaClient {
         }
 
         return this._mutationProgressConverter
+    }
+
+    protected get changeSystemCaptureConverter(): ChangeSystemCaptureConverter {
+        if (this._changeSystemCaptureConverter == undefined) {
+            this._changeSystemCaptureConverter = new ChangeSystemCaptureConverter()
+        }
+        return this._changeSystemCaptureConverter
+    }
+
+    protected get registerSystemChangeCaptureResponseConverter(): RegisterSystemChangeCaptureResponseConverter {
+        if (this._registerSystemChangeCaptureResponseConverter == undefined) {
+            this._registerSystemChangeCaptureResponseConverter =
+                new RegisterSystemChangeCaptureResponseConverter(this.changeSystemCaptureConverter)
+        }
+        return this._registerSystemChangeCaptureResponseConverter
     }
 }
