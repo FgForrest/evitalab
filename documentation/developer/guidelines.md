@@ -114,6 +114,26 @@ export function useService(): Service {
 - `EvitaClient`/driver: all server communication (see [database driver](database-driver.md)).
 - Use the client directly in a component only for truly tiny logic.
 
+### Encapsulate a responsibility in its own type
+
+When a class starts to own a distinct, self-contained responsibility with its own state and behaviour
+(a cache, a registry, a poller, a converter, a state machine…), give it its **own type** and hold an
+instance of it — do not scatter raw `Map`s, arrays and ad-hoc helper functions across the host class.
+The host delegates to thin wrappers; the collaborator owns its data and the operations over it.
+
+- **A field's type should carry its invariants.** Prefer a small dedicated class/interface over a bare
+  `Map<string, …>` or loosely-typed record once the structure has rules of its own (keying scheme,
+  paired register/unregister, fire-on-change, cache-through fetch). This keeps the host thin, keeps each
+  collaborator single-purpose and testable in isolation, and makes the pattern uniform across siblings.
+- **Keep transport/framework coupling out of the collaborator.** Pass what it needs in — e.g. a fetch
+  thunk rather than a client reference (see the cache-through accessor pattern in
+  [database driver](database-driver.md#caching--change-callbacks)).
+- **Follow the established sibling.** If a comparable collaborator already exists, mirror its shape
+  (naming, method surface, id/callback conventions) instead of inventing a parallel style.
+
+This is the same instinct as *Where logic belongs*, applied one level down: just as logic is placed in
+the layer that owns it, state is placed in the type that owns it.
+
 ## UI
 
 Use Vuetify components as the base and the custom component set documented in

@@ -37,6 +37,12 @@ import {
 import {
     SetCatalogMutabilityMutation
 } from '@/modules/database-driver/request-response/schema/mutation/engine/SetCatalogMutabilityMutation'
+import {
+    MarkCatalogMissingMutation
+} from '@/modules/database-driver/request-response/schema/mutation/engine/MarkCatalogMissingMutation'
+import {
+    UpgradeCatalogFormatMutation
+} from '@/modules/database-driver/request-response/schema/mutation/engine/UpgradeCatalogFormatMutation'
 
 export const dataCacheRefresherInjectionKey: InjectionKey<DataCacheRefresher> = Symbol('DataCacheRefresher')
 
@@ -208,12 +214,21 @@ export class DataCacheRefresher {
     }
 
     /**
-     * Invalidates the caches affected by a single engine mutation. Dispatch is by the concrete class
-     * of the converted mutation body; unknown or header-only captures update {@link lastChangeAt} only.
+     * Invalidates the caches affected by a single change capture. Dispatch is by the concrete class
+     * of the converted mutation body.
+     *
+     * A header-only capture (undefined body) reaching this method means the body could not be
+     * converted — an unknown engine mutation or an opt-in host event the client dropped. Because the
+     * client always requests full bodies, a header-only capture never occurs on the happy path, so
+     * the catalog statistics cache is defensively cleared: the cache is lazy and cheap, and this
+     * avoids stale state when the unknown mutation would have required invalidation. Schema caches
+     * stay untouched — no catalog name is recoverable from an unknown mutation.
      */
     private async invalidateFor(capture: ChangeSystemCapture): Promise<void> {
         const body = capture.body
         if (body == undefined) {
+            console.warn('Unknown change capture (header-only); defensively clearing catalog statistics cache.')
+            await this.evitaClient.management.clearCatalogStatisticsCache()
             return
         }
 
@@ -226,6 +241,10 @@ export class DataCacheRefresher {
         } else if (body instanceof RemoveCatalogSchemaMutation) {
             await this.evitaClient.management.clearCatalogStatisticsCache()
             await this.evitaClient.clearSchemaCache(body.catalogName)
+        } else if (body instanceof MarkCatalogMissingMutation) {
+            // catalog stays listed in MISSING state, but its schema is no longer servable
+            await this.evitaClient.management.clearCatalogStatisticsCache()
+            await this.evitaClient.clearSchemaCache(body.catalogName)
         } else if (body instanceof ModifyCatalogSchemaNameMutation) {
             await this.evitaClient.management.clearCatalogStatisticsCache()
             await this.evitaClient.clearSchemaCache(body.catalogName)
@@ -236,8 +255,11 @@ export class DataCacheRefresher {
         } else if (
             body instanceof MakeCatalogAliveMutation ||
             body instanceof SetCatalogStateMutation ||
-            body instanceof SetCatalogMutabilityMutation
+            body instanceof SetCatalogMutabilityMutation ||
+            body instanceof UpgradeCatalogFormatMutation
         ) {
+            // UpgradeCatalogFormatMutation drives OUT_OF_DATE → BEING_UPGRADED → prior state; the
+            // explorer picks up the state change from the refreshed statistics
             await this.evitaClient.management.clearCatalogStatisticsCache()
         }
         // TransactionMutation and any other mutation carry no catalog reference — nothing to invalidate

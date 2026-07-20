@@ -3,7 +3,6 @@ import type {
     GrpcCatalogStatistics,
     GrpcEntityCollectionStatistics
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { List as ImmutableList } from 'immutable'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState'
@@ -52,10 +51,17 @@ export class CatalogStatisticsConverter {
                 return CatalogState.GoingAlive
             case GrpcCatalogState.INACTIVE:
                 return CatalogState.Inactive
+            case GrpcCatalogState.MISSING:
+                return CatalogState.Missing
+            case GrpcCatalogState.OUT_OF_DATE:
+                return CatalogState.OutOfDate
+            case GrpcCatalogState.BEING_UPGRADED:
+                return CatalogState.BeingUpgraded
             default:
-                throw new UnexpectedError(
-                    `Unsupported catalog state '${catalogState}'.`
-                )
+                // forward-compatibility: a newer server may report a state this client does not
+                // know yet; degrade gracefully instead of failing the whole catalog listing/session
+                console.warn(`Unsupported catalog state '${catalogState}', treating as unknown.`)
+                return CatalogState.Unknown
         }
     }
 

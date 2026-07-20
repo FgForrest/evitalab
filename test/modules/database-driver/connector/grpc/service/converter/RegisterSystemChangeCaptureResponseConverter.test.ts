@@ -63,9 +63,9 @@ describe('RegisterSystemChangeCaptureResponseConverter', () => {
                 version: '7',
                 index: 0,
                 operation: GrpcChangeCaptureOperation.UPSERT,
-                systemMutation: undefined,
+                body: { case: undefined },
                 timestamp: undefined
-            } as GrpcRegisterSystemChangeCaptureResponse['capture']
+            } as unknown as GrpcRegisterSystemChangeCaptureResponse['capture']
         }))
 
         expect(result.responseType).toBe(CaptureResponseType.Change)

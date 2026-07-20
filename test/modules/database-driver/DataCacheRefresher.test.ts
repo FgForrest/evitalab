@@ -20,6 +20,12 @@ import {
     CreateCatalogSchemaMutation
 } from '../../../src/modules/database-driver/request-response/schema/mutation/engine/CreateCatalogSchemaMutation'
 import {
+    MarkCatalogMissingMutation
+} from '../../../src/modules/database-driver/request-response/schema/mutation/engine/MarkCatalogMissingMutation'
+import {
+    UpgradeCatalogFormatMutation
+} from '../../../src/modules/database-driver/request-response/schema/mutation/engine/UpgradeCatalogFormatMutation'
+import {
     TransactionMutation
 } from '../../../src/modules/database-driver/request-response/transaction/TransactionMutation'
 import type { SchemaMutation } from '../../../src/modules/database-driver/request-response/schema/mutation/SchemaMutation'
@@ -294,8 +300,49 @@ describe('DataCacheRefresher', () => {
         refresher.stop()
     })
 
-    test('a header-only capture (undefined body) invalidates no caches', async () => {
+    test('a mark-catalog-missing mutation clears both statistics and schema caches', async () => {
+        const stub = makeClient([yieldThenBlock([ack(), change(1, new MarkCatalogMissingMutation('gone'))])])
+        const refresher = new DataCacheRefresher(stub.evitaClient)
+
+        refresher.start()
+        await vi.advanceTimersByTimeAsync(1)
+
+        expect(stub.clearCatalogStatisticsCache).toHaveBeenCalledTimes(1)
+        expect(stub.clearSchemaCache).toHaveBeenCalledWith('gone')
+        refresher.stop()
+    })
+
+    test('an upgrade-catalog-format mutation clears the catalog statistics cache', async () => {
+        const stub = makeClient([yieldThenBlock([ack(), change(1, new UpgradeCatalogFormatMutation('legacy', 2, 3))])])
+        const refresher = new DataCacheRefresher(stub.evitaClient)
+
+        refresher.start()
+        await vi.advanceTimersByTimeAsync(1)
+
+        expect(stub.clearCatalogStatisticsCache).toHaveBeenCalledTimes(1)
+        expect(stub.clearSchemaCache).not.toHaveBeenCalled()
+        refresher.stop()
+    })
+
+    test('a header-only capture (unknown mutation) defensively clears the statistics cache but keeps the stream alive', async () => {
         const stub = makeClient([yieldThenBlock([ack(), change(1, undefined)])])
+        const refresher = new DataCacheRefresher(stub.evitaClient)
+
+        refresher.start()
+        await vi.advanceTimersByTimeAsync(1)
+
+        // the unknown mutation is tolerated: the stream stays up (no reconnect) and lastChangeAt advances
+        expect(stub.registerSystemChangeCapture).toHaveBeenCalledTimes(1)
+        expect(refresher.streamStatus.value).toBe(ChangeStreamStatus.UpToDate)
+        expect(refresher.lastChangeAt.value).toBeDefined()
+        // defensive invalidation: statistics cache cleared, schema cache left untouched (no catalog name)
+        expect(stub.clearCatalogStatisticsCache).toHaveBeenCalledTimes(1)
+        expect(stub.clearSchemaCache).not.toHaveBeenCalled()
+        refresher.stop()
+    })
+
+    test('heartbeat and acknowledgement responses do not trigger the defensive statistics clear', async () => {
+        const stub = makeClient([yieldThenBlock([ack(), heartbeat(3)])])
         const refresher = new DataCacheRefresher(stub.evitaClient)
 
         refresher.start()
