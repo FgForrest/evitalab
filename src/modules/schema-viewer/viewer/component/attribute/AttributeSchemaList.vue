@@ -10,7 +10,7 @@ import { List } from 'immutable'
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     dataPointer: SchemaViewerDataPointer,
     attributes: List<AttributeSchema>
 }>()

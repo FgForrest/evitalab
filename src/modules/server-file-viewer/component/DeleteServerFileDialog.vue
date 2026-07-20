@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
@@ -41,12 +42,12 @@ async function deleteFile(): Promise<boolean> {
         }
         emit('delete')
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'serverFileViewer.delete.notification.couldNotDeleteFile',
             {
                 fileName: props.file.name,
-                reason: e.message
+                reason: errorMessage(e)
             }
         ))
         return false

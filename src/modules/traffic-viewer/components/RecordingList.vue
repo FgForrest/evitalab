@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
 import { useI18n } from 'vue-i18n'
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster, type Toaster } from '@/modules/notification/service/Toaster'
 import ServerFileList from '@/modules/server-file-viewer/component/ServerFileList.vue'
 import { TrafficViewerService, useTrafficViewerService } from '@/modules/traffic-viewer/service/TrafficViewerService'
 
@@ -13,7 +14,7 @@ const trafficViewerService: TrafficViewerService = useTrafficViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     recordingsInPreparationPresent: boolean
 }>()
 
@@ -49,10 +50,10 @@ async function loadRecordings(): Promise<boolean> {
             recordingsLoaded.value = true
         }
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'trafficViewer.recordings.notification.couldNotLoadRecordings',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         return false
     }

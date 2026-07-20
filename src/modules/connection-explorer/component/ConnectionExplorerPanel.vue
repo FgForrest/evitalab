@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { List as ImmutableList } from 'immutable'
@@ -80,13 +81,13 @@ async function loadServerStatus(silent: boolean = false): Promise<boolean> {
         // recovered — cancel any pending background retry
         cancelServerStatusRetry()
         return true
-    } catch (e: any) {
+    } catch (e) {
         // drop stale status so the menu actions disable against an unreachable server
         serverStatus.value = undefined
         if (!silent) {
             await toaster.error(t(
                 'explorer.connection.notification.couldNotLoadServerStatus',
-                { reason: e.message }
+                { reason: errorMessage(e) }
             ))
         }
         scheduleServerStatusRetry()
@@ -124,10 +125,10 @@ async function loadCatalogs(): Promise<boolean> {
     try {
         catalogs.value = await connectionExplorerService.getCatalogs()
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'explorer.connection.notification.couldNotLoadCatalogs',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         return false
     }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 /**
  * Entity property value renderer that tries to render the value in a code editor.
  */
@@ -47,11 +48,12 @@ const props = withDefaults(defineProps<{
 const prettyPrint = ref<boolean>(true)
 
 const menuItems = ref<Map<CodeDetailRendererMenuItemType, MenuItem<CodeDetailRendererMenuItemType>>>()
-const menuItemList: ComputedRef<MenuItem<CodeDetailRendererMenuItemType>[]> = computed(() => {
+const menuItemList: ComputedRef<MenuAction<CodeDetailRendererMenuItemType>[]> = computed(() => {
     if (menuItems.value == undefined) {
         return []
     }
     return Array.from(menuItems.value.values())
+        .filter((item): item is MenuAction<CodeDetailRendererMenuItemType> => item instanceof MenuAction)
 })
 watch(
     [() => props.codeLanguage, prettyPrint],
@@ -62,13 +64,13 @@ watch(
 const formattedValue = computed<string>(() => {
     try {
         return entityViewerService.formatEntityPropertyValue(props.value, props.codeLanguage, prettyPrint.value)
-    } catch (e: any) {
+    } catch (e) {
         console.error(e)
         return t(
             'entityViewer.grid.codeRenderer.placeholder.failedToFormatValue',
             {
                 codeLanguage: props.codeLanguage,
-                message: e?.message ? `${e.message}.` : ''
+                message: errorMessage(e) ? `${errorMessage(e)}.` : ''
             }
         )
     }
@@ -85,13 +87,13 @@ const codeBlockExtensions = computed<Extension[]>(() => {
         case EntityPropertyValueSupportedCodeLanguage.Xml:
             return [xml()]
         default:
-            toaster.error(t('entityViewer.grid.codeRenderer.notification.unsupportedCodeLanguage'))
-                .then()
+            // computeds must stay side-effect-free; a toast here would re-fire on every re-evaluation
+            console.error(t('entityViewer.grid.codeRenderer.notification.unsupportedCodeLanguage'))
             return []
     }
 })
 
-function handleActionClick(action: any) {
+function handleActionClick(action: unknown) {
     const foundedAction = menuItems.value?.get(action as CodeDetailRendererMenuItemType)
     if (foundedAction && foundedAction instanceof MenuAction) {
         (foundedAction as MenuAction<CodeDetailRendererMenuItemType>).execute()

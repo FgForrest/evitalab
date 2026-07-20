@@ -6,7 +6,7 @@ import { Connection } from '@/modules/connection/model/Connection'
  */
 // todo lho use the connection
 export class EvitaDBInstanceServerError extends LabError {
-    constructor(connection: Connection | undefined) {
+    constructor(_connection: Connection | undefined) {
         super(
             'EvitaDBInstanceCallError',
             'Server error. Please check your evitaDB instance for more details.'

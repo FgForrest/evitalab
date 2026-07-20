@@ -66,8 +66,7 @@ const displayedLabels = computed<string>(() => {
     if (props.modelValue.length === 0) {
         return ''
     }
-    //@ts-ignore
-    return t('trafficViewer.recordHistory.filter.form.labels.displayedLabels', props.modelValue.length, { count: props.modelValue.length })
+    return t('trafficViewer.recordHistory.filter.form.labels.displayedLabels', props.modelValue.length, { named: { count: props.modelValue.length } })
 })
 
 function addLabel(): void {

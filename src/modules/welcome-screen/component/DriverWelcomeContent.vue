@@ -6,7 +6,7 @@ import { ConnectionService, useConnectionService } from '@/modules/connection/se
 const connectionService: ConnectionService = useConnectionService()
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     version: string
 }>()
 

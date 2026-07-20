@@ -1,4 +1,5 @@
 import type { HierarchyResultParser } from '@/modules/console/result-visualiser/service/HierarchyResultParser'
+import type { GraphQLResultNode } from '@/modules/database-driver/connector/gql/model/GraphQLResultNode'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import {
     VisualisedHierarchyResult,
@@ -26,7 +27,7 @@ export class GraphQLHierarchyResultParser implements HierarchyResultParser {
     }
 
     async parse(queryResult: unknown, entitySchema: EntitySchema, catalogName: string): Promise<VisualisedHierarchyResult> {
-        const result = queryResult as any
+        const result = queryResult as GraphQLResultNode
         const hierarchyResult = result['extraResults']?.['hierarchy']
         if (!hierarchyResult) {
             return new VisualisedHierarchyResult([])
@@ -71,7 +72,7 @@ export class GraphQLHierarchyResultParser implements HierarchyResultParser {
     }
 
     private resolveNamedHierarchy(
-        namedHierarchyResult: any[],
+        namedHierarchyResult: GraphQLResultNode[],
         entityRepresentativeAttributes: string[]
     ): VisualisedNamedHierarchy {
         const trees: VisualisedHierarchyTreeNode[] = []
@@ -134,10 +135,10 @@ export class GraphQLHierarchyResultParser implements HierarchyResultParser {
         }
     }
 
-    private resolveRepresentativeTitle(entityResult: any | undefined, representativeAttributes: string[]): string | undefined {
+    private resolveRepresentativeTitle(entityResult: GraphQLResultNode | undefined, representativeAttributes: string[]): string | undefined {
         if (!entityResult) return undefined
 
-        const possibleAttributes: { value: any; isRepresentative: boolean }[] = []
+        const possibleAttributes: { value: unknown; isRepresentative: boolean }[] = []
         const attributes = entityResult['attributes'] || {}
         for (const attributeName in attributes) {
             possibleAttributes.push({

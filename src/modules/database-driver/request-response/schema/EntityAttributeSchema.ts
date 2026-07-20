@@ -1,3 +1,4 @@
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { NamingConvention } from '../NamingConvetion'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
@@ -24,7 +25,7 @@ export class EntityAttributeSchema extends AttributeSchema {
                 deprecationNotice: string | undefined,
                 type: Scalar,
                 nullable: boolean,
-                defaultValue: any | any[] | undefined,
+                defaultValue: EvitaValue | EvitaValue[] | undefined,
                 localized: boolean,
                 indexedDecimalPlaces: number,
                 representative: boolean,
@@ -36,7 +37,7 @@ export class EntityAttributeSchema extends AttributeSchema {
         this.representative = representative
     }
 
-    protected prefixFlags(): Flag[] {
+    protected override prefixFlags(): Flag[] {
         const flags: Flag[] = []
         if (this.representative) {
             flags.push(new Flag(EntityAttributeSchemaFlag.Representative))

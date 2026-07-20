@@ -7,7 +7,7 @@ import { ref } from 'vue'
 
 const { t } = useI18n()
 
-const props = withDefaults(
+withDefaults(
     defineProps<{
         disabled?: boolean
     }>(),

@@ -176,7 +176,7 @@ export class EvitaClient extends AbstractEvitaClient {
         catalogName: string,
         instanceType: GraphQLInstanceType,
         query: string,
-        variables: any = {}
+        variables: Record<string, unknown> = {}
     ): Promise<GraphQLResponse> {
         let path
         if (instanceType === GraphQLInstanceType.System) {
@@ -210,7 +210,7 @@ export class EvitaClient extends AbstractEvitaClient {
                 )
                     .json()
             ) as GraphQLResponse
-        } catch (e: any) {
+        } catch (e) {
             throw this.errorTransformer.transformError(e)
         }
     }
@@ -298,7 +298,6 @@ export class EvitaClient extends AbstractEvitaClient {
                 this.errorTransformer,
                 this,
                 () => this.evitaManagementClient,
-                () => this.evitaValueConverter,
                 () => this.catalogStatisticsConverter,
                 () => this.serverStatusConverter,
                 () => this.reservedKeywordsConverter,

@@ -10,13 +10,14 @@ import {
 import {
     DisallowLocaleInEntitySchemaMutation
 } from '@/modules/database-driver/request-response/schema/mutation/entity/DisallowLocaleInEntitySchemaMutation.ts'
+import { Set as ImmutableSet } from 'immutable'
 
 export class DisallowLocaleInEntitySchemaMutationConverter implements SchemaMutationConverter<DisallowLocaleInEntitySchemaMutation, GrpcDisallowLocaleInEntitySchemaMutation> {
     public static readonly INSTANCE = new DisallowLocaleInEntitySchemaMutationConverter()
 
     convert(mutation: GrpcDisallowLocaleInEntitySchemaMutation): DisallowLocaleInEntitySchemaMutation {
         return new DisallowLocaleInEntitySchemaMutation(
-            Immutable.Set(CatalogSchemaConverter.convertLocales(mutation.locales))
+            ImmutableSet(CatalogSchemaConverter.convertLocales(mutation.locales))
         )
     }
 }

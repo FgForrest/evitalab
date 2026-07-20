@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { useI18n } from 'vue-i18n'
-import { Toaster, useToaster } from '@/modules/notification/service/Toaster'
+import { useToaster, type Toaster } from '@/modules/notification/service/Toaster'
 import { TrafficViewerService, useTrafficViewerService } from '@/modules/traffic-viewer/service/TrafficViewerService'
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 
@@ -26,10 +27,10 @@ async function stopRecording(): Promise<boolean> {
         await toaster.success(t('trafficViewer.recordings.stopRecording.notification.recordingStopped'))
         emit('end', updatedTask)
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'trafficViewer.recordings.stopRecording.notification.couldNotStopRecording',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         return false
     }

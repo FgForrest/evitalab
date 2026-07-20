@@ -1,4 +1,6 @@
+import type { GraphQLResultNode } from '@/modules/database-driver/connector/gql/model/GraphQLResultNode'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import type {
     EntityPropertyValuePreviewStringContext
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValuePreviewStringContext'
@@ -58,7 +60,7 @@ export class EntityPrice extends EntityPropertyValue {
         )
     }
 
-    static fromJson(json: any): EntityPrice {
+    static fromJson(json: GraphQLResultNode): EntityPrice {
         return new EntityPrice(json.priceId,
             json.priceList,
             json.currency,
@@ -70,7 +72,7 @@ export class EntityPrice extends EntityPropertyValue {
             json.taxRate)
     }
 
-    value(): any {
+    value(): EvitaValue {
         return this
     }
 
@@ -82,7 +84,7 @@ export class EntityPrice extends EntityPropertyValue {
         return JSON.stringify(this.toRawRepresentation())
     }
 
-    toRawRepresentation(): any {
+    toRawRepresentation(): EvitaValue {
         return {
             priceId: this.priceId,
             priceList: this.priceList,

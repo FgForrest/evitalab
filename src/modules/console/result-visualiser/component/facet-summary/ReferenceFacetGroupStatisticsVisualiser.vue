@@ -26,8 +26,9 @@ const isGroupedFacets = computed<boolean>(() => {
 
 const ungroupedFacets = computed<VisualisedFacetStatistics[]>(() => {
     if (isGroupedFacets.value) return []
-    if (props.referenceFacets.groups.length === 0) return []
-    return props.referenceFacets.groups[0].facets
+    const firstGroup = props.referenceFacets.groups[0]
+    if (firstGroup == undefined) return []
+    return firstGroup.facets
 })
 const facetStatisticsResultsPage = ref<number>(1)
 </script>

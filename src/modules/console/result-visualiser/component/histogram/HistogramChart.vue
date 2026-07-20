@@ -50,9 +50,9 @@ const maxBucketOccurrences = computed(() => {
 })
 
 const chartSeries = computed(() => {
-    const nonRequestedBuckets: any[] = []
-    const requestedBuckets: any[] = []
-    const fillerBuckets: any[] = [] // this is basically hack to allow showing bucket tooltips even for empty buckets where there is no area to hover over (the `intersect` option on tooltip options doesn't work as expected)
+    const nonRequestedBuckets: [number, number][] = []
+    const requestedBuckets: [number, number][] = []
+    const fillerBuckets: [number, number][] = [] // this is basically hack to allow showing bucket tooltips even for empty buckets where there is no area to hover over (the `intersect` option on tooltip options doesn't work as expected)
 
     for (let i = 0; i < props.histogram.buckets.size; i++) {
         const bucket: VisualisedHistogramBucket | undefined = props.histogram.buckets.get(i)

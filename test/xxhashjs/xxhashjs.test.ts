@@ -1,5 +1,6 @@
 import { test, expect } from 'vitest'
-import XXH, { HashObject } from 'xxhashjs'
+import XXH from 'xxhashjs'
+import type { HashObject } from 'xxhashjs'
 
 /**
  * Tests for xxhashjs usage

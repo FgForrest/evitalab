@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 /**
  * Dialog window to accept or reject a shared tab.
  */
 
 import { useI18n } from 'vue-i18n'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
-import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import type { AnyTabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
 import VConfirmDialogButton from '@/modules/base/component/VConfirmDialogButton.vue'
 import { SharedTabResolver, useSharedTabResolver } from '@/modules/workspace/tab/service/SharedTabResolver'
@@ -60,22 +61,22 @@ async function acceptSharedTab(): Promise<void> {
     }
 
     try {
-        const sharedTabRequest: TabDefinition<any, any> = await sharedTabResolver.resolve(sharedTab.value)
+        const sharedTabRequest: AnyTabDefinition = await sharedTabResolver.resolve(sharedTab.value)
         workspaceService.createTab(sharedTabRequest)
 
         sharedTabResolved()
-    } catch (e: any) {
+    } catch (e) {
         if (e instanceof InvalidConnectionInSharedTabError) {
             showSharedTabTroubleshooter.value = true
             sharedTabOriginalConnectionName.value = e.originalConnectionName
             sharedTabTroubleshooterCallback.value = e.troubleshooterCallback
         } else {
-            await toaster.error('Could not resolve shared tab', e)
+            await toaster.error('Could not resolve shared tab', asError(e))
         }
     }
 }
 
-function brokenSharedTabFixed(fixedSharedTabRequest: TabDefinition<any, any>): void {
+function brokenSharedTabFixed(fixedSharedTabRequest: AnyTabDefinition): void {
     workspaceService.createTab(fixedSharedTabRequest)
     sharedTabResolved()
 }

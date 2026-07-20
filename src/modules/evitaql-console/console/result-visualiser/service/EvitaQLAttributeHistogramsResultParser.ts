@@ -7,7 +7,6 @@ import {
 import { VisualisedHistogram } from '@/modules/console/result-visualiser/model/histogram/VisualisedHistogram'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
-import { Histogram } from '@/modules/database-driver/request-response/data/Histogram'
 
 /**
  * {@link AttributeHistogramsResultParser} for EvitaQL query language. Converts typed

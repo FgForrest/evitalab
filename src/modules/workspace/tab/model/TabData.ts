@@ -13,3 +13,10 @@ export interface TabData<DTO extends TabDataDto> {
      */
     toSerializable(): DTO
 }
+
+/**
+ * Existential alias for tab data of any concrete DTO type — used where tabs of
+ * differing types are handled uniformly (heterogeneous collections).
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- existential generic slot
+export type AnyTabData = TabData<any>

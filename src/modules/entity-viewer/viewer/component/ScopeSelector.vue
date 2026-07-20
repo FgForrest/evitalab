@@ -15,8 +15,8 @@ const emit = defineEmits<{
     (e: 'update:selected', value: SelectedScope[]): void
 }>()
 
-const liveSelection = ref<boolean>(props.selectedScope.find(x => x.scope === EntityScope.Live)?.value!)
-const archiveSelection = ref<boolean>(props.selectedScope.find(x => x.scope === EntityScope.Archive)?.value!)
+const liveSelection = ref<boolean>(props.selectedScope.find(x => x.scope === EntityScope.Live)?.value ?? false)
+const archiveSelection = ref<boolean>(props.selectedScope.find(x => x.scope === EntityScope.Archive)?.value ?? false)
 
 watch(liveSelection, () => {
     updatedSelection()

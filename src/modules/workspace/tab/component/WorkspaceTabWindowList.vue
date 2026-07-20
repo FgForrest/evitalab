@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
-import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import type { AnyTabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import { DemoSnippetResolver, useDemoSnippetResolver } from '@/modules/workspace/service/DemoSnippetResolver'
@@ -36,8 +37,8 @@ const tabActions = [
     }
 ]
 
-function handleTabActionClick(selected: any[]): void {
-    if (selected.length === 0) {
+function handleTabActionClick(selected: unknown): void {
+    if (!Array.isArray(selected) || selected.length === 0) {
         return
     }
     switch (selected[0]) {
@@ -47,10 +48,10 @@ function handleTabActionClick(selected: any[]): void {
     }
 }
 
-const tabDefinitions = ref<TabDefinition<any, any>[]>(workspaceService.getTabDefinitions())
+const tabDefinitions = ref<AnyTabDefinition[]>(workspaceService.getTabDefinitions())
 watch(tabDefinitions, () => {
     // switch to newly opened tab
-    const newTab: TabDefinition<any, any> | undefined = workspaceService.getTheNewTab()
+    const newTab: AnyTabDefinition | undefined = workspaceService.getTheNewTab()
     if (newTab) {
         currentTabId.value = newTab.id
         workspaceService.markTabAsVisited(newTab.id)
@@ -80,7 +81,10 @@ function moveTabCursor(diff: number) {
     } else if (newTabIndex >= tabDefinitions.value.length) {
         newTabIndex = 0
     }
-    currentTabId.value = tabDefinitions.value[newTabIndex].id
+    const nextTab = tabDefinitions.value[newTabIndex]
+    if (nextTab != undefined) {
+        currentTabId.value = nextTab.id
+    }
 }
 
 function closeTab(tabId: string): void {
@@ -95,16 +99,22 @@ function closeTab(tabId: string): void {
     if (tabDefinitions.value.length === 0) {
         currentTabId.value = null
     } else if (closedTabIndex === prevTabIndex && closedTabIndex === prevTabsLength - 1) {
-        currentTabId.value = tabDefinitions.value[closedTabIndex - 1].id
+        const prevTab = tabDefinitions.value[closedTabIndex - 1]
+        if (prevTab != undefined) {
+            currentTabId.value = prevTab.id
+        }
     } else if (closedTabIndex === prevTabIndex && closedTabIndex < prevTabsLength - 1) {
-        currentTabId.value = tabDefinitions.value[closedTabIndex].id
+        const nextTab = tabDefinitions.value[closedTabIndex]
+        if (nextTab != undefined) {
+            currentTabId.value = nextTab.id
+        }
     }
 }
 
 /**
  * open demo code snippet if requested
  */
-async function resolveDemoCodeSnippet(urlSearchParams: URLSearchParams): Promise<TabDefinition<any, any> | undefined> {
+async function resolveDemoCodeSnippet(urlSearchParams: URLSearchParams): Promise<AnyTabDefinition | undefined> {
     const demoSnippetRequestSerialized: string | null = urlSearchParams.get('demoSnippetRequest')
     if (demoSnippetRequestSerialized == undefined) {
         return undefined
@@ -112,8 +122,8 @@ async function resolveDemoCodeSnippet(urlSearchParams: URLSearchParams): Promise
 
     try {
         return await demoCodeSnippetResolver.resolve(demoSnippetRequestSerialized)
-    } catch (e: any) {
-        await toaster.error('Could not resolve demo code snippet', e) // todo lho i18n
+    } catch (e) {
+        await toaster.error('Could not resolve demo code snippet', asError(e)) // todo lho i18n
     }
 }
 

@@ -9,7 +9,7 @@ import type {
 export class RemoveParentMutationConverter implements LocalMutationConverter<RemoveParentMutation, GrpcRemoveParentMutation> {
     public static readonly INSTANCE = new RemoveParentMutationConverter()
 
-    convert(mutation: GrpcRemoveParentMutation): RemoveParentMutation {
+    convert(_mutation: GrpcRemoveParentMutation): RemoveParentMutation {
         return new RemoveParentMutation()
     }
 }

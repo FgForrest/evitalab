@@ -1,3 +1,5 @@
+import type { Scalar } from '@/modules/database-driver/data-type/Scalar'
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import {
     type ScopedAttributeUniquenessType
 } from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
@@ -14,12 +16,12 @@ export class CreateAttributeSchemaMutation {
     readonly localized: boolean
     readonly nullable: boolean
     readonly representative: boolean
-    readonly type: any
-    readonly defaultValue: any|undefined
+    readonly type: Scalar
+    readonly defaultValue: EvitaValue|undefined
     readonly indexedDecimalPlaces: number
 
 
-    constructor(name: string, description: string|undefined, deprecationNotice: string|undefined, uniqueInScopes: ImmutableList<ScopedAttributeUniquenessType>, filterableInScopes: ImmutableList<EntityScope>, sortableInScopes: ImmutableList<EntityScope>, localized: boolean, nullable: boolean, representative: boolean, type: any, defaultValue: any|undefined, indexedDecimalPlaces: number) {
+    constructor(name: string, description: string|undefined, deprecationNotice: string|undefined, uniqueInScopes: ImmutableList<ScopedAttributeUniquenessType>, filterableInScopes: ImmutableList<EntityScope>, sortableInScopes: ImmutableList<EntityScope>, localized: boolean, nullable: boolean, representative: boolean, type: Scalar, defaultValue: EvitaValue|undefined, indexedDecimalPlaces: number) {
         this.name = name
         this.description = description
         this.deprecationNotice = deprecationNotice

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
+import { asError } from '@/utils/error'
 /**
  * Dialog to open a shared tab from a hash or share link pasted by the user into a running
  * evitaLab session. Resolution mirrors the URL-based shared tab flow (see TabSharedDialog):
@@ -14,7 +16,7 @@ import { SharedTabResolver, useSharedTabResolver } from '@/modules/workspace/tab
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { ShareTabObject } from '@/modules/workspace/tab/model/ShareTabObject'
-import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import type { AnyTabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { InvalidConnectionInSharedTabError } from '@/modules/workspace/tab/error/InvalidConnectionInSharedTabError'
 import type { SharedTabTroubleshooterCallback } from '@/modules/workspace/tab/service/SharedTabTroubleshooterCallback'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
@@ -25,7 +27,7 @@ const sharedTabResolver: SharedTabResolver = useSharedTabResolver()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     modelValue: boolean
 }>()
 const emit = defineEmits<{
@@ -38,12 +40,12 @@ const changed = computed<boolean>(() => hashOrUrl.value.trim().length > 0)
 const sharedTab = computed<ShareTabObject | undefined>(() => {
     try {
         return ShareTabObject.fromLinkParamOrUrl(hashOrUrl.value)
-    } catch (e) {
+    } catch {
         return undefined
     }
 })
 const hasSensitiveData = computed<boolean>(() => {
-    const tabData: any = sharedTab.value?.tabData
+    const tabData: TabDataDto | undefined = sharedTab.value?.tabData
     return tabData != undefined && Object.keys(tabData).length > 0
 })
 
@@ -55,7 +57,7 @@ const hashOrUrlRules = [
         try {
             ShareTabObject.fromLinkParamOrUrl(value)
             return true
-        } catch (e) {
+        } catch {
             return t('tabShare.openSharedDialog.form.hashOrUrl.validation.invalid')
         }
     }
@@ -73,29 +75,29 @@ async function openSharedTab(): Promise<boolean> {
     let shareTabObject: ShareTabObject
     try {
         shareTabObject = ShareTabObject.fromLinkParamOrUrl(hashOrUrl.value)
-    } catch (e: any) {
-        await toaster.error('Could not resolve shared tab', e)
+    } catch (e) {
+        await toaster.error('Could not resolve shared tab', asError(e))
         return false
     }
 
     try {
-        const sharedTabRequest: TabDefinition<any, any> = await sharedTabResolver.resolve(shareTabObject)
+        const sharedTabRequest: AnyTabDefinition = await sharedTabResolver.resolve(shareTabObject)
         workspaceService.createTab(sharedTabRequest)
         return true
-    } catch (e: any) {
+    } catch (e) {
         if (e instanceof InvalidConnectionInSharedTabError) {
             showSharedTabTroubleshooter.value = true
             sharedTabOriginalConnectionName.value = e.originalConnectionName
             sharedTabTroubleshooterCallback.value = e.troubleshooterCallback
             return false
         } else {
-            await toaster.error('Could not resolve shared tab', e)
+            await toaster.error('Could not resolve shared tab', asError(e))
             return false
         }
     }
 }
 
-function brokenSharedTabFixed(fixedSharedTabRequest: TabDefinition<any, any>): void {
+function brokenSharedTabFixed(fixedSharedTabRequest: AnyTabDefinition): void {
     workspaceService.createTab(fixedSharedTabRequest)
     showSharedTabTroubleshooter.value = false
     reset()

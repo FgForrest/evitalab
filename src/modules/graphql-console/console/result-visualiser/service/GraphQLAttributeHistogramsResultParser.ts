@@ -1,4 +1,5 @@
 import type { AttributeHistogramsResultParser } from '@/modules/console/result-visualiser/service/AttributeHistogramsResultParser'
+import type { GraphQLResultNode } from '@/modules/database-driver/connector/gql/model/GraphQLResultNode'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import {
     VisualisedAttributeHistograms,
@@ -14,7 +15,7 @@ import { findSchemaByName } from '@/modules/console/result-visualiser/service/ut
 export class GraphQLAttributeHistogramsResultParser implements AttributeHistogramsResultParser {
 
     parse(queryResult: unknown, entitySchema: EntitySchema): VisualisedAttributeHistograms {
-        const result = queryResult as any
+        const result = queryResult as GraphQLResultNode
         const histogramsResult = result['extraResults']?.['attributeHistogram']
         if (!histogramsResult) {
             return new VisualisedAttributeHistograms([])

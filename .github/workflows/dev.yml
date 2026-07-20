@@ -1,9 +1,12 @@
-# Verifies dev branch integrity by building the project
+# Verifies dev branch integrity and pull requests targeting dev
 
 name: Dev
 
 on:
   push:
+    branches:
+      - dev
+  pull_request:
     branches:
       - dev
 
@@ -18,7 +21,7 @@ env:
 
 jobs:
   verify:
-    name: Verify (build and test)
+    name: Verify (lint, type-check, test and build)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -35,5 +38,14 @@ jobs:
       - name: Install dependencies
         run: npm install -g yarn && yarn install --frozen-lockfile
 
+      - name: Lint
+        run: yarn lint:check
+
+      - name: Type check
+        run: yarn typecheck
+
       - name: Test
         run: yarn test
+
+      - name: Build
+        run: yarn build

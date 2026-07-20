@@ -33,7 +33,8 @@ export class VisualisedReferenceFacets {
         if (this.referenceSchema.referencedGroupType != undefined) {
             return this.groups.length
         }
-        return this.groups.length > 0 ? this.groups[0].facets.length : 0
+        const firstGroup = this.groups[0]
+        return firstGroup != undefined ? firstGroup.facets.length : 0
     }
 }
 

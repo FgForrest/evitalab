@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 import type { Extension } from '@codemirror/state'
 import { yaml } from '@codemirror/lang-yaml'
@@ -43,10 +44,10 @@ async function loadRuntimeConfiguration(reload: boolean = false): Promise<boolea
             runtimeConfigurationLoaded.value = true
         }
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'serverViewer.serverStatus.runtimeConfiguration.notification.couldNotLoadConfiguration',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         return false
     }

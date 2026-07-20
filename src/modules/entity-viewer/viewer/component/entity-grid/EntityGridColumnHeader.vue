@@ -6,12 +6,20 @@
 import { computed } from 'vue'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 
+/*
+ * These props are the Vuetify data-table #headers slot bindings. Their precise
+ * types (InternalDataTableHeader, IconValue) are not exported through any
+ * resolvable Vuetify entry point, so they cannot be typed without reaching into
+ * Vuetify internals. Kept as any at this single library-boundary.
+ */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const props = defineProps<{
     column: any,
     isSorted: (column: any) => boolean,
     getSortIcon: (column: any) => any,
     toggleSort: (column: any) => void
 }>()
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 const prependIcon = computed<string | undefined>(() => {
     const propertyType: EntityPropertyType | undefined = props.column.descriptor?.type

@@ -1,6 +1,3 @@
-import type {
-    GrpcAttributeSchemaMutation
-} from '@/modules/database-driver/connector/grpc/gen/GrpcAttributeSchemaMutations_pb.ts'
 import {
     CreateAttributeSchemaMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/attribute/CreateAttributeSchemaMutationConverter.ts'
@@ -54,6 +51,7 @@ import type {
 
 export class DelegatingAttributeSchemaMutationConverter {
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- heterogeneous mutation-converter registry keyed by grpc oneof case
     private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([ // todo pfi: replace any
         ['createAttributeSchemaMutation',
             CreateAttributeSchemaMutationConverter.INSTANCE

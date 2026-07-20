@@ -40,6 +40,7 @@ import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
+import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
 
 export const entityViewerServiceInjectionKey: InjectionKey<EntityViewerService> = Symbol('entityViewerService')
 
@@ -164,7 +165,11 @@ export class EntityViewerService {
         } else if (result.totalEntitiesCount != 1) {
             throw new UnexpectedError(`Expected 1 entity with price for sale, got ${result.totalEntitiesCount} entities.`)
         }
-        return (result.entities[0][EntityPropertyKey.prices().toString()] as EntityPrices | undefined)?.priceForSale
+        const firstEntity = result.entities[0]
+        if (firstEntity == undefined) {
+            return undefined
+        }
+        return (firstEntity[EntityPropertyKey.prices().toString()] as EntityPrices | undefined)?.priceForSale
     }
 
     /**
@@ -176,7 +181,7 @@ export class EntityViewerService {
      */
     async buildOrderByFromGridColumns(dataPointer: EntityViewerDataPointer,
                                       language: QueryLanguage,
-                                      columns: any[]): Promise<string> {
+                                      columns: { key: string, order?: 'asc' | 'desc' }[]): Promise<string> {
         const entitySchema: EntitySchema = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
             async session => await session.getEntitySchemaOrThrowException(dataPointer.entityType)
@@ -185,9 +190,10 @@ export class EntityViewerService {
 
         const orderBy: string[] = []
         for (const column of columns) {
+            const orderDirection: OrderDirection = column.order === 'desc' ? OrderDirection.Desc : OrderDirection.Asc
             const propertyKey: EntityPropertyKey = EntityPropertyKey.fromString(column.key)
             if (propertyKey.type === EntityPropertyType.Entity && propertyKey.name === StaticEntityProperties.PrimaryKey) {
-                orderBy.push(queryBuilder.buildPrimaryKeyOrderBy(column.order.toUpperCase()))
+                orderBy.push(queryBuilder.buildPrimaryKeyOrderBy(orderDirection))
             } else if (propertyKey.type === EntityPropertyType.Attributes) {
                 const attributeSchema: EntityAttributeSchema | undefined = entitySchema.attributes
                     .find(attributeSchema => attributeSchema.nameVariants
@@ -196,7 +202,7 @@ export class EntityViewerService {
                     throw new UnexpectedError(`Entity ${entitySchema.name} does not have attribute ${propertyKey.name}.`)
                 }
 
-                orderBy.push(queryBuilder.buildAttributeOrderBy(attributeSchema, column.order.toUpperCase()))
+                orderBy.push(queryBuilder.buildAttributeOrderBy(attributeSchema, orderDirection))
             } else if (propertyKey.type === EntityPropertyType.ReferenceAttributes) {
                 const referenceSchema: ReferenceSchema | undefined = entitySchema.references
                     .find(referenceSchema => referenceSchema.nameVariants
@@ -211,7 +217,7 @@ export class EntityViewerService {
                     throw new UnexpectedError(`Reference ${referenceSchema.name} does not have attribute ${propertyKey.name}.`)
                 }
 
-                orderBy.push(queryBuilder.buildReferenceAttributeOrderBy(referenceSchema, attributeSchema, column.order.toUpperCase()))
+                orderBy.push(queryBuilder.buildReferenceAttributeOrderBy(referenceSchema, attributeSchema, orderDirection))
             } else {
                 throw new UnexpectedError(`Entity property ${column.key} is not supported to be sortable.`)
             }

@@ -1,3 +1,4 @@
+import type { GraphQLResultNode } from '@/modules/database-driver/connector/gql/model/GraphQLResultNode'
 import type { PriceHistogramResultParser } from '@/modules/console/result-visualiser/service/PriceHistogramResultParser'
 import { VisualisedHistogram } from '@/modules/console/result-visualiser/model/histogram/VisualisedHistogram'
 
@@ -7,7 +8,7 @@ import { VisualisedHistogram } from '@/modules/console/result-visualiser/model/h
 export class GraphQLPriceHistogramResultParser implements PriceHistogramResultParser {
 
     parse(queryResult: unknown): VisualisedHistogram {
-        const result = queryResult as any
+        const result = queryResult as GraphQLResultNode
         return VisualisedHistogram.fromJson(result['extraResults']['priceHistogram'])
     }
 }

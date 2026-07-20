@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 /**
  * GraphQL console. Allows to execute GraphQL queries against a evitaDB instance.
  */
@@ -60,7 +61,6 @@ import {
 import {
     GraphQLConsoleTabDefinition
 } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
-import { command } from 'keymaster'
 
 enum EditorTabType {
     Query = 'query',
@@ -255,8 +255,8 @@ onUnmounted(() => {
 async function executeQuery(): Promise<void> {
     try {
         workspaceService.addTabHistoryRecord(historyKey.value, createGraphQLConsoleHistoryRecord(queryCode.value, variablesCode.value))
-    } catch (e: any) {
-        await toaster.error(t('graphQLConsole.notification.failedToSaveQueryToHistory', e))
+    } catch (e) {
+        await toaster.error(t('graphQLConsole.notification.failedToSaveQueryToHistory'), asError(e))
     }
 
     loading.value = true
@@ -268,9 +268,9 @@ async function executeQuery(): Promise<void> {
         if (resultTab.value === ResultTabType.Raw) {
             focusRawResultEditor()
         }
-    } catch (error: any) {
+    } catch (error) {
         loading.value = false
-        await toaster.error('Could not execute query', error) // todo lho i18n
+        await toaster.error('Could not execute query', asError(error)) // todo lho i18n
     }
 }
 

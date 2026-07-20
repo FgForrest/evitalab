@@ -32,7 +32,7 @@ import { EvitaService } from './connector/grpc/gen/GrpcEvitaAPI_pb'
 import { EvitaSessionService } from './connector/grpc/gen/GrpcEvitaSessionAPI_pb'
 import { EvitaManagementService } from './connector/grpc/gen/GrpcEvitaManagementAPI_pb'
 import { GrpcEvitaTrafficRecordingService } from './connector/grpc/gen/GrpcEvitaTrafficRecordingAPI_pb'
-import type { KyInstance } from 'ky/distribution/types/ky'
+import type { KyInstance } from 'ky'
 import {
     MutationProgressConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/MutationProgressConverter.ts'

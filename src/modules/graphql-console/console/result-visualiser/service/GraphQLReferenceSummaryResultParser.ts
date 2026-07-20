@@ -1,4 +1,5 @@
 import type { ReferenceSummaryResultParser } from '@/modules/console/result-visualiser/service/ReferenceSummaryResultParser'
+import type { GraphQLResultNode } from '@/modules/database-driver/connector/gql/model/GraphQLResultNode'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import {
     VisualisedReferenceSummary,
@@ -24,7 +25,7 @@ export class GraphQLReferenceSummaryResultParser implements ReferenceSummaryResu
     }
 
     async parse(queryResult: unknown, entitySchema: EntitySchema, catalogName: string): Promise<VisualisedReferenceSummary> {
-        const result = queryResult as any
+        const result = queryResult as GraphQLResultNode
         const referenceSummaryResult = result['extraResults']?.['referenceSummary']
         if (!referenceSummaryResult) {
             return new VisualisedReferenceSummary([])
@@ -53,10 +54,10 @@ export class GraphQLReferenceSummaryResultParser implements ReferenceSummaryResu
             const rawGroups = referenceSummaryResult[referenceName]
             const groupsArray = rawGroups instanceof Array ? rawGroups : [rawGroups]
 
-            const groups: VisualisedReferenceGroup[] = groupsArray.map((groupResult: any) => {
+            const groups: VisualisedReferenceGroup[] = groupsArray.map((groupResult: GraphQLResultNode) => {
                 const groupStatistics = this.resolveGroupStatistics(groupResult, groupRepresentativeAttributes)
-                const facetStatisticsResults: any[] = groupResult['facetStatistics'] || []
-                const facets = facetStatisticsResults.map((facetResult: any) =>
+                const facetStatisticsResults: GraphQLResultNode[] = groupResult['facetStatistics'] || []
+                const facets = facetStatisticsResults.map((facetResult: GraphQLResultNode) =>
                     this.resolveFacetStatistics(result, facetResult, facetRepresentativeAttributes)
                 )
                 const histogramStatisticsResult = groupResult['histogramStatistics'] || {}
@@ -76,7 +77,7 @@ export class GraphQLReferenceSummaryResultParser implements ReferenceSummaryResu
         return new VisualisedReferenceSummary(references)
     }
 
-    private resolveGroupStatistics(groupStatisticsResult: any, groupRepresentativeAttributes: string[]): VisualisedReferenceGroupStatistics {
+    private resolveGroupStatistics(groupStatisticsResult: GraphQLResultNode, groupRepresentativeAttributes: string[]): VisualisedReferenceGroupStatistics {
         const count: number | undefined = groupStatisticsResult['count']
         const groupEntityResult = groupStatisticsResult['groupEntity']
         if (!groupEntityResult) {
@@ -87,7 +88,7 @@ export class GraphQLReferenceSummaryResultParser implements ReferenceSummaryResu
         return new VisualisedReferenceGroupStatistics(primaryKey, title, count)
     }
 
-    private resolveFacetStatistics(queryResult: any, facetStatisticsResult: any, facetRepresentativeAttributes: string[]): VisualisedFacetStatistics {
+    private resolveFacetStatistics(queryResult: GraphQLResultNode, facetStatisticsResult: GraphQLResultNode, facetRepresentativeAttributes: string[]): VisualisedFacetStatistics {
         const facetEntityResult = facetStatisticsResult['facetEntity']
         const requested: boolean | undefined = facetStatisticsResult['requested']
         const primaryKey: number | undefined = facetEntityResult?.['primaryKey']
@@ -100,10 +101,10 @@ export class GraphQLReferenceSummaryResultParser implements ReferenceSummaryResu
         return new VisualisedFacetStatistics(requested, primaryKey, title, numberOfEntities, impactDifference, impactMatchCount, count)
     }
 
-    private resolveRepresentativeTitle(entityResult: any | undefined, representativeAttributes: string[]): string | undefined {
+    private resolveRepresentativeTitle(entityResult: GraphQLResultNode | undefined, representativeAttributes: string[]): string | undefined {
         if (!entityResult) return undefined
 
-        const possibleAttributes: { value: any; isRepresentative: boolean }[] = []
+        const possibleAttributes: { value: unknown; isRepresentative: boolean }[] = []
         const attributes = entityResult['attributes'] || {}
         for (const attributeName in attributes) {
             possibleAttributes.push({

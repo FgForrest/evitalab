@@ -9,8 +9,8 @@ import { useI18n } from 'vue-i18n'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
-import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
-import type { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { AnyTabParams } from '@/modules/workspace/tab/model/TabParams'
+import type { AnyTabData } from '@/modules/workspace/tab/model/TabData'
 import { ShareTabObject } from '@/modules/workspace/tab/model/ShareTabObject'
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
 import VRejectDialogButton from '@/modules/base/component/VRejectDialogButton.vue'
@@ -35,8 +35,8 @@ const { t } = useI18n()
 const props = defineProps<{
     modelValue: boolean,
     tabType: TabType,
-    tabParams: TabParams<any>,
-    tabData: TabData<any> | undefined
+    tabParams: AnyTabParams,
+    tabData: AnyTabData | undefined
 }>()
 
 const emit = defineEmits<{

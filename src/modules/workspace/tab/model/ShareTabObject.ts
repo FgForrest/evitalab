@@ -69,15 +69,16 @@ export class ShareTabObject extends SerializableTabObject {
             if (hash != undefined && hash.length > 0) {
                 return hash
             }
-        } catch (e) {
+        } catch {
             // not a fully valid URL, fall through to the regex fallback
         }
 
         const match: RegExpMatchArray | null = input.match(/[?&]sharedTab=([^&#\s]+)/)
-        if (match == undefined || match[1].length === 0) {
+        const sharedTab: string | undefined = match?.[1]
+        if (sharedTab == undefined || sharedTab.length === 0) {
             throw new UnexpectedError('The link does not contain a shared tab.')
         }
-        return match[1]
+        return sharedTab
     }
 
     /**
@@ -89,10 +90,10 @@ export class ShareTabObject extends SerializableTabObject {
             throw new UnexpectedError('The value is not a valid shared tab hash.')
         }
 
-        let json: any
+        let json: { tabType?: TabType, tabParams: TabParamsDto, tabData?: TabDataDto } | undefined
         try {
             json = JSON.parse(decompressed)
-        } catch (e) {
+        } catch {
             throw new UnexpectedError('The value is not a valid shared tab hash.')
         }
 

@@ -1,3 +1,4 @@
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import { List, Map, Set } from 'immutable'
 import { AssociatedDataValue } from '@/modules/database-driver/request-response/data/AssociatedDataValue'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
@@ -9,21 +10,21 @@ import { Locale } from '@/modules/database-driver/data-type/Locale'
  * binary arrays representing entire files (i.e. pictures, documents).
  */
 export class AssociatedData {
-    private readonly globalAssociatedData: Map<string, any>
-    private readonly localizedAssociatedData: Map<string, Map<string, any>>
+    private readonly globalAssociatedData: Map<string, EvitaValue>
+    private readonly localizedAssociatedData: Map<string, Map<string, EvitaValue>>
 
     private _allAssociatedData?: List<AssociatedDataValue> = undefined
     private _names?: Set<string> = undefined
     private _locales?: Set<Locale> = undefined
 
-    constructor(globalAssociatedData: Map<string, any>, localizedAssociatedData: Map<string, Map<string, any>>){
+    constructor(globalAssociatedData: Map<string, EvitaValue>, localizedAssociatedData: Map<string, Map<string, EvitaValue>>){
         this.globalAssociatedData = globalAssociatedData
         this.localizedAssociatedData = localizedAssociatedData
     }
 
-    associatedData(associatedDataName: string): any | undefined
-    associatedData(associatedDataName: string, locale?: Locale): any | undefined
-    associatedData(associatedDataName: string, locale?: Locale): any | undefined {
+    associatedData(associatedDataName: string): EvitaValue | undefined
+    associatedData(associatedDataName: string, locale?: Locale): EvitaValue | undefined
+    associatedData(associatedDataName: string, locale?: Locale): EvitaValue | undefined {
         if (locale == undefined) {
             return this.globalAssociatedData.get(associatedDataName)
         }

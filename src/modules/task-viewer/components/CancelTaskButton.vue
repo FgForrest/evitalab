@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 import { computed, ref } from 'vue'
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
@@ -42,12 +43,12 @@ async function cancelTask(): Promise<void> {
         }
         // visualize the cancel until the next full reload
         props.task.cancelRequested()
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'taskViewer.tasksVisualizer.notification.couldNotCancelTask',
             {
                 taskName: props.task.taskName,
-                reason: e.message
+                reason: errorMessage(e)
             }
         ))
     }

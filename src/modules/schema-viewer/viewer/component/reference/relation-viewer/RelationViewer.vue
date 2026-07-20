@@ -34,6 +34,8 @@ const icon = computed(() => {
         case Cardinality.ZeroOrMore:
         case Cardinality.ZeroOrMoreWithDuplicates:
             return 'mdi-relation-one-to-zero-or-many'
+        default:
+            return undefined
     }
 })
 

@@ -14,7 +14,7 @@ export class StoredTabObject extends SerializableTabObject {
     }
 
     static restoreFromSerializable(serializable: string): StoredTabObject {
-        const json: any = JSON.parse(LZString.decompressFromEncodedURIComponent(serializable))
+        const json = JSON.parse(LZString.decompressFromEncodedURIComponent(serializable)) as { tabType: TabType, tabParams: TabParamsDto, tabData: TabDataDto }
         return new StoredTabObject(json.tabType, json.tabParams, json.tabData)
     }
 

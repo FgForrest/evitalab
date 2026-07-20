@@ -1,13 +1,15 @@
 <script setup lang="ts">
-const props = withDefaults(defineProps<{
-    actions?: any[]
+import type { MenuAction } from '@/modules/base/model/menu/MenuAction'
+
+withDefaults(defineProps<{
+    actions?: MenuAction<PropertyKey>[]
     fillSpace?: boolean
 }>(), {
     actions: () => [],
     fillSpace: true
 })
 const emit = defineEmits<{
-    (e: 'click:action', value: any): void
+    (e: 'click:action', value: PropertyKey): void
 }>()
 </script>
 

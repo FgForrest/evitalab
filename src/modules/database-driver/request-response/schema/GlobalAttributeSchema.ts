@@ -1,3 +1,4 @@
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import { List, Map } from 'immutable'
 import { NamingConvention } from '../NamingConvetion'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
@@ -32,7 +33,7 @@ export class GlobalAttributeSchema extends EntityAttributeSchema {
                 deprecationNotice: string | undefined,
                 type: Scalar,
                 nullable: boolean,
-                defaultValue: any,
+                defaultValue: EvitaValue,
                 localized: boolean,
                 indexedDecimalPlaces: number,
                 representative: boolean,
@@ -44,7 +45,7 @@ export class GlobalAttributeSchema extends EntityAttributeSchema {
         this.uniqueGloballyInScopes = uniqueGloballyInScopes
     }
 
-    protected uniquenessFlags(): Flag[] {
+    protected override uniquenessFlags(): Flag[] {
         const flags: Flag[] = []
         for (const flag of this.uniqueGloballyInScopes.groupBy(x => x.uniquenessType)) {
             if (flag[0] === GlobalAttributeUniquenessType.UniqueWithinCatalog) {
@@ -60,7 +61,7 @@ export class GlobalAttributeSchema extends EntityAttributeSchema {
         return [...flags, ...super.uniquenessFlags()]
     }
 
-    protected isImplicitlyFilterable(): boolean {
+    protected override isImplicitlyFilterable(): boolean {
         return super.isImplicitlyFilterable() || !this.uniqueGloballyInScopes.isEmpty()
     }
 }

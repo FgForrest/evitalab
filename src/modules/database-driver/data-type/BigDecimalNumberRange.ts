@@ -1,5 +1,4 @@
 import { BigDecimal } from "./BigDecimal";
-import type { PrettyPrintable } from "./PrettyPrintable";
 import { Range } from "./Range";
 
 /**
@@ -11,7 +10,7 @@ export class BigDecimalNumberRange extends Range<BigDecimal> {
         super(from, to)
     }
 
-    protected assertValidity(from?: BigDecimal, to?: BigDecimal): void {
+    protected override assertValidity(from?: BigDecimal, to?: BigDecimal): void {
         super.assertValidity(from, to)
         if (from != undefined && to != undefined && from.toFloat() > to.toFloat()) {
             throw new Error(`Invalid range: from (${from.value}) cannot be greater than to (${to.value})`)

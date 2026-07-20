@@ -9,7 +9,7 @@ import VMarkdown from '@/modules/base/component/VMarkdown.vue'
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     histogram: VisualisedHistogram
 }>()
 </script>
