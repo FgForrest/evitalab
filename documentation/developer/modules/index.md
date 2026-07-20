@@ -43,7 +43,7 @@ Core evitaLab infrastructure. All of them are registered first in `src/modules/m
 | `config` | Runtime configuration of evitaLab | `EvitaLabConfig` — run mode (`STANDALONE`/`DRIVER`), read-only flag, playground mode, system properties parsed from URL query params (`evitalab-*` prefixed, base64-encoded) |
 | `storage` | Persistent client-side storage | `LabStorage` — key-value wrapper around browser local storage (`store2` library). Keys must be globally unique |
 | `connection` | Connection to an evitaDB server | `Connection` model, `ConnectionService` — resolves the single active connection from system properties, preconfigured connections, or `VITE_DEV_CONNECTION` (dev mode) |
-| `database-driver` | All communication with evitaDB server | `EvitaClient` and friends — see [database driver](../database-driver.md) |
+| `database-driver` | All communication with evitaDB server | `EvitaClient` and friends, plus `DataCacheRefresher` (single system-CDC stream that keeps client caches in sync) — see [database driver](../database-driver.md) |
 | `workspace` | Overall UI structure: tabs, panels, status bar, history | `WorkspaceService`, `TabDefinition`, `workspaceStore` (Pinia) — see [workspace & tabs](../workspace-and-tabs.md) |
 | `notification` | Toast notifications | `Toaster` interface + `useToaster()`, `LocalToaster` (vue-toastification, standalone mode), `RemoteToaster` (IPC to evitaLab Desktop, driver mode), `ToasterFactory` |
 | `keymap` | Keyboard shortcuts | `Command` enum (`model/Command.ts`), `keyboardShortcutMappings.ts`, `Keymap` service (`bind`/`unbind`/`bindGlobal`, scoped per tab context), keymap viewer tab |

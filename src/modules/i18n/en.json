@@ -65,9 +65,10 @@
           "label": "Supported language in the active editor"
         }
       },
-      "autoRefresh": {
-        "connected": "The lab is connected to EvitaDB and receives changes.",
-        "disconnected": "The lab is not connected to EvitaDB and does not accept changes."
+      "changeStream": {
+        "upToDate": "Up to date. Last change: {lastChange}",
+        "upToDateNoChanges": "Up to date. No changes observed yet.",
+        "broken": "Live updates unavailable — reconnecting…"
       }
     },
     "dialog": {
