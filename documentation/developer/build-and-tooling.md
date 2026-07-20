@@ -19,7 +19,7 @@ Reference of the build pipeline, environment variables and developer tooling. Fo
 | `yarn dev:with-evitadb` | Starts a local Dockerized evitaDB and dev server with `VITE_DEV_CONNECTION=LOCAL` |
 | `yarn typecheck` | Whole-program type check (`vue-tsc -b --force`, covers the app project **and** `vite.config.mts`) |
 | `yarn build` / `yarn build-driver` | `yarn typecheck` + production build (standalone/driver) |
-| `yarn verify` | One-shot local pre-push gate: `yarn lint && yarn typecheck && yarn test` |
+| `yarn verify` | One-shot local pre-push gate: `yarn lint && yarn typecheck && vitest run` (tests run once, not in watch mode) |
 | `yarn preview` | Serves the production build on port 3000 |
 | `yarn lint` | ESLint with auto-fix (flat config) |
 | `yarn lint:check` | ESLint **without** auto-fix — fails on any problem; used by CI |

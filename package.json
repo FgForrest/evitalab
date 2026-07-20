@@ -6,7 +6,7 @@
     "dev-driver": "env VITE_RUN_MODE=\"DRIVER\" vite",
     "dev:with-evitadb": "./scripts/evitadb-server.sh start && env VITE_DEV_CONNECTION=LOCAL vite",
     "typecheck": "vue-tsc -b --force",
-    "verify": "yarn lint && yarn typecheck && yarn test",
+    "verify": "yarn lint && yarn typecheck && vitest run",
     "build": "yarn typecheck && vite build",
     "build-driver": "yarn typecheck && env VITE_RUN_MODE=\"DRIVER\" vite build",
     "preview": "vite preview --port 3000",
