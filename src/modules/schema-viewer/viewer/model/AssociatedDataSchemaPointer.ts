@@ -1,5 +1,5 @@
 import { markRaw } from 'vue'
-import type { DefineComponent, Raw } from 'vue'
+import type { Component, Raw } from 'vue'
 import type { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 import AssociatedDataSchemaViewer
     from '@/modules/schema-viewer/viewer/component/associated-data/AssociatedDataSchemaViewer.vue'
@@ -19,8 +19,8 @@ export class AssociatedDataSchemaPointer implements SchemaPointer {
         this.associatedDataName = associatedDataName
     }
 
-    get component(): Raw<DefineComponent<any, any, any>> {
-        return markRaw(AssociatedDataSchemaViewer as DefineComponent<any, any, any>)
+    get component(): Raw<Component> {
+        return markRaw(AssociatedDataSchemaViewer as Component)
     }
 
     get schemaType(): SchemaType {

@@ -10,13 +10,14 @@ import {
 import {
     DisallowCurrencyInEntitySchemaMutation
 } from '@/modules/database-driver/request-response/schema/mutation/entity/DisallowCurrencyInEntitySchemaMutation.ts'
+import { Set as ImmutableSet } from 'immutable'
 
 export class DisallowCurrencyInEntitySchemaMutationConverter implements SchemaMutationConverter<DisallowCurrencyInEntitySchemaMutation, GrpcDisallowCurrencyInEntitySchemaMutation> {
     public static readonly INSTANCE = new DisallowCurrencyInEntitySchemaMutationConverter()
 
     convert(mutation: GrpcDisallowCurrencyInEntitySchemaMutation): DisallowCurrencyInEntitySchemaMutation {
         return new DisallowCurrencyInEntitySchemaMutation(
-            Immutable.Set(CatalogSchemaConverter.toCurrencyArray(mutation.currencies))
+            ImmutableSet(CatalogSchemaConverter.toCurrencyArray(mutation.currencies))
         )
     }
 }

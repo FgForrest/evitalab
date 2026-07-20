@@ -3,7 +3,7 @@
  * Visualises a fully resolved facet summary as expansion panels grouped by reference.
  */
 import { useI18n } from 'vue-i18n'
-import { VisualisedFacetSummary, VisualisedReferenceFacets } from '@/modules/console/result-visualiser/model/facet-summary/VisualisedFacetSummary'
+import { VisualisedFacetSummary } from '@/modules/console/result-visualiser/model/facet-summary/VisualisedFacetSummary'
 import ReferenceFacetGroupStatisticsVisualiser
     from '@/modules/console/result-visualiser/component/facet-summary/ReferenceFacetGroupStatisticsVisualiser.vue'
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
@@ -11,7 +11,7 @@ import { VExpansionPanels, VExpansionPanel, VExpansionPanelTitle, VExpansionPane
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     facetSummary: VisualisedFacetSummary
 }>()
 </script>

@@ -5,10 +5,8 @@ import {
     type MutationHistoryItemVisualisationDefinition
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
 import RecordMetadata from '@/modules/history-viewer/component/RecordMetadata.vue'
-import { JfrViewerTabDefinition } from '@/modules/jfr-viewer/model/JfrViewerTabDefinition.ts'
-import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 
-const props = defineProps<{
+defineProps<{
     definition: MutationHistoryItemVisualisationDefinition
 }>()
 

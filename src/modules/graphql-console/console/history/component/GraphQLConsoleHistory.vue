@@ -17,7 +17,7 @@ const emit = defineEmits<{
     (e: 'update:clearHistory'): void
 }>()
 
-const historyListItems = computed<any[]>(() => {
+const historyListItems = computed<{ key: string, preview: string[], value: GraphQLConsoleHistoryRecord }[]>(() => {
     return props.items.map((record: GraphQLConsoleHistoryRecord) => {
         return {
             key: record[0],
@@ -26,10 +26,23 @@ const historyListItems = computed<any[]>(() => {
         }
     })
 })
+
+const historyComponentRef = ref<InstanceType<typeof HistoryComponent> | undefined>()
+
+function focus(): void {
+    historyComponentRef.value?.focus()
+}
+
+defineExpose<{
+    focus: () => void
+}>({
+    focus
+})
 </script>
 
 <template>
-    <HistoryComponent :items="historyListItems"
+    <HistoryComponent ref="historyComponentRef"
+        :items="historyListItems"
         @select-history-record="(value) => emit('selectHistoryRecord', value)"
         @update:clear-history="emit('update:clearHistory')">
     </HistoryComponent>

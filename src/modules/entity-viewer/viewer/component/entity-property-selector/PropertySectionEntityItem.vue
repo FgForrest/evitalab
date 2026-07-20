@@ -18,7 +18,7 @@ import type { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/Ent
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
 
-const props = defineProps<{
+defineProps<{
     propertyDescriptor: EntityPropertyDescriptor
 }>()
 const emit = defineEmits<{

@@ -1,3 +1,4 @@
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import type {
     EntityPropertyValuePreviewStringContext
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValuePreviewStringContext'
@@ -14,7 +15,7 @@ export abstract class EntityPropertyValue {
     /**
      * Returns the raw value of the entity property value.
      */
-    abstract value(): any | any[] | undefined
+    abstract value(): EvitaValue | EvitaValue[] | undefined
 
     /**
      * Returns true if the raw entity property value is missing.
@@ -28,7 +29,7 @@ export abstract class EntityPropertyValue {
     abstract toPreviewString(context?: EntityPropertyValuePreviewStringContext): string
 
     abstract toRawString(): string
-    abstract toRawRepresentation(): any
+    abstract toRawRepresentation(): EvitaValue
 
     /** Add documentation */
     toPrettyPrintString(context?: EntityPropertyValuePreviewStringContext): string {

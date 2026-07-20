@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { useI18n } from 'vue-i18n'
@@ -24,17 +25,17 @@ const emit = defineEmits<{
 const duplicationCatalogName = ref<string>()
 
 const newNameRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value != undefined && value.trim().length > 0) return true
         return t('explorer.catalog.duplication.form.duplicationName.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         const classifierValidationResult : ClassifierValidationErrorType | undefined =
             await catalogItemService.isCatalogNameValid(value)
         if (classifierValidationResult == undefined) return true
         return t(`explorer.catalog.duplication.form.duplicationName.validations.${classifierValidationResult}`)
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         if (value === props.catalog.name) {
             return true
         }
@@ -52,12 +53,12 @@ async function duplicateCatalog():Promise<boolean> {
             catalogName: props.catalog.name
         }))
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'explorer.catalog.duplication.notification.couldNotDuplicateCatalog',
             {
                 catalogName: props.catalog.name,
-                reason: e.message
+                reason: errorMessage(e)
             }
         ))
         return false

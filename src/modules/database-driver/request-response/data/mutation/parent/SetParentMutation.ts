@@ -3,7 +3,7 @@ import { ParentMutation } from '@/modules/database-driver/request-response/data/
 export class SetParentMutation extends ParentMutation {
     static readonly TYPE = 'setParentMutation' as const
 
-    private readonly parentPrimaryKey: number
+    readonly parentPrimaryKey: number
 
     constructor(parentPrimaryKey: number) {
         super()

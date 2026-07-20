@@ -10,6 +10,7 @@ export enum EntityScope {
     Archive='archive'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-namespace -- intentional enum/namespace declaration merging (EntityScope.DefaultScope etc.)
 export namespace EntityScope {
     /**
      * Default scope to be used if not specified custom one.

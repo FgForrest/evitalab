@@ -59,7 +59,7 @@ export function workspaceStatusBarIntegration(workspaceService: WorkspaceService
     })
 
     const lifecycleHandler: Extension = EditorView.domEventObservers({
-        focus(event, view) {
+        focus(_event, view) {
             if (view.state.field(editorRegistrationIdField) == undefined) {
                 const id: string = uuidv4()
                 workspaceService.editorStatus.defineEditorInfo(
@@ -75,7 +75,7 @@ export function workspaceStatusBarIntegration(workspaceService: WorkspaceService
             }
             workspaceService.editorStatus.activateEditor(view.state.field(editorRegistrationIdField)!)
         },
-        blur(event, view) {
+        blur(_event, view) {
             const editorRegistrationId: string | undefined = view.state.field(editorRegistrationIdField)
             if (editorRegistrationId != undefined) {
                 workspaceService.editorStatus.deactivateEditor(editorRegistrationId)
@@ -108,7 +108,7 @@ export function workspaceStatusBarIntegration(workspaceService: WorkspaceService
         }
     })
 
-    const destroyer: ViewPlugin<any> = ViewPlugin.fromClass(class {
+    const destroyer = ViewPlugin.fromClass(class {
         private editorRegistrationId: string | undefined = undefined
 
         constructor(view: EditorView) {

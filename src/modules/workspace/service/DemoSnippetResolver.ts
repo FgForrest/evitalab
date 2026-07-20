@@ -1,6 +1,6 @@
 import ky from 'ky'
 import type { InjectionKey } from 'vue'
-import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import type { AnyTabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import type { DemoSnippetRequest } from '@/modules/workspace/tab/model/DemoSnippetRequest'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
@@ -31,14 +31,14 @@ export class DemoSnippetResolver {
     /**
      * Resolves input request into tab request.
      */
-    async resolve(requestSerialized: string): Promise<TabDefinition<any, any>> {
+    async resolve(requestSerialized: string): Promise<AnyTabDefinition> {
         const request: DemoSnippetRequest = JSON.parse(atob(requestSerialized)) as DemoSnippetRequest
 
         const codeSnippetUrl: string = `${baseCodeSnippetUrl}/${request.branch}/${request.path}`
         let codeSnippetContent: string
         try {
             codeSnippetContent = await ky.get(codeSnippetUrl).text()
-        } catch (e) {
+        } catch {
             throw new UnexpectedError(`Cannot fetch demo code snippet '${request.path}' from GitHub from branch '${request.branch}'.`)
         }
 

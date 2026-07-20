@@ -23,8 +23,8 @@ export function parseHumanCountToNumber(humanCount: string): number {
         throw new Error('Invalid count format.')
     }
 
-    const parsedFormattedNumber: string = exec[1]
-    const parsedUnitPrefix: string = exec[2]
+    const parsedFormattedNumber: string | undefined = exec[1]
+    const parsedUnitPrefix: string | undefined = exec[2]
 
     const formattedNumber: number = Number(parsedFormattedNumber)
     if (Number.isNaN(formattedNumber)) {
@@ -54,8 +54,8 @@ export function parseHumanCountToBigInt(formattedCount: string): [bigint, boolea
         throw new Error('Invalid count format.')
     }
 
-    const parsedFormattedNumber: string = exec[1]
-    const parsedUnitPrefix: string = exec[2]
+    const parsedFormattedNumber: string | undefined = exec[1]
+    const parsedUnitPrefix: string | undefined = exec[2]
 
     switch (parsedUnitPrefix) {
         case 'T': return scaleParsedFormattedNumberToBigInt(parsedFormattedNumber, 1000, 4)
@@ -90,8 +90,8 @@ export function parseHumanByteSizeToBigInt(formattedByteSize: string): [bigint, 
         throw new Error('Invalid byte size format.')
     }
 
-    const parsedFormattedNumber: string = exec[1]
-    const parsedUnitPrefix: string = exec[2]
+    const parsedFormattedNumber: string | undefined = exec[1]
+    const parsedUnitPrefix: string | undefined = exec[2]
 
     switch (parsedUnitPrefix) {
         case 'G': return scaleParsedFormattedNumberToBigInt(parsedFormattedNumber, 1000, 3)
@@ -106,12 +106,19 @@ export function parseHumanByteSizeToBigInt(formattedByteSize: string): [bigint, 
     }
 }
 
-function scaleParsedFormattedNumberToBigInt(parsedFormattedNumber: string,
+function scaleParsedFormattedNumberToBigInt(parsedFormattedNumber: string | undefined,
                                             base: number,
                                             exponent: number): [bigint, boolean] {
+    if (parsedFormattedNumber == undefined) {
+        throw new Error('Invalid count format.')
+    }
     const formattedNumberParts: string[] = parsedFormattedNumber.split('.')
+    const preDecimalPointPart: string | undefined = formattedNumberParts[0]
+    if (preDecimalPointPart == undefined) {
+        throw new Error('Invalid count format.')
+    }
 
-    let preDecimalPointCount: bigint = BigInt(formattedNumberParts[0])
+    let preDecimalPointCount: bigint = BigInt(preDecimalPointPart)
     let postDecimalPointCount: number = formattedNumberParts.length > 1
         ? Number(`0.${formattedNumberParts[1]}`)
         : 0

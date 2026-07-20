@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import { useI18n } from 'vue-i18n'
 import { BackupViewerService, useBackupViewerService } from '@/modules/backup-viewer/service/BackupViewerService.ts'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics.ts'
@@ -11,7 +12,6 @@ import PointInTimeBackupDialog from '@/modules/backup-viewer/components/PointInT
 import FullBackupDialog from '@/modules/backup-viewer/components/FullBackupDialog.vue'
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
 import { watch } from 'vue'
-import { CatalogState } from '@/modules/database-driver/request-response/CatalogState.ts'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -55,10 +55,10 @@ async function loadAvailableCatalogs(): Promise<void> {
             .toArray()
 
         availableCatalogsLoaded.value = true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'backupViewer.backup.notification.couldNotLoadAvailableCatalogs',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
     }
 }

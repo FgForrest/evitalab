@@ -4,13 +4,15 @@ import { LabError } from '@/modules/base/exception/LabError'
  * Error that is thrown when a query to evitaDB fails.
  */
 export class QueryError extends LabError {
-    readonly error: any
+    readonly error: unknown
 
-    constructor(error: any) {
+    constructor(error: unknown) {
         super(
             'QueryError',
             `Query error occurred`,
-            error instanceof Array ? error.map(it => it.message).join('; ') : error.message
+            Array.isArray(error)
+                ? error.map(it => String((it as { message?: unknown }).message)).join('; ')
+                : String((error as { message?: unknown }).message)
         )
         this.error = error
     }

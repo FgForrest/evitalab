@@ -1,5 +1,5 @@
 import { markRaw } from 'vue'
-import type { DefineComponent} from 'vue'
+import type {  } from 'vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { VoidTabParams } from '@/modules/workspace/tab/model/void/VoidTabParams'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
@@ -15,7 +15,7 @@ export class KeymapViewerTabDefinition extends TabDefinition<VoidTabParams, Void
             'keymap', // only one keymap viewer tab can be opened at a time, multiple doesn't make sense since it cannot be parametrized
             'Keymap',
             KeymapViewerTabDefinition.icon(),
-            markRaw(KeymapViewer as DefineComponent<any, any, any>),
+            markRaw(KeymapViewer as Component),
             new VoidTabParams(),
             new VoidTabData()
         )

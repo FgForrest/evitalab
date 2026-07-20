@@ -1,4 +1,4 @@
-import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql'
+import { buildClientSchema, getIntrospectionQuery, GraphQLSchema, type IntrospectionQuery } from 'graphql'
 import { GraphQLConsoleDataPointer } from '@/modules/graphql-console/console/model/GraphQLConsoleDataPointer'
 import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
@@ -34,13 +34,13 @@ export class GraphQLConsoleService {
             getIntrospectionQuery()
         )
 
-        return buildClientSchema(introspectionSchema.data)
+        return buildClientSchema(introspectionSchema.data as IntrospectionQuery)
     }
 
     /**
      * Executes user GraphQL query against a given evitaDB server and catalog.
      */
-    async executeGraphQLQuery(dataPointer: GraphQLConsoleDataPointer, query: string, variables?: object): Promise<string> {
+    async executeGraphQLQuery(dataPointer: GraphQLConsoleDataPointer, query: string, variables?: Record<string, unknown>): Promise<string> {
         const result: GraphQLResponse = await this.callGraphQLApi(
             dataPointer,
             query,
@@ -54,7 +54,7 @@ export class GraphQLConsoleService {
      */
     private async callGraphQLApi(dataPointer: GraphQLConsoleDataPointer,
                                  query: string,
-                                 variables: object = {}): Promise<GraphQLResponse> {
+                                 variables: Record<string, unknown> = {}): Promise<GraphQLResponse> {
         return await this.evitaClient.queryCatalogUsingGraphQL(
             dataPointer.catalogName,
             dataPointer.instanceType,

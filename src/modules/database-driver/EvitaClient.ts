@@ -2,8 +2,7 @@ import { AbstractEvitaClient } from '@/modules/database-driver/AbstractEvitaClie
 import type {
     GrpcCatalogNamesResponse,
     GrpcDefineCatalogResponse,
-    GrpcEvitaSessionResponse,
-    GrpcRegisterSystemChangeCaptureResponse
+    GrpcEvitaSessionResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaAPI_pb'
 import { EvitaClientSession } from '@/modules/database-driver/EvitaClientSession'
 import { Code, ConnectError } from '@connectrpc/connect'
@@ -22,6 +21,9 @@ import type {
     ApplyMutationWithProgressResponse
 } from '@/modules/database-driver/request-response/schema/ApplyMutationWithProgressResponse.ts'
 import { GrpcChangeCaptureContent } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
+import type {
+    RegisterSystemChangeCaptureResponse
+} from '@/modules/database-driver/request-response/cdc/RegisterSystemChangeCaptureResponse.ts'
 
 export const evitaClientInjectionKey: InjectionKey<EvitaClient> = Symbol('EvitaClient')
 
@@ -176,7 +178,7 @@ export class EvitaClient extends AbstractEvitaClient {
         catalogName: string,
         instanceType: GraphQLInstanceType,
         query: string,
-        variables: any = {}
+        variables: Record<string, unknown> = {}
     ): Promise<GraphQLResponse> {
         let path
         if (instanceType === GraphQLInstanceType.System) {
@@ -210,7 +212,7 @@ export class EvitaClient extends AbstractEvitaClient {
                 )
                     .json()
             ) as GraphQLResponse
-        } catch (e: any) {
+        } catch (e) {
             throw this.errorTransformer.transformError(e)
         }
     }
@@ -298,7 +300,6 @@ export class EvitaClient extends AbstractEvitaClient {
                 this.errorTransformer,
                 this,
                 () => this.evitaManagementClient,
-                () => this.evitaValueConverter,
                 () => this.catalogStatisticsConverter,
                 () => this.serverStatusConverter,
                 () => this.reservedKeywordsConverter,
@@ -369,6 +370,9 @@ export class EvitaClient extends AbstractEvitaClient {
      */
     async clearCache(): Promise<void> {
         if (this._management != undefined) {
+            // refresh the server status first: it is the reachability signal consumers rely on to
+            // decide whether reloading catalog-level data is even worth attempting
+            await this.management.clearServerMetadataCache()
             await this.management.clearCatalogStatisticsCache()
         }
         // we need a new session if we want to load a new data
@@ -475,11 +479,42 @@ export class EvitaClient extends AbstractEvitaClient {
         }
     }
 
-    async *registerSystemChangeCapture(): AsyncIterable<GrpcRegisterSystemChangeCaptureResponse> {
-        for await (const activity of this.evitaClient.registerSystemChangeCapture({
-            content: GrpcChangeCaptureContent.CHANGE_BODY,
-        })) {
-            yield activity
+    /**
+     * Opens a server-streaming subscription to engine-level (system) change-data-capture events:
+     * catalog create/drop/rename/state/schema changes. The stream always requests the full change
+     * body ({@link GrpcChangeCaptureContent.CHANGE_BODY}), which carries the catalog name required
+     * for targeted cache invalidation.
+     *
+     * The first response is an acknowledgement (with heartbeat info), followed by change responses
+     * (carrying a capture) and periodic heartbeat responses. The stream is expected to be consumed
+     * by a single consumer ({@link DataCacheRefresher}); the caller can cancel it deterministically
+     * via `options.signal`.
+     *
+     * @param options.sinceVersion resume the stream from the given engine version (replays mutations
+     *        that happened during an outage)
+     * @param options.sinceIndex resume from the given mutation index within `sinceVersion`
+     * @param options.signal abort signal to cancel the stream
+     */
+    async *registerSystemChangeCapture(
+        options?: {
+            sinceVersion?: bigint,
+            sinceIndex?: number,
+            signal?: AbortSignal
+        }
+    ): AsyncIterable<RegisterSystemChangeCaptureResponse> {
+        try {
+            for await (const response of this.evitaClient.registerSystemChangeCapture(
+                {
+                    content: GrpcChangeCaptureContent.CHANGE_BODY,
+                    sinceVersion: options?.sinceVersion,
+                    sinceIndex: options?.sinceIndex
+                },
+                { signal: options?.signal }
+            )) {
+                yield this.registerSystemChangeCaptureResponseConverter.convert(response)
+            }
+        } catch (e) {
+            throw this.errorTransformer.transformError(e)
         }
     }
 

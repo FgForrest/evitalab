@@ -24,8 +24,9 @@ export class VisualisedReferenceStatistics {
         if (this.referenceSchema.referencedGroupType != undefined) {
             return this.groups.length
         }
-        if (this.groups.length === 0) return 0
-        return this.groups[0].facets.length + this.groups[0].histograms.length
+        const firstGroup = this.groups[0]
+        if (firstGroup == undefined) return 0
+        return firstGroup.facets.length + firstGroup.histograms.length
     }
 }
 

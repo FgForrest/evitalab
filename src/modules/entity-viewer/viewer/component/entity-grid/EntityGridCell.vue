@@ -11,6 +11,7 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { useDataLocale, usePriceType, useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { isLocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
 import { isTypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
+import { isNamedSchema } from '@/modules/database-driver/request-response/schema/NamedSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue.ts'
 import type { Predecessor } from '@/modules/database-driver/data-type/Predecessor.ts'
@@ -18,6 +19,7 @@ import { ReferenceSchema } from '@/modules/database-driver/request-response/sche
 import { MutationHistoryViewerTabData } from '@/modules/history-viewer/model/MutationHistoryViewerTabData.ts'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
 import { GrpcChangeCaptureContainerType } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
+import { copyToClipboard } from '@/utils/clipboard'
 
 const tabProps = useTabProps()
 const workspaceService: WorkspaceService = useWorkspaceService()
@@ -136,7 +138,7 @@ function copyValue(raw: boolean): void {
                 value = entityValue.toRawString()
             }
 
-            navigator.clipboard.writeText(value).then(() => {
+            copyToClipboard(value).then(() => {
                 toaster.info(t('common.notification.copiedToClipboard')).then()
             }).catch(() => {
                 toaster.error(t('common.notification.failedToCopyToClipboard')).then()
@@ -144,7 +146,7 @@ function copyValue(raw: boolean): void {
         }
     } else {
         if (printablePropertyValue.value) {
-            navigator.clipboard.writeText(printablePropertyValue.value).then(() => {
+            copyToClipboard(printablePropertyValue.value).then(() => {
                 toaster.info(t('common.notification.copiedToClipboard')).then()
             }).catch(() => {
                 toaster.error(t('common.notification.failedToCopyToClipboard')).then()
@@ -234,6 +236,9 @@ const openMutationHistoryByAttribute = () => {
         return;
     }
 
+    const schema = props.propertyDescriptor.schema
+    const containerName: string | undefined = schema != undefined && isNamedSchema(schema) ? schema.name : undefined
+    const containerType = resolveContainerTypeList(props.propertyDescriptor.type)
 
     workspaceService.createTab(
         workspaceService.mutationHistoryViewerTabFactory.createNew(
@@ -243,8 +248,8 @@ const openMutationHistoryByAttribute = () => {
                 undefined,
                 entityPrimaryKey,
                 undefined,
-                [props.propertyDescriptor?.schema?.name],
-                [resolveContainerTypeList(props.propertyDescriptor?.type)],
+                containerName != undefined ? [containerName] : undefined,
+                containerType != undefined ? [containerType] : undefined,
                 tabProps.params.dataPointer.entityType,
                 'dataSite',
                 false

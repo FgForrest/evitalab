@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { useToaster } from '@/modules/notification/service/Toaster'
@@ -14,12 +15,12 @@ const props = defineProps<{
     task: TaskStatus
 }>()
 
-function onCouldNotDownloadResultFile(e: Error): void {
+function onCouldNotDownloadResultFile(e: Error | undefined): void {
     toaster.error(t(
         'taskViewer.tasksVisualizer.task.notification.couldNotDownloadResultFile',
         {
             taskName: props.task.taskName,
-            reason: e.message
+            reason: errorMessage(e)
         }
     )).then()
 }

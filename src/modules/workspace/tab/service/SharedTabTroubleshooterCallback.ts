@@ -1,6 +1,6 @@
 import type { ConnectionId } from '@/modules/connection/model/ConnectionId'
-import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import type { AnyTabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 
 export interface SharedTabTroubleshooterCallback {
-    (newConnectionId: ConnectionId): Promise<TabDefinition<any, any>>
+    (newConnectionId: ConnectionId): Promise<AnyTabDefinition>
 }

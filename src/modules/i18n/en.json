@@ -65,9 +65,10 @@
           "label": "Supported language in the active editor"
         }
       },
-      "autoRefresh": {
-        "connected": "The lab is connected to EvitaDB and receives changes.",
-        "disconnected": "The lab is not connected to EvitaDB and does not accept changes."
+      "changeStream": {
+        "upToDate": "Up to date. Last change: {lastChange}",
+        "upToDateNoChanges": "Up to date. No changes observed yet.",
+        "broken": "Live updates unavailable — reconnecting…"
       }
     },
     "dialog": {
@@ -172,7 +173,8 @@
   },
   "tab": {
     "button": {
-      "closeTab": "Close tab"
+      "closeTab": "Close tab",
+      "tabActions": "Tab actions"
     },
     "placeholder": {
       "loading": "Loading, please wait ..."
@@ -180,7 +182,8 @@
   },
   "tabShare": {
     "button": {
-      "shareTab": "Share this tab"
+      "shareTab": "Share this tab",
+      "openSharedTab": "Open shared tab"
     },
     "tooltip": {
       "nonSharableTab": "Cannot share this tab because it is using a user-defined evitaDB connection. Only pre-configured connections can be shared."
@@ -188,8 +191,8 @@
     "sharedDialog": {
       "title": "Shared tab found",
       "text": {
-        "withoutInitialData": "The URL contains an embedded query from an unknown source. Do you want to open it? If you accept, evitaLab will <em>open a new tab</em> with the query, but will <em>not</em> execute it automatically. You can still decide if you want to execute it. If you reject, the query in the URL will be <em>discarded</em>.",
-        "withInitialData": "The URL contains an embedded shared tab from an unknown source. Do you want to open it? If you accept it, evitaLab will <em>open a new tab</em> with the query. If you reject it, it will be <em>discarded</em>."
+        "withInitialData": "The URL contains an embedded query from an unknown source. Do you want to open it? If you accept, evitaLab will <em>open a new tab</em> with the query, but will <em>not</em> execute it automatically. You can still decide if you want to execute it. If you reject, the query in the URL will be <em>discarded</em>.",
+        "withoutInitialData": "The URL contains an embedded shared tab from an unknown source. Do you want to open it? If you accept it, evitaLab will <em>open a new tab</em> with the query. If you reject it, it will be <em>discarded</em>."
       },
       "warning": {
         "potentiallyUnsafe": "<em>Be careful!</em> The query in the URL may contain potentially malicious code."
@@ -210,16 +213,35 @@
     },
     "shareDialog": {
       "title": "Share this tab",
-      "text": "You can share this tab and its data with other users via a link. This link will open a new instance of evitaLab on their device and load this tab with the same query, which should give the same output as you see now.",
+      "text": "You can share this tab and its data with other users via a link. This link will open a new instance of evitaLab on their device and load this tab with the same query, which should give the same output as you see now. Alternatively, you can copy just the tab <em>hash</em> and let the recipient open it in a running evitaLab via the <em>+ &rarr; Open shared tab</em> action in the tab bar.",
       "notification": {
-        "linkCopied": "Link copied to clipboard."
+        "linkCopied": "Link copied to clipboard.",
+        "hashCopied": "Tab hash copied to clipboard."
       },
       "warning": {
         "sensitiveData": "Be <em>careful</em> if you have sensitive data in the query, you are giving them away embedded in the link. Once you send the link, you lose control over it and it can be opened by <em>anyone</em> who has access to this evitaLab instance.",
-        "linkMayNotWork": "The link may <em>not</em> work in certain browsers due to its length exceeding {{ urlCharacterLimit }} characters."
+        "linkTooLong": "The link is longer than {urlCharacterLimit} characters and would not work in browsers, therefore it cannot be copied. Copy the tab <em>hash</em> instead and open it in a running evitaLab via the <em>+ &rarr; Open shared tab</em> action in the tab bar."
       },
       "button": {
-        "copyLink": "Copy link"
+        "copyLink": "Copy link",
+        "copyHash": "Copy hash"
+      }
+    },
+    "openSharedDialog": {
+      "title": "Open shared tab",
+      "text": "Paste a shared tab hash or an entire shared tab link. evitaLab will open it as a new tab in this session, but will <em>not</em> execute the query automatically.",
+      "form": {
+        "hashOrUrl": {
+          "label": "Shared tab hash or link",
+          "placeholder": "Paste the hash or link here",
+          "validation": {
+            "required": "Hash or link is required.",
+            "invalid": "The pasted value is not a valid shared tab hash or link."
+          }
+        }
+      },
+      "button": {
+        "open": "Open tab"
       }
     }
   },
@@ -1082,7 +1104,9 @@
         "indexedDecimalPlaces": "Indexed decimal places",
         "attributes": "Attributes",
         "uniqueWithinCollection": "within collection",
-        "uniqueWithinLocaleOfCollection": "within locale of collection"
+        "uniqueWithinLocaleOfCollection": "within locale of collection",
+        "globallyUniqueWithinCatalog": "within catalog",
+        "globallyUniqueWithinLocaleOfCatalog": "within locale of catalog"
       },
       "tooltip": {
         "content": "The attribute can be {0} within the {1} scope.",
@@ -1198,6 +1222,9 @@
     },
     "notification": {
       "couldNotLoad": "Could not load server status: {reason}"
+    },
+    "unavailable": {
+      "title": "The server is currently unavailable. It may be down or unreachable. The viewer will refresh automatically once the server is back."
     },
     "serverTitle": {
       "flags": {

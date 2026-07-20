@@ -10,7 +10,7 @@ import { Command } from '@/modules/keymap/model/Command'
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     active: boolean,
     loading: boolean
 }>()

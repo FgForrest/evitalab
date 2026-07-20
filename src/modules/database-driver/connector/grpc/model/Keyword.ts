@@ -1,4 +1,4 @@
-import XXH, { HashObject } from 'xxhashjs'
+import XXH, { type HashObject } from 'xxhashjs'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 
 const hasher: HashObject = XXH.h64()

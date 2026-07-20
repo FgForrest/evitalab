@@ -1,3 +1,4 @@
+import { errorMessage } from '@/utils/error'
 import type { EvitaDBBlogPost } from '@/modules/welcome-screen/model/EvitaDBBlogPost'
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 import ky from 'ky'
@@ -7,7 +8,7 @@ import { EvitaDBInstanceServerError } from '@/modules/database-driver/exception/
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { TimeoutError } from '@/modules/database-driver/exception/TimeoutError'
 import { EvitaDBInstanceNetworkError } from '@/modules/database-driver/exception/EvitaDBInstanceNetworkError'
-import type { KyInstance } from 'ky/distribution/types/ky'
+import type { KyInstance } from 'ky'
 
 /**
  * HTTP client for evitaDB docs website. Should not be used directly in components, instead it should be used as a low level
@@ -48,7 +49,7 @@ export class EvitaDBDocsClient {
             // we need only 2 latest blog posts
             blogPosts.reverse().splice(2)
             return blogPosts
-        } catch (e: any) {
+        } catch (e) {
             throw this.handleCallError(e, undefined)
         }
     }
@@ -64,20 +65,21 @@ export class EvitaDBDocsClient {
     /**
      * Translates HTTP errors into specific lab errors.
      */
-    protected handleCallError(e: any, connection?: Connection): LabError {
-        if (e.name === 'HTTPError') {
-            const statusCode: number = e.response.status
+    protected handleCallError(e: unknown, connection?: Connection): LabError {
+        const err = e as { name?: string, response?: { status?: number } }
+        if (err.name === 'HTTPError') {
+            const statusCode: number = err.response?.status ?? 0
             if (statusCode >= 500) {
                 return new EvitaDBInstanceServerError(connection)
             } else {
-                return new UnexpectedError(e.message)
+                return new UnexpectedError(errorMessage(e))
             }
-        } else if (e.name === 'TimeoutError') {
+        } else if (err.name === 'TimeoutError') {
             return new TimeoutError(connection)
-        } else if (e.name === 'TypeError' && e.message === 'Failed to fetch') {
+        } else if (err.name === 'TypeError' && errorMessage(e) === 'Failed to fetch') {
             return new EvitaDBInstanceNetworkError(connection)
         } else {
-            return new UnexpectedError(e.message)
+            return new UnexpectedError(errorMessage(e))
         }
     }
 }

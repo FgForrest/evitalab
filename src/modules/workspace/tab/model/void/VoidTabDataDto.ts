@@ -1,4 +1,4 @@
-import { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
+import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
 
 /**
  * Specific DTO for {@link VoidTabData}.

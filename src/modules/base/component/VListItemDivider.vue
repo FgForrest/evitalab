@@ -3,7 +3,7 @@
  * Pre-styles divider for separating list items.
  */
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     inset?: boolean
 }>(), {
     inset: false

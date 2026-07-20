@@ -7,7 +7,7 @@ import DeleteServerFileDialog from '@/modules/server-file-viewer/component/Delet
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     file: ServerFile
 }>()
 const emit = defineEmits<{

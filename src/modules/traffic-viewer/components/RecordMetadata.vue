@@ -3,7 +3,7 @@
 import { MetadataGroup} from '@/modules/traffic-viewer/model/TrafficRecordVisualisationDefinition'
 import RecordMetadataGroup from '@/modules/traffic-viewer/components/RecordMetadataGroup.vue'
 
-const props = defineProps<{
+defineProps<{
     metadata: MetadataGroup[]
 }>()
 </script>

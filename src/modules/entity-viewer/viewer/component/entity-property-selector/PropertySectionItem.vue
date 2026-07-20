@@ -12,7 +12,7 @@ import { EntityScope, EntityScopeIcons } from '@/modules/database-driver/request
 
 const { t } = useI18n()
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     value: EntityPropertyKey,
     title: string,
     description?: string,

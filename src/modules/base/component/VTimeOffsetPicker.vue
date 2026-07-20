@@ -19,8 +19,9 @@ const emit = defineEmits<{
     (e: 'update:modelValue', value: string): void
 }>()
 
-const timeOffsetHours = ref<number>(Number.parseInt(props.modelValue.split(offsetSplitPattern)[0]))
-const timeOffsetMinutes = ref<number>(Number.parseInt(props.modelValue.split(offsetSplitPattern)[1]))
+const offsetParts: string[] = props.modelValue.split(offsetSplitPattern)
+const timeOffsetHours = ref<number>(Number.parseInt(offsetParts[0] ?? ''))
+const timeOffsetMinutes = ref<number>(Number.parseInt(offsetParts[1] ?? ''))
 watch(
     [timeOffsetHours, timeOffsetMinutes],
     () => {

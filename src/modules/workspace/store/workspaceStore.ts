@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Ref } from 'vue'
-import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
-import type { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { AnyTabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import type { AnyTabData } from '@/modules/workspace/tab/model/TabData'
 import { SubjectPathStatus } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathStatus'
 import { EditorStatus } from '@/modules/workspace/status-bar/model/editor-status/EditorStatus'
 
@@ -11,9 +11,9 @@ import { EditorStatus } from '@/modules/workspace/status-bar/model/editor-status
  */
 export const useWorkspaceStore = defineStore('workspace', () => {
     // tabs
-    const tabDefinitions: Ref<TabDefinition<any, any>[]> = ref<TabDefinition<any, any>[]>([])
-    const tabData: Ref<Map<string, TabData<any>>> = ref<Map<string, TabData<any>>>(new Map())
-    const tabHistory: Ref<Map<string, any[]>> = ref<Map<string, any[]>>(new Map())
+    const tabDefinitions: Ref<AnyTabDefinition[]> = ref<AnyTabDefinition[]>([])
+    const tabData: Ref<Map<string, AnyTabData>> = ref<Map<string, AnyTabData>>(new Map())
+    const tabHistory: Ref<Map<string, unknown[]>> = ref<Map<string, unknown[]>>(new Map())
 
     // status bar
     const subjectPathStatus: Ref<SubjectPathStatus> = ref<SubjectPathStatus>(new SubjectPathStatus())

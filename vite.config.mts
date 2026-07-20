@@ -23,16 +23,21 @@ export default defineConfig(({ mode }) => {
     const evitaLabVersionSuffix: string = resolveEvitaLabVersionSuffix(env)
 
     let outputOptions: OutputOptions
-    if (labRunMode === 'STANDALONE') {
-        outputOptions = {
-            chunkFileNames: `assets/[name]-[hash]-${evitaLabVersionSuffix}.js`,
-            entryFileNames: `assets/[name]-${evitaLabVersionSuffix}.js`,
-            assetFileNames: `assets/[name]-[hash]-${evitaLabVersionSuffix}[extname]`
-        }
-    } else if (labRunMode === 'DRIVER') {
-        outputOptions = {
-            inlineDynamicImports: true
-        }
+    switch (labRunMode) {
+        case 'STANDALONE':
+            outputOptions = {
+                chunkFileNames: `assets/[name]-[hash]-${evitaLabVersionSuffix}.js`,
+                entryFileNames: `assets/[name]-${evitaLabVersionSuffix}.js`,
+                assetFileNames: `assets/[name]-[hash]-${evitaLabVersionSuffix}[extname]`
+            }
+            break
+        case 'DRIVER':
+            outputOptions = {
+                inlineDynamicImports: true
+            }
+            break
+        default:
+            throw new Error(`Unsupported lab run mode ${labRunMode}`)
     }
 
     return {
@@ -104,16 +109,6 @@ export default defineConfig(({ mode }) => {
             host: true,
         },
         base: baseUrl,
-        css: {
-            preprocessorOptions: {
-                sass: {
-                    api: 'modern-compiler',
-                },
-                scss: {
-                    api: 'modern-compiler',
-                },
-            },
-        },
     }
 })
 

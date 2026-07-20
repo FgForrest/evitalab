@@ -12,6 +12,7 @@ export class ScopedReferenceIndexType {
 }
 
 
+// eslint-disable-next-line @typescript-eslint/no-namespace -- intentional class/namespace declaration merging (ScopedReferenceIndexType.Empty)
 export namespace ScopedReferenceIndexType {
 
     export const Empty:ScopedReferenceIndexType[] = [];

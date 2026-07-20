@@ -58,7 +58,7 @@ export class ConnectionService {
             evitaLabConfig.systemProperty(connectionSystemPropertyName)
         if (connectionSystemProperty != undefined) {
             try {
-                return Connection.fromJson(JSON.parse(connectionSystemProperty) as any)
+                return Connection.fromJson(JSON.parse(connectionSystemProperty) as { id: string, name: string, serverUrl: string })
             } catch (e) {
                 console.error('Failed to load preconfigured connections from system properties', e)
             }
@@ -69,16 +69,19 @@ export class ConnectionService {
             evitaLabConfig.systemProperty(preconfiguredConnectionsSystemPropertyName)
         if (preconfiguredConnectionsSystemProperty != undefined) {
             try {
-                const preconfiguredConnections: Connection[] = (JSON.parse(preconfiguredConnectionsSystemProperty) as Array<any>)
+                const preconfiguredConnections: Connection[] = (JSON.parse(preconfiguredConnectionsSystemProperty) as { id: string, name: string, serverUrl: string }[])
                     .map(connection => Connection.fromJson(connection))
 
                 if (preconfiguredConnections.length == 0) {
                     console.warn('Preconfigured connection property present, but empty list found. Trying default connection.')
-                } else if (preconfiguredConnections.length > 1) {
-                    console.warn('More than one preconfigured connection found. Using first one only.')
-                    return preconfiguredConnections[0]
                 } else {
-                    return preconfiguredConnections[0]
+                    if (preconfiguredConnections.length > 1) {
+                        console.warn('More than one preconfigured connection found. Using first one only.')
+                    }
+                    const firstConnection: Connection | undefined = preconfiguredConnections[0]
+                    if (firstConnection != undefined) {
+                        return firstConnection
+                    }
                 }
             } catch (e) {
                 console.error('Failed to load preconfigured connections from system properties', e)
@@ -95,10 +98,11 @@ export class ConnectionService {
                     'https://demo.evitadb.io'
                 )
             } else if (devConnection === 'LOCAL') {
+                const localUrl: string = import.meta.env.VITE_DEV_LOCAL_URL || 'http://localhost:5555'
                 return new Connection(
                     'dev-localhost',
                     'Localhost (dev)',
-                    'http://localhost:5555'
+                    localUrl
                 )
             }
         }

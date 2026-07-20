@@ -16,8 +16,7 @@ import { PlaceholderValue } from '@/modules/base/model/properties-table/Placehol
 
 const { t } = useI18n()
 
-const props =
-    defineProps<{
+defineProps<{
     property: Property,
     propertyValue: PropertyValue
 }>()

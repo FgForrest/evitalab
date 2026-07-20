@@ -99,7 +99,7 @@ export class RangeValue {
                 )
             }
             throw new Error('Unaccepted type')
-        } catch (e) {
+        } catch {
             // not date time but long or BigDecimal
             return part.toString()
         }

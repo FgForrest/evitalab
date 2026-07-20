@@ -12,7 +12,7 @@ import SortableAttributeCompoundSchemaListItem
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     dataPointer: SchemaViewerDataPointer,
     sortableAttributeCompounds: List<SortableAttributeCompoundSchema>,
 }>()

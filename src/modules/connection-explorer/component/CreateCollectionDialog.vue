@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
@@ -23,17 +24,17 @@ const emit = defineEmits<{
 }>()
 
 const entityTypeRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value != undefined && value.trim().length > 0) return true
         return t('explorer.collection.create.form.entityType.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         const classifierValidationResult : ClassifierValidationErrorType | undefined =
             await collectionItemService.isEntityTypeValid(value)
         if (classifierValidationResult == undefined) return true
         return t(`explorer.collection.create.form.entityType.validations.${classifierValidationResult}`)
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         const available: boolean = await collectionItemService.isEntityTypeAvailable(props.catalogName, value)
         if (available) return true
         return t('explorer.collection.create.form.entityType.validations.notAvailable')
@@ -58,12 +59,12 @@ async function create(): Promise<boolean> {
             { entityType: entityType.value }
         ))
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'explorer.collection.create.notification.couldNotCreateCollection',
             {
                 entityType: entityType.value,
-                reason: e.message
+                reason: errorMessage(e)
             }
         ))
         return false

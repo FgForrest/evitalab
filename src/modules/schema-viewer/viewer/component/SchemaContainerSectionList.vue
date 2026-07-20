@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T">
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import SchemaContainerSectionListItem from '@/modules/schema-viewer/viewer/component/SchemaContainerSectionListItem.vue'
@@ -8,8 +8,8 @@ import { List } from 'immutable'
 const { t } = useI18n()
 
 const props = defineProps<{
-    items: List<any>,
-    nameSupplier: (item: any) => string
+    items: List<T>,
+    nameSupplier: (item: T) => string
 }>()
 
 const filter = ref<string>('')

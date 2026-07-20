@@ -1,5 +1,5 @@
 import { markRaw } from 'vue'
-import type { DefineComponent } from 'vue'
+import type {  } from 'vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import { ErrorViewerTabParams } from '@/modules/error-viewer/viewer/workspace/model/ErrorViewerTabParams'
@@ -15,7 +15,7 @@ export class ErrorViewerTabDefinition extends TabDefinition<ErrorViewerTabParams
             undefined,
             title,
             ErrorViewerTabDefinition.icon(),
-            markRaw(ErrorViewer as DefineComponent<any, any, any>),
+            markRaw(ErrorViewer as Component),
             params,
             new VoidTabData()
         )

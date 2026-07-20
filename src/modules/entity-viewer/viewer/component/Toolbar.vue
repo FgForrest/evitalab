@@ -19,7 +19,7 @@ import { getEnumKeyByValue } from '@/utils/enum.ts'
 const keymap: Keymap = useKeymap()
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     icon: string,
     currentData: EntityViewerTabData,
     title: List<string>,
@@ -32,8 +32,8 @@ const tabProps = useTabProps()
 const dataLocale = useDataLocale()
 const layers = useLayer()
 
-const flags = computed<any>(() => {
-    const flags: any[] = []
+const flags = computed<List<{ title: string, prependIcon: string }>>(() => {
+    const flags: { title: string, prependIcon: string }[] = []
     if (dataLocale?.value != undefined) {
         flags.push({
             title: dataLocale.value,
@@ -50,7 +50,7 @@ const flags = computed<any>(() => {
             }
         }
     }
-    return flags
+    return List(flags)
 })
 
 const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()

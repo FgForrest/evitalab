@@ -3,6 +3,10 @@ import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 import { EvitaLabConfig, evitaLabConfigInjectionKey } from '@/modules/config/EvitaLabConfig'
 import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
 import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
+import {
+    DataCacheRefresher,
+    dataCacheRefresherInjectionKey
+} from '@/modules/database-driver/DataCacheRefresher'
 
 export class DatabaseDriverModuleRegistrar implements ModuleRegistrar {
 
@@ -12,6 +16,10 @@ export class DatabaseDriverModuleRegistrar implements ModuleRegistrar {
 
         const evitaClient: EvitaClient = new EvitaClient(evitaLabConfig, connectionService)
         builder.provide(evitaClientInjectionKey, evitaClient)
+
+        const dataCacheRefresher: DataCacheRefresher = new DataCacheRefresher(evitaClient)
+        builder.provide(dataCacheRefresherInjectionKey, dataCacheRefresher)
+        dataCacheRefresher.start()
     }
 
 }

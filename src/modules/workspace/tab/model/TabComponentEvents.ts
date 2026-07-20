@@ -1,4 +1,4 @@
-import type { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { AnyTabData } from '@/modules/workspace/tab/model/TabData'
 
 /**
  * Represents basic events every tab component should emit.
@@ -12,5 +12,5 @@ export interface TabComponentEvents {
     /**
      * Emitted when the tab component's data has been updated.
      */
-    (e: 'update:data', value: TabData<any>): void
+    (e: 'update:data', value: AnyTabData): void
 }

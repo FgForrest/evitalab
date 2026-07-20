@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -63,10 +64,10 @@ async function loadMinimalDate(): Promise<void> {
 
         defaultTimeOffset.value = minimalBackupDate.introducedAt.offset
         defaultTimeOffsetLoaded.value = true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'backupViewer.backup.notification.couldNotLoadMinimalDate',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
     }
 }
@@ -92,12 +93,12 @@ async function backup(): Promise<boolean> {
         ))
         emit('backup')
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'backupViewer.backup.notification.couldNotRequestBackup',
             {
                 catalogName: catalogNameValue.value,
-                reason: e.message
+                reason: errorMessage(e)
             }
         ))
         return false

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { useToaster } from '@/modules/notification/service/Toaster'
@@ -13,12 +14,12 @@ const props = defineProps<{
     file: ServerFile
 }>()
 
-function onCouldNotDownloadResultFile(e: Error): void {
+function onCouldNotDownloadResultFile(e: Error | undefined): void {
     toaster.error(t(
         'serverFileViewer.list.item.notification.couldNotDownloadFile',
         {
             fileName: props.file.name,
-            reason: e.message
+            reason: errorMessage(e)
         }
     )).then()
 }

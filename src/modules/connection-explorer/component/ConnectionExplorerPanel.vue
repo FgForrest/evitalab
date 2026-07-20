@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { List as ImmutableList } from 'immutable'
@@ -21,6 +22,8 @@ import {
     ConnectionExplorerPanelMenuFactory, useConnectionExplorerPanelMenuFactory
 } from '@/modules/connection-explorer/service/ConnectionExplorerPanelMenuFactory'
 
+const retryInterval: number = 5000
+
 const connectionExplorerService: ConnectionExplorerService = useConnectionExplorerService()
 const connectionExplorerPanelMenuFactory: ConnectionExplorerPanelMenuFactory = useConnectionExplorerPanelMenuFactory()
 const toaster: Toaster = useToaster()
@@ -28,6 +31,7 @@ const { t } = useI18n()
 
 let loaded: boolean = false
 const loading = ref<boolean>(false)
+let retryTimeoutId: ReturnType<typeof setTimeout> | undefined = undefined
 
 const serverStatus = ref<ServerStatus | undefined>()
 const serverStatusChangeCallbackId: string = connectionExplorerService.registerServerStatusChangeCallback(async () => {
@@ -71,27 +75,60 @@ async function load(): Promise<void> {
     loading.value = false
 }
 
-async function loadServerStatus(): Promise<boolean> {
+async function loadServerStatus(silent: boolean = false): Promise<boolean> {
     try {
         serverStatus.value = await connectionExplorerService.getServerStatus()
+        // recovered — cancel any pending background retry
+        cancelServerStatusRetry()
         return true
-    } catch (e: any) {
-        await toaster.error(t(
-            'explorer.connection.notification.couldNotLoadServerStatus',
-            { reason: e.message }
-        ))
+    } catch (e) {
+        // drop stale status so the menu actions disable against an unreachable server
+        serverStatus.value = undefined
+        if (!silent) {
+            await toaster.error(t(
+                'explorer.connection.notification.couldNotLoadServerStatus',
+                { reason: errorMessage(e) }
+            ))
+        }
+        scheduleServerStatusRetry()
         return false
     }
 }
 
+function cancelServerStatusRetry(): void {
+    if (retryTimeoutId != undefined) {
+        clearTimeout(retryTimeoutId)
+        retryTimeoutId = undefined
+    }
+}
+
+function scheduleServerStatusRetry(): void {
+    // guard against parallel loops racing with a Reload click or a change callback
+    cancelServerStatusRetry()
+    retryTimeoutId = setTimeout(async () => {
+        retryTimeoutId = undefined
+        // background retries stay quiet until the server is reachable again
+        const reachable: boolean = await loadServerStatus(true)
+        if (reachable) {
+            // the initial load() chain skipped catalogs; complete the recovery here
+            await loadCatalogs()
+        }
+    }, retryInterval)
+}
+
 async function loadCatalogs(): Promise<boolean> {
+    if (serverStatus.value == undefined) {
+        // the server is unreachable (per the server status) — catalogs live on it, so there is
+        // nothing to fetch and no point surfacing a second failure on top of the status error
+        return false
+    }
     try {
         catalogs.value = await connectionExplorerService.getCatalogs()
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'explorer.connection.notification.couldNotLoadCatalogs',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         return false
     }
@@ -119,6 +156,7 @@ function handleAction(action: string): void {
 onUnmounted(() => {
     connectionExplorerService.unregisterServerStatusChangeCallback(serverStatusChangeCallbackId)
     connectionExplorerService.unregisterCatalogChangeCallback(catalogChangeCallbackId)
+    cancelServerStatusRetry()
 })
 
 load().then()

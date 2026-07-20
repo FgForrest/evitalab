@@ -40,8 +40,8 @@ defineExpose<TabComponentExpose>({
     }
 })
 
-const taskListRef = ref<typeof TaskList>()
-const recordingListRef = ref<typeof RecordingList>()
+const taskListRef = ref<InstanceType<typeof TaskList>>()
+const recordingListRef = ref<InstanceType<typeof RecordingList>>()
 
 const title: List<string> = List.of(t('trafficViewer.recordings.title'))
 
@@ -49,12 +49,10 @@ const recordingsInPreparationPresent = ref<boolean>(false)
 
 function reloadRecordings(): void {
     reloadTasks()
-    //@ts-ignore
     recordingListRef.value?.reload(true)
 }
 
 function reloadTasks(): void {
-    //@ts-ignore
     taskListRef.value?.reload(true)
 }
 

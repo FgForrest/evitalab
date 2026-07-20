@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import { useI18n } from 'vue-i18n'
 import { computed, ref, watch } from 'vue'
 import { useToaster } from '@/modules/notification/service/Toaster'
-import { Toaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { TrafficViewerService, useTrafficViewerService } from '@/modules/traffic-viewer/service/TrafficViewerService'
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
@@ -13,7 +14,6 @@ import {
 } from '@/utils/number'
 import { parseHumanDurationToMs } from '@/utils/duration'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
-import { CatalogState } from '@/modules/database-driver/request-response/CatalogState.ts'
 
 const trafficViewerService: TrafficViewerService = useTrafficViewerService()
 const toaster: Toaster = useToaster()
@@ -47,8 +47,7 @@ const exportFile = ref<boolean>(false)
 watch(
     exportFile,
     async () => {
-        //@ts-ignore
-        await formDialog.value.validateForm()
+        await formDialog.value?.validateForm()
     }
 )
 const maxFileSizeInBytes = ref<string | undefined>(undefined)
@@ -58,7 +57,7 @@ const maxFileSizeInBytesRounded = computed<boolean>(() => {
     }
     try {
         return parseHumanByteSizeToBigInt(maxFileSizeInBytes.value)[1]
-    } catch (e) {
+    } catch {
         return false
     }
 })
@@ -69,24 +68,24 @@ const chunkFileSizeInBytesRounded = computed<boolean>(() => {
     }
     try {
         return parseHumanByteSizeToBigInt(chunkFileSizeInBytes.value)[1]
-    } catch (e) {
+    } catch {
         return false
     }
 })
 
 const catalogNameRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value != undefined && value.trim().length > 0) return true
         return t('trafficViewer.recordings.startRecording.form.catalogName.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         const available: boolean = await trafficViewerService.isCatalogExists(value)
         if (available) return true
         return t('trafficViewer.recordings.startRecording.form.catalogName.validations.notExists')
     }
 ]
 const samplingRateRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value == undefined || value === '') {
             return t('trafficViewer.recordings.startRecording.form.samplingRate.validations.required')
         }
@@ -101,7 +100,7 @@ const samplingRateRules = [
     }
 ]
 const maxDurationInMillisecondsRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value == undefined || value === '') {
             return true
         }
@@ -109,7 +108,7 @@ const maxDurationInMillisecondsRules = [
         let duration: bigint
         try {
             duration = parseHumanDurationToMs(value.trim())
-        } catch (e) {
+        } catch {
             return t('trafficViewer.recordings.startRecording.form.maxDurationInMilliseconds.validations.notDuration')
         }
         if (duration < 0 || duration > int64MaxValue) {
@@ -119,7 +118,7 @@ const maxDurationInMillisecondsRules = [
     }
 ]
 const maxFileSizeInBytesRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (!exportFile.value) {
             return true
         }
@@ -129,7 +128,7 @@ const maxFileSizeInBytesRules = [
         let number: bigint
         try {
             number = parseHumanByteSizeToBigInt(value)[0]
-        } catch (e) {
+        } catch {
             return t('trafficViewer.recordings.startRecording.form.maxFileSizeInBytes.validations.notByteSize')
         }
         if (number < 0 || number > int64MaxValue) {
@@ -139,7 +138,7 @@ const maxFileSizeInBytesRules = [
     }
 ]
 const chunkFileSizeInBytesRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (!exportFile.value) {
             return true
         }
@@ -149,7 +148,7 @@ const chunkFileSizeInBytesRules = [
         let number: bigint
         try {
             number = parseHumanByteSizeToBigInt(value)[0]
-        } catch (e) {
+        } catch {
             return t('trafficViewer.recordings.startRecording.form.chunkFileSizeInBytes.validations.notByteSize')
         }
         if (number < 0 || number > int64MaxValue) {
@@ -168,10 +167,10 @@ async function loadAvailableCatalogs(): Promise<void> {
             .map(it => it.name)
             .toArray()
         availableCatalogsLoaded.value = true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'backupViewer.backup.notification.couldNotLoadAvailableCatalogs',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
     }
 }
@@ -204,10 +203,10 @@ async function startRecording(): Promise<boolean> {
         await toaster.success(t('trafficViewer.recordings.startRecording.notification.recordingStarted'))
         emit('start', createdTask)
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'trafficViewer.recordings.startRecording.notification.couldNotStartRecording',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         return false
     }

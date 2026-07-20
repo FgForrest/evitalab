@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { useI18n } from 'vue-i18n'
@@ -32,10 +33,10 @@ async function makeCatalogMutable(): Promise<boolean> {
             catalogName: props.catalog.name
         }))
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t('explorer.catalog.makeCatalogMutable.notification.couldNotMakeCatalogMutable', {
             catalogName: props.catalog.name,
-            reason: e.message
+            reason: errorMessage(e)
         }))
         return false
     }

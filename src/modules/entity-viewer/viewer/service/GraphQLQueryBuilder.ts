@@ -258,7 +258,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                 }
             } else if (requiredDatum.type === EntityPropertyType.ReferenceAttributes) {
                 const referenceName = requiredDatum.names[0]
-                if (!requiredReferences.includes(referenceName)) {
+                if (referenceName != undefined && !requiredReferences.includes(referenceName)) {
                     requiredReferences.push(referenceName)
                 }
             }
@@ -344,15 +344,15 @@ export class GraphQLQueryBuilder implements QueryBuilder {
     }
 
     buildPrimaryKeyOrderBy(orderDirection: OrderDirection): string {
-        return `entityPrimaryKeyNatural: ${orderDirection}`
+        return `entityPrimaryKeyNatural: ${orderDirection.toUpperCase()}`
     }
 
     buildAttributeOrderBy(attributeSchema: AttributeSchema, orderDirection: OrderDirection): string {
-        return `attribute${attributeSchema.nameVariants.get(NamingConvention.PascalCase)}Natural: ${orderDirection}`
+        return `attribute${attributeSchema.nameVariants.get(NamingConvention.PascalCase)}Natural: ${orderDirection.toUpperCase()}`
     }
 
     buildReferenceAttributeOrderBy(referenceSchema: ReferenceSchema, attributeSchema: AttributeSchema, orderDirection: OrderDirection): string {
-        return `reference${referenceSchema.nameVariants.get(NamingConvention.PascalCase)}Property: { attribute${attributeSchema.nameVariants.get(NamingConvention.PascalCase)}Natural: ${orderDirection} }`
+        return `reference${referenceSchema.nameVariants.get(NamingConvention.PascalCase)}Property: { attribute${attributeSchema.nameVariants.get(NamingConvention.PascalCase)}Natural: ${orderDirection.toUpperCase()} }`
     }
 
     buildParentEntityFilterBy(parentPrimaryKey: number): string {

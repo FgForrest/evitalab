@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 /**
  * Main orchestrator for result visualisation. Analyzes raw query results, presents query and
  * visualiser type selectors, and delegates parsing + rendering to per-type child components.
@@ -46,8 +47,9 @@ const visualiserTypesRef = ref<InstanceType<typeof VAutocomplete> | undefined>()
 const supportsMultipleQueries = computed<boolean>(() => {
     try {
         return props.visualiserService.resultAnalyzer.supportsMultipleQueries()
-    } catch (e: any) {
-        toaster.error('Could resolve multiple queries support', e).then()
+    } catch (e) {
+        // computeds must stay side-effect-free; a toast here would re-fire on every re-evaluation
+        console.error('Could not resolve multiple queries support', e)
         return false
     }
 })
@@ -67,9 +69,9 @@ watch([() => props.result, () => props.inputQuery], async () => {
             props.result,
             props.catalogPointer.catalogName
         )
-    } catch (e: any) {
+    } catch (e) {
         analyzedResult.value = undefined
-        toaster.error('Could not analyze result', e).then()
+        toaster.error('Could not analyze result', asError(e)).then()
     } finally {
         loading.value = false
     }
@@ -109,7 +111,10 @@ const visualiserTypes = computed<VisualiserType[]>(() => {
 watch(visualiserTypes, (newValue) => {
     if (newValue.length > 0) {
         if (selectedVisualiserType.value == undefined || !newValue.map(it => it.value).includes(selectedVisualiserType.value)) {
-            selectedVisualiserType.value = newValue[0].value
+            const firstType = newValue[0]
+            if (firstType != undefined) {
+                selectedVisualiserType.value = firstType.value
+            }
         }
     } else {
         selectedVisualiserType.value = undefined
@@ -159,8 +164,8 @@ watch([selectedVisualiserType, selectedQuery], async () => {
                     .parse(queryResult)
                 break
         }
-    } catch (e: any) {
-        toaster.error('Could not parse result for visualisation', e).then()
+    } catch (e) {
+        toaster.error('Could not parse result for visualisation', asError(e)).then()
     } finally {
         parsingResult.value = false
     }

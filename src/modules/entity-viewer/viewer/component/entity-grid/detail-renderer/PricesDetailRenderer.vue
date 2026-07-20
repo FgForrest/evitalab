@@ -10,8 +10,6 @@ import {
     EntityViewerService,
     useEntityViewerService,
 } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
-import { useToaster } from '@/modules/notification/service/Toaster'
-import type { Toaster } from '@/modules/notification/service/Toaster'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { PriceInnerRecordHandling } from '@/modules/entity-viewer/viewer/model/PriceInnerRecordHandling'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
@@ -65,7 +63,6 @@ type FilterData = {
 }
 
 const entityViewerService: EntityViewerService = useEntityViewerService()
-const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = withDefaults(
@@ -103,9 +100,8 @@ const entityPricingProperties = computed<Property[]>(() => [
 ])
 const prices = computed<EntityPrices>(() => {
     if (!(props.value instanceof EntityPrices)) {
-        toaster.error(
-            t('entityViewer.grid.priceRenderer.notification.invalidPricesObject')
-        ).then()
+        // computeds must stay side-effect-free; a toast here would re-fire on every re-evaluation
+        console.error(t('entityViewer.grid.priceRenderer.notification.invalidPricesObject'))
         return new EntityPrices(undefined, [])
     }
     return props.value as EntityPrices
@@ -154,26 +150,29 @@ watch([selectedPriceLists, selectedCurrencies], async () => {
         selectedPriceLists.value.length > 0 &&
         selectedCurrencies.value.length === 1
     ) {
-        computedPriceForSale.value =
-            await entityViewerService.computePriceForSale(
-                tabProps.params.dataPointer,
-                queryLanguage.value!,
-                (
-                    selectedEntity[
-                        EntityPropertyKey.entity(
-                            StaticEntityProperties.PrimaryKey
-                        ).toString()
-                    ] as NativeValue
-                ).value() as number,
-                selectedPriceLists.value,
-                selectedCurrencies.value[0]
-            )
+        const selectedCurrency: string | undefined = selectedCurrencies.value[0]
+        if (selectedCurrency != undefined) {
+            computedPriceForSale.value =
+                await entityViewerService.computePriceForSale(
+                    tabProps.params.dataPointer,
+                    queryLanguage.value!,
+                    (
+                        selectedEntity[
+                            EntityPropertyKey.entity(
+                                StaticEntityProperties.PrimaryKey
+                            ).toString()
+                        ] as NativeValue
+                    ).value() as number,
+                    selectedPriceLists.value,
+                    selectedCurrency
+                )
+        }
     }
 })
 
 const filteredAllPrices = computed<EntityPrice[]>(() => {
     // note: originally we wanted to do server call here for filtering, but it seems to be really fast in browser (tested on hundreds of prices)
-    let filteredPrices: EntityPrice[] = prices.value.prices.filter((price) => {
+    const filteredPrices: EntityPrice[] = prices.value.prices.filter((price) => {
         if (price.priceId && price.priceList && price.currency) {
             if (
                 selectedPriceIds.value.length > 0 &&
@@ -253,9 +252,9 @@ async function preselectFilterFromQuery(): Promise<void> {
                 priceLists.matchAll(
                     constraintPriceListsPattern.get(queryLanguage.value!)!
                 )
-            selectedPriceLists.value = Array.from(priceListsMatches).map(
-                (match) => match[1]
-            )
+            selectedPriceLists.value = Array.from(priceListsMatches)
+                .map((match) => match[1])
+                .filter((priceList): priceList is string => priceList != undefined)
         }
         if (currency != undefined) {
             selectedCurrencies.value = [currency]

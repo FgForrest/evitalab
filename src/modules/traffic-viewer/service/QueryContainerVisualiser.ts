@@ -41,7 +41,7 @@ export class QueryContainerVisualiser extends TrafficRecordVisualiser<QueryConta
         return trafficRecord instanceof QueryContainer
     }
 
-    prepare(ctx: TrafficRecordPreparationContext, trafficRecord: QueryContainer): void {
+    override prepare(ctx: TrafficRecordPreparationContext, trafficRecord: QueryContainer): void {
         const sourceQueryId: string | undefined = this.resolveSourceQueryId(trafficRecord)
         if (sourceQueryId != undefined) {
             ctx.requestAdditionalSourceQueryRecord(sourceQueryId, trafficRecord)
@@ -95,7 +95,6 @@ export class QueryContainerVisualiser extends TrafficRecordVisualiser<QueryConta
             i18n.global.t('trafficViewer.recordHistory.record.type.query.metadata.item.primaryKeys.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.query.metadata.item.primaryKeys.value',
-                // @ts-ignore
                 trafficRecord.primaryKeys.size,
                 { named: { count: formatCount(trafficRecord.primaryKeys.size) } }
             )
@@ -106,7 +105,6 @@ export class QueryContainerVisualiser extends TrafficRecordVisualiser<QueryConta
             i18n.global.t('trafficViewer.recordHistory.record.type.query.metadata.item.totalRecordCount.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.query.metadata.item.totalRecordCount.value',
-                // @ts-ignore
                 trafficRecord.totalRecordCount,
                 { named: { count: formatCount(trafficRecord.totalRecordCount) } }
             )

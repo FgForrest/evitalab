@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { useI18n } from 'vue-i18n'
 import { BackupViewerService, useBackupViewerService } from '@/modules/backup-viewer/service/BackupViewerService.ts'
@@ -36,12 +37,12 @@ async function backup(): Promise<boolean> {
         ))
         emit('backup')
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'backupViewer.backup.notification.couldNotRequestBackup',
             {
                 catalogName: catalogNameValue.value,
-                reason: e.message
+                reason: errorMessage(e)
             }
         ))
         return false

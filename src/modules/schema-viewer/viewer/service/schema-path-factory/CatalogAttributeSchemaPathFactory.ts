@@ -21,7 +21,7 @@ export class CatalogAttributeSchemaPathFactory extends AbstractSchemaPathFactory
         return schemaPointer instanceof CatalogAttributeSchemaPointer
     }
 
-    protected resolvePathItems(schemaPointer: CatalogAttributeSchemaPointer): SubjectPathItem[] {
+    protected override resolvePathItems(schemaPointer: CatalogAttributeSchemaPointer): SubjectPathItem[] {
         return [
             ...super.resolvePathItems(schemaPointer),
             SubjectPathItem.plain(i18n.global.t('schemaViewer.path.item.attributes'))

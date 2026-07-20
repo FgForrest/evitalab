@@ -20,6 +20,7 @@ import {
     MarkdownDetailRendererMenuFactory,
     useMarkdownDetailRendererMenuFactory
 } from '@/modules/entity-viewer/viewer/service/MarkdownDetailRendererMenuFactory'
+import { copyToClipboard } from '@/utils/clipboard'
 
 const markdownDetailRendererMenuFactory: MarkdownDetailRendererMenuFactory = useMarkdownDetailRendererMenuFactory()
 const toaster: Toaster = useToaster()
@@ -52,12 +53,13 @@ const props = withDefaults(
 const prettyPrint = ref<boolean>(true)
 
 const menuItems = ref<Map<MarkdownDetailRendererMenuItemType, MenuItem<MarkdownDetailRendererMenuItemType>>>()
-const menuItemList: ComputedRef<MenuItem<MarkdownDetailRendererMenuItemType>[]> =
+const menuItemList: ComputedRef<MenuAction<MarkdownDetailRendererMenuItemType>[]> =
     computed(() => {
         if (menuItems.value == undefined) {
             return []
         }
         return Array.from(menuItems.value.values())
+            .filter((item): item is MenuAction<MarkdownDetailRendererMenuItemType> => item instanceof MenuAction)
     })
 watch(
     prettyPrint,
@@ -228,7 +230,7 @@ function prettyPrintRangeValue(
     }
 }
 
-function handleActionClick(action: any) {
+function handleActionClick(action: unknown) {
     const foundedAction = menuItems.value?.get(action as MarkdownDetailRendererMenuItemType)
     if (foundedAction && foundedAction instanceof MenuAction) {
         (foundedAction as MenuAction<MarkdownDetailRendererMenuItemType>).execute()
@@ -236,8 +238,7 @@ function handleActionClick(action: any) {
 }
 
 function copyRenderedValue() {
-    navigator.clipboard
-        .writeText(formattedValue.value)
+    copyToClipboard(formattedValue.value)
         .then(() => {
             toaster.info(t('common.notification.copiedToClipboard')).then()
         })

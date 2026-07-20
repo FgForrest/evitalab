@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 /**
  * Explorer tree item representing a single catalog in evitaDB.
  */
@@ -128,12 +129,12 @@ async function closeSharedSession(): Promise<void> {
             'explorer.catalog.notification.closedSharedSession',
             { catalogName: props.catalog.name }
         ))
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'explorer.catalog.notification.couldNotCloseSharedSession',
             {
                 catalogName: props.catalog.name,
-                reason: e.message
+                reason: errorMessage(e)
             }
         ))
     }

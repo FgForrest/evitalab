@@ -11,6 +11,7 @@ import FacetStatisticsVisualiser
     from '@/modules/console/result-visualiser/component/reference-summary/FacetStatisticsVisualiser.vue'
 import HistogramStatisticsVisualiser
     from '@/modules/console/result-visualiser/component/reference-summary/HistogramStatisticsVisualiser.vue'
+import { copyToClipboard } from '@/utils/clipboard'
 
 const facetStatisticsPageSize: number = 10
 
@@ -35,7 +36,7 @@ function initializeFacets(): void {
 
 async function copyPrimaryKey(): Promise<void> {
     if (props.facetGroup.groupStatistics.primaryKey != undefined) {
-        navigator.clipboard.writeText(`${props.facetGroup.groupStatistics.primaryKey}`).then(() => {
+        copyToClipboard(`${props.facetGroup.groupStatistics.primaryKey}`).then(() => {
             toaster.info(t('resultVisualizer.facetStatisticsVisualiser.notification.primaryKeyCopiedToClipboard')).then()
         }).catch(() => {
             toaster.error(t('common.notification.failedToCopyToClipboard')).then()

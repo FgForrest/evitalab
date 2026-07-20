@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 import VFormDialog from '@/modules/base/component/VFormDialog.vue'
 import { BackupViewerService, useBackupViewerService } from '@/modules/backup-viewer/service/BackupViewerService'
@@ -12,7 +13,7 @@ const backupViewerService: BackupViewerService = useBackupViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     modelValue: boolean
 }>()
 const emit = defineEmits<{
@@ -21,7 +22,7 @@ const emit = defineEmits<{
 }>()
 
 const backupFileRules = [
-    (value: File): any => {
+    (value: File): boolean | string => {
         if (value != undefined) {
             return true
         }
@@ -29,17 +30,17 @@ const backupFileRules = [
     }
 ]
 const catalogNameRules = [
-    (value: string): any => {
+    (value: string): boolean | string => {
         if (value != undefined && value.trim().length > 0) return true
         return t('backupViewer.restoreLocal.form.catalogName.validations.required')
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         const classifierValidationResult : ClassifierValidationErrorType | undefined =
             await backupViewerService.isCatalogNameValid(value)
         if (classifierValidationResult == undefined) return true
         return t(`backupViewer.restoreLocal.form.catalogName.validations.${classifierValidationResult}`)
     },
-    async (value: string): Promise<any> => {
+    async (value: string): Promise<boolean | string> => {
         const available: boolean = await backupViewerService.isCatalogNameAvailable(value)
         if (available) return true
         return t('backupViewer.restoreLocal.form.catalogName.validations.notAvailable')
@@ -68,10 +69,10 @@ async function restoreLocal(): Promise<boolean> {
         await toaster.success(t('backupViewer.restoreLocal.notification.restoreRequested'))
         emit('restore')
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'backupViewer.restoreLocal.notification.couldNotRestoreBackupFile',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         return false
     }

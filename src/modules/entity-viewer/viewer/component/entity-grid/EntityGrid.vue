@@ -24,6 +24,7 @@ import {
 import { EntityViewerTabData } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabData'
 import { EntityReferenceValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceValue'
 import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue'
+import type { GridHeader } from '@/modules/entity-viewer/viewer/model/GridHeader'
 import EntityGridColumnHeader from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridColumnHeader.vue'
 import EntityGridCell from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridCell.vue'
 import EntityGridCellDetail from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridCellDetail.vue'
@@ -44,10 +45,10 @@ const entityViewerTabFactory: EntityViewerTabFactory = useEntityViewerTabFactory
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const pageSizeOptions: any[] = [10, 25, 50, 100, 250, 500, 1000].map(it => ({ title: it.toString(10), value: it }))
+const pageSizeOptions: { title: string; value: number }[] = [10, 25, 50, 100, 250, 500, 1000].map(it => ({ title: it.toString(10), value: it }))
 
 const props = defineProps<{
-    displayedGridHeaders: any[],
+    displayedGridHeaders: GridHeader[],
     loading: boolean,
     resultEntities: FlatEntity[],
     totalResultCount: number,
@@ -55,7 +56,7 @@ const props = defineProps<{
     pageSize: number
 }>()
 const emit = defineEmits<{
-    (e: 'gridUpdated', value: { page: number, itemsPerPage: number, sortBy: any[] }): void
+    (e: "gridUpdated", value: { page: number, itemsPerPage: number, sortBy: { key: string, order?: "asc" | "desc" }[] }): void
 }>()
 const tabProps = useTabProps()
 const entityPropertyDescriptorIndex = useEntityPropertyDescriptorIndex()

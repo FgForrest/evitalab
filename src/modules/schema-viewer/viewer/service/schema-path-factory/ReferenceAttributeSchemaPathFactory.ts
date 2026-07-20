@@ -23,7 +23,7 @@ export class ReferenceAttributeSchemaPathFactory extends AbstractSchemaPathFacto
         return schemaPointer instanceof ReferenceAttributeSchemaPointer
     }
 
-    protected resolvePathItems(schemaPointer: ReferenceAttributeSchemaPointer): SubjectPathItem[] {
+    protected override resolvePathItems(schemaPointer: ReferenceAttributeSchemaPointer): SubjectPathItem[] {
         return [
             ...super.resolvePathItems(schemaPointer),
             SubjectPathItem.plain(i18n.global.t('schemaViewer.path.item.entities')),

@@ -8,7 +8,7 @@ import { ApiStatus } from '@/modules/database-driver/request-response/status/Api
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     apiType: ApiType,
     apiStatus: ApiStatus
 }>()
