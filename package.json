@@ -49,7 +49,7 @@
     "ky": "^1.8.1",
     "luxon": "^3.6.1",
     "lz-string": "^1.5.0",
-    "markdown-it": "^14.1.1",
+    "markdown-it": "^14.2.0",
     "markdown-it-emoji": "^3.0.0",
     "markdown-it-highlightjs": "^4.2.0",
     "pinia": "^3.0.3",
