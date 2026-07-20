@@ -31,6 +31,7 @@
       "switch": "Switch",
       "accept": "Accept",
       "reload": "Reload",
+      "tryAgain": "Try again",
       "duplicate": "Duplicate",
       "makeCatalogImmutable": "Make catalog immutable",
       "makeCatalogMutable": "Make catalog mutable",
@@ -177,7 +178,8 @@
       "tabActions": "Tab actions"
     },
     "placeholder": {
-      "loading": "Loading, please wait ..."
+      "loading": "Loading, please wait ...",
+      "loadingFailed": "Failed to load the tab."
     }
   },
   "tabShare": {
@@ -832,10 +834,12 @@
       "results": "Results will be displayed here..."
     },
     "button": {
-      "instanceDetails": "GraphQL API instance details"
+      "instanceDetails": "GraphQL API instance details",
+      "reloadSchema": "Reload GraphQL schema"
     },
     "notification": {
-      "failedToSaveQueryToHistory": "Failed to save query to history."
+      "failedToSaveQueryToHistory": "Failed to save query to history.",
+      "failedToReloadSchema": "Failed to reload GraphQL schema."
     }
   },
   "historyComponent": {

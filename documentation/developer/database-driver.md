@@ -27,6 +27,7 @@ The client is modeled after the evitaDB Java/C# drivers, simplified for evitaLab
 | `EvitaClientSession` | Session-scoped operations: `query()` (evitaQL), schema access (`getCatalogSchema()`, `getEntitySchema()`), collection management, backups, traffic recording, mutation history, labels, `close()` |
 | `EvitaClientManagement` | Server-level operations: server status, configuration, catalog statistics, backup/restore, file listing/download, task monitoring, with its own caches + change callbacks |
 | `EvitaSchemaCache` | Per-catalog cache of catalog/entity schemas with change callbacks |
+| `GraphQLSchemaCache` | Cache of built GraphQL schemas keyed by `(catalog, instanceType)` with change callbacks |
 | `EvitaServerMetadataCache`, `EvitaCatalogStatisticsCache` | Caches for server metadata and catalog statistics |
 
 ## Sessions
@@ -60,9 +61,35 @@ replaced at any time (the client retries logic on closed sessions automatically)
 
 ### GraphQL access
 
-`queryCatalogUsingGraphQL(catalogName, instanceType, query, variables)` posts to the server's
-GraphQL HTTP API (`GraphQLInstanceType.Data | Schema | System`). This is used by the GraphQL
-console and the entity viewer's GraphQL query executor.
+`queryCatalogUsingGraphQL(catalogName, instanceType, query, variables, signal?)` posts to the
+server's GraphQL HTTP API (`GraphQLInstanceType.Data | Schema | System`). This is used by the
+GraphQL console and the entity viewer's GraphQL query executor. The optional `signal` is threaded
+into ky, so a caller can bound and genuinely cancel a request (the GraphQL console uses this to time
+out schema introspection — see the GraphQL schema cache below).
+
+#### GraphQL schema cache
+
+The GraphQL console needs a built `graphql.GraphQLSchema` (for CodeMirror autocomplete and the schema
+viewer tab), obtained via an HTTP introspection query. `GraphQLSchemaCache` caches the **built
+schema** so opening or reopening N consoles for the same GraphQL API instance does not trigger N
+introspections. `EvitaClient` holds a single instance and exposes:
+
+- `getGraphQLSchema(catalogName, instanceType, signal?)` — cache-through: returns the cached schema
+  or introspects (via `queryCatalogUsingGraphQL` + `buildClientSchema`) and caches it. The `signal`
+  only bounds the fetch, not the cache key.
+- `registerGraphQLSchemaChangedCallback(catalogName, instanceType, cb)` / `unregister…(…, id)` — the
+  console listens **only** on this channel (not on the catalog-schema callbacks) to avoid double
+  reloads on a catalog change.
+- `clearGraphQLSchemaCache(catalogName, instanceType)` — invalidates just one entry and fires its
+  callbacks; backs the console's manual "Reload GraphQL schema" button. Touches nothing else (no
+  entity caches, no schema-viewer callback).
+
+Entries are keyed by `${catalogName}:${instanceType}`, so `System`, `Data` and `Schema` are handled
+uniformly (`System` uses the stable literal `system` catalog name). A catalog schema change
+invalidates the derived GraphQL schemas at **both** catalog-change funnels — `clearSchemaCache`
+(per catalog, when clearing the whole catalog) and `clearCache` (global) — clearing the catalog's
+`Data` + `Schema` entries and firing their callbacks so open consoles auto-reload once. The `System`
+instance is **not** catalog-scoped and is therefore refreshed only through the manual button.
 
 ## Internal model (request-response)
 
@@ -115,6 +142,8 @@ Available callback registries:
 
 - `EvitaClient.registerCatalogSchemaChangedCallback(catalogName, cb)` /
   `registerEntitySchemaChangedCallback(catalogName, entityType, cb)`
+- `EvitaClient.registerGraphQLSchemaChangedCallback(catalogName, instanceType, cb)` — GraphQL schema
+  cache (see [GraphQL schema cache](#graphql-schema-cache) above)
 - `EvitaClientManagement.registerServerStatusChangeCallback(cb)`,
   `registerConfigurationChangeCallback(cb)`, `registerCatalogStatisticsChangeCallback(cb)`
 
@@ -139,8 +168,8 @@ change callbacks fire:
   `ServerViewerService.getServerStatus(forceRefresh)` / `getRuntimeConfiguration(forceRefresh)` pick
   between the cached read and the refresh path.
 
-`EvitaClient.clearCache()` clears **all** client caches — catalog statistics, sessions, schemas and
-now the server metadata cache too. It clears the **server metadata cache first**, so the
+`EvitaClient.clearCache()` clears **all** client caches — catalog statistics, sessions, schemas
+(internal and GraphQL) and the server metadata cache too. It clears the **server metadata cache first**, so the
 server-status reachability signal is refreshed before the catalog-statistics cache; consumers
 reacting to the catalog change callback (e.g. the connection panel) can then check the server
 status and skip catalog reloads that would only fail against an unreachable server. Because it

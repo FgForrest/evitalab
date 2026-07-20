@@ -1,4 +1,4 @@
-import { buildClientSchema, getIntrospectionQuery, GraphQLSchema, type IntrospectionQuery } from 'graphql'
+import { GraphQLSchema } from 'graphql'
 import { GraphQLConsoleDataPointer } from '@/modules/graphql-console/console/model/GraphQLConsoleDataPointer'
 import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
@@ -17,24 +17,42 @@ export class GraphQLConsoleService {
         this.evitaClient = evitaClient
     }
 
-    registerGraphQLSchemaChangeCallback(catalogName: string, callback: () => Promise<void>): string {
-        return this.evitaClient.registerCatalogSchemaChangedCallback(catalogName, callback)
-    }
-
-    unregisterGraphQLSchemaChangeCallback(catalogName: string, callbackId: string): void {
-        this.evitaClient.unregisterCatalogSchemaChangedCallback(catalogName, callbackId)
+    /**
+     * Registers a callback invoked when the cached GraphQL schema of the given GraphQL API instance changes.
+     */
+    registerGraphQLSchemaChangeCallback(dataPointer: GraphQLConsoleDataPointer, callback: () => Promise<void>): string {
+        return this.evitaClient.registerGraphQLSchemaChangedCallback(
+            dataPointer.catalogName,
+            dataPointer.instanceType,
+            callback
+        )
     }
 
     /**
-     * Fetches and parses a GraphQL schema from a given evitaDB server and catalog.
+     * Unregisters a previously registered GraphQL schema change callback.
      */
-    async getGraphQLSchema(dataPointer: GraphQLConsoleDataPointer): Promise<GraphQLSchema> {
-        const introspectionSchema: GraphQLResponse = await this.callGraphQLApi(
-            dataPointer,
-            getIntrospectionQuery()
+    unregisterGraphQLSchemaChangeCallback(dataPointer: GraphQLConsoleDataPointer, callbackId: string): void {
+        this.evitaClient.unregisterGraphQLSchemaChangedCallback(
+            dataPointer.catalogName,
+            dataPointer.instanceType,
+            callbackId
         )
+    }
 
-        return buildClientSchema(introspectionSchema.data as IntrospectionQuery)
+    /**
+     * Fetches a (cached) GraphQL schema for a given evitaDB server and catalog. Pass a `signal` to bound
+     * and cancel the underlying introspection request.
+     */
+    async getGraphQLSchema(dataPointer: GraphQLConsoleDataPointer, signal?: AbortSignal): Promise<GraphQLSchema> {
+        return this.evitaClient.getGraphQLSchema(dataPointer.catalogName, dataPointer.instanceType, signal)
+    }
+
+    /**
+     * Invalidates the cached GraphQL schema for the given GraphQL API instance, causing open consoles to
+     * reload only that schema. Does not touch any other cache.
+     */
+    async refreshGraphQLSchema(dataPointer: GraphQLConsoleDataPointer): Promise<void> {
+        await this.evitaClient.clearGraphQLSchemaCache(dataPointer.catalogName, dataPointer.instanceType)
     }
 
     /**
