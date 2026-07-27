@@ -4,5 +4,6 @@
  */
 export enum ExtraEntityObjectType {
     Prices = 'prices',
+    References = 'references',
     ReferenceAttributes = 'referenceAttributes'
 }

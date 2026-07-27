@@ -1,4 +1,5 @@
 import { QueryExecutor } from '@/modules/entity-viewer/viewer/service/QueryExecutor'
+import type { ReferenceClassification } from '@/modules/entity-viewer/viewer/service/QueryExecutor'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import type { QueryResult } from '@/modules/entity-viewer/viewer/model/QueryResult'
 import type { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
@@ -7,6 +8,10 @@ import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPr
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue'
 import { EntityReferenceValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceValue'
+import { EntityReferences } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferences'
+import {
+    EntityReferenceAttributes
+} from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceAttributes'
 import { EntityPrice } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrice'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { EntityPrices } from '../model/entity-property-value/EntityPrices'
@@ -14,6 +19,7 @@ import { GroupByUtil } from '@/utils/GroupByUtil'
 import type { Grouped } from '@/utils/GroupByUtil'
 import { List as ImmutableList } from 'immutable'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
 import { Entity } from '@/modules/database-driver/request-response/data/Entity'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
@@ -36,18 +42,30 @@ export class EvitaQLQueryExecutor extends QueryExecutor {
 
     async executeQuery(
         dataPointer: EntityViewerDataPointer,
-        query: string
+        query: string,
+        requiredData: EntityPropertyKey[]
     ): Promise<QueryResult> {
         const result: EvitaResponse = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
             session => session.query(query),
             true // we want to load fresh entity data every time
         )
+
+        const entitySchema: EntitySchema = await this.evitaClient.queryCatalog(
+            dataPointer.catalogName,
+            async session => await session.getEntitySchemaOrThrowException(dataPointer.entityType)
+        )
+        const referenceClassifications: Map<string, ReferenceClassification> = this.buildReferenceClassifications(
+            entitySchema,
+            requiredData,
+            attribute => attribute.name
+        )
+
         return {
             entities:
                 result
                     .recordPage
-                    .data.map((entity: Entity) => this.flattenEntity(entity)) ||
+                    .data.map((entity: Entity) => this.flattenEntity(entity, referenceClassifications)) ||
                 [],
             totalEntitiesCount:
                 result.recordPage.totalRecordCount || 0,
@@ -57,7 +75,7 @@ export class EvitaQLQueryExecutor extends QueryExecutor {
     /**
      * Converts original rich entity into simplified flat entity that is displayable in table
      */
-    private flattenEntity(entity: Entity): FlatEntity {
+    private flattenEntity(entity: Entity, referenceClassifications: Map<string, ReferenceClassification>): FlatEntity {
         const flattenedProperties: (WritableEntityProperty | undefined)[] = []
 
         flattenedProperties.push([
@@ -99,7 +117,7 @@ export class EvitaQLQueryExecutor extends QueryExecutor {
         flattenedProperties.push(...this.flattenAttributes(entity))
         flattenedProperties.push(...this.flattenAssociatedData(entity))
         flattenedProperties.push(this.flattenPrices(entity))
-        flattenedProperties.push(...this.flattenReferences(entity))
+        flattenedProperties.push(...this.flattenReferences(entity, referenceClassifications))
         return this.createFlatEntity(flattenedProperties)
     }
 
@@ -182,7 +200,7 @@ export class EvitaQLQueryExecutor extends QueryExecutor {
         }
     }
 
-    private flattenReferences(entity: Entity): WritableEntityProperty[] {
+    private flattenReferences(entity: Entity, referenceClassifications: Map<string, ReferenceClassification>): WritableEntityProperty[] {
         const flattenedReferences: WritableEntityProperty[] = []
 
         const references = entity.references;
@@ -194,82 +212,104 @@ export class EvitaQLQueryExecutor extends QueryExecutor {
                 if (referenceGroup == undefined) {
                     continue
                 }
+                const classification: ReferenceClassification | undefined = referenceClassifications.get(referenceName)
 
-                const representativeValues: EntityReferenceValue[] = referenceGroup.map((referenceOfName) =>
-                    this.resolveReferenceRepresentativeValue(referenceOfName)
-                )
+                const referenceValues: EntityReferenceValue[] = referenceGroup
+                    .map((referenceOfName) => this.buildReferenceValue(referenceOfName, classification))
 
+                // references column holds a single container with all references of this name
                 flattenedReferences.push([
                     EntityPropertyKey.references(referenceName),
-                    representativeValues
+                    new EntityReferences(referenceName, referenceValues)
                 ])
 
-                const mergedReferenceAttributesByName: Map<string, EntityReferenceValue[]> = referenceGroup
-                    .map((referenceOfName) => this.flattenAttributesForSingleReference(referenceOfName))
-                    .reduce((accumulator, referenceAttributes) => {
-                        referenceAttributes.forEach(([attributeName, attributeValue]) => {
-                            let attributes = accumulator.get(attributeName)
-                            if (!attributes) {
-                                attributes = []
-                                accumulator.set(attributeName, attributes)
+                // reference-attribute columns: one container per selected column, carrying the attribute value per reference
+                if (classification != undefined && classification.selectedColumnAttributeNames.size > 0) {
+                    const valuesByColumn: Map<string, EntityReferenceValue[]> = new Map<string, EntityReferenceValue[]>()
+                    referenceGroup.forEach((referenceOfName, index) => {
+                        const referenceValue: EntityReferenceValue = referenceValues[index]!
+                        referenceOfName.allAttributes.forEach(it => {
+                            if (!classification.selectedColumnAttributeNames.has(it.name)) {
+                                return
                             }
-                            attributes.push(attributeValue)
+                            const wrappedValue: NativeValue | NativeValue[] = this.wrapRawValueIntoNativeValue(it.value)
+                            const columnValue: EntityReferenceValue = new EntityReferenceValue(
+                                referenceValue.primaryKey,
+                                wrappedValue instanceof Array ? wrappedValue : [wrappedValue],
+                                referenceValue.representativeReferenceAttributes,
+                                referenceValue.targetRepresentativeAttributes,
+                                referenceValue.groupPrimaryKey
+                            )
+                            let values = valuesByColumn.get(it.name)
+                            if (values == undefined) {
+                                values = []
+                                valuesByColumn.set(it.name, values)
+                            }
+                            values.push(columnValue)
                         })
-                        return accumulator
-                    }, new Map<string, EntityReferenceValue[]>())
-
-                mergedReferenceAttributesByName.forEach((attributeValues, attributeName) => {
-                    flattenedReferences.push([
-                        EntityPropertyKey.referenceAttributes(referenceName, attributeName),
-                        attributeValues
-                    ])
-                })
+                    })
+                    valuesByColumn.forEach((values, attributeName) => {
+                        flattenedReferences.push([
+                            EntityPropertyKey.referenceAttributes(referenceName, attributeName),
+                            new EntityReferenceAttributes(referenceName, attributeName, values)
+                        ])
+                    })
+                }
             }
         }
+
+        // backfill empty containers for selected references (and their columns) the entity has none of, so the grid
+        // renders a "0 references" summary instead of a null cell
+        this.backfillEmptyReferenceContainers(flattenedReferences, referenceClassifications)
 
         return flattenedReferences;
     }
 
-    private resolveReferenceRepresentativeValue(
-        reference: Reference
+    /**
+     * Builds a single reference item carrying the target entity's representative attributes (both as the legacy flat
+     * list and as a named map) and the reference's own representative attributes as a named map for grouping/filtering.
+     */
+    private buildReferenceValue(
+        reference: Reference,
+        classification: ReferenceClassification | undefined
     ): EntityReferenceValue {
         const referencedPrimaryKey: number = reference.referencedPrimaryKey
-        const representativeAttributes: (EntityPropertyValue | EntityPropertyValue[])[] = []
 
+        const representativeAttributes: EntityPropertyValue[] = []
+        const targetRepresentativeAttributes: Map<string, EntityPropertyValue> = new Map<string, EntityPropertyValue>()
         if (reference.referencedEntity instanceof Entity) {
-            reference.referencedEntity.allAttributes
-                .forEach(it =>
-                    representativeAttributes.push(this.wrapRawValueIntoNativeValue(it.value)))
+            reference.referencedEntity.allAttributes.forEach(it => {
+                const wrappedValue: NativeValue | NativeValue[] = this.wrapRawValueIntoNativeValue(it.value)
+                if (wrappedValue instanceof Array) {
+                    representativeAttributes.push(...wrappedValue)
+                } else {
+                    representativeAttributes.push(wrappedValue)
+                }
+                targetRepresentativeAttributes.set(it.name, this.toSingleValue(wrappedValue))
+            })
         }
+
+        const representativeReferenceAttributes: Map<string, EntityPropertyValue> = new Map<string, EntityPropertyValue>()
+        if (classification != undefined && classification.representativeAttributeNames.size > 0) {
+            reference.allAttributes.forEach(it => {
+                if (classification.representativeAttributeNames.has(it.name)) {
+                    representativeReferenceAttributes.set(it.name, this.toSingleValue(this.wrapRawValueIntoNativeValue(it.value)))
+                }
+            })
+        }
+
+        const groupPrimaryKey: number | undefined =
+            classification?.referenceSchema.referencedGroupTypeManaged === true
+                ? reference.groupReferencedEntity?.primaryKey
+                : undefined
 
         return new EntityReferenceValue(
             referencedPrimaryKey ?? 0,
-            representativeAttributes.flat()
+            representativeAttributes,
+            representativeReferenceAttributes.size > 0 ? representativeReferenceAttributes : undefined,
+            targetRepresentativeAttributes.size > 0 ? targetRepresentativeAttributes : undefined,
+            groupPrimaryKey
         )
-    }
-
-    private flattenAttributesForSingleReference(
-        reference: Reference
-    ): [string, EntityReferenceValue][] {
-        const referencedPrimaryKey: number = reference.referencedPrimaryKey
-        const flattenedAttributes: [string, EntityReferenceValue][] = []
-
-        reference.allAttributes
-            .forEach(it => {
-                const wrappedValue: NativeValue | NativeValue[] =
-                    this.wrapRawValueIntoNativeValue(it.value)
-                flattenedAttributes.push([
-                    it.name,
-                    new EntityReferenceValue(
-                        referencedPrimaryKey,
-                        wrappedValue instanceof Array
-                            ? wrappedValue
-                            : [wrappedValue]
-                    )
-                ] as [string, EntityReferenceValue])
-            })
-
-        return flattenedAttributes
     }
 
 }

@@ -74,6 +74,12 @@ enum ResultTabType {
     Visualiser = 'visualiser'
 }
 
+/**
+ * Upper bound for the initial GraphQL schema introspection. On expiry the request is aborted and the tab
+ * switches to its error/retry state instead of showing the loading screen indefinitely.
+ */
+const schemaLoadTimeoutMs = 15_000
+
 const keymap: Keymap = useKeymap()
 const graphQLConsoleService: GraphQLConsoleService = useGraphQLConsoleService()
 const workspaceService: WorkspaceService = useWorkspaceService()
@@ -94,6 +100,9 @@ defineExpose<TabComponentExpose>({
             t(`graphQLConsole.instanceType.${props.params.dataPointer.instanceType}`)
         ))
         return new ConnectionSubjectPath(props.params.dataPointer.connection, pathItems)
+    },
+    retry(): void {
+        initialize()
     }
 })
 
@@ -113,9 +122,10 @@ const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
 
 const graphQLSchema = ref<GraphQLSchema>()
 const graphQLSchemaChangeCallbackId = graphQLConsoleService.registerGraphQLSchemaChangeCallback(
-    props.params.dataPointer.catalogName,
+    props.params.dataPointer,
     async () => await loadGraphQLSchema()
 )
+const reloadingSchema = ref<boolean>(false)
 
 const queryEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
 const queryCode = ref<string>(props.data.query ? props.data.query : t('graphQLConsole.placeholder.writeQuery', { catalogName: props.params.dataPointer.catalogName }))
@@ -171,10 +181,15 @@ watch(currentData, (data) => {
     emit('update:data', data)
 })
 
-async function loadGraphQLSchema(): Promise<void> {
-    const schema: GraphQLSchema = await graphQLConsoleService.getGraphQLSchema(props.params.dataPointer)
+async function loadGraphQLSchema(signal?: AbortSignal): Promise<void> {
+    const schema: GraphQLSchema = await graphQLConsoleService.getGraphQLSchema(props.params.dataPointer, signal)
+    graphQLSchema.value = schema
     queryLanguageExtension = graphql(schema)
     applyQueryLanguage()
+    // keep the schema viewer tab in sync when the schema is reloaded after it was already displayed
+    if (schemaEditorInitialized.value) {
+        schemaCode.value = printSchema(schema)
+    }
 }
 
 /**
@@ -190,8 +205,13 @@ function applyQueryLanguage(): void {
 // apply the already-loaded language once the editor view becomes available
 watch(queryEditorView, () => applyQueryLanguage())
 
-onBeforeMount(() => {
-    loadGraphQLSchema()
+/**
+ * Loads the GraphQL schema (bounded by a request timeout) and marks the tab ready. On any failure —
+ * including a timed-out/aborted introspection — reports the error to the tab framework so it can offer
+ * a retry, instead of leaving the tab stuck behind the loading screen. Reused by both mount and retry.
+ */
+function initialize(): void {
+    loadGraphQLSchema(AbortSignal.timeout(schemaLoadTimeoutMs))
         .then(() => {
             initialized.value = true
             emit('ready')
@@ -201,8 +221,24 @@ onBeforeMount(() => {
             }
         })
         .catch(error => {
-            toaster.error('Could get GraphQL Schema', error).then() // todo lho i18n
+            emit('error', asError(error))
         })
+}
+
+async function refreshGraphQLSchema(): Promise<void> {
+    reloadingSchema.value = true
+    try {
+        // invalidate the cached schema; the registered change callback performs the actual reload
+        await graphQLConsoleService.refreshGraphQLSchema(props.params.dataPointer)
+    } catch (error) {
+        await toaster.error(t('graphQLConsole.notification.failedToReloadSchema'), asError(error))
+    } finally {
+        reloadingSchema.value = false
+    }
+}
+
+onBeforeMount(() => {
+    initialize()
 })
 onMounted(() => {
     // register console specific keyboard shortcuts
@@ -237,7 +273,7 @@ onMounted(() => {
 })
 onUnmounted(() => {
     graphQLConsoleService.unregisterGraphQLSchemaChangeCallback(
-        props.params.dataPointer.catalogName,
+        props.params.dataPointer,
         graphQLSchemaChangeCallbackId
     )
 
@@ -327,6 +363,13 @@ function focusResultVisualiser(): void {
 <!--                        {{ t('graphQLConsole.button.instanceDetails') }}-->
 <!--                    </VTooltip>-->
 <!--                </VBtn>-->
+
+                <VBtn :loading="reloadingSchema" icon density="compact" @click="refreshGraphQLSchema()">
+                    <VIcon>mdi-refresh</VIcon>
+                    <VActionTooltip activator="parent">
+                        {{ t('graphQLConsole.button.reloadSchema') }}
+                    </VActionTooltip>
+                </VBtn>
 
                 <VExecuteQueryButton
                     :loading="loading"

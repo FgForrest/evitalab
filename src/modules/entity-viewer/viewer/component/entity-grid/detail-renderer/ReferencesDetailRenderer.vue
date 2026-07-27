@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
- * Special entity property value renderer for a reference-attribute column. Mirrors the references column detail:
- * references are grouped and filtered by their representative reference attribute values, but each item shows this
- * column's attribute value instead of the target entity's representative attributes.
+ * Special entity property value renderer for the references column. Shows a summary of the reference, a set of
+ * filters (one per representative reference attribute) and the references grouped by their representative reference
+ * attribute values. The whole filtered list, or a single reference, can be opened in a new grid.
  */
 
 import { computed, ref } from 'vue'
@@ -15,12 +15,10 @@ import {
     type ReferenceGroup
 } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
+import { EntityReferences } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferences'
 import {
     EntityReferenceValue
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceValue'
-import {
-    EntityReferenceAttributes
-} from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceAttributes'
 import {
     EntityViewerTabFactory,
     useEntityViewerTabFactory
@@ -28,18 +26,16 @@ import {
 import { EntityViewerTabData } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabData'
 import { QueryLanguage } from '@/modules/entity-viewer/viewer/model/QueryLanguage'
 import { Property } from '@/modules/base/model/properties-table/Property'
-import { PropertyValue } from '@/modules/base/model/properties-table/PropertyValue'
-import { KeywordValue } from '@/modules/base/model/properties-table/KeywordValue'
-import VPropertiesTable from '@/modules/base/component/VPropertiesTable.vue'
 import {
     buildReferenceSummaryProperties
 } from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/referenceSummary'
+import VPropertiesTable from '@/modules/base/component/VPropertiesTable.vue'
 import ReferenceGroupFilter
     from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/ReferenceGroupFilter.vue'
 import ReferenceGroupedList
     from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/ReferenceGroupedList.vue'
-import ReferenceAttributesDetailRendererItem
-    from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/ReferenceAttributesDetailRendererItem.vue'
+import ReferencesDetailRendererReferenceItem
+    from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/ReferencesDetailRendererReferenceItem.vue'
 import {
     useDataLocale,
     useEntityPropertyDescriptor,
@@ -48,8 +44,6 @@ import {
 } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
-import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
-import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const entityViewerService: EntityViewerService = useEntityViewerService()
@@ -67,34 +61,19 @@ const queryLanguage = useQueryLanguage()
 const dataLocale = useDataLocale()
 const propertyDescriptor = useEntityPropertyDescriptor()
 
-const parentReferenceSchema = computed<ReferenceSchema>(() => {
-    if (propertyDescriptor?.parentSchema == undefined || !(propertyDescriptor.parentSchema instanceof ReferenceSchema)) {
-        throw new UnexpectedError(`Parent schema is expected to be present and of type 'ReferenceSchema'.`)
-    }
-    return propertyDescriptor.parentSchema
-})
-const referenceAttributeSchema = computed<AttributeSchema>(() => {
-    if (propertyDescriptor?.schema == undefined || !(propertyDescriptor.schema instanceof AttributeSchema)) {
-        throw new UnexpectedError(`Schema is expected to be present and of type 'AttributeSchema'.`)
+const referenceSchema = computed<ReferenceSchema>(() => {
+    if (propertyDescriptor?.schema == undefined || !(propertyDescriptor.schema instanceof ReferenceSchema)) {
+        throw new UnexpectedError(`Schema is expected to be present and of type 'ReferenceSchema'.`)
     }
     return propertyDescriptor.schema
 })
 
 const references = computed<EntityReferenceValue[]>(() => {
-    if (!(props.value instanceof EntityReferenceAttributes)) {
-        console.error(t('entityViewer.grid.referenceAttributeRenderer.notification.invalidReferenceAttributesObject'))
+    if (!(props.value instanceof EntityReferences)) {
+        console.error(t('entityViewer.grid.referencesRenderer.notification.invalidReferencesObject'))
         return []
     }
-    return props.value.values
-})
-
-const rawAttributeDataType = computed<Scalar>(() => referenceAttributeSchema.value.type)
-const isArray = computed<boolean>(() => rawAttributeDataType.value?.endsWith('Array') || false)
-const attributeDataType = computed<Scalar>(() => {
-    if (isArray.value) {
-        return (rawAttributeDataType.value as string).replace('Array', '') as Scalar
-    }
-    return rawAttributeDataType.value
+    return props.value.references
 })
 
 const filterData = computed<ReferenceFilterData>(() => entityViewerService.collectReferenceFilterData(references.value))
@@ -105,36 +84,30 @@ const filteredReferences = computed<EntityReferenceValue[]>(() =>
     entityViewerService.filterReferences(references.value, selections.value))
 const groups = computed<ReferenceGroup[]>(() => entityViewerService.groupReferences(filteredReferences.value))
 
-const summaryProperties = computed<Property[]>(() => [
-    ...buildReferenceSummaryProperties(
-        t,
-        parentReferenceSchema.value,
-        references.value.length,
-        filteredReferences.value.length
-    ),
-    new Property(
-        t('entityViewer.grid.referenceDetail.label.attributeType'),
-        new PropertyValue(new KeywordValue(referenceAttributeSchema.value.type))
-    )
-])
+const summaryProperties = computed<Property[]>(() => buildReferenceSummaryProperties(
+    t,
+    referenceSchema.value,
+    references.value.length,
+    filteredReferences.value.length
+))
 
 function openFilteredReferences(): void {
     const primaryKeys: number[] = filteredReferences.value.map(reference => reference.primaryKey)
     if (primaryKeys.length === 0) {
         return
     }
-    openInNewGrid(parentReferenceSchema.value.entityType, primaryKeys)
+    openInNewGrid(referenceSchema.value.entityType, primaryKeys)
 }
 
 function openReference(primaryKey: number): void {
-    openInNewGrid(parentReferenceSchema.value.entityType, [primaryKey])
+    openInNewGrid(referenceSchema.value.entityType, [primaryKey])
 }
 
 function openGroup(groupPrimaryKey: number): void {
-    if (parentReferenceSchema.value.referencedGroupType == undefined) {
+    if (referenceSchema.value.referencedGroupType == undefined) {
         return
     }
-    openInNewGrid(parentReferenceSchema.value.referencedGroupType, [groupPrimaryKey])
+    openInNewGrid(referenceSchema.value.referencedGroupType, [groupPrimaryKey])
 }
 
 function openInNewGrid(entityType: string, primaryKeys: number[]): void {
@@ -153,11 +126,11 @@ function openInNewGrid(entityType: string, primaryKeys: number[]): void {
 </script>
 
 <template>
-    <div class="reference-attributes-renderer">
-        <div class="reference-attributes-renderer__toolbar">
-            <VPropertiesTable :properties="summaryProperties" class="reference-attributes-renderer__summary" />
+    <div class="references-renderer">
+        <div class="references-renderer__toolbar">
+            <VPropertiesTable :properties="summaryProperties" class="references-renderer__summary" />
             <VBtn
-                v-if="parentReferenceSchema.referencedEntityTypeManaged"
+                v-if="referenceSchema.referencedEntityTypeManaged"
                 icon
                 variant="text"
                 density="compact"
@@ -166,7 +139,7 @@ function openInNewGrid(entityType: string, primaryKeys: number[]): void {
             >
                 <VIcon>mdi-open-in-new</VIcon>
                 <VTooltip activator="parent">
-                    {{ t('entityViewer.grid.referenceAttributeRenderer.button.openFilteredReferences') }}
+                    {{ t('entityViewer.grid.referencesRenderer.button.openFilteredReferences') }}
                 </VTooltip>
             </VBtn>
         </div>
@@ -179,12 +152,11 @@ function openInNewGrid(entityType: string, primaryKeys: number[]): void {
 
         <ReferenceGroupedList :groups="groups">
             <template #item="{ item, index }">
-                <ReferenceAttributesDetailRendererItem
+                <ReferencesDetailRendererReferenceItem
                     :key="index"
                     :reference="item"
-                    :attribute-data-type="attributeDataType"
-                    :managed="parentReferenceSchema.referencedEntityTypeManaged"
-                    :group-managed="parentReferenceSchema.referencedGroupTypeManaged === true"
+                    :managed="referenceSchema.referencedEntityTypeManaged"
+                    :group-managed="referenceSchema.referencedGroupTypeManaged === true"
                     @open-entity="openReference"
                     @open-group="openGroup"
                 />
@@ -194,7 +166,7 @@ function openInNewGrid(entityType: string, primaryKeys: number[]): void {
 </template>
 
 <style lang="scss" scoped>
-.reference-attributes-renderer {
+.references-renderer {
     display: flex;
     flex-direction: column;
     gap: 1rem;

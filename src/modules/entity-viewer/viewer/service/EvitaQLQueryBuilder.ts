@@ -5,6 +5,9 @@ import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPr
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
+import {
+    ReferenceAttributeSchema
+} from '@/modules/database-driver/request-response/schema/ReferenceAttributeSchema'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
@@ -247,6 +250,12 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
                 .filter(it => it != undefined)
                 .map(it => it as string)
 
+            // representative attributes of the reference itself, fetched implicitly to allow grouping/filtering the
+            // references and reference-attribute details; unioned with the explicitly selected column attributes
+            const representativeReferenceAttributes: string[] = this.findRepresentativeReferenceAttributes(referenceSchema, dataLocale)
+                .map(attributeSchema => attributeSchema.name)
+            const ownAttributes: string[] = Array.from(new Set<string>([...requiredAttributes, ...representativeReferenceAttributes]))
+
             let requiredRepresentativeAttributes: string[] = []
             if (referenceSchema.referencedEntityTypeManaged) {
                 requiredRepresentativeAttributes = this.findRepresentativeAttributes(
@@ -260,12 +269,12 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
             }
 
             let referenceContentConstraintBuilder: string = 'referenceContent'
-            if (requiredAttributes.length > 0) {
+            if (ownAttributes.length > 0) {
                 referenceContentConstraintBuilder += `WithAttributes`
             }
             referenceContentConstraintBuilder += `("${referenceSchema.name}"`
-            if (requiredAttributes.length > 0) {
-                referenceContentConstraintBuilder += `,attributeContent(${requiredAttributes.map(it => `"${it}"`).join(',')})`
+            if (ownAttributes.length > 0) {
+                referenceContentConstraintBuilder += `,attributeContent(${ownAttributes.map(it => `"${it}"`).join(',')})`
             }
             if (requiredRepresentativeAttributes.length > 0) {
                 referenceContentConstraintBuilder += `,entityFetch(attributeContent(${requiredRepresentativeAttributes.map(it => `"${it}"`).join(',')}))`
@@ -274,6 +283,17 @@ export class EvitaQLQueryBuilder implements QueryBuilder {
 
             entityFetchRequires.push(referenceContentConstraintBuilder)
         }
+    }
+
+    private findRepresentativeReferenceAttributes(referenceSchema: ReferenceSchema, dataLocale: string | undefined): AttributeSchema[] {
+        return Array.from(referenceSchema.attributes.values())
+            .filter(attributeSchema => attributeSchema instanceof ReferenceAttributeSchema && attributeSchema.representative)
+            .filter(attributeSchema => {
+                if (!dataLocale) {
+                    return !attributeSchema.localized
+                }
+                return true
+            })
     }
 
     private findRepresentativeAttributes(entitySchema: EntitySchema, dataLocale: string | undefined): AttributeSchema[] {

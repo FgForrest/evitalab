@@ -3,6 +3,15 @@
     "name": "evitaLab"
   },
   "common": {
+    "cardinality": {
+      "exactlyOne": "1:1",
+      "oneOrMore": "1:1…*",
+      "zeroOrOne": "1:0…1",
+      "zeroOrMore": "1:0…*",
+      "zeroOrMoreWithDuplicates": "1:0…*",
+      "oneOrMoreWithDuplicates": "1:1…*",
+      "notSpecified": "N/A"
+    },
     "placeholder": {
       "empty": "<empty>",
       "emptyArray": "<empty array>",
@@ -31,6 +40,7 @@
       "switch": "Switch",
       "accept": "Accept",
       "reload": "Reload",
+      "tryAgain": "Try again",
       "duplicate": "Duplicate",
       "makeCatalogImmutable": "Make catalog immutable",
       "makeCatalogMutable": "Make catalog mutable",
@@ -177,7 +187,8 @@
       "tabActions": "Tab actions"
     },
     "placeholder": {
-      "loading": "Loading, please wait ..."
+      "loading": "Loading, please wait ...",
+      "loadingFailed": "Failed to load the tab."
     }
   },
   "tabShare": {
@@ -800,9 +811,38 @@
           }
         }
       },
+      "referenceDetail": {
+        "label": {
+          "referencedType": "Referenced type",
+          "referencedGroup": "Referenced group",
+          "cardinality": "Cardinality",
+          "count": "References",
+          "attributeType": "Attribute type"
+        },
+        "value": {
+          "countFiltered": "{total} ({filtered} after filtering)"
+        }
+      },
+      "referencesRenderer": {
+        "button": {
+          "openFilteredReferences": "Open filtered references",
+          "openReference": "Open reference",
+          "openReferencedEntity": "Open referenced entity",
+          "openReferencedGroup": "Open referenced group"
+        },
+        "notification": {
+          "invalidReferencesObject": "Invalid references object!"
+        }
+      },
       "referenceAttributeRenderer": {
         "button": {
-          "openReference": "Open reference in new tab"
+          "openFilteredReferences": "Open filtered references in new tab",
+          "openReference": "Open reference in new tab",
+          "openReferencedEntity": "Open referenced entity in new tab",
+          "openReferencedGroup": "Open referenced group in new tab"
+        },
+        "notification": {
+          "invalidReferenceAttributesObject": "Invalid reference attributes object!"
         }
       }
     }
@@ -836,10 +876,12 @@
       "results": "Results will be displayed here..."
     },
     "button": {
-      "instanceDetails": "GraphQL API instance details"
+      "instanceDetails": "GraphQL API instance details",
+      "reloadSchema": "Reload GraphQL schema"
     },
     "notification": {
-      "failedToSaveQueryToHistory": "Failed to save query to history."
+      "failedToSaveQueryToHistory": "Failed to save query to history.",
+      "failedToReloadSchema": "Failed to reload GraphQL schema."
     }
   },
   "historyComponent": {
@@ -2174,12 +2216,6 @@
   },
   "relationViewer": {
     "title": "Relation",
-    "cardinality": {
-      "exactlyOne": "1:1",
-      "oneOrMore": "1:1…*",
-      "zeroOrOne": "1:0…1",
-      "zeroOrMore": "1:0…*"
-    },
     "managedByEvita": "This entity is managed by evitaDB.",
     "managedExternal": "This entity is managed externally.",
     "cardinalityWithDuplicates": "Allows multiple relations with an identical referenced entity primary key. This may be necessary in cases where the distinguishing factor is a reference attribute value."

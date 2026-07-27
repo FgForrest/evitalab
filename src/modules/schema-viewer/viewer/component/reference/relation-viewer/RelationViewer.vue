@@ -80,7 +80,7 @@ function openTo(): void {
                 <div>
                     <VIcon class="icon" :icon="icon" />
                     <VTooltip activator="parent">
-                        {{ t(`relationViewer.cardinality.${schema.cardinality}`) }}
+                        {{ t(`common.cardinality.${schema.cardinality}`) }}
                     </VTooltip>
                 </div>
                 <VChip @click="schema.referencedEntityTypeManaged ? openTo() : null"
