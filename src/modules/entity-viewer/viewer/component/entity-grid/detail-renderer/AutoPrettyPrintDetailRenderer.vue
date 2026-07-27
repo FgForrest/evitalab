@@ -18,6 +18,8 @@ import MarkdownDetailRenderer
     from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/MarkdownDetailRenderer.vue'
 import PricesDetailRenderer
     from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/PricesDetailRenderer.vue'
+import ReferencesDetailRenderer
+    from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/ReferencesDetailRenderer.vue'
 import ReferenceAttributesDetailRenderer
     from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/ReferenceAttributesDetailRenderer.vue'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
@@ -38,6 +40,7 @@ enum RendererType {
     Code = 'code',
     Html = 'html',
     Price = 'price',
+    Reference = 'reference',
     ReferenceAttribute = 'referenceAttribute'
 }
 type ResolvedRenderer = {
@@ -114,6 +117,12 @@ const valueToRender = computed<ValueToRender>(() => {
                 }
                 valueToRender.value = props.value
                 break
+            case ExtraEntityObjectType.References:
+                valueToRender.renderer = {
+                    type: RendererType.Reference
+                }
+                valueToRender.value = props.value
+                break
             case ExtraEntityObjectType.ReferenceAttributes:
                 valueToRender.renderer = {
                     type: RendererType.ReferenceAttribute
@@ -159,6 +168,10 @@ function hasHtmlTag(s: string): boolean {
     />
     <PricesDetailRenderer
         v-else-if="valueToRender.renderer.type === RendererType.Price"
+        :value="valueToRender.value"
+    />
+    <ReferencesDetailRenderer
+        v-else-if="valueToRender.renderer.type === RendererType.Reference"
         :value="valueToRender.value"
     />
     <ReferenceAttributesDetailRenderer

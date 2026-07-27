@@ -2,6 +2,7 @@ import { describe, test, expect } from 'vitest'
 import { List, Map } from 'immutable'
 import { AttributeSchema, AttributeSchemaFlag } from '../../../../../src/modules/database-driver/request-response/schema/AttributeSchema'
 import { EntityAttributeSchema, EntityAttributeSchemaFlag } from '../../../../../src/modules/database-driver/request-response/schema/EntityAttributeSchema'
+import { ReferenceAttributeSchema, ReferenceAttributeSchemaFlag } from '../../../../../src/modules/database-driver/request-response/schema/ReferenceAttributeSchema'
 import { GlobalAttributeSchema, GlobalAttributeSchemaFlag } from '../../../../../src/modules/database-driver/request-response/schema/GlobalAttributeSchema'
 import { NamingConvention } from '../../../../../src/modules/database-driver/request-response/NamingConvetion'
 import { Scalar } from '../../../../../src/modules/database-driver/data-type/Scalar'
@@ -76,6 +77,32 @@ describe('EntityAttributeSchema.representativeFlags', () => {
         expect(sortable.icons).toEqual([EntityScope.Live])
         // guard against the double-mapping regression that stored 'mdi-*' strings
         expect(sortable.icons.every(i => !i.startsWith('mdi-'))).toBe(true)
+    })
+})
+
+describe('ReferenceAttributeSchema.representativeFlags', () => {
+    test('exposes the representative flag when the reference attribute is representative', () => {
+        const schema = new ReferenceAttributeSchema(
+            'a', nameVariants, undefined, undefined, Scalar.String, false, undefined, false, 0,
+            true,
+            List([EntityScope.Live]),
+            List([EntityScope.Live]),
+            List()
+        )
+        const names = flagNames(schema.representativeFlags)
+        expect(names).toContain(ReferenceAttributeSchemaFlag.Representative)
+        expect(names).toContain(AttributeSchemaFlag.Sortable)
+        expect(names).toContain(AttributeSchemaFlag.Filterable)
+    })
+
+    test('omits the representative flag when the reference attribute is not representative', () => {
+        const schema = new ReferenceAttributeSchema(
+            'a', nameVariants, undefined, undefined, Scalar.String, false, undefined, false, 0,
+            false,
+            List(), List(), List()
+        )
+        const names = flagNames(schema.representativeFlags)
+        expect(names).not.toContain(ReferenceAttributeSchemaFlag.Representative)
     })
 })
 
@@ -160,7 +187,7 @@ describe('implicit filterable due to uniqueness (restored pre-#233 rule)', () =>
 describe('CatalogSchemaConverter.convertAttributeSchema class mapping', () => {
     const converter = new CatalogSchemaConverter()
 
-    function grpcAttribute(schemaType: GrpcAttributeSchemaType): GrpcAttributeSchema {
+    function grpcAttribute(schemaType: GrpcAttributeSchemaType, representative: boolean = false): GrpcAttributeSchema {
         return {
             name: 'a',
             schemaType,
@@ -172,7 +199,7 @@ describe('CatalogSchemaConverter.convertAttributeSchema class mapping', () => {
             defaultValue: undefined,
             localized: false,
             indexedDecimalPlaces: 0,
-            representative: false,
+            representative,
             sortableInScopes: [],
             filterableInScopes: [],
             uniqueInScopes: [],
@@ -180,10 +207,10 @@ describe('CatalogSchemaConverter.convertAttributeSchema class mapping', () => {
         } as unknown as GrpcAttributeSchema
     }
 
-    function convert(schemaType: GrpcAttributeSchemaType): AttributeSchema {
+    function convert(schemaType: GrpcAttributeSchemaType, representative: boolean = false): AttributeSchema {
         return (converter as unknown as {
             convertAttributeSchema(attribute: GrpcAttributeSchema): AttributeSchema
-        }).convertAttributeSchema(grpcAttribute(schemaType))
+        }).convertAttributeSchema(grpcAttribute(schemaType, representative))
     }
 
     test('ENTITY_SCHEMA maps to EntityAttributeSchema', () => {
@@ -192,10 +219,15 @@ describe('CatalogSchemaConverter.convertAttributeSchema class mapping', () => {
         expect(result).not.toBeInstanceOf(GlobalAttributeSchema)
     })
 
-    test('REFERENCE_SCHEMA maps to plain AttributeSchema', () => {
+    test('REFERENCE_SCHEMA maps to ReferenceAttributeSchema', () => {
         const result = convert(GrpcAttributeSchemaType.REFERENCE_SCHEMA)
-        expect(result).toBeInstanceOf(AttributeSchema)
+        expect(result).toBeInstanceOf(ReferenceAttributeSchema)
         expect(result).not.toBeInstanceOf(EntityAttributeSchema)
+    })
+
+    test('REFERENCE_SCHEMA propagates the representative flag', () => {
+        expect((convert(GrpcAttributeSchemaType.REFERENCE_SCHEMA, true) as ReferenceAttributeSchema).representative).toBe(true)
+        expect((convert(GrpcAttributeSchemaType.REFERENCE_SCHEMA, false) as ReferenceAttributeSchema).representative).toBe(false)
     })
 
     test('GLOBAL_SCHEMA maps to GlobalAttributeSchema', () => {
