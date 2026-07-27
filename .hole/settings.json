@@ -10,7 +10,10 @@
   "files": {
     "include": {
       "$HOME/www/oss/evita/evitaDB/data": "/evita-data"
-    }
+    },
+    "exclude": [
+      "node_modules"
+    ]
   },
   "network": {
     "domainWhitelist": [

@@ -4,6 +4,9 @@ import { useI18n } from 'vue-i18n'
 import { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer'
 import { GlobalAttributeSchema } from '@/modules/database-driver/request-response/schema/GlobalAttributeSchema'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
+import {
+    ReferenceAttributeSchema
+} from '@/modules/database-driver/request-response/schema/ReferenceAttributeSchema'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { Property } from '@/modules/base/model/properties-table/Property'
 import { PropertyValue } from '@/modules/base/model/properties-table/PropertyValue'
@@ -29,6 +32,7 @@ const keys = ref<string[]>([getEnumKeyByValue(EntityScope, EntityScope.Live), ge
 
 const globalAttribute = props.schema instanceof GlobalAttributeSchema
 const entityAttribute = props.schema instanceof EntityAttributeSchema
+const referenceAttribute = props.schema instanceof ReferenceAttributeSchema
 
 const properties = computed<Property[]>(() => {
     const properties: Property[] = []
@@ -37,6 +41,7 @@ const properties = computed<Property[]>(() => {
     properties.push(new Property(t('schemaViewer.attribute.label.description'), new PropertyValue(props.schema.description)))
     properties.push(new Property(t('schemaViewer.attribute.label.deprecationNotice'), new PropertyValue(props.schema.deprecationNotice)))
     if (entityAttribute) properties.push(new Property(t('schemaViewer.attribute.label.representative'), new PropertyValue((props.schema as EntityAttributeSchema).representative)))
+    if (referenceAttribute) properties.push(new Property(t('schemaViewer.attribute.label.representative'), new PropertyValue((props.schema as ReferenceAttributeSchema).representative)))
     properties.push(new Property(t('schemaViewer.attribute.label.sortable'), List(keys.value.map(x => new PropertyValue(new MultiValueFlagValue(
         props.schema.sortableInScopes.some(y => getEnumKeyByValue(EntityScope, y) === x), t(`schemaViewer.attribute.label.${x.toLowerCase()}`),
         props.schema.sortableInScopes.some(q => getEnumKeyByValue(EntityScope, q) === x) ? t('schemaViewer.attribute.tooltip.content', [

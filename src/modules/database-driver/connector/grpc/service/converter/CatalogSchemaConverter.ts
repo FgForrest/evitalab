@@ -14,6 +14,9 @@ import {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
+import {
+    ReferenceAttributeSchema
+} from '@/modules/database-driver/request-response/schema/ReferenceAttributeSchema'
 import { EvolutionMode } from '@/modules/database-driver/request-response/schema/EvolutionMode'
 import type {
     GrpcAssociatedDataSchema,
@@ -135,7 +138,7 @@ export class CatalogSchemaConverter {
                 ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes)
             )
         } else if (attribute.schemaType === GrpcAttributeSchemaType.REFERENCE_SCHEMA) {
-            return new AttributeSchema(
+            return new ReferenceAttributeSchema(
                 attribute.name,
                 nameVariants,
                 attribute.description ?? undefined,
@@ -148,6 +151,7 @@ export class CatalogSchemaConverter {
                 ),
                 attribute.localized,
                 attribute.indexedDecimalPlaces,
+                attribute.representative,
                 ScopesConverter.convertEntityScopes(attribute.sortableInScopes),
                 ScopesConverter.convertEntityScopes(attribute.filterableInScopes),
                 ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes)

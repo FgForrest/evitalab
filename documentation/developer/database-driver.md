@@ -117,8 +117,14 @@ gRPC `GrpcAttributeSchemaType` discriminator — the mapping must stay in sync w
 | `GrpcAttributeSchemaType` | Internal class | Has `representative` |
 |---|---|---|
 | `ENTITY_SCHEMA` | `EntityAttributeSchema` | yes |
-| `REFERENCE_SCHEMA` | `AttributeSchema` (base) | no |
+| `REFERENCE_SCHEMA` | `ReferenceAttributeSchema` | yes |
 | `GLOBAL_SCHEMA` | `GlobalAttributeSchema` | yes (+ global uniqueness) |
+
+`ReferenceAttributeSchema` mirrors `EntityAttributeSchema`: it carries the `representative` flag (delivered
+by gRPC but previously dropped when reference attributes were built as the plain base `AttributeSchema`) and
+contributes the representative badge through the `prefixFlags()` hook. The flag drives grouping/filtering of
+references in the entity-viewer detail. Older servers that don't send the flag report `representative = false`,
+so those details fall back to a flat, unfiltered list.
 
 ## Caching & change callbacks
 
