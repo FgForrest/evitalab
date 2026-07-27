@@ -8,7 +8,7 @@ import EndRecordingDialog from '@/modules/traffic-viewer/components/EndRecording
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     trafficRecorderTask: TaskStatus
 }>()
 const emit = defineEmits<{

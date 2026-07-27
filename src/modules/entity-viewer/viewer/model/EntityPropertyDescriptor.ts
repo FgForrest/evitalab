@@ -23,8 +23,8 @@ export class EntityPropertyDescriptor {
                 key: EntityPropertyKey,
                 title: string,
                 flattenedTitle: string,
-                parentSchema: any | undefined,
-                schema: any | undefined,
+                parentSchema: Schema | undefined,
+                schema: Schema | undefined,
                 children: ImmutableList<EntityPropertyDescriptor>) {
         this.type = type
         this.key = key

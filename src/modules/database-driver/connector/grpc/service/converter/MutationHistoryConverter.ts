@@ -71,14 +71,12 @@ export class MutationHistoryConverter {
 
     }
 
-    // todo : fix me
-    toContainerType(input: GrpcChangeCaptureContainerType[]): GrpcChangeCaptureContainerType[] {
-        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureContainerType[it as any] : it)
+    toContainerType(input: (GrpcChangeCaptureContainerType | string)[]): GrpcChangeCaptureContainerType[] {
+        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureContainerType[it as keyof typeof GrpcChangeCaptureContainerType] : it)
     }
 
-    // todo : fix me
-    toMutationType(input: GrpcChangeCaptureOperation[]): number[] {
-        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureOperation[it as any] : it)
+    toMutationType(input: (GrpcChangeCaptureOperation | string)[]): GrpcChangeCaptureOperation[] {
+        return input.map(it => typeof it === 'string' ? GrpcChangeCaptureOperation[it as keyof typeof GrpcChangeCaptureOperation] : it)
     }
 
     convertMutationHistoryRequest(mutationHistoryRequest: MutationHistoryRequest): GrpcChangeCaptureCriteria[] {
@@ -86,30 +84,30 @@ export class MutationHistoryConverter {
 
 
 
-        const dataSite: GrpcChangeCaptureCriteria = {
+        const dataSite = {
             area: GrpcChangeCaptureArea.DATA,
             site: {
                 value: {
                     entityType: mutationHistoryRequest.entityType,
                     entityPrimaryKey: mutationHistoryRequest.entityPrimaryKey,
-                    containerType: this.toContainerType(mutationHistoryRequest.containerTypeList) as number[],
+                    containerType: this.toContainerType(mutationHistoryRequest.containerTypeList),
                     operation: this.toMutationType(mutationHistoryRequest.operationList),
                     containerName: [...mutationHistoryRequest.containerNameList]
                 },
                 case: 'dataSite'
             }
-        }
-        const schemaSite: GrpcChangeCaptureCriteria = {
+        } as GrpcChangeCaptureCriteria
+        const schemaSite = {
             area: GrpcChangeCaptureArea.SCHEMA,
             site: {
                 value: {
                     entityType: mutationHistoryRequest.entityType,
-                    containerType: this.toContainerType(mutationHistoryRequest.containerTypeList) as number[],
+                    containerType: this.toContainerType(mutationHistoryRequest.containerTypeList),
                     operation: mutationHistoryRequest.operationList
                 },
                 case: 'schemaSite'
             }
-        }
+        } as GrpcChangeCaptureCriteria
 
 
         if (mutationHistoryRequest.infrastructureAreaType === 'DATA_SITE') {

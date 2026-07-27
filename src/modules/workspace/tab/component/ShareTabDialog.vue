@@ -9,16 +9,18 @@ import { useI18n } from 'vue-i18n'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
-import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
-import type { TabData } from '@/modules/workspace/tab/model/TabData'
+import type { AnyTabParams } from '@/modules/workspace/tab/model/TabParams'
+import type { AnyTabData } from '@/modules/workspace/tab/model/TabData'
 import { ShareTabObject } from '@/modules/workspace/tab/model/ShareTabObject'
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
 import VRejectDialogButton from '@/modules/base/component/VRejectDialogButton.vue'
 import VConfirmDialogButton from '@/modules/base/component/VConfirmDialogButton.vue'
+import VAlternativeActionDialogButton from '@/modules/base/component/VAlternativeActionDialogButton.vue'
 import { EvitaLabConfig, useEvitaLabConfig } from '@/modules/config/EvitaLabConfig'
 import { LabRunMode } from '@/LabRunMode'
 import { ConnectionService, useConnectionService } from '@/modules/connection/service/ConnectionService'
 import { Connection } from '@/modules/connection/model/Connection'
+import { copyToClipboard } from '@/utils/clipboard'
 
 /**
  * Smallest possible number of characters in a URL valid across all browser. Usually browser support more characters.
@@ -33,8 +35,8 @@ const { t } = useI18n()
 const props = defineProps<{
     modelValue: boolean,
     tabType: TabType,
-    tabParams: TabParams<any>,
-    tabData: TabData<any> | undefined
+    tabParams: AnyTabParams,
+    tabData: AnyTabData | undefined
 }>()
 
 const emit = defineEmits<{
@@ -53,18 +55,29 @@ const evitaLabInstance = computed<string>(() => {
         return location.origin + location.pathname
     }
 })
-const link = computed<string>(() => {
-    const shareTabObject: ShareTabObject = new ShareTabObject(props.tabType, props.tabParams.toSerializable(), props.tabData?.toSerializable())
-    return `${evitaLabInstance.value}?sharedTab=${shareTabObject.toLinkParam()}`
-})
+const shareTabObject = computed<ShareTabObject>(() =>
+    new ShareTabObject(props.tabType, props.tabParams.toSerializable(), props.tabData?.toSerializable()))
+const hash = computed<string>(() => shareTabObject.value.toLinkParam())
+const link = computed<string>(() => `${evitaLabInstance.value}?sharedTab=${hash.value}`)
+const linkTooLong = computed<boolean>(() => link.value.length > urlCharacterLimit)
 
 function cancel(): void {
     emit('update:modelValue', false)
 }
 
 function copyLink(): void {
-    navigator.clipboard.writeText(link.value).then(() => {
+    copyToClipboard(link.value).then(() => {
         toaster.info(t('tabShare.shareDialog.notification.linkCopied')).then()
+    }).catch(() => {
+        toaster.error(t('common.notification.failedToCopyToClipboard')).then()
+    })
+
+    emit('update:modelValue', false)
+}
+
+function copyHash(): void {
+    copyToClipboard(hash.value).then(() => {
+        toaster.info(t('tabShare.shareDialog.notification.hashCopied')).then()
     }).catch(() => {
         toaster.error(t('common.notification.failedToCopyToClipboard')).then()
     })
@@ -89,7 +102,7 @@ function copyLink(): void {
         </template>
 
         <template #default>
-            <div>{{ t('tabShare.shareDialog.text') }}</div>
+            <div v-html="t('tabShare.shareDialog.text')" />
 
             <VAlert
                 v-if="tabData != undefined"
@@ -100,22 +113,30 @@ function copyLink(): void {
                 <span v-html="t('tabShare.shareDialog.warning.sensitiveData')" />
             </VAlert>
             <VAlert
-                v-if="link.length > urlCharacterLimit"
+                v-if="linkTooLong"
                 type="warning"
                 icon="mdi-alert-outline"
                 class="mt-4"
             >
-                <span v-html="t('tabShare.shareDialog.warning.linkMayNotWork', { urlCharacterLimit })" />
+                <span v-html="t('tabShare.shareDialog.warning.linkTooLong', { urlCharacterLimit })" />
             </VAlert>
         </template>
 
+        <template #alternative-action-button>
+            <VAlternativeActionDialogButton v-if="!linkTooLong" icon="mdi-pound" @click="copyHash">
+                {{ t('tabShare.shareDialog.button.copyHash') }}
+            </VAlternativeActionDialogButton>
+        </template>
         <template #reject-button>
             <VRejectDialogButton @reject="cancel">
                 {{ t('common.button.cancel') }}
             </VRejectDialogButton>
         </template>
         <template #confirm-button>
-            <VConfirmDialogButton icon="mdi-content-copy" @confirm="copyLink">
+            <VConfirmDialogButton v-if="linkTooLong" icon="mdi-pound" @confirm="copyHash">
+                {{ t('tabShare.shareDialog.button.copyHash') }}
+            </VConfirmDialogButton>
+            <VConfirmDialogButton v-else icon="mdi-content-copy" @confirm="copyLink">
                 {{ t('tabShare.shareDialog.button.copyLink') }}
             </VConfirmDialogButton>
         </template>

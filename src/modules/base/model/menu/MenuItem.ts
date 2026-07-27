@@ -1,4 +1,4 @@
-export interface MenuItem<AT> {
+export interface MenuItem<_AT> {
     readonly title: string
 
 }

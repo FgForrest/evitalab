@@ -1,4 +1,5 @@
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { LocalDateTime } from '@/modules/database-driver/data-type/LocalDateTime'
 import { Range } from '@/modules/database-driver/data-type/Range'
@@ -30,7 +31,7 @@ type supportedValueType =
     | Locale
     | Currency
     | undefined
-    | Range<any>
+    | Range<unknown>
 export class NativeValue extends EntityPropertyValue {
     readonly delegate: supportedValueType
 
@@ -47,7 +48,7 @@ export class NativeValue extends EntityPropertyValue {
         return this.delegate == undefined
     }
 
-    toPrettyPrintString(): string {
+    override toPrettyPrintString(): string {
         if(typeof this.delegate === 'bigint' || typeof this.delegate === 'boolean' || typeof this.delegate === 'number' || typeof this.delegate === 'string' || typeof this.delegate === 'symbol' || typeof this.delegate === 'undefined')
             return this.delegate?.toString() ?? ''
         if (this.isPrettyPrintable(this.delegate)) {
@@ -86,11 +87,11 @@ export class NativeValue extends EntityPropertyValue {
         return this.toPreviewString()
     }
 
-    toRawRepresentation(): any {
+    toRawRepresentation(): EvitaValue {
         return this.delegate
     }
 
-    isPrettyPrintable(obj: any): obj is PrettyPrintable {
-        return 'getPrettyPrintableString' in obj
+    isPrettyPrintable(obj: unknown): obj is PrettyPrintable {
+        return obj != null && typeof obj === 'object' && 'getPrettyPrintableString' in obj
     }
 }

@@ -27,6 +27,15 @@ By default, the development version of evitaLab starts with a connection to the 
 in the `.env.local` file by modifying the `VITE_DEV_CONNECTION` variable. Right now the following values are supported:
 
 - `DEMO` - connects to the evitaDB Demo server
-- `LOCAL` - connects to a local evitaDB server running on the default port 5555
+- `LOCAL` - connects to a local evitaDB server running on the default port 5555 (override the URL with `VITE_DEV_LOCAL_URL`)
+
+To spin up a local Dockerized evitaDB (matching the `dev` integration branch via the `canary` tag by default) and run vite against it in one step:
+
+```shell
+yarn dev:with-evitadb
+```
+
+Additional container management scripts (`yarn evitadb:start`, `evitadb:stop`, `evitadb:status`, `evitadb:logs`) and the
+underlying `scripts/evitadb-server.sh` are documented in [evitaDB server](evitadb-server.md).
 
 To build the production version of evitaLab, check out the [building from source section](building-from-source.md).

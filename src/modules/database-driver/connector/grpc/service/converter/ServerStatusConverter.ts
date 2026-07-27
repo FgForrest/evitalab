@@ -70,10 +70,10 @@ export class ServerStatusConverter {
 
     private convertApis(grpcApis: { [key: string]: GrpcApiStatus }): ImmutableMap<ApiType, ApiStatus> {
         const apis: Map<ApiType, ApiStatus> = new Map<ApiType, ApiStatus>()
-        for (const grpcApiType in grpcApis) {
+        for (const [grpcApiType, grpcApiStatus] of Object.entries(grpcApis)) {
             apis.set(
                 this.convertApiType(grpcApiType),
-                this.convertApiStatus(grpcApis[grpcApiType])
+                this.convertApiStatus(grpcApiStatus)
             )
         }
         return ImmutableMap(apis)

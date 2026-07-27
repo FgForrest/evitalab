@@ -5,7 +5,7 @@ import type { EvitaQLConsoleHistoryRecord } from '../evitaql-console/console/his
 const { t } = useI18n()
 
 const props = defineProps<{
-    items: any[],
+    items: { key: string, preview: string[], value: GraphQLConsoleHistoryRecord | EvitaQLConsoleHistoryRecord }[],
 }>()
 
 const emit = defineEmits<{
@@ -13,14 +13,13 @@ const emit = defineEmits<{
     (e: 'update:clearHistory'): void
 }>()
 
-const historyListRef = ref<HTMLElement | undefined>()
+const historyListRef = ref<ComponentPublicInstance | undefined>()
 
 /**
  * Focuses the first item in the history list.
  */
 function focus() {
-    // @ts-ignore
-    let firstItem = historyListRef.value?.$el?.querySelector('.v-list-item');
+    const firstItem = historyListRef.value?.$el?.querySelector('.v-list-item');
     if (firstItem) {
         firstItem.focus();
     }

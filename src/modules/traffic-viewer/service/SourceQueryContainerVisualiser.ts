@@ -47,7 +47,7 @@ export class SourceQueryContainerVisualiser extends TrafficRecordVisualiser<Sour
         return trafficRecord instanceof SourceQueryContainer
     }
 
-    prepare(ctx: TrafficRecordPreparationContext, trafficRecord: SourceQueryContainer): void {
+    override prepare(ctx: TrafficRecordPreparationContext, trafficRecord: SourceQueryContainer): void {
         ctx.sourceQueryRecordVisited(trafficRecord.sourceQueryId.toString())
     }
 
@@ -145,7 +145,7 @@ export class SourceQueryContainerVisualiser extends TrafficRecordVisualiser<Sour
 
         let queryActionCallback: (() => void) | undefined = undefined
         if (queryType === QueryType.GraphQL) {
-            const sourceQuery: { query: string, variables: any, extensions: any } = JSON.parse(trafficRecord.sourceQuery)
+            const sourceQuery: { query: string, variables: Record<string, unknown>, extensions: unknown } = JSON.parse(trafficRecord.sourceQuery)
             queryActionCallback = () => this.workspaceService.createTab(
                 this.graphQLConsoleTabFactory.createNew(
                     ctx.catalogName,

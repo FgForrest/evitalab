@@ -1,5 +1,4 @@
 import { Range } from "./Range";
-import type { PrettyPrintable } from "./PrettyPrintable";
 
 /**
  * Specialized {@link Range} for {@link bigint}.
@@ -10,7 +9,7 @@ export class BigintNumberRange extends Range<bigint> {
         super(from, to)
     }
 
-    protected assertValidity(from?: bigint, to?: bigint): void {
+    protected override assertValidity(from?: bigint, to?: bigint): void {
         super.assertValidity(from, to)
         if (from != undefined && to != undefined && from > to) {
             throw new Error(`Invalid range: from (${from}) cannot be greater than to (${to})`);

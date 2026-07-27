@@ -5,11 +5,11 @@ import VPreviewEditorDialog from '@/modules/code-editor/component/VPreviewEditor
 
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     modelValue: boolean,
     exception: string
 }>()
-const emit = defineEmits<{
+defineEmits<{
     (e: 'update:modelValue', value: boolean): void
 }>()
 </script>

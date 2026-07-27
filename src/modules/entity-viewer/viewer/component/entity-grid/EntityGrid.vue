@@ -23,7 +23,12 @@ import {
 } from '@/modules/entity-viewer/viewer/workspace/service/EntityViewerTabFactory'
 import { EntityViewerTabData } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabData'
 import { EntityReferenceValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceValue'
+import { EntityReferences } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferences'
+import {
+    EntityReferenceAttributes
+} from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceAttributes'
 import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue'
+import type { GridHeader } from '@/modules/entity-viewer/viewer/model/GridHeader'
 import EntityGridColumnHeader from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridColumnHeader.vue'
 import EntityGridCell from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridCell.vue'
 import EntityGridCellDetail from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridCellDetail.vue'
@@ -34,7 +39,6 @@ import {
     useTabProps
 } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
-import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import type { Predecessor } from '@/modules/database-driver/data-type/Predecessor.ts'
 
@@ -44,10 +48,10 @@ const entityViewerTabFactory: EntityViewerTabFactory = useEntityViewerTabFactory
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const pageSizeOptions: any[] = [10, 25, 50, 100, 250, 500, 1000].map(it => ({ title: it.toString(10), value: it }))
+const pageSizeOptions: { title: string; value: number }[] = [10, 25, 50, 100, 250, 500, 1000].map(it => ({ title: it.toString(10), value: it }))
 
 const props = defineProps<{
-    displayedGridHeaders: any[],
+    displayedGridHeaders: GridHeader[],
     loading: boolean,
     resultEntities: FlatEntity[],
     totalResultCount: number,
@@ -55,7 +59,7 @@ const props = defineProps<{
     pageSize: number
 }>()
 const emit = defineEmits<{
-    (e: 'gridUpdated', value: { page: number, itemsPerPage: number, sortBy: any[] }): void
+    (e: "gridUpdated", value: { page: number, itemsPerPage: number, sortBy: { key: string, order?: "asc" | "desc" }[] }): void
 }>()
 const tabProps = useTabProps()
 const entityPropertyDescriptorIndex = useEntityPropertyDescriptorIndex()
@@ -66,6 +70,9 @@ const showPropertyDetail = ref<boolean>(false)
 const propertyDetailEntity = ref<FlatEntity | undefined>()
 const propertyDetailDescriptor = ref<EntityPropertyDescriptor | undefined>()
 const propertyDetailValue = ref<EntityPropertyValue | EntityPropertyValue[] | undefined>()
+// identity of the currently detailed cell; used to force the detail component to remount when switching cells so
+// its non-reactive `provide`d entity/descriptor are refreshed instead of going stale
+const propertyDetailKey = ref<string | undefined>()
 
 function getPropertyDescriptor(key: string): EntityPropertyDescriptor | undefined {
     const descriptor = entityPropertyDescriptorIndex.value.get(key)
@@ -83,6 +90,9 @@ function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string,
     const propertyDescriptor: EntityPropertyDescriptor | undefined = getPropertyDescriptor(propertyKey)
     if (value instanceof Array && value.length === 0) {
         // do nothing with empty value
+        return
+    } else if ((value instanceof EntityReferences || value instanceof EntityReferenceAttributes) && value.count() === 0) {
+        // no references to show, keep the empty cell non-interactive
         return
     } else if (propertyDescriptor &&
         propertyDescriptor.type === EntityPropertyType.Entity &&
@@ -114,29 +124,12 @@ function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string,
             ),
             true
         ))
-    } else if (propertyDescriptor && propertyDescriptor.type === EntityPropertyType.References) {
-        // we want references to open referenced entities in appropriate new grid for referenced collection
-        workspaceService.createTab(entityViewerTabFactory.createNew(
-            tabProps.params.dataPointer.catalogName,
-            (propertyDescriptor.schema as ReferenceSchema).entityType,
-            new EntityViewerTabData(
-                queryLanguage.value,
-                entityViewerService.buildReferencedEntityFilterBy(
-                    queryLanguage.value as QueryLanguage,
-                    value instanceof Array
-                        ? (value as EntityReferenceValue[]).map(it => it.primaryKey)
-                        : [(value as EntityReferenceValue).primaryKey]
-                ),
-                undefined,
-                dataLocale?.value
-            ),
-            true
-        ))
     } else {
-        // for other values, show detail of the value
+        // for other values (incl. references and reference attributes), show detail of the value in the sidepanel
         propertyDetailEntity.value = props.resultEntities[relativeEntityIndex]
         propertyDetailDescriptor.value = propertyDescriptor
         propertyDetailValue.value = value
+        propertyDetailKey.value = `${relativeEntityIndex}-${propertyKey}`
         showPropertyDetail.value = true
     }
 }
@@ -146,6 +139,7 @@ function closePropertyDetail(): void {
     propertyDetailEntity.value = undefined
     propertyDetailDescriptor.value = undefined
     propertyDetailValue.value = undefined
+    propertyDetailKey.value = undefined
 }
 </script>
 
@@ -204,6 +198,7 @@ function closePropertyDetail(): void {
             min-size="30"
         >
             <EntityGridCellDetail
+                :key="propertyDetailKey"
                 :model-value="showPropertyDetail"
                 :entity="propertyDetailEntity!"
                 :property-descriptor="propertyDetailDescriptor"

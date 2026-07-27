@@ -1,4 +1,4 @@
-import type { DefineComponent } from 'vue'
+import type {  } from 'vue'
 import { markRaw } from 'vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import { EntityViewerTabParams } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabParams'
@@ -15,7 +15,7 @@ export class EntityViewerTabDefinition extends TabDefinition<EntityViewerTabPara
             undefined,
             title,
             EntityViewerTabDefinition.icon(),
-            markRaw(EntityViewer as DefineComponent<any, any, any>),
+            markRaw(EntityViewer as Component),
             params,
             initialData
         )

@@ -5,14 +5,11 @@ import  { type Cardinality } from '@/modules/database-driver/request-response/sc
 import {
     ReferenceMutation
 } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceMutation.ts'
-import type {
-    ReferenceKeyWithAttributeKey
-} from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceKeyWithAttributeKey.ts'
 
 export class InsertReferenceMutation extends ReferenceMutation {
     static readonly TYPE = 'insertReferenceMutation' as const
 
-    readonly referenceKey: ReferenceKey
+    override readonly referenceKey: ReferenceKey
     readonly referenceCardinality: Cardinality
     readonly referenceEntityType: string|undefined
 

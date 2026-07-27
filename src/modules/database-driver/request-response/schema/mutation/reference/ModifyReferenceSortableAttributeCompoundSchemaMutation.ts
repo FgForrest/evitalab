@@ -8,7 +8,7 @@ import type {
 
 export class ModifyReferenceSortableAttributeCompoundSchemaMutation extends AbstractModifyReferenceDataSchemaMutation {
 
-    private readonly sortableAttributeCompoundSchemaMutation: ReferenceSortableAttributeCompoundSchemaMutation
+    readonly sortableAttributeCompoundSchemaMutation: ReferenceSortableAttributeCompoundSchemaMutation
 
     constructor(name: string, sortableAttributeCompoundSchemaMutation: ReferenceSortableAttributeCompoundSchemaMutation) {
         super(name)

@@ -8,9 +8,9 @@ import type {
 } from '@/modules/database-driver/request-response/schema/mutation/reference/ScopedReferenceIndexType.ts'
 
 export class SetReferenceSchemaIndexedMutation extends AbstractModifyReferenceDataSchemaMutation {
-    readonly indexedInScopes: ImmutableList<ScopedReferenceIndexType>
+    readonly indexedInScopes?: ImmutableList<ScopedReferenceIndexType>
 
-    constructor(name: string, indexedInScopes: ImmutableList<ScopedReferenceIndexType>) {
+    constructor(name: string, indexedInScopes: ImmutableList<ScopedReferenceIndexType> | undefined) {
         super(name)
         this.indexedInScopes = indexedInScopes
     }

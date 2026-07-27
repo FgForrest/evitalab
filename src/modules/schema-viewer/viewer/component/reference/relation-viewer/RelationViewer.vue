@@ -34,6 +34,8 @@ const icon = computed(() => {
         case Cardinality.ZeroOrMore:
         case Cardinality.ZeroOrMoreWithDuplicates:
             return 'mdi-relation-one-to-zero-or-many'
+        default:
+            return undefined
     }
 })
 
@@ -78,7 +80,7 @@ function openTo(): void {
                 <div>
                     <VIcon class="icon" :icon="icon" />
                     <VTooltip activator="parent">
-                        {{ t(`relationViewer.cardinality.${schema.cardinality}`) }}
+                        {{ t(`common.cardinality.${schema.cardinality}`) }}
                     </VTooltip>
                 </div>
                 <VChip @click="schema.referencedEntityTypeManaged ? openTo() : null"

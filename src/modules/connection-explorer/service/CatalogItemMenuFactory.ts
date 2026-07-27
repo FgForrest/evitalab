@@ -295,7 +295,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
                 'mdi-toggle-switch-outline',
                 this.getItemTitle,
                 () => switchCatalogToAliveStateCallback(),
-                baseEnabledFunctions && serverWritable
+                !catalog.unusable && serverWritable
             )
         }
         this.createMenuAction(

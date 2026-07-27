@@ -1,3 +1,4 @@
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import { List, Map } from 'immutable'
 import { NamingConvention } from '../NamingConvetion'
 import { AbstractSchema } from '@/modules/database-driver/request-response/schema/AbstractSchema'
@@ -11,6 +12,7 @@ import {
 import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 import { i18n } from '@/vue-plugins/i18n.ts'
 import { getEnumKeyByValue } from '@/utils/enum.ts'
+import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType.ts'
 
 /**
  * evitaLab's representation of a single evitaDB attribute schema independent of specific evitaDB version
@@ -42,7 +44,7 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Loca
     /**
      * Default value is used when the entity is created without this attribute specified. Default values allow to pass non-null checks even if no attributes of such name are specified.
      */
-    readonly defaultValue: any | any[] | null
+    readonly defaultValue: EvitaValue | EvitaValue[] | null
     /**
      * When attribute is localized, it has to be ALWAYS used in connection with specific `Locale`.
      */
@@ -63,7 +65,7 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Loca
                 deprecationNotice: string | undefined,
                 type: Scalar,
                 nullable: boolean,
-                defaultValue: any | any[] | undefined,
+                defaultValue: EvitaValue | EvitaValue[] | undefined,
                 localized: boolean,
                 indexedDecimalPlaces: number,
                 sortableInScopes: List<EntityScope>,
@@ -89,23 +91,64 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Loca
             const flags: Flag[] = []
 
             flags.push(new Flag(this.formatDataTypeForFlag(this.type)))
+            flags.push(...this.prefixFlags())
+            flags.push(...this.uniquenessFlags())
 
             if (this.sortableInScopes !== undefined && this.sortableInScopes.size > 0) {
-               flags.push(new Flag(AttributeSchemaFlag.Sortable, this.sortableInScopes.toArray(), i18n.global.t('schemaViewer.attribute.tooltip.content', [i18n.global.t('schemaViewer.tooltip.sorted'), this.sortableInScopes.map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
+                flags.push(new Flag(AttributeSchemaFlag.Sortable, this.sortableInScopes.toArray(), i18n.global.t('schemaViewer.attribute.tooltip.content', [i18n.global.t('schemaViewer.tooltip.sorted'), this.sortableInScopes.map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
             }
             if (this.filteredInScopes !== undefined && this.filteredInScopes.size > 0) {
                 flags.push(new Flag(AttributeSchemaFlag.Filterable, this.filteredInScopes.toArray(), i18n.global.t('schemaViewer.attribute.tooltip.content', [i18n.global.t('schemaViewer.tooltip.filtered'), this.filteredInScopes.map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z).toLowerCase()}`)).join('/')])))
-            }
-            if (this.nullable) {
-                flags.push(new Flag(AttributeSchemaFlag.Nullable))
+            } else if (this.isImplicitlyFilterable()) {
+                flags.push(new Flag(AttributeSchemaFlag.Filterable, [EntityScope.Live], i18n.global.t('schemaViewer.attribute.tooltip.filterableUnique', [i18n.global.t('schemaViewer.tooltip.filtered'), i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, EntityScope.Live).toLowerCase()}`)])))
             }
             if (this.localized) {
                 flags.push(new Flag(AttributeSchemaFlag.Localized))
+            }
+            if (this.nullable) {
+                flags.push(new Flag(AttributeSchemaFlag.Nullable))
             }
 
             this._representativeFlags = List(flags)
         }
         return this._representativeFlags
+    }
+
+    /**
+     * Flags contributed by subclasses right after the data-type flag and before the uniqueness flags.
+     * The base attribute schema contributes none.
+     */
+    protected prefixFlags(): Flag[] {
+        return []
+    }
+
+    /**
+     * Collection-level uniqueness flags (unique / unique per locale) built from {@link uniqueInScopes}.
+     * Subclasses may extend this slot to add their own uniqueness flavours.
+     */
+    protected uniquenessFlags(): Flag[] {
+        const flags: Flag[] = []
+        for (const group of this.uniqueInScopes.groupBy(x => x.uniquenessType)) {
+            if (group[0] === AttributeUniquenessType.UniqueWithinCollection) {
+                flags.push(new Flag(AttributeSchemaFlag.Unique, group[1].map(x => x.scope).toArray(), i18n.global.t('schemaViewer.attribute.tooltip.uniqueContent', [
+                    i18n.global.t('schemaViewer.section.flag.attributeSchema.unique').toLowerCase(),
+                    group[1].map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z.scope).toLowerCase()}`)).join('/')])))
+            } else if (group[0] === AttributeUniquenessType.UniqueWithinCollectionLocale) {
+                flags.push(new Flag(AttributeSchemaFlag.UniquePerLocale, group[1].map(x => x.scope).toArray(), i18n.global.t('schemaViewer.attribute.tooltip.uniqueContent', [
+                    i18n.global.t('schemaViewer.section.flag.attributeSchema.uniquePerLocale').toLowerCase(),
+                    group[1].map(z => i18n.global.t(`schemaViewer.tooltip.${getEnumKeyByValue(EntityScope, z.scope).toLowerCase()}`)).join('/')])))
+            }
+        }
+        return flags
+    }
+
+    /**
+     * Whether the attribute is filterable purely as a consequence of being unique (evitaDB makes unique
+     * attributes implicitly filterable). Drives the "filterable due to uniqueness" flag when
+     * {@link filteredInScopes} is empty.
+     */
+    protected isImplicitlyFilterable(): boolean {
+        return !this.uniqueInScopes.isEmpty()
     }
 }
 

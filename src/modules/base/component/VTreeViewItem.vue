@@ -10,7 +10,7 @@ export interface Props {
     prependIcon: string,
     loading?: boolean,
     flags?: ItemFlag[],
-    actions?: MenuItem<any>[]
+    actions?: MenuItem<unknown>[]
 }
 
 const props = withDefaults(defineProps<Props>(), {

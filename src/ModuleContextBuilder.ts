@@ -7,7 +7,7 @@ import { InitializationError } from '@/modules/base/exception/InitializationErro
 export class ModuleContextBuilder {
 
     readonly app: App
-    private readonly resourceIndex: Map<string, any> = new Map()
+    private readonly resourceIndex: Map<string, unknown> = new Map()
 
     constructor(app: App) {
         this.app = app
@@ -28,6 +28,6 @@ export class ModuleContextBuilder {
         if (injectionKey.description == undefined) {
             throw new InitializationError('Injection key must have globally unique description.')
         }
-        return this.resourceIndex.get(injectionKey.description)
+        return this.resourceIndex.get(injectionKey.description) as T
     }
 }

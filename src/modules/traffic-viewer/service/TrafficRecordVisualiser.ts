@@ -16,7 +16,7 @@ export abstract class TrafficRecordVisualiser<R extends TrafficRecord> {
      * Can be overridden for doing some preparation work for the entire history
      * before actual visualisation
      */
-    prepare(ctx: TrafficRecordPreparationContext, trafficRecord: R): void {
+    prepare(_ctx: TrafficRecordPreparationContext, _trafficRecord: R): void {
         // do nothing by default
     }
 

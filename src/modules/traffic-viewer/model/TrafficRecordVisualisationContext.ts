@@ -1,4 +1,3 @@
-import { TrafficRecordHistoryDataPointer } from '@/modules/traffic-viewer/model/TrafficRecordHistoryDataPointer'
 import {
     TrafficRecordVisualisationDefinition
 } from '@/modules/traffic-viewer/model/TrafficRecordVisualisationDefinition'

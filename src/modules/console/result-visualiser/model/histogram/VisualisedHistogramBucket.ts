@@ -1,3 +1,4 @@
+import type { GraphQLResultNode } from '@/modules/database-driver/connector/gql/model/GraphQLResultNode'
 import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { HistogramBucket } from '@/modules/database-driver/request-response/data/HistogramBucket'
 
@@ -25,7 +26,7 @@ export class VisualisedHistogramBucket {
         )
     }
 
-    static fromJson(json: any): VisualisedHistogramBucket {
+    static fromJson(json: GraphQLResultNode): VisualisedHistogramBucket {
         return new VisualisedHistogramBucket(
             json.threshold ? new BigDecimal(json.threshold) : undefined,
             json.occurrences,

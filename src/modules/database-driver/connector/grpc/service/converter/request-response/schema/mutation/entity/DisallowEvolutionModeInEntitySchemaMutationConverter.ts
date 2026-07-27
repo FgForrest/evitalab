@@ -10,13 +10,14 @@ import {
 import {
     DisallowEvolutionModeInEntitySchemaMutation
 } from '@/modules/database-driver/request-response/schema/mutation/entity/DisallowEvolutionModeInEntitySchemaMutation.ts'
+import { Set as ImmutableSet } from 'immutable'
 
 export class DisallowEvolutionModeInEntitySchemaMutationConverter implements SchemaMutationConverter<DisallowEvolutionModeInEntitySchemaMutation, GrpcDisallowEvolutionModeInEntitySchemaMutation> {
     public static readonly INSTANCE = new DisallowEvolutionModeInEntitySchemaMutationConverter()
 
     convert(mutation: GrpcDisallowEvolutionModeInEntitySchemaMutation): DisallowEvolutionModeInEntitySchemaMutation {
         return new DisallowEvolutionModeInEntitySchemaMutation(
-            Immutable.Set(CatalogSchemaConverter.convertEvolutionMode(mutation.evolutionModes))
+            ImmutableSet(CatalogSchemaConverter.convertEvolutionMode(mutation.evolutionModes))
         )
     }
 }

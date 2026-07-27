@@ -11,7 +11,7 @@ import EditorStatusComponent from '@/modules/workspace/status-bar/component/Edit
 import SubjectPathStatusComponent from '@/modules/workspace/status-bar/component/subject-path-status/SubjectPathStatus.vue'
 import { SubjectPathStatus } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathStatus'
 import { EditorStatus } from '@/modules/workspace/status-bar/model/editor-status/EditorStatus'
-import AutoRefresher from '@/modules/workspace/status-bar/component/AutoRefresher.vue'
+import ChangeStreamIndicator from '@/modules/workspace/status-bar/component/ChangeStreamIndicator.vue'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 
@@ -19,8 +19,6 @@ const pathStatus = computed<SubjectPathStatus>(() =>
     workspaceService.subjectPathStatus)
 const editorStatus = computed<EditorStatus>(() =>
     workspaceService.editorStatus)
-
-const connected = ref<boolean>(false)
 </script>
 
 <template>
@@ -35,8 +33,7 @@ const connected = ref<boolean>(false)
         </div>
         <div class="right-content">
             <EditorStatusComponent :status="editorStatus" />
-            <AutoRefresher :connected="connected" />
-            <button @click="() => connected = !connected">Test</button>
+            <ChangeStreamIndicator />
         </div>
     </VAppBar>
 </template>

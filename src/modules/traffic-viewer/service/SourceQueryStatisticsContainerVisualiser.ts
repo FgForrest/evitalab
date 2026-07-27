@@ -59,7 +59,6 @@ export class SourceQueryStatisticsContainerVisualiser extends TrafficRecordVisua
             i18n.global.t('trafficViewer.recordHistory.record.type.sourceQueryStatistics.metadata.item.returnedRecordCount.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.sourceQueryStatistics.metadata.item.returnedRecordCount.value',
-                //@ts-ignore
                 trafficRecord.returnedRecordCount,
                 { named: { count: formatCount(trafficRecord.returnedRecordCount) } }
             )
@@ -70,7 +69,6 @@ export class SourceQueryStatisticsContainerVisualiser extends TrafficRecordVisua
             i18n.global.t('trafficViewer.recordHistory.record.type.sourceQueryStatistics.metadata.item.totalRecordCount.tooltip'),
             i18n.global.t(
                 'trafficViewer.recordHistory.record.type.sourceQueryStatistics.metadata.item.totalRecordCount.value',
-                //@ts-ignore
                 trafficRecord.totalRecordCount,
                 { named: { count: formatCount(trafficRecord.totalRecordCount) } }
             )

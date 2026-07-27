@@ -4,7 +4,7 @@
 
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
-import type { GrpcCatalogEvolutionMode } from "./GrpcEnums_pb";
+import type { GrpcCatalogEvolutionMode, GrpcConflictResolution } from "./GrpcEnums_pb";
 import { file_GrpcEnums } from "./GrpcEnums_pb";
 import { file_google_protobuf_wrappers } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file GrpcCatalogSchemaMutations.proto.
  */
 export const file_GrpcCatalogSchemaMutations: GenFile = /*@__PURE__*/
-  fileDesc("CiBHcnBjQ2F0YWxvZ1NjaGVtYU11dGF0aW9ucy5wcm90bxIlaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZCJfCipHcnBjTW9kaWZ5Q2F0YWxvZ1NjaGVtYURlc2NyaXB0aW9uTXV0YXRpb24SMQoLZGVzY3JpcHRpb24YASABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUiiAEKLUdycGNBbGxvd0V2b2x1dGlvbk1vZGVJbkNhdGFsb2dTY2hlbWFNdXRhdGlvbhJXCg5ldm9sdXRpb25Nb2RlcxgBIAMoDjI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NhdGFsb2dFdm9sdXRpb25Nb2RlIosBCjBHcnBjRGlzYWxsb3dFdm9sdXRpb25Nb2RlSW5DYXRhbG9nU2NoZW1hTXV0YXRpb24SVwoOZXZvbHV0aW9uTW9kZXMYASADKA4yPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDYXRhbG9nRXZvbHV0aW9uTW9kZUKGAgopY29tLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWRCH0dycGNDYXRhbG9nU2NoZW1hTXV0YXRpb25zUHJvdG9QAaICBUlFRUdHqgIlSW8uRXZpdGFkYi5FeHRlcm5hbEFwaS5HcnBjLkdlbmVyYXRlZMoCJUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWTiAjFJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVkXEdQQk1ldGFkYXRh6gIpSW86OkV2aXRhZGI6OkV4dGVybmFsQXBpOjpHcnBjOjpHZW5lcmF0ZWRiBnByb3RvMw", [file_GrpcEnums, file_google_protobuf_wrappers]);
+  fileDesc("CiBHcnBjQ2F0YWxvZ1NjaGVtYU11dGF0aW9ucy5wcm90bxIlaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZCJfCipHcnBjTW9kaWZ5Q2F0YWxvZ1NjaGVtYURlc2NyaXB0aW9uTXV0YXRpb24SMQoLZGVzY3JpcHRpb24YASABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUijgEKMUdycGNNb2RpZnlDYXRhbG9nU2NoZW1hQ29uZmxpY3RSZXNvbHV0aW9uTXV0YXRpb24SWQoSY29uZmxpY3RSZXNvbHV0aW9uGAEgASgLMj0uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ29uZmxpY3RSZXNvbHV0aW9uIogBCi1HcnBjQWxsb3dFdm9sdXRpb25Nb2RlSW5DYXRhbG9nU2NoZW1hTXV0YXRpb24SVwoOZXZvbHV0aW9uTW9kZXMYASADKA4yPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDYXRhbG9nRXZvbHV0aW9uTW9kZSKLAQowR3JwY0Rpc2FsbG93RXZvbHV0aW9uTW9kZUluQ2F0YWxvZ1NjaGVtYU11dGF0aW9uElcKDmV2b2x1dGlvbk1vZGVzGAEgAygOMj8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2F0YWxvZ0V2b2x1dGlvbk1vZGVChgIKKWNvbS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkQh9HcnBjQ2F0YWxvZ1NjaGVtYU11dGF0aW9uc1Byb3RvUAGiAgVJRUVHR6oCJUlvLkV2aXRhZGIuRXh0ZXJuYWxBcGkuR3JwYy5HZW5lcmF0ZWTKAiVJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVk4gIxSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZFxHUEJNZXRhZGF0YeoCKUlvOjpFdml0YWRiOjpFeHRlcm5hbEFwaTo6R3JwYzo6R2VuZXJhdGVkYgZwcm90bzM", [file_GrpcEnums, file_google_protobuf_wrappers]);
 
 /**
  * Mutation is responsible for setting value to a `CatalogSchema.description` in `CatalogSchema`.
@@ -38,6 +38,28 @@ export const GrpcModifyCatalogSchemaDescriptionMutationSchema: GenMessage<GrpcMo
   messageDesc(file_GrpcCatalogSchemaMutations, 0);
 
 /**
+ * Mutation is responsible for setting value to a `CatalogSchema.conflictResolution` in `CatalogSchema`.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcModifyCatalogSchemaConflictResolutionMutation
+ */
+export type GrpcModifyCatalogSchemaConflictResolutionMutation = Message<"io.evitadb.externalApi.grpc.generated.GrpcModifyCatalogSchemaConflictResolutionMutation"> & {
+  /**
+   * The catalog-level conflict resolution setting. When not set (absent), the catalog schema conflict resolution is
+   * cleared (inherits the resolved conflict resolution).
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcConflictResolution conflictResolution = 1;
+   */
+  conflictResolution?: GrpcConflictResolution;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcModifyCatalogSchemaConflictResolutionMutation.
+ * Use `create(GrpcModifyCatalogSchemaConflictResolutionMutationSchema)` to create a new message.
+ */
+export const GrpcModifyCatalogSchemaConflictResolutionMutationSchema: GenMessage<GrpcModifyCatalogSchemaConflictResolutionMutation> = /*@__PURE__*/
+  messageDesc(file_GrpcCatalogSchemaMutations, 1);
+
+/**
  * Mutation is responsible for adding one or more modes to a `CatalogSchema.catalogEvolutionMode` in `CatalogSchema`.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcAllowEvolutionModeInCatalogSchemaMutation
@@ -58,7 +80,7 @@ export type GrpcAllowEvolutionModeInCatalogSchemaMutation = Message<"io.evitadb.
  * Use `create(GrpcAllowEvolutionModeInCatalogSchemaMutationSchema)` to create a new message.
  */
 export const GrpcAllowEvolutionModeInCatalogSchemaMutationSchema: GenMessage<GrpcAllowEvolutionModeInCatalogSchemaMutation> = /*@__PURE__*/
-  messageDesc(file_GrpcCatalogSchemaMutations, 1);
+  messageDesc(file_GrpcCatalogSchemaMutations, 2);
 
 /**
  * Mutation is responsible for removing one or more modes from a `CatalogSchema.evolutionMode` in `CatalogSchema`.
@@ -81,5 +103,5 @@ export type GrpcDisallowEvolutionModeInCatalogSchemaMutation = Message<"io.evita
  * Use `create(GrpcDisallowEvolutionModeInCatalogSchemaMutationSchema)` to create a new message.
  */
 export const GrpcDisallowEvolutionModeInCatalogSchemaMutationSchema: GenMessage<GrpcDisallowEvolutionModeInCatalogSchemaMutation> = /*@__PURE__*/
-  messageDesc(file_GrpcCatalogSchemaMutations, 2);
+  messageDesc(file_GrpcCatalogSchemaMutations, 3);
 

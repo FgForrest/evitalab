@@ -74,12 +74,12 @@ export class MetadataItem {
         this.onClickCallback = onClickCallback
     }
 
-    static area(area: any): MetadataItem {
+    static area(area: unknown): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             area === 'infrastructure' ? 'mdi-graph-outline' : 'mdi-table',
             i18n.global.t('mutationHistoryViewer.record.type.area.tooltip'),
-            area?.toString(),
+            area == undefined ? "" : String(area),
             MetadataItemSeverity.Info,
             undefined,
             undefined
@@ -87,12 +87,12 @@ export class MetadataItem {
     }
 
     // todo vstupuje sem i transaction
-    static operation(operationType: any): MetadataItem {
+    static operation(operationType: unknown): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-file-tree',
             i18n.global.t('mutationHistoryViewer.record.type.operation.tooltip'),
-            operationType?.toString(),
+            operationType == undefined ? "" : String(operationType),
             operationType === 'remove' ? MetadataItemSeverity.Error : MetadataItemSeverity.Success,
             undefined,
             undefined
@@ -100,48 +100,48 @@ export class MetadataItem {
     }
 
 
-    static entityType(sessionId: any): MetadataItem {
+    static entityType(sessionId: unknown): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-file-tree',
             i18n.global.t('mutationHistoryViewer.record.type.entityType.tooltip'),
-            sessionId?.toString(),
+            sessionId == undefined ? "" : String(sessionId),
             MetadataItemSeverity.Info,
             undefined,
             undefined
         )
     }
 
-    static version(sessionId: any): MetadataItem {
+    static version(sessionId: unknown): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-source-commit',
             i18n.global.t('mutationHistoryViewer.record.type.version.tooltip'),
-            sessionId?.toString(),
+            sessionId == undefined ? "" : String(sessionId),
             MetadataItemSeverity.Info,
             undefined,
             undefined
         )
     }
 
-    static entityPrimaryKey(sessionId: any): MetadataItem {
+    static entityPrimaryKey(sessionId: unknown): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-identifier',
             i18n.global.t('mutationHistoryViewer.record.type.entityPrimaryKey.tooltip'),
-            sessionId?.toString(),
+            sessionId == undefined ? "" : String(sessionId),
             MetadataItemSeverity.Info,
             undefined,
             undefined
         )
     }
 
-    static index(sessionId: any): MetadataItem {
+    static index(sessionId: unknown): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-file-tree',
             i18n.global.t('mutationHistoryViewer.record.type.index.tooltip'),
-            sessionId?.toString(),
+            sessionId == undefined ? "" : String(sessionId),
             MetadataItemSeverity.Info,
             undefined,
             undefined

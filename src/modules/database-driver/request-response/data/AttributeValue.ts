@@ -1,3 +1,4 @@
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 
 /**
@@ -8,9 +9,9 @@ import { Locale } from '@/modules/database-driver/data-type/Locale'
 export class AttributeValue {
     readonly locale: Locale | undefined
     readonly name: string
-    readonly value: any
+    readonly value: EvitaValue
 
-    constructor(locale: Locale | undefined, name: string, value: any) {
+    constructor(locale: Locale | undefined, name: string, value: EvitaValue) {
         this.locale = locale
         this.name = name
         this.value = value

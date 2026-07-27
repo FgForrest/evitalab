@@ -10,6 +10,7 @@ import {
     VisualisedHierarchyTreeNode
 } from '@/modules/console/result-visualiser/model/hierarchy/VisualisedHierarchyTreeNode'
 import VMarkdown from '@/modules/base/component/VMarkdown.vue'
+import { copyToClipboard } from '@/utils/clipboard'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -20,7 +21,7 @@ const props = defineProps<{
 
 async function copyPrimaryKey(): Promise<void> {
     if (props.node.primaryKey != undefined) {
-        navigator.clipboard.writeText(`${props.node.primaryKey}`).then(() => {
+        copyToClipboard(`${props.node.primaryKey}`).then(() => {
             toaster.info(t('resultVisualizer.hierarchyVisualiser.notification.primaryKeyCopiedToClipboard')).then()
         }).catch(() => {
             toaster.error(t('common.notification.failedToCopyToClipboard')).then()
@@ -31,7 +32,7 @@ async function copyPrimaryKey(): Promise<void> {
 }
 async function copyParentPrimaryKey(): Promise<void> {
     if (props.node.parentPrimaryKey != undefined) {
-        navigator.clipboard.writeText(`${props.node.parentPrimaryKey}`).then(() => {
+        copyToClipboard(`${props.node.parentPrimaryKey}`).then(() => {
             toaster.info(t('resultVisualizer.hierarchyVisualiser.notification.parentPrimaryKeyCopiedToClipboard')).then()
         }).catch(() => {
             toaster.error(t('common.notification.failedToCopyToClipboard')).then()

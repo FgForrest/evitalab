@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { List as ImmutableList } from 'immutable'
 
-const props = defineProps<{
+defineProps<{
     title: ImmutableList<string>
 }>()
 </script>

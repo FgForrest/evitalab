@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
 import { computed, onUnmounted, ref, watch } from 'vue'
@@ -17,7 +18,7 @@ const backupViewerService: BackupViewerService = useBackupViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     backupsInPreparationPresent: boolean
 }>()
 const emit = defineEmits<{
@@ -58,10 +59,10 @@ async function loadBackupFiles(): Promise<boolean> {
             backupFilesLoaded.value = true
         }
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'backupViewer.notification.couldNotLoadBackupFiles',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         return false
     }

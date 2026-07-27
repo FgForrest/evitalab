@@ -33,7 +33,7 @@ export class LabStorage {
         return this.storage.get(key) || def
     }
 
-    set(key: string, value: any): void {
+    set(key: string, value: unknown): void {
         this.storage.set(key, value, true)
     }
 

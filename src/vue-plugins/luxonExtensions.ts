@@ -3,6 +3,15 @@ import type { DurationLikeObject, DurationUnit, ToHumanDurationOptions } from 'l
 import type { App, Plugin } from 'vue'
 import { round } from '@/utils/number'
 
+declare module 'luxon' {
+    interface Duration {
+        /** Original, unpatched {@link Duration.toHuman}, preserved by this plugin. */
+        __toHuman__?: (opts?: ToHumanDurationOptions) => string
+        /** Compact human-readable duration (e.g. `1.5 h`, `30 s`), added by this plugin. */
+        toShortHuman(): string
+    }
+}
+
 interface LuxonExtensionsOptions {}
 
 const hourInMillis: number = 60 * 60 * 1000
@@ -10,9 +19,10 @@ const minuteInMillis: number = 60 * 1000
 const secondInMillis: number = 1000
 
 const LuxonExtensions: Plugin = {
-    install(app: App, options: LuxonExtensionsOptions) {
+    install(_app: App, _options: LuxonExtensionsOptions) {
         // from https://github.com/moment/luxon/issues/1134#issuecomment-1282092129
-        (Duration.prototype as any).__toHuman__ = Duration.prototype.toHuman;
+        Duration.prototype.__toHuman__ = Duration.prototype.toHuman;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- monkey-patch replacing toHuman with an extended-options variant
         (Duration.prototype as any).toHuman = function (
             opts: ToHumanDurationOptions & {
                 stripZeroUnits?: 'all' | 'end' | 'none';
@@ -24,7 +34,7 @@ const LuxonExtensions: Plugin = {
         ): string {
             let duration = this.normalize();
             let durationUnits = [];
-            let precision =
+            const precision =
                 typeof opts.precision == 'object'
                     ? Duration.fromObject(opts.precision)
                     : Duration.fromMillis(0);
@@ -64,14 +74,14 @@ const LuxonExtensions: Plugin = {
             )
                 biggestUnitIndex = allUnits.indexOf('years');
 
-            for (let unit of allUnits.slice(biggestUnitIndex, smallestUnitIndex + 1)) {
+            for (const unit of allUnits.slice(biggestUnitIndex, smallestUnitIndex + 1)) {
                 const durationInUnit = remainingDuration.as(unit);
                 if (durationInUnit >= 1) {
                     durationUnits.push(unit);
-                    let tmp: any = {};
+                    const tmp: Record<string, number> = {};
                     tmp[unit] = Math.floor(remainingDuration.as(unit));
                     remainingDuration = remainingDuration
-                        .minus(Duration.fromObject(tmp))
+                        .minus(Duration.fromObject(tmp as DurationLikeObject))
                         .normalize();
 
                     // check if remaining duration is smaller than precision
@@ -106,13 +116,16 @@ const LuxonExtensions: Plugin = {
 
             // if `durationUnits` is empty (i.e. duration is zero), then just shift to the smallest unit
             if (!durationUnits.length) {
-                durationUnits.push(allUnits[smallestUnitIndex]);
+                const smallestUnit = allUnits[smallestUnitIndex]
+                if (smallestUnit != undefined) {
+                    durationUnits.push(smallestUnit);
+                }
             }
 
-            return duration.shiftTo(...durationUnits).__toHuman__(opts);
+            return duration.shiftTo(...durationUnits).__toHuman__!(opts);
         };
-        (Duration.prototype as any).toShortHuman = function (): string {
-            const normalized: Duration<any> = this.normalize();
+        Duration.prototype.toShortHuman = function (): string {
+            const normalized: Duration = this.normalize();
             const millis: number = normalized.toMillis()
 
             if (millis > hourInMillis) {

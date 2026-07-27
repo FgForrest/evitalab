@@ -4,17 +4,17 @@ import type {
 import {
     ApplyDeltaAttributeMutation
 } from '@/modules/database-driver/request-response/data/mutation/attribute/ApplyDeltaAttributeMutation.ts'
+import type { ApplyDeltaRange } from '@/modules/database-driver/request-response/data/mutation/attribute/ApplyDeltaAttributeMutation.ts'
 import {
     AttributeMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/data/mutation/attribute/AttributeMutationConverter.ts'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
-import { Range } from '@/modules/database-driver/data-type/Range.ts'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
 
-export class ApplyDeltaAttributeMutationConverter extends AttributeMutationConverter<ApplyDeltaAttributeMutation<any>, GrpcApplyDeltaAttributeMutation> {
+export class ApplyDeltaAttributeMutationConverter extends AttributeMutationConverter<ApplyDeltaAttributeMutation, GrpcApplyDeltaAttributeMutation> {
     public static readonly INSTANCE = new ApplyDeltaAttributeMutationConverter()
 
-    convert(mutation: GrpcApplyDeltaAttributeMutation): ApplyDeltaAttributeMutation<any> {
+    convert(mutation: GrpcApplyDeltaAttributeMutation): ApplyDeltaAttributeMutation {
         const key = AttributeMutationConverter.buildAttributeKey(mutation.attributeName, mutation.attributeLocale)
 
         let delta: number
@@ -32,7 +32,7 @@ export class ApplyDeltaAttributeMutationConverter extends AttributeMutationConve
                 throw new UnexpectedError('Delta value has to be provided when applying ApplyDeltaAttributeMutation!')
         }
 
-        let requiredRange: Range<any> | undefined
+        let requiredRange: ApplyDeltaRange | undefined
         switch (mutation.requiredRangeAfterApplication.case) {
             case 'integerRequiredRangeAfterApplication':
                 requiredRange = EvitaValueConverter.convertGrpcIntegerNumberRange(mutation.requiredRangeAfterApplication.value)

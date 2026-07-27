@@ -4,7 +4,7 @@
 import type { MetadataGroup } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
 import RecordMetadataGroup from '@/modules/history-viewer/component/RecordMetadataGroup.vue'
 
-const props = defineProps<{
+defineProps<{
     metadata: MetadataGroup[]
 }>()
 </script>

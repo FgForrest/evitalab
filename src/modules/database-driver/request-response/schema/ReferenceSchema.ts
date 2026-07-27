@@ -8,7 +8,7 @@ import {
 } from '@/modules/database-driver/request-response/schema/SortableAttributeCompoundSchema'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
-import { useI18n } from 'vue-i18n'
+import { i18n } from '@/vue-plugins/i18n.ts'
 import { getEnumKeyByValue } from '@/utils/enum.ts'
 import {
     ScopedReferenceIndexType
@@ -226,7 +226,7 @@ export class ReferenceSchema extends AbstractSchema {
 
     get representativeFlags(): List<Flag> {
         if (this._representativeFlags == null) {
-            const { t } = useI18n()
+            const t = i18n.global.t
             const representativeFlags: Flag[] = []
 
             if (!this.referencedEntityTypeManaged) representativeFlags.push(new Flag(ReferenceSchemaFlag.External))

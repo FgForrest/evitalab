@@ -4,7 +4,6 @@
  */
 
 import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 import type {
     EvitaQLConsoleHistoryRecord
 } from '@/modules/evitaql-console/console/history/model/EvitaQLConsoleHistoryRecord'
@@ -18,7 +17,7 @@ const emit = defineEmits<{
     (e: 'update:clearHistory'): void
 }>()
 
-const historyListItems = computed<any[]>(() => {
+const historyListItems = computed<{ key: string, preview: string[], value: EvitaQLConsoleHistoryRecord }[]>(() => {
     return props.items.map((record: EvitaQLConsoleHistoryRecord) => {
         return {
             key: record[0],
@@ -27,10 +26,23 @@ const historyListItems = computed<any[]>(() => {
         }
     })
 })
+
+const historyComponentRef = ref<InstanceType<typeof HistoryComponent> | undefined>()
+
+function focus(): void {
+    historyComponentRef.value?.focus()
+}
+
+defineExpose<{
+    focus: () => void
+}>({
+    focus
+})
 </script>
 
 <template>
-    <HistoryComponent :items="historyListItems"
+    <HistoryComponent ref="historyComponentRef"
+        :items="historyListItems"
         @select-history-record="(value: EvitaQLConsoleHistoryRecord) => emit('selectHistoryRecord', value)"
         @update:clear-history="emit('update:clearHistory')">
     </HistoryComponent>

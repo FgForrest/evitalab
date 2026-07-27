@@ -2,7 +2,7 @@
 import { Property } from '@/modules/base/model/properties-table/Property'
 import VPropertiesTableValue from '@/modules/base/component/VPropertiesTableValue.vue'
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     title?: string
     properties: Property[],
     dense?: boolean

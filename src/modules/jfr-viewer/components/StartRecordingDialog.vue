@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 import { JfrViewerService, useJfrViewerService } from '../service/JfrViewerService'
 import { useI18n } from 'vue-i18n'
 import { computed, ref } from 'vue'
@@ -11,7 +12,7 @@ const jfrViewerService: JfrViewerService = useJfrViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
-const props = defineProps<{
+defineProps<{
     modelValue: boolean
 }>()
 const emit = defineEmits<{
@@ -19,7 +20,7 @@ const emit = defineEmits<{
 }>()
 
 const selectedTypesRules = [
-    (value: EventType[]): any => {
+    (value: EventType[]): boolean | string => {
         if (value != undefined && value.length > 0) return true
         return t('jfrViewer.startRecording.form.events.validations.required')
     }
@@ -38,10 +39,10 @@ async function loadEventTypes() {
         eventTypes.value = await jfrViewerService.getEventTypes()
         selectedTypes.value = eventTypes.value
         eventTypesLoaded.value = true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'jfrViewer.startRecording.notification.couldNotLoadEventTypes',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
     }
 }
@@ -61,10 +62,10 @@ async function startRecording(): Promise<boolean> {
             await toaster.info(t('jfrViewer.startRecording.notification.recordingNotStarted'))
         }
         return true
-    } catch (e: any) {
+    } catch (e) {
         await toaster.error(t(
             'jfrViewer.startRecording.notification.couldNotStartRecording',
-            { reason: e.message }
+            { reason: errorMessage(e) }
         ))
         return false
     }

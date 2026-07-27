@@ -1,5 +1,5 @@
 import { markRaw } from 'vue'
-import type { DefineComponent, Raw } from 'vue'
+import type { Component, Raw } from 'vue'
 import type { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 import ReferenceSchemaViewer from '@/modules/schema-viewer/viewer/component/reference/ReferenceSchemaViewer.vue'
 import { SchemaType } from '@/modules/schema-viewer/viewer/model/SchemaType'
@@ -18,8 +18,8 @@ export class ReferenceSchemaPointer implements SchemaPointer {
         this.referenceName = referenceName
     }
 
-    get component(): Raw<DefineComponent<any, any, any>> {
-        return markRaw(ReferenceSchemaViewer as DefineComponent<any, any, any>)
+    get component(): Raw<Component> {
+        return markRaw(ReferenceSchemaViewer as Component)
     }
 
     get schemaName(): string {

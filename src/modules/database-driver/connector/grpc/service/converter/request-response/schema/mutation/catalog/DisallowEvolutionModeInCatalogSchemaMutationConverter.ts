@@ -10,12 +10,13 @@ import type {
 import {
     CatalogEvolutionModeConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogEvolutionModeConverter.ts'
+import { Set as ImmutableSet } from 'immutable'
 
 export class DisallowEvolutionModeInCatalogSchemaMutationConverter implements SchemaMutationConverter<DisallowEvolutionModeInCatalogSchemaMutation, GrpcDisallowEvolutionModeInCatalogSchemaMutation> {
 
     convert(mutation: GrpcDisallowEvolutionModeInCatalogSchemaMutation): DisallowEvolutionModeInCatalogSchemaMutation {
         return new DisallowEvolutionModeInCatalogSchemaMutation(
-            Immutable.Set(mutation.evolutionModes.map(CatalogEvolutionModeConverter.convertCatalogEvolutionMode))
+            ImmutableSet(mutation.evolutionModes.map(CatalogEvolutionModeConverter.convertCatalogEvolutionMode))
         )
     }
 }

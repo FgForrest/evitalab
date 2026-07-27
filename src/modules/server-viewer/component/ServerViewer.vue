@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { errorMessage } from '@/utils/error'
 
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import { List } from 'immutable'
@@ -13,6 +14,7 @@ import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import ServerTitle from '@/modules/server-viewer/component/ServerTitle.vue'
 import ServerStatusComponent from '@/modules/server-viewer/component/server-status/ServerStatus.vue'
+import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
 import type { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import {
@@ -48,67 +50,62 @@ const title: List<string> = List.of(t('serverViewer.title'))
 const detailRef = ref<typeof ServerStatusComponent>()
 
 const serverStatus = ref<ServerStatus>()
-const serverStatusLoaded = ref<boolean>(false)
+const serverAvailable = ref<boolean>(true)
 
-async function loadServerStatus(): Promise<boolean> {
+async function loadServerStatus(silent: boolean = false, forceRefresh: boolean = false): Promise<boolean> {
     try {
-        serverStatus.value = await serverViewerService.getServerStatus()
-        if (!serverStatusLoaded.value) {
-            serverStatusLoaded.value = true
-        }
+        serverStatus.value = await serverViewerService.getServerStatus(forceRefresh)
         return true
-    } catch (e: any) {
-        await toaster.error(t(
-            'serverViewer.notification.couldNotLoad',
-            { reason: e.message }
-        ))
+    } catch (e) {
+        if (!silent) {
+            await toaster.error(t(
+                'serverViewer.notification.couldNotLoad',
+                { reason: errorMessage(e) }
+            ))
+        }
         return false
     }
 }
 
-let canReload: boolean = true
 let reloadTimeoutId: ReturnType<typeof setTimeout> | undefined = undefined
 async function reload(manual: boolean = false): Promise<void> {
-    if (!canReload && !manual) {
-        return
+    // background polls stay silent to avoid toast spam; a manual reload surfaces the error
+    const available: boolean = await loadServerStatus(!manual, true)
+    serverAvailable.value = available
+    if (available) {
+        await detailRef.value?.reload()
     }
+    // keep polling either way so the viewer recovers on its own once the server is back
+    scheduleReload()
+}
 
-    const loadedStatus: boolean = await loadServerStatus()
-    const detailReloaded: boolean = await detailRef.value?.reload()
-    if (loadedStatus && detailReloaded) {
-        if (manual && canReload) {
-            // do nothing if the reloading process is working and user
-            // requests additional reload in between
-        } else {
-            // set new timeout only for automatic reload or reload recovery
-            reloadTimeoutId = setTimeout(reload, reloadInterval)
-        }
-        canReload = true
-    } else {
-        // we don't want to spam user server is down, user needs to refresh manually
-        canReload = false
+function scheduleReload(): void {
+    if (reloadTimeoutId != undefined) {
+        clearTimeout(reloadTimeoutId)
     }
+    reloadTimeoutId = setTimeout(() => reload(), reloadInterval)
 }
 
 loadServerStatus().then((loaded) => {
-    if (!loaded) {
-        return
-    }
-
+    serverAvailable.value = loaded
     initialized.value = true
     emit('ready')
 
-    reloadTimeoutId = setTimeout(reload, reloadInterval)
+    scheduleReload()
 })
 
-onUnmounted(() => clearInterval(reloadTimeoutId))
+onUnmounted(() => {
+    if (reloadTimeoutId != undefined) {
+        clearTimeout(reloadTimeoutId)
+    }
+})
 </script>
 
 <template>
     <div v-if="initialized" class="server-status">
         <VTabToolbar :prepend-icon="ServerViewerTabDefinition.icon()" :title="title">
             <template #append>
-                <VBtn icon @click="reload">
+                <VBtn icon @click="reload(true)">
                     <VIcon>mdi-refresh</VIcon>
                     <VTooltip activator="parent">
                         {{ t('serverViewer.button.reload') }}
@@ -118,7 +115,7 @@ onUnmounted(() => clearInterval(reloadTimeoutId))
         </VTabToolbar>
 
         <VSheet class="server-status__body">
-            <div class="tiles">
+            <div v-if="serverAvailable" class="tiles">
                 <ServerTitle :server-status="serverStatus!" />
 
                 <div class="tiles__row">
@@ -128,6 +125,17 @@ onUnmounted(() => clearInterval(reloadTimeoutId))
                     />
                 </div>
             </div>
+            <VMissingDataIndicator
+                v-else
+                icon="mdi-server-network-off"
+                :title="t('serverViewer.unavailable.title')"
+            >
+                <template #actions>
+                    <VBtn prepend-icon="mdi-refresh" @click="reload(true)">
+                        {{ t('serverViewer.button.reload') }}
+                    </VBtn>
+                </template>
+            </VMissingDataIndicator>
         </VSheet>
     </div>
 </template>

@@ -27,6 +27,9 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EntityPrices } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrices'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
+import {
+    EntityReferenceValue
+} from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceValue'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
@@ -40,8 +43,27 @@ import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
+import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
 
 export const entityViewerServiceInjectionKey: InjectionKey<EntityViewerService> = Symbol('entityViewerService')
+
+/**
+ * Distinct preview values of each representative reference attribute, keyed by attribute name. Feeds the per-attribute
+ * filter selects in the references / reference-attribute detail.
+ */
+export type ReferenceFilterData = Map<string, string[]>
+
+/**
+ * A single group of references sharing the same combination of representative reference attribute values.
+ */
+export type ReferenceGroup = {
+    /** Stable, orderable identity of the group (equal to {@link label}). */
+    key: string
+    /** Human-readable `name = value · name2 = value2` header; empty when the reference schema has no representative attributes. */
+    label: string
+    /** References belonging to this group in server order. */
+    items: EntityReferenceValue[]
+}
 
 /**
  * Service for running the entity viewer component.
@@ -127,7 +149,7 @@ export class EntityViewerService {
             pageNumber,
             pageSize
         )
-        return queryExecutor.executeQuery(dataPointer, query)
+        return queryExecutor.executeQuery(dataPointer, query, requiredData)
     }
 
     /**
@@ -158,13 +180,17 @@ export class EntityViewerService {
             1,
             1
         )
-        const result: QueryResult = await queryExecutor.executeQuery(dataPointer, query)
+        const result: QueryResult = await queryExecutor.executeQuery(dataPointer, query, [EntityPropertyKey.prices()])
         if (result.totalEntitiesCount === 0) {
             return undefined
         } else if (result.totalEntitiesCount != 1) {
             throw new UnexpectedError(`Expected 1 entity with price for sale, got ${result.totalEntitiesCount} entities.`)
         }
-        return (result.entities[0][EntityPropertyKey.prices().toString()] as EntityPrices | undefined)?.priceForSale
+        const firstEntity = result.entities[0]
+        if (firstEntity == undefined) {
+            return undefined
+        }
+        return (firstEntity[EntityPropertyKey.prices().toString()] as EntityPrices | undefined)?.priceForSale
     }
 
     /**
@@ -176,7 +202,7 @@ export class EntityViewerService {
      */
     async buildOrderByFromGridColumns(dataPointer: EntityViewerDataPointer,
                                       language: QueryLanguage,
-                                      columns: any[]): Promise<string> {
+                                      columns: { key: string, order?: 'asc' | 'desc' }[]): Promise<string> {
         const entitySchema: EntitySchema = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
             async session => await session.getEntitySchemaOrThrowException(dataPointer.entityType)
@@ -185,9 +211,10 @@ export class EntityViewerService {
 
         const orderBy: string[] = []
         for (const column of columns) {
+            const orderDirection: OrderDirection = column.order === 'desc' ? OrderDirection.Desc : OrderDirection.Asc
             const propertyKey: EntityPropertyKey = EntityPropertyKey.fromString(column.key)
             if (propertyKey.type === EntityPropertyType.Entity && propertyKey.name === StaticEntityProperties.PrimaryKey) {
-                orderBy.push(queryBuilder.buildPrimaryKeyOrderBy(column.order.toUpperCase()))
+                orderBy.push(queryBuilder.buildPrimaryKeyOrderBy(orderDirection))
             } else if (propertyKey.type === EntityPropertyType.Attributes) {
                 const attributeSchema: EntityAttributeSchema | undefined = entitySchema.attributes
                     .find(attributeSchema => attributeSchema.nameVariants
@@ -196,7 +223,7 @@ export class EntityViewerService {
                     throw new UnexpectedError(`Entity ${entitySchema.name} does not have attribute ${propertyKey.name}.`)
                 }
 
-                orderBy.push(queryBuilder.buildAttributeOrderBy(attributeSchema, column.order.toUpperCase()))
+                orderBy.push(queryBuilder.buildAttributeOrderBy(attributeSchema, orderDirection))
             } else if (propertyKey.type === EntityPropertyType.ReferenceAttributes) {
                 const referenceSchema: ReferenceSchema | undefined = entitySchema.references
                     .find(referenceSchema => referenceSchema.nameVariants
@@ -211,7 +238,7 @@ export class EntityViewerService {
                     throw new UnexpectedError(`Reference ${referenceSchema.name} does not have attribute ${propertyKey.name}.`)
                 }
 
-                orderBy.push(queryBuilder.buildReferenceAttributeOrderBy(referenceSchema, attributeSchema, column.order.toUpperCase()))
+                orderBy.push(queryBuilder.buildReferenceAttributeOrderBy(referenceSchema, attributeSchema, orderDirection))
             } else {
                 throw new UnexpectedError(`Entity property ${column.key} is not supported to be sortable.`)
             }
@@ -248,6 +275,99 @@ export class EntityViewerService {
      */
     buildReferencedEntityFilterBy(language: QueryLanguage, referencedPrimaryKeys: number[]): string {
         return this.getQueryBuilder(language).buildReferencedEntityFilterBy(referencedPrimaryKeys)
+    }
+
+    /**
+     * Collects distinct preview values of every representative reference attribute present on the given references.
+     * The result feeds one filter select per representative reference attribute. Empty when none of the references
+     * carry representative reference attributes.
+     */
+    collectReferenceFilterData(references: EntityReferenceValue[]): ReferenceFilterData {
+        const filterData: ReferenceFilterData = new Map<string, string[]>()
+        for (const reference of references) {
+            const attributes: Map<string, EntityPropertyValue> | undefined = reference.representativeReferenceAttributes
+            if (attributes == undefined) {
+                continue
+            }
+            for (const [attributeName, value] of attributes) {
+                const preview: string = value.toPreviewString()
+                let values: string[] | undefined = filterData.get(attributeName)
+                if (values == undefined) {
+                    values = []
+                    filterData.set(attributeName, values)
+                }
+                if (!values.includes(preview)) {
+                    values.push(preview)
+                }
+            }
+        }
+        for (const values of filterData.values()) {
+            values.sort()
+        }
+        return filterData
+    }
+
+    /**
+     * Filters references by the selected preview values of representative reference attributes. An attribute with no
+     * selected value is ignored (does not narrow the result); references must match all attributes that do have a
+     * selection.
+     */
+    filterReferences(references: EntityReferenceValue[], selections: Map<string, string[]>): EntityReferenceValue[] {
+        return references.filter(reference => {
+            for (const [attributeName, selectedValues] of selections) {
+                if (selectedValues.length === 0) {
+                    continue
+                }
+                const value: EntityPropertyValue | undefined = reference.representativeReferenceAttributes?.get(attributeName)
+                const preview: string | undefined = value?.toPreviewString()
+                if (preview == undefined || !selectedValues.includes(preview)) {
+                    return false
+                }
+            }
+            return true
+        })
+    }
+
+    /**
+     * Groups references by the unique combination of their representative reference attribute values. Groups are
+     * ordered by their key; references inside a group keep server order. When the references carry no representative
+     * reference attributes a single group with an empty label (flat list) is returned.
+     */
+    groupReferences(references: EntityReferenceValue[]): ReferenceGroup[] {
+        const attributeNames: Set<string> = new Set<string>()
+        for (const reference of references) {
+            if (reference.representativeReferenceAttributes != undefined) {
+                for (const attributeName of reference.representativeReferenceAttributes.keys()) {
+                    attributeNames.add(attributeName)
+                }
+            }
+        }
+        const orderedAttributeNames: string[] = Array.from(attributeNames).sort()
+
+        if (orderedAttributeNames.length === 0) {
+            return references.length > 0
+                ? [{ key: '', label: '', items: [...references] }]
+                : []
+        }
+
+        const groupsByKey: Map<string, ReferenceGroup> = new Map<string, ReferenceGroup>()
+        for (const reference of references) {
+            const parts: string[] = orderedAttributeNames.map(attributeName => {
+                const value: EntityPropertyValue | undefined = reference.representativeReferenceAttributes?.get(attributeName)
+                return `${attributeName} = ${value != undefined ? value.toPreviewString() : ''}`
+            })
+            const label: string = parts.join(' · ')
+            let group: ReferenceGroup | undefined = groupsByKey.get(label)
+            if (group == undefined) {
+                group = { key: label, label, items: [] }
+                groupsByKey.set(label, group)
+            }
+            group.items.push(reference)
+        }
+
+        return Array.from(groupsByKey.keys())
+            .sort()
+            .map(key => groupsByKey.get(key)!)
     }
 
     /**

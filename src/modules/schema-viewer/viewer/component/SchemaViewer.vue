@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import { SchemaViewerService, useSchemaViewerService } from '@/modules/schema-viewer/viewer/service/SchemaViewerService'
@@ -26,9 +27,10 @@ import {
 } from '@/modules/schema-viewer/viewer/service/schema-path-factory/DelegatingSchemaPathFactory'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 
+import type { Schema } from '@/modules/database-driver/request-response/schema/Schema'
 const keymap: Keymap = useKeymap()
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
-const schemaPathFactory: SchemaPathFactory<any> = useSchemaPathFactory()
+const schemaPathFactory: SchemaPathFactory<SchemaPointer> = useSchemaPathFactory()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
@@ -52,7 +54,7 @@ const schemaChangeCallbackId = schemaViewerService.registerSchemaChangeCallback(
 const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | null>(null)
 
 const schemaLoaded = ref<boolean>(false)
-const schema = ref<any>()
+const schema = ref<Schema | undefined>()
 const reloadingSchema = ref<boolean>(false)
 const title = ref<ImmutableList<string>>()
 
@@ -73,8 +75,8 @@ async function loadTitle(): Promise<void> {
 async function loadSchema(): Promise<void> {
     try {
         schema.value = await schemaViewerService.getSchema(props.params.dataPointer)
-    } catch (e: any) {
-        await toaster.error('Could not load schema', e) // todo lho i18n
+    } catch (e) {
+        await toaster.error('Could not load schema', asError(e)) // todo lho i18n
     }
 }
 

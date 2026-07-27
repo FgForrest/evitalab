@@ -3,7 +3,7 @@
  * Pre-defined button representing the main action of tab (in the tab toolbar)
  */
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     prependIcon: string
     loading?: boolean,
     disabled?: boolean
@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<{
     disabled: false
 })
 const emit = defineEmits<{
-    (e: 'click', value: any): void
+    (e: 'click', value: unknown): void
 }>()
 </script>
 

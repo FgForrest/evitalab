@@ -47,7 +47,7 @@ const headerPrependIcon = computed<string | undefined>(() => {
     if (propertyType === EntityPropertyType.AssociatedData) {
         return 'mdi-package-variant-closed'
     }
-    if (propertyType === EntityPropertyType.References) {
+    if (propertyType === EntityPropertyType.References || propertyType === EntityPropertyType.ReferenceAttributes) {
         return 'mdi-link-variant'
     }
     return undefined
@@ -67,6 +67,8 @@ const rawDataType = computed<Scalar | ExtraEntityObjectType | undefined>(() => {
         }
     } else if (props.propertyDescriptor?.type === EntityPropertyType.Prices) {
         return ExtraEntityObjectType.Prices
+    } else if (props.propertyDescriptor?.type === EntityPropertyType.References) {
+        return ExtraEntityObjectType.References
     } else if (props.propertyDescriptor?.type === EntityPropertyType.ReferenceAttributes) {
         return ExtraEntityObjectType.ReferenceAttributes
     } else if (props.propertyDescriptor?.schema != undefined && isTypedSchema(props.propertyDescriptor.schema)) {
@@ -77,6 +79,10 @@ const rawDataType = computed<Scalar | ExtraEntityObjectType | undefined>(() => {
 })
 const isArray = computed<boolean>(() => rawDataType?.value?.endsWith('Array') || false)
 const isPrice = computed<boolean>(() => props.propertyDescriptor?.type === EntityPropertyType.Prices || false)
+const isReferenceLike = computed<boolean>(() =>
+    props.propertyDescriptor?.type === EntityPropertyType.References ||
+    props.propertyDescriptor?.type === EntityPropertyType.ReferenceAttributes ||
+    false)
 const componentDataType = computed<Scalar | ExtraEntityObjectType | undefined>(() => {
     if (!rawDataType.value) {
         return undefined
@@ -104,7 +110,7 @@ const componentDataType = computed<Scalar | ExtraEntityObjectType | undefined>((
             </template>
             <template #actions>
                 <DetailOutputFormatSelector
-                    v-if="!isArray && !isPrice"
+                    v-if="!isArray && !isPrice && !isReferenceLike"
                     v-model="globalOutputFormat"
                 />
                 <VBtn

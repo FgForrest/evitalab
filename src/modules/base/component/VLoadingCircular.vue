@@ -3,7 +3,7 @@
  * Pre-configured loading spinner icon
  */
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     size?: number
 }>(), {
     size: 24

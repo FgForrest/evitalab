@@ -16,7 +16,7 @@ import DownloadTaskFileResultButton from '@/modules/task-viewer/components/Downl
 import { FileTaskResult } from '@/modules/database-driver/request-response/task/FileTaskResult'
 import { TextTaskResult } from '@/modules/database-driver/request-response/task/TextTaskResult'
 
-const props = defineProps<{
+defineProps<{
     task: TaskStatus
 }>()
 </script>

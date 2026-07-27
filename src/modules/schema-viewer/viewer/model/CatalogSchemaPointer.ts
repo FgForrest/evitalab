@@ -1,5 +1,5 @@
 import { markRaw } from 'vue'
-import type { DefineComponent, Raw } from 'vue'
+import type { Component, Raw } from 'vue'
 import type { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 import CatalogSchemaViewer from '@/modules/schema-viewer/viewer/component/catalog/CatalogSchemaViewer.vue'
 import { SchemaType } from '@/modules/schema-viewer/viewer/model/SchemaType'
@@ -14,8 +14,8 @@ export class CatalogSchemaPointer implements SchemaPointer {
         this.catalogName = catalogName
     }
 
-    get component(): Raw<DefineComponent<any, any, any>> {
-        return markRaw(CatalogSchemaViewer as DefineComponent<any, any, any>)
+    get component(): Raw<Component> {
+        return markRaw(CatalogSchemaViewer as Component)
     }
 
     get schemaName(): string {

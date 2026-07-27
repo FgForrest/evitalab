@@ -68,7 +68,6 @@ export class EvitaClientManagement {
     private readonly evitaClientProvider: () => EvitaClient
     private readonly evitaManagementClientProvider: () => EvitaManagementServiceClient
 
-    private readonly evitaValueConverterProvider: () => EvitaValueConverter
     private readonly catalogStatisticsConverterProvider: () => CatalogStatisticsConverter
     private readonly serverStatusConverterProvider: () => ServerStatusConverter
     private readonly reservedKeywordsConverterProvider: () => ReservedKeywordsConverter
@@ -79,7 +78,6 @@ export class EvitaClientManagement {
     constructor(errorTransformer: ErrorTransformer,
                 evitaClient: EvitaClient,
                 evitaManagementClientProvider: () => EvitaManagementServiceClient,
-                evitaValueConverterProvider: () => EvitaValueConverter,
                 catalogStatisticsConverterProvider: () => CatalogStatisticsConverter,
                 serverStatusConverterProvider: () => ServerStatusConverter,
                 reservedKeywordsConverterProvider: () => ReservedKeywordsConverter,
@@ -96,7 +94,6 @@ export class EvitaClientManagement {
         this.errorTransformer = errorTransformer
         this.evitaClientProvider = () => evitaClient
         this.evitaManagementClientProvider = evitaManagementClientProvider
-        this.evitaValueConverterProvider = evitaValueConverterProvider
         this.catalogStatisticsConverterProvider = catalogStatisticsConverterProvider
         this.serverStatusConverterProvider = serverStatusConverterProvider
         this.reservedKeywordsConverterProvider = reservedKeywordsConverterProvider
@@ -110,6 +107,24 @@ export class EvitaClientManagement {
      */
     async clearServerMetadataCache(): Promise<void> {
         await this.serverMetadataCache.clear()
+    }
+
+    /**
+     * Fetches fresh server status from the server, updates the server metadata cache and notifies
+     * registered server-status change callbacks. On fetch failure the exception propagates and the
+     * previously cached value is kept.
+     */
+    async refreshServerStatus(): Promise<ServerStatus> {
+        return await this.serverMetadataCache.refreshServerStatus()
+    }
+
+    /**
+     * Fetches fresh configuration from the server, updates the server metadata cache and notifies
+     * registered configuration change callbacks. On fetch failure the exception propagates and the
+     * previously cached value is kept.
+     */
+    async refreshConfiguration(): Promise<string> {
+        return await this.serverMetadataCache.refreshConfiguration()
     }
 
     /**
@@ -544,7 +559,7 @@ export class EvitaClientManagement {
                 response.catalogStatistics
                     .map((x) => this.catalogStatisticsConverterProvider().convert(x))
             )
-        } catch (e: any) {
+        } catch (e) {
             throw this.errorTransformer.transformError(e)
         }
     }

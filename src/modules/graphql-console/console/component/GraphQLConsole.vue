@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { asError } from '@/utils/error'
 /**
  * GraphQL console. Allows to execute GraphQL queries against a evitaDB instance.
  */
@@ -6,7 +7,8 @@
 import { Pane, Splitpanes } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 
-import type { Extension } from '@codemirror/state'
+import { Compartment, type Extension } from '@codemirror/state'
+import { EditorView } from 'codemirror'
 import { graphql } from 'cm6-graphql'
 import { json } from '@codemirror/lang-json'
 
@@ -59,7 +61,6 @@ import {
 import {
     GraphQLConsoleTabDefinition
 } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
-import { command } from 'keymaster'
 
 enum EditorTabType {
     Query = 'query',
@@ -72,6 +73,12 @@ enum ResultTabType {
     Raw = 'raw',
     Visualiser = 'visualiser'
 }
+
+/**
+ * Upper bound for the initial GraphQL schema introspection. On expiry the request is aborted and the tab
+ * switches to its error/retry state instead of showing the loading screen indefinitely.
+ */
+const schemaLoadTimeoutMs = 15_000
 
 const keymap: Keymap = useKeymap()
 const graphQLConsoleService: GraphQLConsoleService = useGraphQLConsoleService()
@@ -93,6 +100,9 @@ defineExpose<TabComponentExpose>({
             t(`graphQLConsole.instanceType.${props.params.dataPointer.instanceType}`)
         ))
         return new ConnectionSubjectPath(props.params.dataPointer.connection, pathItems)
+    },
+    retry(): void {
+        initialize()
     }
 })
 
@@ -112,13 +122,20 @@ const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
 
 const graphQLSchema = ref<GraphQLSchema>()
 const graphQLSchemaChangeCallbackId = graphQLConsoleService.registerGraphQLSchemaChangeCallback(
-    props.params.dataPointer.catalogName,
+    props.params.dataPointer,
     async () => await loadGraphQLSchema()
 )
+const reloadingSchema = ref<boolean>(false)
 
 const queryEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
 const queryCode = ref<string>(props.data.query ? props.data.query : t('graphQLConsole.placeholder.writeQuery', { catalogName: props.params.dataPointer.catalogName }))
-const queryExtensions = ref<Extension[]>()
+// GraphQL language support is swapped in place through a CodeMirror compartment so the
+// editor's extensions array reference stays stable; reassigning it would force the editor
+// to fully remount on every schema (re)load.
+const queryEditorView = ref<EditorView>()
+const queryLanguageCompartment = new Compartment()
+let queryLanguageExtension: Extension = []
+const queryExtensions: Extension[] = [queryLanguageCompartment.of([])]
 
 const variablesEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
 const variablesCode = ref<string>(props.data.variables ? props.data.variables : '{\n  \n}')
@@ -164,13 +181,37 @@ watch(currentData, (data) => {
     emit('update:data', data)
 })
 
-async function loadGraphQLSchema(): Promise<void> {
-    const schema: GraphQLSchema = await graphQLConsoleService.getGraphQLSchema(props.params.dataPointer)
-    queryExtensions.value = graphql(schema)
+async function loadGraphQLSchema(signal?: AbortSignal): Promise<void> {
+    const schema: GraphQLSchema = await graphQLConsoleService.getGraphQLSchema(props.params.dataPointer, signal)
+    graphQLSchema.value = schema
+    queryLanguageExtension = graphql(schema)
+    applyQueryLanguage()
+    // keep the schema viewer tab in sync when the schema is reloaded after it was already displayed
+    if (schemaEditorInitialized.value) {
+        schemaCode.value = printSchema(schema)
+    }
 }
 
-onBeforeMount(() => {
-    loadGraphQLSchema()
+/**
+ * Reconfigures the query editor's language compartment with the currently loaded GraphQL
+ * schema. Safe to call before the editor exists (no-op until its view is available).
+ */
+function applyQueryLanguage(): void {
+    queryEditorView.value?.dispatch({
+        effects: queryLanguageCompartment.reconfigure(queryLanguageExtension)
+    })
+}
+
+// apply the already-loaded language once the editor view becomes available
+watch(queryEditorView, () => applyQueryLanguage())
+
+/**
+ * Loads the GraphQL schema (bounded by a request timeout) and marks the tab ready. On any failure —
+ * including a timed-out/aborted introspection — reports the error to the tab framework so it can offer
+ * a retry, instead of leaving the tab stuck behind the loading screen. Reused by both mount and retry.
+ */
+function initialize(): void {
+    loadGraphQLSchema(AbortSignal.timeout(schemaLoadTimeoutMs))
         .then(() => {
             initialized.value = true
             emit('ready')
@@ -180,8 +221,24 @@ onBeforeMount(() => {
             }
         })
         .catch(error => {
-            toaster.error('Could get GraphQL Schema', error).then() // todo lho i18n
+            emit('error', asError(error))
         })
+}
+
+async function refreshGraphQLSchema(): Promise<void> {
+    reloadingSchema.value = true
+    try {
+        // invalidate the cached schema; the registered change callback performs the actual reload
+        await graphQLConsoleService.refreshGraphQLSchema(props.params.dataPointer)
+    } catch (error) {
+        await toaster.error(t('graphQLConsole.notification.failedToReloadSchema'), asError(error))
+    } finally {
+        reloadingSchema.value = false
+    }
+}
+
+onBeforeMount(() => {
+    initialize()
 })
 onMounted(() => {
     // register console specific keyboard shortcuts
@@ -216,7 +273,7 @@ onMounted(() => {
 })
 onUnmounted(() => {
     graphQLConsoleService.unregisterGraphQLSchemaChangeCallback(
-        props.params.dataPointer.catalogName,
+        props.params.dataPointer,
         graphQLSchemaChangeCallbackId
     )
 
@@ -234,8 +291,8 @@ onUnmounted(() => {
 async function executeQuery(): Promise<void> {
     try {
         workspaceService.addTabHistoryRecord(historyKey.value, createGraphQLConsoleHistoryRecord(queryCode.value, variablesCode.value))
-    } catch (e: any) {
-        await toaster.error(t('graphQLConsole.notification.failedToSaveQueryToHistory', e))
+    } catch (e) {
+        await toaster.error(t('graphQLConsole.notification.failedToSaveQueryToHistory'), asError(e))
     }
 
     loading.value = true
@@ -247,9 +304,9 @@ async function executeQuery(): Promise<void> {
         if (resultTab.value === ResultTabType.Raw) {
             focusRawResultEditor()
         }
-    } catch (error: any) {
+    } catch (error) {
         loading.value = false
-        await toaster.error('Could not execute query', error) // todo lho i18n
+        await toaster.error('Could not execute query', asError(error)) // todo lho i18n
     }
 }
 
@@ -307,6 +364,13 @@ function focusResultVisualiser(): void {
 <!--                    </VTooltip>-->
 <!--                </VBtn>-->
 
+                <VBtn :loading="reloadingSchema" icon density="compact" @click="refreshGraphQLSchema()">
+                    <VIcon>mdi-refresh</VIcon>
+                    <VActionTooltip activator="parent">
+                        {{ t('graphQLConsole.button.reloadSchema') }}
+                    </VActionTooltip>
+                </VBtn>
+
                 <VExecuteQueryButton
                     :loading="loading"
                     @click="executeQuery"
@@ -352,6 +416,7 @@ function focusResultVisualiser(): void {
                                 ref="queryEditorRef"
                                 v-model="queryCode"
                                 :additional-extensions="queryExtensions"
+                                @update:editor="queryEditorView = $event.view"
                             />
                         </VWindowItem>
 

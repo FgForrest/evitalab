@@ -15,9 +15,9 @@ import {
  */
 export class MutationHistoryVisualisationProcessor {
 
-    private readonly visualisers: ImmutableList<MutationVisualiser<any>>
+    private readonly visualisers: ImmutableList<MutationVisualiser<ChangeCatalogCapture>>
 
-    constructor(visualisers: ImmutableList<MutationVisualiser<any>>) {
+    constructor(visualisers: ImmutableList<MutationVisualiser<ChangeCatalogCapture>>) {
         this.visualisers = visualisers
     }
 

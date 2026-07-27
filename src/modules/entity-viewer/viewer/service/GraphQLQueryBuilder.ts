@@ -7,6 +7,9 @@ import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/Sta
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
+import {
+    ReferenceAttributeSchema
+} from '@/modules/database-driver/request-response/schema/ReferenceAttributeSchema'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
 import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
@@ -258,7 +261,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                 }
             } else if (requiredDatum.type === EntityPropertyType.ReferenceAttributes) {
                 const referenceName = requiredDatum.names[0]
-                if (!requiredReferences.includes(referenceName)) {
+                if (referenceName != undefined && !requiredReferences.includes(referenceName)) {
                     requiredReferences.push(referenceName)
                 }
             }
@@ -295,6 +298,12 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                 .filter(it => it != undefined)
                 .map(it => it as string)
 
+            // representative attributes of the reference itself, fetched implicitly to allow grouping/filtering the
+            // references and reference-attribute details; unioned with the explicitly selected column attributes
+            const representativeReferenceAttributes: string[] = this.findRepresentativeReferenceAttributes(referenceSchema, dataLocale)
+                .map(attributeSchema => attributeSchema.nameVariants.get(NamingConvention.CamelCase)!)
+            const ownAttributes: string[] = Array.from(new Set<string>([...requiredAttributes, ...representativeReferenceAttributes]))
+
             let requiredRepresentativeAttributes: string[] = []
             if (referenceSchema.referencedEntityTypeManaged) {
                 requiredRepresentativeAttributes = this.findRepresentativeAttributes(
@@ -311,23 +320,37 @@ export class GraphQLQueryBuilder implements QueryBuilder {
 
             entityOutputFields.push(`reference_${requiredReference}: ${requiredReference} {`)
             entityOutputFields.push('   referencedPrimaryKey')
-            if (referenceSchema.referencedEntityTypeManaged) {
-                if (requiredAttributes.length > 0) {
-                    entityOutputFields.push('   attributes {')
-                    entityOutputFields.push(`       ${requiredAttributes.join(',')}`)
-                    entityOutputFields.push('   }')
-                }
-
-                if (requiredRepresentativeAttributes.length > 0) {
-                    entityOutputFields.push('   referencedEntity {')
-                    entityOutputFields.push('       attributes {')
-                    entityOutputFields.push(`           ${requiredRepresentativeAttributes.join(',')}`)
-                    entityOutputFields.push('       }')
-                    entityOutputFields.push('   }')
-                }
+            if (ownAttributes.length > 0) {
+                entityOutputFields.push('   attributes {')
+                entityOutputFields.push(`       ${ownAttributes.join(',')}`)
+                entityOutputFields.push('   }')
+            }
+            if (referenceSchema.referencedEntityTypeManaged && requiredRepresentativeAttributes.length > 0) {
+                entityOutputFields.push('   referencedEntity {')
+                entityOutputFields.push('       attributes {')
+                entityOutputFields.push(`           ${requiredRepresentativeAttributes.join(',')}`)
+                entityOutputFields.push('       }')
+                entityOutputFields.push('   }')
+            }
+            // group primary key, fetched implicitly to allow opening the referenced group in a new grid
+            if (referenceSchema.referencedGroupTypeManaged === true) {
+                entityOutputFields.push('   groupEntity {')
+                entityOutputFields.push('       primaryKey')
+                entityOutputFields.push('   }')
             }
             entityOutputFields.push('}')
         }
+    }
+
+    private findRepresentativeReferenceAttributes(referenceSchema: ReferenceSchema, dataLocale: string | undefined): AttributeSchema[] {
+        return Array.from(referenceSchema.attributes.values())
+            .filter(attributeSchema => attributeSchema instanceof ReferenceAttributeSchema && attributeSchema.representative)
+            .filter(attributeSchema => {
+                if (!dataLocale) {
+                    return !attributeSchema.localized
+                }
+                return true
+            })
     }
 
     private findRepresentativeAttributes(entitySchema: EntitySchema, dataLocale: string | undefined): AttributeSchema[] {
@@ -344,15 +367,15 @@ export class GraphQLQueryBuilder implements QueryBuilder {
     }
 
     buildPrimaryKeyOrderBy(orderDirection: OrderDirection): string {
-        return `entityPrimaryKeyNatural: ${orderDirection}`
+        return `entityPrimaryKeyNatural: ${orderDirection.toUpperCase()}`
     }
 
     buildAttributeOrderBy(attributeSchema: AttributeSchema, orderDirection: OrderDirection): string {
-        return `attribute${attributeSchema.nameVariants.get(NamingConvention.PascalCase)}Natural: ${orderDirection}`
+        return `attribute${attributeSchema.nameVariants.get(NamingConvention.PascalCase)}Natural: ${orderDirection.toUpperCase()}`
     }
 
     buildReferenceAttributeOrderBy(referenceSchema: ReferenceSchema, attributeSchema: AttributeSchema, orderDirection: OrderDirection): string {
-        return `reference${referenceSchema.nameVariants.get(NamingConvention.PascalCase)}Property: { attribute${attributeSchema.nameVariants.get(NamingConvention.PascalCase)}Natural: ${orderDirection} }`
+        return `reference${referenceSchema.nameVariants.get(NamingConvention.PascalCase)}Property: { attribute${attributeSchema.nameVariants.get(NamingConvention.PascalCase)}Natural: ${orderDirection.toUpperCase()} }`
     }
 
     buildParentEntityFilterBy(parentPrimaryKey: number): string {
