@@ -57,7 +57,7 @@ export class TrafficViewerService {
                          exportFile: boolean,
                          maxFileSizeInBytes: bigint | undefined,
                          chunkFileSizeInBytes: bigint | undefined): Promise<TaskStatus> {
-        return await this.evitaClient.queryCatalog(
+        return await this.evitaClient.updateCatalog(
             catalogName,
             session => session.startRecording(
                 samplingRate,
@@ -70,7 +70,7 @@ export class TrafficViewerService {
     }
 
     async stopRecording(trafficRecorderTask: TaskStatus): Promise<TaskStatus> {
-        return await this.evitaClient.queryCatalog(
+        return await this.evitaClient.updateCatalog(
             trafficRecorderTask.catalogName!,
             session => session.stopRecording(trafficRecorderTask.taskId)
         )
