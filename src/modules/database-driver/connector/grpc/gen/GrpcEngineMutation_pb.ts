@@ -6,6 +6,8 @@ import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { GrpcLocalCatalogSchemaMutation } from "./GrpcCatalogSchemaMutation_pb";
 import { file_GrpcCatalogSchemaMutation } from "./GrpcCatalogSchemaMutation_pb";
+import type { GrpcConflictResolution } from "./GrpcEnums_pb";
+import { file_GrpcEnums } from "./GrpcEnums_pb";
 import { file_GrpcEvitaDataTypes } from "./GrpcEvitaDataTypes_pb";
 import type { GrpcTransactionMutation } from "./GrpcInfrastrutureMutation_pb";
 import { file_GrpcInfrastrutureMutation } from "./GrpcInfrastrutureMutation_pb";
@@ -15,7 +17,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file GrpcEngineMutation.proto.
  */
 export const file_GrpcEngineMutation: GenFile = /*@__PURE__*/
-  fileDesc("ChhHcnBjRW5naW5lTXV0YXRpb24ucHJvdG8SJWlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQiNgofR3JwY0NyZWF0ZUNhdGFsb2dTY2hlbWFNdXRhdGlvbhITCgtjYXRhbG9nTmFtZRgBIAEoCSI3CiBHcnBjUmVzdG9yZUNhdGFsb2dTY2hlbWFNdXRhdGlvbhITCgtjYXRhbG9nTmFtZRgBIAEoCSJrCiNHcnBjTW9kaWZ5Q2F0YWxvZ1NjaGVtYU5hbWVNdXRhdGlvbhITCgtjYXRhbG9nTmFtZRgBIAEoCRIWCg5uZXdDYXRhbG9nTmFtZRgCIAEoCRIXCg9vdmVyd3JpdGVUYXJnZXQYAyABKAgilgEKH0dycGNNb2RpZnlDYXRhbG9nU2NoZW1hTXV0YXRpb24SEwoLY2F0YWxvZ05hbWUYASABKAkSXgoPc2NoZW1hTXV0YXRpb25zGAIgAygLMkUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTG9jYWxDYXRhbG9nU2NoZW1hTXV0YXRpb24iMwocR3JwY01ha2VDYXRhbG9nQWxpdmVNdXRhdGlvbhITCgtjYXRhbG9nTmFtZRgBIAEoCSI2Ch9HcnBjUmVtb3ZlQ2F0YWxvZ1NjaGVtYU11dGF0aW9uEhMKC2NhdGFsb2dOYW1lGAEgASgJIkgKIEdycGNTZXRDYXRhbG9nTXV0YWJpbGl0eU11dGF0aW9uEhMKC2NhdGFsb2dOYW1lGAEgASgJEg8KB211dGFibGUYAiABKAgiSwocR3JwY0R1cGxpY2F0ZUNhdGFsb2dNdXRhdGlvbhITCgtjYXRhbG9nTmFtZRgBIAEoCRIWCg5uZXdDYXRhbG9nTmFtZRgCIAEoCSJCChtHcnBjU2V0Q2F0YWxvZ1N0YXRlTXV0YXRpb24SEwoLY2F0YWxvZ05hbWUYASABKAkSDgoGYWN0aXZlGAIgASgIIt4IChJHcnBjRW5naW5lTXV0YXRpb24SbQobY3JlYXRlQ2F0YWxvZ1NjaGVtYU11dGF0aW9uGAEgASgLMkYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ3JlYXRlQ2F0YWxvZ1NjaGVtYU11dGF0aW9uSAASdQofbW9kaWZ5Q2F0YWxvZ1NjaGVtYU5hbWVNdXRhdGlvbhgCIAEoCzJKLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY01vZGlmeUNhdGFsb2dTY2hlbWFOYW1lTXV0YXRpb25IABJtChttb2RpZnlDYXRhbG9nU2NoZW1hTXV0YXRpb24YAyABKAsyRi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNNb2RpZnlDYXRhbG9nU2NoZW1hTXV0YXRpb25IABJnChhtYWtlQ2F0YWxvZ0FsaXZlTXV0YXRpb24YBCABKAsyQy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNNYWtlQ2F0YWxvZ0FsaXZlTXV0YXRpb25IABJtChtyZW1vdmVDYXRhbG9nU2NoZW1hTXV0YXRpb24YBSABKAsyRi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZW1vdmVDYXRhbG9nU2NoZW1hTXV0YXRpb25IABJdChN0cmFuc2FjdGlvbk11dGF0aW9uGAYgASgLMj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVHJhbnNhY3Rpb25NdXRhdGlvbkgAEm8KHHNldENhdGFsb2dNdXRhYmlsaXR5TXV0YXRpb24YByABKAsyRy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTZXRDYXRhbG9nTXV0YWJpbGl0eU11dGF0aW9uSAASZwoYZHVwbGljYXRlQ2F0YWxvZ011dGF0aW9uGAggASgLMkMuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRHVwbGljYXRlQ2F0YWxvZ011dGF0aW9uSAASZQoXc2V0Q2F0YWxvZ1N0YXRlTXV0YXRpb24YCSABKAsyQi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTZXRDYXRhbG9nU3RhdGVNdXRhdGlvbkgAEm8KHHJlc3RvcmVDYXRhbG9nU2NoZW1hTXV0YXRpb24YCiABKAsyRy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZXN0b3JlQ2F0YWxvZ1NjaGVtYU11dGF0aW9uSABCCgoIbXV0YXRpb25C/gEKKWNvbS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkQhdHcnBjRW5naW5lTXV0YXRpb25Qcm90b1ABogIFSUVFR0eqAiVJby5Fdml0YWRiLkV4dGVybmFsQXBpLkdycGMuR2VuZXJhdGVkygIlSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZOICMUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWRcR1BCTWV0YWRhdGHqAilJbzo6RXZpdGFkYjo6RXh0ZXJuYWxBcGk6OkdycGM6OkdlbmVyYXRlZGIGcHJvdG8z", [file_GrpcCatalogSchemaMutation, file_GrpcEvitaDataTypes, file_GrpcInfrastrutureMutation]);
+  fileDesc("ChhHcnBjRW5naW5lTXV0YXRpb24ucHJvdG8SJWlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQikQEKH0dycGNDcmVhdGVDYXRhbG9nU2NoZW1hTXV0YXRpb24SEwoLY2F0YWxvZ05hbWUYASABKAkSWQoSY29uZmxpY3RSZXNvbHV0aW9uGAIgASgLMj0uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ29uZmxpY3RSZXNvbHV0aW9uIjcKIEdycGNSZXN0b3JlQ2F0YWxvZ1NjaGVtYU11dGF0aW9uEhMKC2NhdGFsb2dOYW1lGAEgASgJImsKI0dycGNNb2RpZnlDYXRhbG9nU2NoZW1hTmFtZU11dGF0aW9uEhMKC2NhdGFsb2dOYW1lGAEgASgJEhYKDm5ld0NhdGFsb2dOYW1lGAIgASgJEhcKD292ZXJ3cml0ZVRhcmdldBgDIAEoCCKWAQofR3JwY01vZGlmeUNhdGFsb2dTY2hlbWFNdXRhdGlvbhITCgtjYXRhbG9nTmFtZRgBIAEoCRJeCg9zY2hlbWFNdXRhdGlvbnMYAiADKAsyRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNMb2NhbENhdGFsb2dTY2hlbWFNdXRhdGlvbiIzChxHcnBjTWFrZUNhdGFsb2dBbGl2ZU11dGF0aW9uEhMKC2NhdGFsb2dOYW1lGAEgASgJIjYKH0dycGNSZW1vdmVDYXRhbG9nU2NoZW1hTXV0YXRpb24SEwoLY2F0YWxvZ05hbWUYASABKAkiSAogR3JwY1NldENhdGFsb2dNdXRhYmlsaXR5TXV0YXRpb24SEwoLY2F0YWxvZ05hbWUYASABKAkSDwoHbXV0YWJsZRgCIAEoCCJLChxHcnBjRHVwbGljYXRlQ2F0YWxvZ011dGF0aW9uEhMKC2NhdGFsb2dOYW1lGAEgASgJEhYKDm5ld0NhdGFsb2dOYW1lGAIgASgJIkIKG0dycGNTZXRDYXRhbG9nU3RhdGVNdXRhdGlvbhITCgtjYXRhbG9nTmFtZRgBIAEoCRIOCgZhY3RpdmUYAiABKAgiNQoeR3JwY01hcmtDYXRhbG9nTWlzc2luZ011dGF0aW9uEhMKC2NhdGFsb2dOYW1lGAEgASgJIm8KIEdycGNVcGdyYWRlQ2F0YWxvZ0Zvcm1hdE11dGF0aW9uEhMKC2NhdGFsb2dOYW1lGAEgASgJEhsKE2Zyb21Qcm90b2NvbFZlcnNpb24YAiABKAUSGQoRdG9Qcm90b2NvbFZlcnNpb24YAyABKAUivAoKEkdycGNFbmdpbmVNdXRhdGlvbhJtChtjcmVhdGVDYXRhbG9nU2NoZW1hTXV0YXRpb24YASABKAsyRi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDcmVhdGVDYXRhbG9nU2NoZW1hTXV0YXRpb25IABJ1Ch9tb2RpZnlDYXRhbG9nU2NoZW1hTmFtZU11dGF0aW9uGAIgASgLMkouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTW9kaWZ5Q2F0YWxvZ1NjaGVtYU5hbWVNdXRhdGlvbkgAEm0KG21vZGlmeUNhdGFsb2dTY2hlbWFNdXRhdGlvbhgDIAEoCzJGLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY01vZGlmeUNhdGFsb2dTY2hlbWFNdXRhdGlvbkgAEmcKGG1ha2VDYXRhbG9nQWxpdmVNdXRhdGlvbhgEIAEoCzJDLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY01ha2VDYXRhbG9nQWxpdmVNdXRhdGlvbkgAEm0KG3JlbW92ZUNhdGFsb2dTY2hlbWFNdXRhdGlvbhgFIAEoCzJGLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1JlbW92ZUNhdGFsb2dTY2hlbWFNdXRhdGlvbkgAEl0KE3RyYW5zYWN0aW9uTXV0YXRpb24YBiABKAsyPi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUcmFuc2FjdGlvbk11dGF0aW9uSAASbwocc2V0Q2F0YWxvZ011dGFiaWxpdHlNdXRhdGlvbhgHIAEoCzJHLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1NldENhdGFsb2dNdXRhYmlsaXR5TXV0YXRpb25IABJnChhkdXBsaWNhdGVDYXRhbG9nTXV0YXRpb24YCCABKAsyQy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNEdXBsaWNhdGVDYXRhbG9nTXV0YXRpb25IABJlChdzZXRDYXRhbG9nU3RhdGVNdXRhdGlvbhgJIAEoCzJCLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1NldENhdGFsb2dTdGF0ZU11dGF0aW9uSAASbwoccmVzdG9yZUNhdGFsb2dTY2hlbWFNdXRhdGlvbhgKIAEoCzJHLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc3RvcmVDYXRhbG9nU2NoZW1hTXV0YXRpb25IABJrChptYXJrQ2F0YWxvZ01pc3NpbmdNdXRhdGlvbhgLIAEoCzJFLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY01hcmtDYXRhbG9nTWlzc2luZ011dGF0aW9uSAASbwocdXBncmFkZUNhdGFsb2dGb3JtYXRNdXRhdGlvbhgMIAEoCzJHLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1VwZ3JhZGVDYXRhbG9nRm9ybWF0TXV0YXRpb25IAEIKCghtdXRhdGlvbkL+AQopY29tLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWRCF0dycGNFbmdpbmVNdXRhdGlvblByb3RvUAGiAgVJRUVHR6oCJUlvLkV2aXRhZGIuRXh0ZXJuYWxBcGkuR3JwYy5HZW5lcmF0ZWTKAiVJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVk4gIxSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZFxHUEJNZXRhZGF0YeoCKUlvOjpFdml0YWRiOjpFeHRlcm5hbEFwaTo6R3JwYzo6R2VuZXJhdGVkYgZwcm90bzM", [file_GrpcCatalogSchemaMutation, file_GrpcEnums, file_GrpcEvitaDataTypes, file_GrpcInfrastrutureMutation]);
 
 /**
  * Mutation is responsible for setting up a new CatalogSchema.
@@ -29,6 +31,14 @@ export type GrpcCreateCatalogSchemaMutation = Message<"io.evitadb.externalApi.gr
    * @generated from field: string catalogName = 1;
    */
   catalogName: string;
+
+  /**
+   * Optional catalog-level transaction conflict resolution override applied to the new catalog. When not set, the
+   * catalog inherits the engine-level default.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcConflictResolution conflictResolution = 2;
+   */
+  conflictResolution?: GrpcConflictResolution;
 };
 
 /**
@@ -249,6 +259,68 @@ export const GrpcSetCatalogStateMutationSchema: GenMessage<GrpcSetCatalogStateMu
   messageDesc(file_GrpcEngineMutation, 8);
 
 /**
+ * Mutation that records the fact a catalog's on-disk folder is no longer present, so the engine
+ * can move it to `MISSING` state in lock-step with the WAL rather than silently rewriting the
+ * bootstrap file on startup reconciliation.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcMarkCatalogMissingMutation
+ */
+export type GrpcMarkCatalogMissingMutation = Message<"io.evitadb.externalApi.grpc.generated.GrpcMarkCatalogMissingMutation"> & {
+  /**
+   * Name of the catalog whose on-disk folder is no longer present.
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcMarkCatalogMissingMutation.
+ * Use `create(GrpcMarkCatalogMissingMutationSchema)` to create a new message.
+ */
+export const GrpcMarkCatalogMissingMutationSchema: GenMessage<GrpcMarkCatalogMissingMutation> = /*@__PURE__*/
+  messageDesc(file_GrpcEngineMutation, 9);
+
+/**
+ * Mutation that upgrades a catalog's on-disk storage protocol from `fromProtocolVersion` to
+ * `toProtocolVersion`. Drives the state transitions `OUT_OF_DATE` → `BEING_UPGRADED` →
+ * prior operational state and serves as the WAL-backed record of the per-catalog lazy format
+ * upgrade.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcUpgradeCatalogFormatMutation
+ */
+export type GrpcUpgradeCatalogFormatMutation = Message<"io.evitadb.externalApi.grpc.generated.GrpcUpgradeCatalogFormatMutation"> & {
+  /**
+   * Name of the catalog whose storage protocol is being upgraded.
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+
+  /**
+   * Storage protocol version currently present on disk (captured for observability).
+   *
+   * @generated from field: int32 fromProtocolVersion = 2;
+   */
+  fromProtocolVersion: number;
+
+  /**
+   * Storage protocol version to upgrade to, typically the engine's current `STORAGE_PROTOCOL_VERSION`
+   * (captured for observability).
+   *
+   * @generated from field: int32 toProtocolVersion = 3;
+   */
+  toProtocolVersion: number;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcUpgradeCatalogFormatMutation.
+ * Use `create(GrpcUpgradeCatalogFormatMutationSchema)` to create a new message.
+ */
+export const GrpcUpgradeCatalogFormatMutationSchema: GenMessage<GrpcUpgradeCatalogFormatMutation> = /*@__PURE__*/
+  messageDesc(file_GrpcEngineMutation, 10);
+
+/**
  * This structure encapsulates all mutations that needs to be executed on entire evitaDB level and not locally to
  * single catalog schema instance.
  *
@@ -340,6 +412,22 @@ export type GrpcEngineMutation = Message<"io.evitadb.externalApi.grpc.generated.
      */
     value: GrpcRestoreCatalogSchemaMutation;
     case: "restoreCatalogSchemaMutation";
+  } | {
+    /**
+     * Mutation that records the fact a catalog's on-disk folder is no longer present.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcMarkCatalogMissingMutation markCatalogMissingMutation = 11;
+     */
+    value: GrpcMarkCatalogMissingMutation;
+    case: "markCatalogMissingMutation";
+  } | {
+    /**
+     * Mutation that upgrades a catalog's on-disk storage protocol to the engine's current version.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcUpgradeCatalogFormatMutation upgradeCatalogFormatMutation = 12;
+     */
+    value: GrpcUpgradeCatalogFormatMutation;
+    case: "upgradeCatalogFormatMutation";
   } | { case: undefined; value?: undefined };
 };
 
@@ -348,5 +436,5 @@ export type GrpcEngineMutation = Message<"io.evitadb.externalApi.grpc.generated.
  * Use `create(GrpcEngineMutationSchema)` to create a new message.
  */
 export const GrpcEngineMutationSchema: GenMessage<GrpcEngineMutation> = /*@__PURE__*/
-  messageDesc(file_GrpcEngineMutation, 9);
+  messageDesc(file_GrpcEngineMutation, 11);
 

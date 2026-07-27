@@ -33,6 +33,12 @@ import {
 import {
     ModifyCatalogSchemaNameMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/engine/ModifyCatalogSchemaNameMutationConverter.ts'
+import {
+    MarkCatalogMissingMutationConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/engine/MarkCatalogMissingMutationConverter.ts'
+import {
+    UpgradeCatalogFormatMutationConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/engine/UpgradeCatalogFormatMutationConverter.ts'
 
 export class DelegatingEngineMutationConverter {
 
@@ -47,12 +53,26 @@ export class DelegatingEngineMutationConverter {
         ['setCatalogMutabilityMutation', SetCatalogMutabilityMutationConverter.INSTANCE],
         ['duplicateCatalogMutation', DuplicateCatalogMutationConverter.INSTANCE],
         ['setCatalogStateMutation', SetCatalogStateMutationConverter.INSTANCE],
-        ['restoreCatalogSchemaMutation', RestoreCatalogSchemaMutationConverter.INSTANCE]
+        ['restoreCatalogSchemaMutation', RestoreCatalogSchemaMutationConverter.INSTANCE],
+        ['markCatalogMissingMutation', MarkCatalogMissingMutationConverter.INSTANCE],
+        ['upgradeCatalogFormatMutation', UpgradeCatalogFormatMutationConverter.INSTANCE]
     ]);
 
-    static convert(mutation: GrpcEngineMutation | undefined): SchemaMutation {
+    /**
+     * Converts a gRPC engine mutation to its internal counterpart.
+     *
+     * Returns `undefined` when the oneof case is unset — a newer server sent a mutation this client
+     * does not know, so proto3 dropped the unknown field. This is the expected version-skew path at
+     * the CDC boundary and must degrade to a header-only capture rather than fail the stream.
+     *
+     * Still throws {@link UnexpectedError} when the oneof case is known but has no registered
+     * converter: regenerated types imply a regenerated registry, so this can only be a forgotten
+     * registry entry, which must fail loudly in tests/dev.
+     */
+    static convert(mutation: GrpcEngineMutation | undefined): SchemaMutation | undefined {
         if (!mutation?.mutation?.case) {
-            throw new UnexpectedError('Unknown mutation type: ' + mutation?.mutation.case)
+            console.warn('Unknown engine mutation dropped (unset oneof case); degrading to header-only capture.')
+            return undefined
         }
 
         const converter = DelegatingEngineMutationConverter.TO_TYPESCRIPT_CONVERTERS.get(mutation.mutation.case)

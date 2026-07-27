@@ -72,6 +72,19 @@ const showDeactivateCatalogDialog = ref<boolean>(false)
 
 const flags = ref<ItemFlag[]>([])
 
+/**
+ * States whose on-disk data cannot be served, so the catalog must not be expandable even if the
+ * server does not (yet) report `unusable=true` for them.
+ */
+const nonServableStates: ReadonlySet<CatalogState> = new Set([
+    CatalogState.Missing,
+    CatalogState.OutOfDate,
+    CatalogState.BeingUpgraded
+])
+const openable = computed<boolean>(() =>
+    !props.catalog.unusable && !nonServableStates.has(props.catalog.catalogState)
+)
+
 onMounted(() => changeFlags())
 
 function changeFlags() {
@@ -79,8 +92,12 @@ function changeFlags() {
 
     if (props.catalog.catalogState === CatalogState.Corrupted) {
         flags.value.push(ItemFlag.error(t('explorer.catalog.flag.corrupted')))
+    } else if (props.catalog.catalogState === CatalogState.Missing) {
+        flags.value.push(ItemFlag.error(t('explorer.catalog.flag.missing')))
     } else if (props.catalog.catalogState === CatalogState.WarmingUp) {
         flags.value.push(ItemFlag.warning(t('explorer.catalog.flag.warmingUp')))
+    } else if (props.catalog.catalogState === CatalogState.OutOfDate) {
+        flags.value.push(ItemFlag.warning(t('explorer.catalog.flag.outOfDate')))
     } else {
         if (props.catalog.catalogState !== CatalogState.Alive)
             flags.value.push(ItemFlag.info(t(`explorer.catalog.flag.${props.catalog.catalogState.toString()}`)))
@@ -173,7 +190,7 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
         <template #activator="{ isOpen, props }">
             <VTreeViewItem
                 v-bind="props"
-                :openable="!catalog.unusable"
+                :openable="openable"
                 :is-open="isOpen"
                 :prepend-icon="catalog.readOnly ? 'mdi-database-eye-outline' : 'mdi-database-outline'"
                 :loading="loading"

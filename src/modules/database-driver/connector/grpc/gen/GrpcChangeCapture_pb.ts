@@ -17,13 +17,15 @@ import type { GrpcInfrastructureMutation } from "./GrpcInfrastrutureMutation_pb"
 import { file_GrpcInfrastrutureMutation } from "./GrpcInfrastrutureMutation_pb";
 import type { GrpcOffsetDateTime } from "./GrpcEvitaDataTypes_pb";
 import { file_GrpcEvitaDataTypes } from "./GrpcEvitaDataTypes_pb";
+import type { GrpcCatalogState } from "./GrpcEnums_pb";
+import { file_GrpcEnums } from "./GrpcEnums_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file GrpcChangeCapture.proto.
  */
 export const file_GrpcChangeCapture: GenFile = /*@__PURE__*/
-  fileDesc("ChdHcnBjQ2hhbmdlQ2FwdHVyZS5wcm90bxIlaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZCKfAgoZR3JwY0NoYW5nZUNhcHR1cmVDcml0ZXJpYRJKCgRhcmVhGAEgASgOMjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2hhbmdlQ2FwdHVyZUFyZWESWAoKc2NoZW1hU2l0ZRgCIAEoCzJCLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZUNhcHR1cmVTY2hlbWFTaXRlSAASVAoIZGF0YVNpdGUYAyABKAsyQC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlRGF0YVNpdGVIAEIGCgRzaXRlIpoCChtHcnBjQ2hhbmdlQ2FwdHVyZVNjaGVtYVNpdGUSMAoKZW50aXR5VHlwZRgBIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRJUCglvcGVyYXRpb24YAiADKA4yQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlT3BlcmF0aW9uElwKDWNvbnRhaW5lclR5cGUYAyADKA4yRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlQ29udGFpbmVyVHlwZRIVCg1jb250YWluZXJOYW1lGAQgAygJIs8CChlHcnBjQ2hhbmdlQ2FwdHVyZURhdGFTaXRlEjAKCmVudGl0eVR5cGUYASABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSNQoQZW50aXR5UHJpbWFyeUtleRgCIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQzMlZhbHVlElQKCW9wZXJhdGlvbhgDIAMoDjJBLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZUNhcHR1cmVPcGVyYXRpb24SXAoNY29udGFpbmVyVHlwZRgEIAMoDjJFLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZUNhcHR1cmVDb250YWluZXJUeXBlEhUKDWNvbnRhaW5lck5hbWUYBSADKAkivQYKGEdycGNDaGFuZ2VDYXRhbG9nQ2FwdHVyZRIsCgd2ZXJzaW9uGAEgASgLMhsuZ29vZ2xlLnByb3RvYnVmLkludDY0VmFsdWUSKgoFaW5kZXgYAiABKAsyGy5nb29nbGUucHJvdG9idWYuSW50MzJWYWx1ZRJKCgRhcmVhGAMgASgOMjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2hhbmdlQ2FwdHVyZUFyZWESMAoKZW50aXR5VHlwZRgEIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRI1ChBlbnRpdHlQcmltYXJ5S2V5GAUgASgLMhsuZ29vZ2xlLnByb3RvYnVmLkludDMyVmFsdWUSVAoJb3BlcmF0aW9uGAYgASgOMkEuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2hhbmdlQ2FwdHVyZU9wZXJhdGlvbhJZCg5zY2hlbWFNdXRhdGlvbhgHIAEoCzI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjaGVtYU11dGF0aW9uSAASUwoOZW50aXR5TXV0YXRpb24YCCABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlNdXRhdGlvbkgAElEKDWxvY2FsTXV0YXRpb24YCSABKAsyOC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNMb2NhbE11dGF0aW9uSAASYwoWaW5mcmFzdHJ1Y3R1cmVNdXRhdGlvbhgKIAEoCzJBLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0luZnJhc3RydWN0dXJlTXV0YXRpb25IABJMCgl0aW1lc3RhbXAYYyABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNPZmZzZXREYXRlVGltZUIGCgRib2R5IrQCChdHcnBjQ2hhbmdlU3lzdGVtQ2FwdHVyZRITCgd2ZXJzaW9uGAEgASgDQgIwARINCgVpbmRleBgCIAEoBRJUCglvcGVyYXRpb24YAyABKA4yQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlT3BlcmF0aW9uElEKDnN5c3RlbU11dGF0aW9uGAQgASgLMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW5naW5lTXV0YXRpb24STAoJdGltZXN0YW1wGAUgASgLMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjT2Zmc2V0RGF0ZVRpbWUitAEKDUdycGNIZWFydEJlYXQSEQoFaW5kZXgYASABKANCAjABEkwKCXRpbWVzdGFtcBgCIAEoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY09mZnNldERhdGVUaW1lEh8KE2xhc3RPYnNlcnZlZFZlcnNpb24YAyABKANCAjABEiEKFW1pbGxpc1RvTmV4dEhlYXJ0YmVhdBgEIAEoA0ICMAEqQQoVR3JwY0NoYW5nZUNhcHR1cmVBcmVhEgoKBlNDSEVNQRAAEggKBERBVEEQARISCg5JTkZSQVNUUlVDVFVSRRACKkUKGkdycGNDaGFuZ2VDYXB0dXJlT3BlcmF0aW9uEgoKBlVQU0VSVBAAEgoKBlJFTU9WRRABEg8KC1RSQU5TQUNUSU9OEAIqswEKHkdycGNDaGFuZ2VDYXB0dXJlQ29udGFpbmVyVHlwZRIVChFDT05UQUlORVJfQ0FUQUxPRxAAEhQKEENPTlRBSU5FUl9FTlRJVFkQARIXChNDT05UQUlORVJfQVRUUklCVVRFEAISHQoZQ09OVEFJTkVSX0FTU09DSUFURURfREFUQRADEhMKD0NPTlRBSU5FUl9QUklDRRAEEhcKE0NPTlRBSU5FUl9SRUZFUkVOQ0UQBSo+ChhHcnBjQ2hhbmdlQ2FwdHVyZUNvbnRlbnQSEQoNQ0hBTkdFX0hFQURFUhAAEg8KC0NIQU5HRV9CT0RZEAEqSQoXR3JwY0NhcHR1cmVSZXNwb25zZVR5cGUSEwoPQUNLTk9XTEVER0VNRU5UEAASCgoGQ0hBTkdFEAESDQoJSEVBUlRCRUFUEAJC/QEKKWNvbS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkQhZHcnBjQ2hhbmdlQ2FwdHVyZVByb3RvUAGiAgVJRUVHR6oCJUlvLkV2aXRhZGIuRXh0ZXJuYWxBcGkuR3JwYy5HZW5lcmF0ZWTKAiVJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVk4gIxSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZFxHUEJNZXRhZGF0YeoCKUlvOjpFdml0YWRiOjpFeHRlcm5hbEFwaTo6R3JwYzo6R2VuZXJhdGVkYgZwcm90bzM", [file_google_protobuf_wrappers, file_GrpcEngineMutation, file_GrpcEntityMutation, file_GrpcLocalMutation, file_GrpcEntitySchemaMutation, file_GrpcInfrastrutureMutation, file_GrpcEvitaDataTypes]);
+  fileDesc("ChdHcnBjQ2hhbmdlQ2FwdHVyZS5wcm90bxIlaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZCKfAgoZR3JwY0NoYW5nZUNhcHR1cmVDcml0ZXJpYRJKCgRhcmVhGAEgASgOMjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2hhbmdlQ2FwdHVyZUFyZWESWAoKc2NoZW1hU2l0ZRgCIAEoCzJCLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZUNhcHR1cmVTY2hlbWFTaXRlSAASVAoIZGF0YVNpdGUYAyABKAsyQC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlRGF0YVNpdGVIAEIGCgRzaXRlIpoCChtHcnBjQ2hhbmdlQ2FwdHVyZVNjaGVtYVNpdGUSMAoKZW50aXR5VHlwZRgBIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRJUCglvcGVyYXRpb24YAiADKA4yQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlT3BlcmF0aW9uElwKDWNvbnRhaW5lclR5cGUYAyADKA4yRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlQ29udGFpbmVyVHlwZRIVCg1jb250YWluZXJOYW1lGAQgAygJIs8CChlHcnBjQ2hhbmdlQ2FwdHVyZURhdGFTaXRlEjAKCmVudGl0eVR5cGUYASABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSNQoQZW50aXR5UHJpbWFyeUtleRgCIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQzMlZhbHVlElQKCW9wZXJhdGlvbhgDIAMoDjJBLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZUNhcHR1cmVPcGVyYXRpb24SXAoNY29udGFpbmVyVHlwZRgEIAMoDjJFLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZUNhcHR1cmVDb250YWluZXJUeXBlEhUKDWNvbnRhaW5lck5hbWUYBSADKAkivQYKGEdycGNDaGFuZ2VDYXRhbG9nQ2FwdHVyZRIsCgd2ZXJzaW9uGAEgASgLMhsuZ29vZ2xlLnByb3RvYnVmLkludDY0VmFsdWUSKgoFaW5kZXgYAiABKAsyGy5nb29nbGUucHJvdG9idWYuSW50MzJWYWx1ZRJKCgRhcmVhGAMgASgOMjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2hhbmdlQ2FwdHVyZUFyZWESMAoKZW50aXR5VHlwZRgEIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRI1ChBlbnRpdHlQcmltYXJ5S2V5GAUgASgLMhsuZ29vZ2xlLnByb3RvYnVmLkludDMyVmFsdWUSVAoJb3BlcmF0aW9uGAYgASgOMkEuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2hhbmdlQ2FwdHVyZU9wZXJhdGlvbhJZCg5zY2hlbWFNdXRhdGlvbhgHIAEoCzI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjaGVtYU11dGF0aW9uSAASUwoOZW50aXR5TXV0YXRpb24YCCABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlNdXRhdGlvbkgAElEKDWxvY2FsTXV0YXRpb24YCSABKAsyOC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNMb2NhbE11dGF0aW9uSAASYwoWaW5mcmFzdHJ1Y3R1cmVNdXRhdGlvbhgKIAEoCzJBLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0luZnJhc3RydWN0dXJlTXV0YXRpb25IABJMCgl0aW1lc3RhbXAYYyABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNPZmZzZXREYXRlVGltZUIGCgRib2R5Io8DChdHcnBjQ2hhbmdlU3lzdGVtQ2FwdHVyZRITCgd2ZXJzaW9uGAEgASgDQgIwARINCgVpbmRleBgCIAEoBRJUCglvcGVyYXRpb24YAyABKA4yQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlT3BlcmF0aW9uElMKDnN5c3RlbU11dGF0aW9uGAQgASgLMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW5naW5lTXV0YXRpb25IABJPCglob3N0RXZlbnQYBiABKAsyOi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNIb3N0U3lzdGVtRXZlbnRIABJMCgl0aW1lc3RhbXAYBSABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNPZmZzZXREYXRlVGltZUIGCgRib2R5IsUCChNHcnBjSG9zdFN5c3RlbUV2ZW50EmMKEGNhdGFsb2dJbnN0YWxsZWQYASABKAsyRy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDYXRhbG9nSW5zdGFsbGVkSW50b0xpdmVWaWV3SAASXwoOY2F0YWxvZ1JlbW92ZWQYAiABKAsyRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDYXRhbG9nUmVtb3ZlZEZyb21MaXZlVmlld0gAEl8KFGNhdGFsb2dTY2hlbWFVcGRhdGVkGAMgASgLMj8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2F0YWxvZ1NjaGVtYVVwZGF0ZWRIAEIHCgVldmVudCKpAQogR3JwY0NhdGFsb2dJbnN0YWxsZWRJbnRvTGl2ZVZpZXcSEwoLY2F0YWxvZ05hbWUYASABKAkSTgoNb2JzZXJ2ZWRTdGF0ZRgCIAEoDjI3LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NhdGFsb2dTdGF0ZRIgChRjdXJyZW50RW5naW5lVmVyc2lvbhgDIAEoA0ICMAEiVwoeR3JwY0NhdGFsb2dSZW1vdmVkRnJvbUxpdmVWaWV3EhMKC2NhdGFsb2dOYW1lGAEgASgJEiAKFGN1cnJlbnRFbmdpbmVWZXJzaW9uGAIgASgDQgIwASJrChhHcnBjQ2F0YWxvZ1NjaGVtYVVwZGF0ZWQSEwoLY2F0YWxvZ05hbWUYASABKAkSGAoQbmV3U2NoZW1hVmVyc2lvbhgCIAEoBRIgChRjdXJyZW50RW5naW5lVmVyc2lvbhgDIAEoA0ICMAEitAEKDUdycGNIZWFydEJlYXQSEQoFaW5kZXgYASABKANCAjABEkwKCXRpbWVzdGFtcBgCIAEoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY09mZnNldERhdGVUaW1lEh8KE2xhc3RPYnNlcnZlZFZlcnNpb24YAyABKANCAjABEiEKFW1pbGxpc1RvTmV4dEhlYXJ0YmVhdBgEIAEoA0ICMAEibQofR3JwY0NoYW5nZVN5c3RlbUNhcHR1cmVDcml0ZXJpYRJKCgRhcmVhGAEgASgOMjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU3lzdGVtQ2FwdHVyZUFyZWEqQQoVR3JwY0NoYW5nZUNhcHR1cmVBcmVhEgoKBlNDSEVNQRAAEggKBERBVEEQARISCg5JTkZSQVNUUlVDVFVSRRACKkUKGkdycGNDaGFuZ2VDYXB0dXJlT3BlcmF0aW9uEgoKBlVQU0VSVBAAEgoKBlJFTU9WRRABEg8KC1RSQU5TQUNUSU9OEAIqswEKHkdycGNDaGFuZ2VDYXB0dXJlQ29udGFpbmVyVHlwZRIVChFDT05UQUlORVJfQ0FUQUxPRxAAEhQKEENPTlRBSU5FUl9FTlRJVFkQARIXChNDT05UQUlORVJfQVRUUklCVVRFEAISHQoZQ09OVEFJTkVSX0FTU09DSUFURURfREFUQRADEhMKD0NPTlRBSU5FUl9QUklDRRAEEhcKE0NPTlRBSU5FUl9SRUZFUkVOQ0UQBSo+ChhHcnBjQ2hhbmdlQ2FwdHVyZUNvbnRlbnQSEQoNQ0hBTkdFX0hFQURFUhAAEg8KC0NIQU5HRV9CT0RZEAEqSQoXR3JwY0NhcHR1cmVSZXNwb25zZVR5cGUSEwoPQUNLTk9XTEVER0VNRU5UEAASCgoGQ0hBTkdFEAESDQoJSEVBUlRCRUFUEAIqYgoVR3JwY1N5c3RlbUNhcHR1cmVBcmVhEhsKF1NZU1RFTV9BUkVBX1VOU1BFQ0lGSUVEEAASFgoSU1lTVEVNX0FSRUFfRU5HSU5FEAESFAoQU1lTVEVNX0FSRUFfSE9TVBACQv0BCiljb20uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZEIWR3JwY0NoYW5nZUNhcHR1cmVQcm90b1ABogIFSUVFR0eqAiVJby5Fdml0YWRiLkV4dGVybmFsQXBpLkdycGMuR2VuZXJhdGVkygIlSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZOICMUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWRcR1BCTWV0YWRhdGHqAilJbzo6RXZpdGFkYjo6RXh0ZXJuYWxBcGk6OkdycGM6OkdlbmVyYXRlZGIGcHJvdG8z", [file_google_protobuf_wrappers, file_GrpcEngineMutation, file_GrpcEntityMutation, file_GrpcLocalMutation, file_GrpcEntitySchemaMutation, file_GrpcInfrastrutureMutation, file_GrpcEvitaDataTypes, file_GrpcEnums]);
 
 /**
  * Record for the criteria of the capture request allowing to limit mutations to specific area of interest an its
@@ -285,11 +287,29 @@ export type GrpcChangeSystemCapture = Message<"io.evitadb.externalApi.grpc.gener
   operation: GrpcChangeCaptureOperation;
 
   /**
-   * optional body of the operation when it is requested by the GrpcContent
+   * Body of the capture - exactly one of the two branches when present. Old clients that
+   * do not opt in to HOST never receive `hostEvent`; clients that decode an
+   * unknown oneof tag drop the body silently, which is acceptable.
    *
-   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEngineMutation systemMutation = 4;
+   * @generated from oneof io.evitadb.externalApi.grpc.generated.GrpcChangeSystemCapture.body
    */
-  systemMutation?: GrpcEngineMutation;
+  body: {
+    /**
+     * Engine mutation body - durable, WAL-replicated event (ENGINE area).
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEngineMutation systemMutation = 4;
+     */
+    value: GrpcEngineMutation;
+    case: "systemMutation";
+  } | {
+    /**
+     * Host event body (HOST area, opt-in only).
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcHostSystemEvent hostEvent = 6;
+     */
+    value: GrpcHostSystemEvent;
+    case: "hostEvent";
+  } | { case: undefined; value?: undefined };
 
   /**
    * Represents the timestamp of the commit.
@@ -305,6 +325,149 @@ export type GrpcChangeSystemCapture = Message<"io.evitadb.externalApi.grpc.gener
  */
 export const GrpcChangeSystemCaptureSchema: GenMessage<GrpcChangeSystemCapture> = /*@__PURE__*/
   messageDesc(file_GrpcChangeCapture, 4);
+
+/**
+ * Host CDC event. Carried as the body of GrpcChangeSystemCapture
+ * when the subscriber explicitly opted in to HOST.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcHostSystemEvent
+ */
+export type GrpcHostSystemEvent = Message<"io.evitadb.externalApi.grpc.generated.GrpcHostSystemEvent"> & {
+  /**
+   * @generated from oneof io.evitadb.externalApi.grpc.generated.GrpcHostSystemEvent.event
+   */
+  event: {
+    /**
+     * Fires when a catalog's local reference settles into a non-transient state on this host.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCatalogInstalledIntoLiveView catalogInstalled = 1;
+     */
+    value: GrpcCatalogInstalledIntoLiveView;
+    case: "catalogInstalled";
+  } | {
+    /**
+     * Fires when a catalog is fully removed from the live view on this host.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCatalogRemovedFromLiveView catalogRemoved = 2;
+     */
+    value: GrpcCatalogRemovedFromLiveView;
+    case: "catalogRemoved";
+  } | {
+    /**
+     * Fires when a catalog's schema version increases on this host (coalesced).
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCatalogSchemaUpdated catalogSchemaUpdated = 3;
+     */
+    value: GrpcCatalogSchemaUpdated;
+    case: "catalogSchemaUpdated";
+  } | { case: undefined; value?: undefined };
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcHostSystemEvent.
+ * Use `create(GrpcHostSystemEventSchema)` to create a new message.
+ */
+export const GrpcHostSystemEventSchema: GenMessage<GrpcHostSystemEvent> = /*@__PURE__*/
+  messageDesc(file_GrpcChangeCapture, 5);
+
+/**
+ * Fires when a catalog's local reference settles into a non-transient state on this host.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcCatalogInstalledIntoLiveView
+ */
+export type GrpcCatalogInstalledIntoLiveView = Message<"io.evitadb.externalApi.grpc.generated.GrpcCatalogInstalledIntoLiveView"> & {
+  /**
+   * the name of the catalog whose reference settled
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+
+  /**
+   * the non-transient state the catalog settled into
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCatalogState observedState = 2;
+   */
+  observedState: GrpcCatalogState;
+
+  /**
+   * snapshot of the engine version at emit time (correlation only - does not advance)
+   *
+   * @generated from field: int64 currentEngineVersion = 3 [jstype = JS_STRING];
+   */
+  currentEngineVersion: string;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcCatalogInstalledIntoLiveView.
+ * Use `create(GrpcCatalogInstalledIntoLiveViewSchema)` to create a new message.
+ */
+export const GrpcCatalogInstalledIntoLiveViewSchema: GenMessage<GrpcCatalogInstalledIntoLiveView> = /*@__PURE__*/
+  messageDesc(file_GrpcChangeCapture, 6);
+
+/**
+ * Fires when a catalog is fully removed from the live view on this host.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcCatalogRemovedFromLiveView
+ */
+export type GrpcCatalogRemovedFromLiveView = Message<"io.evitadb.externalApi.grpc.generated.GrpcCatalogRemovedFromLiveView"> & {
+  /**
+   * the name of the catalog that was removed
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+
+  /**
+   * snapshot of the engine version at emit time (correlation only - does not advance)
+   *
+   * @generated from field: int64 currentEngineVersion = 2 [jstype = JS_STRING];
+   */
+  currentEngineVersion: string;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcCatalogRemovedFromLiveView.
+ * Use `create(GrpcCatalogRemovedFromLiveViewSchema)` to create a new message.
+ */
+export const GrpcCatalogRemovedFromLiveViewSchema: GenMessage<GrpcCatalogRemovedFromLiveView> = /*@__PURE__*/
+  messageDesc(file_GrpcChangeCapture, 7);
+
+/**
+ * Fires when a catalog's schema version increases on this host (coalesced once per
+ * session/transaction). See HostSystemEvent.CatalogSchemaUpdated.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcCatalogSchemaUpdated
+ */
+export type GrpcCatalogSchemaUpdated = Message<"io.evitadb.externalApi.grpc.generated.GrpcCatalogSchemaUpdated"> & {
+  /**
+   * the name of the catalog whose schema version increased
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+
+  /**
+   * the new (current) catalog schema version on this host
+   *
+   * @generated from field: int32 newSchemaVersion = 2;
+   */
+  newSchemaVersion: number;
+
+  /**
+   * snapshot of the engine version at emit time (correlation only - does not advance)
+   *
+   * @generated from field: int64 currentEngineVersion = 3 [jstype = JS_STRING];
+   */
+  currentEngineVersion: string;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcCatalogSchemaUpdated.
+ * Use `create(GrpcCatalogSchemaUpdatedSchema)` to create a new message.
+ */
+export const GrpcCatalogSchemaUpdatedSchema: GenMessage<GrpcCatalogSchemaUpdated> = /*@__PURE__*/
+  messageDesc(file_GrpcChangeCapture, 8);
 
 /**
  * Heartbeat message sent to the subscriber to keep the connection alive.
@@ -348,7 +511,30 @@ export type GrpcHeartBeat = Message<"io.evitadb.externalApi.grpc.generated.GrpcH
  * Use `create(GrpcHeartBeatSchema)` to create a new message.
  */
 export const GrpcHeartBeatSchema: GenMessage<GrpcHeartBeat> = /*@__PURE__*/
-  messageDesc(file_GrpcChangeCapture, 5);
+  messageDesc(file_GrpcChangeCapture, 9);
+
+/**
+ * Criteria for filtering system CDC captures. OR-ed when multiple are provided.
+ * Default-shape divergence vs catalog stream: when criteria is empty, only ENGINE events
+ * are delivered - HOST requires explicit opt-in.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcChangeSystemCaptureCriteria
+ */
+export type GrpcChangeSystemCaptureCriteria = Message<"io.evitadb.externalApi.grpc.generated.GrpcChangeSystemCaptureCriteria"> & {
+  /**
+   * The area of capture (system stream supports only ENGINE and HOST).
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcSystemCaptureArea area = 1;
+   */
+  area: GrpcSystemCaptureArea;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcChangeSystemCaptureCriteria.
+ * Use `create(GrpcChangeSystemCaptureCriteriaSchema)` to create a new message.
+ */
+export const GrpcChangeSystemCaptureCriteriaSchema: GenMessage<GrpcChangeSystemCaptureCriteria> = /*@__PURE__*/
+  messageDesc(file_GrpcChangeCapture, 10);
 
 /**
  * The enum defines what catalog area is covered by the capture.
@@ -535,4 +721,44 @@ export enum GrpcCaptureResponseType {
  */
 export const GrpcCaptureResponseTypeSchema: GenEnum<GrpcCaptureResponseType> = /*@__PURE__*/
   enumDesc(file_GrpcChangeCapture, 4);
+
+/**
+ * Area covered by the system CDC capture. Deliberately separate from GrpcChangeCaptureArea
+ * because the system stream has no SCHEMA/DATA semantics.
+ *
+ * The zero value SYSTEM_AREA_UNSPECIFIED encodes "no area set" / null on the domain side so
+ * proto3's default-value semantics do not collapse a null criterion into ENGINE. See issue
+ * #1151 for the rationale.
+ *
+ * @generated from enum io.evitadb.externalApi.grpc.generated.GrpcSystemCaptureArea
+ */
+export enum GrpcSystemCaptureArea {
+  /**
+   * Sentinel for an absent area — domain `null` round-trips through this value rather than
+   * collapsing into ENGINE because of proto3 default-value semantics.
+   *
+   * @generated from enum value: SYSTEM_AREA_UNSPECIFIED = 0;
+   */
+  SYSTEM_AREA_UNSPECIFIED = 0,
+
+  /**
+   * Engine mutations (durable, WAL-replicated).
+   *
+   * @generated from enum value: SYSTEM_AREA_ENGINE = 1;
+   */
+  SYSTEM_AREA_ENGINE = 1,
+
+  /**
+   * Host events (HostSystemEvent - non-replicable, live-tail-only).
+   *
+   * @generated from enum value: SYSTEM_AREA_HOST = 2;
+   */
+  SYSTEM_AREA_HOST = 2,
+}
+
+/**
+ * Describes the enum io.evitadb.externalApi.grpc.generated.GrpcSystemCaptureArea.
+ */
+export const GrpcSystemCaptureAreaSchema: GenEnum<GrpcSystemCaptureArea> = /*@__PURE__*/
+  enumDesc(file_GrpcChangeCapture, 5);
 
