@@ -30,10 +30,6 @@ mirroring in the other, but note the two modules do **not** share code.
 `EvitaClient.management.listJfrRecordingEventTypes()`; recording itself is
 `startJrfRecording(allowedEvents)` / `stopJfrRecording()`.
 
-> `StartRecordingDialog.vue` currently uses the wrong `VFormDialog` slot name
-> (`confirm-button-content` instead of `confirm-button-body`), so its confirm button reads
-> "Confirm" rather than its intended label. Same bug in `traffic-viewer`'s `StartRecordingDialog.vue`.
-
 ## Related
 
 - [`database-driver`](database-driver.md) — the JFR management calls and `request-response/jfr/`

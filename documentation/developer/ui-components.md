@@ -37,6 +37,15 @@ Convention: a dialog component wraps its trigger via the activator slot, owns it
 `modelValue`, performs its action in `confirm` returning `true`/`false` for success, and reports
 errors via the toaster.
 
+`VFormDialog` renders content through these slots: `activator`, `title`, `prepend-form`, `default`
+(wrapped in the validated `VForm`), `append-form`, `alternative-action-button` and
+**`confirm-button-body`** — the label of the confirm button, which falls back to a generic "Confirm"
+when not passed.
+
+Mind the slot names: Vue silently drops a `<template #…>` whose name the target component doesn't
+declare, so a typo costs you the label with no error anywhere. `test/components/slotNames.test.ts`
+guards against this repository-wide — see [testing](testing.md#slot-names).
+
 ## Tab window building blocks
 
 | Component | Use for |

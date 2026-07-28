@@ -14,6 +14,7 @@ Tests live in the top-level `test/` directory, mirroring the `src/` structure:
 test/
 ├── utils/               # tests of src/utils helpers (duration, number, object, uuid, semver…)
 ├── modules/             # tests of module logic
+├── components/          # repository-wide checks over .vue sources (see Slot names below)
 └── xxhashjs/            # sanity tests of third-party behaviour we depend on
 ```
 
@@ -51,6 +52,22 @@ regression test**.
 UI components and server-dependent flows are currently verified manually against a running evitaDB
 instance (see [running development version](running-development-version.md) and
 [evitaDB server](evitadb-server.md)).
+
+## Slot names
+
+`test/components/slotNames.test.ts` is the one exception to the pure-logic focus: it parses every
+`src/**/*.vue` file with `vue/compiler-sfc` and asserts that no component is passed a
+`<template #slot-name>` it doesn't declare. Vue ignores unknown slots silently, so such a typo
+otherwise only shows up as a missing label in the UI.
+
+The declared slot names are read from each component's own `<slot>` outlets, and a used component is
+resolved through its `import` path — file names alone are ambiguous (both recording modules ship a
+`StartRecordingDialog.vue`). Usages are skipped, not failed, when the name cannot be resolved
+statically: globally registered or dynamically named components, dynamic slot names
+(`<template #[name]>`), and components with a dynamically named `<slot :name="…">` outlet.
+
+When a failure names a slot you *intended* to add, add the `<slot>` outlet to the target component —
+don't relax the test.
 
 ## CI
 
