@@ -16,7 +16,8 @@ it covers the architecture, all modules, custom components, conventions and step
 
 - [index](documentation/developer/index.md) — TOC with recommended reading order
 - [architecture](documentation/developer/architecture.md) — bootstrap, run modes, module system, dependency injection
-- [module catalog](documentation/developer/modules/index.md) — what every module under `src/modules/` does
+- [module catalog](documentation/developer/modules/index.md) — index of all modules under `src/modules/`,
+  linking to one detail page per module (`documentation/developer/modules/<module>.md`)
 - [database driver](documentation/developer/database-driver.md) — `EvitaClient`, sessions, internal model, caching
 - [workspace & tabs](documentation/developer/workspace-and-tabs.md) — the tab framework every feature plugs into
 - [UI components](documentation/developer/ui-components.md) — custom component catalog and theming

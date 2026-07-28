@@ -26,6 +26,7 @@ import { TrafficRecordHistoryCriteria } from '@/modules/traffic-viewer/model/Tra
 import RecordHistoryFilter from '@/modules/traffic-viewer/components/RecordHistoryFilter.vue'
 import { provideHistoryCriteria } from '@/modules/traffic-viewer/components/dependencies'
 import StartPointerButton from '@/modules/traffic-viewer/components/StartPointerButton.vue'
+import ExportTrafficBufferButton from '@/modules/traffic-viewer/components/ExportTrafficBufferButton.vue'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 
 const keymap: Keymap = useKeymap()
@@ -69,6 +70,8 @@ const initialized = ref<boolean>(false)
 const historyListLoading = ref<boolean>(false)
 const historyStartPointerLoading = ref<boolean>(false)
 const historyStartPointerActive = ref<boolean>(false)
+// assume the recorder is present until the first history fetch tells us otherwise
+const recorderAvailable = ref<boolean>(true)
 
 const currentData = computed<TrafficRecordHistoryViewerTabData>(() => {
     return new TrafficRecordHistoryViewerTabData(
@@ -145,6 +148,12 @@ async function reloadHistoryList(): Promise<void> {
                     :command="Command.TrafficRecordHistoryViewer_ShareTab"
                 />
 
+                <ExportTrafficBufferButton
+                    :catalog-name="params.dataPointer.catalogName"
+                    :available="recorderAvailable"
+                    @unavailable="recorderAvailable = false"
+                />
+
                 <StartPointerButton
                     :active="historyStartPointerActive"
                     :loading="historyStartPointerLoading"
@@ -176,6 +185,7 @@ async function reloadHistoryList(): Promise<void> {
                 :data-pointer="params.dataPointer"
                 :criteria="criteria"
                 @update:start-pointer-active="historyStartPointerActive = $event"
+                @update:recorder-available="recorderAvailable = $event"
             />
         </VSheet>
     </div>

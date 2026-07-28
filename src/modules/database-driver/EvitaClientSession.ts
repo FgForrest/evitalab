@@ -459,6 +459,33 @@ export class EvitaClientSession {
     }
 
     /**
+     * Requests an on-demand export of the currently buffered traffic recording window into a downloadable ZIP
+     * archive. The export is not gated by a running recording task, it only requires a rich traffic recorder to be
+     * installed (enabled in server configuration or an on-demand recording being active). Returns the status of
+     * the created server task producing the archive.
+     *
+     * @param chunkFileSizeInBytes desired approximate size of the individual chunk files inside the archive,
+     *                             leave undefined to use the server default
+     */
+    async exportTrafficRecording(chunkFileSizeInBytes: bigint | undefined): Promise<TaskStatus> {
+        this.assertActive()
+        try {
+            const response: GetTrafficRecordingStatusResponse = await this.evitaTrafficRecordingClientProvider()
+                .exportTrafficRecording(
+                    {
+                        chunkFileSizeInBytes: (chunkFileSizeInBytes != undefined && chunkFileSizeInBytes > 0n)
+                            ? chunkFileSizeInBytes
+                            : undefined
+                    },
+                    this._callMetadata
+                )
+            return this.taskStatusConverterProvider().convert(response.taskStatus!)
+        } catch (e) {
+            throw this.errorTransformerProvider().transformError(e)
+        }
+    }
+
+    /**
      * Stops the ongoing recording task identified by the provided task ID.
      */
     async stopRecording(taskId: Uuid): Promise<TaskStatus> {
