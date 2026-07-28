@@ -51,7 +51,9 @@ export class MyModuleRegistrar implements ModuleRegistrar {
    optionally `workspace/`).
 2. Add a `ModuleRegistrar` if it provides/injects services (see above).
 3. Add an i18n namespace to `modules/i18n/en.json`.
-4. Document it in the [module catalog](modules/index.md).
+4. Document it: create `documentation/developer/modules/<my-module>.md` (named after the directory,
+   following the layout of the existing module pages) and add a row linking to it in the
+   [module catalog](modules/index.md).
 
 ## Add a new tab type
 

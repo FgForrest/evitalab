@@ -249,7 +249,10 @@ already clear the relevant caches explicitly, the echoed invalidation is an idem
 Some server operations report progress as async iterables (e.g.
 `duplicateCatalogWithProgress`, `renameCatalogWithProgress`, `deactivateCatalogWithProgress`) —
 consume them with `for await`. Others return a `TaskStatus` and are tracked via the task
-infrastructure (`request-response/task/`, surfaced by the `task-viewer` module).
+infrastructure (`request-response/task/`, surfaced by the `task-viewer` module). To follow one known
+task without listing all of them, `EvitaClientManagement.getTaskStatus(taskId)` polls a single task;
+it returns `undefined` once the server no longer knows the task, which callers must treat as a
+terminal state (the traffic-viewer's export button does).
 
 ## Error handling
 
