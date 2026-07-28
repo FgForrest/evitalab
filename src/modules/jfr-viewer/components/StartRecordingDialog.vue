@@ -109,7 +109,7 @@ async function startRecording(): Promise<boolean> {
             </VAlert>
         </template>
 
-        <template #confirm-button-content>
+        <template #confirm-button-body>
             {{ t('jfrViewer.startRecording.button.startRecording') }}
         </template>
     </VFormDialog>
