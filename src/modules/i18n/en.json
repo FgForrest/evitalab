@@ -1740,13 +1740,43 @@
       "title": "Active traffic recording",
       "notification": {
         "couldNotLoadRecords": "Could not load traffic records: {reason}",
-        "couldNotLoadLatestRecording": "Could not load latest traffic record: {reason}"
+        "couldNotLoadLatestRecording": "Could not load latest traffic record: {reason}",
+        "exportStarted": "Exporting traffic buffer…",
+        "exportReady": "Snapshot of recent traffic for catalog \"{catalogName}\" has been downloaded.",
+        "couldNotExportBuffer": "Traffic buffer export failed: {reason}",
+        "couldNotDownloadExportedFile": "Could not download the exported traffic buffer: {reason}",
+        "unknownExportFailureReason": "the server didn't report a reason",
+        "exportTaskLost": "The traffic buffer export is no longer tracked by the server. Check the traffic recordings for its result."
       },
       "button": {
         "reloadRecordHistory": "Reload record history",
         "moveStartPointerToNewest": "Load only records newer than now",
         "removeStartPointer": "Load entire record history",
-        "modifyStartPointer": "Change start of loaded record history"
+        "modifyStartPointer": "Change start of loaded record history",
+        "exportTrafficBuffer": "Export traffic buffer",
+        "exportTrafficBufferHelp": "Downloads a point-in-time snapshot of the rolling traffic buffer the server keeps in memory. No recording needs to be running; the snapshot covers whatever fits into the buffer window at this moment.",
+        "exportTrafficBufferUnavailable": "Traffic recording is not active for this catalog, so there is no traffic buffer to export. Enable traffic recording in the server configuration, or start an on-demand recording in Traffic Recordings."
+      },
+      "exportDialog": {
+        "title": "Export traffic buffer",
+        "info": "The server keeps a rolling buffer of recent traffic in memory. This exports its current content into a downloadable archive as a point-in-time snapshot — no recording needs to be running and any running recording is not affected.",
+        "button": {
+          "export": "Export"
+        },
+        "form": {
+          "chunkFileSizeInBytes": {
+            "label": "Chunk file size (optional)",
+            "hint": {
+              "default": "The size of the chunk file in bytes. Individual files in the export archive will be approximately this size. Leave empty to use the server default. You can use k, M, G, Ki, Mi, or Gi unit prefix.",
+              "rounded": "The size of the chunk file will be rounded to full bytes."
+            },
+            "unit": "bytes",
+            "validations": {
+              "notByteSize": "Chunk file size must be byte size.",
+              "outOfRange": "Chunk file size must be positive number and less than 2^63-1."
+            }
+          }
+        }
       },
       "filter": {
         "label": "Filter",
@@ -1814,9 +1844,9 @@
       },
       "list": {
         "info": {
-          "noActiveTrafficRecording": "There is no active traffic recording for the {catalogName} catalog. You need to either enable traffic recording on server options or start recording on demand in traffic recordings.",
+          "noActiveTrafficRecording": "Traffic recording is not active for the {catalogName} catalog, so there is no traffic buffer to inspect or export. You need to either enable traffic recording in the server configuration or start recording on demand in traffic recordings.",
           "indexCreating": "Index is being created for the active traffic recording for the {catalogName} catalog. Please wait and reload history in a few moments.",
-          "noRecords": "There are no traffic records for defined filter."
+          "noRecords": "There are no traffic records for defined filter. The traffic buffer of the {catalogName} catalog may still hold records excluded by the filter — use the \"Export traffic buffer\" action in the toolbar to download a snapshot of its entire content."
         },
         "button": {
           "loadMore": "Load more"

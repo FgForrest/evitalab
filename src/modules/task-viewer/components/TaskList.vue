@@ -34,7 +34,8 @@ const props = withDefaults(
     }
 )
 const emit = defineEmits<{
-    (e: 'update:activeJobsPresent', value: boolean): void
+    (e: 'update:activeJobsPresent', value: boolean): void,
+    (e: 'update:tasks', value: TaskStatus[]): void
 }>()
 
 const pageNumber = ref<number>(1)
@@ -50,11 +51,9 @@ const pageCount = computed<number>(() => {
 
 const taskStatuses = ref<PaginatedList<TaskStatus>>()
 watch(taskStatuses, async (newValue) => {
-    if (newValue != undefined && newValue.data.size > 0) {
-        emit('update:activeJobsPresent', true)
-    } else {
-        emit('update:activeJobsPresent', false)
-    }
+    const tasks: TaskStatus[] = newValue?.data.toArray() ?? []
+    emit('update:tasks', tasks)
+    emit('update:activeJobsPresent', tasks.length > 0)
 })
 const taskStatusesItems = computed<TaskStatus[]>(() => {
     if (taskStatuses.value == undefined) {

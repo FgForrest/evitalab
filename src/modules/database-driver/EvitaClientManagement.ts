@@ -13,7 +13,7 @@ import type {
     GrpcEvitaCatalogStatisticsResponse,
     GrpcEvitaConfigurationResponse,
     GrpcEvitaServerStatusResponse, GrpcReservedKeywordsResponse, GrpcRestoreCatalogUnaryRequest,
-    GrpcRestoreCatalogUnaryResponse
+    GrpcRestoreCatalogUnaryResponse, GrpcTaskStatusResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_pb'
 import { ErrorTransformer } from '@/modules/database-driver/exception/ErrorTransformer'
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
@@ -368,6 +368,27 @@ export class EvitaClientManagement {
                     simplifiedState: params
                 })
             return this.taskStatusConverterProvider().convertTaskStatuses(result)
+        } catch (e) {
+            throw this.errorTransformer.transformError(e)
+        }
+    }
+
+    /**
+     * Returns status of a single job with the specified jobId, or undefined if the server doesn't know such job
+     * (anymore). Useful for tracking progress of a single known task without listing all of them.
+     */
+    async getTaskStatus(taskId: Uuid): Promise<TaskStatus | undefined> {
+        try {
+            const result: GrpcTaskStatusResponse = await this.evitaManagementClientProvider().getTaskStatus({
+                taskId: {
+                    leastSignificantBits: taskId.leastSignificantBits.toString(),
+                    mostSignificantBits: taskId.mostSignificantBits.toString()
+                }
+            })
+            if (result.taskStatus == undefined) {
+                return undefined
+            }
+            return this.taskStatusConverterProvider().convert(result.taskStatus)
         } catch (e) {
             throw this.errorTransformer.transformError(e)
         }

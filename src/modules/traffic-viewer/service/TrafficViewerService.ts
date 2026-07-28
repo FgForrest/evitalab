@@ -3,6 +3,8 @@ import { mandatoryInject } from '@/utils/reactivity'
 import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { trafficRecorderTaskName } from '@/modules/traffic-viewer/model/TrafficRecorderTask'
+import { trafficRecordingExportTaskName } from '@/modules/traffic-viewer/model/TrafficRecordingExportTask'
+import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { List as ImmutableList } from 'immutable'
 import {
@@ -47,7 +49,7 @@ export class TrafficViewerService {
         return await this.evitaClient.management.listFilesToFetch(
             pageNumber,
             pageSize,
-            [trafficRecorderTaskName]
+            [trafficRecorderTaskName, trafficRecordingExportTaskName]
         )
     }
 
@@ -74,6 +76,38 @@ export class TrafficViewerService {
             trafficRecorderTask.catalogName!,
             session => session.stopRecording(trafficRecorderTask.taskId)
         )
+    }
+
+    /**
+     * Requests an on-demand export of the traffic recording buffer of the passed catalog into a downloadable ZIP
+     * archive and returns status of the server task producing it. The export doesn't require a running recording,
+     * only an installed rich traffic recorder (enabled in server configuration or an active on-demand recording).
+     *
+     * @param catalogName name of the catalog whose traffic buffer should be exported
+     * @param chunkFileSizeInBytes desired approximate size of the individual chunk files inside the archive,
+     *                             leave undefined to use the server default
+     */
+    async exportTrafficBuffer(catalogName: string,
+                              chunkFileSizeInBytes: bigint | undefined): Promise<TaskStatus> {
+        return await this.evitaClient.updateCatalog(
+            catalogName,
+            session => session.exportTrafficRecording(chunkFileSizeInBytes)
+        )
+    }
+
+    /**
+     * Returns current status of a single server task, or undefined if the server doesn't know such task anymore.
+     * Used for tracking progress of a started traffic buffer export.
+     */
+    async getTaskStatus(taskId: Uuid): Promise<TaskStatus | undefined> {
+        return await this.evitaClient.management.getTaskStatus(taskId)
+    }
+
+    /**
+     * Downloads contents of a server file produced by a finished traffic recording export.
+     */
+    async fetchExportedFile(fileId: Uuid): Promise<Blob> {
+        return await this.evitaClient.management.fetchFile(fileId)
     }
 
     async getRecordHistoryList(catalogName: string,
