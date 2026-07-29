@@ -29,6 +29,16 @@ import {
     TransactionMutation
 } from '../../../src/modules/database-driver/request-response/transaction/TransactionMutation'
 import type { SchemaMutation } from '../../../src/modules/database-driver/request-response/schema/mutation/SchemaMutation'
+import {
+    ModifyCatalogSchemaMutation
+} from '../../../src/modules/database-driver/request-response/schema/mutation/engine/ModifyCatalogSchemaMutation'
+import {
+    ModifyCatalogSchemaConflictResolutionMutation
+} from '../../../src/modules/database-driver/request-response/schema/mutation/catalog/ModifyCatalogSchemaConflictResolutionMutation'
+import {
+    UnknownSchemaMutation
+} from '../../../src/modules/database-driver/request-response/schema/mutation/UnknownSchemaMutation'
+import { List as ImmutableList } from 'immutable'
 
 // --- response builders -------------------------------------------------------
 
@@ -321,6 +331,39 @@ describe('DataCacheRefresher', () => {
 
         expect(stub.clearCatalogStatisticsCache).toHaveBeenCalledTimes(1)
         expect(stub.clearSchemaCache).not.toHaveBeenCalled()
+        refresher.stop()
+    })
+
+    test('a modify catalog schema mutation clears the schema cache of that catalog', async () => {
+        const stub = makeClient([yieldThenBlock([ack(), change(1, new ModifyCatalogSchemaMutation(
+            'shop',
+            undefined,
+            ImmutableList([new ModifyCatalogSchemaConflictResolutionMutation(undefined)])
+        ))])])
+        const refresher = new DataCacheRefresher(stub.evitaClient)
+
+        refresher.start()
+        await vi.advanceTimersByTimeAsync(1)
+
+        expect(stub.clearSchemaCache).toHaveBeenCalledWith('shop')
+        expect(stub.clearCatalogStatisticsCache).toHaveBeenCalledTimes(1)
+        refresher.stop()
+    })
+
+    test('a nested mutation the client cannot convert still evicts the schema cache', async () => {
+        // eviction keys off the containing mutation's catalog name only, so an unknown nested mutation
+        // (a newer server, or a missing registry entry) must not cost the refresh
+        const stub = makeClient([yieldThenBlock([ack(), change(1, new ModifyCatalogSchemaMutation(
+            'shop',
+            undefined,
+            ImmutableList([new UnknownSchemaMutation('aMutationFromANewerServer')])
+        ))])])
+        const refresher = new DataCacheRefresher(stub.evitaClient)
+
+        refresher.start()
+        await vi.advanceTimersByTimeAsync(1)
+
+        expect(stub.clearSchemaCache).toHaveBeenCalledWith('shop')
         refresher.stop()
     })
 

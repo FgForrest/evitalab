@@ -140,13 +140,11 @@ defineProps<{
     </span>
 
     <!-- side note for the value -->
-    <div v-if="propertyValue.note">
-        <span class="ml-2">
-            <VIcon icon="mdi-alert-outline" color="warning" />
-            <VTooltip activator="parent">
-                <span>{{ propertyValue.note }}</span>
-            </VTooltip>
-        </span>
+    <div v-if="propertyValue.note" class="value-note">
+        <VIcon icon="mdi-alert-outline" color="warning" />
+        <VTooltip activator="parent">
+            <span>{{ propertyValue.note }}</span>
+        </VTooltip>
     </div>
 </template>
 
@@ -160,6 +158,17 @@ defineProps<{
 .progress-bar-value {
     text-wrap: nowrap;
 }
+// the note sits next to the value it annotates - as a flex item among chips it has to center itself on
+// their line, otherwise the icon (24px) rides above the chips (32px). Spacing on the left already comes
+// from the annotated chip's own margin, so only the trailing gap has to be added to keep the note evenly
+// spaced between its value and whatever follows.
+.value-note {
+    display: inline-flex;
+    align-items: center;
+    align-self: center;
+    margin-right: 0.5rem;
+}
+
 .text-item {
     // seems like hack to keep markdown text from overflowing outside of the table
     overflow-wrap: anywhere;

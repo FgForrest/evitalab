@@ -274,6 +274,21 @@ mutation `body`:
 Mutations performed by evitaLab itself are echoed back through the stream; because those operations
 already clear the relevant caches explicitly, the echoed invalidation is an idempotent no-op.
 
+**Every schema change arrives wrapped in `ModifyCatalogSchemaMutation`** — a catalog-level change nests a
+local catalog mutation, an entity-level change nests `ModifyEntitySchemaMutation`, and an item override
+nests deeper still. Eviction keys off the wrapper's `catalogName` alone and never inspects the nested
+mutations, which is why the **nested delegating converters must never throw**
+(`DelegatingLocalCatalogSchemaMutationConverter`, `DelegatingEntitySchemaMutationConverter`,
+`DelegatingAttributeSchemaMutationConverter`). A single unconvertible nested mutation used to abort the
+whole body conversion; `ChangeSystemCaptureConverter`'s last-resort catch then degraded the capture to
+header-only, and the row above shows what that costs: **no schema-cache eviction at all**, so the UI kept
+serving a stale schema. Unknown nested mutations therefore degrade to `UnknownSchemaMutation` (which keeps
+the nested-mutation count honest for the history viewer) and the wrapper still evicts.
+
+For the same reason each delegating registry is **built on first use, not at class initialisation**: the
+converter modules form import cycles (a mutation contains mutations that delegate back), and a statically
+initialised map captures `undefined` for whichever module the bundler evaluates first.
+
 ## Long-running operations
 
 Some server operations report progress as async iterables (e.g.
