@@ -17,6 +17,9 @@ import {
 import { ErrorTransformer } from '@/modules/database-driver/exception/ErrorTransformer'
 import { ServerStatusConverter } from '@/modules/database-driver/connector/grpc/service/converter/ServerStatusConverter'
 import {
+    EngineSettingsConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/EngineSettingsConverter'
+import {
     ReservedKeywordsConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/ReservedKeywordsConverter'
 import { TaskStatusConverter } from '@/modules/database-driver/connector/grpc/service/converter/TaskStatusConverter'
@@ -82,6 +85,7 @@ export abstract class AbstractEvitaClient {
     private _mutationProgressConverter?: MutationProgressConverter
 
     private _serverStatusConverter?: ServerStatusConverter
+    private _engineSettingsConverter?: EngineSettingsConverter
     private _reservedKeywordsConverter?: ReservedKeywordsConverter
     private _serverFileConverter?: ServerFileConverter
     private _taskStateConverter?: TaskStateConverter
@@ -204,6 +208,13 @@ export abstract class AbstractEvitaClient {
             this._serverStatusConverter = new ServerStatusConverter()
         }
         return this._serverStatusConverter
+    }
+
+    protected get engineSettingsConverter(): EngineSettingsConverter {
+        if (this._engineSettingsConverter == undefined) {
+            this._engineSettingsConverter = new EngineSettingsConverter()
+        }
+        return this._engineSettingsConverter
     }
 
     protected get reservedKeywordsConverter(): ReservedKeywordsConverter {

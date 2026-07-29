@@ -52,6 +52,11 @@ export class EvitaClient extends AbstractEvitaClient {
      * @private
      */
     private readonly sharedSessions: Map<string, EvitaClientSession> = new Map()
+    /**
+     * Shared sessions whose creation is still in flight, keyed by catalog name. Concurrent callers await
+     * the same creation instead of opening a session of their own.
+     */
+    private readonly sharedSessionsInCreation: Map<string, Promise<EvitaClientSession>> = new Map()
 
     constructor(evitaLabConfig: EvitaLabConfig,
                 connectionService: ConnectionService) {
@@ -363,6 +368,7 @@ export class EvitaClient extends AbstractEvitaClient {
                 () => this.evitaManagementClient,
                 () => this.catalogStatisticsConverter,
                 () => this.serverStatusConverter,
+                () => this.engineSettingsConverter,
                 () => this.reservedKeywordsConverter,
                 () => this.serverFileConverter,
                 () => this.taskStateConverter,
@@ -617,11 +623,35 @@ export class EvitaClient extends AbstractEvitaClient {
         }
 
         if (sharedSession == undefined) {
+            // callers routinely fetch several schemas at once (a tab loads its own schema, the catalog schema
+            // and the engine settings together), and they all miss the cache in the same tick. Without
+            // single-flighting the creation, each of them opens its own session: on an alive catalog that
+            // leaks all but the last one, and on a warming-up catalog - where evitaDB permits exactly one
+            // session - every call after the first one fails outright.
+            //
+            // The in-flight entry is keyed by catalog name only, which relies on an invariant: every caller
+            // that shares a session for a given catalog asks for the same `readWrite` mode (it is derived
+            // from the catalog's warm-up state, not from the caller). A future caller that needs a different
+            // mode must not join this queue - it has to open its own session.
+            const sessionInCreation: Promise<EvitaClientSession> | undefined =
+                this.sharedSessionsInCreation.get(catalogName)
+            if (sessionInCreation != undefined) {
+                return await sessionInCreation
+            }
+
             // because a session for warming up catalogs is shared, we need to create it in read-write mode to be able to
             // execute all operations
-            const session: EvitaClientSession = await this.createSession(catalogName, readWrite)
-            this.sharedSessions.set(catalogName, session)
-            return session
+            const creation: Promise<EvitaClientSession> = this.createSession(catalogName, readWrite)
+                .then(session => {
+                    this.sharedSessions.set(catalogName, session)
+                    return session
+                })
+            this.sharedSessionsInCreation.set(catalogName, creation)
+            try {
+                return await creation
+            } finally {
+                this.sharedSessionsInCreation.delete(catalogName)
+            }
         } else {
             return sharedSession
         }

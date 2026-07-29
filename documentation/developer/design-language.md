@@ -20,6 +20,8 @@ evitaLab is **dark-only**. The palette (defined in `src/vue-plugins/vuetify.ts` 
 | `primary-light` | `#23355C` | Structural chrome: tab toolbars, secondary chart series |
 | `primary-lightest` | `#21BFE3` | **The only accent.** Highlighted/selected data (e.g. requested histogram buckets), links, active emphasis |
 | `gray-light` | `#A5ACBC` | Secondary text and default chip color |
+| `success` | `#22a44e` | The safe/recommended state of a setting (e.g. the default conflict scope) |
+| `info` | `#487ad3` | A deliberately narrowed/relaxed state of a setting |
 | `warning` | `#f7a729` | Warning icons and notes |
 | `error` | `#E13321` | Errors, dangerous confirm buttons |
 
@@ -33,6 +35,18 @@ Rules:
   `text-medium-emphasis` and `--v-disabled-opacity` classes/variables.
 - Borders use the theme border variables:
   `thin solid rgba(var(--v-border-color), var(--v-border-opacity))`.
+
+**Chips that encode a setting's risk** follow one legend, so a reader learns it once. The
+conflict-resolution chips in the [schema viewer](modules/schema-viewer.md#conflict-resolution-rows) are the
+reference implementation:
+
+| Chip color | Means |
+|---|---|
+| `error` (red) | The widest/strictest setting — safest, but the biggest cost (lowest throughput) |
+| `warning` (orange) | Wide setting with a noticeable cost |
+| `success` (green) | The balanced, recommended default |
+| `info` (blue) | Deliberately narrower than the default — cheaper, but relaxes a safety check |
+| default grey + `mdi-alert-outline` | The check is off entirely; grey (not red) because the risk is *data safety*, not cost, and the amber icon carries the warning |
 
 ### Typography & emphasis
 

@@ -66,6 +66,11 @@ export class EvitaSchemaCache {
             if (index !== -1) {
                 callbacksForEntityType.splice(index, 1)
             }
+            if (callbacksForEntityType.length === 0) {
+                // drop the entity type entirely: the registered types drive which schemas a catalog-wide
+                // invalidation notifies, and a type nobody listens to any more must not linger there
+                this.entitySchemaChangedCallbacks.delete(entityType)
+            }
         }
     }
 
@@ -130,10 +135,18 @@ export class EvitaSchemaCache {
 
     async removeLatestEntitySchema(entityType?: string): Promise<void> {
         if (entityType == undefined) {
-            const cachedSchemaKeys: string[] = Array.from(this.cachedSchemas.keys())
-            for (const cachedKey of cachedSchemaKeys) {
-                const entityType: string = this.parseEntityTypeFromLatestEntitySchemaCacheKey(cachedKey)
-                await this.removeLatestEntitySchema(entityType)
+            // every entity type that is cached *or* listened to has to be notified: a listener whose schema
+            // is not in the cache right now (evicted by an earlier change and not re-fetched yet) would
+            // otherwise never learn about this one and would keep rendering a stale schema
+            const affectedEntityTypes: Set<string> = new Set(
+                Array.from(this.cachedSchemas.keys())
+                    .map(cachedKey => this.parseEntityTypeFromLatestEntitySchemaCacheKey(cachedKey))
+            )
+            for (const listenedEntityType of this.entitySchemaChangedCallbacks.keys()) {
+                affectedEntityTypes.add(listenedEntityType)
+            }
+            for (const affectedEntityType of affectedEntityTypes) {
+                await this.removeLatestEntitySchema(affectedEntityType)
             }
         } else {
             this.cachedSchemas.delete(this.constructLatestEntitySchemaCacheKey(entityType))

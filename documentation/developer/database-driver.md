@@ -126,6 +126,36 @@ contributes the representative badge through the `prefixFlags()` hook. The flag 
 references in the entity-viewer detail. Older servers that don't send the flag report `representative = false`,
 so those details fall back to a flat, unfiltered list.
 
+### Transaction conflict resolution
+
+evitaDB's write-conflict policy is declared at several schema levels and inherited downward. The driver
+carries the **declared** values only — which level wins is derived in the
+[`schema-viewer`](modules/schema-viewer.md#conflict-resolution-rows), because the schema API returns no
+"which level won" marker.
+
+| Internal model | Field | Shape |
+|---|---|---|
+| `CatalogSchema`, `EntitySchema` | `conflictResolution: ConflictResolution \| undefined` | `undefined` ⇒ the level declares nothing and inherits |
+| `AttributeSchema` (+ all subclasses), `AssociatedDataSchema`, `ReferenceSchema` (+ `ReflectedReferenceSchema`) | `conflictResolutionOverride: ConflictResolutionOverride` | non-null enum whose `Inherited` value is the "not set" sentinel |
+
+`ConflictResolution` pairs a coarse `ConflictPolicy` (`None`/`Catalog`/`Collection`/`Entity`) with a
+`List<GranularConflictPolicy>` of refinements (non-empty only under `Entity`).
+
+**The base of the inheritance chain is not a constant.** The engine-wide default is server configuration, so
+it is read from `EvitaClientManagement.getEngineSettings()` (`EvitaManagementService.GetEngineSettings` →
+`EngineSettings`, which also reports whether time travel, CDC, traffic recording and the query cache are
+enabled). Never hardcode `Entity` as the default — a differently configured server reports something else.
+Engine settings are constant for the lifetime of the server process, so `EvitaServerMetadataCache` caches
+them like server status and configuration, but without change callbacks: they can only change by
+reconnecting, which clears the whole cache.
+
+`ConflictResolutionConverter` maps all four enums and the optional message. **The two shapes must be
+converted differently**: an absent `GrpcConflictResolution` message becomes `undefined`, while an absent
+per-item enum (a server that predates the field) degrades to `Inherited`. Every construction site in
+`CatalogSchemaConverter` passes these values as trailing constructor arguments; they default to
+"inherits", so a forgotten pass-through degrades silently rather than throwing — the converter test
+covers each attribute subclass for that reason.
+
 ## Caching & change callbacks
 
 Schemas, server status, configuration and catalog statistics are cached client-side. When a UI
@@ -243,6 +273,21 @@ mutation `body`:
 
 Mutations performed by evitaLab itself are echoed back through the stream; because those operations
 already clear the relevant caches explicitly, the echoed invalidation is an idempotent no-op.
+
+**Every schema change arrives wrapped in `ModifyCatalogSchemaMutation`** — a catalog-level change nests a
+local catalog mutation, an entity-level change nests `ModifyEntitySchemaMutation`, and an item override
+nests deeper still. Eviction keys off the wrapper's `catalogName` alone and never inspects the nested
+mutations, which is why the **nested delegating converters must never throw**
+(`DelegatingLocalCatalogSchemaMutationConverter`, `DelegatingEntitySchemaMutationConverter`,
+`DelegatingAttributeSchemaMutationConverter`). A single unconvertible nested mutation used to abort the
+whole body conversion; `ChangeSystemCaptureConverter`'s last-resort catch then degraded the capture to
+header-only, and the row above shows what that costs: **no schema-cache eviction at all**, so the UI kept
+serving a stale schema. Unknown nested mutations therefore degrade to `UnknownSchemaMutation` (which keeps
+the nested-mutation count honest for the history viewer) and the wrapper still evicts.
+
+For the same reason each delegating registry is **built on first use, not at class initialisation**: the
+converter modules form import cycles (a mutation contains mutations that delegate back), and a statically
+initialised map captures `undefined` for whichever module the bundler evaluates first.
 
 ## Long-running operations
 

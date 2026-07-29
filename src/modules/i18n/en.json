@@ -19,6 +19,13 @@
       "yes": "Yes",
       "no": "No"
     },
+    "item": {
+      "catalog": "catalog",
+      "entity": "entity",
+      "attribute": "attribute",
+      "associatedData": "associated data",
+      "reference": "reference"
+    },
     "button": {
       "previous": "Previous",
       "next": "Next",
@@ -1071,6 +1078,144 @@
         }
       }
     },
+    "conflictResolution": {
+      "label": {
+        "conflictResolution": "Conflict resolution",
+        "conflictResolutionOverride": "Conflict resolution override",
+        "effectiveConflictScope": "Effective conflict scope"
+      },
+      "help": {
+        "catalog": "The catalog-wide default for detecting write conflicts. It applies to every collection and entity in this catalog unless an entity declares its own policy. If unset, the engine-wide default configured on this server is used.",
+        "entity": "How write conflicts are detected for this entity type. If set here it overrides the catalog and engine defaults entirely (scope and refinements). It applies to every attribute, reference and associated data of this entity unless one of them declares its own override.",
+        "effectiveScope": {
+          "entity": "The conflict scope actually applied to writes of this {item}, after resolving the entity policy and this override.",
+          "catalog": "The conflict scope actually applied to writes of this {item}, after resolving the catalog policy and this override."
+        },
+        "granularIntro": "Granular refinements narrow checking to a single part of an entity, so two people editing different parts of the same entity no longer clash — fewer rejections, higher throughput. The trade-off: two edits to different parts can now both succeed, so use them only where those parts don't depend on each other.",
+        "colorLegend": "Colour shows how widely evitaDB looks for a conflicting change: wider (red) rejects more of your concurrent saves — safer but slower; narrower lets more through — faster but relaxes a safety check."
+      },
+      "scope": {
+        "none": {
+          "label": "No detection",
+          "short": "Last writer wins",
+          "hint": "Conflict detection is turned off. Concurrent saves never clash, so nothing is ever rejected — but when two of them change the same data, whichever saves last silently overwrites the other and the first change is lost with no warning. The fastest option and the least safe; use only when losing a concurrent update is acceptable."
+        },
+        "catalog": {
+          "label": "Catalog-wide",
+          "short": "Any change anywhere in the catalog clashes",
+          "hint": "The widest net. Two saves clash if they change anything in the catalog — even unrelated entities in different collections. Strongest consistency, but effectively only one write per catalog version survives, so most concurrent saves are rejected and must retry. Shown red because that high rejection rate means the lowest write throughput. Use only for operations that need a frozen snapshot of the whole catalog (bulk import, global re-pricing)."
+        },
+        "collection": {
+          "label": "Collection-wide",
+          "short": "Any change to this entity type clashes",
+          "hint": "Two saves clash if they change any entity of the same type — two Product edits clash even on different products, while a Product edit and a Category edit run side by side. Use it to guard a rule spanning the whole collection that has no single owning entity (e.g. only one product may be the storefront hero). It serializes the whole collection, so throughput drops — hence the warning colour."
+        },
+        "entity": {
+          "label": "Per entity",
+          "short": "Only changes to the same entity clash",
+          "hint": "The recommended default and the best balance of safety and speed. Two saves clash only when they change the same entity (same type and primary key); edits to two different products never clash. It is also the only scope you can narrow further with the granular refinements."
+        }
+      },
+      "granular": {
+        "entityAttribute": {
+          "label": "Per attribute",
+          "short": "Same-attribute edits clash; different-attribute edits don't",
+          "hint": "Two saves to the same entity clash only if they change the same attribute — changing name and price at once no longer clashes, but two edits to name still do.",
+          "levelNote": {
+            "entity": "On an entity: applies to every attribute of this entity unless a specific attribute overrides it.",
+            "catalog": "On the catalog: applies to every attribute of every entity in the catalog unless an entity or attribute overrides it."
+          }
+        },
+        "associatedData": {
+          "label": "Per associated data",
+          "short": "Only edits to the same associated-data item clash",
+          "hint": "Two saves clash only if they change the same associated-data item; edits to different associated data of the same entity run side by side. Applies to all associated data below this level unless an item overrides it."
+        },
+        "price": {
+          "label": "Per price",
+          "short": "Only edits to the same price clash",
+          "hint": "Two saves clash only if they change the same price; edits to different prices of the same entity run side by side. Applies to all prices below this level. (No per-price override exists — set it here.)"
+        },
+        "hierarchy": {
+          "label": "Per hierarchy move",
+          "short": "Only two moves of the same entity clash",
+          "hint": "Two saves clash only if they both change this entity's position in the tree; other edits run alongside a move. (No per-item override — set it here.)"
+        },
+        "reference": {
+          "label": "Per reference",
+          "short": "Only edits to the same reference clash",
+          "hint": "Two saves clash only if they change the same reference; edits to different references of the same entity run side by side. Applies to all references below this level unless a reference overrides it."
+        },
+        "referenceAttribute": {
+          "label": "Per reference attribute",
+          "short": "Only edits to the same attribute of the same reference clash",
+          "hint": "Even finer than Per reference: two saves clash only if they change the same attribute on the same reference. Applies to all reference attributes below this level unless one overrides it."
+        }
+      },
+      "override": {
+        "granular": {
+          "label": "Granular",
+          "short": "Check this {item} on its own",
+          "hint": "This {item} gets its own conflict check: a save clashes with another only when both change this {item}; every other change to the entity ignores it. Overrides what the entity policy would do for this {item}. Only takes effect while the entity is checked Per entity — if the entity is No detection / Catalog-wide / Collection-wide, this override does nothing."
+        },
+        "entity": {
+          "label": "Whole entity",
+          "short": "Always clash with any change to the entity",
+          "hint": "This {item} is pinned to whole-entity checking: any concurrent change to the same entity clashes with it, even when the rest of the entity uses finer per-part checks. Use it for a consistency-critical {item} you never want changed behind your back."
+        }
+      },
+      "inertWarning": {
+        "entity": "No effect — this entity is checked {scope}, which is wider than Per entity, so this override is ignored. Overrides only apply when the entity's effective scope is Per entity.",
+        "catalog": "No effect — this catalog is checked {scope}, which is wider than Per entity, so this override is ignored. Overrides only apply when the effective scope is Per entity."
+      },
+      "notification": {
+        "failedToResolvePolicy": "Could not resolve the effective conflict resolution policy"
+      },
+      "outcome": {
+        "thisItemOnly": {
+          "label": "This {item} only",
+          "hint": "A save is rejected only if another concurrent save changes this same {item}."
+        },
+        "wholeEntity": {
+          "label": "Whole entity",
+          "hint": "A save is rejected if any concurrent save changes this entity."
+        },
+        "noDetection": {
+          "label": "No detection (last writer wins)",
+          "hint": "Conflict detection is off for this entity — concurrent changes are never rejected and the last save wins, so changes can be lost."
+        },
+        "wholeCatalog": {
+          "label": "Whole catalog",
+          "hint": "A save is rejected if any concurrent save changes anything in the catalog."
+        },
+        "wholeCollection": {
+          "label": "Whole collection",
+          "hint": "A save is rejected if any concurrent save changes any entity of this type."
+        }
+      },
+      "provenance": {
+        "definedHere": {
+          "label": "Defined here",
+          "hint": "This policy is set directly on this {level}."
+        },
+        "inheritedFromCatalog": {
+          "label": "Inherited from catalog",
+          "hint": "No policy is set on this entity, so it uses the catalog's policy. Set one here to override it for this entity type."
+        },
+        "engineDefault": {
+          "label": "Engine default",
+          "hint": "No policy is set on this catalog or entity, so the engine-wide default configured on this server ({scope}) applies."
+        },
+        "followsEntityPolicy": {
+          "label": "Follows entity policy",
+          "hint": "This {item} has no override of its own; it follows the entity's effective policy shown above."
+        },
+        "followsCatalogPolicy": {
+          "label": "Follows catalog policy",
+          "hint": "This {item} has no override of its own; it follows the catalog's effective policy."
+        }
+      }
+    },
     "catalog": {
       "label": {
         "catalogId": "Catalog ID",
@@ -1106,7 +1251,8 @@
         "addingPrices": "Adding Prices",
         "addingLocales": "Adding Locales",
         "addingCurrencies": "Adding Currencies",
-        "addingHierarchy": "Adding Hierarchy"
+        "addingHierarchy": "Adding Hierarchy",
+        "updatingReferenceCardinality": "Updating Reference Cardinality"
       }
     },
     "nameVariants": {

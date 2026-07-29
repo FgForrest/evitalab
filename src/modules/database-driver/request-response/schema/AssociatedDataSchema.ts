@@ -5,6 +5,9 @@ import type { TypedSchema } from '@/modules/database-driver/request-response/sch
 import type { LocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
+import {
+    ConflictResolutionOverride
+} from '@/modules/database-driver/request-response/schema/ConflictResolutionOverride.ts'
 
 /**
  * evitaLab's representation of a single evitaDB associated data schema independent of specific evitaDB version
@@ -42,6 +45,12 @@ export class AssociatedDataSchema extends AbstractSchema implements TypedSchema,
      */
     readonly localized: boolean
 
+    /**
+     * Per-item refinement of the conflict resolution resolved for the owning entity.
+     * {@link ConflictResolutionOverride.Inherited} means no override is declared.
+     */
+    readonly conflictResolutionOverride: ConflictResolutionOverride
+
     protected _representativeFlags?: List<Flag>
 
     constructor(name: string,
@@ -50,7 +59,8 @@ export class AssociatedDataSchema extends AbstractSchema implements TypedSchema,
                 deprecationNotice: string | undefined,
                 type: Scalar,
                 nullable: boolean,
-                localized: boolean) {
+                localized: boolean,
+                conflictResolutionOverride: ConflictResolutionOverride = ConflictResolutionOverride.Inherited) {
         super()
         this.name = name
         this.nameVariants = nameVariants
@@ -59,6 +69,7 @@ export class AssociatedDataSchema extends AbstractSchema implements TypedSchema,
         this.type = type
         this.nullable = nullable
         this.localized = localized
+        this.conflictResolutionOverride = conflictResolutionOverride
     }
 
     get representativeFlags(): List<Flag> {

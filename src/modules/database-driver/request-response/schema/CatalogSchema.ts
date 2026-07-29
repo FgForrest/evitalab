@@ -5,6 +5,7 @@ import { GlobalAttributeSchema } from '@/modules/database-driver/request-respons
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import type { EntitySchemaAccessor } from '@/modules/database-driver/request-response/schema/EntitySchemaAccessor'
 import type { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
+import type { ConflictResolution } from '@/modules/database-driver/request-response/schema/ConflictResolution.ts'
 
 /**
  * evitaLab's representation of a single evitaDB catalog schema independent of specific evitaDB version
@@ -19,6 +20,11 @@ export class CatalogSchema extends AbstractSchema {
     readonly description: string | undefined
 
     readonly attributes: Map<string, GlobalAttributeSchema>
+    /**
+     * Conflict resolution declared on this catalog. When undefined, the catalog inherits evitaDB's
+     * engine default.
+     */
+    readonly conflictResolution: ConflictResolution | undefined
     private _entitySchemas: Map<string, EntitySchema> | undefined
     private readonly entitySchemaAccessor: EntitySchemaAccessor
 
@@ -39,7 +45,8 @@ export class CatalogSchema extends AbstractSchema {
         nameVariants: Map<NamingConvention, string>,
         description: string | undefined,
         attributes: GlobalAttributeSchema[],
-        entitySchemaAccessor: EntitySchemaAccessor
+        entitySchemaAccessor: EntitySchemaAccessor,
+        conflictResolution: ConflictResolution | undefined = undefined
     ) {
         super()
         this.version = version
@@ -48,6 +55,7 @@ export class CatalogSchema extends AbstractSchema {
         this.description = description
         this.attributes = Map(attributes.map((attribute) => [attribute.name, attribute]))
         this.entitySchemaAccessor = entitySchemaAccessor
+        this.conflictResolution = conflictResolution
     }
 
     get representativeFlags(): List<Flag> {

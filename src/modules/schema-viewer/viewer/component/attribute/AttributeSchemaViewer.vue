@@ -20,6 +20,15 @@ import { EntityScope } from '@/modules/database-driver/request-response/schema/E
 import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType.ts'
 import { GlobalAttributeUniquenessType } from '@/modules/database-driver/request-response/schema/GlobalAttributeUniquenessType.ts'
 import { getEnumKeyByValue } from '@/utils/enum.ts'
+import {
+    ReferenceAttributeSchemaPointer
+} from '@/modules/schema-viewer/viewer/model/ReferenceAttributeSchemaPointer.ts'
+import {
+    ConflictItemKind
+} from '@/modules/schema-viewer/viewer/service/ConflictResolutionResolver.ts'
+import {
+    useEffectiveConflictScope
+} from '@/modules/schema-viewer/viewer/component/conflict-resolution/useEffectiveConflictScope.ts'
 
 const { t } = useI18n()
 
@@ -33,6 +42,18 @@ const keys = ref<string[]>([getEnumKeyByValue(EntityScope, EntityScope.Live), ge
 const globalAttribute = props.schema instanceof GlobalAttributeSchema
 const entityAttribute = props.schema instanceof EntityAttributeSchema
 const referenceAttribute = props.schema instanceof ReferenceAttributeSchema
+
+// how the attribute was navigated to decides which granular refinement it resolves against; the model
+// class cannot tell an entity attribute from a reference one reliably
+const conflictItemKind: ConflictItemKind =
+    props.dataPointer.schemaPointer instanceof ReferenceAttributeSchemaPointer
+        ? ConflictItemKind.ReferenceAttribute
+        : ConflictItemKind.EntityAttribute
+const conflictResolutionProperties = useEffectiveConflictScope(
+    props.dataPointer,
+    conflictItemKind,
+    () => props.schema.conflictResolutionOverride
+)
 
 const properties = computed<Property[]>(() => {
     const properties: Property[] = []
@@ -118,6 +139,7 @@ const properties = computed<Property[]>(() => {
     properties.push(new Property(t('schemaViewer.attribute.label.nullable'), new PropertyValue(props.schema.nullable)))
     properties.push(new Property(t('schemaViewer.attribute.label.defaultValue'), new PropertyValue(props.schema.defaultValue)))
     properties.push(new Property(t('schemaViewer.attribute.label.indexedDecimalPlaces'), new PropertyValue(props.schema.indexedDecimalPlaces)))
+    properties.push(...conflictResolutionProperties.value)
 
     return properties
 })

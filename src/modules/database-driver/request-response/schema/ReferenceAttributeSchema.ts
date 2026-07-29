@@ -8,6 +8,9 @@ import type {
     ScopedAttributeUniquenessType
 } from '@/modules/database-driver/request-response/schema/ScopedAttributeUniquenessType.ts'
 import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
+import {
+    ConflictResolutionOverride
+} from '@/modules/database-driver/request-response/schema/ConflictResolutionOverride.ts'
 
 /**
  * evitaLab's representation of a single evitaDB reference attribute schema independent of specific evitaDB version.
@@ -33,9 +36,10 @@ export class ReferenceAttributeSchema extends AttributeSchema {
                 representative: boolean,
                 sortableInScopes: ImmutableList<EntityScope>,
                 filteredInScopes: ImmutableList<EntityScope>,
-                uniqueInScopes: ImmutableList<ScopedAttributeUniquenessType>
+                uniqueInScopes: ImmutableList<ScopedAttributeUniquenessType>,
+                conflictResolutionOverride: ConflictResolutionOverride = ConflictResolutionOverride.Inherited
     ) {
-        super(name, nameVariants, description, deprecationNotice, type, nullable, defaultValue, localized, indexedDecimalPlaces, sortableInScopes, filteredInScopes, uniqueInScopes)
+        super(name, nameVariants, description, deprecationNotice, type, nullable, defaultValue, localized, indexedDecimalPlaces, sortableInScopes, filteredInScopes, uniqueInScopes, conflictResolutionOverride)
         this.representative = representative
     }
 

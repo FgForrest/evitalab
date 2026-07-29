@@ -12,6 +12,7 @@ import type {
     GrpcDeleteFileToFetchResponse,
     GrpcEvitaCatalogStatisticsResponse,
     GrpcEvitaConfigurationResponse,
+    GrpcEvitaEngineSettingsResponse,
     GrpcEvitaServerStatusResponse, GrpcReservedKeywordsResponse, GrpcRestoreCatalogUnaryRequest,
     GrpcRestoreCatalogUnaryResponse, GrpcTaskStatusResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_pb'
@@ -37,6 +38,10 @@ import { EventType } from '@/modules/database-driver/request-response/jfr/EventT
 import { EvitaCatalogStatisticsCache } from '@/modules/database-driver/EvitaCatalogStatisticsCache'
 import { EntityCollectionStatistics } from '@/modules/database-driver/request-response/EntityCollectionStatistics'
 import { EvitaServerMetadataCache } from '@/modules/database-driver/EvitaServerMetadataCache'
+import { EngineSettings } from '@/modules/database-driver/request-response/status/EngineSettings'
+import {
+    EngineSettingsConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/EngineSettingsConverter'
 import type { StringValue } from '@bufbuild/protobuf/wkt'
 
 /**
@@ -70,6 +75,7 @@ export class EvitaClientManagement {
 
     private readonly catalogStatisticsConverterProvider: () => CatalogStatisticsConverter
     private readonly serverStatusConverterProvider: () => ServerStatusConverter
+    private readonly engineSettingsConverterProvider: () => EngineSettingsConverter
     private readonly reservedKeywordsConverterProvider: () => ReservedKeywordsConverter
     private readonly serverFileConverterProvider: () => ServerFileConverter
     private readonly taskStateConverterProvider: () => TaskStateConverter
@@ -80,13 +86,15 @@ export class EvitaClientManagement {
                 evitaManagementClientProvider: () => EvitaManagementServiceClient,
                 catalogStatisticsConverterProvider: () => CatalogStatisticsConverter,
                 serverStatusConverterProvider: () => ServerStatusConverter,
+                engineSettingsConverterProvider: () => EngineSettingsConverter,
                 reservedKeywordsConverterProvider: () => ReservedKeywordsConverter,
                 serverFileConverterProvider: () => ServerFileConverter,
                 taskStateConverterProvider: () => TaskStateConverter,
                 taskStatusConverterProvider: () => TaskStatusConverter) {
         this.serverMetadataCache = new EvitaServerMetadataCache(
             async () => await this.fetchServerStatus.bind(this)(),
-            async () => await this.fetchConfiguration.bind(this)()
+            async () => await this.fetchConfiguration.bind(this)(),
+            async () => await this.fetchEngineSettings.bind(this)()
         )
         this.catalogStatisticsCache = new EvitaCatalogStatisticsCache(
             async () => await this.fetchCatalogStatistics.bind(this)()
@@ -96,6 +104,7 @@ export class EvitaClientManagement {
         this.evitaManagementClientProvider = evitaManagementClientProvider
         this.catalogStatisticsConverterProvider = catalogStatisticsConverterProvider
         this.serverStatusConverterProvider = serverStatusConverterProvider
+        this.engineSettingsConverterProvider = engineSettingsConverterProvider
         this.reservedKeywordsConverterProvider = reservedKeywordsConverterProvider
         this.serverFileConverterProvider = serverFileConverterProvider
         this.taskStateConverterProvider = taskStateConverterProvider
@@ -520,6 +529,24 @@ export class EvitaClientManagement {
             const grpcServerStatus: GrpcEvitaServerStatusResponse = await this.evitaManagementClientProvider()
                 .serverStatus({})
             return this.serverStatusConverterProvider().convert(grpcServerStatus)
+        } catch (e) {
+            throw this.errorTransformer.transformError(e)
+        }
+    }
+
+    /**
+     * Fetches the curated subset of the engine configuration that is safe to expose to any client. The values
+     * are constant for the lifetime of the server process, so they are cached until the connection is reset.
+     */
+    async getEngineSettings(): Promise<EngineSettings> {
+        return await this.serverMetadataCache.getLatestEngineSettings()
+    }
+
+    private async fetchEngineSettings(): Promise<EngineSettings> {
+        try {
+            const response: GrpcEvitaEngineSettingsResponse = await this.evitaManagementClientProvider()
+                .getEngineSettings({})
+            return this.engineSettingsConverterProvider().convert(response)
         } catch (e) {
             throw this.errorTransformer.transformError(e)
         }

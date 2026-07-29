@@ -22,6 +22,9 @@ import { ScopedExpression } from '@/modules/database-driver/request-response/sch
 import {
     ScopedHistogramIndexDefinition
 } from '@/modules/database-driver/request-response/schema/ScopedHistogramIndexDefinition.ts'
+import {
+    ConflictResolutionOverride
+} from '@/modules/database-driver/request-response/schema/ConflictResolutionOverride.ts'
 
 export class ReflectedReferenceSchema extends ReferenceSchema {
     /**
@@ -84,10 +87,11 @@ export class ReflectedReferenceSchema extends ReferenceSchema {
                 facetedInherited: boolean,
                 indexedInherited: boolean,
                 attributeInheritanceBehavior: AttributeInheritanceBehavior,
-                attributeInheritanceFilter: string[]) {
+                attributeInheritanceFilter: string[],
+                conflictResolutionOverride: ConflictResolutionOverride = ConflictResolutionOverride.Inherited) {
         super(name, nameVariants, description, deprecationNotice, entityType, referencedEntityTypeManaged,
             entityTypeNameVariants, referencedGroupType, referencedGroupTypeManaged, groupTypeNameVariants, cardinality, attributes, sortableAttributeCompounds, scopedIndexTypes, facetedInScopes,
-            facetedPartiallyInScopes, histogramIndexDefinitions, bucketedPartiallyInScopes)
+            facetedPartiallyInScopes, histogramIndexDefinitions, bucketedPartiallyInScopes, conflictResolutionOverride)
         this.reflectedReferenceName = reflectedReferenceName
         this.descriptionInherited = descriptionInherited
         this.deprecationNoticeInherited = deprecationNoticeInherited
