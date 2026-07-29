@@ -39,19 +39,22 @@ function entitySchema(conflictResolution?: ConflictResolution): EntitySchema {
     )
 }
 
+// the engine-wide default is configurable per server, so every resolution takes it as an explicit input
+const engineDefault: ConflictResolution = resolution(ConflictPolicy.Entity)
+
 function entityPolicy(policy: ConflictPolicy, ...granularity: GranularConflictPolicy[]) {
     return { resolution: resolution(policy, ...granularity), source: PolicySource.DefinedHere }
 }
 
 describe('resolveCatalogPolicy', () => {
     test('reports the catalog\'s own declaration as defined here', () => {
-        const resolved = resolveCatalogPolicy(catalogSchema(resolution(ConflictPolicy.Collection)))
+        const resolved = resolveCatalogPolicy(catalogSchema(resolution(ConflictPolicy.Collection)), engineDefault)
         expect(resolved.source).toBe(PolicySource.DefinedHere)
         expect(resolved.resolution.policy).toBe(ConflictPolicy.Collection)
     })
 
     test('falls back to the engine default when the catalog is silent', () => {
-        const resolved = resolveCatalogPolicy(catalogSchema(undefined))
+        const resolved = resolveCatalogPolicy(catalogSchema(undefined), engineDefault)
         expect(resolved.source).toBe(PolicySource.EngineDefault)
         expect(resolved.resolution.policy).toBe(ConflictPolicy.Entity)
         expect(resolved.resolution.granularity.isEmpty()).toBe(true)
@@ -62,7 +65,8 @@ describe('resolveEntityPolicy', () => {
     test('the entity declaration wins outright over the catalog one, refinements included', () => {
         const resolved = resolveEntityPolicy(
             entitySchema(resolution(ConflictPolicy.Entity, GranularConflictPolicy.Price)),
-            catalogSchema(resolution(ConflictPolicy.Entity, GranularConflictPolicy.EntityAttribute))
+            catalogSchema(resolution(ConflictPolicy.Entity, GranularConflictPolicy.EntityAttribute)),
+            engineDefault
         )
         expect(resolved.source).toBe(PolicySource.DefinedHere)
         expect(resolved.resolution.granularity.toArray()).toEqual([GranularConflictPolicy.Price])
@@ -71,22 +75,39 @@ describe('resolveEntityPolicy', () => {
     test('a silent entity inherits the whole catalog resolution', () => {
         const resolved = resolveEntityPolicy(
             entitySchema(undefined),
-            catalogSchema(resolution(ConflictPolicy.Entity, GranularConflictPolicy.EntityAttribute))
+            catalogSchema(resolution(ConflictPolicy.Entity, GranularConflictPolicy.EntityAttribute)),
+            engineDefault
         )
         expect(resolved.source).toBe(PolicySource.InheritedFromCatalog)
         expect(resolved.resolution.granularity.toArray()).toEqual([GranularConflictPolicy.EntityAttribute])
     })
 
+    test('the engine default comes from the server, not from a hardcoded per-entity assumption', () => {
+        const collectionWideEngineDefault: ConflictResolution = resolution(ConflictPolicy.Collection)
+
+        const catalogResolved = resolveCatalogPolicy(catalogSchema(undefined), collectionWideEngineDefault)
+        expect(catalogResolved.source).toBe(PolicySource.EngineDefault)
+        expect(catalogResolved.resolution.policy).toBe(ConflictPolicy.Collection)
+
+        const entityResolved = resolveEntityPolicy(
+            entitySchema(undefined),
+            catalogSchema(undefined),
+            collectionWideEngineDefault
+        )
+        expect(entityResolved.source).toBe(PolicySource.EngineDefault)
+        expect(entityResolved.resolution.policy).toBe(ConflictPolicy.Collection)
+    })
+
     test('both levels silent resolves to the engine default', () => {
-        const resolved = resolveEntityPolicy(entitySchema(undefined), catalogSchema(undefined))
+        const resolved = resolveEntityPolicy(entitySchema(undefined), catalogSchema(undefined), engineDefault)
         expect(resolved.source).toBe(PolicySource.EngineDefault)
         expect(resolved.resolution.policy).toBe(ConflictPolicy.Entity)
     })
 
     test('a not yet loaded catalog schema still resolves the entity declaration', () => {
-        expect(resolveEntityPolicy(entitySchema(resolution(ConflictPolicy.None)), undefined).source)
+        expect(resolveEntityPolicy(entitySchema(resolution(ConflictPolicy.None)), undefined, engineDefault).source)
             .toBe(PolicySource.DefinedHere)
-        expect(resolveEntityPolicy(entitySchema(undefined), undefined).source)
+        expect(resolveEntityPolicy(entitySchema(undefined), undefined, engineDefault).source)
             .toBe(PolicySource.EngineDefault)
     })
 })

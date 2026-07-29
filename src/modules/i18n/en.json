@@ -1085,7 +1085,7 @@
         "effectiveConflictScope": "Effective conflict scope"
       },
       "help": {
-        "catalog": "The catalog-wide default for detecting write conflicts. It applies to every collection and entity in this catalog unless an entity declares its own policy. If unset, evitaDB's engine default (Per entity) is used.",
+        "catalog": "The catalog-wide default for detecting write conflicts. It applies to every collection and entity in this catalog unless an entity declares its own policy. If unset, the engine-wide default configured on this server is used.",
         "entity": "How write conflicts are detected for this entity type. If set here it overrides the catalog and engine defaults entirely (scope and refinements). It applies to every attribute, reference and associated data of this entity unless one of them declares its own override.",
         "effectiveScope": {
           "entity": "The conflict scope actually applied to writes of this {item}, after resolving the entity policy and this override.",
@@ -1204,7 +1204,7 @@
         },
         "engineDefault": {
           "label": "Engine default",
-          "hint": "No policy is set on this catalog or entity, so evitaDB's built-in default (Per entity) applies."
+          "hint": "No policy is set on this catalog or entity, so the engine-wide default configured on this server ({scope}) applies."
         },
         "followsEntityPolicy": {
           "label": "Follows entity policy",

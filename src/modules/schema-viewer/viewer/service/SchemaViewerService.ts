@@ -19,6 +19,9 @@ import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
+import type {
+    ConflictResolution
+} from '@/modules/database-driver/request-response/schema/ConflictResolution.ts'
 import { ReflectedReferenceSchema } from '@/modules/database-driver/request-response/schema/ReflectedReferenceSchema.ts'
 import {
     SortableAttributeCompoundSchemaPointer
@@ -142,6 +145,14 @@ export class SchemaViewerService {
 
     async getCatalog(catalogName: string): Promise<CatalogStatistics> {
         return await this.evitaClient.management.getCatalogStatisticsForCatalog(catalogName)
+    }
+
+    /**
+     * Engine-wide default conflict resolution configured on the server - the base of the
+     * conflict-resolution precedence walk. Cached by the driver for the lifetime of the connection.
+     */
+    async getDefaultConflictResolution(): Promise<ConflictResolution> {
+        return (await this.evitaClient.management.getEngineSettings()).conflictResolution
     }
 
     async getCatalogSchema(catalogName: string): Promise<CatalogSchema> {

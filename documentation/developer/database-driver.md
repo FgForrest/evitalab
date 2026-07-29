@@ -139,8 +139,15 @@ carries the **declared** values only — which level wins is derived in the
 | `AttributeSchema` (+ all subclasses), `AssociatedDataSchema`, `ReferenceSchema` (+ `ReflectedReferenceSchema`) | `conflictResolutionOverride: ConflictResolutionOverride` | non-null enum whose `Inherited` value is the "not set" sentinel |
 
 `ConflictResolution` pairs a coarse `ConflictPolicy` (`None`/`Catalog`/`Collection`/`Entity`) with a
-`List<GranularConflictPolicy>` of refinements (non-empty only under `Entity`), and exposes
-`ConflictResolution.EngineDefault` (`Entity`, no refinements) — evitaDB's built-in default.
+`List<GranularConflictPolicy>` of refinements (non-empty only under `Entity`).
+
+**The base of the inheritance chain is not a constant.** The engine-wide default is server configuration, so
+it is read from `EvitaClientManagement.getEngineSettings()` (`EvitaManagementService.GetEngineSettings` →
+`EngineSettings`, which also reports whether time travel, CDC, traffic recording and the query cache are
+enabled). Never hardcode `Entity` as the default — a differently configured server reports something else.
+Engine settings are constant for the lifetime of the server process, so `EvitaServerMetadataCache` caches
+them like server status and configuration, but without change callbacks: they can only change by
+reconnecting, which clears the whole cache.
 
 `ConflictResolutionConverter` maps all four enums and the optional message. **The two shapes must be
 converted differently**: an absent `GrpcConflictResolution` message becomes `undefined`, while an absent

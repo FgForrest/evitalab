@@ -70,6 +70,11 @@ single item ends up being checked against, is computed here**:
 - `resolveCatalogPolicy` / `resolveEntityPolicy` — the **most specific level that declares a resolution
   wins outright**, scope *and* refinement set, with no merging (`entity → catalog → engine default`).
   The winner is reported as a `PolicySource` (*Defined here* / *Inherited from catalog* / *Engine default*).
+  The engine default is a **required input**, not a constant: it is server configuration, read through
+  `SchemaViewerService.getDefaultConflictResolution()` (`useDefaultConflictResolution()` in components) and
+  cached by the driver. When it cannot be read, the row that would need it is omitted and the error is
+  reported — never substitute a guessed default, that is exactly the confidently-wrong UI this feature
+  removes.
 - `resolveItemScope` — per-item overrides take effect **only** under a coarse `Entity` policy. Under a
   wider (or disabled) policy the coarse scope dominates and the declared override is reported as
   `inert: true`, which drives the amber inert-override warning — the most valuable safety cue here.
@@ -94,9 +99,11 @@ Two deviations worth knowing:
 - Row B renders its outcome as a chip rather than plain text — a `List<PropertyValue>` is rendered inside
   a `VChipGroup`, where a raw string would be a block element among flex chips.
 
-Existing rows never wait for the extra schema fetches: they render immediately, and the conflict rows are
-appended once the owning policy resolves. The entity row additionally waits when the entity declares
-nothing — *Inherited from catalog* cannot be told from *Engine default* before the catalog schema arrives.
+Existing rows never wait for the extra fetches: they render immediately, and the conflict rows are appended
+once the owning policy resolves. Catalog and entity rows wait for the engine default (and the entity row
+also for the catalog schema) **only when the inspected level declares no policy of its own** — that is the
+only case where the answer depends on them, and *Inherited from catalog* cannot be told from *Engine
+default* before they arrive.
 
 ## Related
 

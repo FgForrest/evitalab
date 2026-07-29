@@ -79,7 +79,12 @@ export function buildConflictResolutionProperty(
         }
     }
 
-    values.push(provenanceBadge(resolved.source, t(`common.item.${level}`)))
+    values.push(provenanceBadge(
+        resolved.source,
+        t(`common.item.${level}`),
+        // the engine default is server-configured, so its hint names the scope the server actually reports
+        t(`${conflictResolutionKey}.scope.${policy}.label`)
+    ))
 
     return new Property(
         t(`${conflictResolutionKey}.label.conflictResolution`),
@@ -186,12 +191,12 @@ export function itemNoun(itemKind: ConflictItemKind): string {
     }
 }
 
-function provenanceBadge(source: PolicySource, level: string): PropertyValue {
+function provenanceBadge(source: PolicySource, level: string, scope?: string): PropertyValue {
     const t = i18n.global.t
     return new PropertyValue(new KeywordValue(
         t(`${conflictResolutionKey}.provenance.${source}.label`),
         undefined,
-        t(`${conflictResolutionKey}.provenance.${source}.hint`, { level, item: level })
+        t(`${conflictResolutionKey}.provenance.${source}.hint`, { level, item: level, scope: scope ?? '' })
     ))
 }
 

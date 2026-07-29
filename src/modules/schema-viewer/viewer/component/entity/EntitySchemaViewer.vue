@@ -29,6 +29,9 @@ import {
     ConflictPolicyLevel
 } from '@/modules/schema-viewer/viewer/component/conflict-resolution/conflictResolutionProperties.ts'
 import { asError } from '@/utils/error.ts'
+import {
+    useDefaultConflictResolution
+} from '@/modules/schema-viewer/viewer/component/conflict-resolution/useDefaultConflictResolution.ts'
 
 const { t } = useI18n()
 
@@ -52,14 +55,21 @@ schemaViewerService
         asError(e)
     ))
 
-// an inherited policy cannot be told apart from the engine default before the catalog schema arrives, so
-// the row waits for it unless the entity declares a policy of its own
+const defaultConflictResolution = useDefaultConflictResolution()
+
+// an inherited policy cannot be told apart from the engine default before the catalog schema and the
+// server's engine default arrive, so the row waits for both unless the entity declares a policy of its own
 const conflictResolutionProperty = computed<Property | undefined>(() => {
-    if (props.schema.conflictResolution == undefined && catalogSchema.value == undefined) {
+    const declared = props.schema.conflictResolution
+    if (declared == undefined && (catalogSchema.value == undefined || defaultConflictResolution.value == undefined)) {
         return undefined
     }
     return buildConflictResolutionProperty(
-        resolveEntityPolicy(props.schema, catalogSchema.value),
+        resolveEntityPolicy(
+            props.schema,
+            catalogSchema.value,
+            defaultConflictResolution.value ?? declared!
+        ),
         ConflictPolicyLevel.Entity
     )
 })

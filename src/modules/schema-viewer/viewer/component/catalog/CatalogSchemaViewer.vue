@@ -24,6 +24,9 @@ import {
     ConflictPolicyLevel
 } from '@/modules/schema-viewer/viewer/component/conflict-resolution/conflictResolutionProperties.ts'
 import { resolveCatalogPolicy } from '@/modules/schema-viewer/viewer/service/ConflictResolutionResolver.ts'
+import {
+    useDefaultConflictResolution
+} from '@/modules/schema-viewer/viewer/component/conflict-resolution/useDefaultConflictResolution.ts'
 
 const { t } = useI18n()
 
@@ -75,6 +78,23 @@ props.schema
     })
     .catch()
 
+const defaultConflictResolution = useDefaultConflictResolution()
+
+// the engine default is consulted only when the catalog declares no policy of its own, so the row waits
+// for the server to report it only in that case
+const conflictResolutionProperty = computed<Property | undefined>(() => {
+    const declared = props.schema.conflictResolution
+    const engineDefault = defaultConflictResolution.value
+    const resolutionBase = declared ?? engineDefault
+    if (resolutionBase == undefined) {
+        return undefined
+    }
+    return buildConflictResolutionProperty(
+        resolveCatalogPolicy(props.schema, resolutionBase),
+        ConflictPolicyLevel.Catalog
+    )
+})
+
 const properties = computed<Property[]>(() => [
     new Property(
         t('schemaViewer.catalog.label.catalogId'),
@@ -92,10 +112,7 @@ const properties = computed<Property[]>(() => [
         t('schemaViewer.catalog.label.locales'),
         ImmutableList(locales.value)
     ),
-    buildConflictResolutionProperty(
-        resolveCatalogPolicy(props.schema),
-        ConflictPolicyLevel.Catalog
-    )
+    ...(conflictResolutionProperty.value == undefined ? [] : [conflictResolutionProperty.value])
 ])
 </script>
 

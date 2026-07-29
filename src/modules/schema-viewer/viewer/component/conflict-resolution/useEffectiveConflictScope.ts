@@ -63,15 +63,16 @@ export function useEffectiveConflictScope(
 
     async function resolveOwnerPolicy(): Promise<ResolvedPolicy> {
         const catalogName: string = dataPointer.schemaPointer.catalogName
+        const engineDefault = await schemaViewerService.getDefaultConflictResolution()
         const catalogSchema = await schemaViewerService.getCatalogSchema(catalogName)
         if (ownerLevel === ConflictPolicyLevel.Catalog) {
-            return resolveCatalogPolicy(catalogSchema)
+            return resolveCatalogPolicy(catalogSchema, engineDefault)
         }
         const entitySchema = await schemaViewerService.getEntitySchema(
             catalogName,
             (dataPointer.schemaPointer as EntitySchemaPointer).entityType
         )
-        return resolveEntityPolicy(entitySchema, catalogSchema)
+        return resolveEntityPolicy(entitySchema, catalogSchema, engineDefault)
     }
 
     return computed<Property[]>(() => {

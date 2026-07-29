@@ -1,5 +1,5 @@
-import { List } from 'immutable'
-import { ConflictPolicy } from '@/modules/database-driver/request-response/schema/ConflictPolicy.ts'
+import type { List } from 'immutable'
+import type { ConflictPolicy } from '@/modules/database-driver/request-response/schema/ConflictPolicy.ts'
 import {
     GranularConflictPolicy
 } from '@/modules/database-driver/request-response/schema/GranularConflictPolicy.ts'
@@ -8,14 +8,11 @@ import {
  * Conflict resolution declared on a catalog or an entity schema: a coarse {@link ConflictPolicy} plus,
  * only under {@link ConflictPolicy.Entity}, a set of granular refinements.
  *
- * Absence of this value on a schema means the schema inherits the resolution from a less specific level.
+ * Absence of this value on a schema means the schema inherits the resolution from a less specific level; the
+ * base of that inheritance chain is the engine-wide default, which the server reports through its engine
+ * settings and which is therefore never hardcoded here.
  */
 export class ConflictResolution {
-
-    /**
-     * evitaDB built-in default applied when neither the entity nor the catalog declares a resolution.
-     */
-    static readonly EngineDefault: ConflictResolution = new ConflictResolution(ConflictPolicy.Entity, List())
 
     readonly policy: ConflictPolicy
     /**

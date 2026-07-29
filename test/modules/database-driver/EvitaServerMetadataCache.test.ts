@@ -1,6 +1,7 @@
 import { describe, test, expect, vi } from 'vitest'
 import { EvitaServerMetadataCache } from '../../../src/modules/database-driver/EvitaServerMetadataCache'
 import { ServerStatus } from '../../../src/modules/database-driver/request-response/status/ServerStatus'
+import { EngineSettings } from '../../../src/modules/database-driver/request-response/status/EngineSettings'
 
 // The cache only stores and hands back whatever its accessors return, so a lightweight stub cast to
 // ServerStatus is enough to exercise the caching/refresh logic without building a full instance.
@@ -8,12 +9,17 @@ function serverStatus(version: string): ServerStatus {
     return { version } as unknown as ServerStatus
 }
 
+function engineSettings(): EngineSettings {
+    return {} as unknown as EngineSettings
+}
+
 describe('EvitaServerMetadataCache', () => {
 
     test('clear() resets cached status/configuration and invokes both callback sets', async () => {
         const cache = new EvitaServerMetadataCache(
             async () => serverStatus('1.0'),
-            async () => 'config'
+            async () => 'config',
+            async () => engineSettings()
         )
         // populate both caches
         await cache.getLatestServerStatus()
@@ -30,13 +36,34 @@ describe('EvitaServerMetadataCache', () => {
         expect(configurationCallback).toHaveBeenCalledTimes(1)
     })
 
+    test('engine settings are cached until the cache is cleared', async () => {
+        const accessor = vi.fn()
+            .mockResolvedValueOnce(engineSettings())
+            .mockResolvedValueOnce(engineSettings())
+        const cache = new EvitaServerMetadataCache(
+            async () => serverStatus('1.0'),
+            async () => 'config',
+            accessor
+        )
+
+        await cache.getLatestEngineSettings()
+        await cache.getLatestEngineSettings()
+        expect(accessor).toHaveBeenCalledTimes(1)
+
+        await cache.clear()
+
+        await cache.getLatestEngineSettings()
+        expect(accessor).toHaveBeenCalledTimes(2)
+    })
+
     test('a failed status accessor call is not sticky - the next getLatestServerStatus() retries', async () => {
         const accessor = vi.fn()
             .mockRejectedValueOnce(new Error('server down'))
             .mockResolvedValueOnce(serverStatus('1.0'))
         const cache = new EvitaServerMetadataCache(
             accessor,
-            async () => 'config'
+            async () => 'config',
+            async () => engineSettings()
         )
 
         await expect(cache.getLatestServerStatus()).rejects.toThrow('server down')
@@ -51,7 +78,8 @@ describe('EvitaServerMetadataCache', () => {
             .mockResolvedValueOnce('config')
         const cache = new EvitaServerMetadataCache(
             async () => serverStatus('1.0'),
-            accessor
+            accessor,
+            async () => engineSettings()
         )
 
         await expect(cache.getLatestConfiguration()).rejects.toThrow('server down')
@@ -65,7 +93,8 @@ describe('EvitaServerMetadataCache', () => {
             .mockResolvedValueOnce(serverStatus('2.0'))
         const cache = new EvitaServerMetadataCache(
             accessor,
-            async () => 'config'
+            async () => 'config',
+            async () => engineSettings()
         )
         await cache.getLatestServerStatus()
 
@@ -90,7 +119,8 @@ describe('EvitaServerMetadataCache', () => {
             .mockRejectedValueOnce(new Error('server down'))
         const cache = new EvitaServerMetadataCache(
             accessor,
-            async () => 'config'
+            async () => 'config',
+            async () => engineSettings()
         )
         await cache.getLatestServerStatus()
 
@@ -110,7 +140,8 @@ describe('EvitaServerMetadataCache', () => {
             .mockResolvedValueOnce('config-2')
         const cache = new EvitaServerMetadataCache(
             async () => serverStatus('1.0'),
-            accessor
+            accessor,
+            async () => engineSettings()
         )
         await cache.getLatestConfiguration()
 
@@ -133,7 +164,8 @@ describe('EvitaServerMetadataCache', () => {
             .mockRejectedValueOnce(new Error('server down'))
         const cache = new EvitaServerMetadataCache(
             async () => serverStatus('1.0'),
-            accessor
+            accessor,
+            async () => engineSettings()
         )
         await cache.getLatestConfiguration()
 

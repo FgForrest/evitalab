@@ -1,6 +1,6 @@
 import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema.ts'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema.ts'
-import {
+import type {
     ConflictResolution
 } from '@/modules/database-driver/request-response/schema/ConflictResolution.ts'
 import {
@@ -25,7 +25,8 @@ export enum PolicySource {
      */
     InheritedFromCatalog = 'inheritedFromCatalog',
     /**
-     * Neither the entity nor the catalog declares anything, so evitaDB's built-in default applies.
+     * Neither the entity nor the catalog declares anything, so the engine-wide default configured on the
+     * server applies.
      */
     EngineDefault = 'engineDefault'
 }
@@ -88,14 +89,20 @@ export interface ResolvedItemScope {
 }
 
 /**
- * Resolves the conflict resolution effective for a catalog: its own declaration, or evitaDB's engine
- * default when it declares none.
+ * Resolves the conflict resolution effective for a catalog: its own declaration, or the engine-wide default
+ * when it declares none.
+ *
+ * @param engineDefault the default the server reports through its engine settings - it is configurable and
+ *        must never be assumed
  */
-export function resolveCatalogPolicy(catalogSchema: CatalogSchema): ResolvedPolicy {
+export function resolveCatalogPolicy(
+    catalogSchema: CatalogSchema,
+    engineDefault: ConflictResolution
+): ResolvedPolicy {
     if (catalogSchema.conflictResolution != undefined) {
         return { resolution: catalogSchema.conflictResolution, source: PolicySource.DefinedHere }
     }
-    return { resolution: ConflictResolution.EngineDefault, source: PolicySource.EngineDefault }
+    return { resolution: engineDefault, source: PolicySource.EngineDefault }
 }
 
 /**
@@ -104,10 +111,14 @@ export function resolveCatalogPolicy(catalogSchema: CatalogSchema): ResolvedPoli
  *
  * The catalog schema may be undefined while it is still being loaded; the entity's own declaration then
  * still resolves correctly and only inheritance falls back to the engine default.
+ *
+ * @param engineDefault the default the server reports through its engine settings - it is configurable and
+ *        must never be assumed
  */
 export function resolveEntityPolicy(
     entitySchema: EntitySchema,
-    catalogSchema: CatalogSchema | undefined
+    catalogSchema: CatalogSchema | undefined,
+    engineDefault: ConflictResolution
 ): ResolvedPolicy {
     if (entitySchema.conflictResolution != undefined) {
         return { resolution: entitySchema.conflictResolution, source: PolicySource.DefinedHere }
@@ -118,7 +129,7 @@ export function resolveEntityPolicy(
             source: PolicySource.InheritedFromCatalog
         }
     }
-    return { resolution: ConflictResolution.EngineDefault, source: PolicySource.EngineDefault }
+    return { resolution: engineDefault, source: PolicySource.EngineDefault }
 }
 
 /**

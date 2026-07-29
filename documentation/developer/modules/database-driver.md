@@ -37,8 +37,9 @@ Never expose generated gRPC types outside this module — converters in
 `connector/grpc/service/converter/` map them into these classes, which are immutable where possible.
 
 Conflict-resolution parts of a schema (`ConflictPolicy`, `GranularConflictPolicy`, `ConflictResolution`,
-`ConflictResolutionOverride` under `request-response/schema/`, mapped by `ConflictResolutionConverter`)
-are described in the deep-dive:
+`ConflictResolutionOverride` under `request-response/schema/`, mapped by `ConflictResolutionConverter`) and
+the server-reported `EngineSettings` (`request-response/status/`, mapped by `EngineSettingsConverter`) that
+carries the engine-wide default are described in the deep-dive:
 [transaction conflict resolution](../database-driver.md#transaction-conflict-resolution).
 
 ## Two rules that bite
