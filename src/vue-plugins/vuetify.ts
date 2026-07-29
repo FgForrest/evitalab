@@ -33,6 +33,8 @@ export default createVuetify({
                     'primary-light': '#23355C',
                     'primary-lightest': '#21BFE3',
                     'gray-light' : '#A5ACBC',
+                    success: '#22a44e',
+                    info: '#487ad3',
                     warning: '#f7a729',
                     error: '#E13321'
                 },

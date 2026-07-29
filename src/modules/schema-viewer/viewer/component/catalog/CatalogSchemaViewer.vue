@@ -19,6 +19,11 @@ import type { Toaster } from '@/modules/notification/service/Toaster'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import type { Locale } from '@/modules/database-driver/data-type/Locale.ts'
 import { KeywordValue } from '@/modules/base/model/properties-table/KeywordValue.ts'
+import {
+    buildConflictResolutionProperty,
+    ConflictPolicyLevel
+} from '@/modules/schema-viewer/viewer/component/conflict-resolution/conflictResolutionProperties.ts'
+import { resolveCatalogPolicy } from '@/modules/schema-viewer/viewer/service/ConflictResolutionResolver.ts'
 
 const { t } = useI18n()
 
@@ -86,6 +91,10 @@ const properties = computed<Property[]>(() => [
     new Property(
         t('schemaViewer.catalog.label.locales'),
         ImmutableList(locales.value)
+    ),
+    buildConflictResolutionProperty(
+        resolveCatalogPolicy(props.schema),
+        ConflictPolicyLevel.Catalog
     )
 ])
 </script>

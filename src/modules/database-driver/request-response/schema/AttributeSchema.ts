@@ -13,6 +13,9 @@ import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
 import { i18n } from '@/vue-plugins/i18n.ts'
 import { getEnumKeyByValue } from '@/utils/enum.ts'
 import { AttributeUniquenessType } from '@/modules/database-driver/request-response/schema/AttributeUniquenessType.ts'
+import {
+    ConflictResolutionOverride
+} from '@/modules/database-driver/request-response/schema/ConflictResolutionOverride.ts'
 
 /**
  * evitaLab's representation of a single evitaDB attribute schema independent of specific evitaDB version
@@ -56,6 +59,11 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Loca
     readonly sortableInScopes: List<EntityScope>
     readonly filteredInScopes: List<EntityScope>
     readonly uniqueInScopes: List<ScopedAttributeUniquenessType>
+    /**
+     * Per-item refinement of the conflict resolution resolved for the owning entity.
+     * {@link ConflictResolutionOverride.Inherited} means no override is declared.
+     */
+    readonly conflictResolutionOverride: ConflictResolutionOverride
 
     protected _representativeFlags?: List<Flag>
 
@@ -70,7 +78,8 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Loca
                 indexedDecimalPlaces: number,
                 sortableInScopes: List<EntityScope>,
                 filteredInScopes: List<EntityScope>,
-                uniqueInScopes: List<ScopedAttributeUniquenessType>) {
+                uniqueInScopes: List<ScopedAttributeUniquenessType>,
+                conflictResolutionOverride: ConflictResolutionOverride = ConflictResolutionOverride.Inherited) {
         super()
         this.name = name
         this.nameVariants = nameVariants
@@ -84,6 +93,7 @@ export class AttributeSchema extends AbstractSchema implements TypedSchema, Loca
         this.sortableInScopes = sortableInScopes
         this.filteredInScopes = filteredInScopes
         this.uniqueInScopes = uniqueInScopes
+        this.conflictResolutionOverride = conflictResolutionOverride
     }
 
     get representativeFlags(): List<Flag> {

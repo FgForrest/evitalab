@@ -52,6 +52,52 @@ attribute schemas an additional "Globally unique" row from `uniqueGloballyInScop
 to uniqueness" treatment mirrors the model's `isImplicitlyFilterable()`, which is triggered by either
 local or global uniqueness.
 
+## Conflict-resolution rows
+
+Five tabs surface evitaDB's write-conflict policy. The driver delivers only what each level *declares*
+([driver model](../database-driver.md#transaction-conflict-resolution)); **which level wins, and what a
+single item ends up being checked against, is computed here**:
+
+| Piece | Where |
+|---|---|
+| Pure resolution algorithm | `viewer/service/ConflictResolutionResolver.ts` |
+| Shared property-row builders | `viewer/component/conflict-resolution/conflictResolutionProperties.ts` |
+| Async plumbing for item tabs | `viewer/component/conflict-resolution/useEffectiveConflictScope.ts` |
+
+`ConflictResolutionResolver` is I/O-free and unit-tested against the reference algorithm from
+[issue #426](https://github.com/FgForrest/evitalab/issues/426) — it must not drift from it:
+
+- `resolveCatalogPolicy` / `resolveEntityPolicy` — the **most specific level that declares a resolution
+  wins outright**, scope *and* refinement set, with no merging (`entity → catalog → engine default`).
+  The winner is reported as a `PolicySource` (*Defined here* / *Inherited from catalog* / *Engine default*).
+- `resolveItemScope` — per-item overrides take effect **only** under a coarse `Entity` policy. Under a
+  wider (or disabled) policy the coarse scope dominates and the declared override is reported as
+  `inert: true`, which drives the amber inert-override warning — the most valuable safety cue here.
+  Without an override, the outcome follows the entity's granularity set for the item's own flag.
+
+**`itemKind` is derived from the schema pointer, not from the model class.** `GlobalAttributeSchema
+extends EntityAttributeSchema`, so `instanceof` cannot separate the attribute flavours; and the same
+`AttributeSchemaViewer` renders both entity and reference attributes, which must resolve against
+`ENTITY_ATTRIBUTE` and `REFERENCE_ATTRIBUTE` respectively (a `ReferenceAttributeSchemaPointer` selects the
+latter).
+
+Layout — catalog and entity tabs get **one** row (chips + provenance badge); item tabs get **two**:
+row A "Conflict resolution override" only when an override is declared, row B "Effective conflict scope"
+always. Row help lives on `Property.description`, chip hints on `KeywordValue.tooltip`, the inert warning
+on `PropertyValue.note`.
+
+Two deviations worth knowing:
+
+- A **catalog-level global attribute** has no owning entity, so it resolves against the catalog's
+  effective policy and its copy is catalog-flavoured (*Follows catalog policy*). The issue does not
+  specify this case.
+- Row B renders its outcome as a chip rather than plain text — a `List<PropertyValue>` is rendered inside
+  a `VChipGroup`, where a raw string would be a block element among flex chips.
+
+Existing rows never wait for the extra schema fetches: they render immediately, and the conflict rows are
+appended once the owning policy resolves. The entity row additionally waits when the entity declares
+nothing — *Inherited from catalog* cannot be told from *Engine default* before the catalog schema arrives.
+
 ## Related
 
 - [`database-driver`](database-driver.md) — the schema model and `representativeFlags`

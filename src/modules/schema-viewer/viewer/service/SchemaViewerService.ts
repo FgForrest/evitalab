@@ -144,6 +144,13 @@ export class SchemaViewerService {
         return await this.evitaClient.management.getCatalogStatisticsForCatalog(catalogName)
     }
 
+    async getCatalogSchema(catalogName: string): Promise<CatalogSchema> {
+        return await this.evitaClient.queryCatalog(
+            catalogName,
+            session => session.getCatalogSchema()
+        )
+    }
+
     async getEntitySchema(catalogName: string, entityType: string): Promise<EntitySchema> {
         return await this.evitaClient.queryCatalog(
             catalogName,

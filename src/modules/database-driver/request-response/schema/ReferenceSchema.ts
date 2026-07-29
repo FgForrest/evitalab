@@ -21,6 +21,9 @@ import {
 import {
     HistogramIndexDefinition
 } from '@/modules/database-driver/request-response/schema/HistogramIndexDefinition.ts'
+import {
+    ConflictResolutionOverride
+} from '@/modules/database-driver/request-response/schema/ConflictResolutionOverride.ts'
 
 
 /**
@@ -87,6 +90,12 @@ export class ReferenceSchema extends AbstractSchema {
      * Per-scope expressions narrowing which entities participate in bucketed histogram computation.
      */
     readonly bucketedPartiallyInScopes: List<ScopedExpression>
+    /**
+     * Per-item refinement of the conflict resolution resolved for the owning entity.
+     * {@link ConflictResolutionOverride.Inherited} means no override is declared; on reflected
+     * references the value is always inherited.
+     */
+    readonly conflictResolutionOverride: ConflictResolutionOverride
 
     private _representativeFlags?: List<Flag>
 
@@ -107,7 +116,8 @@ export class ReferenceSchema extends AbstractSchema {
                 facetedInScopes: List<EntityScope>,
                 facetedPartiallyInScopes: List<ScopedExpression>,
                 histogramIndexDefinitions: List<ScopedHistogramIndexDefinition>,
-                bucketedPartiallyInScopes: List<ScopedExpression>) {
+                bucketedPartiallyInScopes: List<ScopedExpression>,
+                conflictResolutionOverride: ConflictResolutionOverride = ConflictResolutionOverride.Inherited) {
         super()
         this.name = name
         this.nameVariants = nameVariants
@@ -127,6 +137,7 @@ export class ReferenceSchema extends AbstractSchema {
         this.facetedPartiallyInScopes = facetedPartiallyInScopes
         this.histogramIndexDefinitions = histogramIndexDefinitions
         this.bucketedPartiallyInScopes = bucketedPartiallyInScopes
+        this.conflictResolutionOverride = conflictResolutionOverride
     }
 
     /**

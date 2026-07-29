@@ -126,6 +126,29 @@ contributes the representative badge through the `prefixFlags()` hook. The flag 
 references in the entity-viewer detail. Older servers that don't send the flag report `representative = false`,
 so those details fall back to a flat, unfiltered list.
 
+### Transaction conflict resolution
+
+evitaDB's write-conflict policy is declared at several schema levels and inherited downward. The driver
+carries the **declared** values only — which level wins is derived in the
+[`schema-viewer`](modules/schema-viewer.md#conflict-resolution-rows), because the schema API returns no
+"which level won" marker.
+
+| Internal model | Field | Shape |
+|---|---|---|
+| `CatalogSchema`, `EntitySchema` | `conflictResolution: ConflictResolution \| undefined` | `undefined` ⇒ the level declares nothing and inherits |
+| `AttributeSchema` (+ all subclasses), `AssociatedDataSchema`, `ReferenceSchema` (+ `ReflectedReferenceSchema`) | `conflictResolutionOverride: ConflictResolutionOverride` | non-null enum whose `Inherited` value is the "not set" sentinel |
+
+`ConflictResolution` pairs a coarse `ConflictPolicy` (`None`/`Catalog`/`Collection`/`Entity`) with a
+`List<GranularConflictPolicy>` of refinements (non-empty only under `Entity`), and exposes
+`ConflictResolution.EngineDefault` (`Entity`, no refinements) — evitaDB's built-in default.
+
+`ConflictResolutionConverter` maps all four enums and the optional message. **The two shapes must be
+converted differently**: an absent `GrpcConflictResolution` message becomes `undefined`, while an absent
+per-item enum (a server that predates the field) degrades to `Inherited`. Every construction site in
+`CatalogSchemaConverter` passes these values as trailing constructor arguments; they default to
+"inherits", so a forgotten pass-through degrades silently rather than throwing — the converter test
+covers each attribute subclass for that reason.
+
 ## Caching & change callbacks
 
 Schemas, server status, configuration and catalog statistics are cached client-side. When a UI

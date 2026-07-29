@@ -48,10 +48,16 @@ defineProps<{
     />
 
     <!-- actual value is keyword -->
+    <!--
+        the color is passed twice on purpose: inside a VChipGroup (the List<PropertyValue> variant) Vuetify
+        applies `color` only to selected chips and falls back to `base-color`, while outside a group
+        `color` wins - and the global VChip default would otherwise override the base color there
+    -->
     <VChip
         v-else-if="propertyValue.value instanceof KeywordValue"
         :variant="propertyValue.action ? 'outlined' : 'plain'"
         :color="propertyValue.value?.color"
+        :base-color="propertyValue.value?.color"
         dense
         @click="propertyValue.action?.(propertyValue.value!.value)"
     >
@@ -157,5 +163,10 @@ defineProps<{
 .text-item {
     // seems like hack to keep markdown text from overflowing outside of the table
     overflow-wrap: anywhere;
+
+    // markdown blocks carry trailing margins that would make text rows sit lower than chip rows
+    :deep(.md-content) > :last-child {
+        margin-bottom: 0;
+    }
 }
 </style>

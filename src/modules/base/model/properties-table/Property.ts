@@ -14,9 +14,14 @@ export class Property {
      * Value of the property
      */
     readonly value: PropertyValue | List<PropertyValue>
+    /**
+     * Optional explanation of the property rendered as an info icon with a tooltip next to the row label
+     */
+    readonly description?: string
 
-    constructor(name: string, value: PropertyValue | List<PropertyValue>) {
+    constructor(name: string, value: PropertyValue | List<PropertyValue>, description?: string) {
         this.name = name
         this.value = value
+        this.description = description
     }
 }

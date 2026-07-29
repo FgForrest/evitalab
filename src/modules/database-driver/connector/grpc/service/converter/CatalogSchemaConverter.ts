@@ -77,6 +77,9 @@ import {
 import {
     HistogramIndexDefinition
 } from '@/modules/database-driver/request-response/schema/HistogramIndexDefinition.ts'
+import {
+    ConflictResolutionConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/ConflictResolutionConverter.ts'
 
 
 export class CatalogSchemaConverter {
@@ -94,7 +97,8 @@ export class CatalogSchemaConverter {
             MapUtil.getNamingMap(catalogSchema.nameVariant),
             catalogSchema.description,
             this.convertGlobalAttributeSchemas(catalogSchema.attributes),
-            entitySchemaAccessor
+            entitySchemaAccessor,
+            ConflictResolutionConverter.convertConflictResolution(catalogSchema.conflictResolution)
         )
     }
 
@@ -135,7 +139,8 @@ export class CatalogSchemaConverter {
                 attribute.representative,
                 ScopesConverter.convertEntityScopes(attribute.sortableInScopes),
                 ScopesConverter.convertEntityScopes(attribute.filterableInScopes),
-                ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes)
+                ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes),
+                ConflictResolutionConverter.convertConflictResolutionOverride(attribute.conflictResolutionOverride)
             )
         } else if (attribute.schemaType === GrpcAttributeSchemaType.REFERENCE_SCHEMA) {
             return new ReferenceAttributeSchema(
@@ -154,7 +159,8 @@ export class CatalogSchemaConverter {
                 attribute.representative,
                 ScopesConverter.convertEntityScopes(attribute.sortableInScopes),
                 ScopesConverter.convertEntityScopes(attribute.filterableInScopes),
-                ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes)
+                ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes),
+                ConflictResolutionConverter.convertConflictResolutionOverride(attribute.conflictResolutionOverride)
             )
         } else if (attribute.schemaType === GrpcAttributeSchemaType.GLOBAL_SCHEMA) {
             return new GlobalAttributeSchema(
@@ -174,7 +180,8 @@ export class CatalogSchemaConverter {
                 ScopesConverter.convertEntityScopes(attribute.sortableInScopes),
                 ScopesConverter.convertEntityScopes(attribute.filterableInScopes),
                 ScopesConverter.convertUniqueGloballyInScopes(attribute.uniqueGloballyInScopes),
-                ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes)
+                ScopesConverter.convertUniqueInScopes(attribute.uniqueInScopes),
+                ConflictResolutionConverter.convertConflictResolutionOverride(attribute.conflictResolutionOverride)
             )
         } else {
             throw new UnexpectedError('Unaccepted type')
@@ -202,7 +209,8 @@ export class CatalogSchemaConverter {
             ScopesConverter.convertEntityScopes(globalAttributeSchema.sortableInScopes),
             ScopesConverter.convertEntityScopes(globalAttributeSchema.filterableInScopes),
             ScopesConverter.convertUniqueGloballyInScopes(globalAttributeSchema.uniqueGloballyInScopes),
-            ScopesConverter.convertUniqueInScopes(globalAttributeSchema.uniqueInScopes)
+            ScopesConverter.convertUniqueInScopes(globalAttributeSchema.uniqueInScopes),
+            ConflictResolutionConverter.convertConflictResolutionOverride(globalAttributeSchema.conflictResolutionOverride)
         )
     }
 
@@ -225,7 +233,8 @@ export class CatalogSchemaConverter {
                 entitySchema.sortableAttributeCompounds
             ),
             this.convertAssociatedDataSchemas(entitySchema.associatedData),
-            this.convertReferenceSchemas(entitySchema.references)
+            this.convertReferenceSchemas(entitySchema.references),
+            ConflictResolutionConverter.convertConflictResolution(entitySchema.conflictResolution)
         )
     }
 
@@ -311,7 +320,8 @@ export class CatalogSchemaConverter {
                 referenceSchema.facetedInherited,
                 referenceSchema.indexedInherited,
                 CatalogSchemaConverter.convertAttributeInheritanceBehavior(referenceSchema.attributeInheritanceBehavior),
-                referenceSchema.attributeInheritanceFilter
+                referenceSchema.attributeInheritanceFilter,
+                ConflictResolutionConverter.convertConflictResolutionOverride(referenceSchema.conflictResolutionOverride)
             )
         } else {
             return new ReferenceSchema(
@@ -334,7 +344,8 @@ export class CatalogSchemaConverter {
                 ScopesConverter.convertEntityScopes(referenceSchema.facetedInScopes),
                 this.convertScopedExpressions(referenceSchema.facetedPartially),
                 this.convertScopedHistogramIndexDefinitions(referenceSchema.bucketed),
-                this.convertScopedExpressions(referenceSchema.bucketedPartially)
+                this.convertScopedExpressions(referenceSchema.bucketedPartially),
+                ConflictResolutionConverter.convertConflictResolutionOverride(referenceSchema.conflictResolutionOverride)
             )
         }
     }
@@ -417,7 +428,8 @@ export class CatalogSchemaConverter {
                 associatedDataSchema.type
             ),
             associatedDataSchema.nullable,
-            associatedDataSchema.localized
+            associatedDataSchema.localized,
+            ConflictResolutionConverter.convertConflictResolutionOverride(associatedDataSchema.conflictResolutionOverride)
         )
     }
 

@@ -11,6 +11,7 @@ import {
 import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { Flag } from '@/modules/schema-viewer/viewer/model/Flag.ts'
+import type { ConflictResolution } from '@/modules/database-driver/request-response/schema/ConflictResolution.ts'
 
 /**
  * evitaLab's representation of a single evitaDB entity schema independent of specific evitaDB version
@@ -63,6 +64,11 @@ export class EntitySchema extends AbstractSchema {
      * Evolution mode allows to specify how strict is evitaDB when unknown information is presented to her for the first time. When no evolution mode is set, each violation of the `EntitySchema` is reported by an exception. This behaviour can be changed by this evolution mode however.
      */
     readonly evolutionMode: List<EvolutionMode>
+    /**
+     * Conflict resolution declared on this entity schema. When undefined, the entity inherits the
+     * resolution declared on the catalog, or evitaDB's engine default when the catalog is silent too.
+     */
+    readonly conflictResolution: ConflictResolution | undefined
 
     // todo lho maybe add getter methods that will throw exception when particular item doesnt exist under specified name
     readonly attributes: Map<string, EntityAttributeSchema>
@@ -86,7 +92,8 @@ export class EntitySchema extends AbstractSchema {
                 attributes: EntityAttributeSchema[],
                 sortableAttributeCompounds: SortableAttributeCompoundSchema[],
                 associatedData: AssociatedDataSchema[],
-                references: ReferenceSchema[]) {
+                references: ReferenceSchema[],
+                conflictResolution: ConflictResolution | undefined = undefined) {
         super()
         this.version = version
         this.name = name
@@ -104,6 +111,7 @@ export class EntitySchema extends AbstractSchema {
         this.sortableAttributeCompounds = Map(sortableAttributeCompounds.map(sac => [sac.name, sac]))
         this.associatedData = Map(associatedData.map(ad => [ad.name, ad]))
         this.references = Map(references.map(reference => [reference.name, reference]))
+        this.conflictResolution = conflictResolution
     }
 
     get representativeFlags(): List<Flag> {

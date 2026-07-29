@@ -65,6 +65,26 @@ area).
 | `VCardTitleWithActions` | Card title row with action buttons |
 | `VActionTooltip` | Tooltip for action buttons; pass a `command` to display its keyboard shortcut |
 
+### Properties table
+
+`Property(name, value, description?)` is one row. The optional `description` renders a muted
+`mdi-information-outline` icon with a tooltip after the row label — use it for row-level help, not for
+explaining a single value. Per-value affordances live on the value objects instead:
+
+| Want | Use |
+|---|---|
+| Row-level help | `Property.description` |
+| Colored chip with its own tooltip | `KeywordValue(value, color?, tooltip?)` |
+| Warning next to a value (amber `mdi-alert-outline`) | `PropertyValue.note` |
+| Several chips on one row | `List<PropertyValue>` as the property value |
+
+Rows have a fixed `min-height` so chip rows and text rows share one vertical rhythm; markdown values get
+their trailing block margin zeroed for the same reason. Do not add per-page spacing overrides.
+
+A chip color must be a **theme role** (`success`, `info`, `warning`, `error`, or the default grey) — the
+renderer passes it as Vuetify's `base-color`, because inside a `VChipGroup` (the `List<PropertyValue>`
+variant) a plain `color` applies only to *selected* chips.
+
 ## Code editors (`code-editor` module)
 
 CodeMirror 6 wrappers — never instantiate CodeMirror directly:
