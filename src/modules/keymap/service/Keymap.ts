@@ -6,6 +6,7 @@ import { Command } from '@/modules/keymap/model/Command'
 import { keyboardShortcutMappingIndex } from '@/modules/keymap/model/keyboardShortcutMappings'
 import { KeyboardShortcut } from '@/modules/keymap/model/KeyboardShortcut'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
+import { isKeyboardShortcutDispatchable } from '@/modules/keymap/model/keyboardShortcutEventFilter'
 import { mandatoryInject } from '@/utils/reactivity'
 
 export const keymapInjectionKey: InjectionKey<Keymap> = Symbol('keymap')
@@ -21,6 +22,7 @@ export class Keymap {
 
     constructor() {
         this.systemType = this.getCurrentSystemType()
+        this.installKeymasterEventFilter()
     }
 
     /**
@@ -199,6 +201,18 @@ export class Keymap {
             throw new UnexpectedError(`No shortcut mapping found for command '${command}'. This should never happen!`)
         }
         return mapping
+    }
+
+    /**
+     * Replaces keymaster's default event filter with {@link isKeyboardShortcutDispatchable}, which lets
+     * `Ctrl`/`Cmd` shortcuts fire even while a form field is focused. Installed from the constructor because
+     * the filter must be in place before the first keystroke and {@link Keymap} is instantiated once at
+     * startup.
+     *
+     * @private
+     */
+    private installKeymasterEventFilter(): void {
+        keymaster.filter = isKeyboardShortcutDispatchable
     }
 
     /**

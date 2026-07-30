@@ -28,8 +28,12 @@ import { provideHistoryCriteria } from '@/modules/traffic-viewer/components/depe
 import StartPointerButton from '@/modules/traffic-viewer/components/StartPointerButton.vue'
 import ExportTrafficBufferButton from '@/modules/traffic-viewer/components/ExportTrafficBufferButton.vue'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
+import type { Toaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import { errorMessage } from '@/utils/error'
 
 const keymap: Keymap = useKeymap()
+const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<TabComponentProps<TrafficRecordHistoryViewerTabParams, TrafficRecordHistoryViewerTabData>>()
@@ -56,6 +60,7 @@ const title: List<string> = List.of(
 
 const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
 const historyListRef = ref<InstanceType<typeof RecordHistory> | undefined>()
+const filterRef = ref<InstanceType<typeof RecordHistoryFilter> | undefined>()
 const criteria = ref<TrafficRecordHistoryCriteria>(new TrafficRecordHistoryCriteria(
     props.data.since,
     props.data.types,
@@ -105,13 +110,23 @@ onMounted(() => {
     keymap.bind(Command.TrafficRecordHistoryViewer_ShareTab, props.id, () => shareTabButtonRef.value?.share())
     keymap.bind(Command.TrafficRecordHistoryViewer_ReloadRecordHistory, props.id, async () => await reloadHistoryList())
     keymap.bind(Command.TrafficRecordHistoryViewer_MoveStartPointer, props.id, async () => await moveStartPointerToNewest())
+    keymap.bind(Command.TrafficRecordHistoryViewer_ApplyFilter, props.id, () => applyFilter())
 })
 onUnmounted(() => {
     // unregister console specific keyboard shortcuts
     keymap.unbind(Command.TrafficRecordHistoryViewer_ShareTab, props.id)
     keymap.unbind(Command.TrafficRecordHistoryViewer_ReloadRecordHistory, props.id)
     keymap.unbind(Command.TrafficRecordHistoryViewer_MoveStartPointer, props.id)
+    keymap.unbind(Command.TrafficRecordHistoryViewer_ApplyFilter, props.id)
 })
+
+function applyFilter(): void {
+    filterRef.value?.apply()
+        .catch((e: unknown) => toaster.error(t(
+            'trafficViewer.recordHistory.filter.notification.couldNotApplyFilter',
+            { reason: errorMessage(e) }
+        )).then())
+}
 
 async function moveStartPointerToNewest(): Promise<void> {
     historyStartPointerLoading.value = true
@@ -172,6 +187,7 @@ async function reloadHistoryList(): Promise<void> {
 
             <template #extension>
                 <RecordHistoryFilter
+                    ref="filterRef"
                     v-model="criteria"
                     :data-pointer="params.dataPointer"
                     @apply="reloadHistoryList"

@@ -5,8 +5,9 @@ GraphQL**, renders entity properties through formatters, and offers a property s
 renderer. Contributes `TabType.EntityViewer`.
 
 - **Provides:** `entityViewerServiceInjectionKey`, `entityViewerTabFactoryInjectionKey`,
-  `codeDetailRendererMenuFactoryInjectionKey`, `markdownDetailRendererMenuFactoryInjectionKey`
-- **Injects:** `evitaClientInjectionKey`
+  `codeDetailRendererMenuFactoryInjectionKey`, `markdownDetailRendererMenuFactoryInjectionKey`,
+  `entityGridCellMenuFactoryInjectionKey`
+- **Injects:** `evitaClientInjectionKey`, `workspaceServiceInjectionKey`
 
 ## Layout
 
@@ -16,13 +17,54 @@ Everything sits under `viewer/`:
 |------|--------------|
 | `component/entity-grid/` | The grid itself — `EntityGrid.vue`, cells, and `detail-renderer/` |
 | `component/entity-property-selector/` | Choosing which properties become columns |
-| `service/` | `EntityViewerService` + the query abstraction (below) |
+| `service/` | `EntityViewerService` + the query abstraction (below), `EntityGridCellMenuFactory` |
 | `service/entity-property-value-formatter/` | `Raw`, `Json`, `Xml` formatters behind `EntityPropertyValueFormatter` |
 | `model/` | `EntityPropertyKey`, `EntityPropertyDescriptor`, `EntityPropertyType`, `FlatEntity`, `GridHeader`, `QueryLanguage`, `QueryResult`, `QueryPriceMode`, `SelectedScope`, … |
 | `model/entity-property-value/` | `EntityPrice(s)`, `EntityReferences`, `EntityReferenceValue`, `EntityReferenceAttributes`, `NativeValue` |
+| `model/entity-grid/` | `EntityGridCellMenuItemType`, `propertyMutationHistoryContainer` (property type → mutation history container) |
 | `history/` | `FilterByHistoryKey`/`Record`, `OrderByHistoryKey`/`Record` |
 | `keymap/scopes.ts` | The viewer's shortcut scopes |
 | `workspace/` | `EntityViewerTabDefinition`, params/data DTOs, `EntityViewerTabFactory` |
+
+## Cell interaction model
+
+`EntityGridCell.vue` supports three pointer gestures:
+
+| Gesture | Effect |
+|---|---|
+| Left click | opens the cell detail sidepanel / navigates (`EntityGrid.handlePropertyClicked`) |
+| Middle click | copies the printable value; **Shift + middle click** copies the raw value |
+| Right click | opens the cell's context menu at the cursor |
+
+The two copy actions therefore exist twice on purpose: the mouse combos (documented by the chips in the
+value tooltip) make them fast, the menu makes them discoverable. The former `E`/`L` + middle-click
+history combos are **gone** — they were undiscoverable and each cell had to install four `window`
+keyboard listeners to track the held key.
+
+Menu items come from `EntityGridCellMenuFactory` (`EntityGridCellMenuItemType`), created **lazily on
+first right-click**: both the items and the `VMenu` itself (`v-if="menuItemList.length > 0"`), because a
+100 × 10 grid would otherwise instantiate a thousand overlays. The menu is positioned by passing the
+click coordinates as `VMenu`'s `:target="[clientX, clientY]"` — a table cell has no activator element of
+its own, and `target="cursor"` only works for activator-driven menus. `handleClick` must **not** call
+`preventDefault()` before checking `event.button`: browsers disagree on whether a default-prevented
+button-2 `mousedown` still emits `contextmenu`.
+
+Which history items a cell offers depends on the property type. The mapping lives in the pure
+`resolvePropertyMutationHistoryContainer` (`model/entity-grid/`); unsupported items are not created at
+all rather than created disabled:
+
+| `propertyDescriptor.type` | Property history item | Container type | Container name |
+|---|---|---|---|
+| `Entity` (`primaryKey`, `version`, `locales`, `scope`, …) | — | — | — |
+| `Attributes` | *Attribute history* | `CONTAINER_ATTRIBUTE` | attribute name |
+| `AssociatedData` | *Associated data history* | `CONTAINER_ASSOCIATED_DATA` | associated-data name |
+| `Prices` | *Price history* | `CONTAINER_PRICE` | — |
+| `References` | *Reference history* | `CONTAINER_REFERENCE` | reference name |
+| `ReferenceAttributes` | *Reference history* | `CONTAINER_REFERENCE` | reference name (`key.parentName`) |
+
+*Entity history* is always offered. Container names come from the **property key**, not from the
+descriptor's schema: a reference attribute's schema is the *attribute* schema, so a schema-derived name
+would filter the history by the attribute where evitaDB expects the reference.
 
 ## The two-language query abstraction
 
@@ -59,6 +101,12 @@ cell identity** in `EntityGrid.vue` so it fully remounts when switching cells �
 entity/descriptor are non-reactive and would otherwise go stale, blanking the panel. Open-in-new-tab
 lives inside the panel (whole filtered list + per item).
 
+The panel header carries a single `mdi-history` button that opens the mutation history of whatever the
+panel is showing. It calls `EntityGridCellMenuFactory.openPropertyMutationHistory` directly — no menu —
+and its tooltip is `resolvePropertyHistoryTitle`, i.e. the same string the cell menu's item uses, so the
+button names its target ("Attribute history", "Price history", …). For `Entity`-type properties, which
+have no property-level container, it falls back to the entity history and the *Entity history* label.
+
 Per-item open is a **menu** for managed reference types that also define a managed group: it opens the
 referenced entity, or the referenced group (`referencedGroupType`) when that reference carries a group;
 item rows show `{referenced entity PK} / {referenced group PK}`. The group primary key is carried on
@@ -68,7 +116,8 @@ the reference's group reference by default, GraphQL fetches `groupEntity { prima
 ## Note for automated UI testing
 
 `agent-browser click @ref` does **not** fire the grid's `@mousedown` cell handler; dispatch native
-`mousedown` + `mouseup` + `click` (button 0) on the `td` instead.
+`mousedown` + `mouseup` + `click` (button 0) on the `td` instead. For the cell context menu, dispatch a
+native `contextmenu` event on the `td`.
 
 ## Related
 

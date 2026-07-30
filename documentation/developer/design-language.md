@@ -292,13 +292,26 @@ omitted entirely (`v-if` on size), not rendered empty.
   columns get the pointer cursor.
 - Clickable cells (`--clickable` modifier) show pointer cursor + `on-surface`-hover; a cell
   click either navigates (reference-like values → new tab) or opens the **detail pane**.
+- **Per-cell actions belong in a right-click menu**, not in modifier-key mouse combos. A cell's
+  `@contextmenu.prevent` opens a `VMenu` positioned at the cursor (`:target="[clientX, clientY]"`)
+  listing everything that cell supports; items the cell cannot do are omitted, not greyed out.
+  Build the items lazily on first right-click and guard the `VMenu` itself with a `v-if` — a grid
+  is hundreds of cells. Mouse combos may stay as *fast paths* for actions the menu also lists
+  (middle click = copy, Shift + middle click = copy raw), documented by chips in the value tooltip;
+  they must never be the only way to reach an action.
 
 ### Value detail & pretty printing
 
 The cell-detail pane is the model for any "inspect one value" surface:
 
 - `VCard` header via `VCardTitleWithActions`: property-type icon + property name; actions =
-  output-format selector + close button; `VDivider`; scrollable body.
+  history button + output-format selector + close button (close stays rightmost); `VDivider`;
+  scrollable body.
+- When a detail surface has exactly one navigable target, give it a **plain icon button, not a
+  menu**, and let its tooltip name the resolved target ("Attribute history", "Price history", …)
+  rather than a generic label — the same string the equivalent context-menu item uses. Fall back to
+  the next-broadest target when the specific one does not exist (an entity-wide property has no
+  property-level history, so the button opens the entity history) instead of hiding the button.
 - Rendering delegates through `DelegateDetailRenderer` driven by an
   `EntityPropertyValueDesiredOutputFormat` chosen in a `VMenu` list (each format with its icon:
   auto `mdi-auto-fix`, raw `mdi-text`, markdown, JSON, XML, HTML). Default is

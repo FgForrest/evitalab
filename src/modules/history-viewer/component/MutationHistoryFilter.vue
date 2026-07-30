@@ -21,6 +21,8 @@ import {
     GrpcChangeCaptureContainerType
 } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import { useEvitaClient } from '@/modules/database-driver/EvitaClient'
+import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
+import { Command } from '@/modules/keymap/model/Command.ts'
 
 const evitaClient = useEvitaClient()
 const toaster: Toaster = useToaster()
@@ -67,10 +69,8 @@ const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
     props.modelValue.areaType ?? 'both',
     props.modelValue.mutableFilters
 ))
-const criteriaChanged = ref<boolean>(false)
 watch(criteria.value, (newValue) => {
     emit('update:modelValue', newValue)
-    criteriaChanged.value = true
 })
 
 const form = ref<InstanceType<typeof VForm> | null>(null)
@@ -202,15 +202,14 @@ async function applyChangedCriteria(): Promise<void> {
     }
     const { valid } = await form.value.validate()
     if (!valid) {
-        await toaster.error(t('mutationHistoryViewer.recordHistory.filter.notification.invalidFilter'))
+        await toaster.error(t('mutationHistoryViewer.filter.notification.invalidFilter'))
         return
     }
 
     emit('apply')
-    criteriaChanged.value = false
 }
 
-
+defineExpose({ apply: applyChangedCriteria })
 </script>
 
 <template>
@@ -218,7 +217,7 @@ async function applyChangedCriteria(): Promise<void> {
         v-model="formValidationState"
         ref="form"
         validate-on="blur"
-        @submit="applyChangedCriteria"
+        @submit.prevent="applyChangedCriteria"
         class="record-history-filter-form"
     >
         <div class="record-history-filter">
@@ -381,21 +380,15 @@ async function applyChangedCriteria(): Promise<void> {
 
         </div>
 
-        <VTooltip v-if="criteriaChanged">
-            <template #activator="{ props }">
-                <VBtn
-                    type="submit"
-                    icon
-                    @click="applyChangedCriteria"
-                    v-bind="props"
-                >
-                    <VIcon>mdi-send</VIcon>
-                </VBtn>
-            </template>
-            <template #default>
+        <VBtn
+            type="submit"
+            icon
+        >
+            <VIcon>mdi-send</VIcon>
+            <VActionTooltip :command="Command.MutationHistoryViewer_ApplyFilter">
                 {{ t('mutationHistoryViewer.filter.button.apply') }}
-            </template>
-        </VTooltip>
+            </VActionTooltip>
+        </VBtn>
     </VForm>
 </template>
 

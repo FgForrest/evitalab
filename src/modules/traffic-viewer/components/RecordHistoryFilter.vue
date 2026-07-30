@@ -25,6 +25,8 @@ import { parseHumanByteSizeToNumber } from '@/utils/number'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { Label } from '@/modules/database-driver/request-response/traffic-recording/Label'
+import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
+import { Command } from '@/modules/keymap/model/Command'
 
 const trafficViewerService: TrafficViewerService = useTrafficViewerService()
 const toaster: Toaster = useToaster()
@@ -54,10 +56,8 @@ const criteria = ref<TrafficRecordHistoryCriteria>(new TrafficRecordHistoryCrite
     props.modelValue.fetchingMoreBytesThanInHumanFormat,
     props.modelValue.labels
 ))
-const criteriaChanged = ref<boolean>(false)
 watch(criteria.value, (newValue) => {
     emit('update:modelValue', newValue)
-    criteriaChanged.value = true
 })
 
 const form = ref<InstanceType<typeof VForm> | null>(null)
@@ -208,8 +208,9 @@ async function applyChangedCriteria(): Promise<void> {
     }
 
     emit('apply')
-    criteriaChanged.value = false
 }
+
+defineExpose({ apply: applyChangedCriteria })
 </script>
 
 <template>
@@ -217,7 +218,7 @@ async function applyChangedCriteria(): Promise<void> {
         v-model="formValidationState"
         ref="form"
         validate-on="blur"
-        @submit="applyChangedCriteria"
+        @submit.prevent="applyChangedCriteria"
         class="record-history-filter-form"
     >
         <div class="record-history-filter">
@@ -331,21 +332,15 @@ async function applyChangedCriteria(): Promise<void> {
             </VTooltip>
         </div>
 
-        <VTooltip v-if="criteriaChanged">
-            <template #activator="{ props }">
-                <VBtn
-                    type="submit"
-                    icon
-                    @click="applyChangedCriteria"
-                    v-bind="props"
-                >
-                    <VIcon>mdi-send</VIcon>
-                </VBtn>
-            </template>
-            <template #default>
+        <VBtn
+            type="submit"
+            icon
+        >
+            <VIcon>mdi-send</VIcon>
+            <VActionTooltip :command="Command.TrafficRecordHistoryViewer_ApplyFilter">
                 {{ t('trafficViewer.recordHistory.filter.button.apply') }}
-            </template>
-        </VTooltip>
+            </VActionTooltip>
+        </VBtn>
     </VForm>
 </template>
 
