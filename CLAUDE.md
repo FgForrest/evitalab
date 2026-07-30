@@ -49,6 +49,11 @@ yarn test                   # Vitest
 
 Full reference (env variables, Vite config, CI/CD): [build & tooling](documentation/developer/build-and-tooling.md).
 
+**Agent workflow:** when the user wants to verify changes in their own browser ("build it, I want to
+test it now"), use the skill `.claude/skills/build-evitalab/SKILL.md` — it builds the requested run
+mode and hands over `./scripts/serve-dist.sh`, which serves `dist/` with the correct base path and an
+injected evitaDB connection using only `python3` (no Node.js needed on the developer's side).
+
 ### evitaDB server
 
 evitaLab needs a running evitaDB backend to verify changes — either **DEMO** (`https://demo.evitadb.io`,

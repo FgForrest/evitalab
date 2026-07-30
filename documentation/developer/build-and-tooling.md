@@ -26,6 +26,13 @@ Reference of the build pipeline, environment variables and developer tooling. Fo
 | `yarn test` | Vitest |
 | `yarn evitadb:start\|stop\|status\|logs` | Manage the local evitaDB container (`scripts/evitadb-server.sh`, see [evitaDB server](evitadb-server.md)) |
 
+## Standalone scripts (`scripts/`)
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/evitadb-server.sh` | Local Dockerized evitaDB lifecycle — see [evitaDB server](evitadb-server.md) |
+| `scripts/serve-dist.sh` | Serves a built `dist/` over HTTP with the correct base path and an injected evitaDB connection; needs only `python3` (no Node.js) — see [building from source](building-from-source.md#serving-the-built-dist-locally) |
+
 ## Environment variables
 
 Set in `.env` / `.env.local` (never commit `.env.local`; agent flows must not mutate it — use
