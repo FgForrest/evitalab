@@ -86,9 +86,13 @@ createKeyboardShortcutMapping(Command.SchemaViewer_ShareTab, 'Ctrl+L', 'Cmd+L')
 createKeyboardShortcutMapping(Command.TrafficRecordHistoryViewer_ShareTab, 'Ctrl+L', 'Cmd+L')
 createKeyboardShortcutMapping(Command.TrafficRecordHistoryViewer_ReloadRecordHistory, 'Ctrl+D', 'Cmd+D')
 createKeyboardShortcutMapping(Command.TrafficRecordHistoryViewer_MoveStartPointer, 'Ctrl+M', 'Cmd+M')
+createKeyboardShortcutMapping(Command.TrafficRecordHistoryViewer_ApplyFilter, 'Ctrl+Enter', 'Cmd+Enter')
+
+// Mutation history viewer
 
 createKeyboardShortcutMapping(Command.MutationHistoryViewer_ShareTab, 'Ctrl+L', 'Cmd+L')
 createKeyboardShortcutMapping(Command.MutationHistoryViewer_ReloadRecordHistory, 'Ctrl+D', 'Cmd+D')
 createKeyboardShortcutMapping(Command.MutationHistoryViewer_MoveStartPointer, 'Ctrl+M', 'Cmd+M')
+createKeyboardShortcutMapping(Command.MutationHistoryViewer_ApplyFilter, 'Ctrl+Enter', 'Cmd+Enter')
 
 export { keyboardShortcutMappingIndex }

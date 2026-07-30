@@ -23,11 +23,22 @@ import EntityGridCellDetailValueListItem
     from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridCellDetailValueListItem.vue'
 import {
     provideEntityPropertyDescriptor,
-    provideSelectedEntity
+    provideSelectedEntity,
+    useTabProps
 } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { isTypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
+import {
+    EntityGridCellMenuFactory,
+    useEntityGridCellMenuFactory
+} from '@/modules/entity-viewer/viewer/service/EntityGridCellMenuFactory'
+import type { Toaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import { errorMessage } from '@/utils/error'
 
+const tabProps = useTabProps()
+const entityGridCellMenuFactory: EntityGridCellMenuFactory = useEntityGridCellMenuFactory()
+const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -83,6 +94,37 @@ const isReferenceLike = computed<boolean>(() =>
     props.propertyDescriptor?.type === EntityPropertyType.References ||
     props.propertyDescriptor?.type === EntityPropertyType.ReferenceAttributes ||
     false)
+const entityPrimaryKey = computed<number>(() =>
+    (props.entity[StaticEntityProperties.PrimaryKey] as EntityPropertyValue).value() as number)
+/**
+ * Properties without a property-level container fall back to the entity history, so the button always
+ * names an unambiguous target.
+ */
+const historyTitle = computed<string>(() =>
+    entityGridCellMenuFactory.resolvePropertyHistoryTitle(props.propertyDescriptor) ??
+    t('entityViewer.grid.cell.menu.entityHistory'))
+
+function openMutationHistory(): void {
+    try {
+        if (entityGridCellMenuFactory.resolvePropertyHistoryTitle(props.propertyDescriptor) == undefined) {
+            entityGridCellMenuFactory.openEntityMutationHistory(
+                tabProps.params.dataPointer.catalogName,
+                tabProps.params.dataPointer.entityType,
+                entityPrimaryKey.value
+            )
+        } else {
+            entityGridCellMenuFactory.openPropertyMutationHistory(
+                tabProps.params.dataPointer.catalogName,
+                tabProps.params.dataPointer.entityType,
+                entityPrimaryKey.value,
+                props.propertyDescriptor
+            )
+        }
+    } catch (e) {
+        toaster.error(errorMessage(e)).then()
+    }
+}
+
 const componentDataType = computed<Scalar | ExtraEntityObjectType | undefined>(() => {
     if (!rawDataType.value) {
         return undefined
@@ -109,6 +151,17 @@ const componentDataType = computed<Scalar | ExtraEntityObjectType | undefined>((
                 <span>{{ propertyDescriptor?.flattenedTitle || t('entityViewer.grid.cell.detail.placeholder.unknownProperty') }}</span>
             </template>
             <template #actions>
+                <VBtn
+                    icon
+                    variant="flat"
+                    density="compact"
+                    @click.stop="openMutationHistory"
+                >
+                    <VIcon>mdi-history</VIcon>
+                    <VTooltip activator="parent">
+                        {{ historyTitle }}
+                    </VTooltip>
+                </VBtn>
                 <DetailOutputFormatSelector
                     v-if="!isArray && !isPrice && !isReferenceLike"
                     v-model="globalOutputFormat"

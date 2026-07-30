@@ -26,6 +26,22 @@ browsing the record history of one catalog.
 | `service/TrafficRecordHistoryVisualisationProcessor.ts` | Turns raw records into `TrafficRecordVisualisationDefinition`s |
 | `service/TrafficViewerService.ts` | The module's service |
 
+## Applying the record history filter
+
+`Ctrl+Enter` (`Command.TrafficRecordHistoryViewer_ApplyFilter`) applies the filter and reloads the record
+history, **also when nothing changed**, so it doubles as a reload from the filter row; the apply button is
+therefore always visible. `RecordHistoryFilter.vue` exposes `apply()` via `defineExpose` and
+`TrafficRecordHistoryViewer.vue` binds the command (the filter has no access to the tab id). `apply()` is
+async and can reject, so the call site catches and toasts.
+
+The form is `@submit.prevent` — a bare `@submit` lets Enter in a text field trigger a native form
+submission, i.e. a full page reload — and the submit button relies on `type="submit"` alone; adding an
+`@click` as well fires the apply twice. That shortcuts reach a focused `INPUT` at all is the keymaster
+filter override described in [`keymap`](keymap.md).
+
+This mirrors [`history-viewer`](history-viewer.md) exactly; the two are separate implementations, so
+changes here need porting there and vice versa.
+
 ## Record visualisation
 
 Raw traffic records are not rendered directly. `TrafficRecordHistoryVisualisationProcessor` runs a list

@@ -328,11 +328,7 @@
           "rawCopyToolTip": "Shift + Middle mouse button",
           "rawCopyToolTipDescription": "Copy raw value from cell",
           "copyValueToolTip": "Middle mouse button",
-          "copyValueToolTipDescription": "Copy value from cell",
-          "entityHistory": "E + Middle mouse button",
-          "entityHistoryDescription": "Show entity history",
-          "attributeHistory": "L + Middle mouse button",
-          "attributeHistoryDescription": "Show attribute history"
+          "copyValueToolTipDescription": "Copy value from cell"
         }
       }
     },
@@ -377,7 +373,15 @@
       "_title": "Traffic record history viewer",
       "shareTab": "Share tab",
       "reloadRecordHistory": "Reload record history",
-      "moveStartPointer": "Load only records newer than now"
+      "moveStartPointer": "Load only records newer than now",
+      "applyFilter": "Apply filter"
+    },
+    "mutationHistoryViewer": {
+      "_title": "Mutation history viewer",
+      "shareTab": "Share tab",
+      "reloadRecordHistory": "Reload mutation history",
+      "moveStartPointer": "Load only mutations newer than now",
+      "applyFilter": "Apply filter"
     }
   },
   "explorer": {
@@ -729,6 +733,15 @@
       "cell": {
         "placeholder": {
           "noLocaleSelected": "<no locale selected>"
+        },
+        "menu": {
+          "copyValue": "Copy value",
+          "copyRawValue": "Copy raw value",
+          "entityHistory": "Entity history",
+          "attributeHistory": "Attribute history",
+          "associatedDataHistory": "Associated data history",
+          "priceHistory": "Price history",
+          "referenceHistory": "Reference history"
         },
         "detail": {
           "placeholder": {
@@ -1987,7 +2000,8 @@
           "apply": "Apply filter"
         },
         "notification": {
-          "invalidFilter": "Filter criteria are not valid."
+          "invalidFilter": "Filter criteria are not valid.",
+          "couldNotApplyFilter": "Could not apply filter: {reason}"
         }
       },
       "list": {
@@ -2191,6 +2205,10 @@
       "label": "Filter",
       "button": {
         "apply": "Apply filter"
+      },
+      "notification": {
+        "invalidFilter": "Filter criteria are not valid.",
+        "couldNotApplyFilter": "Could not apply filter: {reason}"
       },
       "form": {
         "from": {
