@@ -29,8 +29,13 @@ export class LabStorage {
         this.storage = store.namespace(`evitaLab:${hasher.update(providerName).digest().toString(16)}:${buildVersion}`)
     }
 
+    /**
+     * Returns value stored under the key, or the default value if there is no such value. Only missing values fall
+     * back to the default, falsy values (`0`, `''`, `false`) are returned as they were stored.
+     */
     get<V>(key: string, def?: V): V {
-        return this.storage.get(key) || def
+        const value: V | null | undefined = this.storage.get(key)
+        return value == undefined ? def as V : value
     }
 
     set(key: string, value: unknown): void {

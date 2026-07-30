@@ -78,7 +78,8 @@ workspaceService.createTab(tabFactory.createNew(catalogName))
 ```
 
 Other useful `WorkspaceService` methods: `getTabDefinitions()`, `getTabDefinition(id)`,
-`replaceTabData(id, data)`, `markTabAsVisited(id)`, `destroyTab(id)`, `destroyAllTabs()`.
+`replaceTabData(id, data)`, `markTabAsVisited(id)`, `getSelectedTabId()`, `markTabAsSelected(id)`,
+`destroyTab(id)`, `destroyAllTabs()`.
 
 ### Persistence, restore, sharing
 
@@ -86,6 +87,13 @@ Other useful `WorkspaceService` methods: `getTabDefinitions()`, `getTabDefinitio
   into `LabStorage`; `restoreTabsFromLastSession()` restores them on startup via the tab
   factories' `restoreFromJson()`. New tab types must be wired into the restore switch in
   `WorkspaceService`.
+- **Selected tab** — tab ids are generated per session (`uuidv4`) and are not part of
+  `StoredTabObject`, so the selection is persisted as the *index* of the selected tab within the
+  stored tabs (own storage key, written by `storeOpenedTabs()` together with the tabs themselves).
+  `WorkspaceService` tracks the selection in `workspaceStore.selectedTabId`; the tab bar
+  (`WorkspaceTabWindowList`) reports every switch through `markTabAsSelected(id)` and, right after
+  the restore, activates `getSelectedTabId()` — restored tabs are marked as already visited, so the
+  "switch to the newly opened tab" logic does not steal the selection.
 - **Share links** use `ShareTabObject` (LZ-string-encoded tab type + DTOs in the `?sharedTab=`
   URL param — the *hash*), resolved on startup by `SharedTabResolver` (via `TabSharedDialog`).
   When the resulting URL exceeds the browser-safe length (`urlCharacterLimit`, 2083 chars),
