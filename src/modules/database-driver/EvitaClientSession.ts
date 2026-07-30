@@ -87,6 +87,15 @@ export class EvitaClientSession {
     private readonly _catalogName: string
     private readonly _catalogState: CatalogState
     private _active: boolean = true
+    /**
+     * Number of callers currently executing their logic against this session (see {@link acquire}).
+     */
+    private _usages: number = 0
+    /**
+     * Close requested by {@link closeWhenIdle} while the session was still in use. Resolved once the
+     * session is actually closed.
+     */
+    private _pendingClose?: { promise: Promise<void>, resolve: () => void }
     private readonly _callMetadata: { headers: Record<string, string> }
 
     private readonly clientEntitySchemaAccessor: EntitySchemaAccessor
@@ -613,6 +622,55 @@ export class EvitaClientSession {
             EvitaValueConverter.convertGrpcOffsetDateTime(grpcTransactionOverview.commitTimestamp!)
         )
 
+    }
+
+    /**
+     * Marks the session as being used by a caller. An acquired session is never closed underneath the
+     * caller by {@link closeWhenIdle}; it is only evicted from the shared-session registry, so no new
+     * caller can obtain it.
+     */
+    acquire(): void {
+        this._usages++
+    }
+
+    /**
+     * Releases the session previously taken by {@link acquire}. When a close has been requested in the
+     * meantime and this was the last user, the session is closed right away.
+     */
+    release(): void {
+        this._usages--
+        if (this._usages <= 0 && this._pendingClose != undefined) {
+            void this.closePending()
+        }
+    }
+
+    /**
+     * Closes the session as soon as nobody uses it: immediately when idle, otherwise once the last
+     * in-flight caller {@link release}s it. Unlike {@link close} it never terminates a call that is
+     * already executing (the server would answer it with a "session already terminated" error).
+     *
+     * @return promise resolved once the session is really closed; repeated calls return the same promise
+     */
+    closeWhenIdle(): Promise<void> {
+        if (this._usages <= 0) {
+            return this.close()
+        }
+        if (this._pendingClose == undefined) {
+            let resolvePendingClose: () => void = () => { /* replaced synchronously below */ }
+            const promise: Promise<void> = new Promise<void>(resolve => { resolvePendingClose = resolve })
+            this._pendingClose = { promise, resolve: resolvePendingClose }
+        }
+        return this._pendingClose.promise
+    }
+
+    private async closePending(): Promise<void> {
+        const pendingClose = this._pendingClose
+        this._pendingClose = undefined
+        try {
+            await this.close()
+        } finally {
+            pendingClose?.resolve()
+        }
     }
 
     /**

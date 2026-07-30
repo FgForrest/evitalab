@@ -39,7 +39,7 @@ Sessions are expensive; evitaLab deliberately deviates from other drivers:
   reads are schema fetches that are cached anyway). `forceNewSession: true` requests a fresh
   session, which then becomes the new shared one.
 - **`updateCatalog(catalogName, updateLogic)`** — creates a **new short-lived read-write session**
-  for each call, closes it afterwards, and also terminates the shared read-only session for the
+  for each call, closes it afterwards, and also evicts the shared read-only session for the
   catalog so subsequent reads see fresh data.
 - **Warm-up catalogs** (`CatalogStatistics.isInWarmup`) are special: evitaDB supports only a single
   session in warm-up state, so both methods share one session and never force new ones.
@@ -57,7 +57,36 @@ await evitaClient.updateCatalog(
 ```
 
 Never hold a session reference outside the logic function — a shared session may be closed and
-replaced at any time (the client retries logic on closed sessions automatically).
+replaced at any time. This rule is what makes the eviction and recovery below sound: the client can
+only tell when a session is unused because every use is bracketed by a logic function.
+
+#### Eviction and draining
+
+Every path that "closes" the shared session of a catalog (`forceNewSession`,
+`terminateSharedSession`, `closeSharedSession`, `clearSchemaCache`, `clearCache`) **evicts** it
+rather than killing it:
+
+1. the session is removed from the registry, but only if the registry still holds *that* session — a
+   concurrent creation may have already installed a newer one, which must not be dropped;
+2. the session itself is closed only once its in-flight callers are done (it is reference-counted via
+   `acquire()` / `release()`).
+
+Closing a session that another call is still executing on is what evitaDB answers with *"Evita
+session has been already terminated!"*, so the client never does it. The pending close is **not**
+awaited by the evicting caller — someone asking for fresh data must not block on an unrelated slow
+query. Warm-up catalogs are the exception: evitaDB permits exactly one open session there, so
+creating the next shared session waits for the outstanding close to finish.
+
+#### Recovery
+
+If logic still fails on a session that the client evicted in the meantime, the client **replays it
+once** on a fresh session. The decision is based on the client's own knowledge (was this session
+already evicted or closed when the logic failed?), *not* on the error — evitaDB reports a call on a
+terminated session as an ordinary invalid-usage error, indistinguishable from a malformed query.
+Mutating logic is never replayed, because it may have been partially applied. A session the **server**
+dropped on its own (e.g. on the inactivity timeout) reports itself as unauthenticated and is retried
+on that signal. When even the retry fails, a `SessionRetryFailedError` carrying the original failure
+is thrown.
 
 ### GraphQL access
 
