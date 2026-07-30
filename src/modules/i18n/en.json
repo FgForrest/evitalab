@@ -1491,6 +1491,7 @@
     "backupSelector": {
       "currentSnapshot": "Current snapshot",
       "pointInTime": "Point in time",
+      "pointInTimeUnavailable": "Point in time recovery is not accessible when time travel is disabled in database options.",
       "fullBackup": "Full",
       "selectSubTitle": "Choose backup type"
     },
@@ -1556,6 +1557,7 @@
       "notification": {
         "couldNotLoadAvailableCatalogs": "Could not load available catalogs: {reason}",
         "couldNotLoadMinimalDate": "Could not load available moments: {reason}",
+        "couldNotLoadTimeTravelAvailability": "Could not resolve whether time travel is enabled on the server: {reason}",
         "backupRequested": "A backup for the {catalogName} catalog requested.",
         "couldNotRequestBackup": "Could not request a backup for the {catalogName} catalog: {reason}"
       },

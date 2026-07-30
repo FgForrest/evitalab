@@ -11,7 +11,7 @@ import SnapshotBackupDialog from '@/modules/backup-viewer/components/SnapshotBac
 import PointInTimeBackupDialog from '@/modules/backup-viewer/components/PointInTimeBackupDialog.vue'
 import FullBackupDialog from '@/modules/backup-viewer/components/FullBackupDialog.vue'
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -30,8 +30,13 @@ const props = defineProps<{
 watch(
     () => props.modelValue,
     (newValue) => {
-        if (newValue && availableCatalogsLoaded.value == false) {
-            loadAvailableCatalogs().then()
+        if (newValue) {
+            if (availableCatalogsLoaded.value == false) {
+                loadAvailableCatalogs().then()
+            }
+            if (timeTravelEnabled.value == undefined) {
+                loadTimeTravelAvailability().then()
+            }
         }
     }
 )
@@ -58,6 +63,24 @@ async function loadAvailableCatalogs(): Promise<void> {
     } catch (e) {
         await toaster.error(t(
             'backupViewer.backup.notification.couldNotLoadAvailableCatalogs',
+            { reason: errorMessage(e) }
+        ))
+    }
+}
+
+/**
+ * Whether the server retains historical data. Stays undefined until the answer arrives from the server,
+ * because the reason a backup kind is unavailable must never be guessed.
+ */
+const timeTravelEnabled = ref<boolean | undefined>()
+const pointInTimeUnavailable = computed<boolean>(() => timeTravelEnabled.value === false)
+
+async function loadTimeTravelAvailability(): Promise<void> {
+    try {
+        timeTravelEnabled.value = await backupViewerService.isTimeTravelEnabled()
+    } catch (e) {
+        await toaster.error(t(
+            'backupViewer.backup.notification.couldNotLoadTimeTravelAvailability',
             { reason: errorMessage(e) }
         ))
     }
@@ -127,12 +150,17 @@ const backupActualDataModelValue = ref<boolean>(false)
                         </VBtn>
                     </div>
                     <div class="box-item">
-                        <VIcon class="icon" :size="100" :disabled="!catalogName"
-                               @click="openBackupDialog(BackupType.PointInTime)">mdi-timeline-clock-outline
+                        <VIcon class="icon" :size="100" :disabled="!catalogName || pointInTimeUnavailable"
+                               @click="!pointInTimeUnavailable && openBackupDialog(BackupType.PointInTime)">mdi-timeline-clock-outline
                         </VIcon>
-                        <VBtn class="btn-select" @click="openBackupDialog(BackupType.PointInTime)" :disabled="!catalogName">
+                        <VBtn class="btn-select" @click="openBackupDialog(BackupType.PointInTime)" :disabled="!catalogName || pointInTimeUnavailable">
                             {{ t('backupViewer.backupSelector.pointInTime') }}
                         </VBtn>
+
+                        <!-- placed on the whole tile, because a disabled button doesn't emit pointer events itself -->
+                        <VTooltip v-if="pointInTimeUnavailable" activator="parent">
+                            {{ t('backupViewer.backupSelector.pointInTimeUnavailable') }}
+                        </VTooltip>
                     </div>
                     <div class="box-item">
                         <VIcon class="icon" :size="100" :disabled="!catalogName"
