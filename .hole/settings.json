@@ -5,7 +5,14 @@
     }
   },
   "libraries": {
-    "$HOME/www/oss/evita/evitaDB": "$HOME/www/oss/evita/evitaDB"
+    "$HOME/www/oss/evita/evitaDB": {
+      "path": "$HOME/www/oss/evita/evitaDB",
+      "readwrite": true
+    },
+    "$HOME/www/oss/evita/codemirror-lang-evitaql": {
+      "path": "$HOME/www/oss/evita/codemirror-lang-evitaql",
+      "readwrite": true
+    }
   },
   "files": {
     "include": {
