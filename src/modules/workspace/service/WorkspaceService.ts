@@ -38,6 +38,7 @@ import type { MutationHistoryViewerTabFactory } from '@/modules/history-viewer/s
 import { MutationHistoryViewerTabDefinition } from '@/modules/history-viewer/model/MutationHistoryViewerTabDefinition.ts'
 
 const openedTabsStorageKey: string = 'openedTabs'
+const selectedTabStorageKey: string = 'selectedTab'
 const tabHistoryStorageKey: string = 'tabHistory'
 
 export const workspaceServiceInjectionKey: InjectionKey<WorkspaceService> = Symbol('workspaceService')
@@ -136,6 +137,22 @@ export class WorkspaceService {
     }
 
     /**
+     * Returns id of the tab the user currently works with, if there is any.
+     */
+    getSelectedTabId(): string | undefined {
+        return this.store.selectedTabId
+    }
+
+    /**
+     * Marks the tab as the one the user currently works with, so that it can be selected again in the next session.
+     * @param tabId id of the selected tab, or undefined if no tab is selected anymore
+     */
+    markTabAsSelected(tabId: string | undefined): void {
+        this.store.selectedTabId = tabId
+        this.storeOpenedTabs()
+    }
+
+    /**
      * Replace tab data with new ones
      *@param tabId
      * @param updatedData
@@ -157,23 +174,27 @@ export class WorkspaceService {
     destroyAllTabs(): void {
         this.store.tabDefinitions.splice(0)
         this.store.tabData.clear()
+        this.store.selectedTabId = undefined
         this.storeOpenedTabs()
     }
 
     /**
-     * Restores last stored tab from lab storage
+     * Restores last stored tab from lab storage. The tab selected in the last session, if it is still among
+     * the restored ones, is marked as selected again.
      * @return whether any tab data were restored
      */
     restoreTabsFromLastSession(): boolean {
         const lastOpenedTabs: StoredTabObject[] = this.labStorage.get(openedTabsStorageKey, [])
             .map((it: string) => StoredTabObject.restoreFromSerializable(it))
+        const lastSelectedTabIndex: number = this.labStorage.get(selectedTabStorageKey, -1)
         this.labStorage.remove(openedTabsStorageKey)
+        this.labStorage.remove(selectedTabStorageKey)
         if (lastOpenedTabs.length === 0) {
             return false
         }
 
         let restoredTabsDataCount: number = 0
-        lastOpenedTabs
+        const restoredTabDefinitions: AnyTabDefinition[] = lastOpenedTabs
             .map(storedTabObject => {
                 switch (storedTabObject.tabType as string) {
                     case 'data-grid':
@@ -210,68 +231,99 @@ export class WorkspaceService {
                         throw new UnexpectedError(`Unsupported stored tab type '${storedTabObject.tabType}'.`)
                 }
             })
-            .forEach(tabDefinition => {
-                if (tabDefinition.initialData != undefined) {
-                    this.store.tabData.set(tabDefinition.id, tabDefinition.initialData)
-                    restoredTabsDataCount++
-                }
-                this.createTab(tabDefinition)
-            })
+
+        restoredTabDefinitions.forEach(tabDefinition => {
+            // restored tabs were already visited by the user in the last session, only the previously selected
+            // one is activated below
+            tabDefinition.new = false
+            if (tabDefinition.initialData != undefined) {
+                this.store.tabData.set(tabDefinition.id, tabDefinition.initialData)
+                restoredTabsDataCount++
+            }
+            this.createTab(tabDefinition)
+        })
+
+        const lastSelectedTab: AnyTabDefinition | undefined = restoredTabDefinitions[lastSelectedTabIndex]
+        if (lastSelectedTab != undefined && this.getTabDefinition(lastSelectedTab.id) != undefined) {
+            this.markTabAsSelected(lastSelectedTab.id)
+        }
 
         return restoredTabsDataCount > 0
     }
 
     /**
-     * Stores current tabs into lab storage
+     * Stores current tabs and index of the currently selected tab into lab storage
      */
     storeOpenedTabs(): void {
         if (this.evitaLabConfig.playgroundMode) {
             return
         }
-        const tabsToStore: string[] = this.getTabDefinitions()
-            .map(tabRequest => {
-                let tabType: TabType
-                if (tabRequest instanceof EntityViewerTabDefinition) {
-                    tabType = TabType.EntityViewer
-                } else if (tabRequest instanceof EvitaQLConsoleTabDefinition) {
-                    tabType = TabType.EvitaQLConsole
-                } else if (tabRequest instanceof GraphQLConsoleTabDefinition) {
-                    tabType = TabType.GraphQLConsole
-                } else if (tabRequest instanceof SchemaViewerTabDefinition) {
-                    tabType = TabType.SchemaViewer
-                } else if (tabRequest instanceof KeymapViewerTabDefinition) {
-                    tabType = TabType.KeymapViewer
-                } else if (tabRequest instanceof ServerViewerTabDefinition) {
-                    tabType = TabType.ServerViewer
-                } else if (tabRequest instanceof TaskViewerTabDefinition) {
-                    tabType = TabType.TaskViewer
-                } else if (tabRequest instanceof BackupViewerTabDefinition) {
-                    tabType = TabType.BackupViewer
-                } else if (tabRequest instanceof JfrViewerTabDefinition) {
-                    tabType = TabType.JfrViewer
-                } else if (tabRequest instanceof TrafficRecordingsViewerTabDefinition) {
-                    tabType = TabType.TrafficRecordingsViewer
-                } else if (tabRequest instanceof TrafficRecordHistoryViewerTabDefinition) {
-                    tabType = TabType.TrafficRecordHistoryViewer
-                } else if (tabRequest instanceof MutationHistoryViewerTabDefinition) {
-                    tabType = TabType.MutationHistoryViewer
-                } else {
-                    console.info(undefined, `Unsupported tab type '${tabRequest.constructor.name}'. Not storing for next session.`)
-                    return undefined
-                }
 
-                const tabData: AnyTabData | undefined = this.store.tabData.get(tabRequest.id)
-                return new StoredTabObject(
+        const selectedTabId: string | undefined = this.store.selectedTabId
+        let selectedTabIndex: number = -1
+        const tabsToStore: string[] = []
+        for (const tabRequest of this.getTabDefinitions()) {
+            const tabType: TabType | undefined = WorkspaceService.resolveStorableTabType(tabRequest)
+            if (tabType == undefined) {
+                console.info(undefined, `Unsupported tab type '${tabRequest.constructor.name}'. Not storing for next session.`)
+                continue
+            }
+
+            // the index must point into the stored tabs, not into all opened ones, because unsupported tabs are skipped
+            if (tabRequest.id === selectedTabId) {
+                selectedTabIndex = tabsToStore.length
+            }
+
+            const tabData: AnyTabData | undefined = this.store.tabData.get(tabRequest.id)
+            tabsToStore.push(
+                new StoredTabObject(
                     tabType,
                     tabRequest.params.toSerializable(),
                     tabData != undefined ? tabData.toSerializable() : undefined
-                )
-            })
-            .filter(it => it != undefined)
-            .map(it => it as StoredTabObject)
-            .map(it => it.toSerializable())
+                ).toSerializable()
+            )
+        }
 
         this.labStorage.set(openedTabsStorageKey, tabsToStore)
+        if (selectedTabIndex < 0) {
+            this.labStorage.remove(selectedTabStorageKey)
+        } else {
+            this.labStorage.set(selectedTabStorageKey, selectedTabIndex)
+        }
+    }
+
+    /**
+     * Resolves type under which the tab definition is persisted between sessions. Returns undefined for tabs
+     * that cannot be persisted.
+     */
+    private static resolveStorableTabType(tabDefinition: AnyTabDefinition): TabType | undefined {
+        if (tabDefinition instanceof EntityViewerTabDefinition) {
+            return TabType.EntityViewer
+        } else if (tabDefinition instanceof EvitaQLConsoleTabDefinition) {
+            return TabType.EvitaQLConsole
+        } else if (tabDefinition instanceof GraphQLConsoleTabDefinition) {
+            return TabType.GraphQLConsole
+        } else if (tabDefinition instanceof SchemaViewerTabDefinition) {
+            return TabType.SchemaViewer
+        } else if (tabDefinition instanceof KeymapViewerTabDefinition) {
+            return TabType.KeymapViewer
+        } else if (tabDefinition instanceof ServerViewerTabDefinition) {
+            return TabType.ServerViewer
+        } else if (tabDefinition instanceof TaskViewerTabDefinition) {
+            return TabType.TaskViewer
+        } else if (tabDefinition instanceof BackupViewerTabDefinition) {
+            return TabType.BackupViewer
+        } else if (tabDefinition instanceof JfrViewerTabDefinition) {
+            return TabType.JfrViewer
+        } else if (tabDefinition instanceof TrafficRecordingsViewerTabDefinition) {
+            return TabType.TrafficRecordingsViewer
+        } else if (tabDefinition instanceof TrafficRecordHistoryViewerTabDefinition) {
+            return TabType.TrafficRecordHistoryViewer
+        } else if (tabDefinition instanceof MutationHistoryViewerTabDefinition) {
+            return TabType.MutationHistoryViewer
+        } else {
+            return undefined
+        }
     }
 
     /**
