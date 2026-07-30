@@ -41,6 +41,15 @@ export class BackupViewerService {
         return (await this.evitaClient.getCatalogNames()).contains(catalogName)
     }
 
+    /**
+     * Whether the connected server retains historical data. Point-in-time backups are rejected by the
+     * server when it doesn't, so the offering must be gated on this flag. Configurable per server,
+     * therefore always read from the server and cached by the driver for the lifetime of the connection.
+     */
+    async isTimeTravelEnabled(): Promise<boolean> {
+        return (await this.evitaClient.management.getEngineSettings()).timeTravelEnabled
+    }
+
     async getMinimalBackupDate(catalogName: string): Promise<CatalogVersionAtResponse> {
         return await this.evitaClient.queryCatalog(catalogName, async session => {
             return await session.getCatalogVersionAt()
