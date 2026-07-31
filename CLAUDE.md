@@ -91,7 +91,7 @@ Non-negotiable. A 30-second advisor call is cheaper than a failed 90M-token orch
 ## Planning
 
 Always create a detailed plan of implementation or fix if asked for issue analysis. Always store the plan in Markdown file
-inside this project.
+inside this project at `.claude/plans`.
 
 ## Architecture & Conventions
 
