@@ -9,6 +9,19 @@ Reference of the build pipeline, environment variables and developer tooling. Fo
 - **Yarn only.** Never run `npm install`/`npm ci`/`npx` in this repo — npm writes
   `package-lock.json`, diverging from `yarn.lock`.
 - Node.js version is pinned in `.nvmrc`.
+- `node_modules/.gitignore` and `node_modules/.gitkeep` are **tracked** — the `.gitignore` ignores
+  everything in the folder except itself and `.gitkeep`, which is what keeps an installed dependency
+  tree out of `git status`. A wiped `node_modules` therefore shows up as two deleted files; restore
+  them (`git checkout -- node_modules/.gitignore node_modules/.gitkeep`) rather than committing the
+  deletion.
+
+### Empty `node_modules` (agent sandboxes)
+
+A fresh sandbox checkout typically has an **empty `node_modules`**, so every tool-invoking script
+fails with `error Command "<tool>" not found` (`vitest`, `vue-tsc`, `eslint`). That is a setup gap,
+not a code problem: run `yarn install` and retry. Agents should do this without asking, and note it
+in their summary since it changes the working tree. Yarn v1 does not re-resolve versions the lockfile
+already pins, so a clean install leaves `yarn.lock` untouched — a diff there is pre-existing work.
 
 ## Scripts (`package.json`)
 
