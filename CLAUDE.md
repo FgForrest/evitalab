@@ -56,15 +56,17 @@ injected evitaDB connection using only `python3` (no Node.js needed on the devel
 
 ### evitaDB server
 
-evitaLab needs a running evitaDB backend to verify changes — either **DEMO** (`https://demo.evitadb.io`,
-the `.env.local` default; use for evitaLab-only work) or **LOCAL** (Dockerized evitaDB; use when the task
-depends on an unreleased evitaDB feature). Details, yarn shortcuts, Docker networking and
+evitaLab needs a running evitaDB backend to verify changes — **DEMO** (`https://demo.evitadb.io`,
+the `.env.local` default; use for evitaLab-only work), **LOCAL-canary** (Dockerized published image; use
+when the task depends on an unreleased but committed evitaDB feature) or **LOCAL-source**
+(`scripts/evitadb-server.sh start --source`, evitaDB built from the local working tree; use when the task
+itself changes evitaDB). Details, yarn shortcuts, Docker networking and
 `VITE_DEV_LOCAL_URL` override: [evitaDB server](documentation/developer/evitadb-server.md).
 Never mutate `.env.local` in agent flows — use inline env vars instead.
 
 **Agent workflow:** the skill `.claude/skills/evitadb-server/SKILL.md` codifies the decision (ask once
-per session — DEMO or LOCAL?), the startup / readiness probe, and the cleanup (stop + remove container
-on task completion). Invoke it before running `yarn dev` for any task that verifies UI behavior.
+per session — DEMO, canary or source?), the startup / readiness probe, and the cleanup (stop + remove
+container on task completion). Invoke it before running `yarn dev` for any task that verifies UI behavior.
 
 ## Browser Automation
 

@@ -2,6 +2,14 @@
 
 set -euo pipefail
 
+# Install maven 3.9 (ubuntu has older versions only)
+MAVEN_VERSION="3.9.8"
+
+wget -qO- "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" | tar -xz -C $HOME/.local/share
+
+ln -s $HOME/.local/share/apache-maven-${MAVEN_VERSION}/bin/mvn $HOME/.local/bin/mvn
+ln -s $HOME/.local/share/apache-maven-${MAVEN_VERSION}/bin/mvnDebug $HOME/.local/bin/mvnDebug
+
 # Install nvm and nodes
 export NVM_DIR="${HOME}/.nvm"
 if [ ! -f "${NVM_DIR}/nvm.sh" ]; then

@@ -5,6 +5,7 @@
     "dev": "vite",
     "dev-driver": "env VITE_RUN_MODE=\"DRIVER\" vite",
     "dev:with-evitadb": "./scripts/evitadb-server.sh start && env VITE_DEV_CONNECTION=LOCAL vite",
+    "dev:with-evitadb:source": "./scripts/evitadb-server.sh start --source && env VITE_DEV_CONNECTION=LOCAL vite",
     "typecheck": "vue-tsc -b --force",
     "verify": "yarn lint && yarn typecheck && vitest run",
     "build": "yarn typecheck && vite build",
@@ -14,6 +15,9 @@
     "lint:check": "eslint .",
     "test": "vitest",
     "evitadb:start": "./scripts/evitadb-server.sh start",
+    "evitadb:start:source": "./scripts/evitadb-server.sh start --source",
+    "evitadb:build": "./scripts/evitadb-server.sh build",
+    "evitadb:rebuild": "./scripts/evitadb-server.sh rebuild",
     "evitadb:stop": "./scripts/evitadb-server.sh stop",
     "evitadb:status": "./scripts/evitadb-server.sh status",
     "evitadb:logs": "./scripts/evitadb-server.sh logs -f"

@@ -17,6 +17,7 @@ Reference of the build pipeline, environment variables and developer tooling. Fo
 | `yarn dev` | Dev server at `localhost:3000/lab` (standalone mode) |
 | `yarn dev-driver` | Dev server at `localhost:3000` in `DRIVER` run mode |
 | `yarn dev:with-evitadb` | Starts a local Dockerized evitaDB and dev server with `VITE_DEV_CONNECTION=LOCAL` |
+| `yarn dev:with-evitadb:source` | Same, but evitaDB is built from the local source tree — see [evitaDB server](evitadb-server.md#running-evitadb-built-from-source) |
 | `yarn typecheck` | Whole-program type check (`vue-tsc -b --force`, covers the app project **and** `vite.config.mts`) |
 | `yarn build` / `yarn build-driver` | `yarn typecheck` + production build (standalone/driver) |
 | `yarn verify` | One-shot local pre-push gate: `yarn lint && yarn typecheck && vitest run` (tests run once, not in watch mode) |
@@ -25,12 +26,13 @@ Reference of the build pipeline, environment variables and developer tooling. Fo
 | `yarn lint:check` | ESLint **without** auto-fix — fails on any problem; used by CI |
 | `yarn test` | Vitest |
 | `yarn evitadb:start\|stop\|status\|logs` | Manage the local evitaDB container (`scripts/evitadb-server.sh`, see [evitaDB server](evitadb-server.md)) |
+| `yarn evitadb:start:source\|build\|rebuild` | Build evitaDB from the local source tree and run that build — see [evitaDB server](evitadb-server.md#running-evitadb-built-from-source) |
 
 ## Standalone scripts (`scripts/`)
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/evitadb-server.sh` | Local Dockerized evitaDB lifecycle — see [evitaDB server](evitadb-server.md) |
+| `scripts/evitadb-server.sh` | Local Dockerized evitaDB lifecycle, either the published image or a build from the evitaDB source tree (`--source`) — see [evitaDB server](evitadb-server.md) |
 | `scripts/serve-dist.sh` | Serves a built `dist/` over HTTP with the correct base path and an injected evitaDB connection; needs only `python3` (no Node.js) — see [building from source](building-from-source.md#serving-the-built-dist-locally) |
 
 ## Environment variables
