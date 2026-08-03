@@ -35,17 +35,6 @@
   --v-activated-opacity: 0.08!important;
 }
 
-
-// Refactor font family globally
-$font-family: 'Poppins';
-.v-application {
-  [class*='text-'] {
-    font-family: $font-family, sans-serif !important;
-  }
-
-  font-family: $font-family, sans-serif !important;
-}
-
 .v-field--variant-solo-filled .v-field__overlay {
   background-color: colors.$primary-dark !important;
   opacity: 1 !important;
