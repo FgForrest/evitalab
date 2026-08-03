@@ -30,8 +30,8 @@ Serves a built evitaLab dist over HTTP (foreground, Ctrl-C to stop).
 Options:
     --port <port>         Port to listen on (default: 8080).
     --mode <mode>         auto | standalone | driver (default: auto).
-                          Detected from dist/index.html; standalone is served
-                          under /lab/, driver under /.
+                          Detected from dist/index.html at startup only;
+                          standalone is served under /lab/, driver under /.
     --server-url <url>    evitaDB server the lab connects to
                           (default: http://localhost:5555).
     --connection-name <n> Display name of the injected connection
@@ -43,6 +43,12 @@ Options:
 Prerequisites:
     A production build must exist: `yarn build` (standalone) or
     `yarn build-driver` (driver). Both write into `dist/`.
+
+Note:
+    Rebuilding in the same run mode needs only a browser reload. Rebuilding in
+    the OTHER mode requires restarting this script — the mode is resolved once
+    at startup, so the server would keep serving the previous base path and
+    every request to the expected prefix would 404 even though the files exist.
 EOF
 }
 

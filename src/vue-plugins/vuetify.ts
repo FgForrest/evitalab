@@ -5,6 +5,7 @@
  */
 
 // Styles
+import '@/styles/fonts.scss'
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 
