@@ -2187,7 +2187,8 @@
         "moveStartPointer": "Load only records newer than now"
       },
       "notification": {
-        "noNewerRecords": "No newer records exist."
+        "noNewerRecords": "No newer records exist.",
+        "noOlderRecords": "No older records exist."
       }
     },
     "definition": {

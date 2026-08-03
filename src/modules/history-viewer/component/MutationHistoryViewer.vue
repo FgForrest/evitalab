@@ -147,9 +147,9 @@ async function moveStartPointerToNewest(): Promise<void> {
     historyStartPointerLoading.value = false
 }
 
-function removeStartPointer(): void {
+async function removeStartPointer(): Promise<void> {
     historyStartPointerLoading.value = true
-    historyListRef.value?.removeStartPointer()
+    await historyListRef.value?.removeStartPointer()
     historyStartPointerLoading.value = false
 }
 

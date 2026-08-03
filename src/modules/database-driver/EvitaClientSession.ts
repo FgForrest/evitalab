@@ -62,6 +62,11 @@ import type {
     MutationHistoryConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/MutationHistoryConverter.ts'
 import { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
+import {
+    mergeTransactionOverviews,
+    MutationHistoryPage,
+    truncateBelowBoundary
+} from '@/modules/database-driver/request-response/cdc/MutationHistoryPage.ts'
 import type { MutationHistoryRequest } from '@/modules/history-viewer/model/MutationHistoryRequest.ts'
 import type {
     TrafficRecordingCaptureRequest
@@ -542,8 +547,16 @@ export class EvitaClientSession {
     }
 
 
+    /**
+     * Returns a single page of the catalog's mutation history, newest records first.
+     *
+     * `MutationHistoryRequest.sinceVersion` is the reverse-pagination anchor (an **upper** bound the
+     * server clamps to the current catalog version); the API has no lower bound, so
+     * `MutationHistoryRequest.newerThanVersion` is applied here, client-side. This split is by design
+     * and permanent — see evitaDB#1349.
+     */
     async getMutationHistory(mutationHistoryRequest: MutationHistoryRequest,
-                             limit: number): Promise<ImmutableList<ChangeCatalogCapture>> {
+                             limit: number): Promise<MutationHistoryPage> {
         this.assertActive()
         try {
             const request: GetMutationsHistoryPageRequest = {
@@ -569,7 +582,13 @@ export class EvitaClientSession {
 
 
             const response: GetMutationsHistoryPageResponse = await this.evitaSessionClientProvider().getMutationsHistoryPage(request, this._callMetadata)
-            const captures = response.changeCapture.map(i => this.mutationHistoryConverterProvider().convertGrpcMutationHistory(i))
+            const captures: ChangeCatalogCapture[] = truncateBelowBoundary(
+                response.changeCapture.map(i => this.mutationHistoryConverterProvider().convertGrpcMutationHistory(i)),
+                mutationHistoryRequest.newerThanVersion
+            )
+            if (captures.length === 0) {
+                return MutationHistoryPage.empty()
+            }
 
             const catalogVersionIdList = [...new Set(
                 captures
@@ -584,7 +603,13 @@ export class EvitaClientSession {
                 transactionCaptures = transactionResponse.transactionOverviews.map(i => this.convertGrpcTransactionOverview(i));
             }
 
-            return ImmutableList([...transactionCaptures, ...captures])
+            // the transaction header of a group is streamed only once, so pages beyond the first do not
+            // carry the header of the transaction their first capture belongs to — the overviews are
+            // fetched locally to compensate and must not be dropped as redundant (evitaDB#1349)
+            return new MutationHistoryPage(
+                ImmutableList(mergeTransactionOverviews(captures, transactionCaptures)),
+                captures.length
+            )
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
         }

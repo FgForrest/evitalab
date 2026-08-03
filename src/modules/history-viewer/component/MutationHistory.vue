@@ -7,7 +7,7 @@ import { errorMessage } from '@/utils/error'
 
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
 import { useI18n } from 'vue-i18n'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import { List as ImmutableList } from 'immutable'
@@ -22,8 +22,17 @@ import {
 import type {
     MutationHistoryItemVisualisationDefinition
 } from '@/modules/history-viewer/model/MutationHistoryItemVisualisationDefinition.ts'
-import { MutationHistoryRequest } from '@/modules/history-viewer/model/MutationHistoryRequest.ts'
+import {
+    MutationHistoryRequest,
+    reverseScanStartIndex
+} from '@/modules/history-viewer/model/MutationHistoryRequest.ts'
 import type { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
+import type { MutationHistoryPage } from '@/modules/database-driver/request-response/cdc/MutationHistoryPage.ts'
+import {
+    hasMoreRecords,
+    MutationHistoryStartPointer,
+    selectNewestVersion
+} from '@/modules/history-viewer/model/MutationHistoryStartPointer.ts'
 import MutationHistoryItem from '@/modules/history-viewer/component/MutationHistoryItem.vue'
 
 // note: this is enum from vuetify, but vuetify doesn't export it
@@ -33,45 +42,39 @@ enum MutationHistoryFetchErrorType {
 
 }
 
-class StartRecordsPointer {
-    readonly sinceSessionSequenceId: number
-    readonly sinceRecordSessionOffset: number
-
-    constructor(sinceSessionSequenceId: number) {
-        this.sinceSessionSequenceId = sinceSessionSequenceId
-        this.sinceRecordSessionOffset = 0
-    }
-}
-
+/**
+ * Reverse-pagination state of the list. `sinceVersion`/`sinceIndex` anchor the scan at the newest
+ * version of the first page so that concurrent writes cannot shift the following pages.
+ */
 class RecordsPointer {
-    private _sinceSessionSequenceId: number = 1
-    private _sinceRecordSessionOffset: number = 0
+    private _sinceVersion: number | undefined = undefined
+    private _sinceIndex: number | undefined = undefined
     private _page: number = 1
     private _hasPointer: boolean = false
     private _lastFetchedCount: number | undefined = undefined
 
-    get sinceSessionSequenceId(): number {
-        return this._sinceSessionSequenceId
+    get sinceVersion(): number | undefined {
+        return this._sinceVersion
     }
 
-    get sinceRecordSessionOffset(): number {
-        return this._sinceRecordSessionOffset
+    get sinceIndex(): number | undefined {
+        return this._sinceIndex
     }
 
     get hasPointer(): boolean {
         return this._hasPointer
     }
 
-    reset(startPointer?: StartRecordsPointer): void {
-        this._sinceSessionSequenceId = startPointer?.sinceSessionSequenceId || 1
-        this._sinceRecordSessionOffset = startPointer?.sinceRecordSessionOffset || 0
+    reset(): void {
+        this._sinceVersion = undefined
+        this._sinceIndex = undefined
         this._page = 1
-        this._hasPointer = startPointer != undefined
+        this._hasPointer = false
     }
 
-    move(sinceSessionSequenceId: number, sinceRecordSessionOffset: number) {
-        this._sinceSessionSequenceId = sinceSessionSequenceId
-        this._sinceRecordSessionOffset = sinceRecordSessionOffset
+    move(sinceVersion: number, sinceIndex: number) {
+        this._sinceVersion = sinceVersion
+        this._sinceIndex = sinceIndex
         this._hasPointer = true
     }
 
@@ -116,8 +119,9 @@ const fetchError = ref<MutationHistoryFetchErrorType | undefined>(undefined)
 let records: ChangeCatalogCapture[] = []
 const history = ref<MutationHistoryItemVisualisationDefinition[]>([])
 
-const startPointer = ref<StartRecordsPointer | undefined>(undefined)
-watch(startPointer, () => reloadHistory(), { deep: true })
+// deliberately no watcher: both actions changing it await the reload themselves, otherwise the parent's
+// loading indicator stops before the data arrives
+const startPointer = ref<MutationHistoryStartPointer | undefined>(undefined)
 const nextPagePointer = ref<RecordsPointer>(new RecordsPointer())
 const limit = ref<number>(pageSize)
 
@@ -128,57 +132,28 @@ const nextPageRequest = computed<MutationHistoryRequest>(() => {
     const infraType = props.criteria.areaType === 'dataSite' ? 'DATA_SITE'
         : props.criteria.areaType === 'schemaSite' ? 'SCHEMA_SITE'
         : undefined
-    // Initial load: do not send since*/page
-    if (!nextPagePointer.value.hasPointer) {
-        return new MutationHistoryRequest(
-            props.criteria.from,
-            props.criteria.to,
-            props.criteria.operationList,
-            props.criteria.containerNameList,
-            props.criteria.containerTypeList,
-            props.criteria.entityPrimaryKey,
-            props.criteria.entityType,
-            infraType,
-            undefined,
-            undefined,
-            1,
-            props.criteria.mutableFilters
-        )
-    }
-    // Subsequent loads: anchor by sinceVersion, paginate by page
-    return new MutationHistoryRequest(
-        props.criteria.from,
-        props.criteria.to,
-        props.criteria.operationList,
-        props.criteria.containerNameList,
-        props.criteria.containerTypeList,
-        props.criteria.entityPrimaryKey,
-        props.criteria.entityType,
-        infraType,
-        nextPagePointer.value.sinceSessionSequenceId,
-        undefined,
-        nextPagePointer.value.page,
-        props.criteria.mutableFilters
-    )
-})
-const lastRecordRequest = computed<MutationHistoryRequest>(() => {
-    const infraType = props.criteria.areaType === 'dataSite' ? 'DATA_SITE'
-        : props.criteria.areaType === 'schemaSite' ? 'SCHEMA_SITE'
-        : undefined
-    return new MutationHistoryRequest(
-        props.criteria.from,
-        props.criteria.to,
-        props.criteria.operationList,
-        props.criteria.containerNameList,
-        props.criteria.containerTypeList,
-        props.criteria.entityPrimaryKey,
-        props.criteria.entityType,
-        infraType,
-        undefined,
-        undefined,
-        1,
-        props.criteria.mutableFilters
-    )
+    // transaction overviews belong to the full-history view only; the entity-grid-scoped viewer renders
+    // a narrow list without them. unifying the two is a separate UX decision.
+    const loadTransactionOverview: boolean = props.criteria.mutableFilters !== false
+    const anchored: boolean = nextPagePointer.value.hasPointer && nextPagePointer.value.sinceVersion != undefined
+
+    return new MutationHistoryRequest({
+        from: props.criteria.from,
+        to: props.criteria.to,
+        operationList: props.criteria.operationList,
+        containerNameList: props.criteria.containerNameList,
+        containerTypeList: props.criteria.containerTypeList,
+        entityPrimaryKey: props.criteria.entityPrimaryKey,
+        entityType: props.criteria.entityType,
+        infrastructureAreaType: infraType,
+        // sinceIndex must accompany sinceVersion, otherwise the server starts the reverse scan at the
+        // anchor version's lead event and skips the rest of it
+        sinceVersion: anchored ? nextPagePointer.value.sinceVersion : undefined,
+        sinceIndex: anchored ? nextPagePointer.value.sinceIndex ?? reverseScanStartIndex : undefined,
+        page: nextPagePointer.value.page,
+        loadTransaction: loadTransactionOverview,
+        newerThanVersion: startPointer.value?.newerThanVersion
+    })
 })
 
 async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) => void }): Promise<void> {
@@ -187,18 +162,18 @@ async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) 
         if (nextPagePointer.value.hasPointer) {
             nextPagePointer.value.nextPage()
         }
-        const fetchedRecords: ImmutableList<ChangeCatalogCapture> = await fetchRecords()
+        const fetchedPage: MutationHistoryPage = await fetchRecords()
         fetchError.value = undefined
 
-        nextPagePointer.value.setLastFetchedCount(fetchedRecords.size)
-        if (fetchedRecords.size === 0) {
-            await toaster.info(t('mutationHistoryViewer.list.notification.noNewerRecords'))
+        nextPagePointer.value.setLastFetchedCount(fetchedPage.captureCount)
+        if (fetchedPage.records.size === 0) {
+            await toaster.info(t('mutationHistoryViewer.list.notification.noOlderRecords'))
             done('ok')
             return
         }
 
-        moveNextPagePointer(fetchedRecords)
-        pushNewRecords(fetchedRecords)
+        moveNextPagePointer(fetchedPage)
+        pushNewRecords(fetchedPage.records)
         await processRecords()
         done('ok')
     } catch (e) {
@@ -208,20 +183,24 @@ async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) 
 }
 
 async function reloadHistory(): Promise<void> {
-    nextPagePointer.value.reset(startPointer.value)
+    nextPagePointer.value.reset()
     records = []
     history.value = []
     fetchError.value = undefined
 
     try {
-        const fetchedRecords: ImmutableList<ChangeCatalogCapture> = await fetchRecords()
-        nextPagePointer.value.setLastFetchedCount(fetchedRecords.size)
-        if (fetchedRecords.size === 0) {
+        const fetchedPage: MutationHistoryPage = await fetchRecords()
+        nextPagePointer.value.setLastFetchedCount(fetchedPage.captureCount)
+        if (fetchedPage.records.size === 0) {
+            if (startPointer.value != undefined) {
+                // without this the pointer flow is mute — the list just empties
+                await toaster.info(t('mutationHistoryViewer.list.notification.noNewerRecords'))
+            }
             return
         }
 
-        moveNextPagePointer(fetchedRecords)
-        pushNewRecords(fetchedRecords)
+        moveNextPagePointer(fetchedPage)
+        pushNewRecords(fetchedPage.records)
         await processRecords()
     } catch (e) {
         handleRecordFetchError(e)
@@ -232,14 +211,13 @@ async function tryReloadHistoryForPossibleNewRecords(): Promise<void> {
     fetchingNewRecordsWhenThereArentAny.value = true
     await reloadHistory()
     fetchingNewRecordsWhenThereArentAny.value = false
-    if (history.value.length === 0) {
+    if (history.value.length === 0 && startPointer.value == undefined) {
         await toaster.info(t('mutationHistoryViewer.list.notification.noNewerRecords'))
         nextPagePointer.value.setLastFetchedCount(0)
-        return
     }
 }
 
-async function fetchRecords(): Promise<ImmutableList<ChangeCatalogCapture>> {
+async function fetchRecords(): Promise<MutationHistoryPage> {
     return await mutationHistoryViewerService.getMutationHistoryList(
         props.dataPointer.catalogName,
         nextPageRequest.value,
@@ -247,15 +225,18 @@ async function fetchRecords(): Promise<ImmutableList<ChangeCatalogCapture>> {
     )
 }
 
-function moveNextPagePointer(fetchedRecords: ImmutableList<ChangeCatalogCapture>): void {
-    if (fetchedRecords.size === 0) return
+function moveNextPagePointer(fetchedPage: MutationHistoryPage): void {
+    if (fetchedPage.records.size === 0) return
 
-    // Initialize anchor (sinceVersion) to newest boundary when not set yet
+    // anchor the reverse scan at the newest version of the first page, so that records committed while
+    // the user pages through the history cannot shift the following pages
     if (!nextPagePointer.value.hasPointer) {
-        const newestVersion: number = fetchedRecords.get(0)!.version
-        nextPagePointer.value.move(newestVersion + 1, 0)
+        const newestVersion: number | undefined = selectNewestVersion(fetchedPage.records.toArray())
+        if (newestVersion == undefined) {
+            return
+        }
+        nextPagePointer.value.move(newestVersion, reverseScanStartIndex)
         nextPagePointer.value.setPage(1)
-        return
     }
 
     // For subsequent loads, page is advanced before fetch in loadNextHistory
@@ -286,41 +267,35 @@ function handleRecordFetchError(e: unknown): void {
     )).then()
 }
 
+/**
+ * Limits the list to records newer than the newest one already loaded. The boundary comes from the
+ * records the user is looking at, not from the server's current version — anything committed since the
+ * last load counts as new — so no extra request is needed to establish it.
+ *
+ * With nothing loaded there is no boundary to capture. That is also the state right after a pointer was
+ * set and found no newer records, and the action stays offered there, so the pointer is dropped and the
+ * full history is loaded back instead of leaving the user on an empty list.
+ */
 async function moveStartPointerToNewest(): Promise<void> {
-    try {
-        const latestRecords: ImmutableList<ChangeCatalogCapture> = await mutationHistoryViewerService.getMutationHistoryList(
-            props.dataPointer.catalogName,
-            lastRecordRequest.value,
-            limit.value
-        )
-        if (latestRecords.size === 0) {
-            startPointer.value = undefined
-            emit('update:startPointerActive', false)
-        } else {
-            const latestRecord: ChangeCatalogCapture = latestRecords.get(0)!
-            startPointer.value = new StartRecordsPointer(latestRecord.version + 1)
-            emit('update:startPointerActive', true)
-        }
-    } catch (e) {
-        await toaster.error(t(
-            'mutationHistoryViewer.notification.couldNotLoadLatestRecording',
-            { reason: errorMessage(e) }
-        ))
-        emit('update:startPointerActive', false)
-    }
-
+    const newestVersion: number | undefined = selectNewestVersion(records)
+    startPointer.value = newestVersion != undefined
+        ? new MutationHistoryStartPointer(newestVersion)
+        : undefined
+    emit('update:startPointerActive', startPointer.value != undefined)
+    await reloadHistory()
 }
 
-function removeStartPointer(): void {
+async function removeStartPointer(): Promise<void> {
     startPointer.value = undefined
     emit('update:startPointerActive', false)
+    await reloadHistory()
 }
 
 
 defineExpose<{
     reload(): Promise<void>,
     moveStartPointerToNewest(): Promise<void>,
-    removeStartPointer(): void
+    removeStartPointer(): Promise<void>
 }>({
     reload: () => reloadHistory(),
     moveStartPointerToNewest,
@@ -344,7 +319,7 @@ defineExpose<{
             </template>
 
             <template #load-more="{ props }" >
-                <VBtn v-bind="props" v-if="nextPagePointer.lastFetchedCount == undefined || nextPagePointer.lastFetchedCount >= limit " >
+                <VBtn v-bind="props" v-if="hasMoreRecords(nextPagePointer.lastFetchedCount, limit)" >
                     {{ t('mutationHistoryViewer.list.button.loadMore') }}
                 </VBtn>
             </template>

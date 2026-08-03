@@ -3,6 +3,9 @@ import { ShareTabObject } from '@/modules/workspace/tab/model/ShareTabObject'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
 import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
+import { MutationHistoryViewerTabData } from '@/modules/history-viewer/model/MutationHistoryViewerTabData'
+import { OffsetDateTime, Timestamp } from '@/modules/database-driver/data-type/OffsetDateTime'
+import { GrpcChangeCaptureOperation } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb'
 
 function sampleShareTabObject(): ShareTabObject {
     return new ShareTabObject(
@@ -67,5 +70,40 @@ describe('ShareTabObject.fromLinkParamOrUrl', () => {
         const hash: string = sampleShareTabObject().toLinkParam()
         const corrupted: string = hash.substring(0, hash.length - 5) + '!!!!!'
         expect(() => ShareTabObject.fromLinkParamOrUrl(corrupted)).toThrow()
+    })
+})
+
+describe('ShareTabObject with mutation history viewer time filters', () => {
+    // `Timestamp.seconds` is a BigInt, which `JSON.stringify` refuses to serialize; the tab data DTO
+    // therefore emits it as a string and the tab factory restores it via `BigInt(...)`. Sharing a
+    // mutation history tab carrying `from`/`to` must survive that transport losslessly.
+    test('round-trips from/to timestamps through the share link', () => {
+        const tabData: MutationHistoryViewerTabData = new MutationHistoryViewerTabData(
+            new OffsetDateTime(new Timestamp(BigInt(1735689600), 123), '+02:00'),
+            new OffsetDateTime(new Timestamp(BigInt(1767225600), 0), 'Z'),
+            42,
+            [GrpcChangeCaptureOperation.UPSERT],
+            ['code'],
+            undefined,
+            'Product',
+            'dataSite',
+            true
+        )
+        const original: ShareTabObject = new ShareTabObject(
+            TabType.MutationHistoryViewer,
+            { connectionId: 'demo', connectionName: 'Demo', catalogName: 'evita' } as unknown as TabParamsDto,
+            tabData.toSerializable() as unknown as TabDataDto
+        )
+
+        const parsed: ShareTabObject = ShareTabObject.fromLinkParam(original.toLinkParam())
+
+        expect(parsed.tabType).toEqual(TabType.MutationHistoryViewer)
+        expect(parsed.tabParams).toEqual(original.tabParams)
+        expect(parsed.tabData).toEqual(original.tabData)
+
+        const parsedData = parsed.tabData as unknown as { from: { seconds: string, nanos: number, offset: string } }
+        expect(BigInt(parsedData.from.seconds)).toEqual(BigInt(1735689600))
+        expect(parsedData.from.nanos).toEqual(123)
+        expect(parsedData.from.offset).toEqual('+02:00')
     })
 })
