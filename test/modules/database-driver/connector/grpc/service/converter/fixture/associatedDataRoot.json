@@ -1,0 +1,132 @@
+{
+    "version": 1,
+    "root": {
+        "mapValue": {
+            "data": {
+                "code": {
+                    "primitiveValue": {
+                        "stringValue": "product-1"
+                    }
+                },
+                "quantity": {
+                    "primitiveValue": {
+                        "integerValue": 42,
+                        "type": "INTEGER"
+                    }
+                },
+                "price": {
+                    "primitiveValue": {
+                        "bigDecimalValue": {
+                            "valueString": "10.5"
+                        },
+                        "type": "BIG_DECIMAL"
+                    }
+                },
+                "available": {
+                    "primitiveValue": {
+                        "booleanValue": true,
+                        "type": "BOOLEAN"
+                    }
+                },
+                "emptyMap": {
+                    "mapValue": {}
+                },
+                "emptyArray": {
+                    "arrayValue": {}
+                },
+                "matrix": {
+                    "arrayValue": {
+                        "children": [
+                            {
+                                "arrayValue": {
+                                    "children": [
+                                        {
+                                            "primitiveValue": {
+                                                "integerValue": 1,
+                                                "type": "INTEGER"
+                                            }
+                                        },
+                                        {
+                                            "primitiveValue": {
+                                                "integerValue": 2,
+                                                "type": "INTEGER"
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "arrayValue": {
+                                    "children": [
+                                        {
+                                            "primitiveValue": {
+                                                "integerValue": 3,
+                                                "type": "INTEGER"
+                                            }
+                                        },
+                                        {
+                                            "primitiveValue": {
+                                                "integerValue": 4,
+                                                "type": "INTEGER"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                "nested": {
+                    "mapValue": {
+                        "data": {
+                            "depth": {
+                                "primitiveValue": {
+                                    "integerValue": 2,
+                                    "type": "INTEGER"
+                                }
+                            },
+                            "title": {
+                                "primitiveValue": {
+                                    "stringValue": "nested title"
+                                }
+                            },
+                            "tags": {
+                                "arrayValue": {
+                                    "children": [
+                                        {
+                                            "primitiveValue": {
+                                                "stringValue": "x"
+                                            }
+                                        },
+                                        {
+                                            "primitiveValue": {
+                                                "stringValue": "y"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "labels": {
+                    "arrayValue": {
+                        "children": [
+                            {
+                                "primitiveValue": {
+                                    "stringValue": "alpha"
+                                }
+                            },
+                            {
+                                "primitiveValue": {
+                                    "stringValue": "beta"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "type": "COMPLEX_DATA_OBJECT"
+}

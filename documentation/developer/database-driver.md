@@ -22,7 +22,7 @@ The client is modeled after the evitaDB Java/C# drivers, simplified for evitaLab
 
 | Class | Responsibility |
 |-------|----------------|
-| `AbstractEvitaClient` | Lazily-built gRPC transport ([connect-web](https://connectrpc.com/)), gRPC service clients (`EvitaService`, `EvitaManagementService`, `EvitaSessionService`, `EvitaTrafficRecordingService`), HTTP client ([ky](https://github.com/sindresorhus/ky)) for GraphQL API, converter singletons, `ErrorTransformer` |
+| `AbstractEvitaClient` | Lazily-built gRPC transport ([connect-web](https://connectrpc.com/)) with the `clientVersion` interceptor (see [associated data & complex data objects](#associated-data--complex-data-objects)), gRPC service clients (`EvitaService`, `EvitaManagementService`, `EvitaSessionService`, `EvitaTrafficRecordingService`), HTTP client ([ky](https://github.com/sindresorhus/ky)) for GraphQL API, converter singletons, `ErrorTransformer` |
 | `EvitaClient` | Catalog-level operations (list/create/rename/replace/delete/duplicate…), session orchestration (`queryCatalog`, `updateCatalog`), GraphQL passthrough (`queryCatalogUsingGraphQL`), schema-cache management, change callbacks |
 | `EvitaClientSession` | Session-scoped operations: `query()` (evitaQL), schema access (`getCatalogSchema()`, `getEntitySchema()`), collection management, backups, traffic recording, mutation history, labels, `close()` |
 | `EvitaClientManagement` | Server-level operations: server status, configuration, catalog statistics, backup/restore, file listing/download, task monitoring, with its own caches + change callbacks |
@@ -154,6 +154,62 @@ by gRPC but previously dropped when reference attributes were built as the plain
 contributes the representative badge through the `prefixFlags()` hook. The flag drives grouping/filtering of
 references in the entity-viewer detail. Older servers that don't send the flag report `representative = false`,
 so those details fall back to a flat, unfiltered list.
+
+### Associated data & complex data objects
+
+`GrpcEvitaAssociatedDataValue` carries a **oneof** with three mutually exclusive forms:
+
+| oneof case | payload | meaning |
+|---|---|---|
+| `primitiveValue` | `GrpcEvitaValue` | plain (non-complex) associated data value |
+| `jsonValue` | `string` | **deprecated** — a complex data object flattened into a JSON string (lossy) |
+| `root` | `GrpcDataItem` | a complex data object as a typed tree (`primitiveValue` / `arrayValue` / `mapValue` recursion) |
+
+Which of the two complex forms arrives is negotiated: evitaDB picks the structured tree only for
+clients declaring evitaDB API version `2025.4` or newer through the `clientVersion` gRPC header.
+evitaLab declares it from `.evitadbrc` in a transport interceptor
+(`AbstractEvitaClient.transport` + `connector/grpc/utils/ClientVersion.ts`), so **one interceptor covers
+all four service clients**, unary and streaming alike. Only a version evitaDB can parse
+(`major.minor[.patch][-SNAPSHOT]`) may be sent — the server parses the header without any error handling,
+so a malformed value would break *every* gRPC call; `resolveClientVersion()` therefore drops anything else
+and the server falls back to the deprecated form. **Both branches are live** — older servers keep answering
+`jsonValue` — and neither may be dropped until the supported-server floor moves past the JSON form.
+
+The `type` discriminator stays `COMPLEX_DATA_OBJECT` in **both** complex forms, therefore
+**dispatch must key off the oneof case, never off `type`** — `EvitaValueConverter.convertGrpcAssociatedValue`
+is the single dispatch point for both entry points (entity reads in `EntityConverter`, and
+`UpsertAssociatedDataMutation` in traffic/history). `ScalarConverter.convertAssociatedDataScalar` legitimately
+keys off `type`, because the associated data scalar is `ComplexDataObject` either way.
+
+`EvitaValueConverter.convertGrpcDataItem` converts the tree into a **plain JSON-compatible structure** —
+maps to plain objects, arrays to plain arrays, leaves to plain JSON values. This is a deliberate exception
+to the "use the `data-type/` wrappers, not raw JS types" rule above: complex data objects are rendered by
+a bare `JSON.stringify` (entity grid renderers, `MutationHistoryDataVisualiser`), which throws on `bigint`
+and would serialize the wrappers as their internal fields. The leaf projection reproduces evitaDB's
+`ComplexDataObjectToJsonConverter`, so the structured form renders exactly like the JSON form:
+
+| evitaDB type | projection |
+|---|---|
+| `BYTE`, `SHORT`, `INTEGER`, `BOOLEAN` | JSON number / boolean |
+| `LONG`, `BIG_DECIMAL` | JSON **string** (ECMAScript numbers cannot hold the whole range / precision) |
+| `STRING`, `CHARACTER`, `LOCALE` | unquoted JSON string (locale as a language tag) |
+| `CURRENCY`, `UUID` | JSON string wrapped in apostrophes (`'CZK'`) — an evitaDB formatting wart, kept for display parity |
+| date/times | ISO strings with millisecond precision, built from the sent offset (never from the local time zone) |
+| ranges, predecessors | `[from,to]` / `toString()` |
+| null leaf | JSON `null` — a leaf holding no value arrives as an empty `GrpcEvitaValue` |
+
+Known deviations from the JSON form: `BIG_DECIMAL` is passed through in the wire form (`E` normalized to
+`e`) instead of `toPlainString()`, date/times are truncated to milliseconds, predecessors use evitaLab's own
+`Predecessor.toString()` (`Head` / the predecessor id) rather than evitaDB's, and a bare primitive root is
+converted leniently (the JSON form rejects it). Nulls have two distinct shapes and only the first survives
+the structured form: a **leaf holding null** is sent as a present item with an empty value message (→ `null`,
+as in the table above), whereas a map property that is a **null item** is skipped by the server when it builds
+the tree, while the JSON form emitted an explicit `null` for it. That second difference is produced
+server-side and cannot be compensated by the client.
+
+`convertGrpcDataItem` throws `UnexpectedError` on an unrecognized item, mirroring the Java driver. The
+"nested delegating converters must never throw" rule below applies to *schema* mutation converters on the
+`ChangeSystemCaptureConverter` path; associated data upsert is a local entity mutation and is not on it.
 
 ### Transaction conflict resolution
 
