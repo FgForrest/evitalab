@@ -37,7 +37,11 @@ export class MutationHistoryViewerService {
                            limit: number): Promise<MutationHistoryPage> {
         return await this.evitaClient.queryCatalog(
             catalogName,
-            session => session.getMutationHistory(mutationHistoryRequest, limit)
+            session => session.getMutationHistory(mutationHistoryRequest, limit),
+            // a read-only session is a snapshot: without an anchor the server starts the reverse scan at
+            // the session's own catalog version, so a shared session never reports mutations committed
+            // after it was opened
+            true
         )
     }
 

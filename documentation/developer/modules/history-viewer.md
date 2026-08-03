@@ -77,6 +77,11 @@ what the list does with them:
   from `MutationHistoryPage`, never the rendered size (which the merged overviews inflate past the page
   size). A partial page means end-of-history or boundary reached; both hide the button. Replace this with
   the server's `hasMore` flag once it exists.
+- **Every load forces a fresh session.** `MutationHistoryViewerService.getMutationHistoryList` passes
+  `forceNewSession: true`, like the evitaQL console and the entity viewer's query executor. A read-only
+  session is a snapshot, and with no anchor sent the server starts the reverse scan at *that session's*
+  catalog version — so on the shared session the list never shows mutations committed after it was
+  opened, and appears frozen until something else happens to evict it.
 - **No watcher drives the reload.** `moveStartPointerToNewest()` and `removeStartPointer()` both `await`
   `reloadHistory()` themselves and are both `async`, because `MutationHistoryViewer.vue` clears
   `historyStartPointerLoading` right after awaiting them — an out-of-band watcher stopped the spinner
