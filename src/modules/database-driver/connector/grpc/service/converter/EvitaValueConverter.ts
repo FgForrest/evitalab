@@ -7,7 +7,7 @@ import { IntegerRange } from '@/modules/database-driver/data-type/IntegerRange'
 import { LocalDate } from '@/modules/database-driver/data-type/LocalDate'
 import { LocalDateTime } from '@/modules/database-driver/data-type/LocalDateTime'
 import { LocalTime } from '@/modules/database-driver/data-type/LocalTime'
-import { OffsetDateTime, Timestamp } from '@/modules/database-driver/data-type/OffsetDateTime'
+import { OffsetDateTime, Timestamp, toLuxonZone } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { Predecessor } from '@/modules/database-driver/data-type/Predecessor'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { List as ImmutableList } from 'immutable'
@@ -52,25 +52,58 @@ import type { Timestamp as GrpcTimestamp } from '@bufbuild/protobuf/wkt'
 export class EvitaValueConverter {
 
 
-    static convertGrpcAssociatedValue(value: GrpcEvitaAssociatedDataValue | undefined, valueCase: string | undefined): EvitaValue {
-        if (value?.value.case == 'primitiveValue') {
-            return EvitaValueConverter.convertGrpcValue(value.value.value, valueCase);
-        } else if (value?.value.case == 'root') {
-            return EvitaValueConverter.convertGrpcValue(value.value.value, valueCase);
-        } else if (value?.value.case == 'jsonValue') {
-            return JSON.parse(value?.value?.value)
-        } else {
-            throw new UnexpectedError("Unknown value type.");
+    /**
+     * Converts a single associated data value into its local representation. The server may send a complex data object
+     * either as the deprecated JSON string or as the typed {@link GrpcDataItem} tree, therefore the dispatch must be
+     * based on the actual oneof case, not on the `type` discriminator (which stays `COMPLEX_DATA_OBJECT` in both cases).
+     */
+    static convertGrpcAssociatedValue(value: GrpcEvitaAssociatedDataValue | undefined): EvitaValue {
+        if (value == undefined) {
+            throw new UnexpectedError('Unknown value type.')
+        }
+        switch (value.value.case) {
+            case 'primitiveValue':
+                return EvitaValueConverter.convertGrpcValue(value.value.value, value.value.case)
+            case 'jsonValue':
+                // deprecated form, still sent by servers that don't support the structured form
+                return JSON.parse(value.value.value)
+            case 'root':
+                return EvitaValueConverter.convertGrpcDataItem(value.value.value)
+            default:
+                throw new UnexpectedError('Unknown associated data value type.')
         }
     }
-    static convertGrpcValue(value: string | GrpcEvitaValue | GrpcDataItem | undefined, valueCase: string | undefined): EvitaValue {
+
+    /**
+     * Converts the typed complex data object tree into a plain JSON-compatible structure - maps become plain objects,
+     * arrays plain arrays and leaves plain JSON values. The projection mirrors evitaDB's
+     * `ComplexDataObjectToJsonConverter` so that the structured form renders identically to the deprecated JSON form.
+     */
+    static convertGrpcDataItem(dataItem: GrpcDataItem): EvitaValue {
+        switch (dataItem.value.case) {
+            case 'primitiveValue':
+                return EvitaValueConverter.convertGrpcDataItemLeaf(dataItem.value.value)
+            case 'arrayValue':
+                return dataItem.value.value.children
+                    .map(child => EvitaValueConverter.convertGrpcDataItem(child))
+            case 'mapValue':
+                return Object.fromEntries(
+                    Object.entries(dataItem.value.value.data)
+                        .map(([propertyName, property]) => [
+                            propertyName,
+                            EvitaValueConverter.convertGrpcDataItem(property)
+                        ])
+                )
+            default:
+                throw new UnexpectedError('Unsupported complex data object item.')
+        }
+    }
+
+    static convertGrpcValue(value: string | GrpcEvitaValue | undefined, _valueCase: string | undefined): EvitaValue {
         if (typeof value === 'string') {
             return value
         } else if (value == undefined) {
             return undefined
-        } else if (valueCase === 'root') {
-            // https://github.com/FgForrest/evitalab/issues/290
-            throw new Error('Not implemented yet: https://github.com/FgForrest/evitalab/issues/290')
         } else {
             const val = value as GrpcEvitaValue
             const objectValue = val.value.value
@@ -223,6 +256,202 @@ export class EvitaValueConverter {
                     throw new UnexpectedError(`Unsupported evita data type '${val.type}'.`)
             }
         }
+    }
+
+    /**
+     * Projects a single leaf of a complex data object tree into a JSON-compatible value. No `bigint`s and no
+     * `data-type/` wrappers may leak into the result because complex data objects are rendered by a bare
+     * `JSON.stringify` in several places.
+     */
+    private static convertGrpcDataItemLeaf(value: GrpcEvitaValue): EvitaValue {
+        if (value.value.case === undefined) {
+            // a null property of a complex data object is sent as an empty value message
+            return null
+        }
+        const objectValue = value.value.value
+        switch (value.type) {
+            case GrpcEvitaDataType.BYTE:
+            case GrpcEvitaDataType.SHORT:
+            case GrpcEvitaDataType.INTEGER:
+            case GrpcEvitaDataType.BOOLEAN:
+            case GrpcEvitaDataType.STRING:
+            case GrpcEvitaDataType.CHARACTER:
+                return objectValue
+            case GrpcEvitaDataType.LONG:
+                // longs are projected as strings, ECMAScript numbers cannot hold the entire long range
+                return String(objectValue)
+            case GrpcEvitaDataType.BIG_DECIMAL:
+                return (objectValue as GrpcBigDecimal).valueString
+            case GrpcEvitaDataType.LOCALE:
+                return (objectValue as GrpcLocale).languageTag
+            case GrpcEvitaDataType.CURRENCY:
+                return EvitaValueConverter.quoteDataItemValue((objectValue as GrpcCurrency).code)
+            case GrpcEvitaDataType.UUID:
+                return EvitaValueConverter.quoteDataItemValue(
+                    EvitaValueConverter.convertGrpcUuid(objectValue as GrpcUuid).toString()
+                )
+            case GrpcEvitaDataType.PREDECESSOR:
+            case GrpcEvitaDataType.REFERENCED_ENTITY_PREDECESSOR:
+                return EvitaValueConverter.convertGrpcPredecessor(objectValue as GrpcPredecessor).toString()
+            case GrpcEvitaDataType.OFFSET_DATE_TIME:
+                return EvitaValueConverter.formatDataItemOffsetDateTime(objectValue as GrpcOffsetDateTime)
+            case GrpcEvitaDataType.LOCAL_DATE_TIME:
+                return EvitaValueConverter.formatDataItemLocalDateTime(objectValue as GrpcOffsetDateTime)
+            case GrpcEvitaDataType.LOCAL_DATE:
+                return EvitaValueConverter.formatDataItemLocalDate(objectValue as GrpcOffsetDateTime)
+            case GrpcEvitaDataType.LOCAL_TIME:
+                return EvitaValueConverter.formatDataItemLocalTime(objectValue as GrpcOffsetDateTime)
+            case GrpcEvitaDataType.DATE_TIME_RANGE:
+                return EvitaValueConverter.formatDataItemDateTimeRange(objectValue as GrpcDateTimeRange)
+            case GrpcEvitaDataType.BIG_DECIMAL_NUMBER_RANGE:
+                return EvitaValueConverter.formatDataItemBigDecimalNumberRange(
+                    objectValue as GrpcBigDecimalNumberRange
+                )
+            case GrpcEvitaDataType.LONG_NUMBER_RANGE:
+                return EvitaValueConverter.formatDataItemNumberRange(
+                    (objectValue as GrpcLongNumberRange).from,
+                    (objectValue as GrpcLongNumberRange).to
+                )
+            case GrpcEvitaDataType.INTEGER_NUMBER_RANGE:
+            case GrpcEvitaDataType.SHORT_NUMBER_RANGE:
+            case GrpcEvitaDataType.BYTE_NUMBER_RANGE:
+                return EvitaValueConverter.formatDataItemNumberRange(
+                    (objectValue as GrpcIntegerNumberRange).from,
+                    (objectValue as GrpcIntegerNumberRange).to
+                )
+            // evitaDB models arrays as `GrpcDataItemArray`, array leaves are handled only defensively so that
+            // no immutable list ever escapes into the converted tree
+            case GrpcEvitaDataType.STRING_ARRAY:
+                return [...(objectValue as GrpcStringArray).value]
+            case GrpcEvitaDataType.BOOLEAN_ARRAY:
+                return [...(objectValue as GrpcBooleanArray).value]
+            case GrpcEvitaDataType.BYTE_ARRAY:
+            case GrpcEvitaDataType.SHORT_ARRAY:
+            case GrpcEvitaDataType.INTEGER_ARRAY:
+            case GrpcEvitaDataType.CHARACTER_ARRAY:
+                return [...(objectValue as GrpcIntegerArray).value]
+            case GrpcEvitaDataType.LONG_ARRAY:
+                return (objectValue as GrpcLongArray).value.map(it => String(it))
+            case GrpcEvitaDataType.BIG_DECIMAL_ARRAY:
+                return (objectValue as GrpcBigDecimalArray).value.map(it => it.valueString)
+            case GrpcEvitaDataType.LOCALE_ARRAY:
+                return (objectValue as GrpcLocaleArray).value.map(it => it.languageTag)
+            case GrpcEvitaDataType.CURRENCY_ARRAY:
+                return (objectValue as GrpcCurrencyArray).value
+                    .map(it => EvitaValueConverter.quoteDataItemValue(it.code))
+            case GrpcEvitaDataType.UUID_ARRAY:
+                return (objectValue as GrpcUuidArray).value
+                    .map(it => EvitaValueConverter.quoteDataItemValue(
+                        EvitaValueConverter.convertGrpcUuid(it).toString()
+                    ))
+            case GrpcEvitaDataType.OFFSET_DATE_TIME_ARRAY:
+                return (objectValue as GrpcOffsetDateTimeArray).value
+                    .map(it => EvitaValueConverter.formatDataItemOffsetDateTime(it))
+            case GrpcEvitaDataType.LOCAL_DATE_TIME_ARRAY:
+                return (objectValue as GrpcOffsetDateTimeArray).value
+                    .map(it => EvitaValueConverter.formatDataItemLocalDateTime(it))
+            case GrpcEvitaDataType.LOCAL_DATE_ARRAY:
+                return (objectValue as GrpcOffsetDateTimeArray).value
+                    .map(it => EvitaValueConverter.formatDataItemLocalDate(it))
+            case GrpcEvitaDataType.LOCAL_TIME_ARRAY:
+                return (objectValue as GrpcOffsetDateTimeArray).value
+                    .map(it => EvitaValueConverter.formatDataItemLocalTime(it))
+            case GrpcEvitaDataType.DATE_TIME_RANGE_ARRAY:
+                return (objectValue as GrpcDateTimeRangeArray).value
+                    .map(it => EvitaValueConverter.formatDataItemDateTimeRange(it))
+            case GrpcEvitaDataType.BIG_DECIMAL_NUMBER_RANGE_ARRAY:
+                return (objectValue as GrpcBigDecimalNumberRangeArray).value
+                    .map(it => EvitaValueConverter.formatDataItemBigDecimalNumberRange(it))
+            case GrpcEvitaDataType.LONG_NUMBER_RANGE_ARRAY:
+                return (objectValue as GrpcLongNumberRangeArray).value
+                    .map(it => EvitaValueConverter.formatDataItemNumberRange(it.from, it.to))
+            case GrpcEvitaDataType.INTEGER_NUMBER_RANGE_ARRAY:
+            case GrpcEvitaDataType.SHORT_NUMBER_RANGE_ARRAY:
+            case GrpcEvitaDataType.BYTE_NUMBER_RANGE_ARRAY:
+                return (objectValue as GrpcIntegerNumberRangeArray).value
+                    .map(it => EvitaValueConverter.formatDataItemNumberRange(it.from, it.to))
+            default:
+                throw new UnexpectedError(`Unsupported evita data type '${value.type}'.`)
+        }
+    }
+
+    /**
+     * evitaDB formats currencies, UUIDs and similar values wrapped in apostrophes when they are serialized into
+     * a complex data object.
+     */
+    private static quoteDataItemValue(value: string): string {
+        return `'${value}'`
+    }
+
+    private static formatDataItemOffsetDateTime(value: GrpcOffsetDateTime): string {
+        return EvitaValueConverter.stripRedundantFractionZeros(
+            EvitaValueConverter.toDataItemDateTime(value)
+                .toISO({ suppressSeconds: true, suppressMilliseconds: true, includeOffset: true })!
+        )
+    }
+
+    private static formatDataItemLocalDateTime(value: GrpcOffsetDateTime): string {
+        return EvitaValueConverter.stripRedundantFractionZeros(
+            EvitaValueConverter.toDataItemDateTime(value)
+                .toISO({ suppressSeconds: true, suppressMilliseconds: true, includeOffset: false })!
+        )
+    }
+
+    private static formatDataItemLocalDate(value: GrpcOffsetDateTime): string {
+        return EvitaValueConverter.toDataItemDateTime(value).toISODate()!
+    }
+
+    private static formatDataItemLocalTime(value: GrpcOffsetDateTime): string {
+        return EvitaValueConverter.stripRedundantFractionZeros(
+            EvitaValueConverter.toDataItemDateTime(value)
+                .toISOTime({ suppressSeconds: true, suppressMilliseconds: true, includeOffset: false })!
+        )
+    }
+
+    /**
+     * evitaDB prints the second fraction with the minimum number of digits (`.1`), whereas Luxon always prints
+     * all three (`.100`).
+     */
+    private static stripRedundantFractionZeros(dateTime: string): string {
+        return dateTime.replace(/(\.\d*[1-9])0+/, '$1')
+    }
+
+    private static formatDataItemDateTimeRange(value: GrpcDateTimeRange): string {
+        return EvitaValueConverter.formatDataItemRange(
+            value.from != undefined ? EvitaValueConverter.formatDataItemOffsetDateTime(value.from) : undefined,
+            value.to != undefined ? EvitaValueConverter.formatDataItemOffsetDateTime(value.to) : undefined
+        )
+    }
+
+    private static formatDataItemBigDecimalNumberRange(value: GrpcBigDecimalNumberRange): string {
+        return EvitaValueConverter.formatDataItemRange(value.from?.valueString, value.to?.valueString)
+    }
+
+    private static formatDataItemNumberRange(
+        from: number | bigint | undefined,
+        to: number | bigint | undefined
+    ): string {
+        return EvitaValueConverter.formatDataItemRange(
+            from != undefined ? String(from) : undefined,
+            to != undefined ? String(to) : undefined
+        )
+    }
+
+    private static formatDataItemRange(from: string | undefined, to: string | undefined): string {
+        return `[${from ?? ''},${to ?? ''}]`
+    }
+
+    /**
+     * Reconstructs the date-time in the offset it was sent with. The offset is decisive - local date/time values are
+     * always sent in the UTC offset, so reading them in the local system time zone would shift them.
+     */
+    private static toDataItemDateTime(value: GrpcOffsetDateTime): DateTime {
+        if (value.timestamp == undefined) {
+            throw new UnexpectedError('Missing prop timestamp')
+        }
+        const milliseconds: number = Number(value.timestamp.seconds) * 1000 +
+            Math.floor(value.timestamp.nanos / 1_000_000)
+        return DateTime.fromMillis(milliseconds, { zone: toLuxonZone(value.offset) })
     }
 
     static convertGrpcBigDecimal(value: GrpcBigDecimal): BigDecimal {

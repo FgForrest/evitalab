@@ -10,6 +10,7 @@ import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 // Utilities
 import { defineConfig, loadEnv } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
+import { readFileSync } from 'node:fs'
 import { NodePackageImporter } from 'sass'
 import XXH, { HashObject } from 'xxhashjs'
 import { OutputOptions } from 'rollup'
@@ -93,7 +94,11 @@ export default defineConfig(({ mode }) => {
                 output: outputOptions,
             },
         },
-        define: { 'process.env': {} },
+        define: {
+            'process.env': {},
+            // the oldest supported evitaDB API version, declared to the server on every gRPC call
+            __EVITADB_API_VERSION__: JSON.stringify(resolveSupportedEvitaDbApiVersion()),
+        },
         resolve: {
             alias: {
                 '@': fileURLToPath(new URL('src', import.meta.url)),
@@ -123,6 +128,10 @@ function resolveBaseUrl(labRunMode: string): string {
         case 'DRIVER': return './'
         default: throw new Error(`Unsupported lab run mode ${labRunMode}`)
     }
+}
+
+function resolveSupportedEvitaDbApiVersion(): string {
+    return readFileSync(fileURLToPath(new URL('.evitadbrc', import.meta.url)), 'utf-8').trim()
 }
 
 function resolveEvitaLabVersionSuffix(env: Record<string, string>): string {

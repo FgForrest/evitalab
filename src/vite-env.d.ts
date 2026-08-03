@@ -6,6 +6,12 @@ declare module '*.vue' {
   export default component
 }
 
+/**
+ * The oldest evitaDB version (API generation) evitaLab supports, read from `.evitadbrc` at config time and
+ * declared to the server as the `clientVersion` gRPC header.
+ */
+declare const __EVITADB_API_VERSION__: string
+
 interface ImportMetaEnv {
     readonly VITE_BUILD_VERSION: string
     readonly VITE_RUN_MODE: string

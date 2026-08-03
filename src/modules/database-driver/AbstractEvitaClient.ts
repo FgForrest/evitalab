@@ -49,6 +49,10 @@ import {
 import {
     RegisterSystemChangeCaptureResponseConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/RegisterSystemChangeCaptureResponseConverter.ts'
+import {
+    clientVersionHeader,
+    resolveClientVersion
+} from '@/modules/database-driver/connector/grpc/utils/ClientVersion.ts'
 
 
 export type EvitaServiceClient = Client<typeof EvitaService>
@@ -107,8 +111,19 @@ export abstract class AbstractEvitaClient {
 
     private get transport(): Transport {
         if (this._transport == undefined) {
+            const clientVersion: string | undefined = resolveClientVersion(__EVITADB_API_VERSION__)
             this._transport = createGrpcWebTransport({
-                baseUrl: this.connection.grpcUrl
+                baseUrl: this.connection.grpcUrl,
+                interceptors: [
+                    // declares the supported evitaDB API version to the server, so that it can pick response forms
+                    // this client understands
+                    next => async req => {
+                        if (clientVersion != undefined) {
+                            req.header.set(clientVersionHeader, clientVersion)
+                        }
+                        return await next(req)
+                    }
+                ]
             })
         }
         return this._transport

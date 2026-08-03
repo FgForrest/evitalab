@@ -58,6 +58,11 @@ inline env vars):
 | `VITE_DEV_LOCAL_URL` | Override for the `LOCAL` connection URL |
 | `VITE_BUILD_VERSION` | Build version; in CI populated from `EVITALAB_BUILD_VERSION` |
 
+Not an env variable, but injected the same way: `__EVITADB_API_VERSION__` is a global constant added to the
+Vite `define` block, read from `.evitadbrc` at config time. It is the oldest evitaDB API version evitaLab
+supports and it is declared to the server as the `clientVersion` gRPC header — see
+[evitaDB server — versioning](evitadb-server.md#versioning).
+
 ## Type checking
 
 `yarn typecheck` runs `vue-tsc -b --force` against the solution-style root
