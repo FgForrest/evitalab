@@ -21,3 +21,9 @@ pnpm-debug.log*
 *.sln
 *.sw?
 *.iml
+
+# Ignore everything inside node_modules
+node_modules/*
+
+# Except the placeholder file
+!node_modules/.gitkeep
