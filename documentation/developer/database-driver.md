@@ -185,6 +185,47 @@ per-item enum (a server that predates the field) degrades to `Inherited`. Every 
 "inherits", so a forgotten pass-through degrades silently rather than throwing — the converter test
 covers each attribute subclass for that reason.
 
+### Mutation history paging (`getMutationHistory`)
+
+`EvitaClientSession.getMutationHistory` returns a `MutationHistoryPage`
+(`request-response/cdc/MutationHistoryPage.ts`), not a plain list:
+
+| Field | Meaning |
+|---|---|
+| `records` | what the viewer renders — the streamed captures with transaction overviews merged in |
+| `captureCount` | number of **streamed** captures only; the basis for pagination and "load more" |
+
+The two must not be conflated. `records.size` routinely exceeds the requested page size because of the
+merged overviews, so deciding "is there another page?" from it keeps the button visible forever.
+
+**The API is reverse-only and has no lower bound.** `GetMutationsHistoryPageRequest.sinceVersion` is an
+**upper** bound: the server starts a reverse (newest → oldest) scan there and clamps the value to the
+current catalog version, so it cannot express "records newer than X". That bound is therefore the
+client's job by design (evitaDB#1349, agreed with the evitaDB team — no forward RPC is coming):
+`MutationHistoryRequest.newerThanVersion` is applied here via `truncateBelowBoundary()`, a
+prefix-preserving `takeWhile` over the reverse-ordered captures. It runs **before** the catalog-version
+list is built, so overviews are never fetched for versions that are about to be discarded; when
+truncation empties the page, `getTransactionOverview` is skipped entirely (an empty version list would
+otherwise ask for everything).
+
+**`sinceIndex` must always be sent together with `sinceVersion`.** Unset, the server reads it as `0`,
+which in the reverse direction starts at the anchor version's transaction lead event and skips the rest
+of that version. Send `reverseScanStartIndex` (`Integer.MAX_VALUE`); it is correct on every server
+generation.
+
+**The local transaction-overview merge must stay.** A transaction's header is streamed once per
+transaction group, so pages beyond the first do not carry the header of the transaction their first
+capture belongs to — `getTransactionOverview` compensates for that, and it is only safe to drop once the
+server emits record-aligned pages. `mergeTransactionOverviews()` interleaves overviews by catalog
+version (they used to be prepended as one block) and lets each lead its own version, matching the
+`index = 0` lead-event contract the `history-viewer`'s visualisation processor groups by.
+
+**Transaction records are distinguished by provenance, not by body type.** `body instanceof
+TransactionMutation` is not a discriminator: a stream-delivered infrastructure capture converts to a
+`TransactionMutation` exactly like the synthesised overviews do. Only this method knows which records
+came from `response.changeCapture`, which is why `captureCount` is reported from here rather than
+recomputed upstream.
+
 ## Caching & change callbacks
 
 Schemas, server status, configuration and catalog statistics are cached client-side. When a UI

@@ -39,6 +39,19 @@ source code files.
 
 **Package manager is yarn. Never run `npm install`, `npm ci`, or `npx` in this repo** — npm may write `package-lock.json`, which diverges from `yarn.lock`. If yarn looks broken, fix it (proxy allowlist / corepack / missing binary); do not fall back to npm.
 
+**Agents: `node_modules` is usually empty in a fresh sandbox.** Run `yarn install` without asking as
+soon as you need to build, type-check, lint or test — a missing dependency tree shows up as
+`error Command "vitest" not found` (or the same for `vue-tsc`/`eslint`), which is a setup gap, not a
+code problem. Two notes:
+
+- `node_modules/.gitignore` and `node_modules/.gitkeep` are **tracked** — they are what keeps the
+  populated directory out of `git status`. If they show as deleted (a wiped `node_modules`), restore
+  them with `git checkout -- node_modules/.gitignore node_modules/.gitkeep` after installing,
+  otherwise `git status` fills with hundreds of untracked entries.
+- Mention the install in your summary; it changes the working tree even though it touches no code.
+  Yarn v1 does not bump versions the lockfile already pins, so a clean install leaves `yarn.lock`
+  alone — any diff there is pre-existing work, not install churn.
+
 ```bash
 yarn install                # install dependencies
 yarn dev                    # dev server (localhost:3000/lab); dev-driver for Desktop driver mode
