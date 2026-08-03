@@ -3,10 +3,11 @@
  * Generates `public/THIRD-PARTY-NOTICES.txt` — the attribution index for every third-party
  * artifact that ends up inside a built evitaLab bundle.
  *
- * The runtime closure is derived from the actual import graph, not from `package.json` →
- * `dependencies` (that block also holds build-only packages which never reach the bundle):
- * every bare module specifier used under `src/` is collected, mapped to a package, and the
- * transitive `dependencies` of those packages are walked through `node_modules`.
+ * The runtime closure is derived from the actual import graph rather than from `package.json` →
+ * `dependencies`: every bare module specifier used under `src/` is collected, mapped to a package,
+ * and the transitive `dependencies` of those packages are walked through `node_modules`. The
+ * manifest is only a hint — nothing stops a build-only package from being declared there, and a
+ * misclassified one would silently add a package that never reaches the bundle.
  *
  * Requires an installed `node_modules`. Run it manually and commit the output — it is
  * deliberately not wired into `yarn build`, so that a stale notices file surfaces as a failing
