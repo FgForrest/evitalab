@@ -92,10 +92,63 @@ tree at **zero** errors — any new error is a real regression.
     `src/auto-imports.d.ts` + ESLint config `.eslintrc-auto-import.json`),
   - `unplugin-vue-components` — auto-registration of components (generates `src/components.d.ts`),
   - `vite-plugin-vuetify` — Vuetify with SASS settings from `src/styles/settings.scss`,
-  - `unplugin-fonts` — Roboto via Fontsource,
   - `vite-plugin-vue-layouts-next`.
+- **SCSS**: Sass's `NodePackageImporter` is registered
+  (`css.preprocessorOptions.scss.importers`) so stylesheets can `@use 'pkg:<package>'` —
+  required by `src/styles/fonts.scss`.
 
 Generated `*.d.ts` files are committed but never edited manually.
+
+## Fonts
+
+evitaLab contacts **no remote font provider** — a request to `fonts.googleapis.com` /
+`fonts.gstatic.com` would leak the visitor's IP address to a third party
+([issue #183](https://github.com/FgForrest/evitalab/issues/183), GDPR). Both fonts are bundled from
+npm packages and emitted into `dist/assets/`:
+
+- **Poppins** (UI font) — declared in `src/styles/fonts.scss`, which drives the
+  `@fontsource-utils/scss` `faces` mixin off `@fontsource/poppins` metadata. Imported from
+  `src/vue-plugins/vuetify.ts`.
+  - subsets `latin` + `latin-ext` (`latin-ext` is mandatory — catalog data routinely contains Czech
+    and Polish diacritics),
+  - weights 300/400/500/700/900 normal, plus 300/400 italic,
+  - `woff2` only (every browser in `.browserslistrc` supports it).
+  - A weight or style that is not listed there **silently falls back** to the system sans-serif with
+    no console error, so extend the mixin arguments when the UI starts using a new one.
+- **Material Design Icons** — `@mdi/font`, imported as its own stylesheet in
+  `src/vue-plugins/vuetify.ts`.
+
+`src/styles/settings.scss` sets Vuetify's `$body-font-family` to Poppins, so Vuetify's own generated
+typography does not reference the unbundled Roboto.
+
+There is a regression guard in `test/fonts/localFonts.test.ts` — it fails if any remote font host or
+`webfontloader` reappears anywhere under `src/`, in `index.html`, `vite.config.mts` or
+`package.json`.
+
+## Third-party licenses
+
+Bundling fonts and code makes evitaLab a redistributor, so the attribution files must ship **inside
+the built artifact**, not just in the repository. They live in `public/`, which Vite copies verbatim
+to the dist root in both run modes:
+
+- `public/THIRD-PARTY-NOTICES.txt` — the index of every bundled third-party artifact with its
+  copyright holder and license. **Generated, not hand-maintained**: run
+  `node scripts/generate-third-party-notices.mjs` and **commit the output** (it needs `node_modules`,
+  and it is deliberately not part of `yarn build` so that a stale file surfaces as a failing test
+  rather than being silently regenerated). `--check` verifies the committed file is up to date. The
+  generator carries a small override table for packages whose license cannot be detected
+  automatically (e.g. `keymaster` declares none; `dompurify` is dual-licensed and evitaLab elects
+  Apache-2.0). The same content is mirrored at the repository root for the source distribution.
+- `public/licenses/Apache-2.0.txt` — the Apache License 2.0 text, required by §4(a) to accompany the
+  bundled Apache-2.0 dependencies and the MDI webfont.
+- `public/licenses/OFL-1.1-Poppins.txt` — verbatim copy of
+  `node_modules/@fontsource/poppins/LICENSE` (SIL Open Font License 1.1 §2).
+- `public/licenses/Apache-2.0-MaterialDesignIcons.txt` — verbatim copy of
+  `node_modules/@mdi/font/LICENSE`.
+
+The two font license files are **static committed copies**, so they are diff-reviewable and work
+offline. **Re-copy them when bumping `@fontsource/poppins` or `@mdi/font`.**
+`test/fonts/localFonts.test.ts` asserts all four files exist and are non-empty.
 
 ## Linting
 

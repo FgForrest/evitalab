@@ -1,7 +1,6 @@
 // Plugins
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
-import Fonts from 'unplugin-fonts/vite'
 import Layouts from 'vite-plugin-vue-layouts-next'
 import Vue from '@vitejs/plugin-vue'
 import VueRouter from 'unplugin-vue-router/vite'
@@ -11,6 +10,7 @@ import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 // Utilities
 import { defineConfig, loadEnv } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
+import { NodePackageImporter } from 'sass'
 import XXH, { HashObject } from 'xxhashjs'
 import { OutputOptions } from 'rollup'
 
@@ -70,18 +70,15 @@ export default defineConfig(({ mode }) => {
                     configFile: 'src/styles/settings.scss',
                 },
             }),
-            Fonts({
-                fontsource: {
-                    families: [
-                        {
-                            name: 'Roboto',
-                            weights: [100, 300, 400, 500, 700, 900],
-                            styles: ['normal', 'italic'],
-                        },
-                    ],
-                },
-            }),
         ],
+        css: {
+            preprocessorOptions: {
+                scss: {
+                    // enables `pkg:` URLs used by src/styles/fonts.scss
+                    importers: [new NodePackageImporter()],
+                },
+            },
+        },
         optimizeDeps: {
             exclude: [
                 'vuetify',

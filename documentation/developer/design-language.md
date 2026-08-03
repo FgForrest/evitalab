@@ -50,6 +50,10 @@ reference implementation:
 
 ### Typography & emphasis
 
+- The UI font is **Poppins**, bundled locally (never fetched from a remote provider). Only weights
+  300/400/500/700/900 normal and 300/400 italic are shipped — using any other weight or style
+  silently falls back to the system sans-serif, so it requires extending `src/styles/fonts.scss`
+  (see [build & tooling — fonts](build-and-tooling.md#fonts)).
 - Regular data values are plain body text; there is no custom font scale — headings inside pages
   are rare and small (panel titles, card titles).
 - **Muted (`text-disabled`) italic/light text is the universal "non-value" signal**: `null`,

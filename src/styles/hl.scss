@@ -6,6 +6,12 @@ pre code.hljs {
     padding: 1rem;
     border-radius: 0.5rem;
 }
+/*
+  Vendored copy of highlight.js' `default` theme (BSD-3-Clause), upstream
+  `src/styles/default.css` of highlight.js 11.x — see THIRD-PARTY-NOTICES.txt. The rules above this
+  header are evitaLab's own additions; everything below is upstream and should be re-synced from the
+  package rather than hand-edited when bumping `highlight.js`.
+*/
 /*!
   Theme: Default
   Description: Original highlight.js style

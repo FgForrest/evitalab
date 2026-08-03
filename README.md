@@ -98,6 +98,9 @@ For more in-depth information about the evitaLab development navigate to the [de
 
 [Apache License 2.0](LICENSE)
 
+Third-party software bundled into evitaLab builds is listed in [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt),
+with the full licence texts in [public/licenses](public/licenses).
+
 ## Contribution
 
 Any contributions are welcome and appreciated. If you would like to contribute to evitaLab, feel free to open an issue

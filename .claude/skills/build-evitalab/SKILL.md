@@ -103,11 +103,32 @@ Also tell the user:
 - the run mode currently in `dist/`,
 - what to look for (the concrete change to verify),
 - that the server runs in the foreground — Ctrl-C stops it,
-- that after any new build a plain browser reload is enough (the script sends
-  `Cache-Control: no-store`).
+- that after a new build **in the same run mode** a plain browser reload is
+  enough (the script sends `Cache-Control: no-store`).
 
 If the port is taken, `--port <port>` overrides it. Full flag list:
 `./scripts/serve-dist.sh --help`.
+
+**Restart the server when you switch run mode.** The mode is detected once at
+startup and both modes build into the same `dist/`, so the server can end up on
+the wrong base path. A server in **driver** mode opened under `/lab/` 404s
+*everything* — `index.html`, `assets/*`, `logo/*.svg` — because paths outside the
+base path are rejected; it looks like a broken build rather than a stale server.
+The reverse (standalone server, driver build) mostly keeps working but verifies
+the build under a base path it never ships on. The tell is the
+`[serve-dist] Detected run mode: …` startup line versus the URL being opened.
+Either restart, or pin with `--mode standalone|driver`.
+
+Two traps when driving this from a script rather than by hand:
+
+- `curl -s -o /dev/null <url>` **exits 0 on a 404**, so an
+  `until curl …; do sleep 2; done` readiness loop happily reports "up" against a
+  server in exactly the broken state above. Use `curl -fs` or assert
+  `%{http_code}`, and probe a hashed file from `dist/assets/` — `index.html` can
+  keep returning 200 while every asset around it 404s.
+- `yarn build 2>&1 | tail -2 && ./scripts/serve-dist.sh …` starts the server
+  **even when the build failed**: a pipeline's exit status is the last command's
+  (`tail`), not yarn's. Check the build result separately, or drop the pipe.
 
 ### Step 5 — CORS caveat
 
