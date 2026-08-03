@@ -6,7 +6,6 @@ import { i18n } from '@/vue-plugins/i18n'
 import router from '@/vue-plugins/router'
 import pinia from '@/vue-plugins/pinia'
 import { modules } from '@/modules/modules'
-import { loadFonts } from '@/vue-plugins/webfontloader'
 import { defaultToastOptions, toast } from '@/vue-plugins/toastification'
 import vuetify from '@/vue-plugins/vuetify'
 import Lab from '@/Lab.vue'
@@ -20,27 +19,28 @@ import { evitaLabConfigInjectionKey } from '@/modules/config/EvitaLabConfig'
  */
 const app: App<Element> = createApp(Lab)
 
-// load Vue plugins
-loadFonts()
-    .then(async () => {
-        app
-            .use(vuetify)
-            .use(codemirror, defaultCodemirrorOptions)
-            .use(toast, defaultToastOptions)
-            .use(pinia)
-            .use(i18n)
-            .use(router)
-            .use(luxonExtensions)
-            .component('apexcharts', VueApexCharts)
+async function bootstrap(): Promise<void> {
+    // load Vue plugins
+    app
+        .use(vuetify)
+        .use(codemirror, defaultCodemirrorOptions)
+        .use(toast, defaultToastOptions)
+        .use(pinia)
+        .use(i18n)
+        .use(router)
+        .use(luxonExtensions)
+        .component('apexcharts', VueApexCharts)
 
-        // register evitaLab modules
-        const moduleContextBuilder: ModuleContextBuilder = new ModuleContextBuilder(app)
-        for (const module of modules) {
-            await module.register(moduleContextBuilder)
-        }
+    // register evitaLab modules
+    const moduleContextBuilder: ModuleContextBuilder = new ModuleContextBuilder(app)
+    for (const module of modules) {
+        await module.register(moduleContextBuilder)
+    }
 
-        const mounted: ComponentPublicInstance = app.mount('#app')
-        if (moduleContextBuilder.inject(evitaLabConfigInjectionKey).runMode === LabRunMode.Driver) {
-            await mounted.$nextTick(()=>{ router.push("/"); })
-        }
-    })
+    const mounted: ComponentPublicInstance = app.mount('#app')
+    if (moduleContextBuilder.inject(evitaLabConfigInjectionKey).runMode === LabRunMode.Driver) {
+        await mounted.$nextTick(()=>{ router.push("/"); })
+    }
+}
+
+bootstrap()

@@ -10,6 +10,9 @@
 // );
 
 @use 'vuetify/settings' with (
+  // the self-hosted font (see src/styles/fonts.scss), replaces Vuetify's default Roboto
+  // which is not bundled and would silently fall back to the system sans-serif
+  $body-font-family: ('Poppins', sans-serif),
   $overlay-opacity: 0.8,
   $overlay-scrim-background: rgba(35, 53, 92, 0.80),
   // tooltip
