@@ -20,6 +20,7 @@ import {
     TrafficRecordingCaptureRequest
 } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordingCaptureRequest'
 import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
+import type { FetchFileOptions } from '@/modules/database-driver/EvitaClientManagement'
 
 export const trafficViewerServiceInjectionKey: InjectionKey<TrafficViewerService> = Symbol('trafficViewerService')
 
@@ -104,10 +105,11 @@ export class TrafficViewerService {
     }
 
     /**
-     * Downloads contents of a server file produced by a finished traffic recording export.
+     * Downloads contents of a server file produced by a finished traffic recording export. Accepts the
+     * driver's fetch options, so the caller can report transfer progress.
      */
-    async fetchExportedFile(fileId: Uuid): Promise<Blob> {
-        return await this.evitaClient.management.fetchFile(fileId)
+    async fetchExportedFile(fileId: Uuid, options?: FetchFileOptions): Promise<Blob> {
+        return await this.evitaClient.management.fetchFile(fileId, options)
     }
 
     async getRecordHistoryList(catalogName: string,

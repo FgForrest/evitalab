@@ -35,7 +35,7 @@ of their own.
 | [`base`](base.md) | Foundation for everything else — the `V*` component library, base error types, shared dialog/menu/properties-table/tree-view models |
 | [`code-editor`](code-editor.md) | CodeMirror 6 editor wrappers and the status-bar integration extension |
 | [`console`](console.md) | Shared infrastructure for query consoles — result visualisation (facet summary, hierarchy, histograms, reference summary) |
-| [`viewer-support`](viewer-support.md) | Shared helpers for server-data viewers — `CatalogPointer`, `VDownloadServerFileButton` |
+| [`viewer-support`](viewer-support.md) | Shared helpers for server-data viewers — `CatalogPointer`, `VDownloadServerFileButton`, `useAutoReload` |
 | [`history-component`](history-component.md) | Reusable UI for displaying execution history lists |
 
 ## Generic modules

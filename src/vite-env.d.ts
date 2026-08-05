@@ -22,3 +22,16 @@ interface ImportMetaEnv {
 interface ImportMeta {
     readonly env: ImportMetaEnv
 }
+
+/**
+ * The File System Access save picker. `FileSystemFileHandle` and `FileSystemWritableFileStream` are
+ * part of `lib.dom`, but `showSaveFilePicker` itself is not (the API is Chromium-only), so the minimal
+ * shape evitaLab uses is declared here. Always feature-detect before calling it.
+ */
+interface SaveFilePickerOptions {
+    suggestedName?: string
+}
+
+interface Window {
+    showSaveFilePicker?(options?: SaveFilePickerOptions): Promise<FileSystemFileHandle>
+}

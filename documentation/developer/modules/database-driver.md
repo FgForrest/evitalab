@@ -45,7 +45,9 @@ carries the engine-wide default are described in the deep-dive:
 ## Two rules that bite
 
 - **Errors** — every driver call wraps failures through `ErrorTransformer.transformError(e)`, so
-  callers catch `LabError` subclasses, never gRPC errors.
+  callers catch `LabError` subclasses, never gRPC errors. The one exception is `ConnectError`, which is
+  returned as-is — that is what lets a caller recognize a cancelled stream
+  (`Code.Canceled`, see [downloading server files](../database-driver.md#downloading-server-files)).
 - **Model-class i18n** — model getters (e.g. `representativeFlags`) must use `i18n.global.t`, never
   `useI18n()`, which throws outside component setup.
 

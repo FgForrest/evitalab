@@ -28,6 +28,11 @@ const taskPollingInterval: number = 2000
  * seem to take time before the file is actually downloaded.
  */
 const downloadCooldown: number = 3000
+/**
+ * Minimum interval in milliseconds between two progress updates written to the reactive state while
+ * downloading, so that a large archive arriving in thousands of chunks doesn't flood the UI.
+ */
+const progressUpdateInterval: number = 250
 
 enum State {
     Idle = 'idle',
@@ -54,11 +59,17 @@ const progress = ref<number>(0)
 
 const inProgress = computed<boolean>(() => state.value === State.Exporting || state.value === State.Downloading)
 const disabled = computed<boolean>(() => !props.available || state.value !== State.Idle)
-// the task reports no progress until it actually starts exporting, and the download itself is not measurable
-const indeterminateProgress = computed<boolean>(() => state.value === State.Downloading || progress.value === 0)
+// the task reports no progress until it actually starts exporting, and the download reports none until
+// its first chunk arrives
+const indeterminateProgress = computed<boolean>(() => progress.value === 0)
 
 let pollingTimeoutId: ReturnType<typeof setTimeout> | undefined = undefined
-onUnmounted(() => clearTimeout(pollingTimeoutId))
+let downloadUrl: string | undefined = undefined
+let lastProgressUpdate: number = 0
+onUnmounted(() => {
+    clearTimeout(pollingTimeoutId)
+    revokeDownloadUrl()
+})
 
 function onExportStarted(createdTask: TaskStatus): void {
     state.value = State.Exporting
@@ -112,6 +123,8 @@ async function pollTask(taskId: Uuid): Promise<void> {
 
 async function downloadExportedFile(task: TaskStatus): Promise<void> {
     state.value = State.Downloading
+    progress.value = 0
+    lastProgressUpdate = 0
     const exportedFile: ServerFile | undefined = (task.result as FileTaskResult | undefined)?.value
     if (exportedFile == undefined) {
         await reportFailedExport(t('trafficViewer.recordHistory.notification.exportTaskLost'))
@@ -119,9 +132,13 @@ async function downloadExportedFile(task: TaskStatus): Promise<void> {
     }
 
     try {
-        const blob: Blob = await trafficViewerService.fetchExportedFile(exportedFile.fileId)
+        const blob: Blob = await trafficViewerService.fetchExportedFile(
+            exportedFile.fileId,
+            { onProgress: onDownloadProgress }
+        )
 
-        const downloadUrl: string = URL.createObjectURL(blob)
+        revokeDownloadUrl()
+        downloadUrl = URL.createObjectURL(blob)
         const link: HTMLAnchorElement = document.createElement('a')
         link.href = downloadUrl
         link.download = exportedFile.name
@@ -144,6 +161,19 @@ async function downloadExportedFile(task: TaskStatus): Promise<void> {
     ))
 }
 
+function onDownloadProgress(bytesRead: bigint, totalSizeInBytes: bigint): void {
+    if (totalSizeInBytes === 0n) {
+        return
+    }
+    const now: number = performance.now()
+    const finished: boolean = bytesRead >= totalSizeInBytes
+    if (!finished && progress.value !== 0 && now - lastProgressUpdate < progressUpdateInterval) {
+        return
+    }
+    lastProgressUpdate = now
+    progress.value = Number(bytesRead * 100n / totalSizeInBytes)
+}
+
 async function reportFailedExport(message: string): Promise<void> {
     resetState()
     await toaster.error(message)
@@ -154,6 +184,14 @@ function resetState(): void {
     pollingTimeoutId = undefined
     progress.value = 0
     state.value = State.Idle
+    revokeDownloadUrl()
+}
+
+function revokeDownloadUrl(): void {
+    if (downloadUrl != undefined) {
+        URL.revokeObjectURL(downloadUrl)
+        downloadUrl = undefined
+    }
 }
 </script>
 

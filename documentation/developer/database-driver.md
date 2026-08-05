@@ -425,6 +425,32 @@ task without listing all of them, `EvitaClientManagement.getTaskStatus(taskId)` 
 it returns `undefined` once the server no longer knows the task, which callers must treat as a
 terminal state (the traffic-viewer's export button does).
 
+## Downloading server files
+
+`EvitaClientManagement` exposes two entry points for the files the server offers for download
+(backups, JFR recordings, traffic exports):
+
+```ts
+async *fetchFileStream(fileId: Uuid, options?: FetchFileOptions): AsyncIterable<ServerFileChunk>
+async  fetchFile(fileId: Uuid, options?: FetchFileOptions): Promise<Blob>
+```
+
+`FetchFileOptions` carries an optional `signal` and an optional
+`onProgress(bytesRead, totalSizeInBytes)`. Every `GrpcFetchFileResponse` repeats
+`totalSizeInBytes`, so progress is known from the first chunk on (it is `0n` if the server does not
+report a size — guard before dividing). `onProgress` is called **once per chunk**, i.e. tens of
+thousands of times for a multi-gigabyte file: throttle any reactive state updates in the consumer, the
+driver deliberately does not.
+
+`fetchFile` is `fetchFileStream` collected into a `Blob` and therefore buffers the whole file in
+memory — prefer the stream for anything that can be large (`VDownloadServerFileButton` writes chunks
+straight to disk where the browser allows it, see [`viewer-support`](modules/viewer-support.md)).
+
+**Cancellation contract:** aborting `options.signal` cancels the gRPC stream, and the iteration
+rejects with a `ConnectError` carrying `Code.Canceled` — `ErrorTransformer` passes `ConnectError`s
+through unchanged, so a caller can distinguish a user-requested cancellation from a transfer failure by
+testing `e instanceof ConnectError && e.code === Code.Canceled`.
+
 ## Error handling
 
 Every driver call wraps errors through `ErrorTransformer.transformError(e)`, converting transport

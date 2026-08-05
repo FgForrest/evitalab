@@ -55,7 +55,12 @@ links to a history tab scoped to that session, hence the self-injection of its o
 `ExportTrafficBufferButton.vue` + `ExportTrafficBufferDialog.vue` in the record-history toolbar download
 a point-in-time snapshot of the server's rolling traffic buffer on demand. The dialog collects an
 optional chunk file size (empty ⇒ server default) and starts the export; the button then polls the export
-task and auto-downloads the finished ZIP.
+task and auto-downloads the finished ZIP. Its determinate spinner covers both phases — the task's own
+progress while exporting, then the transfer progress reported by
+[`fetchFile`](../database-driver.md#downloading-server-files) while downloading (throttled to 250 ms).
+
+The recordings list reloads every 5 s through [`useAutoReload`](viewer-support.md#useautoreload), like the
+[`jfr-viewer`](jfr-viewer.md) one.
 
 Two traps:
 

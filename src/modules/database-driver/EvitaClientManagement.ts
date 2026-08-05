@@ -54,6 +54,41 @@ const chunkSize: number = 500 * 1024; // 500 KB chunks
 const fileChunkUploadTimeout: number = 60000 // 1 minute
 
 /**
+ * One chunk of a downloaded server file together with the transfer counters the server reports
+ * alongside it.
+ */
+export interface ServerFileChunk {
+    readonly contents: Uint8Array
+    /**
+     * Cumulative number of bytes received so far, including this chunk.
+     */
+    readonly bytesRead: bigint
+    /**
+     * Total size of the fetched file in bytes as reported by the server with every chunk. May be `0n`
+     * when the server does not know the size.
+     */
+    readonly totalSizeInBytes: bigint
+}
+
+/**
+ * Options for fetching a server file, allowing the caller to observe transfer progress and to cancel
+ * the transfer.
+ */
+export interface FetchFileOptions {
+    /**
+     * Aborts the underlying gRPC stream. An aborted transfer surfaces as a `ConnectError` with
+     * `Code.Canceled`.
+     */
+    readonly signal?: AbortSignal
+    /**
+     * Called for every received chunk with the cumulative number of received bytes and the total file
+     * size reported by the server. Callers are expected to throttle any reactive state updates
+     * themselves — a multi-gigabyte file yields tens of thousands of calls.
+     */
+    readonly onProgress?: (bytesRead: bigint, totalSizeInBytes: bigint) => void
+}
+
+/**
  * Global management service that allows to execute various management tasks on the Evita instance and retrieve
  * global evitaDB information. These operations might require special permissions for execution and are not used
  * daily and therefore are segregated into special management class.
@@ -451,25 +486,52 @@ export class EvitaClientManagement {
     }
 
     /**
-     * Fetches contents of the file with the specified fileId to the output blob.
+     * Streams contents of the file with the specified fileId chunk by chunk, so that a caller can
+     * write the data out incrementally instead of buffering the whole file in memory.
+     *
+     * Cancellation contract: aborting `options.signal` cancels the underlying gRPC stream and the
+     * iteration rejects with a `ConnectError` carrying `Code.Canceled` (the {@link ErrorTransformer}
+     * passes `ConnectError`s through unchanged), so callers can distinguish a user-requested
+     * cancellation from a genuine transfer failure.
      */
-    async fetchFile(fileId: Uuid): Promise<Blob> {
+    async *fetchFileStream(fileId: Uuid, options?: FetchFileOptions): AsyncIterable<ServerFileChunk> {
         try {
-            const res = this.evitaManagementClientProvider().fetchFile({
-                fileId: {
-                    leastSignificantBits: fileId.leastSignificantBits.toString(),
-                    mostSignificantBits: fileId.mostSignificantBits.toString()
-                }
-            })
-            const data: Uint8Array[] = []
+            const responses = this.evitaManagementClientProvider().fetchFile(
+                {
+                    fileId: {
+                        leastSignificantBits: fileId.leastSignificantBits.toString(),
+                        mostSignificantBits: fileId.mostSignificantBits.toString()
+                    }
+                },
+                { signal: options?.signal }
+            )
 
-            for await (const job of res) {
-                data.push(job.fileContents)
+            let bytesRead: bigint = 0n
+            for await (const response of responses) {
+                const totalSizeInBytes: bigint = BigInt(response.totalSizeInBytes ?? 0)
+                bytesRead += BigInt(response.fileContents.length)
+                options?.onProgress?.(bytesRead, totalSizeInBytes)
+                yield {
+                    contents: response.fileContents,
+                    bytesRead,
+                    totalSizeInBytes
+                }
             }
-            return new Blob(data)
         } catch (e) {
             throw this.errorTransformer.transformError(e)
         }
+    }
+
+    /**
+     * Fetches contents of the file with the specified fileId to the output blob. Buffers the entire
+     * file in memory — prefer {@link fetchFileStream} for potentially large files.
+     */
+    async fetchFile(fileId: Uuid, options?: FetchFileOptions): Promise<Blob> {
+        const data: Uint8Array[] = []
+        for await (const chunk of this.fetchFileStream(fileId, options)) {
+            data.push(chunk.contents)
+        }
+        return new Blob(data)
     }
 
     /**

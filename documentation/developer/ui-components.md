@@ -129,8 +129,28 @@ registered). For combined date-time input use the custom `VDateTimeInput` (retur
 
 ## Viewer helpers
 
-- `VDownloadServerFileButton` (`viewer-support`) — download button for server files.
+- `VDownloadServerFileButton` (`viewer-support`) — download button for server files, with determinate
+  progress and click-to-cancel (see [`viewer-support`](modules/viewer-support.md)).
+- `useAutoReload` (`viewer-support`) — the periodic reload loop behind the server-data viewer lists.
 - `HistoryComponent` (`history-component`) — reusable execution-history list UI.
+
+### Determinate progress on an icon button
+
+A button whose work reports progress keeps the standard `loading` prop and replaces the
+indeterminate spinner through Vuetify's `#loader` slot, so the button footprint stays identical:
+
+```vue
+<VBtn icon :loading="inProgress" :disabled="disabled">
+    <VIcon>mdi-file-download-outline</VIcon>
+    <template #loader>
+        <VProgressCircular :model-value="progress" :indeterminate="progress === 0" size="20" width="2" />
+    </template>
+</VBtn>
+```
+
+Vuetify does **not** fold `loading` into the button's disabled state, so a loading button still
+receives clicks — which is what makes "click again to cancel" possible. Guard the click handler on the
+current state and add an `aria-label` for the cancel affordance.
 
 ## Charts
 

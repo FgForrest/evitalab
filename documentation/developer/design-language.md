@@ -224,6 +224,13 @@ row is the open action; non-openable items are `disabled`.
 - In-progress states use `VLoadingCircular` (inside `VMissingDataIndicator` for pane-level
   loading) or the `loading` prop on buttons/tables; the primary action button shows the spinner
   while its work runs.
+- When the work reports measurable progress, that spinner becomes **determinate**: keep the
+  `loading` prop and render a `VProgressCircular` with a `model-value` in the button's `#loader`
+  slot (`VDownloadServerFileButton`, `ExportTrafficBufferButton`), so the button's footprint never
+  changes. It stays `indeterminate` until the first measurement arrives.
+- A long-running action that can be given up on is **cancelled by clicking its own button again**
+  (`VDownloadServerFileButton`); the tooltip says so while the action runs and the button carries an
+  `aria-label` describing the cancel affordance. Cancelling is silent — it is not an error.
 - Errors are toasts — panes don't render inline error boxes.
 
 ## Data display language
