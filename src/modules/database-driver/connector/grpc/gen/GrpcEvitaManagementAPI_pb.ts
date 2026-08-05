@@ -6,7 +6,7 @@ import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegen
 import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import type { EmptySchema, StringValue } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_empty, file_google_protobuf_wrappers } from "@bufbuild/protobuf/wkt";
-import type { GrpcClassifierType, GrpcHealthProblem, GrpcReadiness, GrpcTaskSimplifiedState } from "./GrpcEnums_pb";
+import type { GrpcClassifierType, GrpcConflictResolution, GrpcHealthProblem, GrpcReadiness, GrpcTaskSimplifiedState } from "./GrpcEnums_pb";
 import { file_GrpcEnums } from "./GrpcEnums_pb";
 import type { GrpcCatalogStatistics, GrpcFile, GrpcOffsetDateTime, GrpcTaskStatus, GrpcUuid } from "./GrpcEvitaDataTypes_pb";
 import { file_GrpcEvitaDataTypes } from "./GrpcEvitaDataTypes_pb";
@@ -16,7 +16,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file GrpcEvitaManagementAPI.proto.
  */
 export const file_GrpcEvitaManagementAPI: GenFile = /*@__PURE__*/
-  fileDesc("ChxHcnBjRXZpdGFNYW5hZ2VtZW50QVBJLnByb3RvEiVpby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkIuIFCh1HcnBjRXZpdGFTZXJ2ZXJTdGF0dXNSZXNwb25zZRIPCgd2ZXJzaW9uGAEgASgJEkwKCXN0YXJ0ZWRBdBgCIAEoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY09mZnNldERhdGVUaW1lEhIKBnVwdGltZRgDIAEoA0ICMAESEgoKaW5zdGFuY2VJZBgEIAEoCRIZChFjYXRhbG9nc0NvcnJ1cHRlZBgFIAEoBRIWCgpjYXRhbG9nc09rGAYgASgFQgIYARJQCg5oZWFsdGhQcm9ibGVtcxgHIAMoDjI4LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hlYWx0aFByb2JsZW0SRwoJcmVhZGluZXNzGAggASgOMjQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVhZGluZXNzEloKA2FwaRgJIAMoCzJNLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhU2VydmVyU3RhdHVzUmVzcG9uc2UuQXBpRW50cnkSEAoIcmVhZE9ubHkYCiABKAgSFgoOY2F0YWxvZ3NBY3RpdmUYCyABKAUSGAoQY2F0YWxvZ3NJbmFjdGl2ZRgMIAEoBRIZCg1lbmdpbmVWZXJzaW9uGA0gASgDQgIwARJPCgxpbnRyb2R1Y2VkQXQYDiABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNPZmZzZXREYXRlVGltZRpgCghBcGlFbnRyeRILCgNrZXkYASABKAkSQwoFdmFsdWUYAiABKAsyNC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBcGlTdGF0dXM6AjgBIogBCg1HcnBjQXBpU3RhdHVzEg8KB2VuYWJsZWQYASABKAgSDQoFcmVhZHkYAiABKAgSDwoHYmFzZVVybBgDIAMoCRJGCgllbmRwb2ludHMYBCADKAsyMy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbmRwb2ludCIpCgxHcnBjRW5kcG9pbnQSDAoEbmFtZRgBIAEoCRILCgN1cmwYAiADKAkiNwoeR3JwY0V2aXRhQ29uZmlndXJhdGlvblJlc3BvbnNlEhUKDWNvbmZpZ3VyYXRpb24YASABKAkifQoiR3JwY0V2aXRhQ2F0YWxvZ1N0YXRpc3RpY3NSZXNwb25zZRJXChFjYXRhbG9nU3RhdGlzdGljcxgBIAMoCzI8LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NhdGFsb2dTdGF0aXN0aWNzIkQKGUdycGNSZXN0b3JlQ2F0YWxvZ1JlcXVlc3QSEwoLY2F0YWxvZ05hbWUYASABKAkSEgoKYmFja3VwRmlsZRgCIAEoDCKoAQoeR3JwY1Jlc3RvcmVDYXRhbG9nVW5hcnlSZXF1ZXN0EhMKC2NhdGFsb2dOYW1lGAEgASgJEhIKCmJhY2t1cEZpbGUYAiABKAwSPwoGZmlsZUlkGAMgASgLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVXVpZBIcChB0b3RhbFNpemVJbkJ5dGVzGAQgASgDQgIwASJ/CidHcnBjUmVzdG9yZUNhdGFsb2dGcm9tU2VydmVyRmlsZVJlcXVlc3QSEwoLY2F0YWxvZ05hbWUYASABKAkSPwoGZmlsZUlkGAIgASgLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVXVpZCJzChpHcnBjUmVzdG9yZUNhdGFsb2dSZXNwb25zZRIQCgRyZWFkGAEgASgDQgIwARJDCgR0YXNrGAMgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVGFza1N0YXR1cyK5AQofR3JwY1Jlc3RvcmVDYXRhbG9nVW5hcnlSZXNwb25zZRIQCgRyZWFkGAEgASgDQgIwARI/CgZmaWxlSWQYAiABKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNVdWlkEkMKBHRhc2sYAyABKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUYXNrU3RhdHVzIsgBChdHcnBjVGFza1N0YXR1c2VzUmVxdWVzdBISCgpwYWdlTnVtYmVyGAEgASgFEhAKCHBhZ2VTaXplGAIgASgFEi4KCHRhc2tUeXBlGAMgAygLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlElcKD3NpbXBsaWZpZWRTdGF0ZRgEIAMoDjI+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Rhc2tTaW1wbGlmaWVkU3RhdGUiqQEKGEdycGNUYXNrU3RhdHVzZXNSZXNwb25zZRIQCghwYWdlU2l6ZRgBIAEoBRISCgpwYWdlTnVtYmVyGAIgASgFEkkKCnRhc2tTdGF0dXMYAyADKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUYXNrU3RhdHVzEhwKFHRvdGFsTnVtYmVyT2ZSZWNvcmRzGAQgASgFImQKIEdycGNTcGVjaWZpZWRUYXNrU3RhdHVzZXNSZXF1ZXN0EkAKB3Rhc2tJZHMYASADKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNVdWlkIm4KIUdycGNTcGVjaWZpZWRUYXNrU3RhdHVzZXNSZXNwb25zZRJJCgp0YXNrU3RhdHVzGAEgAygLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVGFza1N0YXR1cyJYChVHcnBjVGFza1N0YXR1c1JlcXVlc3QSPwoGdGFza0lkGAEgASgLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVXVpZCJjChZHcnBjVGFza1N0YXR1c1Jlc3BvbnNlEkkKCnRhc2tTdGF0dXMYASABKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUYXNrU3RhdHVzIlgKFUdycGNDYW5jZWxUYXNrUmVxdWVzdBI/CgZ0YXNrSWQYASABKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNVdWlkIikKFkdycGNDYW5jZWxUYXNrUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCJtChdHcnBjRmlsZXNUb0ZldGNoUmVxdWVzdBISCgpwYWdlTnVtYmVyGAEgASgFEhAKCHBhZ2VTaXplGAIgASgFEiwKBm9yaWdpbhgDIAMoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZSKlAQoYR3JwY0ZpbGVzVG9GZXRjaFJlc3BvbnNlEhAKCHBhZ2VTaXplGAEgASgFEhIKCnBhZ2VOdW1iZXIYAiABKAUSRQoMZmlsZXNUb0ZldGNoGAMgAygLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRmlsZRIcChR0b3RhbE51bWJlck9mUmVjb3JkcxgEIAEoBSJZChZHcnBjRmlsZVRvRmV0Y2hSZXF1ZXN0Ej8KBmZpbGVJZBgBIAEoCzIvLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1V1aWQiXwoXR3JwY0ZpbGVUb0ZldGNoUmVzcG9uc2USRAoLZmlsZVRvRmV0Y2gYASABKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGaWxlIlcKFEdycGNGZXRjaEZpbGVSZXF1ZXN0Ej8KBmZpbGVJZBgBIAEoCzIvLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1V1aWQiSwoVR3JwY0ZldGNoRmlsZVJlc3BvbnNlEhQKDGZpbGVDb250ZW50cxgBIAEoDBIcChB0b3RhbFNpemVJbkJ5dGVzGAIgASgDQgIwASJfChxHcnBjRGVsZXRlRmlsZVRvRmV0Y2hSZXF1ZXN0Ej8KBmZpbGVJZBgBIAEoCzIvLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1V1aWQiMAodR3JwY0RlbGV0ZUZpbGVUb0ZldGNoUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCKLAQoTR3JwY1Jlc2VydmVkS2V5d29yZBJRCg5jbGFzc2lmaWVyVHlwZRgBIAEoDjI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NsYXNzaWZpZXJUeXBlEhIKCmNsYXNzaWZpZXIYAiABKAkSDQoFd29yZHMYAyADKAkibAocR3JwY1Jlc2VydmVkS2V5d29yZHNSZXNwb25zZRJMCghrZXl3b3JkcxgBIAMoCzI6LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc2VydmVkS2V5d29yZDKDEQoWRXZpdGFNYW5hZ2VtZW50U2VydmljZRJsCgxTZXJ2ZXJTdGF0dXMSFi5nb29nbGUucHJvdG9idWYuRW1wdHkaRC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFdml0YVNlcnZlclN0YXR1c1Jlc3BvbnNlEnEKEEdldENvbmZpZ3VyYXRpb24SFi5nb29nbGUucHJvdG9idWYuRW1wdHkaRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFdml0YUNvbmZpZ3VyYXRpb25SZXNwb25zZRJ5ChRHZXRDYXRhbG9nU3RhdGlzdGljcxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRpJLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhQ2F0YWxvZ1N0YXRpc3RpY3NSZXNwb25zZRKXAQoOUmVzdG9yZUNhdGFsb2cSQC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZXN0b3JlQ2F0YWxvZ1JlcXVlc3QaQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZXN0b3JlQ2F0YWxvZ1Jlc3BvbnNlKAESpAEKE1Jlc3RvcmVDYXRhbG9nVW5hcnkSRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZXN0b3JlQ2F0YWxvZ1VuYXJ5UmVxdWVzdBpGLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc3RvcmVDYXRhbG9nVW5hcnlSZXNwb25zZRKxAQocUmVzdG9yZUNhdGFsb2dGcm9tU2VydmVyRmlsZRJOLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc3RvcmVDYXRhbG9nRnJvbVNlcnZlckZpbGVSZXF1ZXN0GkEuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVzdG9yZUNhdGFsb2dSZXNwb25zZRKTAQoQTGlzdFRhc2tTdGF0dXNlcxI+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Rhc2tTdGF0dXNlc1JlcXVlc3QaPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUYXNrU3RhdHVzZXNSZXNwb25zZRKMAQoNR2V0VGFza1N0YXR1cxI8LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Rhc2tTdGF0dXNSZXF1ZXN0Gj0uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVGFza1N0YXR1c1Jlc3BvbnNlEqQBCg9HZXRUYXNrU3RhdHVzZXMSRy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTcGVjaWZpZWRUYXNrU3RhdHVzZXNSZXF1ZXN0GkguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU3BlY2lmaWVkVGFza1N0YXR1c2VzUmVzcG9uc2USiQEKCkNhbmNlbFRhc2sSPC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDYW5jZWxUYXNrUmVxdWVzdBo9LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NhbmNlbFRhc2tSZXNwb25zZRKTAQoQTGlzdEZpbGVzVG9GZXRjaBI+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZpbGVzVG9GZXRjaFJlcXVlc3QaPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGaWxlc1RvRmV0Y2hSZXNwb25zZRKPAQoOR2V0RmlsZVRvRmV0Y2gSPS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGaWxlVG9GZXRjaFJlcXVlc3QaPi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGaWxlVG9GZXRjaFJlc3BvbnNlEogBCglGZXRjaEZpbGUSOy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGZXRjaEZpbGVSZXF1ZXN0GjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRmV0Y2hGaWxlUmVzcG9uc2UwARKXAQoKRGVsZXRlRmlsZRJDLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0RlbGV0ZUZpbGVUb0ZldGNoUmVxdWVzdBpELmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0RlbGV0ZUZpbGVUb0ZldGNoUmVzcG9uc2UScwoUTGlzdFJlc2VydmVkS2V5d29yZHMSFi5nb29nbGUucHJvdG9idWYuRW1wdHkaQy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZXNlcnZlZEtleXdvcmRzUmVzcG9uc2VCggIKKWNvbS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkQhtHcnBjRXZpdGFNYW5hZ2VtZW50QVBJUHJvdG9QAaICBUlFRUdHqgIlSW8uRXZpdGFkYi5FeHRlcm5hbEFwaS5HcnBjLkdlbmVyYXRlZMoCJUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWTiAjFJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVkXEdQQk1ldGFkYXRh6gIpSW86OkV2aXRhZGI6OkV4dGVybmFsQXBpOjpHcnBjOjpHZW5lcmF0ZWRiBnByb3RvMw", [file_google_protobuf_empty, file_GrpcEnums, file_GrpcEvitaDataTypes, file_google_protobuf_wrappers]);
+  fileDesc("ChxHcnBjRXZpdGFNYW5hZ2VtZW50QVBJLnByb3RvEiVpby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkIuIFCh1HcnBjRXZpdGFTZXJ2ZXJTdGF0dXNSZXNwb25zZRIPCgd2ZXJzaW9uGAEgASgJEkwKCXN0YXJ0ZWRBdBgCIAEoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY09mZnNldERhdGVUaW1lEhIKBnVwdGltZRgDIAEoA0ICMAESEgoKaW5zdGFuY2VJZBgEIAEoCRIZChFjYXRhbG9nc0NvcnJ1cHRlZBgFIAEoBRIWCgpjYXRhbG9nc09rGAYgASgFQgIYARJQCg5oZWFsdGhQcm9ibGVtcxgHIAMoDjI4LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hlYWx0aFByb2JsZW0SRwoJcmVhZGluZXNzGAggASgOMjQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVhZGluZXNzEloKA2FwaRgJIAMoCzJNLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhU2VydmVyU3RhdHVzUmVzcG9uc2UuQXBpRW50cnkSEAoIcmVhZE9ubHkYCiABKAgSFgoOY2F0YWxvZ3NBY3RpdmUYCyABKAUSGAoQY2F0YWxvZ3NJbmFjdGl2ZRgMIAEoBRIZCg1lbmdpbmVWZXJzaW9uGA0gASgDQgIwARJPCgxpbnRyb2R1Y2VkQXQYDiABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNPZmZzZXREYXRlVGltZRpgCghBcGlFbnRyeRILCgNrZXkYASABKAkSQwoFdmFsdWUYAiABKAsyNC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBcGlTdGF0dXM6AjgBIogBCg1HcnBjQXBpU3RhdHVzEg8KB2VuYWJsZWQYASABKAgSDQoFcmVhZHkYAiABKAgSDwoHYmFzZVVybBgDIAMoCRJGCgllbmRwb2ludHMYBCADKAsyMy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbmRwb2ludCIpCgxHcnBjRW5kcG9pbnQSDAoEbmFtZRgBIAEoCRILCgN1cmwYAiADKAkiNwoeR3JwY0V2aXRhQ29uZmlndXJhdGlvblJlc3BvbnNlEhUKDWNvbmZpZ3VyYXRpb24YASABKAki9QEKH0dycGNFdml0YUVuZ2luZVNldHRpbmdzUmVzcG9uc2USWQoSY29uZmxpY3RSZXNvbHV0aW9uGAEgASgLMj0uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ29uZmxpY3RSZXNvbHV0aW9uEhkKEXRpbWVUcmF2ZWxFbmFibGVkGAIgASgIEiAKGGNoYW5nZURhdGFDYXB0dXJlRW5hYmxlZBgDIAEoCBIfChd0cmFmZmljUmVjb3JkaW5nRW5hYmxlZBgEIAEoCBIZChFxdWVyeUNhY2hlRW5hYmxlZBgFIAEoCCJ9CiJHcnBjRXZpdGFDYXRhbG9nU3RhdGlzdGljc1Jlc3BvbnNlElcKEWNhdGFsb2dTdGF0aXN0aWNzGAEgAygLMjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2F0YWxvZ1N0YXRpc3RpY3MiRAoZR3JwY1Jlc3RvcmVDYXRhbG9nUmVxdWVzdBITCgtjYXRhbG9nTmFtZRgBIAEoCRISCgpiYWNrdXBGaWxlGAIgASgMIqgBCh5HcnBjUmVzdG9yZUNhdGFsb2dVbmFyeVJlcXVlc3QSEwoLY2F0YWxvZ05hbWUYASABKAkSEgoKYmFja3VwRmlsZRgCIAEoDBI/CgZmaWxlSWQYAyABKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNVdWlkEhwKEHRvdGFsU2l6ZUluQnl0ZXMYBCABKANCAjABIn8KJ0dycGNSZXN0b3JlQ2F0YWxvZ0Zyb21TZXJ2ZXJGaWxlUmVxdWVzdBITCgtjYXRhbG9nTmFtZRgBIAEoCRI/CgZmaWxlSWQYAiABKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNVdWlkInMKGkdycGNSZXN0b3JlQ2F0YWxvZ1Jlc3BvbnNlEhAKBHJlYWQYASABKANCAjABEkMKBHRhc2sYAyABKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUYXNrU3RhdHVzIrkBCh9HcnBjUmVzdG9yZUNhdGFsb2dVbmFyeVJlc3BvbnNlEhAKBHJlYWQYASABKANCAjABEj8KBmZpbGVJZBgCIAEoCzIvLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1V1aWQSQwoEdGFzaxgDIAEoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Rhc2tTdGF0dXMiyAEKF0dycGNUYXNrU3RhdHVzZXNSZXF1ZXN0EhIKCnBhZ2VOdW1iZXIYASABKAUSEAoIcGFnZVNpemUYAiABKAUSLgoIdGFza1R5cGUYAyADKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSVwoPc2ltcGxpZmllZFN0YXRlGAQgAygOMj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVGFza1NpbXBsaWZpZWRTdGF0ZSKpAQoYR3JwY1Rhc2tTdGF0dXNlc1Jlc3BvbnNlEhAKCHBhZ2VTaXplGAEgASgFEhIKCnBhZ2VOdW1iZXIYAiABKAUSSQoKdGFza1N0YXR1cxgDIAMoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Rhc2tTdGF0dXMSHAoUdG90YWxOdW1iZXJPZlJlY29yZHMYBCABKAUiZAogR3JwY1NwZWNpZmllZFRhc2tTdGF0dXNlc1JlcXVlc3QSQAoHdGFza0lkcxgBIAMoCzIvLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1V1aWQibgohR3JwY1NwZWNpZmllZFRhc2tTdGF0dXNlc1Jlc3BvbnNlEkkKCnRhc2tTdGF0dXMYASADKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUYXNrU3RhdHVzIlgKFUdycGNUYXNrU3RhdHVzUmVxdWVzdBI/CgZ0YXNrSWQYASABKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNVdWlkImMKFkdycGNUYXNrU3RhdHVzUmVzcG9uc2USSQoKdGFza1N0YXR1cxgBIAEoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Rhc2tTdGF0dXMiWAoVR3JwY0NhbmNlbFRhc2tSZXF1ZXN0Ej8KBnRhc2tJZBgBIAEoCzIvLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1V1aWQiKQoWR3JwY0NhbmNlbFRhc2tSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIIm0KF0dycGNGaWxlc1RvRmV0Y2hSZXF1ZXN0EhIKCnBhZ2VOdW1iZXIYASABKAUSEAoIcGFnZVNpemUYAiABKAUSLAoGb3JpZ2luGAMgAygLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlIqUBChhHcnBjRmlsZXNUb0ZldGNoUmVzcG9uc2USEAoIcGFnZVNpemUYASABKAUSEgoKcGFnZU51bWJlchgCIAEoBRJFCgxmaWxlc1RvRmV0Y2gYAyADKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGaWxlEhwKFHRvdGFsTnVtYmVyT2ZSZWNvcmRzGAQgASgFIlkKFkdycGNGaWxlVG9GZXRjaFJlcXVlc3QSPwoGZmlsZUlkGAEgASgLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVXVpZCJfChdHcnBjRmlsZVRvRmV0Y2hSZXNwb25zZRJECgtmaWxlVG9GZXRjaBgBIAEoCzIvLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZpbGUiVwoUR3JwY0ZldGNoRmlsZVJlcXVlc3QSPwoGZmlsZUlkGAEgASgLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVXVpZCJLChVHcnBjRmV0Y2hGaWxlUmVzcG9uc2USFAoMZmlsZUNvbnRlbnRzGAEgASgMEhwKEHRvdGFsU2l6ZUluQnl0ZXMYAiABKANCAjABIl8KHEdycGNEZWxldGVGaWxlVG9GZXRjaFJlcXVlc3QSPwoGZmlsZUlkGAEgASgLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVXVpZCIwCh1HcnBjRGVsZXRlRmlsZVRvRmV0Y2hSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIIosBChNHcnBjUmVzZXJ2ZWRLZXl3b3JkElEKDmNsYXNzaWZpZXJUeXBlGAEgASgOMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2xhc3NpZmllclR5cGUSEgoKY2xhc3NpZmllchgCIAEoCRINCgV3b3JkcxgDIAMoCSJsChxHcnBjUmVzZXJ2ZWRLZXl3b3Jkc1Jlc3BvbnNlEkwKCGtleXdvcmRzGAEgAygLMjouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVzZXJ2ZWRLZXl3b3JkMvgRChZFdml0YU1hbmFnZW1lbnRTZXJ2aWNlEmwKDFNlcnZlclN0YXR1cxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRpELmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhU2VydmVyU3RhdHVzUmVzcG9uc2UScQoQR2V0Q29uZmlndXJhdGlvbhIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRpFLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhQ29uZmlndXJhdGlvblJlc3BvbnNlEnMKEUdldEVuZ2luZVNldHRpbmdzEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GkYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZpdGFFbmdpbmVTZXR0aW5nc1Jlc3BvbnNlEnkKFEdldENhdGFsb2dTdGF0aXN0aWNzEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GkkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZpdGFDYXRhbG9nU3RhdGlzdGljc1Jlc3BvbnNlEpcBCg5SZXN0b3JlQ2F0YWxvZxJALmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc3RvcmVDYXRhbG9nUmVxdWVzdBpBLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc3RvcmVDYXRhbG9nUmVzcG9uc2UoARKkAQoTUmVzdG9yZUNhdGFsb2dVbmFyeRJFLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc3RvcmVDYXRhbG9nVW5hcnlSZXF1ZXN0GkYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVzdG9yZUNhdGFsb2dVbmFyeVJlc3BvbnNlErEBChxSZXN0b3JlQ2F0YWxvZ0Zyb21TZXJ2ZXJGaWxlEk4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVzdG9yZUNhdGFsb2dGcm9tU2VydmVyRmlsZVJlcXVlc3QaQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZXN0b3JlQ2F0YWxvZ1Jlc3BvbnNlEpMBChBMaXN0VGFza1N0YXR1c2VzEj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVGFza1N0YXR1c2VzUmVxdWVzdBo/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Rhc2tTdGF0dXNlc1Jlc3BvbnNlEowBCg1HZXRUYXNrU3RhdHVzEjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVGFza1N0YXR1c1JlcXVlc3QaPS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUYXNrU3RhdHVzUmVzcG9uc2USpAEKD0dldFRhc2tTdGF0dXNlcxJHLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1NwZWNpZmllZFRhc2tTdGF0dXNlc1JlcXVlc3QaSC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTcGVjaWZpZWRUYXNrU3RhdHVzZXNSZXNwb25zZRKJAQoKQ2FuY2VsVGFzaxI8LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NhbmNlbFRhc2tSZXF1ZXN0Gj0uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2FuY2VsVGFza1Jlc3BvbnNlEpMBChBMaXN0RmlsZXNUb0ZldGNoEj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRmlsZXNUb0ZldGNoUmVxdWVzdBo/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZpbGVzVG9GZXRjaFJlc3BvbnNlEo8BCg5HZXRGaWxlVG9GZXRjaBI9LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZpbGVUb0ZldGNoUmVxdWVzdBo+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZpbGVUb0ZldGNoUmVzcG9uc2USiAEKCUZldGNoRmlsZRI7LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZldGNoRmlsZVJlcXVlc3QaPC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGZXRjaEZpbGVSZXNwb25zZTABEpcBCgpEZWxldGVGaWxlEkMuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRGVsZXRlRmlsZVRvRmV0Y2hSZXF1ZXN0GkQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRGVsZXRlRmlsZVRvRmV0Y2hSZXNwb25zZRJzChRMaXN0UmVzZXJ2ZWRLZXl3b3JkcxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRpDLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc2VydmVkS2V5d29yZHNSZXNwb25zZUKCAgopY29tLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWRCG0dycGNFdml0YU1hbmFnZW1lbnRBUElQcm90b1ABogIFSUVFR0eqAiVJby5Fdml0YWRiLkV4dGVybmFsQXBpLkdycGMuR2VuZXJhdGVkygIlSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZOICMUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWRcR1BCTWV0YWRhdGHqAilJbzo6RXZpdGFkYjo6RXh0ZXJuYWxBcGk6OkdycGM6OkdlbmVyYXRlZGIGcHJvdG8z", [file_google_protobuf_empty, file_GrpcEnums, file_GrpcEvitaDataTypes, file_google_protobuf_wrappers]);
 
 /**
  * Response to a server status request.
@@ -224,6 +224,71 @@ export const GrpcEvitaConfigurationResponseSchema: GenMessage<GrpcEvitaConfigura
   messageDesc(file_GrpcEvitaManagementAPI, 3);
 
 /**
+ * Response to an evitaDB engine settings request.
+ *
+ * Carries the curated subset of the engine configuration that clients need in order to reason about the behaviour of
+ * the server they talk to. Unlike GrpcEvitaConfigurationResponse - which renders the entire configuration file
+ * including paths and credentials, and is refused while the engine runs in read-only mode - the values collected here
+ * carry nothing sensitive and remain readable in read-only mode.
+ *
+ * The message is intentionally flat rather than mirroring the sectioning of the configuration file: only a small
+ * fraction of the configuration is client-actionable, and which section a value happens to live in is an accident of
+ * the server's own configuration history that the caller should not have to know.
+ *
+ * All values originate from the configuration file and are therefore constant for the entire lifetime of the server
+ * process - a client may safely cache the response until it reconnects. Live state that changes while the server runs
+ * (readiness, health problems, catalog counts) and the enabled external APIs with their URLs are deliberately absent -
+ * they belong to GrpcEvitaServerStatusResponse, which must not be cached.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcEvitaEngineSettingsResponse
+ */
+export type GrpcEvitaEngineSettingsResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcEvitaEngineSettingsResponse"> & {
+  /**
+   * The engine-wide default conflict resolution applied to a transaction commit when neither the catalog schema nor
+   * the entity schema declares its own - the base of the conflict resolution precedence walk.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcConflictResolution conflictResolution = 1;
+   */
+  conflictResolution?: GrpcConflictResolution;
+
+  /**
+   * True when the engine retains historical data, so queries and restores targeting a past point in time are
+   * available at all.
+   *
+   * @generated from field: bool timeTravelEnabled = 2;
+   */
+  timeTravelEnabled: boolean;
+
+  /**
+   * True when clients may subscribe to change data capture streams.
+   *
+   * @generated from field: bool changeDataCaptureEnabled = 3;
+   */
+  changeDataCaptureEnabled: boolean;
+
+  /**
+   * True when the server records client traffic, so recordings can be started, inspected and exported.
+   *
+   * @generated from field: bool trafficRecordingEnabled = 4;
+   */
+  trafficRecordingEnabled: boolean;
+
+  /**
+   * True when the engine caches computed query results; affects latency characteristics only, never query results.
+   *
+   * @generated from field: bool queryCacheEnabled = 5;
+   */
+  queryCacheEnabled: boolean;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcEvitaEngineSettingsResponse.
+ * Use `create(GrpcEvitaEngineSettingsResponseSchema)` to create a new message.
+ */
+export const GrpcEvitaEngineSettingsResponseSchema: GenMessage<GrpcEvitaEngineSettingsResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaManagementAPI, 4);
+
+/**
  * Response to a server catalog statistics request.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcEvitaCatalogStatisticsResponse
@@ -242,7 +307,7 @@ export type GrpcEvitaCatalogStatisticsResponse = Message<"io.evitadb.externalApi
  * Use `create(GrpcEvitaCatalogStatisticsResponseSchema)` to create a new message.
  */
 export const GrpcEvitaCatalogStatisticsResponseSchema: GenMessage<GrpcEvitaCatalogStatisticsResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 4);
+  messageDesc(file_GrpcEvitaManagementAPI, 5);
 
 /**
  * Request to restore a catalog.
@@ -271,7 +336,7 @@ export type GrpcRestoreCatalogRequest = Message<"io.evitadb.externalApi.grpc.gen
  * Use `create(GrpcRestoreCatalogRequestSchema)` to create a new message.
  */
 export const GrpcRestoreCatalogRequestSchema: GenMessage<GrpcRestoreCatalogRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 5);
+  messageDesc(file_GrpcEvitaManagementAPI, 6);
 
 /**
  * Request to restore a catalog.
@@ -314,7 +379,7 @@ export type GrpcRestoreCatalogUnaryRequest = Message<"io.evitadb.externalApi.grp
  * Use `create(GrpcRestoreCatalogUnaryRequestSchema)` to create a new message.
  */
 export const GrpcRestoreCatalogUnaryRequestSchema: GenMessage<GrpcRestoreCatalogUnaryRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 6);
+  messageDesc(file_GrpcEvitaManagementAPI, 7);
 
 /**
  * Request to restore a catalog.
@@ -343,7 +408,7 @@ export type GrpcRestoreCatalogFromServerFileRequest = Message<"io.evitadb.extern
  * Use `create(GrpcRestoreCatalogFromServerFileRequestSchema)` to create a new message.
  */
 export const GrpcRestoreCatalogFromServerFileRequestSchema: GenMessage<GrpcRestoreCatalogFromServerFileRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 7);
+  messageDesc(file_GrpcEvitaManagementAPI, 8);
 
 /**
  * Response to a catalog restore request.
@@ -371,7 +436,7 @@ export type GrpcRestoreCatalogResponse = Message<"io.evitadb.externalApi.grpc.ge
  * Use `create(GrpcRestoreCatalogResponseSchema)` to create a new message.
  */
 export const GrpcRestoreCatalogResponseSchema: GenMessage<GrpcRestoreCatalogResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 8);
+  messageDesc(file_GrpcEvitaManagementAPI, 9);
 
 /**
  * Response to a catalog restore request (unary variant). This is used for gRPC/web.
@@ -407,7 +472,7 @@ export type GrpcRestoreCatalogUnaryResponse = Message<"io.evitadb.externalApi.gr
  * Use `create(GrpcRestoreCatalogUnaryResponseSchema)` to create a new message.
  */
 export const GrpcRestoreCatalogUnaryResponseSchema: GenMessage<GrpcRestoreCatalogUnaryResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 9);
+  messageDesc(file_GrpcEvitaManagementAPI, 10);
 
 /**
  * Request to list task statuses in paginated form.
@@ -451,7 +516,7 @@ export type GrpcTaskStatusesRequest = Message<"io.evitadb.externalApi.grpc.gener
  * Use `create(GrpcTaskStatusesRequestSchema)` to create a new message.
  */
 export const GrpcTaskStatusesRequestSchema: GenMessage<GrpcTaskStatusesRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 10);
+  messageDesc(file_GrpcEvitaManagementAPI, 11);
 
 /**
  * Response to a task statuses request.
@@ -493,7 +558,7 @@ export type GrpcTaskStatusesResponse = Message<"io.evitadb.externalApi.grpc.gene
  * Use `create(GrpcTaskStatusesResponseSchema)` to create a new message.
  */
 export const GrpcTaskStatusesResponseSchema: GenMessage<GrpcTaskStatusesResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 11);
+  messageDesc(file_GrpcEvitaManagementAPI, 12);
 
 /**
  * Request to get multiple task statuses.
@@ -514,7 +579,7 @@ export type GrpcSpecifiedTaskStatusesRequest = Message<"io.evitadb.externalApi.g
  * Use `create(GrpcSpecifiedTaskStatusesRequestSchema)` to create a new message.
  */
 export const GrpcSpecifiedTaskStatusesRequestSchema: GenMessage<GrpcSpecifiedTaskStatusesRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 12);
+  messageDesc(file_GrpcEvitaManagementAPI, 13);
 
 /**
  * Response to a multiple task statuses request.
@@ -535,7 +600,7 @@ export type GrpcSpecifiedTaskStatusesResponse = Message<"io.evitadb.externalApi.
  * Use `create(GrpcSpecifiedTaskStatusesResponseSchema)` to create a new message.
  */
 export const GrpcSpecifiedTaskStatusesResponseSchema: GenMessage<GrpcSpecifiedTaskStatusesResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 13);
+  messageDesc(file_GrpcEvitaManagementAPI, 14);
 
 /**
  * Request to get single task status by id
@@ -556,7 +621,7 @@ export type GrpcTaskStatusRequest = Message<"io.evitadb.externalApi.grpc.generat
  * Use `create(GrpcTaskStatusRequestSchema)` to create a new message.
  */
 export const GrpcTaskStatusRequestSchema: GenMessage<GrpcTaskStatusRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 14);
+  messageDesc(file_GrpcEvitaManagementAPI, 15);
 
 /**
  * Response to a task status request.
@@ -577,7 +642,7 @@ export type GrpcTaskStatusResponse = Message<"io.evitadb.externalApi.grpc.genera
  * Use `create(GrpcTaskStatusResponseSchema)` to create a new message.
  */
 export const GrpcTaskStatusResponseSchema: GenMessage<GrpcTaskStatusResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 15);
+  messageDesc(file_GrpcEvitaManagementAPI, 16);
 
 /**
  * Request to get cancel task status by id
@@ -598,7 +663,7 @@ export type GrpcCancelTaskRequest = Message<"io.evitadb.externalApi.grpc.generat
  * Use `create(GrpcCancelTaskRequestSchema)` to create a new message.
  */
 export const GrpcCancelTaskRequestSchema: GenMessage<GrpcCancelTaskRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 16);
+  messageDesc(file_GrpcEvitaManagementAPI, 17);
 
 /**
  * Request to get cancel task status by id
@@ -619,7 +684,7 @@ export type GrpcCancelTaskResponse = Message<"io.evitadb.externalApi.grpc.genera
  * Use `create(GrpcCancelTaskResponseSchema)` to create a new message.
  */
 export const GrpcCancelTaskResponseSchema: GenMessage<GrpcCancelTaskResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 17);
+  messageDesc(file_GrpcEvitaManagementAPI, 18);
 
 /**
  * Request to list files to fetch in paginated form.
@@ -655,7 +720,7 @@ export type GrpcFilesToFetchRequest = Message<"io.evitadb.externalApi.grpc.gener
  * Use `create(GrpcFilesToFetchRequestSchema)` to create a new message.
  */
 export const GrpcFilesToFetchRequestSchema: GenMessage<GrpcFilesToFetchRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 18);
+  messageDesc(file_GrpcEvitaManagementAPI, 19);
 
 /**
  * Response to a get files to fetch request.
@@ -697,7 +762,7 @@ export type GrpcFilesToFetchResponse = Message<"io.evitadb.externalApi.grpc.gene
  * Use `create(GrpcFilesToFetchResponseSchema)` to create a new message.
  */
 export const GrpcFilesToFetchResponseSchema: GenMessage<GrpcFilesToFetchResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 19);
+  messageDesc(file_GrpcEvitaManagementAPI, 20);
 
 /**
  * Request to list task statuses in paginated form.
@@ -718,7 +783,7 @@ export type GrpcFileToFetchRequest = Message<"io.evitadb.externalApi.grpc.genera
  * Use `create(GrpcFileToFetchRequestSchema)` to create a new message.
  */
 export const GrpcFileToFetchRequestSchema: GenMessage<GrpcFileToFetchRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 20);
+  messageDesc(file_GrpcEvitaManagementAPI, 21);
 
 /**
  * Response to a task statuses request.
@@ -739,7 +804,7 @@ export type GrpcFileToFetchResponse = Message<"io.evitadb.externalApi.grpc.gener
  * Use `create(GrpcFileToFetchResponseSchema)` to create a new message.
  */
 export const GrpcFileToFetchResponseSchema: GenMessage<GrpcFileToFetchResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 21);
+  messageDesc(file_GrpcEvitaManagementAPI, 22);
 
 /**
  * Request to get single file by id
@@ -760,7 +825,7 @@ export type GrpcFetchFileRequest = Message<"io.evitadb.externalApi.grpc.generate
  * Use `create(GrpcFetchFileRequestSchema)` to create a new message.
  */
 export const GrpcFetchFileRequestSchema: GenMessage<GrpcFetchFileRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 22);
+  messageDesc(file_GrpcEvitaManagementAPI, 23);
 
 /**
  * Response to a task status request.
@@ -788,7 +853,7 @@ export type GrpcFetchFileResponse = Message<"io.evitadb.externalApi.grpc.generat
  * Use `create(GrpcFetchFileResponseSchema)` to create a new message.
  */
 export const GrpcFetchFileResponseSchema: GenMessage<GrpcFetchFileResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 23);
+  messageDesc(file_GrpcEvitaManagementAPI, 24);
 
 /**
  * Request to list task statuses in paginated form.
@@ -809,7 +874,7 @@ export type GrpcDeleteFileToFetchRequest = Message<"io.evitadb.externalApi.grpc.
  * Use `create(GrpcDeleteFileToFetchRequestSchema)` to create a new message.
  */
 export const GrpcDeleteFileToFetchRequestSchema: GenMessage<GrpcDeleteFileToFetchRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 24);
+  messageDesc(file_GrpcEvitaManagementAPI, 25);
 
 /**
  * Response to a task statuses request.
@@ -830,7 +895,7 @@ export type GrpcDeleteFileToFetchResponse = Message<"io.evitadb.externalApi.grpc
  * Use `create(GrpcDeleteFileToFetchResponseSchema)` to create a new message.
  */
 export const GrpcDeleteFileToFetchResponseSchema: GenMessage<GrpcDeleteFileToFetchResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 25);
+  messageDesc(file_GrpcEvitaManagementAPI, 26);
 
 /**
  * Single reserved keyword
@@ -865,7 +930,7 @@ export type GrpcReservedKeyword = Message<"io.evitadb.externalApi.grpc.generated
  * Use `create(GrpcReservedKeywordSchema)` to create a new message.
  */
 export const GrpcReservedKeywordSchema: GenMessage<GrpcReservedKeyword> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 26);
+  messageDesc(file_GrpcEvitaManagementAPI, 27);
 
 /**
  * Response that returns information about reserved keywords.
@@ -886,7 +951,7 @@ export type GrpcReservedKeywordsResponse = Message<"io.evitadb.externalApi.grpc.
  * Use `create(GrpcReservedKeywordsResponseSchema)` to create a new message.
  */
 export const GrpcReservedKeywordsResponseSchema: GenMessage<GrpcReservedKeywordsResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 27);
+  messageDesc(file_GrpcEvitaManagementAPI, 28);
 
 /**
  * This service contains RPCs that could be called by gRPC clients on evitaDB. Main purpose of this service is to provide
@@ -914,6 +979,17 @@ export const EvitaManagementService: GenService<{
     methodKind: "unary";
     input: typeof EmptySchema;
     output: typeof GrpcEvitaConfigurationResponseSchema;
+  },
+  /**
+   * Procedure used to obtain the curated subset of the engine configuration that is safe to expose to any client.
+   * Unlike GetConfiguration this procedure is available also when the engine runs in read-only mode.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaManagementService.GetEngineSettings
+   */
+  getEngineSettings: {
+    methodKind: "unary";
+    input: typeof EmptySchema;
+    output: typeof GrpcEvitaEngineSettingsResponseSchema;
   },
   /**
    * Procedure used to obtain catalog statistics.

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { SchemaViewerDataPointer } from '@/modules/schema-viewer/viewer/model/SchemaViewerDataPointer'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
@@ -16,6 +16,22 @@ import ReferenceSchemaList from '@/modules/schema-viewer/viewer/component/refere
 import { i18n } from '@/vue-plugins/i18n'
 import SortableAttributeCompoundSchemaList
     from '@/modules/schema-viewer/viewer/component/sortable-compound/SortableAttributeCompoundSchemaList.vue'
+import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import type { Toaster } from '@/modules/notification/service/Toaster'
+import {
+    SchemaViewerService,
+    useSchemaViewerService
+} from '@/modules/schema-viewer/viewer/service/SchemaViewerService'
+import { resolveEntityPolicy } from '@/modules/schema-viewer/viewer/service/ConflictResolutionResolver.ts'
+import {
+    buildConflictResolutionProperty,
+    ConflictPolicyLevel
+} from '@/modules/schema-viewer/viewer/component/conflict-resolution/conflictResolutionProperties.ts'
+import { asError } from '@/utils/error.ts'
+import {
+    useDefaultConflictResolution
+} from '@/modules/schema-viewer/viewer/component/conflict-resolution/useDefaultConflictResolution.ts'
 
 const { t } = useI18n()
 
@@ -23,6 +39,40 @@ const props = defineProps<{
     dataPointer: SchemaViewerDataPointer,
     schema: EntitySchema
 }>()
+
+const toaster: Toaster = useToaster()
+const schemaViewerService: SchemaViewerService = useSchemaViewerService()
+
+// the catalog schema is needed to tell an inherited policy from an own one; the remaining rows must not
+// wait for it
+const catalogSchema = ref<CatalogSchema>()
+
+schemaViewerService
+    .getCatalogSchema(props.dataPointer.schemaPointer.catalogName)
+    .then(schema => catalogSchema.value = schema)
+    .catch(e => toaster.error(
+        t('schemaViewer.conflictResolution.notification.failedToResolvePolicy'),
+        asError(e)
+    ))
+
+const defaultConflictResolution = useDefaultConflictResolution()
+
+// an inherited policy cannot be told apart from the engine default before the catalog schema and the
+// server's engine default arrive, so the row waits for both unless the entity declares a policy of its own
+const conflictResolutionProperty = computed<Property | undefined>(() => {
+    const declared = props.schema.conflictResolution
+    if (declared == undefined && (catalogSchema.value == undefined || defaultConflictResolution.value == undefined)) {
+        return undefined
+    }
+    return buildConflictResolutionProperty(
+        resolveEntityPolicy(
+            props.schema,
+            catalogSchema.value,
+            defaultConflictResolution.value ?? declared!
+        ),
+        ConflictPolicyLevel.Entity
+    )
+})
 
 const properties = computed<Property[]>(() => {
     const propertiesArr = [
@@ -43,6 +93,9 @@ const properties = computed<Property[]>(() => {
             })
         )
     ]
+    if (conflictResolutionProperty.value != undefined) {
+        propertiesArr.push(conflictResolutionProperty.value)
+    }
     if (props.schema.deprecationNotice)
         propertiesArr.splice(2, 0,
             new Property(t('schemaViewer.entity.label.deprecationNotice'), new PropertyValue(props.schema.deprecationNotice)))

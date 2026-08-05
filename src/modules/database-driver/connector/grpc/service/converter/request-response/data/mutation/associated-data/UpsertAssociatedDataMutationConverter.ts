@@ -14,7 +14,7 @@ export class UpsertAssociatedDataMutationConverter extends AssociatedDataMutatio
 
     convert(mutation: GrpcUpsertAssociatedDataMutation): UpsertAssociatedDataMutation {
         const key = AssociatedDataMutationConverter.buildAssociatedDataKey(mutation.associatedDataName, mutation.associatedDataLocale)
-        const targetTypeValue = EvitaValueConverter.convertGrpcAssociatedValue(mutation.associatedDataValue, mutation.associatedDataValue?.value.case)
+        const targetTypeValue = EvitaValueConverter.convertGrpcAssociatedValue(mutation.associatedDataValue)
         return new UpsertAssociatedDataMutation(key, targetTypeValue)
     }
 }

@@ -83,7 +83,8 @@ const props = defineProps<{
     criteria: TrafficRecordHistoryCriteria,
 }>()
 const emit = defineEmits<{
-    (e: 'update:startPointerActive', value: boolean): void
+    (e: 'update:startPointerActive', value: boolean): void,
+    (e: 'update:recorderAvailable', value: boolean): void
 }>()
 
 const fetchError = ref<TrafficFetchErrorType | undefined>(undefined)
@@ -162,6 +163,8 @@ async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) 
     } catch (e) {
         handleRecordFetchError(e)
         done('error')
+    } finally {
+        emitRecorderAvailability()
     }
 }
 
@@ -182,7 +185,17 @@ async function reloadHistory(): Promise<void> {
         await processRecords()
     } catch (e) {
         handleRecordFetchError(e)
+    } finally {
+        emitRecorderAvailability()
     }
+}
+
+/**
+ * Notifies the parent whether the server has a traffic recorder installed for the catalog, which is what
+ * the failed history fetch tells us. Actions working with the traffic buffer are available only then.
+ */
+function emitRecorderAvailability(): void {
+    emit('update:recorderAvailable', fetchError.value !== TrafficFetchErrorType.NoActiveTrafficRecording)
 }
 
 async function tryReloadHistoryForPossibleNewRecords(): Promise<void> {

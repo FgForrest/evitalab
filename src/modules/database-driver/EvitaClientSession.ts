@@ -62,6 +62,11 @@ import type {
     MutationHistoryConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/MutationHistoryConverter.ts'
 import { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
+import {
+    mergeTransactionOverviews,
+    MutationHistoryPage,
+    truncateBelowBoundary
+} from '@/modules/database-driver/request-response/cdc/MutationHistoryPage.ts'
 import type { MutationHistoryRequest } from '@/modules/history-viewer/model/MutationHistoryRequest.ts'
 import type {
     TrafficRecordingCaptureRequest
@@ -87,6 +92,15 @@ export class EvitaClientSession {
     private readonly _catalogName: string
     private readonly _catalogState: CatalogState
     private _active: boolean = true
+    /**
+     * Number of callers currently executing their logic against this session (see {@link acquire}).
+     */
+    private _usages: number = 0
+    /**
+     * Close requested by {@link closeWhenIdle} while the session was still in use. Resolved once the
+     * session is actually closed.
+     */
+    private _pendingClose?: { promise: Promise<void>, resolve: () => void }
     private readonly _callMetadata: { headers: Record<string, string> }
 
     private readonly clientEntitySchemaAccessor: EntitySchemaAccessor
@@ -459,6 +473,33 @@ export class EvitaClientSession {
     }
 
     /**
+     * Requests an on-demand export of the currently buffered traffic recording window into a downloadable ZIP
+     * archive. The export is not gated by a running recording task, it only requires a rich traffic recorder to be
+     * installed (enabled in server configuration or an on-demand recording being active). Returns the status of
+     * the created server task producing the archive.
+     *
+     * @param chunkFileSizeInBytes desired approximate size of the individual chunk files inside the archive,
+     *                             leave undefined to use the server default
+     */
+    async exportTrafficRecording(chunkFileSizeInBytes: bigint | undefined): Promise<TaskStatus> {
+        this.assertActive()
+        try {
+            const response: GetTrafficRecordingStatusResponse = await this.evitaTrafficRecordingClientProvider()
+                .exportTrafficRecording(
+                    {
+                        chunkFileSizeInBytes: (chunkFileSizeInBytes != undefined && chunkFileSizeInBytes > 0n)
+                            ? chunkFileSizeInBytes
+                            : undefined
+                    },
+                    this._callMetadata
+                )
+            return this.taskStatusConverterProvider().convert(response.taskStatus!)
+        } catch (e) {
+            throw this.errorTransformerProvider().transformError(e)
+        }
+    }
+
+    /**
      * Stops the ongoing recording task identified by the provided task ID.
      */
     async stopRecording(taskId: Uuid): Promise<TaskStatus> {
@@ -515,8 +556,16 @@ export class EvitaClientSession {
     }
 
 
+    /**
+     * Returns a single page of the catalog's mutation history, newest records first.
+     *
+     * `MutationHistoryRequest.sinceVersion` is the reverse-pagination anchor (an **upper** bound the
+     * server clamps to the current catalog version); the API has no lower bound, so
+     * `MutationHistoryRequest.newerThanVersion` is applied here, client-side. This split is by design
+     * and permanent — see evitaDB#1349.
+     */
     async getMutationHistory(mutationHistoryRequest: MutationHistoryRequest,
-                             limit: number): Promise<ImmutableList<ChangeCatalogCapture>> {
+                             limit: number): Promise<MutationHistoryPage> {
         this.assertActive()
         try {
             const request: GetMutationsHistoryPageRequest = {
@@ -542,7 +591,13 @@ export class EvitaClientSession {
 
 
             const response: GetMutationsHistoryPageResponse = await this.evitaSessionClientProvider().getMutationsHistoryPage(request, this._callMetadata)
-            const captures = response.changeCapture.map(i => this.mutationHistoryConverterProvider().convertGrpcMutationHistory(i))
+            const captures: ChangeCatalogCapture[] = truncateBelowBoundary(
+                response.changeCapture.map(i => this.mutationHistoryConverterProvider().convertGrpcMutationHistory(i)),
+                mutationHistoryRequest.newerThanVersion
+            )
+            if (captures.length === 0) {
+                return MutationHistoryPage.empty()
+            }
 
             const catalogVersionIdList = [...new Set(
                 captures
@@ -557,7 +612,13 @@ export class EvitaClientSession {
                 transactionCaptures = transactionResponse.transactionOverviews.map(i => this.convertGrpcTransactionOverview(i));
             }
 
-            return ImmutableList([...transactionCaptures, ...captures])
+            // the transaction header of a group is streamed only once, so pages beyond the first do not
+            // carry the header of the transaction their first capture belongs to — the overviews are
+            // fetched locally to compensate and must not be dropped as redundant (evitaDB#1349)
+            return new MutationHistoryPage(
+                ImmutableList(mergeTransactionOverviews(captures, transactionCaptures)),
+                captures.length
+            )
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
         }
@@ -586,6 +647,55 @@ export class EvitaClientSession {
             EvitaValueConverter.convertGrpcOffsetDateTime(grpcTransactionOverview.commitTimestamp!)
         )
 
+    }
+
+    /**
+     * Marks the session as being used by a caller. An acquired session is never closed underneath the
+     * caller by {@link closeWhenIdle}; it is only evicted from the shared-session registry, so no new
+     * caller can obtain it.
+     */
+    acquire(): void {
+        this._usages++
+    }
+
+    /**
+     * Releases the session previously taken by {@link acquire}. When a close has been requested in the
+     * meantime and this was the last user, the session is closed right away.
+     */
+    release(): void {
+        this._usages--
+        if (this._usages <= 0 && this._pendingClose != undefined) {
+            void this.closePending()
+        }
+    }
+
+    /**
+     * Closes the session as soon as nobody uses it: immediately when idle, otherwise once the last
+     * in-flight caller {@link release}s it. Unlike {@link close} it never terminates a call that is
+     * already executing (the server would answer it with a "session already terminated" error).
+     *
+     * @return promise resolved once the session is really closed; repeated calls return the same promise
+     */
+    closeWhenIdle(): Promise<void> {
+        if (this._usages <= 0) {
+            return this.close()
+        }
+        if (this._pendingClose == undefined) {
+            let resolvePendingClose: () => void = () => { /* replaced synchronously below */ }
+            const promise: Promise<void> = new Promise<void>(resolve => { resolvePendingClose = resolve })
+            this._pendingClose = { promise, resolve: resolvePendingClose }
+        }
+        return this._pendingClose.promise
+    }
+
+    private async closePending(): Promise<void> {
+        const pendingClose = this._pendingClose
+        this._pendingClose = undefined
+        try {
+            await this.close()
+        } finally {
+            pendingClose?.resolve()
+        }
     }
 
     /**

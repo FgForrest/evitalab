@@ -44,12 +44,15 @@ before the config exists).
 `src/main.ts` drives the startup sequence:
 
 1. `createApp(Lab)` creates the Vue app.
-2. Web fonts are loaded (`vue-plugins/webfontloader.ts`).
-3. Global Vue plugins are registered: Vuetify, CodeMirror, vue-toastification, Pinia, vue-i18n,
+2. Global Vue plugins are registered: Vuetify, CodeMirror, vue-toastification, Pinia, vue-i18n,
    vue-router, Luxon extensions, ApexCharts.
-4. A `ModuleContextBuilder` is created and every registrar from `src/modules/modules.ts` is
+3. A `ModuleContextBuilder` is created and every registrar from `src/modules/modules.ts` is
    `register()`-ed **in order** (async, sequential).
-5. The app is mounted to `#app`. In `DRIVER` mode the router is pushed to `/`.
+4. The app is mounted to `#app`. In `DRIVER` mode the router is pushed to `/`.
+
+The whole sequence lives in an async `bootstrap()` function invoked immediately. Web fonts need no
+bootstrap step — they are bundled CSS imported by `vue-plugins/vuetify.ts`
+(see [build & tooling — fonts](build-and-tooling.md#fonts)).
 
 ### Module registration and dependency injection
 
@@ -114,21 +117,22 @@ Global Vue plugin configuration lives in `src/vue-plugins/`:
 
 | File | Purpose |
 |------|---------|
-| `vuetify.ts` | Vuetify setup: single dark theme with evitaLab palette (`primary-dark`, `primary-light`, `primary-lightest`, `gray-light`, …) and opinionated component defaults (density, variants). Labs components `VDateInput`, `VTimePicker`, `VPicker` are registered explicitly |
+| `vuetify.ts` | Vuetify setup: single dark theme with evitaLab palette (`primary-dark`, `primary-light`, `primary-lightest`, `gray-light`, …) and opinionated component defaults (density, variants). Labs components `VDateInput`, `VTimePicker`, `VPicker` are registered explicitly. Also imports the self-hosted Poppins faces (`styles/fonts.scss`) and the local MDI icon font |
 | `router.ts` | vue-router setup, run-mode-dependent history & root path |
 | `i18n.ts` | vue-i18n setup, `SupportedLocale` enum, messages from `modules/i18n/en.json` |
 | `pinia.ts` | Pinia instance |
 | `codemirror.ts` | vue-codemirror global defaults |
 | `toastification.ts` | vue-toastification defaults (used by `LocalToaster`) |
 | `luxonExtensions.ts` | Luxon date/time helpers |
-| `webfontloader.ts` | async font loading |
 
 ## Utilities
 
 `src/utils/` contains generic, module-independent helpers: `reactivity.ts` (`mandatoryInject`),
 `object.ts`, `string.ts`, `text.ts`, `number.ts`, `bigint.ts`, `enum.ts`, `uuid.ts`,
 `dateTime.ts`, `duration.ts`, `GroupByUtil.ts`, `JsonUtil.ts`, `clipboard.ts` (`copyToClipboard` —
-Clipboard API with a `document.execCommand('copy')` fallback for insecure/non-localhost origins).
+Clipboard API with a `document.execCommand('copy')` fallback for insecure/non-localhost origins),
+`base64.ts` (`decodeBase64ToUtf8` / `tryDecodeBase64ToUtf8` — UTF-8 aware base64 decoding accepting
+both alphabets, optional padding and `+` arriving as a space).
 Prefer extending these over introducing new ad-hoc helpers inside modules.
 
 ## Auto-generated files

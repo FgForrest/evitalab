@@ -37,6 +37,15 @@ Convention: a dialog component wraps its trigger via the activator slot, owns it
 `modelValue`, performs its action in `confirm` returning `true`/`false` for success, and reports
 errors via the toaster.
 
+`VFormDialog` renders content through these slots: `activator`, `title`, `prepend-form`, `default`
+(wrapped in the validated `VForm`), `append-form`, `alternative-action-button` and
+**`confirm-button-body`** — the label of the confirm button, which falls back to a generic "Confirm"
+when not passed.
+
+Mind the slot names: Vue silently drops a `<template #…>` whose name the target component doesn't
+declare, so a typo costs you the label with no error anywhere. `test/components/slotNames.test.ts`
+guards against this repository-wide — see [testing](testing.md#slot-names).
+
 ## Tab window building blocks
 
 | Component | Use for |
@@ -64,6 +73,26 @@ area).
 | `VLoadingCircular` | Loading spinner |
 | `VCardTitleWithActions` | Card title row with action buttons |
 | `VActionTooltip` | Tooltip for action buttons; pass a `command` to display its keyboard shortcut |
+
+### Properties table
+
+`Property(name, value, description?)` is one row. The optional `description` renders a muted
+`mdi-information-outline` icon with a tooltip after the row label — use it for row-level help, not for
+explaining a single value. Per-value affordances live on the value objects instead:
+
+| Want | Use |
+|---|---|
+| Row-level help | `Property.description` |
+| Colored chip with its own tooltip | `KeywordValue(value, color?, tooltip?)` |
+| Warning next to a value (amber `mdi-alert-outline`) | `PropertyValue.note` |
+| Several chips on one row | `List<PropertyValue>` as the property value |
+
+Rows have a fixed `min-height` so chip rows and text rows share one vertical rhythm; markdown values get
+their trailing block margin zeroed for the same reason. Do not add per-page spacing overrides.
+
+A chip color must be a **theme role** (`success`, `info`, `warning`, `error`, or the default grey) — the
+renderer passes it as Vuetify's `base-color`, because inside a `VChipGroup` (the `List<PropertyValue>`
+variant) a plain `color` applies only to *selected* chips.
 
 ## Code editors (`code-editor` module)
 
@@ -100,8 +129,28 @@ registered). For combined date-time input use the custom `VDateTimeInput` (retur
 
 ## Viewer helpers
 
-- `VDownloadServerFileButton` (`viewer-support`) — download button for server files.
+- `VDownloadServerFileButton` (`viewer-support`) — download button for server files, with determinate
+  progress and click-to-cancel (see [`viewer-support`](modules/viewer-support.md)).
+- `useAutoReload` (`viewer-support`) — the periodic reload loop behind the server-data viewer lists.
 - `HistoryComponent` (`history-component`) — reusable execution-history list UI.
+
+### Determinate progress on an icon button
+
+A button whose work reports progress keeps the standard `loading` prop and replaces the
+indeterminate spinner through Vuetify's `#loader` slot, so the button footprint stays identical:
+
+```vue
+<VBtn icon :loading="inProgress" :disabled="disabled">
+    <VIcon>mdi-file-download-outline</VIcon>
+    <template #loader>
+        <VProgressCircular :model-value="progress" :indeterminate="progress === 0" size="20" width="2" />
+    </template>
+</VBtn>
+```
+
+Vuetify does **not** fold `loading` into the button's disabled state, so a loading button still
+receives clicks — which is what makes "click again to cancel" possible. Guard the click handler on the
+current state and add an `aria-label` for the cancel affordance.
 
 ## Charts
 

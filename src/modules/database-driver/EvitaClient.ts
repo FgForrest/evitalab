@@ -26,8 +26,40 @@ import { GrpcChangeCaptureContent } from '@/modules/database-driver/connector/gr
 import type {
     RegisterSystemChangeCaptureResponse
 } from '@/modules/database-driver/request-response/cdc/RegisterSystemChangeCaptureResponse.ts'
+import { SessionRetryFailedError } from '@/modules/database-driver/exception/SessionRetryFailedError.ts'
 
 export const evitaClientInjectionKey: InjectionKey<EvitaClient> = Symbol('EvitaClient')
+
+/**
+ * Describes how a piece of logic is to be executed against the shared session of a single catalog.
+ * Passed as an object on purpose: the flags are all booleans, and a positional signature would let
+ * a refactoring shift them unnoticed.
+ */
+interface SharedSessionExecution {
+    readonly catalogName: string
+    /**
+     * Whether the shared session must be created in the read-write mode. Every caller sharing a session
+     * of a given catalog must agree on this, because it is derived from the catalog state, not from the caller.
+     */
+    readonly readWrite: boolean
+    /**
+     * Whether the catalog is in the warming up state, where evitaDB permits exactly one open session.
+     */
+    readonly warmup: boolean
+    /**
+     * Whether the currently shared session must be replaced with a brand new one first (to see fresh data).
+     */
+    readonly forceNewSession: boolean
+    /**
+     * Whether the logic mutates data. Such logic is never replayed after *we* evicted its session,
+     * because the failure it observed may have come from a mutation that was already partially applied.
+     *
+     * It is still replayed when the *server* dropped the session (the unauthenticated branch of
+     * {@link EvitaClient.executeInSharedSession}): the server refuses calls on a session it no longer
+     * knows, so nothing of the logic could have been applied. Do not merge the two branches.
+     */
+    readonly mutating: boolean
+}
 
 export function useEvitaClient(): EvitaClient {
     return mandatoryInject(evitaClientInjectionKey) as EvitaClient
@@ -52,6 +84,17 @@ export class EvitaClient extends AbstractEvitaClient {
      * @private
      */
     private readonly sharedSessions: Map<string, EvitaClientSession> = new Map()
+    /**
+     * Shared sessions whose creation is still in flight, keyed by catalog name. Concurrent callers await
+     * the same creation instead of opening a session of their own.
+     */
+    private readonly sharedSessionsInCreation: Map<string, Promise<EvitaClientSession>> = new Map()
+    /**
+     * Pending closes of shared sessions that still had in-flight callers when they were evicted, keyed by
+     * catalog name. Only warming-up catalogs have to wait for them, because evitaDB permits a single
+     * open session there.
+     */
+    private readonly sharedSessionsClosing: Map<string, Promise<void>> = new Map()
 
     constructor(evitaLabConfig: EvitaLabConfig,
                 connectionService: ConnectionService) {
@@ -164,12 +207,16 @@ export class EvitaClient extends AbstractEvitaClient {
             const catalog: CatalogStatistics = await this.management.getCatalogStatisticsForCatalog(catalogName)
 
             return (await this.executeInSharedSession<T>(
-                catalogName,
+                {
+                    catalogName,
+                    readWrite: catalog.isInWarmup,
+                    warmup: catalog.isInWarmup,
+                    // there is no point in forcing a new session in the warming up mode, in the warming up mode all mutations
+                    // are visible everywhere, because there is only one shared session
+                    forceNewSession: catalog.isInWarmup ? false : forceNewSession,
+                    mutating: false
+                },
                 queryLogic,
-                catalog.isInWarmup,
-                // there is no point in forcing a new session in the warming up mode, in the warming up mode all mutations
-                // are visible everywhere, because there is only one shared session
-                catalog.isInWarmup ? false : forceNewSession,
                 true
             )) as T
         } catch (e) {
@@ -289,10 +336,14 @@ export class EvitaClient extends AbstractEvitaClient {
                 // in the warming up state, we need to share sessions because evitaDB doesn't support parallel sessions in
                 // this state
                 return await this.executeInSharedSession(
-                    catalogName,
+                    {
+                        catalogName,
+                        readWrite: true,
+                        warmup: true,
+                        forceNewSession: false,
+                        mutating: true
+                    },
                     updateLogic,
-                    true,
-                    false,
                     true
                 )
             } else {
@@ -313,30 +364,69 @@ export class EvitaClient extends AbstractEvitaClient {
         }
     }
 
+    /**
+     * Runs the logic against the shared session of a catalog, transparently recovering from a session
+     * that ceased to exist underneath the logic.
+     *
+     * @param execution how the shared session is to be obtained
+     * @param logic logic to execute in the shared session
+     * @param retryOnSessionClosed whether the logic may still be replayed once on a fresh session
+     */
     private async executeInSharedSession<T>(
-        catalogName: string,
+        execution: SharedSessionExecution,
         logic: (session: EvitaClientSession) => Promise<T>,
-        readWrite: boolean,
-        forceNewSession: boolean,
         retryOnSessionClosed: boolean
     ): Promise<T> {
+        const catalogName: string = execution.catalogName
         let session: EvitaClientSession | undefined = undefined
+        let sessionClosedByUs: boolean = false
         try {
-            session = await this.getOrCreateSharedSession(catalogName, readWrite, forceNewSession)
-            return await logic(session)
+            session = await this.getOrCreateSharedSession(
+                catalogName,
+                execution.readWrite,
+                execution.warmup,
+                execution.forceNewSession
+            )
+            const acquiredSession: EvitaClientSession = session
+            acquiredSession.acquire()
+            try {
+                return await logic(acquiredSession)
+            } catch (e) {
+                // this must be evaluated here, before `release` below may close a session whose close was
+                // pending - otherwise every genuine failure would look like a session we destroyed ourselves
+                sessionClosedByUs = !acquiredSession.isActive
+                    || this.sharedSessions.get(catalogName) !== acquiredSession
+                throw e
+            } finally {
+                acquiredSession.release()
+            }
         } catch (e) {
-            // the cached session was closed by the server
+            // we closed the session underneath the caller (forceNewSession, terminateSharedSession,
+            // clearSchemaCache, clearCache, ...), so the logic never observed a genuine failure and can be
+            // safely replayed. This is deliberately based on our own knowledge and not on the error, because
+            // evitaDB reports a terminated session as an ordinary invalid-usage error, indistinguishable
+            // from a malformed query. Mutating logic is excluded - it may have been partially applied already.
+            if (sessionClosedByUs && !execution.mutating) {
+                // do NOT close the session again, we already did; another Close call would only add noise
+                if (retryOnSessionClosed) {
+                    return await this.executeInSharedSession(execution, logic, false)
+                }
+                throw new SessionRetryFailedError(catalogName, e)
+            }
+
+            // the server dropped the session on its own (e.g. on the inactivity timeout); a session it can
+            // no longer resolve is reported as unauthenticated
             if (e instanceof ConnectError && e.code === Code.Unauthenticated) {
                 // noinspection PointlessBooleanExpressionJS
                 if (session != undefined) {
-                    await this.closeSession(session)
+                    this.closeSession(session)
                 }
 
                 if (retryOnSessionClosed) {
                     // retry once with a new session
-                    return await this.executeInSharedSession(catalogName, logic, readWrite, forceNewSession, false)
+                    return await this.executeInSharedSession(execution, logic, false)
                 } else {
-                    throw new Error('Could not get active shared session on second retry. Giving up...')
+                    throw new SessionRetryFailedError(catalogName, e)
                 }
             }
             throw e
@@ -346,7 +436,7 @@ export class EvitaClient extends AbstractEvitaClient {
     async closeSharedSession(catalogName: string): Promise<void> {
         const sharedSession: EvitaClientSession | undefined = this.sharedSessions.get(catalogName)
         if (sharedSession != undefined) {
-            await this.closeSession(sharedSession)
+            this.closeSession(sharedSession)
         }
     }
 
@@ -363,6 +453,7 @@ export class EvitaClient extends AbstractEvitaClient {
                 () => this.evitaManagementClient,
                 () => this.catalogStatisticsConverter,
                 () => this.serverStatusConverter,
+                () => this.engineSettingsConverter,
                 () => this.reservedKeywordsConverter,
                 () => this.serverFileConverter,
                 () => this.taskStateConverter,
@@ -438,7 +529,7 @@ export class EvitaClient extends AbstractEvitaClient {
         }
         // we need a new session if we want to load a new data
         for (const sharedSession of this.sharedSessions.values()) {
-            await this.closeSession(sharedSession)
+            this.closeSession(sharedSession)
         }
         const cachedCatalogs: IterableIterator<string> = this.schemaCache.keys()
         for (const cachedCatalog of cachedCatalogs) {
@@ -472,7 +563,7 @@ export class EvitaClient extends AbstractEvitaClient {
         // we need a new session if we want to load a new schema version
         const sharedSession: EvitaClientSession | undefined = this.sharedSessions.get(catalogName)
         if (sharedSession != undefined) {
-            await this.closeSession(sharedSession)
+            this.closeSession(sharedSession)
         }
 
         if (entityType != undefined) {
@@ -489,7 +580,7 @@ export class EvitaClient extends AbstractEvitaClient {
     async terminateSharedSession(catalogName: string): Promise<void> {
         const sharedSession: EvitaClientSession | undefined = this.sharedSessions.get(catalogName)
         if (sharedSession != undefined) {
-            await this.closeSession(sharedSession)
+            this.closeSession(sharedSession)
         }
     }
     async *duplicateCatalogWithProgress(catalogName: string, newCatalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
@@ -601,6 +692,7 @@ export class EvitaClient extends AbstractEvitaClient {
     private async getOrCreateSharedSession(
         catalogName: string,
         readWrite: boolean,
+        warmup: boolean,
         forceNewSession: boolean
     ): Promise<EvitaClientSession> {
         let sharedSession: EvitaClientSession | undefined = this.sharedSessions.get(catalogName)
@@ -612,19 +704,64 @@ export class EvitaClient extends AbstractEvitaClient {
         }
 
         if (sharedSession != undefined && forceNewSession) {
-            await this.closeSession(sharedSession)
+            this.closeSession(sharedSession)
             sharedSession = undefined
         }
 
         if (sharedSession == undefined) {
-            // because a session for warming up catalogs is shared, we need to create it in read-write mode to be able to
-            // execute all operations
-            const session: EvitaClientSession = await this.createSession(catalogName, readWrite)
-            this.sharedSessions.set(catalogName, session)
-            return session
+            // callers routinely fetch several schemas at once (a tab loads its own schema, the catalog schema
+            // and the engine settings together), and they all miss the cache in the same tick. Without
+            // single-flighting the creation, each of them opens its own session: on an alive catalog that
+            // leaks all but the last one, and on a warming-up catalog - where evitaDB permits exactly one
+            // session - every call after the first one fails outright.
+            //
+            // The in-flight entry is keyed by catalog name only, which relies on an invariant: every caller
+            // that shares a session for a given catalog asks for the same `readWrite` mode (it is derived
+            // from the catalog's warm-up state, not from the caller). A future caller that needs a different
+            // mode must not join this queue - it has to open its own session.
+            const sessionInCreation: Promise<EvitaClientSession> | undefined =
+                this.sharedSessionsInCreation.get(catalogName)
+            if (sessionInCreation != undefined) {
+                return await sessionInCreation
+            }
+
+            // the in-flight entry must be registered in the very same tick the creation starts (no `await`
+            // between the two statements below): `createSharedSession` may wait for an outstanding close on
+            // a warming-up catalog, and a caller slipping in meanwhile would open a second session there,
+            // which evitaDB refuses
+            const creation: Promise<EvitaClientSession> = this.createSharedSession(catalogName, readWrite, warmup)
+            this.sharedSessionsInCreation.set(catalogName, creation)
+            try {
+                return await creation
+            } finally {
+                this.sharedSessionsInCreation.delete(catalogName)
+            }
         } else {
             return sharedSession
         }
+    }
+
+    /**
+     * Creates a new session and installs it as the shared one for the catalog. On a warming-up catalog it
+     * first waits for a previously evicted session to actually close, because evitaDB permits exactly one
+     * open session on a non-transactional catalog.
+     */
+    private async createSharedSession(
+        catalogName: string,
+        readWrite: boolean,
+        warmup: boolean
+    ): Promise<EvitaClientSession> {
+        if (warmup) {
+            const closing: Promise<void> | undefined = this.sharedSessionsClosing.get(catalogName)
+            if (closing != undefined) {
+                await closing
+            }
+        }
+        // because a session for warming up catalogs is shared, we need to create it in read-write mode to be able to
+        // execute all operations
+        const session: EvitaClientSession = await this.createSession(catalogName, readWrite)
+        this.sharedSessions.set(catalogName, session)
+        return session
     }
 
     private async createSession(catalogName: string,
@@ -657,9 +794,38 @@ export class EvitaClient extends AbstractEvitaClient {
         )
     }
 
-    private async closeSession(session: EvitaClientSession): Promise<void> {
+    /**
+     * Evicts the session from the shared-session registry, so that no new caller can obtain it, and closes
+     * it as soon as its in-flight callers are done. It never terminates a call that is already executing.
+     *
+     * The pending close is intentionally not awaited: a caller asking for fresh data must not block on an
+     * unrelated slow query of somebody else. Warming-up catalogs are the exception and wait for it in
+     * {@link createSharedSession}, because evitaDB permits a single open session there.
+     */
+    private closeSession(session: EvitaClientSession): void {
         const catalogName: string = session.catalogName
-        await session.close()
-        this.sharedSessions.delete(catalogName)
+        // drop the entry first, and only when it is still *this* session - a concurrent creation may have
+        // already installed a newer one that must not be lost
+        if (this.sharedSessions.get(catalogName) === session) {
+            this.sharedSessions.delete(catalogName)
+        }
+        this.trackSessionClosing(catalogName, session.closeWhenIdle())
+    }
+
+    /**
+     * Remembers the pending close of a shared session of the catalog, chaining it after any close that is
+     * still pending for the same catalog, and forgets it once finished.
+     */
+    private trackSessionClosing(catalogName: string, closing: Promise<void>): void {
+        const previousClosing: Promise<void> | undefined = this.sharedSessionsClosing.get(catalogName)
+        const chainedClosing: Promise<void> = previousClosing == undefined
+            ? closing
+            : previousClosing.then(() => closing)
+        this.sharedSessionsClosing.set(catalogName, chainedClosing)
+        void chainedClosing.then(() => {
+            if (this.sharedSessionsClosing.get(catalogName) === chainedClosing) {
+                this.sharedSessionsClosing.delete(catalogName)
+            }
+        })
     }
 }

@@ -14,6 +14,9 @@ import { isTabParamsDtoWithConnection } from '@/modules/workspace/tab/model/TabP
 import type { TabParamsDtoWithConnection } from '@/modules/workspace/tab/model/TabParamsDtoWithConnection'
 import { InvalidConnectionInSharedTabError } from '@/modules/workspace/tab/error/InvalidConnectionInSharedTabError'
 import { ConnectionNotFoundError } from '@/modules/connection/exception/ConnectionNotFoundError'
+import {
+    MutationHistoryViewerTabFactory
+} from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory'
 
 export const sharedTabResolverInjectionKey: InjectionKey<SharedTabResolver> = Symbol('sharedTabResolver')
 
@@ -26,17 +29,20 @@ export class SharedTabResolver {
     private readonly graphQLConsoleTabFactory: GraphQLConsoleTabFactory
     private readonly schemaViewerTabFactory: SchemaViewerTabFactory
     private readonly trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory
+    private readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
 
     constructor(entityViewerTabFactory: EntityViewerTabFactory,
                 evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory,
                 graphQLConsoleTabFactory: GraphQLConsoleTabFactory,
                 schemaViewerTabFactory: SchemaViewerTabFactory,
-                trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory) {
+                trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory,
+                mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory) {
         this.entityViewerTabFactory = entityViewerTabFactory
         this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
         this.graphQLConsoleTabFactory = graphQLConsoleTabFactory
         this.schemaViewerTabFactory = schemaViewerTabFactory
         this.trafficRecordHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
+        this.mutationHistoryViewerTabFactory = mutationHistoryViewerTabFactory
     }
 
     async resolve(shareTabObject: ShareTabObject): Promise<AnyTabDefinition> {
@@ -57,6 +63,8 @@ export class SharedTabResolver {
                     return this.schemaViewerTabFactory.restoreFromJson(shareTabObject.tabParams)
                 case TabType.TrafficRecordHistoryViewer:
                     return this.trafficRecordHistoryViewerTabFactory.restoreFromJson(shareTabObject.tabParams, shareTabObject.tabData)
+                case TabType.MutationHistoryViewer:
+                    return this.mutationHistoryViewerTabFactory.restoreFromJson(shareTabObject.tabParams, shareTabObject.tabData)
                 default:
                     throw new UnexpectedError(`Unsupported shared tab type '${shareTabObject.tabType}'.`)
             }

@@ -193,9 +193,10 @@ All user-facing strings go through vue-i18n — no hardcoded texts in templates.
 ## Documentation
 
 Document every new Vue component, class, type and interface with JSDoc. Any new or changed
-functionality **must be reflected** in `documentation/developer/` (this directory) — new modules
-belong in the [module catalog](modules/index.md), new shared components in
-[UI components](ui-components.md), new recipes in [recipes](recipes.md).
+functionality **must be reflected** in `documentation/developer/` (this directory). Changes to a
+module belong on that module's own page under [`modules/`](modules/index.md) (one page per directory
+in `src/modules/`); a brand-new module also needs a row in the [module catalog](modules/index.md).
+New shared components go in [UI components](ui-components.md), new recipes in [recipes](recipes.md).
 
 ## Git
 

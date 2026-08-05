@@ -17,6 +17,9 @@ import {
 import { ErrorTransformer } from '@/modules/database-driver/exception/ErrorTransformer'
 import { ServerStatusConverter } from '@/modules/database-driver/connector/grpc/service/converter/ServerStatusConverter'
 import {
+    EngineSettingsConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/EngineSettingsConverter'
+import {
     ReservedKeywordsConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/ReservedKeywordsConverter'
 import { TaskStatusConverter } from '@/modules/database-driver/connector/grpc/service/converter/TaskStatusConverter'
@@ -46,6 +49,10 @@ import {
 import {
     RegisterSystemChangeCaptureResponseConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/RegisterSystemChangeCaptureResponseConverter.ts'
+import {
+    clientVersionHeader,
+    resolveClientVersion
+} from '@/modules/database-driver/connector/grpc/utils/ClientVersion.ts'
 
 
 export type EvitaServiceClient = Client<typeof EvitaService>
@@ -82,6 +89,7 @@ export abstract class AbstractEvitaClient {
     private _mutationProgressConverter?: MutationProgressConverter
 
     private _serverStatusConverter?: ServerStatusConverter
+    private _engineSettingsConverter?: EngineSettingsConverter
     private _reservedKeywordsConverter?: ReservedKeywordsConverter
     private _serverFileConverter?: ServerFileConverter
     private _taskStateConverter?: TaskStateConverter
@@ -103,8 +111,19 @@ export abstract class AbstractEvitaClient {
 
     private get transport(): Transport {
         if (this._transport == undefined) {
+            const clientVersion: string | undefined = resolveClientVersion(__EVITADB_API_VERSION__)
             this._transport = createGrpcWebTransport({
-                baseUrl: this.connection.grpcUrl
+                baseUrl: this.connection.grpcUrl,
+                interceptors: [
+                    // declares the supported evitaDB API version to the server, so that it can pick response forms
+                    // this client understands
+                    next => async req => {
+                        if (clientVersion != undefined) {
+                            req.header.set(clientVersionHeader, clientVersion)
+                        }
+                        return await next(req)
+                    }
+                ]
             })
         }
         return this._transport
@@ -204,6 +223,13 @@ export abstract class AbstractEvitaClient {
             this._serverStatusConverter = new ServerStatusConverter()
         }
         return this._serverStatusConverter
+    }
+
+    protected get engineSettingsConverter(): EngineSettingsConverter {
+        if (this._engineSettingsConverter == undefined) {
+            this._engineSettingsConverter = new EngineSettingsConverter()
+        }
+        return this._engineSettingsConverter
     }
 
     protected get reservedKeywordsConverter(): ReservedKeywordsConverter {

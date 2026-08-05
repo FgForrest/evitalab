@@ -135,7 +135,8 @@ export class WorkspaceModuleRegistrar implements ModuleRegistrar {
                 evitaQLConsoleTabFactory,
                 graphQLConsoleTabFactory,
                 schemaViewerTabFactory,
-                trafficRecordHistoryViewerTabFactory
+                trafficRecordHistoryViewerTabFactory,
+                historyViewerTabFactory
             )
         )
     }

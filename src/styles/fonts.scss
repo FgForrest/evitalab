@@ -1,0 +1,35 @@
+/**
+ * src/styles/fonts.scss
+ *
+ * Declares the self-hosted Poppins faces. The font files are bundled from the
+ * `@fontsource/poppins` package, no remote font provider is contacted.
+ *
+ * Only the weights and styles actually used by the UI are emitted, in the
+ * `woff2` format only (every browser in `.browserslistrc` supports it). Using a
+ * weight or style that is not listed here silently falls back to the system
+ * sans-serif, so extend the lists below when a new one is needed.
+ */
+
+@use 'pkg:@fontsource-utils/scss' as fontsource;
+@use 'pkg:@fontsource/poppins/scss/metadata' as poppins;
+
+// path is relative to this file, resolved by Vite when emitting the assets
+$directory: '../../node_modules/@fontsource/poppins/files';
+
+@include fontsource.faces(
+  $metadata: poppins.$metadata,
+  $directory: $directory,
+  $formats: woff2,
+  $subsets: (latin, latin-ext),
+  $weights: (300, 400, 500, 700, 900),
+  $styles: (normal)
+);
+
+@include fontsource.faces(
+  $metadata: poppins.$metadata,
+  $directory: $directory,
+  $formats: woff2,
+  $subsets: (latin, latin-ext),
+  $weights: (300, 400),
+  $styles: (italic)
+);

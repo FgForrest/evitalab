@@ -17,7 +17,6 @@ import { Attributes } from '@/modules/database-driver/request-response/data/Attr
 import { Reference } from '@/modules/database-driver/request-response/data/Reference'
 import {
     GrpcCardinality, GrpcEntityScope,
-    GrpcEvitaAssociatedDataDataType_GrpcEvitaDataType,
     GrpcPriceInnerRecordHandling
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
 import type { GrpcLocalizedAssociatedData } from '@/modules/database-driver/connector/grpc/gen/GrpcAssociatedData_pb'
@@ -245,15 +244,8 @@ export class EntityConverter {
 
     private convertAssociatedDataValue(
         value: GrpcEvitaAssociatedDataValue
-    ): object {
-        if (
-            value.type ===
-            GrpcEvitaAssociatedDataDataType_GrpcEvitaDataType.COMPLEX_DATA_OBJECT
-        ) {
-            return JSON.parse(value.value.value as string)
-        } else {
-            return EvitaValueConverter.convertGrpcValue(value.value.value, value.value.case)
-        }
+    ): EvitaValue {
+        return EvitaValueConverter.convertGrpcAssociatedValue(value)
     }
 
     private convertLocales(locales: GrpcLocale[]): ImmutableList<Locale> {

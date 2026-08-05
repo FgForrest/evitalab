@@ -3,13 +3,16 @@ import { errorMessage } from '@/utils/error'
 
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
 import { useI18n } from 'vue-i18n'
-import { computed, onUnmounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { JfrViewerService, useJfrViewerService } from '@/modules/jfr-viewer/service/JfrViewerService'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import ServerFileList from '@/modules/server-file-viewer/component/ServerFileList.vue'
+import { useAutoReload } from '@/modules/viewer-support/composable/useAutoReload'
+
+const reloadInterval: number = 5000
 
 const jfrViewerService: JfrViewerService = useJfrViewerService()
 const toaster: Toaster = useToaster()
@@ -30,7 +33,7 @@ const recordingItems = computed<ServerFile[]>(() => {
 
 const pageNumber = ref<number>(1)
 watch(pageNumber, async () => {
-    await loadRecordings()
+    await reload(true)
 })
 const pageCount = computed<number>(() => {
     if (recordings.value == undefined) {
@@ -40,53 +43,27 @@ const pageCount = computed<number>(() => {
 })
 const pageSize = ref<number>(20)
 
-async function loadRecordings(): Promise<boolean> {
-    try {
-        recordings.value = await jfrViewerService.getRecordings(pageNumber.value, pageSize.value)
+async function loadRecordings(): Promise<void> {
+    recordings.value = await jfrViewerService.getRecordings(pageNumber.value, pageSize.value)
 
-        if (recordings.value.pageNumber > 1 && recordings.value?.data.size === 0) {
-            pageNumber.value--
-        }
-        if (!recordingsLoaded.value) {
-            recordingsLoaded.value = true
-        }
-        return true
-    } catch (e) {
-        await toaster.error(t(
+    if (recordings.value.pageNumber > 1 && recordings.value?.data.size === 0) {
+        pageNumber.value--
+    }
+    if (!recordingsLoaded.value) {
+        recordingsLoaded.value = true
+    }
+}
+
+const { reload } = useAutoReload(
+    loadRecordings,
+    reloadInterval,
+    (e: unknown) => {
+        toaster.error(t(
             'jfrViewer.notification.couldNotLoadRecordings',
             { reason: errorMessage(e) }
-        ))
-        return false
+        )).then()
     }
-}
-
-let canReload: boolean = true
-let reloadTimeoutId: ReturnType<typeof setTimeout> | undefined = undefined
-async function reload(manual: boolean = false): Promise<void> {
-    if (!canReload && !manual) {
-        return
-    }
-
-    const loaded: boolean = await loadRecordings()
-    if (loaded) {
-        if (manual && canReload) {
-            // do nothing if the reloading process is working and user
-            // requests additional reload in between
-        } else {
-            // set new timeout only for automatic reload or reload recovery
-            reloadTimeoutId = setTimeout(reload, 5000)
-        }
-        canReload = true
-    } else {
-        // we don't want to spam user server is down, user needs to refresh manually
-        canReload = false
-    }
-}
-
-loadRecordings().then(() => {
-    reloadTimeoutId = setTimeout(reload, 5000)
-})
-onUnmounted(() => clearInterval(reloadTimeoutId))
+)
 
 defineExpose<{
     reload(manual: boolean): Promise<void>

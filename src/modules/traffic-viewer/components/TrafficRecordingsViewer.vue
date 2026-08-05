@@ -7,6 +7,7 @@ import type { TabComponentProps } from '@/modules/workspace/tab/model/TabCompone
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
+import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import TaskList from '@/modules/task-viewer/components/TaskList.vue'
 import type { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
@@ -15,6 +16,7 @@ import {
 } from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
 import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
 import { trafficRecorderTaskName } from '@/modules/traffic-viewer/model/TrafficRecorderTask'
+import { trafficRecordingExportTaskName } from '@/modules/traffic-viewer/model/TrafficRecordingExportTask'
 import { TrafficRecordingsViewerTabParams } from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabParams'
 import { TrafficRecordingsViewerTabDefinition } from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabDefinition'
 import RecordingList from '@/modules/traffic-viewer/components/RecordingList.vue'
@@ -22,7 +24,7 @@ import StartRecordingButton from '@/modules/traffic-viewer/components/StartRecor
 import EndRecordingButton from '@/modules/traffic-viewer/components/EndRecordingButton.vue'
 
 const shownTaskStates: TaskState[] = [TaskState.WaitingForPrecondition, TaskState.Running, TaskState.Queued, TaskState.Failed]
-const shownTaskTypes: string[] = [trafficRecorderTaskName]
+const shownTaskTypes: string[] = [trafficRecorderTaskName, trafficRecordingExportTaskName]
 
 const { t } = useI18n()
 
@@ -45,7 +47,18 @@ const recordingListRef = ref<InstanceType<typeof RecordingList>>()
 
 const title: List<string> = List.of(t('trafficViewer.recordings.title'))
 
-const recordingsInPreparationPresent = ref<boolean>(false)
+const shownTasksPresent = ref<boolean>(false)
+const recorderTasksPresent = ref<boolean>(false)
+
+/**
+ * Splits the two signals the task list carries: whether anything is listed at all (drives the list
+ * visibility and the following subheader), and whether an actual recorder task is present (only that
+ * blocks starting another recording — a lingering export task must not).
+ */
+function onShownTasksUpdate(tasks: TaskStatus[]): void {
+    shownTasksPresent.value = tasks.length > 0
+    recorderTasksPresent.value = tasks.some(task => task.taskTypes.contains(trafficRecorderTaskName))
+}
 
 function reloadRecordings(): void {
     reloadTasks()
@@ -70,7 +83,7 @@ emit('ready')
                     </VTooltip>
                 </VBtn>
                 <StartRecordingButton
-                    :disabled="recordingsInPreparationPresent"
+                    :disabled="recorderTasksPresent"
                     @start="reloadRecordings"
                 />
             </template>
@@ -79,16 +92,17 @@ emit('ready')
         <VSheet class="traffic-recordings-viewer__body">
             <TaskList
                 ref="taskListRef"
-                v-show="recordingsInPreparationPresent"
+                v-show="shownTasksPresent"
                 :subheader="t('trafficViewer.recordings.tasks.title')"
                 :states="shownTaskStates"
                 :task-types="shownTaskTypes"
                 :page-size="5"
                 hideable-pagination
-                @update:active-jobs-present="recordingsInPreparationPresent = $event"
+                @update:tasks="onShownTasksUpdate"
             >
                 <template #item-append-action-buttons="{ task }">
                     <EndRecordingButton
+                        v-if="task.taskTypes.contains(trafficRecorderTaskName)"
                         :traffic-recorder-task="task"
                         @end="reloadRecordings"
                     />
@@ -97,7 +111,7 @@ emit('ready')
 
             <RecordingList
                 ref="recordingListRef"
-                :recordings-in-preparation-present="recordingsInPreparationPresent"
+                :recordings-in-preparation-present="shownTasksPresent"
             />
         </VSheet>
     </div>

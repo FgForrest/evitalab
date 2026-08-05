@@ -26,9 +26,14 @@ import { TrafficRecordHistoryCriteria } from '@/modules/traffic-viewer/model/Tra
 import RecordHistoryFilter from '@/modules/traffic-viewer/components/RecordHistoryFilter.vue'
 import { provideHistoryCriteria } from '@/modules/traffic-viewer/components/dependencies'
 import StartPointerButton from '@/modules/traffic-viewer/components/StartPointerButton.vue'
+import ExportTrafficBufferButton from '@/modules/traffic-viewer/components/ExportTrafficBufferButton.vue'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
+import type { Toaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import { errorMessage } from '@/utils/error'
 
 const keymap: Keymap = useKeymap()
+const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const props = defineProps<TabComponentProps<TrafficRecordHistoryViewerTabParams, TrafficRecordHistoryViewerTabData>>()
@@ -55,6 +60,7 @@ const title: List<string> = List.of(
 
 const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
 const historyListRef = ref<InstanceType<typeof RecordHistory> | undefined>()
+const filterRef = ref<InstanceType<typeof RecordHistoryFilter> | undefined>()
 const criteria = ref<TrafficRecordHistoryCriteria>(new TrafficRecordHistoryCriteria(
     props.data.since,
     props.data.types,
@@ -69,6 +75,8 @@ const initialized = ref<boolean>(false)
 const historyListLoading = ref<boolean>(false)
 const historyStartPointerLoading = ref<boolean>(false)
 const historyStartPointerActive = ref<boolean>(false)
+// assume the recorder is present until the first history fetch tells us otherwise
+const recorderAvailable = ref<boolean>(true)
 
 const currentData = computed<TrafficRecordHistoryViewerTabData>(() => {
     return new TrafficRecordHistoryViewerTabData(
@@ -102,13 +110,23 @@ onMounted(() => {
     keymap.bind(Command.TrafficRecordHistoryViewer_ShareTab, props.id, () => shareTabButtonRef.value?.share())
     keymap.bind(Command.TrafficRecordHistoryViewer_ReloadRecordHistory, props.id, async () => await reloadHistoryList())
     keymap.bind(Command.TrafficRecordHistoryViewer_MoveStartPointer, props.id, async () => await moveStartPointerToNewest())
+    keymap.bind(Command.TrafficRecordHistoryViewer_ApplyFilter, props.id, () => applyFilter())
 })
 onUnmounted(() => {
     // unregister console specific keyboard shortcuts
     keymap.unbind(Command.TrafficRecordHistoryViewer_ShareTab, props.id)
     keymap.unbind(Command.TrafficRecordHistoryViewer_ReloadRecordHistory, props.id)
     keymap.unbind(Command.TrafficRecordHistoryViewer_MoveStartPointer, props.id)
+    keymap.unbind(Command.TrafficRecordHistoryViewer_ApplyFilter, props.id)
 })
+
+function applyFilter(): void {
+    filterRef.value?.apply()
+        .catch((e: unknown) => toaster.error(t(
+            'trafficViewer.recordHistory.filter.notification.couldNotApplyFilter',
+            { reason: errorMessage(e) }
+        )).then())
+}
 
 async function moveStartPointerToNewest(): Promise<void> {
     historyStartPointerLoading.value = true
@@ -145,6 +163,12 @@ async function reloadHistoryList(): Promise<void> {
                     :command="Command.TrafficRecordHistoryViewer_ShareTab"
                 />
 
+                <ExportTrafficBufferButton
+                    :catalog-name="params.dataPointer.catalogName"
+                    :available="recorderAvailable"
+                    @unavailable="recorderAvailable = false"
+                />
+
                 <StartPointerButton
                     :active="historyStartPointerActive"
                     :loading="historyStartPointerLoading"
@@ -163,6 +187,7 @@ async function reloadHistoryList(): Promise<void> {
 
             <template #extension>
                 <RecordHistoryFilter
+                    ref="filterRef"
                     v-model="criteria"
                     :data-pointer="params.dataPointer"
                     @apply="reloadHistoryList"
@@ -176,6 +201,7 @@ async function reloadHistoryList(): Promise<void> {
                 :data-pointer="params.dataPointer"
                 :criteria="criteria"
                 @update:start-pointer-active="historyStartPointerActive = $event"
+                @update:recorder-available="recorderAvailable = $event"
             />
         </VSheet>
     </div>

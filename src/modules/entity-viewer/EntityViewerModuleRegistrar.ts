@@ -13,11 +13,17 @@ import {
     MarkdownDetailRendererMenuFactory,
     markdownDetailRendererMenuFactoryInjectionKey
 } from '@/modules/entity-viewer/viewer/service/MarkdownDetailRendererMenuFactory'
+import {
+    EntityGridCellMenuFactory,
+    entityGridCellMenuFactoryInjectionKey
+} from '@/modules/entity-viewer/viewer/service/EntityGridCellMenuFactory'
+import { WorkspaceService, workspaceServiceInjectionKey } from '@/modules/workspace/service/WorkspaceService'
 
 export class EntityViewerModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {
         const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
+        const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
 
         builder.provide(
             entityViewerServiceInjectionKey,
@@ -30,6 +36,10 @@ export class EntityViewerModuleRegistrar implements ModuleRegistrar {
         builder.provide(
             markdownDetailRendererMenuFactoryInjectionKey,
             new MarkdownDetailRendererMenuFactory()
+        )
+        builder.provide(
+            entityGridCellMenuFactoryInjectionKey,
+            new EntityGridCellMenuFactory(workspaceService)
         )
         // todo lho fix circular dep
         // builder.provide(entityViewerTabFactoryInjectionKey, new EntityViewerTabFactory(connectionService))

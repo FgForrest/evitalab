@@ -10,6 +10,9 @@
 // );
 
 @use 'vuetify/settings' with (
+  // the self-hosted font (see src/styles/fonts.scss), replaces Vuetify's default Roboto
+  // which is not bundled and would silently fall back to the system sans-serif
+  $body-font-family: ('Poppins', sans-serif),
   $overlay-opacity: 0.8,
   $overlay-scrim-background: rgba(35, 53, 92, 0.80),
   // tooltip
@@ -30,17 +33,6 @@
   --el-color-primary-lightest: #21BFE3;
   --el-color-primary-lightest-500: #1a98b5;
   --v-activated-opacity: 0.08!important;
-}
-
-
-// Refactor font family globally
-$font-family: 'Poppins';
-.v-application {
-  [class*='text-'] {
-    font-family: $font-family, sans-serif !important;
-  }
-
-  font-family: $font-family, sans-serif !important;
 }
 
 .v-field--variant-solo-filled .v-field__overlay {

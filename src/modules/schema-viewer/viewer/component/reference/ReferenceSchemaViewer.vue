@@ -28,6 +28,12 @@ import { getEnumKeyByValue } from '@/utils/enum.ts'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { ReferenceIndexType } from '@/modules/database-driver/request-response/schema/ReferenceIndexType.ts'
 import HistogramIndexDefinitionList from '@/modules/schema-viewer/viewer/component/reference/HistogramIndexDefinitionList.vue'
+import {
+    ConflictItemKind
+} from '@/modules/schema-viewer/viewer/service/ConflictResolutionResolver.ts'
+import {
+    useEffectiveConflictScope
+} from '@/modules/schema-viewer/viewer/component/conflict-resolution/useEffectiveConflictScope.ts'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerService: SchemaViewerService = useSchemaViewerService()
@@ -48,6 +54,12 @@ const loadedReferencedGroupType = ref<boolean>()
 const groupTypeNameVariants = ref<ImmutableMap<NamingConvention, string> | undefined>()
 const loadedReflectedReferences = ref<boolean>()
 const reflectedReferences = ref<ImmutableList<ReflectedReferenceSchema>>()
+
+const conflictResolutionProperties = useEffectiveConflictScope(
+    props.dataPointer,
+    ConflictItemKind.Reference,
+    () => props.schema.conflictResolutionOverride
+)
 
 const hasHistogramDefinitions = computed(() =>
     props.schema.isBucketedInScope(EntityScope.Live) ||
@@ -169,6 +181,8 @@ const properties = computed<Property[]>(() => {
             )
         )
     )
+
+    properties.push(...conflictResolutionProperties.value)
 
     return properties
 })

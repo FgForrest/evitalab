@@ -3,6 +3,8 @@ import { mandatoryInject } from '@/utils/reactivity'
 import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { trafficRecorderTaskName } from '@/modules/traffic-viewer/model/TrafficRecorderTask'
+import { trafficRecordingExportTaskName } from '@/modules/traffic-viewer/model/TrafficRecordingExportTask'
+import { Uuid } from '@/modules/database-driver/data-type/Uuid'
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { List as ImmutableList } from 'immutable'
 import {
@@ -18,6 +20,7 @@ import {
     TrafficRecordingCaptureRequest
 } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordingCaptureRequest'
 import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
+import type { FetchFileOptions } from '@/modules/database-driver/EvitaClientManagement'
 
 export const trafficViewerServiceInjectionKey: InjectionKey<TrafficViewerService> = Symbol('trafficViewerService')
 
@@ -47,7 +50,7 @@ export class TrafficViewerService {
         return await this.evitaClient.management.listFilesToFetch(
             pageNumber,
             pageSize,
-            [trafficRecorderTaskName]
+            [trafficRecorderTaskName, trafficRecordingExportTaskName]
         )
     }
 
@@ -57,7 +60,7 @@ export class TrafficViewerService {
                          exportFile: boolean,
                          maxFileSizeInBytes: bigint | undefined,
                          chunkFileSizeInBytes: bigint | undefined): Promise<TaskStatus> {
-        return await this.evitaClient.queryCatalog(
+        return await this.evitaClient.updateCatalog(
             catalogName,
             session => session.startRecording(
                 samplingRate,
@@ -70,10 +73,43 @@ export class TrafficViewerService {
     }
 
     async stopRecording(trafficRecorderTask: TaskStatus): Promise<TaskStatus> {
-        return await this.evitaClient.queryCatalog(
+        return await this.evitaClient.updateCatalog(
             trafficRecorderTask.catalogName!,
             session => session.stopRecording(trafficRecorderTask.taskId)
         )
+    }
+
+    /**
+     * Requests an on-demand export of the traffic recording buffer of the passed catalog into a downloadable ZIP
+     * archive and returns status of the server task producing it. The export doesn't require a running recording,
+     * only an installed rich traffic recorder (enabled in server configuration or an active on-demand recording).
+     *
+     * @param catalogName name of the catalog whose traffic buffer should be exported
+     * @param chunkFileSizeInBytes desired approximate size of the individual chunk files inside the archive,
+     *                             leave undefined to use the server default
+     */
+    async exportTrafficBuffer(catalogName: string,
+                              chunkFileSizeInBytes: bigint | undefined): Promise<TaskStatus> {
+        return await this.evitaClient.updateCatalog(
+            catalogName,
+            session => session.exportTrafficRecording(chunkFileSizeInBytes)
+        )
+    }
+
+    /**
+     * Returns current status of a single server task, or undefined if the server doesn't know such task anymore.
+     * Used for tracking progress of a started traffic buffer export.
+     */
+    async getTaskStatus(taskId: Uuid): Promise<TaskStatus | undefined> {
+        return await this.evitaClient.management.getTaskStatus(taskId)
+    }
+
+    /**
+     * Downloads contents of a server file produced by a finished traffic recording export. Accepts the
+     * driver's fetch options, so the caller can report transfer progress.
+     */
+    async fetchExportedFile(fileId: Uuid, options?: FetchFileOptions): Promise<Blob> {
+        return await this.evitaClient.management.fetchFile(fileId, options)
     }
 
     async getRecordHistoryList(catalogName: string,

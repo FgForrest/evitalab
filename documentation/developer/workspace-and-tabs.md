@@ -78,7 +78,8 @@ workspaceService.createTab(tabFactory.createNew(catalogName))
 ```
 
 Other useful `WorkspaceService` methods: `getTabDefinitions()`, `getTabDefinition(id)`,
-`replaceTabData(id, data)`, `markTabAsVisited(id)`, `destroyTab(id)`, `destroyAllTabs()`.
+`replaceTabData(id, data)`, `markTabAsVisited(id)`, `getSelectedTabId()`, `markTabAsSelected(id)`,
+`destroyTab(id)`, `destroyAllTabs()`.
 
 ### Persistence, restore, sharing
 
@@ -86,14 +87,32 @@ Other useful `WorkspaceService` methods: `getTabDefinitions()`, `getTabDefinitio
   into `LabStorage`; `restoreTabsFromLastSession()` restores them on startup via the tab
   factories' `restoreFromJson()`. New tab types must be wired into the restore switch in
   `WorkspaceService`.
-- **Share links** use `ShareTabObject` (LZ-string-encoded tab type + DTOs in the `?sharedTab=`
-  URL param — the *hash*), resolved on startup by `SharedTabResolver` (via `TabSharedDialog`).
+- **Selected tab** — tab ids are generated per session (`uuidv4`) and are not part of
+  `StoredTabObject`, so the selection is persisted as the *index* of the selected tab within the
+  stored tabs (own storage key, written by `storeOpenedTabs()` together with the tabs themselves).
+  `WorkspaceService` tracks the selection in `workspaceStore.selectedTabId`; the tab bar
+  (`WorkspaceTabWindowList`) reports every switch through `markTabAsSelected(id)` and, right after
+  the restore, activates `getSelectedTabId()` — restored tabs are marked as already visited, so the
+  "switch to the newly opened tab" logic does not steal the selection.
+- **Share links** use `ShareTabObject` (tab type + DTOs in the `?sharedTab=` URL param — the
+  *hash*), resolved on startup by `SharedTabResolver` (via `TabSharedDialog`).
   When the resulting URL exceeds the browser-safe length (`urlCharacterLimit`, 2083 chars),
   the share dialog (`ShareTabDialog`) blocks copying the link and offers *Copy hash* instead.
   A running session can import a hash or link at any time through the tab bar's `+` →
   *Open shared tab* action (`OpenSharedTabDialog`), which parses the input via
   `ShareTabObject.fromLinkParamOrUrl()` (accepting a bare hash or a full URL) and resolves it
   through the same `SharedTabResolver` (including the connection troubleshooter).
+- **Two accepted hash formats.** `ShareTabObject.fromHash()` first tries to decode the hash as a
+  plain base64 (or base64url) encoded JSON payload and falls back to LZ-string decompression.
+  Base64 is detected by a successful decode yielding a JSON object with a string `tabType`;
+  LZ-string cannot be the detector, because it returns nonsense instead of failing on foreign
+  input. **The producer side is unchanged** — `toLinkParam()` still emits LZ-string; base64 is an
+  accepted *input* format only, so that external applications can deep-link into evitaLab without
+  implementing evitaLab's compression. Such payloads also **omit `connectionId`** entirely
+  (`TabParamsDtoWithConnection.connectionId` is therefore optional), and the tab factories resolve
+  them against the single connection of the running instance via `ConnectionService.getConnection()`.
+  See the [recipe](recipes.md#deep-link-into-evitalab-from-an-external-application) for the payload
+  contract.
 - **Demo snippets** (`DemoSnippetRequest`, `DemoSnippetResolver`) open evitaQL/GraphQL examples
   from the evitaDB documentation in a console tab.
 - Restored/shared tabs never auto-execute queries (performance & safety) — factories set

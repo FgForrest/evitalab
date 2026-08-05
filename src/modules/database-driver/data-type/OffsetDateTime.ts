@@ -50,7 +50,7 @@ export class OffsetDateTime implements PrettyPrintable {
  * Converts the stored ISO offset (e.g. `Z`, `+02:00`) into a zone specifier accepted by Luxon.
  * Luxon does not recognize bare ISO offsets as zones, so they are normalized to the `UTC±HH:MM` form.
  */
-function toLuxonZone(offset: string): string {
+export function toLuxonZone(offset: string): string {
     return offset === 'Z' || offset === ''
         ? 'UTC'
         : `UTC${offset}`

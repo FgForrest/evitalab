@@ -16,6 +16,9 @@ import {
 } from '@/modules/database-driver/request-response/schema/GlobalAttributeUniquenessType.ts'
 import { i18n } from '@/vue-plugins/i18n.ts'
 import { getEnumKeyByValue } from '@/utils/enum.ts'
+import {
+    ConflictResolutionOverride
+} from '@/modules/database-driver/request-response/schema/ConflictResolutionOverride.ts'
 
 /**
  * evitaLab's representation of a single evitaDB global attribute schema independent of specific evitaDB version
@@ -40,8 +43,9 @@ export class GlobalAttributeSchema extends EntityAttributeSchema {
                 sortableInScopes: List<EntityScope>,
                 filterableInScopes: List<EntityScope>,
                 uniqueGloballyInScopes: List<ScopedGlobalAttributeUniquenessType>,
-                uniqueInScopes: List<ScopedAttributeUniquenessType>) {
-        super(name, nameVariants, description, deprecationNotice, type, nullable, defaultValue, localized, indexedDecimalPlaces, representative, sortableInScopes, filterableInScopes, uniqueInScopes)
+                uniqueInScopes: List<ScopedAttributeUniquenessType>,
+                conflictResolutionOverride: ConflictResolutionOverride = ConflictResolutionOverride.Inherited) {
+        super(name, nameVariants, description, deprecationNotice, type, nullable, defaultValue, localized, indexedDecimalPlaces, representative, sortableInScopes, filterableInScopes, uniqueInScopes, conflictResolutionOverride)
         this.uniqueGloballyInScopes = uniqueGloballyInScopes
     }
 

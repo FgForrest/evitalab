@@ -10,6 +10,12 @@ Each evitaLab version must have set the correct oldest evitaDB version that it s
 This ensures compatibility and avoids potential issues with incompatible versions. This evitaDB version
 basically indicates a version of the evitaDB API (new endpoints, breaking changes, etc.).
 
+`.evitadbrc` is not only build metadata: it is baked into the bundle as `__EVITADB_API_VERSION__` and sent
+to the server on every gRPC call as the `clientVersion` header, where it selects the response forms the
+server may use (see [database driver — associated data & complex data objects](database-driver.md#associated-data--complex-data-objects)).
+Bumping it therefore changes wire behavior, and its value must stay a parseable `major.minor[.patch]` —
+evitaDB parses the header without error handling.
+
 ## Running a local evitaDB via Docker
 
 For development against unreleased evitaDB features (or when the demo server is not usable),

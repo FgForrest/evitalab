@@ -32,12 +32,19 @@ const emit = defineEmits<{
 
 watch(
     () => props.modelValue,
-    (newValue) => {
+    async (newValue) => {
         if (newValue) {
             const urlSearchParams: URLSearchParams = new URLSearchParams(document.location.search)
             const sharedTabSerialized: string | null = urlSearchParams.get('sharedTab')
             if (sharedTabSerialized != undefined) {
-                sharedTab.value = ShareTabObject.fromLinkParam(sharedTabSerialized)
+                try {
+                    sharedTab.value = ShareTabObject.fromLinkParam(sharedTabSerialized)
+                } catch (e) {
+                    // there is nothing to confirm, close the dialog instead of leaving it empty
+                    sharedTab.value = undefined
+                    emit('update:modelValue', false)
+                    await toaster.error('Could not resolve shared tab', asError(e)) // todo lho i18n
+                }
             }
         }
     }

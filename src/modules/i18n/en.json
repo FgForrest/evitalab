@@ -19,6 +19,13 @@
       "yes": "Yes",
       "no": "No"
     },
+    "item": {
+      "catalog": "catalog",
+      "entity": "entity",
+      "attribute": "attribute",
+      "associatedData": "associated data",
+      "reference": "reference"
+    },
     "button": {
       "previous": "Previous",
       "next": "Next",
@@ -45,11 +52,17 @@
       "makeCatalogImmutable": "Make catalog immutable",
       "makeCatalogMutable": "Make catalog mutable",
       "deactivateCatalog": "Deactivate catalog",
-      "activateCatalog": "Activate catalog"
+      "activateCatalog": "Activate catalog",
+      "cancelDownload": "Click again to cancel the download"
     },
     "notification": {
       "copiedToClipboard": "Copied to clipboard",
-      "failedToCopyToClipboard": "Failed to copy to clipboard"
+      "failedToCopyToClipboard": "Failed to copy to clipboard",
+      "downloadIncomplete": "Download of '{fileName}' didn't finish. The file at the location you selected is not the requested file and should be deleted."
+    },
+    "download": {
+      "preparing": "Starting download…",
+      "progress": "Downloading… {percent} % ({transferred} / {total})"
     },
     "list": {
       "empty": "No items found."
@@ -240,14 +253,14 @@
     },
     "openSharedDialog": {
       "title": "Open shared tab",
-      "text": "Paste a shared tab hash or an entire shared tab link. evitaLab will open it as a new tab in this session, but will <em>not</em> execute the query automatically.",
+      "text": "Paste a shared tab hash, a base64-encoded shared tab payload, or an entire shared tab link. evitaLab will open it as a new tab in this session, but will <em>not</em> execute the query automatically.",
       "form": {
         "hashOrUrl": {
-          "label": "Shared tab hash or link",
-          "placeholder": "Paste the hash or link here",
+          "label": "Shared tab hash, payload or link",
+          "placeholder": "Paste the hash, base64 payload or link here",
           "validation": {
-            "required": "Hash or link is required.",
-            "invalid": "The pasted value is not a valid shared tab hash or link."
+            "required": "Hash, payload or link is required.",
+            "invalid": "The pasted value is not a valid shared tab hash, payload or link."
           }
         }
       },
@@ -321,11 +334,7 @@
           "rawCopyToolTip": "Shift + Middle mouse button",
           "rawCopyToolTipDescription": "Copy raw value from cell",
           "copyValueToolTip": "Middle mouse button",
-          "copyValueToolTipDescription": "Copy value from cell",
-          "entityHistory": "E + Middle mouse button",
-          "entityHistoryDescription": "Show entity history",
-          "attributeHistory": "L + Middle mouse button",
-          "attributeHistoryDescription": "Show attribute history"
+          "copyValueToolTipDescription": "Copy value from cell"
         }
       }
     },
@@ -370,7 +379,15 @@
       "_title": "Traffic record history viewer",
       "shareTab": "Share tab",
       "reloadRecordHistory": "Reload record history",
-      "moveStartPointer": "Load only records newer than now"
+      "moveStartPointer": "Load only records newer than now",
+      "applyFilter": "Apply filter"
+    },
+    "mutationHistoryViewer": {
+      "_title": "Mutation history viewer",
+      "shareTab": "Share tab",
+      "reloadRecordHistory": "Reload mutation history",
+      "moveStartPointer": "Load only mutations newer than now",
+      "applyFilter": "Apply filter"
     }
   },
   "explorer": {
@@ -723,6 +740,15 @@
         "placeholder": {
           "noLocaleSelected": "<no locale selected>"
         },
+        "menu": {
+          "copyValue": "Copy value",
+          "copyRawValue": "Copy raw value",
+          "entityHistory": "Entity history",
+          "attributeHistory": "Attribute history",
+          "associatedDataHistory": "Associated data history",
+          "priceHistory": "Price history",
+          "referenceHistory": "Reference history"
+        },
         "detail": {
           "placeholder": {
             "invalidValue": "Invalid value.",
@@ -1071,6 +1097,144 @@
         }
       }
     },
+    "conflictResolution": {
+      "label": {
+        "conflictResolution": "Conflict resolution",
+        "conflictResolutionOverride": "Conflict resolution override",
+        "effectiveConflictScope": "Effective conflict scope"
+      },
+      "help": {
+        "catalog": "The catalog-wide default for detecting write conflicts. It applies to every collection and entity in this catalog unless an entity declares its own policy. If unset, the engine-wide default configured on this server is used.",
+        "entity": "How write conflicts are detected for this entity type. If set here it overrides the catalog and engine defaults entirely (scope and refinements). It applies to every attribute, reference and associated data of this entity unless one of them declares its own override.",
+        "effectiveScope": {
+          "entity": "The conflict scope actually applied to writes of this {item}, after resolving the entity policy and this override.",
+          "catalog": "The conflict scope actually applied to writes of this {item}, after resolving the catalog policy and this override."
+        },
+        "granularIntro": "Granular refinements narrow checking to a single part of an entity, so two people editing different parts of the same entity no longer clash — fewer rejections, higher throughput. The trade-off: two edits to different parts can now both succeed, so use them only where those parts don't depend on each other.",
+        "colorLegend": "Colour shows how widely evitaDB looks for a conflicting change: wider (red) rejects more of your concurrent saves — safer but slower; narrower lets more through — faster but relaxes a safety check."
+      },
+      "scope": {
+        "none": {
+          "label": "No detection",
+          "short": "Last writer wins",
+          "hint": "Conflict detection is turned off. Concurrent saves never clash, so nothing is ever rejected — but when two of them change the same data, whichever saves last silently overwrites the other and the first change is lost with no warning. The fastest option and the least safe; use only when losing a concurrent update is acceptable."
+        },
+        "catalog": {
+          "label": "Catalog-wide",
+          "short": "Any change anywhere in the catalog clashes",
+          "hint": "The widest net. Two saves clash if they change anything in the catalog — even unrelated entities in different collections. Strongest consistency, but effectively only one write per catalog version survives, so most concurrent saves are rejected and must retry. Shown red because that high rejection rate means the lowest write throughput. Use only for operations that need a frozen snapshot of the whole catalog (bulk import, global re-pricing)."
+        },
+        "collection": {
+          "label": "Collection-wide",
+          "short": "Any change to this entity type clashes",
+          "hint": "Two saves clash if they change any entity of the same type — two Product edits clash even on different products, while a Product edit and a Category edit run side by side. Use it to guard a rule spanning the whole collection that has no single owning entity (e.g. only one product may be the storefront hero). It serializes the whole collection, so throughput drops — hence the warning colour."
+        },
+        "entity": {
+          "label": "Per entity",
+          "short": "Only changes to the same entity clash",
+          "hint": "The recommended default and the best balance of safety and speed. Two saves clash only when they change the same entity (same type and primary key); edits to two different products never clash. It is also the only scope you can narrow further with the granular refinements."
+        }
+      },
+      "granular": {
+        "entityAttribute": {
+          "label": "Per attribute",
+          "short": "Same-attribute edits clash; different-attribute edits don't",
+          "hint": "Two saves to the same entity clash only if they change the same attribute — changing name and price at once no longer clashes, but two edits to name still do.",
+          "levelNote": {
+            "entity": "On an entity: applies to every attribute of this entity unless a specific attribute overrides it.",
+            "catalog": "On the catalog: applies to every attribute of every entity in the catalog unless an entity or attribute overrides it."
+          }
+        },
+        "associatedData": {
+          "label": "Per associated data",
+          "short": "Only edits to the same associated-data item clash",
+          "hint": "Two saves clash only if they change the same associated-data item; edits to different associated data of the same entity run side by side. Applies to all associated data below this level unless an item overrides it."
+        },
+        "price": {
+          "label": "Per price",
+          "short": "Only edits to the same price clash",
+          "hint": "Two saves clash only if they change the same price; edits to different prices of the same entity run side by side. Applies to all prices below this level. (No per-price override exists — set it here.)"
+        },
+        "hierarchy": {
+          "label": "Per hierarchy move",
+          "short": "Only two moves of the same entity clash",
+          "hint": "Two saves clash only if they both change this entity's position in the tree; other edits run alongside a move. (No per-item override — set it here.)"
+        },
+        "reference": {
+          "label": "Per reference",
+          "short": "Only edits to the same reference clash",
+          "hint": "Two saves clash only if they change the same reference; edits to different references of the same entity run side by side. Applies to all references below this level unless a reference overrides it."
+        },
+        "referenceAttribute": {
+          "label": "Per reference attribute",
+          "short": "Only edits to the same attribute of the same reference clash",
+          "hint": "Even finer than Per reference: two saves clash only if they change the same attribute on the same reference. Applies to all reference attributes below this level unless one overrides it."
+        }
+      },
+      "override": {
+        "granular": {
+          "label": "Granular",
+          "short": "Check this {item} on its own",
+          "hint": "This {item} gets its own conflict check: a save clashes with another only when both change this {item}; every other change to the entity ignores it. Overrides what the entity policy would do for this {item}. Only takes effect while the entity is checked Per entity — if the entity is No detection / Catalog-wide / Collection-wide, this override does nothing."
+        },
+        "entity": {
+          "label": "Whole entity",
+          "short": "Always clash with any change to the entity",
+          "hint": "This {item} is pinned to whole-entity checking: any concurrent change to the same entity clashes with it, even when the rest of the entity uses finer per-part checks. Use it for a consistency-critical {item} you never want changed behind your back."
+        }
+      },
+      "inertWarning": {
+        "entity": "No effect — this entity is checked {scope}, which is wider than Per entity, so this override is ignored. Overrides only apply when the entity's effective scope is Per entity.",
+        "catalog": "No effect — this catalog is checked {scope}, which is wider than Per entity, so this override is ignored. Overrides only apply when the effective scope is Per entity."
+      },
+      "notification": {
+        "failedToResolvePolicy": "Could not resolve the effective conflict resolution policy"
+      },
+      "outcome": {
+        "thisItemOnly": {
+          "label": "This {item} only",
+          "hint": "A save is rejected only if another concurrent save changes this same {item}."
+        },
+        "wholeEntity": {
+          "label": "Whole entity",
+          "hint": "A save is rejected if any concurrent save changes this entity."
+        },
+        "noDetection": {
+          "label": "No detection (last writer wins)",
+          "hint": "Conflict detection is off for this entity — concurrent changes are never rejected and the last save wins, so changes can be lost."
+        },
+        "wholeCatalog": {
+          "label": "Whole catalog",
+          "hint": "A save is rejected if any concurrent save changes anything in the catalog."
+        },
+        "wholeCollection": {
+          "label": "Whole collection",
+          "hint": "A save is rejected if any concurrent save changes any entity of this type."
+        }
+      },
+      "provenance": {
+        "definedHere": {
+          "label": "Defined here",
+          "hint": "This policy is set directly on this {level}."
+        },
+        "inheritedFromCatalog": {
+          "label": "Inherited from catalog",
+          "hint": "No policy is set on this entity, so it uses the catalog's policy. Set one here to override it for this entity type."
+        },
+        "engineDefault": {
+          "label": "Engine default",
+          "hint": "No policy is set on this catalog or entity, so the engine-wide default configured on this server ({scope}) applies."
+        },
+        "followsEntityPolicy": {
+          "label": "Follows entity policy",
+          "hint": "This {item} has no override of its own; it follows the entity's effective policy shown above."
+        },
+        "followsCatalogPolicy": {
+          "label": "Follows catalog policy",
+          "hint": "This {item} has no override of its own; it follows the catalog's effective policy."
+        }
+      }
+    },
     "catalog": {
       "label": {
         "catalogId": "Catalog ID",
@@ -1106,7 +1270,8 @@
         "addingPrices": "Adding Prices",
         "addingLocales": "Adding Locales",
         "addingCurrencies": "Adding Currencies",
-        "addingHierarchy": "Adding Hierarchy"
+        "addingHierarchy": "Adding Hierarchy",
+        "updatingReferenceCardinality": "Updating Reference Cardinality"
       }
     },
     "nameVariants": {
@@ -1345,6 +1510,7 @@
     "backupSelector": {
       "currentSnapshot": "Current snapshot",
       "pointInTime": "Point in time",
+      "pointInTimeUnavailable": "Point in time recovery is not accessible when time travel is disabled in database options.",
       "fullBackup": "Full",
       "selectSubTitle": "Choose backup type"
     },
@@ -1410,6 +1576,7 @@
       "notification": {
         "couldNotLoadAvailableCatalogs": "Could not load available catalogs: {reason}",
         "couldNotLoadMinimalDate": "Could not load available moments: {reason}",
+        "couldNotLoadTimeTravelAvailability": "Could not resolve whether time travel is enabled on the server: {reason}",
         "backupRequested": "A backup for the {catalogName} catalog requested.",
         "couldNotRequestBackup": "Could not request a backup for the {catalogName} catalog: {reason}"
       },
@@ -1740,13 +1907,43 @@
       "title": "Active traffic recording",
       "notification": {
         "couldNotLoadRecords": "Could not load traffic records: {reason}",
-        "couldNotLoadLatestRecording": "Could not load latest traffic record: {reason}"
+        "couldNotLoadLatestRecording": "Could not load latest traffic record: {reason}",
+        "exportStarted": "Exporting traffic buffer…",
+        "exportReady": "Snapshot of recent traffic for catalog \"{catalogName}\" has been downloaded.",
+        "couldNotExportBuffer": "Traffic buffer export failed: {reason}",
+        "couldNotDownloadExportedFile": "Could not download the exported traffic buffer: {reason}",
+        "unknownExportFailureReason": "the server didn't report a reason",
+        "exportTaskLost": "The traffic buffer export is no longer tracked by the server. Check the traffic recordings for its result."
       },
       "button": {
         "reloadRecordHistory": "Reload record history",
         "moveStartPointerToNewest": "Load only records newer than now",
         "removeStartPointer": "Load entire record history",
-        "modifyStartPointer": "Change start of loaded record history"
+        "modifyStartPointer": "Change start of loaded record history",
+        "exportTrafficBuffer": "Export traffic buffer",
+        "exportTrafficBufferHelp": "Downloads a point-in-time snapshot of the rolling traffic buffer the server keeps in memory. No recording needs to be running; the snapshot covers whatever fits into the buffer window at this moment.",
+        "exportTrafficBufferUnavailable": "Traffic recording is not active for this catalog, so there is no traffic buffer to export. Enable traffic recording in the server configuration, or start an on-demand recording in Traffic Recordings."
+      },
+      "exportDialog": {
+        "title": "Export traffic buffer",
+        "info": "The server keeps a rolling buffer of recent traffic in memory. This exports its current content into a downloadable archive as a point-in-time snapshot — no recording needs to be running and any running recording is not affected.",
+        "button": {
+          "export": "Export"
+        },
+        "form": {
+          "chunkFileSizeInBytes": {
+            "label": "Chunk file size (optional)",
+            "hint": {
+              "default": "The size of the chunk file in bytes. Individual files in the export archive will be approximately this size. Leave empty to use the server default. You can use k, M, G, Ki, Mi, or Gi unit prefix.",
+              "rounded": "The size of the chunk file will be rounded to full bytes."
+            },
+            "unit": "bytes",
+            "validations": {
+              "notByteSize": "Chunk file size must be byte size.",
+              "outOfRange": "Chunk file size must be positive number and less than 2^63-1."
+            }
+          }
+        }
       },
       "filter": {
         "label": "Filter",
@@ -1809,14 +2006,15 @@
           "apply": "Apply filter"
         },
         "notification": {
-          "invalidFilter": "Filter criteria are not valid."
+          "invalidFilter": "Filter criteria are not valid.",
+          "couldNotApplyFilter": "Could not apply filter: {reason}"
         }
       },
       "list": {
         "info": {
-          "noActiveTrafficRecording": "There is no active traffic recording for the {catalogName} catalog. You need to either enable traffic recording on server options or start recording on demand in traffic recordings.",
+          "noActiveTrafficRecording": "Traffic recording is not active for the {catalogName} catalog, so there is no traffic buffer to inspect or export. You need to either enable traffic recording in the server configuration or start recording on demand in traffic recordings.",
           "indexCreating": "Index is being created for the active traffic recording for the {catalogName} catalog. Please wait and reload history in a few moments.",
-          "noRecords": "There are no traffic records for defined filter."
+          "noRecords": "There are no traffic records for defined filter. The traffic buffer of the {catalogName} catalog may still hold records excluded by the filter — use the \"Export traffic buffer\" action in the toolbar to download a snapshot of its entire content."
         },
         "button": {
           "loadMore": "Load more"
@@ -1995,7 +2193,8 @@
         "moveStartPointer": "Load only records newer than now"
       },
       "notification": {
-        "noNewerRecords": "No newer records exist."
+        "noNewerRecords": "No newer records exist.",
+        "noOlderRecords": "No older records exist."
       }
     },
     "definition": {
@@ -2013,6 +2212,10 @@
       "label": "Filter",
       "button": {
         "apply": "Apply filter"
+      },
+      "notification": {
+        "invalidFilter": "Filter criteria are not valid.",
+        "couldNotApplyFilter": "Could not apply filter: {reason}"
       },
       "form": {
         "from": {

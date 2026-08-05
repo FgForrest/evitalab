@@ -18,7 +18,8 @@ Recommended reading order for anyone (human or AI agent) new to the codebase:
 
 1. [Codebase architecture](architecture.md) — bootstrap, run modes, module system, dependency
    injection, state management
-2. [Module catalog](modules/index.md) — what every module under `src/modules/` does
+2. [Module catalog](modules/index.md) — what every module under `src/modules/` does; links to a
+   per-module page (one per directory) with that module's DI contract, layout and behaviour
 3. [Database driver](database-driver.md) — `EvitaClient`, sessions, internal model, caching
 4. [Workspace and tabs](workspace-and-tabs.md) — the tab framework every feature plugs into
 5. [UI components](ui-components.md) — custom component catalog and theming

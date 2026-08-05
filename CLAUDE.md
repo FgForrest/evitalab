@@ -16,7 +16,8 @@ it covers the architecture, all modules, custom components, conventions and step
 
 - [index](documentation/developer/index.md) — TOC with recommended reading order
 - [architecture](documentation/developer/architecture.md) — bootstrap, run modes, module system, dependency injection
-- [module catalog](documentation/developer/modules/index.md) — what every module under `src/modules/` does
+- [module catalog](documentation/developer/modules/index.md) — index of all modules under `src/modules/`,
+  linking to one detail page per module (`documentation/developer/modules/<module>.md`)
 - [database driver](documentation/developer/database-driver.md) — `EvitaClient`, sessions, internal model, caching
 - [workspace & tabs](documentation/developer/workspace-and-tabs.md) — the tab framework every feature plugs into
 - [UI components](documentation/developer/ui-components.md) — custom component catalog and theming
@@ -38,6 +39,19 @@ source code files.
 
 **Package manager is yarn. Never run `npm install`, `npm ci`, or `npx` in this repo** — npm may write `package-lock.json`, which diverges from `yarn.lock`. If yarn looks broken, fix it (proxy allowlist / corepack / missing binary); do not fall back to npm.
 
+**Agents: `node_modules` is usually empty in a fresh sandbox.** Run `yarn install` without asking as
+soon as you need to build, type-check, lint or test — a missing dependency tree shows up as
+`error Command "vitest" not found` (or the same for `vue-tsc`/`eslint`), which is a setup gap, not a
+code problem. Two notes:
+
+- `node_modules/.gitignore` and `node_modules/.gitkeep` are **tracked** — they are what keeps the
+  populated directory out of `git status`. If they show as deleted (a wiped `node_modules`), restore
+  them with `git checkout -- node_modules/.gitignore node_modules/.gitkeep` after installing,
+  otherwise `git status` fills with hundreds of untracked entries.
+- Mention the install in your summary; it changes the working tree even though it touches no code.
+  Yarn v1 does not bump versions the lockfile already pins, so a clean install leaves `yarn.lock`
+  alone — any diff there is pre-existing work, not install churn.
+
 ```bash
 yarn install                # install dependencies
 yarn dev                    # dev server (localhost:3000/lab); dev-driver for Desktop driver mode
@@ -47,6 +61,11 @@ yarn test                   # Vitest
 ```
 
 Full reference (env variables, Vite config, CI/CD): [build & tooling](documentation/developer/build-and-tooling.md).
+
+**Agent workflow:** when the user wants to verify changes in their own browser ("build it, I want to
+test it now"), use the skill `.claude/skills/build-evitalab/SKILL.md` — it builds the requested run
+mode and hands over `./scripts/serve-dist.sh`, which serves `dist/` with the correct base path and an
+injected evitaDB connection using only `python3` (no Node.js needed on the developer's side).
 
 ### evitaDB server
 
@@ -85,7 +104,7 @@ Non-negotiable. A 30-second advisor call is cheaper than a failed 90M-token orch
 ## Planning
 
 Always create a detailed plan of implementation or fix if asked for issue analysis. Always store the plan in Markdown file
-inside this project.
+inside this project at `.claude/plans`.
 
 ## Architecture & Conventions
 
@@ -110,6 +129,7 @@ The non-negotiable rules:
 - Feature branches: created from `dev` for each issue
 - Use [conventional commits](https://www.conventionalcommits.org/) — CI/CD depends on this for versioning, do not mentions any author, always use `Refs:` with number of current the issue by first number in the branch name, keep the descriptio coarse
 - Details: [guidelines — git](documentation/developer/guidelines.md#git)
+- Do NOT commit any changes unless explicitly asked.
 
 ## External Documentation
 

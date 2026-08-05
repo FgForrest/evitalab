@@ -33,8 +33,12 @@ import {
 import { ContainerType } from '@/modules/database-driver/data-type/ContainerType.ts'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
 import { GrpcChangeCaptureContainerType } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
+import type { Toaster } from '@/modules/notification/service/Toaster'
+import { useToaster } from '@/modules/notification/service/Toaster'
+import { errorMessage } from '@/utils/error'
 
 const keymap: Keymap = useKeymap()
+const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const workspaceService: WorkspaceService = useWorkspaceService()
@@ -62,6 +66,7 @@ const title: List<string> = List.of(
 
 const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
 const historyListRef = ref<InstanceType<typeof MutationHistory> | undefined>()
+const filterRef = ref<InstanceType<typeof MutationHistoryFilter> | undefined>()
 const criteria = ref<MutationHistoryCriteria>(new MutationHistoryCriteria(
     props.data.from,
     props.data.to,
@@ -118,13 +123,23 @@ onMounted(() => {
     keymap.bind(Command.MutationHistoryViewer_ShareTab, props.id, () => shareTabButtonRef.value?.share())
     keymap.bind(Command.MutationHistoryViewer_ReloadRecordHistory, props.id, async () => await reloadHistoryList())
     keymap.bind(Command.MutationHistoryViewer_MoveStartPointer, props.id, async () => await moveStartPointerToNewest())
+    keymap.bind(Command.MutationHistoryViewer_ApplyFilter, props.id, () => applyFilter())
 })
 onUnmounted(() => {
     // unregister console specific keyboard shortcuts
     keymap.unbind(Command.MutationHistoryViewer_ShareTab, props.id)
     keymap.unbind(Command.MutationHistoryViewer_ReloadRecordHistory, props.id)
     keymap.unbind(Command.MutationHistoryViewer_MoveStartPointer, props.id)
+    keymap.unbind(Command.MutationHistoryViewer_ApplyFilter, props.id)
 })
+
+function applyFilter(): void {
+    filterRef.value?.apply()
+        .catch((e: unknown) => toaster.error(t(
+            'mutationHistoryViewer.filter.notification.couldNotApplyFilter',
+            { reason: errorMessage(e) }
+        )).then())
+}
 
 async function moveStartPointerToNewest(): Promise<void> {
     historyStartPointerLoading.value = true
@@ -132,9 +147,9 @@ async function moveStartPointerToNewest(): Promise<void> {
     historyStartPointerLoading.value = false
 }
 
-function removeStartPointer(): void {
+async function removeStartPointer(): Promise<void> {
     historyStartPointerLoading.value = true
-    historyListRef.value?.removeStartPointer()
+    await historyListRef.value?.removeStartPointer()
     historyStartPointerLoading.value = false
 }
 
@@ -147,7 +162,9 @@ async function reloadHistoryList(): Promise<void> {
 const titleDetails: List<string> = List.of(
     props.params.dataPointer.catalogName,
     t('mutationHistoryViewer.title'),
-    `${currentData.value.entityType}: ${currentData.value.entityPrimaryKey}`,
+    ...(currentData.value.entityType != undefined && currentData.value.entityPrimaryKey != undefined
+        ? [`${currentData.value.entityType}: ${currentData.value.entityPrimaryKey}`]
+        : []),
     ...(!!currentData.value?.containerNameList?.length && CatalogSchemaConverter.toContainerTypes(currentData.value.containerTypeList).contains(ContainerType.Attribute)
         ? [t(`mutationHistoryViewer.toolbar.attributes`, {"containerNameList": currentData.value.containerNameList?.join(', ') }) ]
         : []),
@@ -163,9 +180,10 @@ const titleDetails: List<string> = List.of(
     t('mutationHistoryViewer.toolbar.history')
 )
 
-const openMutationHistoryByAttribute = () => {
+// kept local intentionally: feature modules must not depend on each other, so the shared implementation
+// in EntityGridCellMenuFactory (entity-viewer module) cannot be reused here
+const openEntityMutationHistory = () => {
     const entityPrimaryKey = props.data.entityPrimaryKey
-
 
     workspaceService.createTab(
         workspaceService.mutationHistoryViewerTabFactory.createNew(
@@ -189,7 +207,7 @@ const openMutationHistoryByAttribute = () => {
 </script>
 
 <template>
-    <div class="mutation-history-viewer">
+    <div :class="['mutation-history-viewer', { 'mutation-history-viewer--immutable-filter': !criteria.mutableFilters }]">
         <VTabToolbar
             v-if="criteria.mutableFilters"
             :prepend-icon="MutationHistoryViewerTabDefinition.icon()"
@@ -223,23 +241,22 @@ const openMutationHistoryByAttribute = () => {
 
             <template #extension>
                 <MutationHistoryFilter
+                    ref="filterRef"
                     v-model="criteria"
                     :data-pointer="params.dataPointer"
                     @apply="reloadHistoryList"
                 />
             </template>
         </VTabToolbar>
-<!--        todo pfi: fix height of the toolbar -->
         <VTabToolbar
             v-else
             :prepend-icon="MutationHistoryViewerTabDefinition.icon()"
             :title=titleDetails
         >
             <template #append>
-                <VBtn icon density="compact" v-if="data.containerTypeList?.some(i => i !== GrpcChangeCaptureContainerType.CONTAINER_ENTITY) && !data.mutableFilters" @click="openMutationHistoryByAttribute">
+                <VBtn icon density="compact" v-if="data.containerTypeList?.some(i => i !== GrpcChangeCaptureContainerType.CONTAINER_ENTITY) && !data.mutableFilters" @click="openEntityMutationHistory">
                     <VIcon>mdi-table</VIcon>
                     <VActionTooltip activator="parent" >
-                        {{JSON.stringify(data)}}
                         {{ t('mutationHistoryViewer.toolbar.entity') }}
                     </VActionTooltip>
                 </VBtn>
@@ -271,6 +288,15 @@ const openMutationHistoryByAttribute = () => {
         bottom: 0;
         overflow-y: auto;
         padding: 0 1rem;
+    }
+}
+
+// an immutable filter renders no toolbar extension, so only the toolbar itself must be reserved
+.mutation-history-viewer.mutation-history-viewer--immutable-filter {
+    grid-template-rows: 3rem 1fr;
+
+    .mutation-history-viewer__body {
+        top: 3rem;
     }
 }
 </style>

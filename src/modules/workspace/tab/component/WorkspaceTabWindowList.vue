@@ -59,6 +59,7 @@ watch(tabDefinitions, () => {
 }, { deep: true })
 const currentTabId = ref<string | null>()
 watch(currentTabId, (newTabId, oldTabId) => {
+    workspaceService.markTabAsSelected(newTabId ?? undefined)
     if (newTabId != undefined) {
         keymap.setContext(newTabId)
         workspaceService.subjectPathStatus.activatePath(newTabId)
@@ -171,6 +172,15 @@ if (evitaLabConfig.playgroundMode) {
         })
 } else {
     restorePreviousSession()
+    // select the tab the user worked with in the last session; must happen before the tabs are rendered, otherwise
+    // the tab bar selects the first tab on its own
+    const restoredTabId: string | undefined = workspaceService.getSelectedTabId()
+    if (restoredTabId != undefined) {
+        currentTabId.value = restoredTabId
+    } else if (tabDefinitions.value.length > 0) {
+        // sessions stored before the selection was tracked don't know which tab was selected
+        currentTabId.value = tabDefinitions.value[0]!.id
+    }
 }
 
 onMounted(() => {

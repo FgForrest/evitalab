@@ -20,6 +20,8 @@ evitaLab is **dark-only**. The palette (defined in `src/vue-plugins/vuetify.ts` 
 | `primary-light` | `#23355C` | Structural chrome: tab toolbars, secondary chart series |
 | `primary-lightest` | `#21BFE3` | **The only accent.** Highlighted/selected data (e.g. requested histogram buckets), links, active emphasis |
 | `gray-light` | `#A5ACBC` | Secondary text and default chip color |
+| `success` | `#22a44e` | The safe/recommended state of a setting (e.g. the default conflict scope) |
+| `info` | `#487ad3` | A deliberately narrowed/relaxed state of a setting |
 | `warning` | `#f7a729` | Warning icons and notes |
 | `error` | `#E13321` | Errors, dangerous confirm buttons |
 
@@ -34,8 +36,24 @@ Rules:
 - Borders use the theme border variables:
   `thin solid rgba(var(--v-border-color), var(--v-border-opacity))`.
 
+**Chips that encode a setting's risk** follow one legend, so a reader learns it once. The
+conflict-resolution chips in the [schema viewer](modules/schema-viewer.md#conflict-resolution-rows) are the
+reference implementation:
+
+| Chip color | Means |
+|---|---|
+| `error` (red) | The widest/strictest setting — safest, but the biggest cost (lowest throughput) |
+| `warning` (orange) | Wide setting with a noticeable cost |
+| `success` (green) | The balanced, recommended default |
+| `info` (blue) | Deliberately narrower than the default — cheaper, but relaxes a safety check |
+| default grey + `mdi-alert-outline` | The check is off entirely; grey (not red) because the risk is *data safety*, not cost, and the amber icon carries the warning |
+
 ### Typography & emphasis
 
+- The UI font is **Poppins**, bundled locally (never fetched from a remote provider). Only weights
+  300/400/500/700/900 normal and 300/400 italic are shipped — using any other weight or style
+  silently falls back to the system sans-serif, so it requires extending `src/styles/fonts.scss`
+  (see [build & tooling — fonts](build-and-tooling.md#fonts)).
 - Regular data values are plain body text; there is no custom font scale — headings inside pages
   are rare and small (panel titles, card titles).
 - **Muted (`text-disabled`) italic/light text is the universal "non-value" signal**: `null`,
@@ -206,6 +224,13 @@ row is the open action; non-openable items are `disabled`.
 - In-progress states use `VLoadingCircular` (inside `VMissingDataIndicator` for pane-level
   loading) or the `loading` prop on buttons/tables; the primary action button shows the spinner
   while its work runs.
+- When the work reports measurable progress, that spinner becomes **determinate**: keep the
+  `loading` prop and render a `VProgressCircular` with a `model-value` in the button's `#loader`
+  slot (`VDownloadServerFileButton`, `ExportTrafficBufferButton`), so the button's footprint never
+  changes. It stays `indeterminate` until the first measurement arrives.
+- A long-running action that can be given up on is **cancelled by clicking its own button again**
+  (`VDownloadServerFileButton`); the tooltip says so while the action runs and the button carries an
+  `aria-label` describing the cancel affordance. Cancelling is silent — it is not an error.
 - Errors are toasts — panes don't render inline error boxes.
 
 ## Data display language
@@ -278,13 +303,26 @@ omitted entirely (`v-if` on size), not rendered empty.
   columns get the pointer cursor.
 - Clickable cells (`--clickable` modifier) show pointer cursor + `on-surface`-hover; a cell
   click either navigates (reference-like values → new tab) or opens the **detail pane**.
+- **Per-cell actions belong in a right-click menu**, not in modifier-key mouse combos. A cell's
+  `@contextmenu.prevent` opens a `VMenu` positioned at the cursor (`:target="[clientX, clientY]"`)
+  listing everything that cell supports; items the cell cannot do are omitted, not greyed out.
+  Build the items lazily on first right-click and guard the `VMenu` itself with a `v-if` — a grid
+  is hundreds of cells. Mouse combos may stay as *fast paths* for actions the menu also lists
+  (middle click = copy, Shift + middle click = copy raw), documented by chips in the value tooltip;
+  they must never be the only way to reach an action.
 
 ### Value detail & pretty printing
 
 The cell-detail pane is the model for any "inspect one value" surface:
 
 - `VCard` header via `VCardTitleWithActions`: property-type icon + property name; actions =
-  output-format selector + close button; `VDivider`; scrollable body.
+  history button + output-format selector + close button (close stays rightmost); `VDivider`;
+  scrollable body.
+- When a detail surface has exactly one navigable target, give it a **plain icon button, not a
+  menu**, and let its tooltip name the resolved target ("Attribute history", "Price history", …)
+  rather than a generic label — the same string the equivalent context-menu item uses. Fall back to
+  the next-broadest target when the specific one does not exist (an entity-wide property has no
+  property-level history, so the button opens the entity history) instead of hiding the button.
 - Rendering delegates through `DelegateDetailRenderer` driven by an
   `EntityPropertyValueDesiredOutputFormat` chosen in a `VMenu` list (each format with its icon:
   auto `mdi-auto-fix`, raw `mdi-text`, markdown, JSON, XML, HTML). Default is
