@@ -24,6 +24,13 @@ preconfigured evitaLab: `?evitalab-<name>=<base64 of value>`. `EvitaLabConfig.lo
 bootstrap. This is also how a connection can be injected into a build that has no dev-mode
 `VITE_DEV_CONNECTION` (see [`connection`](connection.md)).
 
+Values are decoded as **UTF-8** base64 (`decodeBase64ToUtf8` from `src/utils/base64.ts`), so
+non-ASCII values such as a localized `server-name` or connection `name` survive the transport.
+Mind that `server-name` doubles as the local-storage namespace (`LabStorage`) and is part of the
+`X-EvitaDB-ClientID` header — changing how a non-ASCII value decodes changes that namespace, and
+the workspace state stored under the previous (mojibake) namespace becomes unreachable. This is a
+one-time reset of client-side state on such deployments, nothing is lost on the server.
+
 ## Related
 
 - [architecture](../architecture.md) — bootstrap and run modes

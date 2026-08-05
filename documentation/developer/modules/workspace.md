@@ -46,6 +46,12 @@ with `InvalidConnectionInSharedTabError`, which the troubleshooter dialog handle
 this way are **not** executed automatically — see the consent gate in
 [design language](../design-language.md#feedback--safety).
 
+`ShareTabObject` accepts two hash formats: the LZ-string payload it produces itself, and plain
+base64/base64url encoded JSON, which lets external applications build a deep link without knowing
+evitaLab internals. Such payloads omit `connectionId` and are resolved against the single connection
+of the running instance; see [workspace & tabs](../workspace-and-tabs.md#persistence-restore-sharing) and
+the [recipe](../recipes.md#deep-link-into-evitalab-from-an-external-application).
+
 ## Related
 
 - [workspace & tabs](../workspace-and-tabs.md) — **the** reference for this module
