@@ -2,7 +2,7 @@
 import { errorMessage } from '@/utils/error'
 
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
-import { computed, onUnmounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { PaginatedList } from '@/modules/database-driver/request-response/PaginatedList'
 import { ServerFile } from '@/modules/database-driver/request-response/server-file/ServerFile'
 import { BackupViewerService, useBackupViewerService } from '@/modules/backup-viewer/service/BackupViewerService'
@@ -11,6 +11,7 @@ import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useI18n } from 'vue-i18n'
 import ServerFileList from '@/modules/server-file-viewer/component/ServerFileList.vue'
 import RestoreBackupFileButton from '@/modules/backup-viewer/components/RestoreBackupFileButton.vue'
+import { useAutoReload } from '@/modules/viewer-support/composable/useAutoReload'
 
 const reloadInterval: number = 5000
 
@@ -35,7 +36,7 @@ const backupFileItems = computed<ServerFile[]>(() => {
 })
 const pageNumber = ref<number>(1)
 watch(pageNumber, async () => {
-    await loadBackupFiles()
+    await reload(true)
 })
 const pageCount = computed<number>(() => {
     if (backupFiles.value == undefined) {
@@ -45,56 +46,30 @@ const pageCount = computed<number>(() => {
 })
 const pageSize = ref<number>(20)
 
-async function loadBackupFiles(): Promise<boolean> {
-    try {
-        backupFiles.value = await backupViewerService.getBackupFiles(
-            pageNumber.value,
-            pageSize.value
-        )
+async function loadBackupFiles(): Promise<void> {
+    backupFiles.value = await backupViewerService.getBackupFiles(
+        pageNumber.value,
+        pageSize.value
+    )
 
-        if (backupFiles.value.pageNumber > 1 && backupFiles.value?.data.size === 0) {
-            pageNumber.value--
-        }
-        if (!backupFilesLoaded.value) {
-            backupFilesLoaded.value = true
-        }
-        return true
-    } catch (e) {
-        await toaster.error(t(
+    if (backupFiles.value.pageNumber > 1 && backupFiles.value?.data.size === 0) {
+        pageNumber.value--
+    }
+    if (!backupFilesLoaded.value) {
+        backupFilesLoaded.value = true
+    }
+}
+
+const { reload } = useAutoReload(
+    loadBackupFiles,
+    reloadInterval,
+    (e: unknown) => {
+        toaster.error(t(
             'backupViewer.notification.couldNotLoadBackupFiles',
             { reason: errorMessage(e) }
-        ))
-        return false
+        )).then()
     }
-}
-
-let canReload: boolean = true
-let reloadTimeoutId: ReturnType<typeof setTimeout> | undefined = undefined
-async function reload(manual: boolean = false): Promise<void> {
-    if (!canReload && !manual) {
-        return
-    }
-
-    const loaded: boolean = await loadBackupFiles()
-    if (loaded) {
-        if (manual && canReload) {
-            // do nothing if the reloading process is working and user
-            // requests additional reload in between
-        } else {
-            // set new timeout only for automatic reload or reload recovery
-            reloadTimeoutId = setTimeout(reload, reloadInterval)
-        }
-        canReload = true
-    } else {
-        // we don't want to spam user server is down, user needs to refresh manually
-        canReload = false
-    }
-}
-
-loadBackupFiles().then(() => {
-    reloadTimeoutId = setTimeout(reload, reloadInterval)
-})
-onUnmounted(() => clearInterval(reloadTimeoutId))
+)
 
 defineExpose<{
     reload(manual: boolean): Promise<void>

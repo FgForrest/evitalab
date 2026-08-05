@@ -47,6 +47,13 @@ The tooltip sits on the whole tile (`activator="parent"`) rather than on the but
 Vuetify button emits no pointer events. For the same reason the tile's large icon needs its own guard in
 the click handler — `disabled` on `VIcon` is cosmetic and does not suppress `@click`.
 
+## The backup list reloads itself
+
+`BackupList` refreshes every 5 s through [`useAutoReload`](viewer-support.md#useautoreload), so a backup
+task that finishes elsewhere shows up without user action. A failed poll retries with a capped backoff
+and is toasted once per outage instead of switching auto-refresh off, and `BackupViewer`'s toolbar
+refresh calls the exposed `reload(true)`, which bypasses the backoff.
+
 ## Restore has two paths
 
 Restoring from a **server-side** file and restoring from a **local** upload are different flows: the

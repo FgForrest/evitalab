@@ -26,9 +26,10 @@ provider despite being a feature module.
 
 `TaskList` is embedded by [`traffic-viewer`](traffic-viewer.md) and [`jfr-viewer`](jfr-viewer.md) to show
 their own in-flight tasks, filtered by `states` and `taskTypes` props, with an
-`item-append-action-buttons` slot for module-specific actions. It polls on a **2 s `setTimeout` chain**
-that is cleared in `onUnmounted`, and stops re-arming after a failure so a down server is not spammed —
-recovery is then via the manual reload it exposes through `defineExpose`.
+`item-append-action-buttons` slot for module-specific actions. It polls every **2 s** through
+[`useAutoReload`](viewer-support.md#useautoreload), which keeps the loop alive across a dropped
+connection (capped backoff, one toast per outage) and clears its timer on unmount. The manual reload it
+exposes through `defineExpose` bypasses any pending backoff.
 
 **Two emits, deliberately separate:**
 

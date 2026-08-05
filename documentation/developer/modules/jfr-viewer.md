@@ -22,7 +22,10 @@ Contributes `TabType.JfrViewer`.
 This module and [`traffic-viewer`](traffic-viewer.md)'s recordings tab are near-identical in shape —
 start/stop dialogs, an embedded [`task-viewer`](task-viewer.md) `TaskList` for in-flight recordings, and a
 file list of finished ones filtered by the module's task-type name. Changes to one are often worth
-mirroring in the other, but note the two modules do **not** share code.
+mirroring in the other, but note the two modules do **not** share code — except for the periodic reload
+of the recording list, which both drive through
+[`useAutoReload`](viewer-support.md#useautoreload) (5 s, survives a dropped connection with a capped
+backoff and one toast per outage).
 
 ## Event types
 

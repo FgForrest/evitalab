@@ -24,6 +24,14 @@ server-side by **origin** — the task type that produced them (e.g. `TrafficRec
 `TrafficRecordingExportTask`) — via `listFilesToFetch(pageNumber, pageSize, origin)`. A module that adds a
 new file-producing task must add that origin to its own listing call, or the files stay invisible.
 
+The embedders drive their own periodic reload through
+[`useAutoReload`](viewer-support.md#useautoreload) and pass a `request-file-update` handler that calls its
+`reload(true)`, which is how deleting a file refreshes the list immediately.
+
+`DownloadServerFileButton` only supplies the failure message; the whole download path — streaming,
+progress, cancellation and the two delivery paths — lives in `VDownloadServerFileButton`
+([`viewer-support`](viewer-support.md#vdownloadserverfilebutton)).
+
 ## Related
 
 - [`database-driver`](database-driver.md) — `listFilesToFetch`, `fetchFile`, `deleteFile`, `ServerFile`

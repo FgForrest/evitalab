@@ -52,11 +52,17 @@
       "makeCatalogImmutable": "Make catalog immutable",
       "makeCatalogMutable": "Make catalog mutable",
       "deactivateCatalog": "Deactivate catalog",
-      "activateCatalog": "Activate catalog"
+      "activateCatalog": "Activate catalog",
+      "cancelDownload": "Click again to cancel the download"
     },
     "notification": {
       "copiedToClipboard": "Copied to clipboard",
-      "failedToCopyToClipboard": "Failed to copy to clipboard"
+      "failedToCopyToClipboard": "Failed to copy to clipboard",
+      "downloadIncomplete": "Download of '{fileName}' didn't finish. The file at the location you selected is not the requested file and should be deleted."
+    },
+    "download": {
+      "preparing": "Starting download…",
+      "progress": "Downloading… {percent} % ({transferred} / {total})"
     },
     "list": {
       "empty": "No items found."
