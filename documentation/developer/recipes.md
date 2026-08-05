@@ -183,6 +183,88 @@ Register change callbacks on `EvitaClient`/`EvitaClientManagement` in `onMounted
 refs in the callback, and unregister in `onUnmounted` — see
 [database driver — caching & change callbacks](database-driver.md#caching--change-callbacks).
 
+## Deep-link into evitaLab from an external application
+
+An e-shop, admin or monitoring application can open a prepared tab in a running evitaLab instance
+by hand-building a URL. No knowledge of evitaLab's LZ-string compression and no connection id of
+the target instance are needed.
+
+**URL shape:** `<evitaLabUrl>?sharedTab=<unpadded base64url of the JSON payload>`
+
+**Envelope:** `{ "tabType": <string>, "tabParams": { … }, "tabData": { … } }` — `tabData` is
+optional, the other two are mandatory.
+
+Prefer **unpadded base64url** (`-`/`_` instead of `+`/`/`, trailing `=` stripped): it needs no
+percent-encoding at all. Standard base64 works too, but then `+` must be sent as `%2B`. The
+LZ-string format produced by evitaLab's own *Share this tab* dialog stays supported — base64 is an
+additional accepted *input* format only.
+
+**Connection:** **omit `connectionId` and `connectionName` entirely.** evitaLab resolves the payload
+against the one connection the instance is running with. Do not send `connectionId: null` — it
+happens to work, but it is not the supported contract. A `connectionId` that does not match the
+target instance triggers the *"Shared tab is broken"* dialog, so an external producer should never
+send one.
+
+| `tabType` | `tabParams` | `tabData` (optional) |
+|---|---|---|
+| `entityViewer` | `catalogName`, `entityType` | `queryLanguage` (`evitaql`/`graphql`), `filterBy`, `orderBy`, `dataLocale`, `displayedProperties[]`, `pageSize`, `pageNumber`, `selectedLayers[]` |
+| `evitaQLConsole` | `catalogName` | `query`, `variables` |
+| `graphQLConsole` | `catalogName`, `instanceType` (`system`/`data`/`schema`) | `query`, `variables` |
+| `schemaViewer` | `schemaPointer: { type, params }` | — |
+| `mutationHistoryViewer` | `catalogName` | (complex; omit for external links) |
+| `trafficRecordHistoryViewer` | `catalogName` | (complex; omit for external links) |
+
+`schemaPointer.type` ∈ `catalogSchema`, `entitySchema`, `catalogAttributeSchema`,
+`entityAttributeSchema`, `referenceAttributeSchema`, `associatedDataSchema`, `referenceSchema`,
+`sortableAttributeCompoundSchema`; `schemaPointer.params` carries the subset of
+`catalogName` / `entityType` / `referenceName` / `attributeName` / `associatedDataName` that the
+type needs (see `SchemaViewerTabFactory.restoreTabParamsFromSerializable`).
+
+The tab types `data-grid`, `dataGrid`, `evitaql-console`, `graphql-console` and `schema-viewer` are
+still accepted by `SharedTabResolver` for backward compatibility — **deprecated**, new integrations
+must use the values above.
+
+**Worked examples** (unpadded base64url):
+
+*Show one entity in the entity viewer:*
+```json
+{"tabType":"entityViewer","tabParams":{"catalogName":"evita","entityType":"Product"},"tabData":{"queryLanguage":"evitaql","filterBy":"entityPrimaryKeyInSet(103885)"}}
+```
+```
+?sharedTab=eyJ0YWJUeXBlIjoiZW50aXR5Vmlld2VyIiwidGFiUGFyYW1zIjp7ImNhdGFsb2dOYW1lIjoiZXZpdGEiLCJlbnRpdHlUeXBlIjoiUHJvZHVjdCJ9LCJ0YWJEYXRhIjp7InF1ZXJ5TGFuZ3VhZ2UiOiJldml0YXFsIiwiZmlsdGVyQnkiOiJlbnRpdHlQcmltYXJ5S2V5SW5TZXQoMTAzODg1KSJ9fQ
+```
+
+*Open an entity schema:*
+```json
+{"tabType":"schemaViewer","tabParams":{"schemaPointer":{"type":"entitySchema","params":{"catalogName":"evita","entityType":"Product"}}}}
+```
+```
+?sharedTab=eyJ0YWJUeXBlIjoic2NoZW1hVmlld2VyIiwidGFiUGFyYW1zIjp7InNjaGVtYVBvaW50ZXIiOnsidHlwZSI6ImVudGl0eVNjaGVtYSIsInBhcmFtcyI6eyJjYXRhbG9nTmFtZSI6ImV2aXRhIiwiZW50aXR5VHlwZSI6IlByb2R1Y3QifX19fQ
+```
+
+*Prefill the evitaQL console:*
+```json
+{"tabType":"evitaQLConsole","tabParams":{"catalogName":"evita"},"tabData":{"query":"query(\n  collection('Product')\n)"}}
+```
+```
+?sharedTab=eyJ0YWJUeXBlIjoiZXZpdGFRTENvbnNvbGUiLCJ0YWJQYXJhbXMiOnsiY2F0YWxvZ05hbWUiOiJldml0YSJ9LCJ0YWJEYXRhIjp7InF1ZXJ5IjoicXVlcnkoXG4gIGNvbGxlY3Rpb24oJ1Byb2R1Y3QnKVxuKSJ9fQ
+```
+
+Runtime behaviour an integrator will observe:
+
+- Opening the link shows the **"Shared tab found"** confirmation dialog (`TabSharedDialog`) — a
+  deep-link is never opened silently.
+- The tab is created **without executing** any query (`executeOnOpen: false` on all restore paths).
+- The mere presence of `sharedTab` switches evitaLab into **playground mode**, so the deep-linked
+  tab is intentionally not persisted into the user's local storage.
+- Non-ASCII values are safe: the payload is decoded as UTF-8.
+- Keep the whole URL under 2083 characters (`urlCharacterLimit`). Base64 JSON is longer than the
+  LZ-string format, so use it for short external deep-links and keep LZ-string for sharing large
+  loaded queries.
+
+The payload can also be pasted without a URL into a running instance via the tab bar's `+` →
+*Open shared tab*.
+
 ## Verify a change in the running app
 
 1. Choose a backend: DEMO (default) or local Dockerized evitaDB

@@ -3,6 +3,7 @@ import { mandatoryInject } from '@/utils/reactivity'
 import { Map as ImmutableMap } from 'immutable'
 import type { Router } from 'vue-router'
 import { LabRunMode } from '@/LabRunMode'
+import { decodeBase64ToUtf8 } from '@/utils/base64'
 
 const systemPropertiesControlParamName: string = 'evitalab'
 const systemPropertyUrlPrefix: string = 'evitalab-'
@@ -50,7 +51,7 @@ export class EvitaLabConfig {
             if (key === systemPropertiesControlParamName) {
                 // don't pass forward
             } else if (key.startsWith(systemPropertyUrlPrefix)) {
-                systemProperties.set(key.substring(systemPropertyUrlPrefix.length), atob(value))
+                systemProperties.set(key.substring(systemPropertyUrlPrefix.length), decodeBase64ToUtf8(value))
             } else {
                 newQueryParams.set(key, value)
             }

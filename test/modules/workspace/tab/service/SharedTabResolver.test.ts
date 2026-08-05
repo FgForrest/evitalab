@@ -98,6 +98,24 @@ describe('SharedTabResolver mutation history viewer', () => {
         )
     })
 
+    test('passes tab params without a connection to the factory untouched', async () => {
+        // an externally built shared tab carries no connection; the factory resolves it against the
+        // single connection of this instance, so the troubleshooter must never kick in
+        const restoredTab: AnyTabDefinition = {} as AnyTabDefinition
+        const restoreFromJson = vi.fn().mockReturnValue(restoredTab)
+        const resolver: SharedTabResolver = createResolver(
+            { restoreFromJson } as unknown as MutationHistoryViewerTabFactory
+        )
+        const tabParamsWithoutConnection: TabParamsDto = { catalogName: 'evita' } as unknown as TabParamsDto
+
+        const resolved: AnyTabDefinition = await resolver.resolve(
+            new ShareTabObject(TabType.MutationHistoryViewer, tabParamsWithoutConnection, tabData)
+        )
+
+        expect(resolved).toBe(restoredTab)
+        expect(restoreFromJson).toHaveBeenCalledWith(tabParamsWithoutConnection, tabData)
+    })
+
     test('rejects a tab type that is not shareable', async () => {
         const resolver: SharedTabResolver = createResolver(unusableFactory as MutationHistoryViewerTabFactory)
 

@@ -247,14 +247,14 @@
     },
     "openSharedDialog": {
       "title": "Open shared tab",
-      "text": "Paste a shared tab hash or an entire shared tab link. evitaLab will open it as a new tab in this session, but will <em>not</em> execute the query automatically.",
+      "text": "Paste a shared tab hash, a base64-encoded shared tab payload, or an entire shared tab link. evitaLab will open it as a new tab in this session, but will <em>not</em> execute the query automatically.",
       "form": {
         "hashOrUrl": {
-          "label": "Shared tab hash or link",
-          "placeholder": "Paste the hash or link here",
+          "label": "Shared tab hash, payload or link",
+          "placeholder": "Paste the hash, base64 payload or link here",
           "validation": {
-            "required": "Hash or link is required.",
-            "invalid": "The pasted value is not a valid shared tab hash or link."
+            "required": "Hash, payload or link is required.",
+            "invalid": "The pasted value is not a valid shared tab hash, payload or link."
           }
         }
       },

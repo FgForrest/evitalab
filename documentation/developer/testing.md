@@ -12,7 +12,7 @@ Tests live in the top-level `test/` directory, mirroring the `src/` structure:
 
 ```
 test/
-├── utils/               # tests of src/utils helpers (duration, number, object, uuid, semver…)
+├── utils/               # tests of src/utils helpers (base64, duration, number, object, uuid, semver…)
 ├── modules/             # tests of module logic
 ├── components/          # repository-wide checks over .vue sources (see Slot names below)
 └── xxhashjs/            # sanity tests of third-party behaviour we depend on
