@@ -56,7 +56,13 @@ const props = defineProps<{
     resultEntities: FlatEntity[],
     totalResultCount: number,
     pageNumber: number,
-    pageSize: number
+    pageSize: number,
+    /**
+     * Grid sort state owned by the parent. Bound one-way on purpose: an `update:sortBy` listener would put Vuetify's
+     * proxied model into controlled mode, where the parent must write the new value back synchronously — which would
+     * destroy the change detection `gridUpdated` relies on to tell user sorts apart from programmatic ones.
+     */
+    sortBy: { key: string, order?: "asc" | "desc" }[]
 }>()
 const emit = defineEmits<{
     (e: "gridUpdated", value: { page: number, itemsPerPage: number, sortBy: { key: string, order?: "asc" | "desc" }[] }): void
@@ -163,6 +169,7 @@ function closePropertyDetail(): void {
                 multi-sort
                 :items-per-page="pageSize"
                 :items-per-page-Options="pageSizeOptions"
+                :sort-by="sortBy"
                 @update:options="emit('gridUpdated', $event)"
                 class="data-grid__grid"
             >

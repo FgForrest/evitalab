@@ -37,6 +37,12 @@ const props = withDefaults(
         additionalExtensions?: Extension[],
         historyRecords?: string[],
         prependInnerIcon?: string
+        /**
+         * Non-interactive glyph rendered after the editor, explaining the state of its content.
+         * Requires {@link appendInnerIconTooltip} to describe what it means.
+         */
+        appendInnerIcon?: string
+        appendInnerIconTooltip?: string
         placeholder?: string
     }>(),
     {
@@ -124,7 +130,10 @@ function clearHistory(): void {
 </script>
 
 <template>
-    <div :class="['inline-query-editor', { 'inline-query-editor--with-prepend-icon': prependInnerIcon }]">
+    <div :class="['inline-query-editor', {
+        'inline-query-editor--with-prepend-icon': prependInnerIcon,
+        'inline-query-editor--with-append-icon': appendInnerIcon
+    }]">
         <template v-if="prependInnerIcon">
             <template v-if="historyRecords != undefined">
                 <VBtn
@@ -184,6 +193,19 @@ function clearHistory(): void {
             @update:model-value="$emit('update:modelValue', $event)"
             style="cursor: text; min-width: 0;"
         />
+
+        <span
+            v-if="appendInnerIcon"
+            class="inline-query-editor__append-inner-icon"
+        >
+            <VIcon size="small">{{ appendInnerIcon }}</VIcon>
+            <VTooltip
+                v-if="appendInnerIconTooltip"
+                activator="parent"
+            >
+                {{ appendInnerIconTooltip }}
+            </VTooltip>
+        </span>
     </div>
 
 </template>
@@ -203,7 +225,22 @@ function clearHistory(): void {
         padding-left: 0.25rem;
     }
 
+    // the icon column is deliberately tight: it eats width from an already narrow single-line editor
+    &--with-append-icon {
+        grid-template-columns: 1fr 1.25rem;
+        gap: 0 0.25rem;
+    }
+
+    &--with-prepend-icon#{&}--with-append-icon {
+        grid-template-columns: 1.5rem 1fr 1.25rem;
+    }
+
     &__prepend-inner-icon {
+        opacity: var(--v-medium-emphasis-opacity);
+    }
+
+    &__append-inner-icon {
+        display: inline-flex;
         opacity: var(--v-medium-emphasis-opacity);
     }
 

@@ -90,7 +90,9 @@ export class EntityViewerTabFactory {
             dto.displayedProperties?.map((key: string) => EntityPropertyKey.fromString(key)),
             dto.pageSize,
             dto.pageNumber,
-            dto.selectedLayers
+            dto.selectedLayers,
+            dto.sortBy,
+            dto.orderByDefinedManually
         )
     }
 }

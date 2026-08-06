@@ -121,5 +121,5 @@ export const parentEntityPropertyType: ImmutableMap<EntityPropertyType, EntityPr
 /**
  * List of {@link StaticEntityProperties} that are sortable.
  */
-export const sortableStaticEntityProperties: ImmutableList<string> = ImmutableList(StaticEntityProperties.PrimaryKey)
+export const sortableStaticEntityProperties: ImmutableList<string> = ImmutableList([StaticEntityProperties.PrimaryKey])
 

@@ -101,7 +101,7 @@ CodeMirror 6 wrappers — never instantiate CodeMirror directly:
 | Component | Use for |
 |-----------|---------|
 | `VQueryEditor` | Full-size query editor (`modelValue`, `additionalExtensions?` for language support, `placeholder?`; emits `update:editor` with the CodeMirror `ViewUpdate` so callers can reach the `EditorView`) |
-| `VInlineQueryEditor` | Single-line/inline editor variant (also emits `update:editor`) |
+| `VInlineQueryEditor` | Single-line/inline editor variant (also emits `update:editor`). Optional `appendInnerIcon` + `appendInnerIconTooltip` render a non-interactive trailing glyph explaining the state of the content — always pass both, an icon without a tooltip is a bug |
 | `VPreviewEditor` | Read-only code/text preview |
 | `VPreviewEditorDialog` | Preview editor in a dialog |
 

@@ -89,6 +89,7 @@ The lab has an established icon vocabulary — reuse it, don't invent synonyms:
 | `mdi-check` / `mdi-close` | Flag on / off |
 | `mdi-refresh` | Reload data from server |
 | `mdi-auto-fix` | Automatic ("pretty print") mode |
+| `mdi-pencil-outline` / `mdi-pencil-off-outline` | Content is hand-written by the user / derived by the lab from another control |
 | `mdi-information-outline` | Neutral explanation tooltip |
 | `mdi-alert-outline` (warning color) | Warning note tooltip |
 

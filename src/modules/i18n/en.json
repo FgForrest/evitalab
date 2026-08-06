@@ -697,6 +697,10 @@
     "queryInput": {
       "notification": {
         "failedToSaveQueryToHistory": "Failed to save query to history."
+      },
+      "orderByOwnership": {
+        "grid": "Ordering follows the sort buttons in the column headers. Writing your own order by here replaces it and clears the column sorting.",
+        "manual": "Ordering is your own text. Using a sort button in a column header replaces it."
       }
     },
     "layerSelector": {
@@ -2238,7 +2242,6 @@
         "entityType": {
           "hint": "Entity type",
           "label": "Entity type"
-
         },
         "areaType": {
           "hint": "Area scope",
