@@ -56,6 +56,13 @@ Container details:
 The container starts with self-signed certificates and `RELAXED` TLS mode on all endpoints so
 evitaLab can connect over HTTP without certificate setup.
 
+Traffic recording is on in the baseline (`server.trafficRecording.enabled=true`) and its flush
+interval is lowered to one second (`server.trafficRecording.trafficFlushIntervalInMilliseconds=1000`,
+the server default is one minute). Records reach the traffic record history only when the server
+flushes its traffic buffer, so the default would make every check of the
+[traffic viewer](modules/traffic-viewer.md) wait up to a minute. Override the property if you need
+to reproduce the production timing.
+
 ### Data directory
 
 `--data-dir` is **required** and deliberately has no default — the data directory decides which

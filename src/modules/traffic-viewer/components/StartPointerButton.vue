@@ -31,7 +31,7 @@ function removeStartPointer(): void {
 <template>
     <template v-if="!active">
         <VBtn icon :loading="loading" density="compact" @click="moveStartPointerToNewest">
-            <VIcon>mdi-arrow-expand-down</VIcon>
+            <VIcon>mdi-arrow-expand-up</VIcon>
             <VActionTooltip activator="parent" :command="Command.TrafficRecordHistoryViewer_MoveStartPointer">
                 {{ t('trafficViewer.recordHistory.button.moveStartPointerToNewest') }}
             </VActionTooltip>
@@ -42,7 +42,7 @@ function removeStartPointer(): void {
             <template #activator="{ props }">
                 <VBtn icon :loading="loading" density="compact" v-bind="props">
                     <VBadge color="success" dot>
-                        <VIcon>mdi-arrow-expand-down</VIcon>
+                        <VIcon>mdi-arrow-expand-up</VIcon>
                     </VBadge>
                     <VActionTooltip activator="parent" :command="Command.TrafficRecordHistoryViewer_MoveStartPointer">
                         {{ t('trafficViewer.recordHistory.button.modifyStartPointer') }}
@@ -51,7 +51,7 @@ function removeStartPointer(): void {
             </template>
             <template #default>
                 <VList>
-                    <VListItem prepend-icon="mdi-arrow-expand-down" @click="moveStartPointerToNewest">
+                    <VListItem prepend-icon="mdi-arrow-expand-up" @click="moveStartPointerToNewest">
                         {{ t('trafficViewer.recordHistory.button.moveStartPointerToNewest') }}
                     </VListItem>
                     <VListItem prepend-icon="mdi-close" @click="removeStartPointer">

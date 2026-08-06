@@ -1913,13 +1913,19 @@
         "couldNotExportBuffer": "Traffic buffer export failed: {reason}",
         "couldNotDownloadExportedFile": "Could not download the exported traffic buffer: {reason}",
         "unknownExportFailureReason": "the server didn't report a reason",
-        "exportTaskLost": "The traffic buffer export is no longer tracked by the server. Check the traffic recordings for its result."
+        "exportTaskLost": "The traffic buffer export is no longer tracked by the server. Check the traffic recordings for its result.",
+        "sharedSessionCloseRequested": "Close of the shared session for catalog \"{catalogName}\" has been requested. Its traffic becomes visible after the next flush of the server traffic buffer.",
+        "couldNotCloseSharedSession": "Could not close the shared session: {reason}"
       },
       "button": {
         "reloadRecordHistory": "Reload record history",
         "moveStartPointerToNewest": "Load only records newer than now",
         "removeStartPointer": "Load entire record history",
         "modifyStartPointer": "Change start of loaded record history",
+        "recordVisibility": "Why recent traffic is missing",
+        "recordVisibilityHelp": "A record shows up here only after its session is closed and the server flushes its traffic buffer to disk (every minute by default, see the server property server.trafficRecording.trafficFlushIntervalInMilliseconds). Traffic of the last few moments — and of any still open session — is therefore expected to be missing. Reload the history again a moment later.",
+        "closeSharedSession": "Close shared session",
+        "closeSharedSessionHelp": "evitaLab runs its own queries in one long-lived session per catalog, and an open session is never written to the traffic buffer, so traffic generated from evitaLab itself never appears here. This requests a close of that session once its in-flight calls finish; the records then appear at the next flush of the traffic buffer, not immediately. Traffic of other clients is not affected.",
         "exportTrafficBuffer": "Export traffic buffer",
         "exportTrafficBufferHelp": "Downloads a point-in-time snapshot of the rolling traffic buffer the server keeps in memory. No recording needs to be running; the snapshot covers whatever fits into the buffer window at this moment.",
         "exportTrafficBufferUnavailable": "Traffic recording is not active for this catalog, so there is no traffic buffer to export. Enable traffic recording in the server configuration, or start an on-demand recording in Traffic Recordings."
@@ -2017,10 +2023,11 @@
           "noRecords": "There are no traffic records for defined filter. The traffic buffer of the {catalogName} catalog may still hold records excluded by the filter — use the \"Export traffic buffer\" action in the toolbar to download a snapshot of its entire content."
         },
         "button": {
-          "loadMore": "Load more"
+          "loadOlder": "Load older"
         },
         "notification": {
-          "noNewerRecords": "No newer records exist."
+          "noNewerRecords": "No newer records exist.",
+          "noOlderRecords": "No older records exist."
         }
       },
       "record": {

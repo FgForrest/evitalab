@@ -114,7 +114,10 @@ not depend on each other), so a fix in one usually needs porting to the other.
 
 The `Ctrl+Enter` apply, the `@submit.prevent` fix, the removed duplicate `@click` and the always-visible
 apply button are in **both**. The paging and start-pointer rework above is **not** portable: it exists
-precisely because the two APIs read their `since*` fields in opposite directions. So is the reason `MutationHistoryViewer`'s entity-history button keeps a
+precisely because the two APIs read their `since*` fields in opposite directions. `traffic-viewer` has
+since moved its record history to newest-first reverse paging too
+([record history paging](traffic-viewer.md#record-history-paging)), but with a cursor of its own — this
+list never had that defect, because the mutation history API is reverse-only to begin with. So is the reason `MutationHistoryViewer`'s entity-history button keeps a
 local copy of the tab-construction code instead of reusing `entity-viewer`'s
 `EntityGridCellMenuFactory`: a feature module must not depend on another feature module.
 
