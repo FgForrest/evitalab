@@ -31,8 +31,10 @@ import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import { errorMessage } from '@/utils/error'
+import { TrafficViewerService, useTrafficViewerService } from '@/modules/traffic-viewer/service/TrafficViewerService'
 
 const keymap: Keymap = useKeymap()
+const trafficViewerService: TrafficViewerService = useTrafficViewerService()
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
@@ -140,6 +142,25 @@ function removeStartPointer(): void {
     historyStartPointerLoading.value = false
 }
 
+/**
+ * Requests a close of the shared session evitaLab uses for this catalog, so that traffic generated from
+ * evitaLab itself can reach the record history at all.
+ */
+async function closeSharedSession(): Promise<void> {
+    try {
+        await trafficViewerService.closeSharedSession(props.params.dataPointer.catalogName)
+        await toaster.info(t(
+            'trafficViewer.recordHistory.notification.sharedSessionCloseRequested',
+            { catalogName: props.params.dataPointer.catalogName }
+        ))
+    } catch (e) {
+        await toaster.error(t(
+            'trafficViewer.recordHistory.notification.couldNotCloseSharedSession',
+            { reason: errorMessage(e) }
+        ))
+    }
+}
+
 async function reloadHistoryList(): Promise<void> {
     historyListLoading.value = true
     await historyListRef.value?.reload()
@@ -155,6 +176,16 @@ async function reloadHistoryList(): Promise<void> {
             :extension-height="64"
         >
             <template #append>
+                <VBtn icon density="compact" color="warning">
+                    <VIcon>mdi-alert-outline</VIcon>
+                    <VTooltip activator="parent">
+                        <div>{{ t('trafficViewer.recordHistory.button.recordVisibility') }}</div>
+                        <div class="text-disabled">
+                            {{ t('trafficViewer.recordHistory.button.recordVisibilityHelp') }}
+                        </div>
+                    </VTooltip>
+                </VBtn>
+
                 <ShareTabButton
                     ref="shareTabButtonRef"
                     :tab-type="TabType.TrafficRecordHistoryViewer"
@@ -162,6 +193,16 @@ async function reloadHistoryList(): Promise<void> {
                     :tab-data="currentData"
                     :command="Command.TrafficRecordHistoryViewer_ShareTab"
                 />
+
+                <VBtn icon density="compact" @click="closeSharedSession">
+                    <VIcon>mdi-lan-disconnect</VIcon>
+                    <VTooltip activator="parent">
+                        <div>{{ t('trafficViewer.recordHistory.button.closeSharedSession') }}</div>
+                        <div class="text-disabled">
+                            {{ t('trafficViewer.recordHistory.button.closeSharedSessionHelp') }}
+                        </div>
+                    </VTooltip>
+                </VBtn>
 
                 <ExportTrafficBufferButton
                     :catalog-name="params.dataPointer.catalogName"
@@ -177,7 +218,6 @@ async function reloadHistoryList(): Promise<void> {
                 />
 
                 <VBtn icon density="compact" :loading="historyListLoading" @click="reloadHistoryList">
-                    <!--            todo lho new data indicator-->
                     <VIcon>mdi-refresh</VIcon>
                     <VActionTooltip activator="parent" :command="Command.TrafficRecordHistoryViewer_ReloadRecordHistory">
                         {{ t('trafficViewer.recordHistory.button.reloadRecordHistory') }}

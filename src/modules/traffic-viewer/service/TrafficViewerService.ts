@@ -112,6 +112,16 @@ export class TrafficViewerService {
         return await this.evitaClient.management.fetchFile(fileId, options)
     }
 
+    /**
+     * Requests a close of the shared session evitaLab uses for the passed catalog. Traffic of an open
+     * session is never written into the server's traffic buffer, so this is what makes evitaLab's own
+     * queries eligible to appear in the record history. The close only happens once the in-flight calls
+     * of the session finish and the records still wait for the next flush of the traffic buffer.
+     */
+    async closeSharedSession(catalogName: string): Promise<void> {
+        await this.evitaClient.closeSharedSession(catalogName)
+    }
+
     async getRecordHistoryList(catalogName: string,
                                captureRequest: TrafficRecordingCaptureRequest,
                                limit: number,

@@ -149,21 +149,21 @@ export class TrafficRecordHistoryVisualisationProcessor {
     private insertFetchedSessionStartRecords(additionalSessionStartRecords: ImmutableList<TrafficRecord>,
                                              requests: ImmutableMap<string, RequestedSessionStartRecord>,
                                              records: TrafficRecord[]): void {
-        let startInsertingAt: number = 0
         for (const sessionStartRecord of additionalSessionStartRecords) {
             if (!(sessionStartRecord instanceof SessionStartContainer)) {
                 throw new UnexpectedError(`Traffic record should be session start record.`)
             }
-            const request: RequestedSessionStartRecord | undefined = requests.get(sessionStartRecord.sessionId.toString())
-            if (request == undefined) {
-                throw new UnexpectedError(`There is unexpected session start record for ID '${sessionStartRecord.sessionId.toString()}'`)
+            const sessionId: string = sessionStartRecord.sessionId.toString()
+            if (!requests.has(sessionId)) {
+                throw new UnexpectedError(`There is unexpected session start record for ID '${sessionId}'`)
             }
 
-            for (let i = startInsertingAt; i < records.length; i++) {
-                const record: TrafficRecord | undefined = records[i]
-                if (record == request.beforeRecord) {
+            // the session start has to precede every record of its session, not only the one that
+            // requested it - a page starting in the middle of a session holds records of it that would
+            // otherwise be visualised as their own roots instead of children of the session
+            for (let i = 0; i < records.length; i++) {
+                if (records[i]!.sessionId.toString() === sessionId) {
                     records.splice(i, 0, sessionStartRecord)
-                    startInsertingAt += 2 // we want to get pass the inserted and the "before" record as these are already processed
                     break
                 }
             }
