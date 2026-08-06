@@ -55,6 +55,8 @@ code problem. Two notes:
 ```bash
 yarn install                # install dependencies
 yarn dev                    # dev server (localhost:3000/lab); dev-driver for Desktop driver mode
+yarn dev:demo|dev:local     # dev server with the connection forced to demo / a local evitaDB
+                            # dev-driver:demo|dev-driver:local for driver mode
 yarn build                  # type-check + production build; build-driver for driver mode
 yarn lint                   # ESLint with auto-fix
 yarn test                   # Vitest
@@ -69,15 +71,17 @@ injected evitaDB connection using only `python3` (no Node.js needed on the devel
 
 ### evitaDB server
 
-evitaLab needs a running evitaDB backend to verify changes — either **DEMO** (`https://demo.evitadb.io`,
-the `.env.local` default; use for evitaLab-only work) or **LOCAL** (Dockerized evitaDB; use when the task
-depends on an unreleased evitaDB feature). Details, yarn shortcuts, Docker networking and
-`VITE_DEV_LOCAL_URL` override: [evitaDB server](documentation/developer/evitadb-server.md).
-Never mutate `.env.local` in agent flows — use inline env vars instead.
+evitaLab needs a running evitaDB backend to verify changes — either **DEMO** (`https://demo.evitadb.io`;
+use for evitaLab-only work) or **LOCAL** (Dockerized evitaDB via `scripts/evitadb-server.sh`, which
+requires `--data-dir`; use when the task depends on an unreleased evitaDB feature). Details, container
+lifecycle, custom evitaDB properties, Docker networking and the `VITE_DEV_LOCAL_URL` override:
+[evitaDB server](documentation/developer/evitadb-server.md).
+Never mutate `.env.local` in agent flows — select the backend with `yarn dev:demo` / `yarn dev:local`
+and pass any extra variable inline.
 
 **Agent workflow:** the skill `.claude/skills/evitadb-server/SKILL.md` codifies the decision (ask once
 per session — DEMO or LOCAL?), the startup / readiness probe, and the cleanup (stop + remove container
-on task completion). Invoke it before running `yarn dev` for any task that verifies UI behavior.
+on task completion). Invoke it before starting the dev server for any task that verifies UI behavior.
 
 ## Browser Automation
 

@@ -29,13 +29,20 @@ in the `.env.local` file by modifying the `VITE_DEV_CONNECTION` variable. Right 
 - `DEMO` - connects to the evitaDB Demo server
 - `LOCAL` - connects to a local evitaDB server running on the default port 5555 (override the URL with `VITE_DEV_LOCAL_URL`)
 
-To spin up a local Dockerized evitaDB (matching the `dev` integration branch via the `canary` tag by default) and run vite against it in one step:
+To switch for a single run without editing `.env.local`, use `yarn dev:demo` or `yarn dev:local`
+(`yarn dev-driver:demo` / `yarn dev-driver:local` in driver mode) — a `VITE_*` variable from the shell environment
+overrides the `.env` files.
+
+To spin up a local Dockerized evitaDB (matching the `dev` integration branch via the `canary` tag by default) and run
+vite against it. The data directory is mandatory — there is no default, because it decides which catalogs the server
+sees:
 
 ```shell
-yarn dev:with-evitadb
+./scripts/evitadb-server.sh start --data-dir /path/to/evita-data
+yarn dev:local
 ```
 
-Additional container management scripts (`yarn evitadb:start`, `evitadb:stop`, `evitadb:status`, `evitadb:logs`) and the
-underlying `scripts/evitadb-server.sh` are documented in [evitaDB server](evitadb-server.md).
+The container lifecycle (`status`, `logs`, `stop`, custom evitaDB properties) is handled by the same script and
+documented in [evitaDB server](evitadb-server.md).
 
 To build the production version of evitaLab, check out the [building from source section](building-from-source.md).

@@ -27,9 +27,15 @@ already pins, so a clean install leaves `yarn.lock` untouched — a diff there i
 
 | Script | Purpose |
 |--------|---------|
-| `yarn dev` | Dev server at `localhost:3000/lab` (standalone mode) |
+| `yarn dev` | Dev server at `localhost:3000/lab` (standalone mode); connection target comes from `.env` / `.env.local` |
 | `yarn dev-driver` | Dev server at `localhost:3000` in `DRIVER` run mode |
-| `yarn dev:with-evitadb` | Starts a local Dockerized evitaDB and dev server with `VITE_DEV_CONNECTION=LOCAL` |
+| `yarn dev:demo` | `yarn dev` forced to the demo server (`VITE_DEV_CONNECTION=DEMO`) |
+| `yarn dev:local` | `yarn dev` forced to a local evitaDB (`VITE_DEV_CONNECTION=LOCAL`); start the server first — see [evitaDB server](evitadb-server.md) |
+| `yarn dev-driver:demo` / `yarn dev-driver:local` | Same connection override in `DRIVER` run mode |
+
+`dev` / `dev-driver` take the connection from `.env` / `.env.local`; the `:demo` / `:local` variants
+force it for that run only, because a `VITE_*` variable in the shell environment overrides the
+`.env` files.
 | `yarn typecheck` | Whole-program type check (`vue-tsc -b --force`, covers the app project **and** `vite.config.mts`) |
 | `yarn build` / `yarn build-driver` | `yarn typecheck` + production build (standalone/driver) |
 | `yarn verify` | One-shot local pre-push gate: `yarn lint && yarn typecheck && vitest run` (tests run once, not in watch mode) |
@@ -37,7 +43,9 @@ already pins, so a clean install leaves `yarn.lock` untouched — a diff there i
 | `yarn lint` | ESLint with auto-fix (flat config) |
 | `yarn lint:check` | ESLint **without** auto-fix — fails on any problem; used by CI |
 | `yarn test` | Vitest |
-| `yarn evitadb:start\|stop\|status\|logs` | Manage the local evitaDB container (`scripts/evitadb-server.sh`, see [evitaDB server](evitadb-server.md)) |
+
+There are no yarn wrappers for the local evitaDB container — use `scripts/evitadb-server.sh`
+directly (see below), then `yarn dev:local`.
 
 ## Standalone scripts (`scripts/`)
 
@@ -49,7 +57,9 @@ already pins, so a clean install leaves `yarn.lock` untouched — a diff there i
 ## Environment variables
 
 Set in `.env` / `.env.local` (never commit `.env.local`; agent flows must not mutate it — use
-inline env vars):
+inline env vars). A `VITE_*` variable present in the shell environment **overrides** the `.env`
+files, which is how `yarn dev:demo` / `yarn dev:local` switch the connection without touching
+`.env.local`:
 
 | Variable | Meaning |
 |----------|---------|
@@ -57,6 +67,14 @@ inline env vars):
 | `VITE_DEV_CONNECTION` | Dev connection target: `DEMO` (default, `https://demo.evitadb.io`) or `LOCAL` |
 | `VITE_DEV_LOCAL_URL` | Override for the `LOCAL` connection URL |
 | `VITE_BUILD_VERSION` | Build version; in CI populated from `EVITALAB_BUILD_VERSION` |
+
+Consumed by `scripts/evitadb-server.sh` (shell env only, not `.env` files) — see
+[evitaDB server](evitadb-server.md):
+
+| Variable | Meaning |
+|----------|---------|
+| `EVITA_DATA_DIR` | Fallback for the mandatory `--data-dir` (host path or docker volume name) |
+| `EVITA_EXTRA_ARGS` | Space-separated `key=value` evitaDB properties, merged like `--arg` |
 
 Not an env variable, but injected the same way: `__EVITADB_API_VERSION__` is a global constant added to the
 Vite `define` block, read from `.evitadbrc` at config time. It is the oldest evitaDB API version evitaLab
