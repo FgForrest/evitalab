@@ -14,4 +14,13 @@ export interface EntityViewerTabDataDto extends TabDataDto {
     readonly displayedProperties?: string[]
     readonly pageSize?: number
     readonly pageNumber?: number
+    /**
+     * Grid sort state (column keys and directions). Language-agnostic counterpart of {@link orderBy}, which is
+     * regenerated from it in whatever query language is currently selected.
+     */
+    readonly sortBy?: { key: string, order?: 'asc' | 'desc' }[]
+    /**
+     * When `true`, {@link orderBy} is text written by the user and the grid must never overwrite it.
+     */
+    readonly orderByDefinedManually?: boolean
 }

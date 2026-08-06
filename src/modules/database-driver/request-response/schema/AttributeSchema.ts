@@ -4,6 +4,7 @@ import { NamingConvention } from '../NamingConvetion'
 import { AbstractSchema } from '@/modules/database-driver/request-response/schema/AbstractSchema'
 import type { TypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
 import type { LocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
+import type { SortableSchema } from '@/modules/database-driver/request-response/schema/SortableSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import {
@@ -20,7 +21,7 @@ import {
 /**
  * evitaLab's representation of a single evitaDB attribute schema independent of specific evitaDB version
  */
-export class AttributeSchema extends AbstractSchema implements TypedSchema, LocalizedSchema {
+export class AttributeSchema extends AbstractSchema implements TypedSchema, LocalizedSchema, SortableSchema {
 
     /**
      * Contains unique name of the model. Case-sensitive. Distinguishes one model item from another within single entity instance.

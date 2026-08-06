@@ -18,6 +18,15 @@ export class EntityViewerTabData implements TabData<EntityViewerTabDataDto> {
     readonly displayedProperties?: EntityPropertyKey[]
     readonly pageSize?: number
     readonly pageNumber?: number
+    /**
+     * Grid sort state (column keys and directions). Language-agnostic counterpart of {@link orderBy}, which is
+     * regenerated from it in whatever query language is currently selected.
+     */
+    readonly sortBy?: { key: string, order?: 'asc' | 'desc' }[]
+    /**
+     * When `true`, {@link orderBy} is text written by the user and the grid must never overwrite it.
+     */
+    readonly orderByDefinedManually?: boolean
 
     constructor(queryLanguage?: QueryLanguage,
                 filterBy?: string,
@@ -26,7 +35,9 @@ export class EntityViewerTabData implements TabData<EntityViewerTabDataDto> {
                 displayedProperties?: EntityPropertyKey[],
                 pageSize?: number,
                 pageNumber?: number,
-                selectedScopes?: SelectedScope[]) {
+                selectedScopes?: SelectedScope[],
+                sortBy?: { key: string, order?: 'asc' | 'desc' }[],
+                orderByDefinedManually?: boolean) {
         this.queryLanguage = queryLanguage
         this.filterBy = filterBy
         this.orderBy = orderBy
@@ -35,6 +46,8 @@ export class EntityViewerTabData implements TabData<EntityViewerTabDataDto> {
         this.pageSize = pageSize
         this.pageNumber = pageNumber
         this.selectedScopes = selectedScopes
+        this.sortBy = sortBy
+        this.orderByDefinedManually = orderByDefinedManually
     }
 
     toSerializable(): EntityViewerTabDataDto {
@@ -46,7 +59,9 @@ export class EntityViewerTabData implements TabData<EntityViewerTabDataDto> {
             dataLocale: this.dataLocale,
             displayedProperties: this.displayedProperties?.map(key => key.toString()),
             pageSize: this.pageSize,
-            pageNumber: this.pageNumber
+            pageNumber: this.pageNumber,
+            sortBy: this.sortBy,
+            orderByDefinedManually: this.orderByDefinedManually
         }
     }
 }

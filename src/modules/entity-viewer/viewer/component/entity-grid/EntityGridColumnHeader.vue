@@ -31,7 +31,9 @@ const prependIcon = computed<string | undefined>(() => {
     }
     return undefined
 })
-const sortable = computed<boolean>(() => props.column.descriptor?.isSortable())
+// sortability is resolved once when the grid headers are built (it depends on the selected scopes), so the header
+// only mirrors the already-computed flag instead of re-deriving it
+const sortable = computed<boolean>(() => props.column.sortable === true)
 const sorted = computed<boolean>(() => props.isSorted(props.column))
 const localized = computed<boolean>(() => props.column.descriptor?.isLocalized())
 
