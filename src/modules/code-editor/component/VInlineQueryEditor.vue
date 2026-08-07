@@ -5,7 +5,6 @@ import type { ComponentPublicInstance } from 'vue'
  */
 
 import { Codemirror } from 'vue-codemirror'
-import { EditorState } from '@codemirror/state'
 import type { Extension } from 'node_modules/@codemirror/state/dist/index.d.cts'
 import {
     crosshairCursor,
@@ -26,6 +25,7 @@ import { EditorView } from 'codemirror'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import { Command } from '@/modules/keymap/model/Command'
 import { workspaceStatusBarIntegration } from '@/modules/code-editor/extension/workspaceStatusBarIntegration'
+import { singleLineDocument } from '@/modules/code-editor/extension/singleLineDocument'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 
 const keymap: Keymap = useKeymap()
@@ -81,7 +81,7 @@ const extensions = computed<Extension[]>(() => [
         ...lintKeymap
     ]),
     dracula,
-    EditorState.transactionFilter.of(tr => tr.newDoc.lines > 1 ? [] : tr),
+    singleLineDocument(),
     workspaceStatusBarIntegration(workspaceService),
     ...props.additionalExtensions
 ])

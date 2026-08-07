@@ -66,6 +66,18 @@ all rather than created disabled:
 descriptor's schema: a reference attribute's schema is the *attribute* schema, so a schema-derived name
 would filter the history by the attribute where evitaDB expects the reference.
 
+## The filter by / order by inputs
+
+`QueryInput.vue` renders both as `VInlineQueryEditor`, which is a strictly single-line editor. Multiline
+text — a pretty-printed query pasted or dropped into the input — is accepted and **flattened into one
+line**, not rejected; see [the single-line invariant](code-editor.md#the-single-line-invariant) for the
+rule, the `Enter` no-op and the trailing-line-comment limitation.
+
+`filterByCode`/`orderByCode` seeded from `EntityViewerTabData` (session restore, share links) bypass the
+editor's transaction filter, so `EntityViewer.vue` flattens them with `flattenToSingleLine` when
+initializing the refs. Normalizing at the seed rather than at the display boundary keeps the executed
+query identical to the visible one.
+
 ## Column sorting
 
 ### What is sortable
