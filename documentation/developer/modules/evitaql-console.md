@@ -29,7 +29,14 @@ Either panel can be hidden to focus on just the query or just the result — cli
 side tab of a strip, or press `Alt+2` (query panel) / `Alt+3` (result panel); the same shortcuts show
 it again, as does picking any view in the collapsed strip. When **both** panels are hidden, a
 `VMissingDataIndicator` overlays the panes area with buttons that bring each panel back. The visibility
-is per open tab and is **not persisted** — a reload restores both panels.
+is per open tab and is **not persisted** — a reload restores the initial state described below.
+
+A newly opened console starts with the **result panel hidden**, so the whole width belongs to the query
+until there is anything to show; the panel opens itself when the **first** result arrives. Only the
+first one — from then on the user's own hide/show choice wins, so executing again never re-opens a panel
+the user deliberately closed (`firstResultPending` in the component). A tab opened with
+`executeOnOpen` starts with the panel already visible, so the result it was opened for doesn't pop the
+panel open a moment after mount.
 
 **Do not turn the collapse into an unmount.** Both `Pane`s stay mounted for the lifetime of the tab and
 the `editorTab` / `resultTab` refs are never cleared; collapsing is CSS only (the pane becomes

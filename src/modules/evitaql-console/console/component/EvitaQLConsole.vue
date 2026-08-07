@@ -103,8 +103,13 @@ const editorTab = ref<EditorTabType>(EditorTabType.Query)
 const resultTab = ref<ResultTabType>(ResultTabType.Raw)
 
 const queryPanelVisible = ref<boolean>(true)
-const resultPanelVisible = ref<boolean>(true)
+const resultPanelVisible = ref<boolean>(props.params.executeOnOpen)
 const bothPanelsHidden = computed<boolean>(() => !queryPanelVisible.value && !resultPanelVisible.value)
+/**
+ * The result panel starts hidden so that a fresh console offers the full width to the query, and opens
+ * itself when the first result arrives. Any later execution respects whatever the user chose since.
+ */
+let firstResultPending: boolean = true
 
 const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
 
@@ -251,6 +256,11 @@ async function executeQuery(): Promise<void> {
         )
         loading.value = false
         enteredQueryCode.value = queryCode.value
+
+        if (firstResultPending) {
+            firstResultPending = false
+            resultPanelVisible.value = true
+        }
 
         if (resultTab.value === ResultTabType.Raw) {
             focusRawResultEditor()
