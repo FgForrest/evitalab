@@ -26,6 +26,7 @@
     "@connectrpc/connect-web": "^2.0.2",
     "@ddietr/codemirror-themes": "^1.5.1",
     "@fontsource/poppins": "^5.3.0",
+    "@lezer/common": "^1.2.0",
     "@lukashornych/codemirror-lang-evitaql": "^1.5.1",
     "@mdi/font": "7.4.47",
     "apexcharts": "^4.7.0",

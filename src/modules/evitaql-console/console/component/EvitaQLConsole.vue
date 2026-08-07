@@ -45,6 +45,7 @@ import VPreviewEditor from '@/modules/code-editor/component/VPreviewEditor.vue'
 import ResultVisualiser from '@/modules/console/result-visualiser/component/ResultVisualiser.vue'
 import { Command } from '@/modules/keymap/model/Command'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
+import VTabToolbarActionGroup from '@/modules/base/component/VTabToolbarActionGroup.vue'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import VExecuteQueryButton from '@/modules/base/component/VExecuteQueryButton.vue'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
@@ -61,6 +62,9 @@ import {
     EvitaQLConsoleTabDefinition
 } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabDefinition'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
+import { minifyEvitaQL, prettifyEvitaQL } from '@/modules/code-editor/service/formatEvitaQL'
+import { minifyJson, prettifyJson } from '@/modules/code-editor/service/formatJson'
+import { DocumentFormattingMode } from '@/modules/code-editor/model/DocumentFormattingMode'
 
 enum EditorTabType {
     Query = 'query',
@@ -104,6 +108,13 @@ const resultTab = ref<ResultTabType>(ResultTabType.Raw)
 
 const queryPanelVisible = ref<boolean>(true)
 const resultPanelVisible = ref<boolean>(props.params.executeOnOpen)
+/**
+ * Panel the caret currently sits in. Both panels are visible at once, so the selected view alone does not
+ * say which editor a formatting action should apply to. The state is sticky — it only changes when the
+ * other panel takes focus — so clicking a toolbar button cannot make that button disappear under the
+ * cursor.
+ */
+const focusedPanel = ref<'query' | 'result'>('query')
 const bothPanelsHidden = computed<boolean>(() => !queryPanelVisible.value && !resultPanelVisible.value)
 /**
  * The result panel starts hidden so that a fresh console offers the full width to the query, and opens
@@ -174,6 +185,38 @@ watch(currentData, (data) => {
     emit('update:data', data)
 })
 
+const formattingAvailable = computed<boolean>(() =>
+    queryPanelVisible.value &&
+    focusedPanel.value === 'query' &&
+    (editorTab.value === EditorTabType.Query || editorTab.value === EditorTabType.Variables)
+)
+
+/**
+ * Reformats the editor the caret sits in — the query with the evitaQL printer, the variables as JSON.
+ * The new document is assigned to the bound model, which resets the caret to the document start.
+ */
+async function formatFocusedEditor(mode: DocumentFormattingMode): Promise<void> {
+    if (!formattingAvailable.value) {
+        return
+    }
+    try {
+        if (editorTab.value === EditorTabType.Query) {
+            queryCode.value = mode === DocumentFormattingMode.Prettify
+                ? prettifyEvitaQL(queryCode.value)
+                : minifyEvitaQL(queryCode.value)
+        } else {
+            variablesCode.value = mode === DocumentFormattingMode.Prettify
+                ? prettifyJson(variablesCode.value)
+                : minifyJson(variablesCode.value)
+        }
+    } catch (e) {
+        await toaster.error(
+            t('evitaQLConsole.notification.failedToFormatDocument'),
+            asError(e)
+        )
+    }
+}
+
 onMounted(() => {
     // register console specific keyboard shortcuts
     keymap.bind(Command.EvitaQLConsole_ExecuteQuery, props.id, executeQuery)
@@ -195,6 +238,12 @@ onMounted(() => {
         queryPanelVisible.value = true
         focusHistory()
     })
+    keymap.bind(Command.EvitaQLConsole_Query_Prettify, props.id, () =>
+        formatFocusedEditor(DocumentFormattingMode.Prettify)
+    )
+    keymap.bind(Command.EvitaQLConsole_Query_Minify, props.id, () =>
+        formatFocusedEditor(DocumentFormattingMode.Minify)
+    )
     keymap.bind(Command.EvitaQLConsole_Query_TogglePanel, props.id, () => {
         queryPanelVisible.value = !queryPanelVisible.value
     })
@@ -225,6 +274,8 @@ onUnmounted(() => {
     keymap.unbind(Command.EvitaQLConsole_Query_QueryEditor, props.id)
     keymap.unbind(Command.EvitaQLConsole_Query_VariablesEditor, props.id)
     keymap.unbind(Command.EvitaQLConsole_Query_History, props.id)
+    keymap.unbind(Command.EvitaQLConsole_Query_Prettify, props.id)
+    keymap.unbind(Command.EvitaQLConsole_Query_Minify, props.id)
     keymap.unbind(Command.EvitaQLConsole_Query_TogglePanel, props.id)
     keymap.unbind(Command.EvitaQLConsole_Result_RawResultViewer, props.id)
     keymap.unbind(Command.EvitaQLConsole_Result_ResultVisualizer, props.id)
@@ -271,19 +322,27 @@ async function executeQuery(): Promise<void> {
     }
 }
 
+// the focused panel is recorded up front rather than left to the `focusin` the deferred focus() will
+// fire — a view that is not mounted yet swallows the call, and the state would keep pointing at the
+// panel the caret has just left
 function focusQueryEditor(): void {
+    focusedPanel.value = 'query'
     setTimeout(() => queryEditorRef.value?.focus())
 }
 function focusVariablesEditor(): void {
+    focusedPanel.value = 'query'
     setTimeout(() => variablesEditorRef.value?.focus())
 }
 function focusHistory(): void {
+    focusedPanel.value = 'query'
     setTimeout(() => historyRef.value?.focus())
 }
 function focusRawResultEditor(): void {
+    focusedPanel.value = 'result'
     setTimeout(() => rawResultEditorRef.value?.focus())
 }
 function focusResultVisualiser(): void {
+    focusedPanel.value = 'result'
     setTimeout(() => resultVisualiserRef.value?.focus())
 }
 
@@ -298,6 +357,30 @@ if (props.params.executeOnOpen) {
     <div class="evitaql-editor">
         <VTabToolbar :prepend-icon="EvitaQLConsoleTabDefinition.icon()" :title="title">
             <template #append>
+                <VTabToolbarActionGroup v-if="formattingAvailable">
+                    <VBtn
+                        icon
+                        density="compact"
+                        @click="formatFocusedEditor(DocumentFormattingMode.Prettify)"
+                    >
+                        <VIcon>mdi-auto-fix</VIcon>
+                        <VActionTooltip :command="Command.EvitaQLConsole_Query_Prettify">
+                            {{ t('common.button.prettify') }}
+                        </VActionTooltip>
+                    </VBtn>
+
+                    <VBtn
+                        icon
+                        density="compact"
+                        @click="formatFocusedEditor(DocumentFormattingMode.Minify)"
+                    >
+                        <VIcon>mdi-arrow-collapse-vertical</VIcon>
+                        <VActionTooltip :command="Command.EvitaQLConsole_Query_Minify">
+                            {{ t('common.button.minify') }}
+                        </VActionTooltip>
+                    </VBtn>
+                </VTabToolbarActionGroup>
+
                 <ShareTabButton
                     ref="shareTabButtonRef"
                     :tab-type="TabType.EvitaQLConsole"
@@ -367,6 +450,7 @@ if (props.params.executeOnOpen) {
                             { 'evitaql-editor-pane--hidden': !queryPanelVisible },
                             { 'evitaql-editor-pane--full': queryPanelVisible && !resultPanelVisible }
                         ]"
+                        @focusin="focusedPanel = 'query'"
                     >
                         <VWindow v-model="editorTab" direction="vertical">
                             <VWindowItem :value="EditorTabType.Query">
@@ -403,6 +487,7 @@ if (props.params.executeOnOpen) {
                             { 'evitaql-editor-pane--hidden': !resultPanelVisible },
                             { 'evitaql-editor-pane--full': resultPanelVisible && !queryPanelVisible }
                         ]"
+                        @focusin="focusedPanel = 'result'"
                     >
                         <VWindow v-model="resultTab" direction="vertical">
                             <VWindowItem :value="ResultTabType.Raw">

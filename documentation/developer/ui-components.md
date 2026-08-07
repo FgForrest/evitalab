@@ -51,6 +51,7 @@ guards against this repository-wide — see [testing](testing.md#slot-names).
 | Component | Use for |
 |-----------|---------|
 | `VTabToolbar` | Toolbar of every tab window. Props: `prependIcon`, `title: List<string>` (path segments), `flags?`, `extensionHeight?`; slots for append actions and extension row |
+| `VTabToolbarActionGroup` | Groups related actions inside the toolbar's append slot and closes them with a vertical separator; place before the ungrouped actions |
 | `VTabToolbarTitle` | Title rendering inside the toolbar |
 | `VTabMainActionButton` | Primary action button of a tab (`prependIcon`, `loading?`, `disabled?`) |
 | `VExecuteQueryButton` | Query execution button; integrates with keymap (`command` prop shows the shortcut) — use together with query editors |

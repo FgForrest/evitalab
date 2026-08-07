@@ -56,6 +56,49 @@ content lingering for a moment after its background was already gone.
 Switching this to `<Pane v-if>`, or letting a view ref go `undefined`, would silently discard the user's
 undo history.
 
+## Prettify & minify
+
+Two toolbar buttons (`mdi-auto-fix` / `mdi-arrow-collapse-vertical`, `Shift+Alt+F` / `Shift+Alt+M`)
+wrapped in a `VTabToolbarActionGroup` at the front of the toolbar's append slot — separated from the
+tab's own actions, and first in the row so that coming and going shifts nothing else — reformat the
+editor the caret sits in — the query with the `graphql-js` printer, the variables document
+as JSON. Both come from [`code-editor`](code-editor.md#document-formatters).
+
+> **GraphQL prettify loses `#` comments** and rewrites an anonymous `query { … }` into `{ … }`, because
+> `print()` works on the parsed document. See the
+> [caveat in `code-editor`](code-editor.md#graphql) — it is a property of graphql-js, not of this
+> console.
+
+The formatted document is **assigned to the bound `ref`**, not dispatched as a CodeMirror transaction.
+The caret therefore jumps to the document start and the whole format is a single undo step. Formatting
+also changes `currentData`, so the tab is marked dirty and a shared link carries the reformatted query;
+that is expected.
+
+### Why the buttons come and go
+
+The buttons are shown only when `formattingAvailable` holds: the query panel is visible, the caret is in
+that panel, and the selected view is the query or the variables editor — never the history or the schema
+viewer. Both panels are visible at once, so `editorTab` alone does not say where the caret is; the panel
+is tracked in `focusedPanel` by a single `@focusin` listener on each `Pane`, plus the `focus*()` helpers,
+which set it directly.
+
+`focusin` bubbles, so two listeners cover every view in both panes without new emits on `VQueryEditor`,
+`VPreviewEditor`, the history component or `ResultVisualiser`. The state is **sticky** — it changes only
+when something else takes focus, never on a plain blur. That matters: clicking the Prettify button
+blurs the editor, and a blur-clears design would make the button vanish from under the cursor on
+mousedown, before the click lands.
+
+**The `focus*()` helpers must keep setting `focusedPanel` themselves.** Their actual `focus()` call is
+deferred through `setTimeout` and is swallowed when the target view is not mounted yet — on a tab opened
+with `executeOnOpen`, for instance. Relying on the `focusin` that call *would* fire leaves the state
+pointing at the panel the caret has just left, and the buttons would then format an editor the user is
+not looking at.
+
+The accepted consequence is that executing a query moves focus to the raw result viewer, so the buttons
+disappear until the user clicks (or `Ctrl+1` / `Ctrl+2`s) back into the query panel. The keyboard
+shortcuts apply the same guard, so a shortcut pressed while the result viewer has focus is a visible
+no-op rather than a hidden action.
+
 ## `GraphQLInstanceType` — the one sanctioned dependency inversion
 
 `EvitaClient.queryCatalogUsingGraphQL()` in [`database-driver`](database-driver.md) references this

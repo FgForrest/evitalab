@@ -56,6 +56,8 @@ export enum Command {
     EvitaQLConsole_Query_QueryEditor = 'evitaQLConsole.query.queryEditor',
     EvitaQLConsole_Query_VariablesEditor = 'evitaQLConsole.query.variablesEditor',
     EvitaQLConsole_Query_History = 'evitaQLConsole.query.history',
+    EvitaQLConsole_Query_Prettify = 'evitaQLConsole.query.prettify',
+    EvitaQLConsole_Query_Minify = 'evitaQLConsole.query.minify',
     EvitaQLConsole_Query_TogglePanel = 'evitaQLConsole.query.togglePanel',
 
     EvitaQLConsole_Result_RawResultViewer = 'evitaQLConsole.result.rawResultViewer',
@@ -71,6 +73,8 @@ export enum Command {
     GraphQLConsole_Query_VariablesEditor = 'graphQLConsole.query.variablesEditor',
     GraphQLConsole_Query_History = 'graphQLConsole.query.history',
     GraphQLConsole_Query_SchemaViewer = 'graphQLConsole.query.schemaViewer',
+    GraphQLConsole_Query_Prettify = 'graphQLConsole.query.prettify',
+    GraphQLConsole_Query_Minify = 'graphQLConsole.query.minify',
     GraphQLConsole_Query_TogglePanel = 'graphQLConsole.query.togglePanel',
 
     GraphQLConsole_Result_RawResultViewer = 'graphQLConsole.result.rawResultViewer',
