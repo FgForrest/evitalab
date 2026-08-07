@@ -89,7 +89,8 @@ The lab has an established icon vocabulary — reuse it, don't invent synonyms:
 | `mdi-counter` | Count metric |
 | `mdi-check` / `mdi-close` | Flag on / off |
 | `mdi-refresh` | Reload data from server |
-| `mdi-auto-fix` | Automatic ("pretty print") mode |
+| `mdi-auto-fix` | Automatic ("pretty print") mode, prettify action |
+| `mdi-arrow-collapse-vertical` | Minify action (collapse a document onto one line) |
 | `mdi-pencil-outline` / `mdi-pencil-off-outline` | Content is hand-written by the user / derived by the lab from another control |
 | `mdi-information-outline` | Neutral explanation tooltip |
 | `mdi-alert-outline` (warning color) | Warning note tooltip |
@@ -148,7 +149,16 @@ the tab area. The canonical skeleton, used by all three reference pages:
   results change meaning, it belongs here.
 - **append slot** — icon buttons, ordered least → most important, with the **primary action
   last**: `ShareTabButton`, secondary actions (reload `mdi-refresh`, …), then
-  `VExecuteQueryButton`/`VTabMainActionButton`.
+  `VExecuteQueryButton`/`VTabMainActionButton`. Actions that act on the **content being edited**
+  rather than on the tab (prettify/minify in the consoles) go **first**, wrapped in
+  `VTabToolbarActionGroup`, which closes them with a vertical separator so they do not read as part
+  of the tab's own actions. The separator is trailing, so a group placed last would leave it
+  dangling at the toolbar's edge.
+- Buttons in *append* may appear conditionally. The append group is right-anchored
+  (`.v-toolbar__append { margin-inline: auto 4px }`, with `.v-toolbar-title` taking the slack via
+  `flex: 1 1`), so it grows leftwards and the primary action never moves. What does shift is
+  everything to the **left** of the appearing button — which is the other reason a group of
+  come-and-go actions belongs at the front rather than in the middle of the row.
 - **extension slot** — a second toolbar row for always-visible query inputs (entity viewer's
   filter/order bar). Use it when the page's main interaction is "type constraint → run".
 

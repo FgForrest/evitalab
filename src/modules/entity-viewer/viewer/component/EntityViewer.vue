@@ -49,7 +49,7 @@ import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/En
 import { EntityViewerTabDefinition } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabDefinition'
 import { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
-import { flattenToSingleLine } from '@/modules/code-editor/model/flattenToSingleLine'
+import { flattenToSingleLine } from '@/modules/code-editor/service/flattenToSingleLine'
 
 const entityViewerService: EntityViewerService = useEntityViewerService()
 const toaster: Toaster = useToaster()

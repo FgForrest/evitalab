@@ -1,6 +1,6 @@
 import { ChangeSet, EditorSelection, EditorState, Transaction } from '@codemirror/state'
 import type { ChangeSpec, Extension, TransactionSpec } from '@codemirror/state'
-import { flattenToSingleLine } from '@/modules/code-editor/model/flattenToSingleLine'
+import { flattenToSingleLine } from '@/modules/code-editor/service/flattenToSingleLine'
 
 /**
  * Keeps the editor document on a single line. Instead of rejecting transactions that would introduce
