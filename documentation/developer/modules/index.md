@@ -14,12 +14,18 @@ Typical inner structure of a module:
 <module>/
 ├── <Module>ModuleRegistrar.ts   # optional, only when the module provides/injects DI services
 ├── component/                   # Vue components of the module
-├── model/                       # domain model classes (immutable where possible)
-├── service/                     # injectable services (business logic)
+├── model/                       # domain model — classes, types, enums (immutable where possible)
+├── service/                     # business logic
 └── workspace/                   # tab integration (TabDefinition, TabParams, TabData, factory)
     ├── model/
     └── service/
 ```
+
+**`model/` holds data, `service/` holds behavior.** Being injectable is not what makes something a
+service — a stateless pure function that transforms a query is business logic and belongs in
+`service/` just as much as a DI-registered class does. Only the classes and types the logic operates
+*on* belong in `model/`. A module may therefore have a `service/` folder and no `ModuleRegistrar` at
+all.
 
 **This page is an index.** Each module has its own page under `documentation/developer/modules/`,
 named after its directory in `src/modules/` — that is where the detail lives. When you change a

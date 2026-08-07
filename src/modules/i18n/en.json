@@ -53,7 +53,9 @@
       "makeCatalogMutable": "Make catalog mutable",
       "deactivateCatalog": "Deactivate catalog",
       "activateCatalog": "Activate catalog",
-      "cancelDownload": "Click again to cancel the download"
+      "cancelDownload": "Click again to cancel the download",
+      "prettify": "Prettify",
+      "minify": "Minify"
     },
     "notification": {
       "copiedToClipboard": "Copied to clipboard",
@@ -347,6 +349,8 @@
         "queryEditor": "Query editor",
         "variablesEditor": "Variables editor",
         "history": "History",
+        "prettify": "Prettify",
+        "minify": "Minify",
         "togglePanel": "Hide/show panel"
       },
       "result": {
@@ -366,6 +370,8 @@
         "variablesEditor": "Variables editor",
         "history": "History",
         "schemaViewer": "Schema viewer",
+        "prettify": "Prettify",
+        "minify": "Minify",
         "togglePanel": "Hide/show panel"
       },
       "result": {
@@ -913,7 +919,8 @@
       "resultVisualizerView": "Result visualizer — click again to hide the panel"
     },
     "notification": {
-      "failedToSaveQueryToHistory": "Failed to save query to history."
+      "failedToSaveQueryToHistory": "Failed to save query to history.",
+      "failedToFormatDocument": "Failed to format the document."
     }
   },
   "graphQLConsole": {
@@ -943,7 +950,8 @@
     },
     "notification": {
       "failedToSaveQueryToHistory": "Failed to save query to history.",
-      "failedToReloadSchema": "Failed to reload GraphQL schema."
+      "failedToReloadSchema": "Failed to reload GraphQL schema.",
+      "failedToFormatDocument": "Failed to format the document."
     }
   },
   "historyComponent": {
