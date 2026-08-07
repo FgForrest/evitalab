@@ -26,6 +26,34 @@ Everything sits under `viewer/`:
 | `keymap/scopes.ts` | The viewer's shortcut scopes |
 | `workspace/` | `EntityViewerTabDefinition`, params/data DTOs, `EntityViewerTabFactory` |
 
+## Toolbar
+
+`component/Toolbar.vue` wraps `VTabToolbar`. Its `#append` slot is ordered least → most important with
+the primary action last:
+
+| Button | What it does |
+|---|---|
+| `ShareTabButton` | shares the tab (`Command.EntityViewer_ShareTab`) |
+| **Open entity schema** (`mdi-graph-outline`) | opens the schema of *this tab's own collection* in a new Schema viewer tab |
+| `VExecuteQueryButton` | runs the query (`Command.EntityViewer_ExecuteQuery`) |
+
+The *Open entity schema* button builds an `EntitySchemaPointer` from
+`tabProps.params.dataPointer` (catalog name + entity type) and hands it to
+`SchemaViewerTabFactory.createNew()`. It uses `SchemaViewerTabDefinition.icon()` — the canonical icon
+of the tab type it opens, the same one `CollectionItemMenuFactory` uses for its *Schema* item.
+
+It **complements, not replaces**, the per-item *Open schema* affordances in the property selector
+(`PropertySectionEntityItem.vue` and friends): those open the schema of an individual attribute,
+associated data, reference or price, while the toolbar button opens the collection's entity schema,
+which previously had no route out of the viewer at all.
+
+The action deliberately has **no `Command` and no keyboard shortcut**. Shortcut space in the
+entity-viewer scope is kept free for future features (notably `Cmd+K` for search), and a `Command`
+without a matching entry in `keyboardShortcutMappings.ts` would make `Keymap.getKeyboardShortcut`
+throw `UnexpectedError` the moment `VActionTooltip` calls `prettyPrint` on it. Per the
+[design language](../design-language.md), a button without a command therefore uses a plain
+`VTooltip` rather than `VActionTooltip`.
+
 ## Cell interaction model
 
 `EntityGridCell.vue` supports three pointer gestures:
