@@ -25,7 +25,9 @@ Grouped by what they are for (details in [UI components](../ui-components.md)):
 - **Dialogs** — `VLabDialog`, `VFormDialog`, `VConfirmDialog`, and their buttons
   (`VConfirmDialogButton`, `VRejectDialogButton`, `VAlternativeActionDialogButton`).
   Note `VFormDialog`'s confirm label slot is **`confirm-button-body`**.
-- **Tab chrome** — `VTabToolbar`, `VTabToolbarTitle`, `VTabMainActionButton`, `VSideTabs`.
+- **Tab chrome** — `VTabToolbar`, `VTabToolbarTitle`, `VTabMainActionButton`, `VSideTabs` (its
+  `collapsible` + `v-model:visible` pair lets the strip collapse the panel it controls; the `v-model`
+  view stays set while collapsed so the panel reopens where it was).
 - **Properties tables** — `VPropertiesTable` plus `VPropertiesTableValue`,
   `VPropertiesTableValueItem`, `VPropertiesTableValueList`.
 - **Tree view** — `VTreeViewItem`, `VTreeViewEmptyItem`.

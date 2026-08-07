@@ -54,7 +54,7 @@ guards against this repository-wide — see [testing](testing.md#slot-names).
 | `VTabToolbarTitle` | Title rendering inside the toolbar |
 | `VTabMainActionButton` | Primary action button of a tab (`prependIcon`, `loading?`, `disabled?`) |
 | `VExecuteQueryButton` | Query execution button; integrates with keymap (`command` prop shows the shortcut) — use together with query editors |
-| `VSideTabs` | Vertical tab strip on the left/right edge of a tab window (`side: 'left' | 'right'`) |
+| `VSideTabs` | Vertical tab strip on the left/right edge of a tab window (`side: 'left' | 'right'`). Two independent models: `v-model` = which view is displayed (always set), `v-model:visible` = whether the panel the strip controls is on screen. With `collapsible`, clicking the active tab collapses the panel (`update:visible = false`) while keeping the remembered view; clicking any tab of a collapsed panel restores it |
 
 All tab windows must fill the available space (the tab component stretches to 100 % of the tab
 area).

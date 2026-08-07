@@ -49,6 +49,7 @@ import { TabType } from '@/modules/workspace/tab/model/TabType'
 import VExecuteQueryButton from '@/modules/base/component/VExecuteQueryButton.vue'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import VSideTabs from '@/modules/base/component/VSideTabs.vue'
+import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
 import { List } from 'immutable'
 import type { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
@@ -101,6 +102,10 @@ const title: List<string> = List.of(props.params.dataPointer.catalogName)
 const editorTab = ref<EditorTabType>(EditorTabType.Query)
 const resultTab = ref<ResultTabType>(ResultTabType.Raw)
 
+const queryPanelVisible = ref<boolean>(true)
+const resultPanelVisible = ref<boolean>(true)
+const bothPanelsHidden = computed<boolean>(() => !queryPanelVisible.value && !resultPanelVisible.value)
+
 const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
 
 const queryEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
@@ -132,6 +137,7 @@ function pickHistoryRecord(record: EvitaQLConsoleHistoryRecord): void {
     queryCode.value = record[1] || ''
     variablesCode.value = record[2] || ''
     editorTab.value = EditorTabType.Query
+    queryPanelVisible.value = true
 }
 function clearHistory(): void {
     workspaceService.clearTabHistory(historyKey.value)
@@ -171,18 +177,25 @@ onMounted(() => {
     )
     keymap.bind(Command.EvitaQLConsole_Query_QueryEditor, props.id, () => {
         editorTab.value = EditorTabType.Query
+        queryPanelVisible.value = true
         focusQueryEditor()
     })
     keymap.bind(Command.EvitaQLConsole_Query_VariablesEditor, props.id, () => {
         editorTab.value = EditorTabType.Variables
+        queryPanelVisible.value = true
         focusVariablesEditor()
     })
     keymap.bind(Command.EvitaQLConsole_Query_History, props.id, () => {
         editorTab.value = EditorTabType.History
+        queryPanelVisible.value = true
         focusHistory()
+    })
+    keymap.bind(Command.EvitaQLConsole_Query_TogglePanel, props.id, () => {
+        queryPanelVisible.value = !queryPanelVisible.value
     })
     keymap.bind(Command.EvitaQLConsole_Result_RawResultViewer, props.id, () => {
         resultTab.value = ResultTabType.Raw
+        resultPanelVisible.value = true
         focusRawResultEditor()
     })
     keymap.bind(
@@ -190,9 +203,13 @@ onMounted(() => {
         props.id,
         () => {
             resultTab.value = ResultTabType.Visualiser
+            resultPanelVisible.value = true
             focusResultVisualiser()
         }
     )
+    keymap.bind(Command.EvitaQLConsole_Result_TogglePanel, props.id, () => {
+        resultPanelVisible.value = !resultPanelVisible.value
+    })
 
     focusQueryEditor()
 })
@@ -203,8 +220,10 @@ onUnmounted(() => {
     keymap.unbind(Command.EvitaQLConsole_Query_QueryEditor, props.id)
     keymap.unbind(Command.EvitaQLConsole_Query_VariablesEditor, props.id)
     keymap.unbind(Command.EvitaQLConsole_Query_History, props.id)
+    keymap.unbind(Command.EvitaQLConsole_Query_TogglePanel, props.id)
     keymap.unbind(Command.EvitaQLConsole_Result_RawResultViewer, props.id)
     keymap.unbind(Command.EvitaQLConsole_Result_ResultVisualizer, props.id)
+    keymap.unbind(Command.EvitaQLConsole_Result_TogglePanel, props.id)
 })
 
 async function executeQuery(): Promise<void> {
@@ -289,12 +308,19 @@ if (props.params.executeOnOpen) {
 
         <div class="evitaql-editor__body">
             <VSheet class="evitaql-editor-query-sections">
-                <VSideTabs v-model="editorTab" side="left">
+                <VSideTabs
+                    v-model="editorTab"
+                    v-model:visible="queryPanelVisible"
+                    side="left"
+                    collapsible
+                >
                     <VTab :value="EditorTabType.Query">
                         <VIcon>mdi-database-search</VIcon>
                         <VActionTooltip
                             :command="Command.EvitaQLConsole_Query_QueryEditor"
-                        />
+                        >
+                            {{ t('evitaQLConsole.tooltip.queryEditorView') }}
+                        </VActionTooltip>
                     </VTab>
                     <VTab :value="EditorTabType.Variables">
                         <VIcon>mdi-variable</VIcon>
@@ -302,85 +328,133 @@ if (props.params.executeOnOpen) {
                             :command="
                                 Command.EvitaQLConsole_Query_VariablesEditor
                             "
-                        />
+                        >
+                            {{ t('evitaQLConsole.tooltip.variablesEditorView') }}
+                        </VActionTooltip>
                     </VTab>
                     <VTab :value="EditorTabType.History">
                         <VIcon>mdi-history</VIcon>
                         <VActionTooltip
                             :command="Command.EvitaQLConsole_Query_History"
-                        />
+                        >
+                            {{ t('evitaQLConsole.tooltip.historyView') }}
+                        </VActionTooltip>
                     </VTab>
                 </VSideTabs>
             </VSheet>
 
-            <Splitpanes vertical>
-                <Pane class="evitaql-editor-pane">
-                    <VWindow v-model="editorTab" direction="vertical">
-                        <VWindowItem :value="EditorTabType.Query">
-                            <VQueryEditor
-                                ref="queryEditorRef"
-                                v-model="queryCode"
-                                :additional-extensions="queryExtensions"
-                            />
-                        </VWindowItem>
+            <div class="evitaql-editor__panes-area">
+                <Splitpanes
+                    vertical
+                    :class="[
+                        'evitaql-editor__panes',
+                        { 'evitaql-editor__panes--collapsed': !queryPanelVisible || !resultPanelVisible }
+                    ]"
+                >
+                    <Pane
+                        :class="[
+                            'evitaql-editor-pane',
+                            { 'evitaql-editor-pane--hidden': !queryPanelVisible },
+                            { 'evitaql-editor-pane--full': queryPanelVisible && !resultPanelVisible }
+                        ]"
+                    >
+                        <VWindow v-model="editorTab" direction="vertical">
+                            <VWindowItem :value="EditorTabType.Query">
+                                <VQueryEditor
+                                    ref="queryEditorRef"
+                                    v-model="queryCode"
+                                    :additional-extensions="queryExtensions"
+                                />
+                            </VWindowItem>
 
-                        <VWindowItem :value="EditorTabType.Variables">
-                            <VQueryEditor
-                                ref="variablesEditorRef"
-                                v-model="variablesCode"
-                                :additional-extensions="variablesExtensions"
-                            />
-                        </VWindowItem>
+                            <VWindowItem :value="EditorTabType.Variables">
+                                <VQueryEditor
+                                    ref="variablesEditorRef"
+                                    v-model="variablesCode"
+                                    :additional-extensions="variablesExtensions"
+                                />
+                            </VWindowItem>
 
-                        <VWindowItem :value="EditorTabType.History">
-                            <EvitaQLConsoleHistory
-                                ref="historyRef"
-                                :items="historyRecords"
-                                @select-history-record="pickHistoryRecord"
-                                @update:clear-history="clearHistory"
-                            />
-                        </VWindowItem>
-                    </VWindow>
-                </Pane>
+                            <VWindowItem :value="EditorTabType.History">
+                                <EvitaQLConsoleHistory
+                                    ref="historyRef"
+                                    :items="historyRecords"
+                                    @select-history-record="pickHistoryRecord"
+                                    @update:clear-history="clearHistory"
+                                />
+                            </VWindowItem>
+                        </VWindow>
+                    </Pane>
 
-                <Pane min-size="20" class="evitaql-editor-pane">
-                    <VWindow v-model="resultTab" direction="vertical">
-                        <VWindowItem :value="ResultTabType.Raw">
-                            <VPreviewEditor
-                                v-if="resultTab === ResultTabType.Raw"
-                                ref="rawResultEditorRef"
-                                :model-value="rawResult"
-                                :placeholder="
-                                    t('evitaQLConsole.placeholder.results')
-                                "
-                                read-only
-                                :additional-extensions="resultExtensions"
-                            />
-                        </VWindowItem>
+                    <Pane
+                        min-size="20"
+                        :class="[
+                            'evitaql-editor-pane',
+                            { 'evitaql-editor-pane--hidden': !resultPanelVisible },
+                            { 'evitaql-editor-pane--full': resultPanelVisible && !queryPanelVisible }
+                        ]"
+                    >
+                        <VWindow v-model="resultTab" direction="vertical">
+                            <VWindowItem :value="ResultTabType.Raw">
+                                <VPreviewEditor
+                                    v-if="resultTab === ResultTabType.Raw"
+                                    ref="rawResultEditorRef"
+                                    :model-value="rawResult"
+                                    :placeholder="
+                                        t('evitaQLConsole.placeholder.results')
+                                    "
+                                    read-only
+                                    :additional-extensions="resultExtensions"
+                                />
+                            </VWindowItem>
 
-                        <VWindowItem :value="ResultTabType.Visualiser">
-                            <ResultVisualiser
-                                v-if="resultTab === ResultTabType.Visualiser"
-                                ref="resultVisualiserRef"
-                                :catalog-pointer="params.dataPointer"
-                                :visualiser-service="visualiserService"
-                                :input-query="enteredQueryCode || ''"
-                                :result="result"
-                            />
-                        </VWindowItem>
-                    </VWindow>
-                </Pane>
-            </Splitpanes>
+                            <VWindowItem :value="ResultTabType.Visualiser">
+                                <ResultVisualiser
+                                    v-if="resultTab === ResultTabType.Visualiser"
+                                    ref="resultVisualiserRef"
+                                    :catalog-pointer="params.dataPointer"
+                                    :visualiser-service="visualiserService"
+                                    :input-query="enteredQueryCode || ''"
+                                    :result="result"
+                                />
+                            </VWindowItem>
+                        </VWindow>
+                    </Pane>
+                </Splitpanes>
+
+                <VMissingDataIndicator
+                    v-if="bothPanelsHidden"
+                    class="evitaql-editor__no-panels"
+                    icon="mdi-arrow-expand-horizontal"
+                    :title="t('evitaQLConsole.placeholder.noPanelsVisible')"
+                >
+                    <template #actions>
+                        <VBtn variant="outlined" @click="queryPanelVisible = true">
+                            {{ t('evitaQLConsole.button.showQueryPanel') }}
+                        </VBtn>
+                        <VBtn variant="outlined" @click="resultPanelVisible = true">
+                            {{ t('evitaQLConsole.button.showResultPanel') }}
+                        </VBtn>
+                    </template>
+                </VMissingDataIndicator>
+            </div>
 
             <VSheet class="evitaql-editor-result-sections">
-                <VSideTabs v-model="resultTab" side="right">
+                <VSideTabs
+                    v-model="resultTab"
+                    v-model:visible="resultPanelVisible"
+                    side="right"
+                    collapsible
+                >
                     <VTab :value="ResultTabType.Raw">
                         <VIcon>mdi-code-braces</VIcon>
                         <VActionTooltip
                             :command="
                                 Command.EvitaQLConsole_Result_RawResultViewer
                             "
-                        />
+                        >
+                            {{ t('evitaQLConsole.tooltip.rawResultViewerView') }}
+                        </VActionTooltip>
                     </VTab>
                     <VTab :value="ResultTabType.Visualiser">
                         <VIcon>mdi-file-tree-outline</VIcon>
@@ -388,7 +462,9 @@ if (props.params.executeOnOpen) {
                             :command="
                                 Command.EvitaQLConsole_Result_ResultVisualizer
                             "
-                        />
+                        >
+                            {{ t('evitaQLConsole.tooltip.resultVisualizerView') }}
+                        </VActionTooltip>
                     </VTab>
                 </VSideTabs>
             </VSheet>
@@ -405,9 +481,38 @@ if (props.params.executeOnOpen) {
         display: grid;
         grid-template-columns: 3rem 1fr 3rem;
     }
+
+    // takes the place of the panes in the body grid so that the both-panels-hidden indicator can
+    // overlay only the panes, not the side tab strips
+    &__panes-area {
+        position: relative;
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    &__panes {
+        // a collapsed pane is positioned against the panes container, not the whole tab area
+        position: relative;
+
+        &--collapsed :deep(.splitpanes__splitter) {
+            display: none;
+        }
+    }
+
+    &__no-panels {
+        position: absolute;
+        inset: 0;
+        background: rgb(var(--v-theme-background));
+    }
 }
 
 .evitaql-editor-pane {
+    // collapsing a panel is a discrete state change; splitpanes' width animation and the compositor
+    // promotion that goes with it would both turn it into a visible two-step
+    transition: none !important;
+    will-change: auto !important;
+
     & :deep(.v-window) {
         // we need to override the default tab window styles used in LabEditor
         position: absolute;
@@ -415,6 +520,32 @@ if (props.params.executeOnOpen) {
         right: 0 !important;
         top: 0 !important;
         bottom: 0 !important;
+    }
+
+    // A collapsed pane keeps its box at its original size, and stays anchored to the edge it already
+    // sits at, so the editors inside never re-measure and never appear to move. It also has to stay
+    // below its surviving sibling — the editors are composited scrollers whose layer can outlive the
+    // frame that hid them.
+    &--hidden {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        visibility: hidden;
+        z-index: 0;
+
+        &:first-child {
+            left: 0;
+        }
+
+        &:last-child {
+            right: 0;
+        }
+    }
+
+    // the width overrides the inline one splitpanes writes on the pane element
+    &--full {
+        width: 100% !important;
+        z-index: 1;
     }
 }
 

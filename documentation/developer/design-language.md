@@ -84,6 +84,7 @@ The lab has an established icon vocabulary — reuse it, don't invent synonyms:
 | `mdi-file-code` | Schema (code form) |
 | `mdi-code-braces` | Raw (JSON) result / output format |
 | `mdi-file-tree-outline` | Visualised / structured result |
+| `mdi-arrow-expand-horizontal` | Hidden/collapsed panel |
 | `mdi-view-column-outline` | Column/property selection |
 | `mdi-counter` | Count metric |
 | `mdi-check` / `mdi-close` | Flag on / off |
@@ -157,7 +158,9 @@ the tab area. The canonical skeleton, used by all three reference pages:
   left, output right — each wrapped by a `VWindow` whose views are switched by a 3-rem
   `VSideTabs` strip on the outer edge (left strip switches input views: query, variables,
   history, schema; right strip switches output views: raw, visualiser). Side-tab items are
-  icon-only `VTab`s with a `VActionTooltip` bound to the switching command.
+  icon-only `VTab`s with a `VActionTooltip` bound to the switching command. Either panel can be
+  **collapsed** by clicking its already-active side tab (the strip is `collapsible` with a
+  `v-model:visible`); with both collapsed the page shows a `VMissingDataIndicator` over the panes area.
 - A **grid-type page** (entity viewer) is a single main pane; a detail pane splits in
   on demand (`Splitpanes` with the detail `Pane` appearing at ~30 % when a cell is opened,
   `min-size` guarded).
@@ -168,6 +171,14 @@ the tab area. The canonical skeleton, used by all three reference pages:
 - Heavy pane content (raw result editor, visualiser) is instantiated lazily —
   `v-if` on the active view, or initialize-on-first-open (GraphQL schema editor) — so opening a
   tab stays cheap.
+- **Collapsing a pane that holds editable content is a view operation, never an unmount.** Hide it with
+  `position: absolute; visibility: hidden` at its existing size and give the sibling `width: 100%`;
+  this preserves caret, undo history and scroll offset, and leaves the split ratio intact. The lazy-
+  instantiation rule above applies to the *views inside* a pane, not to the pane itself.
+  Anchor the collapsed pane to the edge it already occupies so that leaving the flow does not move it,
+  keep it **below** the surviving pane in stacking order so a composited editor layer cannot linger on
+  top of it, and make the collapse **instant** — with splitpanes' default `transition: width .2s` left
+  on, the surviving pane snaps to the container edge and only then sweeps out to full width.
 
 ## Interaction language
 
@@ -221,7 +232,8 @@ row is the open action; non-openable items are `disabled`.
 ### Empty, loading and error states
 
 - Each distinct "nothing to show" cause gets its own `VMissingDataIndicator` with a
-  cause-specific icon and i18n message (no queries found ≠ no query selected ≠ no data selected).
+  cause-specific icon and i18n message (no queries found ≠ no query selected ≠ no data selected ≠
+  all panels collapsed).
 - In-progress states use `VLoadingCircular` (inside `VMissingDataIndicator` for pane-level
   loading) or the `loading` prop on buttons/tables; the primary action button shows the spinner
   while its work runs.
