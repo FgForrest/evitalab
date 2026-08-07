@@ -49,6 +49,7 @@ import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/En
 import { EntityViewerTabDefinition } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabDefinition'
 import { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
+import { flattenToSingleLine } from '@/modules/code-editor/model/flattenToSingleLine'
 
 const entityViewerService: EntityViewerService = useEntityViewerService()
 const toaster: Toaster = useToaster()
@@ -109,10 +110,10 @@ const loading = ref<boolean>(false)
 const pageNumber = ref<number>(props.data.pageNumber ? props.data.pageNumber : 1)
 const pageSize = ref<number>(props.data.pageSize ? props.data.pageSize : 25)
 
-const filterByCode = ref<string>(props.data.filterBy ? props.data.filterBy : '')
+const filterByCode = ref<string>(props.data.filterBy ? flattenToSingleLine(props.data.filterBy) : '')
 const lastAppliedFilterByCode = ref<string>('')
 provideQueryFilter(lastAppliedFilterByCode)
-const orderByCode = ref<string>(props.data.orderBy ? props.data.orderBy : '')
+const orderByCode = ref<string>(props.data.orderBy ? flattenToSingleLine(props.data.orderBy) : '')
 /**
  * Grid sort state. Authoritative source of {@link orderByCode} unless {@link orderByDefinedManually} is `true`.
  */
