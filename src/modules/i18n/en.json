@@ -346,12 +346,14 @@
         "_title": "Query",
         "queryEditor": "Query editor",
         "variablesEditor": "Variables editor",
-        "history": "History"
+        "history": "History",
+        "togglePanel": "Hide/show panel"
       },
       "result": {
         "_title": "Result",
         "rawResultViewer": "Raw result viewer",
-        "resultVisualizer": "Result visualizer"
+        "resultVisualizer": "Result visualizer",
+        "togglePanel": "Hide/show panel"
       }
     },
     "graphQLConsole": {
@@ -363,12 +365,14 @@
         "queryEditor": "Query editor",
         "variablesEditor": "Variables editor",
         "history": "History",
-        "schemaViewer": "Schema viewer"
+        "schemaViewer": "Schema viewer",
+        "togglePanel": "Hide/show panel"
       },
       "result": {
         "_title": "Result",
         "rawResultViewer": "Raw result viewer",
-        "resultVisualizer": "Result visualizer"
+        "resultVisualizer": "Result visualizer",
+        "togglePanel": "Hide/show panel"
       }
     },
     "schemaViewer": {
@@ -889,7 +893,19 @@
   "evitaQLConsole": {
     "placeholder": {
       "writeQuery": "// Write your EvitaQL query for catalog {catalogName} here.\n",
-      "results": "Results will be displayed here..."
+      "results": "Results will be displayed here...",
+      "noPanelsVisible": "Both panels are hidden. Pick a view in the side bars to show a panel again."
+    },
+    "button": {
+      "showQueryPanel": "Show query panel",
+      "showResultPanel": "Show result panel"
+    },
+    "tooltip": {
+      "queryEditorView": "Query editor — click again to hide the panel",
+      "variablesEditorView": "Variables editor — click again to hide the panel",
+      "historyView": "History — click again to hide the panel",
+      "rawResultViewerView": "Raw result viewer — click again to hide the panel",
+      "resultVisualizerView": "Result visualizer — click again to hide the panel"
     },
     "notification": {
       "failedToSaveQueryToHistory": "Failed to save query to history."
@@ -903,11 +919,22 @@
     },
     "placeholder": {
       "writeQuery": "# Write your GraphQL query for catalog {catalogName} here.\n",
-      "results": "Results will be displayed here..."
+      "results": "Results will be displayed here...",
+      "noPanelsVisible": "Both panels are hidden. Pick a view in the side bars to show a panel again."
     },
     "button": {
       "instanceDetails": "GraphQL API instance details",
-      "reloadSchema": "Reload GraphQL schema"
+      "reloadSchema": "Reload GraphQL schema",
+      "showQueryPanel": "Show query panel",
+      "showResultPanel": "Show result panel"
+    },
+    "tooltip": {
+      "queryEditorView": "Query editor — click again to hide the panel",
+      "variablesEditorView": "Variables editor — click again to hide the panel",
+      "historyView": "History — click again to hide the panel",
+      "schemaViewerView": "Schema viewer — click again to hide the panel",
+      "rawResultViewerView": "Raw result viewer — click again to hide the panel",
+      "resultVisualizerView": "Result visualizer — click again to hide the panel"
     },
     "notification": {
       "failedToSaveQueryToHistory": "Failed to save query to history.",

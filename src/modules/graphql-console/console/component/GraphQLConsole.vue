@@ -51,6 +51,7 @@ import { TabType } from '@/modules/workspace/tab/model/TabType'
 import VExecuteQueryButton from '@/modules/base/component/VExecuteQueryButton.vue'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import VSideTabs from '@/modules/base/component/VSideTabs.vue'
+import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
 import type { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
 import { SubjectPathItem } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathItem'
@@ -118,6 +119,15 @@ const title: ImmutableList<string> = (() => {
 const editorTab = ref<EditorTabType>(EditorTabType.Query)
 const resultTab = ref<ResultTabType>(ResultTabType.Raw)
 
+const queryPanelVisible = ref<boolean>(true)
+const resultPanelVisible = ref<boolean>(props.params.executeOnOpen)
+const bothPanelsHidden = computed<boolean>(() => !queryPanelVisible.value && !resultPanelVisible.value)
+/**
+ * The result panel starts hidden so that a fresh console offers the full width to the query, and opens
+ * itself when the first result arrives. Any later execution respects whatever the user chose since.
+ */
+let firstResultPending: boolean = true
+
 const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
 
 const graphQLSchema = ref<GraphQLSchema>()
@@ -150,6 +160,7 @@ function pickHistoryRecord(record: GraphQLConsoleHistoryRecord): void {
     queryCode.value = record[1] || ''
     variablesCode.value = record[2] || ''
     editorTab.value = EditorTabType.Query
+    queryPanelVisible.value = true
     setTimeout(() => queryEditorRef.value?.focus())
 }
 function clearHistory(): void {
@@ -246,27 +257,39 @@ onMounted(() => {
     keymap.bind(Command.GraphQLConsole_ShareTab, props.id, () => shareTabButtonRef.value?.share())
     keymap.bind(Command.GraphQLConsole_Query_QueryEditor, props.id, () => {
         editorTab.value = EditorTabType.Query
+        queryPanelVisible.value = true
         focusQueryEditor()
     })
     keymap.bind(Command.GraphQLConsole_Query_VariablesEditor, props.id, () => {
         editorTab.value = EditorTabType.Variables
+        queryPanelVisible.value = true
         focusVariablesEditor()
     })
     keymap.bind(Command.GraphQLConsole_Query_History, props.id, () => {
         editorTab.value = EditorTabType.History
+        queryPanelVisible.value = true
         focusHistory()
     })
     keymap.bind(Command.GraphQLConsole_Query_SchemaViewer, props.id, () => {
         editorTab.value = EditorTabType.Schema
+        queryPanelVisible.value = true
         focusSchemaEditor()
+    })
+    keymap.bind(Command.GraphQLConsole_Query_TogglePanel, props.id, () => {
+        queryPanelVisible.value = !queryPanelVisible.value
     })
     keymap.bind(Command.GraphQLConsole_Result_RawResultViewer, props.id, () => {
         resultTab.value = ResultTabType.Raw
+        resultPanelVisible.value = true
         focusRawResultEditor()
     })
     keymap.bind(Command.GraphQLConsole_Result_ResultVisualizer, props.id, () => {
         resultTab.value = ResultTabType.Visualiser
+        resultPanelVisible.value = true
         focusResultVisualiser()
+    })
+    keymap.bind(Command.GraphQLConsole_Result_TogglePanel, props.id, () => {
+        resultPanelVisible.value = !resultPanelVisible.value
     })
 
     focusQueryEditor()
@@ -284,8 +307,10 @@ onUnmounted(() => {
     keymap.unbind(Command.GraphQLConsole_Query_VariablesEditor, props.id)
     keymap.unbind(Command.GraphQLConsole_Query_History, props.id)
     keymap.unbind(Command.GraphQLConsole_Query_SchemaViewer, props.id)
+    keymap.unbind(Command.GraphQLConsole_Query_TogglePanel, props.id)
     keymap.unbind(Command.GraphQLConsole_Result_RawResultViewer, props.id)
     keymap.unbind(Command.GraphQLConsole_Result_ResultVisualizer, props.id)
+    keymap.unbind(Command.GraphQLConsole_Result_TogglePanel, props.id)
 })
 
 async function executeQuery(): Promise<void> {
@@ -300,6 +325,11 @@ async function executeQuery(): Promise<void> {
         resultCode.value = await graphQLConsoleService.executeGraphQLQuery(props.params.dataPointer, queryCode.value, JSON.parse(variablesCode.value))
         loading.value = false
         lastAppliedQueryCode.value = queryCode.value
+
+        if (firstResultPending) {
+            firstResultPending = false
+            resultPanelVisible.value = true
+        }
 
         if (resultTab.value === ResultTabType.Raw) {
             focusRawResultEditor()
@@ -384,112 +414,165 @@ function focusResultVisualiser(): void {
             <VSheet class="graphql-editor-query-sections">
                 <VSideTabs
                     v-model="editorTab"
+                    v-model:visible="queryPanelVisible"
                     side="left"
+                    collapsible
                 >
                     <VTab :value="EditorTabType.Query">
                         <VIcon>mdi-database-search</VIcon>
-                        <VActionTooltip :command="Command.GraphQLConsole_Query_QueryEditor" />
+                        <VActionTooltip :command="Command.GraphQLConsole_Query_QueryEditor">
+                            {{ t('graphQLConsole.tooltip.queryEditorView') }}
+                        </VActionTooltip>
                     </VTab>
                     <VTab :value="EditorTabType.Variables">
                         <VIcon>mdi-variable</VIcon>
-                        <VActionTooltip :command="Command.GraphQLConsole_Query_VariablesEditor" />
+                        <VActionTooltip :command="Command.GraphQLConsole_Query_VariablesEditor">
+                            {{ t('graphQLConsole.tooltip.variablesEditorView') }}
+                        </VActionTooltip>
                     </VTab>
                     <VTab :value="EditorTabType.History">
                         <VIcon>mdi-history</VIcon>
-                        <VActionTooltip :command="Command.GraphQLConsole_Query_History" />
+                        <VActionTooltip :command="Command.GraphQLConsole_Query_History">
+                            {{ t('graphQLConsole.tooltip.historyView') }}
+                        </VActionTooltip>
                     </VTab>
                     <VTab :value="EditorTabType.Schema">
                         <VIcon>mdi-file-code</VIcon>
-                        <VActionTooltip :command="Command.GraphQLConsole_Query_SchemaViewer" />
+                        <VActionTooltip :command="Command.GraphQLConsole_Query_SchemaViewer">
+                            {{ t('graphQLConsole.tooltip.schemaViewerView') }}
+                        </VActionTooltip>
                     </VTab>
                 </VSideTabs>
             </VSheet>
 
-            <Splitpanes vertical>
-                <Pane class="graphql-editor-pane">
-                    <VWindow
-                        v-model="editorTab"
-                        direction="vertical"
+            <div class="graphql-editor__panes-area">
+                <Splitpanes
+                    vertical
+                    :class="[
+                        'graphql-editor__panes',
+                        { 'graphql-editor__panes--collapsed': !queryPanelVisible || !resultPanelVisible }
+                    ]"
+                >
+                    <Pane
+                        :class="[
+                            'graphql-editor-pane',
+                            { 'graphql-editor-pane--hidden': !queryPanelVisible },
+                            { 'graphql-editor-pane--full': queryPanelVisible && !resultPanelVisible }
+                        ]"
                     >
-                        <VWindowItem :value="EditorTabType.Query">
-                            <VQueryEditor
-                                ref="queryEditorRef"
-                                v-model="queryCode"
-                                :additional-extensions="queryExtensions"
-                                @update:editor="queryEditorView = $event.view"
-                            />
-                        </VWindowItem>
+                        <VWindow
+                            v-model="editorTab"
+                            direction="vertical"
+                        >
+                            <VWindowItem :value="EditorTabType.Query">
+                                <VQueryEditor
+                                    ref="queryEditorRef"
+                                    v-model="queryCode"
+                                    :additional-extensions="queryExtensions"
+                                    @update:editor="queryEditorView = $event.view"
+                                />
+                            </VWindowItem>
 
-                        <VWindowItem :value="EditorTabType.Variables">
-                            <VQueryEditor
-                                ref="variablesEditorRef"
-                                v-model="variablesCode"
-                                :additional-extensions="variablesExtensions"
-                            />
-                        </VWindowItem>
+                            <VWindowItem :value="EditorTabType.Variables">
+                                <VQueryEditor
+                                    ref="variablesEditorRef"
+                                    v-model="variablesCode"
+                                    :additional-extensions="variablesExtensions"
+                                />
+                            </VWindowItem>
 
-                        <VWindowItem :value="EditorTabType.History">
-                            <GraphQLConsoleHistory
-                                ref="historyRef"
-                                :items="historyRecords"
-                                @select-history-record="pickHistoryRecord"
-                                @update:clear-history="clearHistory"
-                            />
-                        </VWindowItem>
+                            <VWindowItem :value="EditorTabType.History">
+                                <GraphQLConsoleHistory
+                                    ref="historyRef"
+                                    :items="historyRecords"
+                                    @select-history-record="pickHistoryRecord"
+                                    @update:clear-history="clearHistory"
+                                />
+                            </VWindowItem>
 
-                        <VWindowItem :value="EditorTabType.Schema" @group:selected="initializeSchemaEditor">
-                            <VPreviewEditor
-                                ref="schemaEditorRef"
-                                v-model="schemaCode"
-                                :additional-extensions="schemaExtensions"
-                                style="height: 100%"
-                            />
-                        </VWindowItem>
-                    </VWindow>
-                </Pane>
+                            <VWindowItem :value="EditorTabType.Schema" @group:selected="initializeSchemaEditor">
+                                <VPreviewEditor
+                                    ref="schemaEditorRef"
+                                    v-model="schemaCode"
+                                    :additional-extensions="schemaExtensions"
+                                    style="height: 100%"
+                                />
+                            </VWindowItem>
+                        </VWindow>
+                    </Pane>
 
-                <Pane min-size="20" class="graphql-editor-pane">
-                    <VWindow
-                        v-model="resultTab"
-                        direction="vertical"
+                    <Pane
+                        min-size="20"
+                        :class="[
+                            'graphql-editor-pane',
+                            { 'graphql-editor-pane--hidden': !resultPanelVisible },
+                            { 'graphql-editor-pane--full': resultPanelVisible && !queryPanelVisible }
+                        ]"
                     >
-                        <VWindowItem :value="ResultTabType.Raw">
-                            <VPreviewEditor
-                                v-if="resultTab === ResultTabType.Raw"
-                                ref="rawResultEditorRef"
-                                v-model="resultCode"
-                                :placeholder="t('graphQLConsole.placeholder.results')"
-                                read-only
-                                :additional-extensions="resultExtensions"
-                            />
-                        </VWindowItem>
+                        <VWindow
+                            v-model="resultTab"
+                            direction="vertical"
+                        >
+                            <VWindowItem :value="ResultTabType.Raw">
+                                <VPreviewEditor
+                                    v-if="resultTab === ResultTabType.Raw"
+                                    ref="rawResultEditorRef"
+                                    v-model="resultCode"
+                                    :placeholder="t('graphQLConsole.placeholder.results')"
+                                    read-only
+                                    :additional-extensions="resultExtensions"
+                                />
+                            </VWindowItem>
 
-                        <VWindowItem v-if="supportsVisualisation" :value="ResultTabType.Visualiser">
-                            <ResultVisualiser
-                                v-if="resultTab === ResultTabType.Visualiser"
-                                ref="resultVisualiserRef"
-                                :catalog-pointer="params.dataPointer"
-                                :visualiser-service="visualiserService"
-                                :input-query="lastAppliedQueryCode || ''"
-                                :result="resultCode == undefined || !resultCode ? undefined : JSON.parse(resultCode)"
-                            />
-                        </VWindowItem>
-                    </VWindow>
-                </Pane>
-            </Splitpanes>
+                            <VWindowItem v-if="supportsVisualisation" :value="ResultTabType.Visualiser">
+                                <ResultVisualiser
+                                    v-if="resultTab === ResultTabType.Visualiser"
+                                    ref="resultVisualiserRef"
+                                    :catalog-pointer="params.dataPointer"
+                                    :visualiser-service="visualiserService"
+                                    :input-query="lastAppliedQueryCode || ''"
+                                    :result="resultCode == undefined || !resultCode ? undefined : JSON.parse(resultCode)"
+                                />
+                            </VWindowItem>
+                        </VWindow>
+                    </Pane>
+                </Splitpanes>
+
+                <VMissingDataIndicator
+                    v-if="bothPanelsHidden"
+                    class="graphql-editor__no-panels"
+                    icon="mdi-arrow-expand-horizontal"
+                    :title="t('graphQLConsole.placeholder.noPanelsVisible')"
+                >
+                    <template #actions>
+                        <VBtn variant="outlined" @click="queryPanelVisible = true">
+                            {{ t('graphQLConsole.button.showQueryPanel') }}
+                        </VBtn>
+                        <VBtn variant="outlined" @click="resultPanelVisible = true">
+                            {{ t('graphQLConsole.button.showResultPanel') }}
+                        </VBtn>
+                    </template>
+                </VMissingDataIndicator>
+            </div>
 
             <VSheet class="graphql-editor-result-sections">
                 <VSideTabs
                     v-model="resultTab"
+                    v-model:visible="resultPanelVisible"
                     side="right"
+                    collapsible
                 >
                     <VTab :value="ResultTabType.Raw">
                         <VIcon>mdi-code-braces</VIcon>
-                        <VActionTooltip :command="Command.GraphQLConsole_Result_RawResultViewer" />
+                        <VActionTooltip :command="Command.GraphQLConsole_Result_RawResultViewer">
+                            {{ t('graphQLConsole.tooltip.rawResultViewerView') }}
+                        </VActionTooltip>
                     </VTab>
                     <VTab v-if="supportsVisualisation" :value="ResultTabType.Visualiser">
                         <VIcon>mdi-file-tree-outline</VIcon>
-                        <VActionTooltip :command="Command.GraphQLConsole_Result_ResultVisualizer" />
+                        <VActionTooltip :command="Command.GraphQLConsole_Result_ResultVisualizer">
+                            {{ t('graphQLConsole.tooltip.resultVisualizerView') }}
+                        </VActionTooltip>
                     </VTab>
                 </VSideTabs>
             </VSheet>
@@ -506,9 +589,38 @@ function focusResultVisualiser(): void {
         display: grid;
         grid-template-columns: 3rem 1fr 3rem;
     }
+
+    // takes the place of the panes in the body grid so that the both-panels-hidden indicator can
+    // overlay only the panes, not the side tab strips
+    &__panes-area {
+        position: relative;
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    &__panes {
+        // a collapsed pane is positioned against the panes container, not the whole tab area
+        position: relative;
+
+        &--collapsed :deep(.splitpanes__splitter) {
+            display: none;
+        }
+    }
+
+    &__no-panels {
+        position: absolute;
+        inset: 0;
+        background: rgb(var(--v-theme-background));
+    }
 }
 
 .graphql-editor-pane {
+    // collapsing a panel is a discrete state change; splitpanes' width animation and the compositor
+    // promotion that goes with it would both turn it into a visible two-step
+    transition: none !important;
+    will-change: auto !important;
+
     & :deep(.v-window) {
         // we need to override the default tab window styles used in LabEditor
         position: absolute;
@@ -516,6 +628,32 @@ function focusResultVisualiser(): void {
         right: 0 !important;
         top: 0 !important;
         bottom: 0 !important;
+    }
+
+    // A collapsed pane keeps its box at its original size, and stays anchored to the edge it already
+    // sits at, so the editors inside never re-measure and never appear to move. It also has to stay
+    // below its surviving sibling — the editors are composited scrollers whose layer can outlive the
+    // frame that hid them.
+    &--hidden {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        visibility: hidden;
+        z-index: 0;
+
+        &:first-child {
+            left: 0;
+        }
+
+        &:last-child {
+            right: 0;
+        }
+    }
+
+    // the width overrides the inline one splitpanes writes on the pane element
+    &--full {
+        width: 100% !important;
+        z-index: 1;
     }
 }
 

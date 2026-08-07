@@ -246,7 +246,9 @@ body::after {
     color: var(--el-color-primary-lightest);
   }
 
-  &.v-slide-group-item--active {
+  // `v-tab--selected` is set by VTab itself; the group-level `v-tab-item--selected` is chosen by
+  // VTabs and has already been renamed once (Vuetify 3.6.0), which silently killed this rule
+  &.v-tab--selected {
     color: var(--el-color-primary-lightest);
   }
 }
