@@ -15,8 +15,17 @@ import { useDataLocale, useTabProps, useLayer } from '@/modules/entity-viewer/vi
 import { List } from 'immutable'
 import { EntityScope, EntityScopeIcons } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { getEnumKeyByValue } from '@/utils/enum.ts'
+import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
+import {
+    SchemaViewerTabFactory,
+    useSchemaViewerTabFactory
+} from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
+import { SchemaViewerTabDefinition } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabDefinition'
+import { EntitySchemaPointer } from '@/modules/schema-viewer/viewer/model/EntitySchemaPointer'
 
 const keymap: Keymap = useKeymap()
+const workspaceService: WorkspaceService = useWorkspaceService()
+const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
 const { t } = useI18n()
 
 defineProps<{
@@ -55,6 +64,20 @@ const flags = computed<List<{ title: string, prependIcon: string }>>(() => {
 
 const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
 
+/**
+ * Opens the entity schema of the collection displayed by this tab in a new schema viewer tab.
+ */
+function openEntitySchema(): void {
+    workspaceService.createTab(
+        schemaViewerTabFactory.createNew(
+            new EntitySchemaPointer(
+                tabProps.params.dataPointer.catalogName,
+                tabProps.params.dataPointer.entityType
+            )
+        )
+    )
+}
+
 onMounted(() => {
     // register grid specific keyboard shortcuts
     keymap.bind(Command.EntityViewer_ShareTab, tabProps.id, () => shareTabButtonRef.value?.share())
@@ -79,6 +102,13 @@ onUnmounted(() => {
                 :tab-data="currentData"
                 :command="Command.EntityViewer_ShareTab"
             />
+
+            <VBtn icon @click="openEntitySchema">
+                <VIcon>{{ SchemaViewerTabDefinition.icon() }}</VIcon>
+                <VTooltip activator="parent">
+                    {{ t('entityViewer.toolbar.button.openEntitySchema') }}
+                </VTooltip>
+            </VBtn>
 
             <VExecuteQueryButton :command="Command.EntityViewer_ExecuteQuery" :loading="loading" :title="t('common.button.run')" @click="emit('executeQuery')">
             </VExecuteQueryButton>

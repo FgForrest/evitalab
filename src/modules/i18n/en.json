@@ -685,6 +685,11 @@
     "notification": {
       "couldNotExecuteQuery": "Could not execute query"
     },
+    "toolbar": {
+      "button": {
+        "openEntitySchema": "Open entity schema"
+      }
+    },
     "dataLocaleSelector": {
       "item": {
         "none": "None"
