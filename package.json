@@ -32,7 +32,7 @@
     "apexcharts": "^4.7.0",
     "cm6-graphql": "^0.2.1",
     "codemirror": "^6.0.2",
-    "dompurify": "^3.4.12",
+    "dompurify": "^3.4.13",
     "graphql": "^16.11.0",
     "highlight.js": "^11.11.1",
     "immutable": "^5.1.8",
