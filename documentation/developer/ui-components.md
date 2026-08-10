@@ -128,6 +128,22 @@ Primarily use Vuetify date/time components (`VDateInput`, `VTimePicker` labs com
 registered). For combined date-time input use the custom `VDateTimeInput` (returns evitaLab
 `OffsetDateTime`-compatible values, offset picking via `VTimeOffsetPicker`).
 
+`VDateTimeInput` supports two entry modes:
+
+- **Picker wizard** — opened via the calendar icon; three steps (date → time → time offset)
+  confirmed as a whole. While the wizard is open the text field is read-only so that typed text
+  cannot diverge from the wizard state.
+- **Manual text entry** — the field is editable; typed or pasted values are committed on
+  <kbd>Enter</kbd> or blur. Parsing (`parseDateTimeInput` in `src/utils/dateTime.ts`) accepts
+  ISO 8601, SQL-like (`2007-12-03 10:15:30`), RFC 2822 and locale-based formats (derived from
+  `Intl` for the browser locale, incl. the app's own pretty-printed form with a trailing
+  `GMT±X`/`UTC` zone name — so date times displayed elsewhere in the lab can be copied straight
+  in). When the input carries an explicit time offset it is committed directly; **when it has no
+  offset, the wizard opens at the time offset step so the user picks the offset instead of the
+  component guessing one**. While focused the field shows the canonical ISO form (editable),
+  unfocused it shows the localized pretty form. Unparsable input and `min`/`max` violations are
+  reported as field errors and leave the model untouched.
+
 ## Viewer helpers
 
 - `VDownloadServerFileButton` (`viewer-support`) — download button for server files, with determinate

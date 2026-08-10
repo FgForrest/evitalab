@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon'
 import type { PrettyPrintable } from './PrettyPrintable'
-import { timeOffsetFrom } from '@/utils/dateTime'
+import { timeOffsetFrom, toLuxonZone } from '@/utils/dateTime'
+
+export { toLuxonZone }
 
 const offsetDateTimeFormatter = new Intl.DateTimeFormat([], {
     dateStyle: 'short',
@@ -44,16 +46,6 @@ export class OffsetDateTime implements PrettyPrintable {
     toString(): string {
         return DateTime.fromSeconds(Number(this.timestamp?.seconds), { zone: toLuxonZone(this.offset) }).toISO({ includeOffset: true })!
     }
-}
-
-/**
- * Converts the stored ISO offset (e.g. `Z`, `+02:00`) into a zone specifier accepted by Luxon.
- * Luxon does not recognize bare ISO offsets as zones, so they are normalized to the `UTC±HH:MM` form.
- */
-export function toLuxonZone(offset: string): string {
-    return offset === 'Z' || offset === ''
-        ? 'UTC'
-        : `UTC${offset}`
 }
 
 export class Timestamp {

@@ -114,7 +114,8 @@
         },
         "error": {
           "olderThanMin": "Date time is older than the minimum allowed.",
-          "newerThanMax": "Date time is newer than the maximum allowed."
+          "newerThanMax": "Date time is newer than the maximum allowed.",
+          "unparsable": "Unrecognized date time format. Use e.g. ISO 8601: 2007-12-03T10:15:30+01:00."
         }
       }
     }

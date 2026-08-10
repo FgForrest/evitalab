@@ -35,7 +35,9 @@ Grouped by what they are for (details in [UI components](../ui-components.md)):
   lists (see [design language](../design-language.md)).
 - **Misc** — `VActionTooltip` (tooltip that renders a `Command`'s keyboard shortcut), `VMarkdown`,
   `VMissingDataIndicator`, `VLoadingCircular`, `VListItemDivider`, `VCardTitleWithActions`,
-  `VDateTimeInput`, `VTimeOffsetPicker`, `VExecuteQueryButton`.
+  `VDateTimeInput` (combined date-time input with manual text entry and a picker wizard, see
+  [UI components — date & time](../ui-components.md#date--time)), `VTimeOffsetPicker`,
+  `VExecuteQueryButton`.
 
 ## Related
 

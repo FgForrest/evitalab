@@ -1,10 +1,11 @@
 <script setup lang="ts">
 
 import { useI18n } from 'vue-i18n'
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { DateTime } from 'luxon'
 import VTimeOffsetPicker from '@/modules/base/component/VTimeOffsetPicker.vue'
-import { timeOffsetFrom } from '@/utils/dateTime'
+import { parseDateTimeInput, timeOffsetFrom, toLuxonZone } from '@/utils/dateTime'
+import type { ParsedDateTimeInput } from '@/utils/dateTime'
 
 enum Step {
     Date = 0,
@@ -205,27 +206,149 @@ watch(
     { immediate: true }
 )
 
+function validate(dateTime: DateTime): string | undefined {
+    if (props.min != undefined && dateTime < props.min) {
+        return t('common.input.dateTime.error.olderThanMin')
+    }
+    if (props.max != undefined && dateTime > props.max) {
+        return t('common.input.dateTime.error.newerThanMax')
+    }
+    return undefined
+}
+
 const error = computed<string | undefined>(() => {
     if (computedOffsetDateTime.value == undefined) {
         return undefined
     }
-
-    if (props.min != undefined && computedOffsetDateTime.value < props.min) {
-        return t('common.input.dateTime.error.olderThanMin')
-    }
-    if (props.max != undefined && computedOffsetDateTime.value > props.max) {
-        return t('common.input.dateTime.error.newerThanMax')
-    }
-
-    return undefined
+    return validate(computedOffsetDateTime.value)
 })
 
-const displayedOffsetDateTime = computed<string>(() => {
+/**
+ * Manual text entry
+ */
+
+const isFocused = ref<boolean>(false)
+const rawText = ref<string>('')
+// whether rawText contains uncommitted user edits
+const dirty = ref<boolean>(false)
+const parseError = ref<string | undefined>(undefined)
+
+function syncTextFromModel(): void {
     if (model.value == undefined) {
-        return ''
+        rawText.value = ''
+    } else if (isFocused.value) {
+        // editable canonical form; the pretty locale form cannot be reliably parsed back
+        rawText.value = model.value.toISO({ suppressMilliseconds: true })!
+    } else {
+        rawText.value = model.value.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
     }
-    return model.value.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
-})
+    dirty.value = false
+}
+watch(model, syncTextFromModel, { immediate: true })
+
+function onTextInput(newText: string): void {
+    rawText.value = newText
+    dirty.value = true
+    parseError.value = undefined
+}
+
+function onFocus(): void {
+    isFocused.value = true
+    if (!dirty.value) {
+        syncTextFromModel()
+    }
+}
+
+function onBlur(): void {
+    isFocused.value = false
+    if (dirty.value) {
+        if (showMenu.value) {
+            // the blur was caused by interacting with the wizard (e.g. picking the offset
+            // for the typed text) — the wizard's confirm finishes the commit
+            return
+        }
+        if (!commitTypedValue()) {
+            // keep the typed text so that the user can correct it or pick the offset
+            return
+        }
+    }
+    syncTextFromModel()
+}
+
+function onEnter(): void {
+    if (dirty.value) {
+        commitTypedValue()
+    }
+}
+
+/**
+ * Parses the typed text and commits it into the model. When the text carries no explicit time
+ * offset, the wizard is opened at the time offset step instead of guessing one, and the commit
+ * is finished by the wizard's confirm.
+ *
+ * @returns whether the model was updated
+ */
+function commitTypedValue(): boolean {
+    parseError.value = undefined
+    const text: string = rawText.value.trim()
+    if (text.length === 0) {
+        clear()
+        return true
+    }
+
+    const parsed: ParsedDateTimeInput | undefined = parseDateTimeInput(text)
+    if (parsed == undefined) {
+        parseError.value = t('common.input.dateTime.error.unparsable')
+        return false
+    }
+
+    if (parsed.explicitOffset != undefined) {
+        const candidate: DateTime = DateTime.fromObject(
+            {
+                year: parsed.dateTime.year,
+                month: parsed.dateTime.month,
+                day: parsed.dateTime.day,
+                hour: parsed.dateTime.hour,
+                minute: parsed.dateTime.minute,
+                second: parsed.dateTime.second
+            },
+            { zone: toLuxonZone(parsed.explicitOffset) }
+        )
+        const validationError: string | undefined = validate(candidate)
+        if (validationError != undefined) {
+            parseError.value = validationError
+            return false
+        }
+        model.value = candidate
+        return true
+    }
+
+    // no offset in the input, let the user pick one instead of guessing
+    date.value = new Date(
+        parsed.dateTime.year,
+        parsed.dateTime.month - 1,
+        parsed.dateTime.day,
+        parsed.dateTime.hour,
+        parsed.dateTime.minute,
+        parsed.dateTime.second
+    )
+    time.value = parsed.dateTime.toFormat('HH:mm:ss')
+    showMenu.value = true
+    nextTick(() => currentStep.value = Step.TimeOffset)
+    return false
+}
+
+function toggleWizard(): void {
+    if (dirty.value) {
+        const menuWasOpen: boolean = showMenu.value
+        commitTypedValue()
+        if (!menuWasOpen && showMenu.value) {
+            // the commit already opened the wizard at the time offset step
+            return
+        }
+    }
+    showMenu.value = !showMenu.value
+}
 
 function confirm(): void {
     if (computedOffsetDateTime.value == undefined) {
@@ -241,31 +364,50 @@ function confirm(): void {
 
 function clear(): void {
     model.value = undefined
-    // todo lho clear individual data
+    date.value = undefined
+    time.value = ''
+    currentStep.value = Step.Date
+    rawText.value = ''
+    dirty.value = false
+    parseError.value = undefined
 }
 </script>
 
 <template>
     <VTextField
-        :model-value="displayedOffsetDateTime"
-        :active="showMenu"
-        :focus="showMenu"
+        :model-value="rawText"
         :label="label"
         :hint="hint"
         :disabled="disabled"
         :hide-details="hideDetails"
-        readonly
+        :error-messages="parseError"
+        :readonly="showMenu"
+        @update:model-value="onTextInput"
+        @focus="onFocus"
+        @blur="onBlur"
+        @keydown.enter="onEnter"
     >
-        <template v-if="model != undefined" #append-inner="{ isFocused }">
-<!--            todo lho fix hide icon when not focused,  -->
-            <VIcon v-show="isFocused" @click="clear">
+        <template #append-inner>
+            <VIcon
+                v-if="clearable && model != undefined"
+                @mousedown.prevent
+                @click="clear"
+            >
                 mdi-close-circle
+            </VIcon>
+            <VIcon
+                @mousedown.prevent
+                @click="toggleWizard"
+            >
+                mdi-calendar-clock
             </VIcon>
         </template>
 
         <VMenu
             v-model="showMenu"
             :close-on-content-click="false"
+            :open-on-click="false"
+            :open-on-focus="false"
             activator="parent"
             min-width="0"
         >
