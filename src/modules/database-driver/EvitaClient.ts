@@ -1,4 +1,9 @@
-import { AbstractEvitaClient } from '@/modules/database-driver/AbstractEvitaClient'
+import {
+    AbstractEvitaClient,
+    defaultCallTimeout,
+    unboundedStreamOptions,
+    userQueryTimeout
+} from '@/modules/database-driver/AbstractEvitaClient'
 import type { KyInstance } from 'ky'
 import type {
     GrpcCatalogNamesResponse,
@@ -339,12 +344,21 @@ export class EvitaClient extends AbstractEvitaClient {
         }
     }
 
+    /**
+     * Executes a GraphQL document against one of the GraphQL API instances.
+     *
+     * Defaults to {@link userQueryTimeout} because this is *semantically* the user-query method — its only
+     * callers outside this class are the GraphQL console and the entity grid, both of which run documents the
+     * user wrote. The one internal caller that does not ({@link fetchGraphQLIntrospection}) opts back down to
+     * {@link defaultCallTimeout}, which keeps the timeout classification inside the driver instead of pushing
+     * it out into UI services.
+     */
     async queryCatalogUsingGraphQL(
         catalogName: string,
         instanceType: GraphQLInstanceType,
         query: string,
         variables: Record<string, unknown> = {},
-        signal?: AbortSignal
+        timeout: number = userQueryTimeout
     ): Promise<GraphQLResponse> {
         let path
         if (instanceType === GraphQLInstanceType.System) {
@@ -374,7 +388,7 @@ export class EvitaClient extends AbstractEvitaClient {
                             query,
                             variables
                         }),
-                        signal
+                        timeout
                     }
                 )
                     .json()
@@ -387,19 +401,17 @@ export class EvitaClient extends AbstractEvitaClient {
     /**
      * Returns the built GraphQL schema for a given GraphQL API instance. The schema is fetched through
      * HTTP introspection only once per `(catalogName, instanceType)` and cached; subsequent calls reuse
-     * the cached {@link GraphQLSchema}. Pass a `signal` to bound (and genuinely cancel) the introspection
-     * request.
+     * the cached {@link GraphQLSchema}. The introspection request is bounded by
+     * {@link defaultCallTimeout} like any other metadata call.
      */
     async getGraphQLSchema(
         catalogName: string,
-        instanceType: GraphQLInstanceType,
-        signal?: AbortSignal
+        instanceType: GraphQLInstanceType
     ): Promise<GraphQLSchema> {
         return this.graphQLSchemaCache.getSchema(catalogName, instanceType, async () => {
             const introspection: IntrospectionQuery = await this.fetchGraphQLIntrospection(
                 catalogName,
-                instanceType,
-                signal
+                instanceType
             )
             const introspectionHash: string = this._persistentCacheLayer
                 .persistGraphQLIntrospection(catalogName, instanceType, introspection)
@@ -423,13 +435,11 @@ export class EvitaClient extends AbstractEvitaClient {
      */
     async refreshGraphQLSchema(
         catalogName: string,
-        instanceType: GraphQLInstanceType,
-        signal?: AbortSignal
+        instanceType: GraphQLInstanceType
     ): Promise<boolean> {
         const introspection: IntrospectionQuery = await this.fetchGraphQLIntrospection(
             catalogName,
-            instanceType,
-            signal
+            instanceType
         )
         // the disk copy is updated regardless of the outcome: it is now provably the current one
         const freshHash: string = this._persistentCacheLayer
@@ -462,15 +472,15 @@ export class EvitaClient extends AbstractEvitaClient {
      */
     private async fetchGraphQLIntrospection(
         catalogName: string,
-        instanceType: GraphQLInstanceType,
-        signal?: AbortSignal
+        instanceType: GraphQLInstanceType
     ): Promise<IntrospectionQuery> {
         const response: GraphQLResponse = await this.queryCatalogUsingGraphQL(
             catalogName,
             instanceType,
             getIntrospectionQuery(),
             {},
-            signal
+            // introspection is metadata, not a user query, so it opts down to the short default
+            defaultCallTimeout
         )
         return response.data as IntrospectionQuery
     }
@@ -883,59 +893,74 @@ export class EvitaClient extends AbstractEvitaClient {
         }
     }
     async *duplicateCatalogWithProgress(catalogName: string, newCatalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
-        for await (const progress of this.evitaClient.duplicateCatalogWithProgress({
-            catalogName,
-            newCatalogName
-        })) {
+        for await (const progress of this.evitaClient.duplicateCatalogWithProgress(
+            {
+                catalogName,
+                newCatalogName
+            },
+            unboundedStreamOptions
+        )) {
             yield this.mutationProgressConverter.convertMutationWithProgress(progress)
         }
     }
 
     async *renameCatalogWithProgress(catalogName: string, newCatalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
-        for await (const progress of this.evitaClient.renameCatalogWithProgress({
-            catalogName,
-            newCatalogName
-        })) {
+        for await (const progress of this.evitaClient.renameCatalogWithProgress(
+            {
+                catalogName,
+                newCatalogName
+            },
+            unboundedStreamOptions
+        )) {
             yield this.mutationProgressConverter.convertMutationWithProgress(progress)
         }
     }
 
     async *deactivateCatalogWithProgress(catalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
-        for await (const progress of this.evitaClient.deactivateCatalogWithProgress({
-            catalogName
-        })) {
+        for await (const progress of this.evitaClient.deactivateCatalogWithProgress(
+            {
+                catalogName
+            },
+            unboundedStreamOptions
+        )) {
             yield this.mutationProgressConverter.convertMutationWithProgress(progress)
         }
     }
 
     async *activateCatalogWithProgress(catalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
-        for await (const progress of this.evitaClient.activateCatalogWithProgress({
-            catalogName
-        })) {
+        for await (const progress of this.evitaClient.activateCatalogWithProgress(
+            {
+                catalogName
+            },
+            unboundedStreamOptions
+        )) {
             yield this.mutationProgressConverter.convertMutationWithProgress(progress)
         }
     }
 
     async *makeCatalogAliveWithProgress(catalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
-        for await (const progress of this.evitaClient.makeCatalogAliveWithProgress({ catalogName })){
+        for await (const progress of this.evitaClient.makeCatalogAliveWithProgress({ catalogName }, unboundedStreamOptions)){
             yield this.mutationProgressConverter.convertMutationWithProgress(progress)
         }
     }
 
     async *makeCatalogImmutableWithProgress(catalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
-        for await (const progress of this.evitaClient.makeCatalogImmutableWithProgress({ catalogName })){
+        for await (const progress of this.evitaClient.makeCatalogImmutableWithProgress({ catalogName }, unboundedStreamOptions)){
             yield this.mutationProgressConverter.convertMutationWithProgress(progress)
         }
     }
 
     async *makeCatalogMutable(catalogName: string): AsyncIterable<ApplyMutationWithProgressResponse> {
-        for await (const progress of this.evitaClient.makeCatalogMutableWithProgress({ catalogName })){
+        for await (const progress of this.evitaClient.makeCatalogMutableWithProgress({ catalogName }, unboundedStreamOptions)){
             yield this.mutationProgressConverter.convertMutationWithProgress(progress)
         }
     }
 
     async *replaceCatalogWithProgress(catalogNameToBeReplacedWith: string, catalogNameToBeReplaced: string):AsyncIterable<ApplyMutationWithProgressResponse> {
-        for await (const progress of this.evitaClient.replaceCatalogWithProgress({catalogNameToBeReplacedWith, catalogNameToBeReplaced})) {
+        for await (const progress of this.evitaClient.replaceCatalogWithProgress(
+            {catalogNameToBeReplacedWith, catalogNameToBeReplaced},
+            unboundedStreamOptions
+        )) {
             yield this.mutationProgressConverter.convertMutationWithProgress(progress)
         }
     }
@@ -970,7 +995,7 @@ export class EvitaClient extends AbstractEvitaClient {
                     sinceVersion: options?.sinceVersion,
                     sinceIndex: options?.sinceIndex
                 },
-                { signal: options?.signal }
+                { ...unboundedStreamOptions, signal: options?.signal }
             )) {
                 yield this.registerSystemChangeCaptureResponseConverter.convert(response)
             }

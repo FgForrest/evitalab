@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { asError } from '@/utils/error'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onBeforeMount, onMounted, onUnmounted, ref } from 'vue'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import { SchemaViewerService, useSchemaViewerService } from '@/modules/schema-viewer/viewer/service/SchemaViewerService'
 import type { Toaster } from '@/modules/notification/service/Toaster'
@@ -43,12 +43,18 @@ defineExpose<TabComponentExpose>({
             throw new UnexpectedError('Cannot apply schema path factory.')
         }
         return schemaPathFactory.resolvePath(props.params.dataPointer.connection, schemaPointer)
+    },
+    retry(): void {
+        initialize()
     }
 })
 
+// registered at setup top level on purpose: a retry does not remount the component (the tab framework keeps
+// it alive and only re-runs `initialize()`), so this registration must outlive every retry and is released
+// exactly once, in `onUnmounted`
 const schemaChangeCallbackId = schemaViewerService.registerSchemaChangeCallback(
     props.params.dataPointer,
-    async () => await loadSchema()
+    async () => await reportedLoadSchema()
 )
 
 const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | null>(null)
@@ -56,27 +62,47 @@ const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | null>(null)
 const schemaLoaded = ref<boolean>(false)
 const schema = ref<Schema | undefined>()
 const reloadingSchema = ref<boolean>(false)
-const title = ref<ImmutableList<string>>()
 
-async function loadTitle(): Promise<void> {
-    await loadSchema()
+const title: ImmutableList<string> = (() => {
     const schemaPointer: SchemaPointer = props.params.dataPointer.schemaPointer
-
     if (schemaPointer.schemaType === SchemaType.Catalog) {
-        title.value = ImmutableList.of(schemaPointer.schemaName)
-    } else {
-        title.value = ImmutableList.of(
-            t(`schemaViewer.title.schema.${schemaPointer.schemaType}`),
-            schemaPointer.schemaName
-        )
+        return ImmutableList.of(schemaPointer.schemaName)
     }
-}
+    return ImmutableList.of(
+        t(`schemaViewer.title.schema.${schemaPointer.schemaType}`),
+        schemaPointer.schemaName
+    )
+})()
 
 async function loadSchema(): Promise<void> {
+    schema.value = await schemaViewerService.getSchema(props.params.dataPointer)
+}
+
+/**
+ * Loads the schema and marks the tab ready. On any failure — including the fetch exceeding the driver's call
+ * deadline — reports the error to the tab framework so it can offer a retry, instead of rendering the tab
+ * with no schema at all. Reused by both mount and retry.
+ */
+function initialize(): void {
+    loadSchema()
+        .then(() => {
+            schemaLoaded.value = true
+            emit('ready')
+        })
+        .catch(e => {
+            emit('error', asError(e))
+        })
+}
+
+/**
+ * Reloads the schema of an already-working tab. Unlike {@link initialize} it only reports the failure, because
+ * a background reload must never replace displayed content with an error screen.
+ */
+async function reportedLoadSchema(): Promise<void> {
     try {
-        schema.value = await schemaViewerService.getSchema(props.params.dataPointer)
+        await loadSchema()
     } catch (e) {
-        await toaster.error('Could not load schema', asError(e)) // todo lho i18n
+        await toaster.error(t('schemaViewer.notification.couldNotLoadSchema'), asError(e))
     }
 }
 
@@ -92,8 +118,10 @@ async function reloadSchema(): Promise<void> {
     }
 }
 
-onMounted(async () => {
-    await loadTitle()
+onBeforeMount(() => {
+    initialize()
+})
+onMounted(() => {
     // register schema viewer specific keyboard shortcuts
     keymap.bind(Command.SchemaViewer_ShareTab, props.id, () => shareTabButtonRef.value?.share())
 })
@@ -106,16 +134,11 @@ onUnmounted(() => {
     // unregister schema viewer specific keyboard shortcuts
     keymap.unbind(Command.SchemaViewer_ShareTab, props.id)
 })
-
-loadSchema().then(() => {
-    schemaLoaded.value = true
-    emit('ready')
-})
 </script>
 
 <template>
     <div
-        v-if="schemaLoaded && title"
+        v-if="schemaLoaded"
         class="schema-viewer"
     >
         <VTabToolbar

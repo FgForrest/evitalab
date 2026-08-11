@@ -1,9 +1,11 @@
 import { List as ImmutableList } from 'immutable'
 import { Code, ConnectError } from '@connectrpc/connect'
+import type { CallOptions } from '@connectrpc/connect'
 import type {
     EvitaSessionServiceClient,
     EvitaTrafficRecordingServiceClient
 } from '@/modules/database-driver/AbstractEvitaClient'
+import { userQueryTimeout } from '@/modules/database-driver/AbstractEvitaClient'
 import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
 import { InstanceTerminatedError } from '@/modules/database-driver/exception/InstanceTerminatedError'
 import {
@@ -285,6 +287,18 @@ export class EvitaClientSession {
     }
 
     /**
+     * Returns the {@link callMetadata} widened with an explicit deadline for a single call. Without one, the
+     * transport-wide default deadline applies; pass one only for calls that are legitimately allowed to run
+     * longer than metadata, which on this session means anything carrying a user-issued query.
+     *
+     * The classification lives here rather than in the callers above the driver: this class is what knows
+     * which gRPC method is a query, and no signature outside the driver has to mention timeouts because of it.
+     */
+    private async callOptions(timeoutMs: number): Promise<CallOptions> {
+        return { ...(await this.callMetadata()), timeoutMs }
+    }
+
+    /**
      * Returns catalog schema of the catalog this session is connected to.
      */
     async getCatalogSchema(): Promise<CatalogSchema> {
@@ -340,7 +354,8 @@ export class EvitaClientSession {
         this.assertActive()
         try {
             const response: GrpcGoLiveAndCloseResponse = await this.evitaSessionClientProvider()
-                .goLiveAndClose({}, await this.callMetadata())
+                // the whole warm-up-to-alive transition happens inside this call, so it is patient by nature
+                .goLiveAndClose({}, await this.callOptions(userQueryTimeout))
 
             if (response.success) {
                 this._active = false
@@ -438,7 +453,8 @@ export class EvitaClientSession {
                     {
                         query
                     },
-                    await this.callMetadata()
+                    // a query the user wrote; on a large catalog it may legitimately run for minutes
+                    await this.callOptions(userQueryTimeout)
                 )
 
             for (const entity of queryResponse.recordPage?.sealedEntities || []) {
@@ -519,7 +535,8 @@ export class EvitaClientSession {
                         nameStartsWith,
                         limit
                     },
-                    await this.callMetadata()
+                    // a cardinality scan over the whole recording buffer, not a metadata lookup
+                    await this.callOptions(userQueryTimeout)
                 )
             return ImmutableList(response.labelName || [])
         } catch (e) {
@@ -544,7 +561,8 @@ export class EvitaClientSession {
                         valueStartsWith,
                         limit
                     },
-                    await this.callMetadata()
+                    // a cardinality scan over the whole recording buffer, not a metadata lookup
+                    await this.callOptions(userQueryTimeout)
                 )
             return ImmutableList(response.labelValue || [])
         } catch (e) {
@@ -648,12 +666,14 @@ export class EvitaClientSession {
             } as GetTrafficHistoryListRequest
 
             let response: GetTrafficHistoryListResponse
+            // a criteria search over the recording buffer, which on a busy catalog behaves like a user query
+            const callOptions: CallOptions = await this.callOptions(userQueryTimeout)
             if (!reverse) {
                 response = await this.evitaTrafficRecordingClientProvider()
-                    .getTrafficRecordingHistoryList(request, await this.callMetadata())
+                    .getTrafficRecordingHistoryList(request, callOptions)
             } else {
                 response = await this.evitaTrafficRecordingClientProvider()
-                    .getTrafficRecordingHistoryListReversed(request, await this.callMetadata())
+                    .getTrafficRecordingHistoryListReversed(request, callOptions)
             }
             return this.trafficRecordingConverterProvider()
                 .convertGrpcTrafficRecords(response.trafficRecord)
@@ -697,7 +717,8 @@ export class EvitaClientSession {
             } as GetMutationsHistoryPageRequest;
 
 
-            const response: GetMutationsHistoryPageResponse = await this.evitaSessionClientProvider().getMutationsHistoryPage(request, await this.callMetadata())
+            // a wide time range over a busy catalog scans the WAL, so this is a query rather than metadata
+            const response: GetMutationsHistoryPageResponse = await this.evitaSessionClientProvider().getMutationsHistoryPage(request, await this.callOptions(userQueryTimeout))
             const captures: ChangeCatalogCapture[] = truncateBelowBoundary(
                 response.changeCapture.map(i => this.mutationHistoryConverterProvider().convertGrpcMutationHistory(i)),
                 mutationHistoryRequest.newerThanVersion
@@ -715,7 +736,7 @@ export class EvitaClientSession {
             let transactionCaptures:ChangeCatalogCapture[] = [];
             if (mutationHistoryRequest.loadTransaction) {
                 const transactionRequest: GetTransactionOverviewRequest = {catalogVersion: catalogVersionIdList} as GetTransactionOverviewRequest
-                const transactionResponse: GetTransactionOverviewResponse = await this.evitaSessionClientProvider().getTransactionOverview(transactionRequest, await this.callMetadata())
+                const transactionResponse: GetTransactionOverviewResponse = await this.evitaSessionClientProvider().getTransactionOverview(transactionRequest, await this.callOptions(userQueryTimeout))
                 transactionCaptures = transactionResponse.transactionOverviews.map(i => this.convertGrpcTransactionOverview(i));
             }
 

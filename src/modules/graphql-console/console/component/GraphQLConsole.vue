@@ -79,12 +79,6 @@ enum ResultTabType {
     Visualiser = 'visualiser'
 }
 
-/**
- * Upper bound for the initial GraphQL schema introspection. On expiry the request is aborted and the tab
- * switches to its error/retry state instead of showing the loading screen indefinitely.
- */
-const schemaLoadTimeoutMs = 15_000
-
 const keymap: Keymap = useKeymap()
 const graphQLConsoleService: GraphQLConsoleService = useGraphQLConsoleService()
 const workspaceService: WorkspaceService = useWorkspaceService()
@@ -232,8 +226,8 @@ async function formatFocusedEditor(mode: DocumentFormattingMode): Promise<void> 
     }
 }
 
-async function loadGraphQLSchema(signal?: AbortSignal): Promise<void> {
-    const schema: GraphQLSchema = await graphQLConsoleService.getGraphQLSchema(props.params.dataPointer, signal)
+async function loadGraphQLSchema(): Promise<void> {
+    const schema: GraphQLSchema = await graphQLConsoleService.getGraphQLSchema(props.params.dataPointer)
     graphQLSchema.value = schema
     queryLanguageExtension = graphql(schema)
     applyQueryLanguage()
@@ -257,12 +251,12 @@ function applyQueryLanguage(): void {
 watch(queryEditorView, () => applyQueryLanguage())
 
 /**
- * Loads the GraphQL schema (bounded by a request timeout) and marks the tab ready. On any failure —
- * including a timed-out/aborted introspection — reports the error to the tab framework so it can offer
- * a retry, instead of leaving the tab stuck behind the loading screen. Reused by both mount and retry.
+ * Loads the GraphQL schema and marks the tab ready. On any failure — including the introspection exceeding
+ * the driver's default call deadline — reports the error to the tab framework so it can offer a retry,
+ * instead of leaving the tab stuck behind the loading screen. Reused by both mount and retry.
  */
 function initialize(): void {
-    loadGraphQLSchema(AbortSignal.timeout(schemaLoadTimeoutMs))
+    loadGraphQLSchema()
         .then(() => {
             initialized.value = true
             emit('ready')

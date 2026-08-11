@@ -41,11 +41,11 @@ export class GraphQLConsoleService {
     }
 
     /**
-     * Fetches a (cached) GraphQL schema for a given evitaDB server and catalog. Pass a `signal` to bound
-     * and cancel the underlying introspection request.
+     * Fetches a (cached) GraphQL schema for a given evitaDB server and catalog. The underlying introspection
+     * request is bounded by the driver's default call deadline.
      */
-    async getGraphQLSchema(dataPointer: GraphQLConsoleDataPointer, signal?: AbortSignal): Promise<GraphQLSchema> {
-        return this.evitaClient.getGraphQLSchema(dataPointer.catalogName, dataPointer.instanceType, signal)
+    async getGraphQLSchema(dataPointer: GraphQLConsoleDataPointer): Promise<GraphQLSchema> {
+        return this.evitaClient.getGraphQLSchema(dataPointer.catalogName, dataPointer.instanceType)
     }
 
     /**

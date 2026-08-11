@@ -31,6 +31,77 @@ The client is modeled after the evitaDB Java/C# drivers, simplified for evitaLab
 | `EvitaServerMetadataCache`, `EvitaCatalogStatisticsCache` | Caches for server metadata and catalog statistics |
 | `cache/PersistentCacheLayer` | On-disk (L2) half of the caches above — encoding, hydration and revalidation of persisted server data (see [persistent cache](#persistent-cache-l2)) |
 
+## Deadlines & cancellation
+
+Ported from the official evitaDB **Java driver** (`io.evitadb.driver.config.ClientTimeoutOptions`): a
+client-wide default deadline, an explicit opt-up for the few genuinely slow calls, and cancellation kept as a
+separate concept. Both constants live in `AbstractEvitaClient.ts`:
+
+| Class | Constant | Where it is set | Calls |
+|---|---|---|---|
+| **Default (metadata)** | `defaultCallTimeout` = 15 s | `createGrpcWebTransport({ defaultTimeoutMs })` **and** `ky.create({ timeout })` | everything not listed below — schemas, statistics, session creation, listings, GraphQL introspection, the JFR observability endpoints¹ |
+| **Extended (user queries)** | `userQueryTimeout` = 300 s | explicit `timeoutMs` / `timeout` at the driver call site | the call sites enumerated below |
+| **Streams** | `unboundedStreamOptions` (`{ timeoutMs: 0 }`) | every streaming call site | the 10 call sites enumerated below |
+
+**Nothing above the driver ever passes a timeout.** A UI service calls
+`evitaClient.queryCatalog(...)` with no timeout argument; `EvitaClientSession` attaches the extended
+`timeoutMs` because *it* knows which gRPC method is a query. The classification is per gRPC method, decided in
+the driver, so no signature outside `database-driver` mentions deadlines. `AbortSignal` survives only for
+**deliberate cancellation** (`DataCacheRefresher`'s heartbeat watchdog, `fetchFileStream`), which is a different
+concept with a different error code (`Code.Canceled` vs `Code.DeadlineExceeded`).
+
+`EvitaClientSession.callOptions(timeoutMs)` widens the session's call metadata with a deadline for one call.
+
+¹ The three JFR observability endpoints (`getRecordingEventTypes`, `startRecording`, `stopRecording`) were
+*inspected and judged* fast rather than measured — they are the HTTP calls that dropped from ky's former
+client-wide 5 minutes to 15 s. `startRecording` on a loaded JVM is the plausible exception; if JFR start/stop
+ever trips the bound, give those calls an explicit `timeout: userQueryTimeout`, exactly as
+`queryCatalogUsingGraphQL` has.
+
+**Extended-timeout call sites** — a miss here breaks a working feature at 15 s:
+
+- `EvitaClientSession.query()` (evitaQL console **and** the entity grid)
+- `EvitaClientSession.getMutationHistory()` (both `getMutationsHistoryPage` and `getTransactionOverview`)
+- `EvitaClientSession.getRecordings()` (both the forward and reversed variants)
+- `EvitaClientSession.getLabelNamesOrderedByCardinality()` / `getLabelValuesOrderedByCardinality()` —
+  cardinality scans over the whole recording buffer
+- `EvitaClientSession.goLiveAndClose()`
+- `EvitaClient.queryCatalogUsingGraphQL()` — see [GraphQL access](#graphql-access) for why this one *defaults*
+  to the extended timeout and the introspection caller opts back down
+- `EvitaClientManagement.restoreCatalogUnary()` — already carried its own `{ timeoutMs: fileChunkUploadTimeout }`
+
+Verified to need **nothing**: `backupCatalog`, `fullBackupCatalog` and `exportTrafficRecording` return a queued
+`TaskStatus` immediately rather than doing the work inline, so they stay at the default.
+
+**Streams must opt out.** connect-web applies `defaultTimeoutMs` to `stream()` as well as `unary()`, and
+`timeoutMs` is a *whole-call* deadline — so a healthy long-lived stream would be killed the moment it expires.
+**Rule: any new streaming gRPC call must pass `unboundedStreamOptions`.** Nothing enforces this mechanically —
+a forgotten opt-out compiles, type-checks and passes tests, and only breaks at runtime once the transfer
+outlives 15 s. The current 10 sites: the eight `*WithProgress` catalog operations and
+`registerSystemChangeCapture` in `EvitaClient`, and `fetchFile` in `EvitaClientManagement`.
+
+Note what the opt-out does *not* do: it removes the deadline without replacing it. The Java driver instead
+re-arms a **per-message** deadline (`streamingTimeout`, 300 s, reset after every received message), which
+connect-web's whole-call `timeoutMs` cannot express. evitaLab's only equivalent is `DataCacheRefresher`'s
+heartbeat watchdog on the system-CDC stream; the other nine streams have none — a pre-existing gap.
+
+**Worst case is not a single deadline.** One `queryCatalog` can be up to three sequential bounded calls
+(catalog statistics → session creation → the logic), i.e. ~45 s, and ~90 s if the single `Unauthenticated`
+session retry also fires. Against a fully hung server the first call absorbs the deadline and the caller fails
+at ~15 s; only a selectively hung server reaches the multiples.
+
+**Schema fetches deliberately keep the 15 s default.** `fetchLatestCatalogSchema` / `fetchLatestEntitySchema`
+sit on the init critical path of the schema viewer and entity viewer tabs, and they are metadata — the Java
+driver bounds the same calls at 5 s. If a large catalog ever proves slower than 15 s over gRPC-web, the fix is
+an explicit larger `timeoutMs` on those two call sites, **not** a raised global: raising the global would
+un-bound every other metadata call again.
+
+**A deadline counts as an outage signal.** `isConnectivityError` treats `Code.DeadlineExceeded` as
+"server unreachable", so a call that exceeds its deadline flips evitaLab into
+[offline state](#offline-state--is-evitalab-offline). This is intentional — a metadata call that cannot answer
+in 15 s *is* an unresponsive server — and it is self-healing: the next successful response on either transport
+clears it.
+
 ## Sessions
 
 Sessions are expensive; evitaLab deliberately deviates from other drivers:
@@ -127,11 +198,15 @@ is thrown.
 
 ### GraphQL access
 
-`queryCatalogUsingGraphQL(catalogName, instanceType, query, variables, signal?)` posts to the
+`queryCatalogUsingGraphQL(catalogName, instanceType, query, variables, timeout?)` posts to the
 server's GraphQL HTTP API (`GraphQLInstanceType.Data | Schema | System`). This is used by the
-GraphQL console and the entity viewer's GraphQL query executor. The optional `signal` is threaded
-into ky, so a caller can bound and genuinely cancel a request (the GraphQL console uses this to time
-out schema introspection — see the GraphQL schema cache below).
+GraphQL console and the entity viewer's GraphQL query executor.
+
+`timeout` defaults to `userQueryTimeout` because this is *semantically* the user-query method — every caller
+outside the class runs a document the user wrote. The direction is therefore inverted relative to gRPC: the one
+internal caller that is **not** a user query (`fetchGraphQLIntrospection`) opts back *down* to
+`defaultCallTimeout`. Defaulting the other way round would force both UI call sites to pass a timeout, pushing
+the classification out of the driver — see [deadlines & cancellation](#deadlines--cancellation).
 
 #### GraphQL schema cache
 
@@ -140,13 +215,13 @@ viewer tab), obtained via an HTTP introspection query. `GraphQLSchemaCache` cach
 schema** so opening or reopening N consoles for the same GraphQL API instance does not trigger N
 introspections. `EvitaClient` holds a single instance and exposes:
 
-- `getGraphQLSchema(catalogName, instanceType, signal?)` — cache-through: returns the cached schema
-  or introspects (via `queryCatalogUsingGraphQL` + `buildClientSchema`) and caches it. The `signal`
-  only bounds the fetch, not the cache key.
+- `getGraphQLSchema(catalogName, instanceType)` — cache-through: returns the cached schema
+  or introspects (via `queryCatalogUsingGraphQL` + `buildClientSchema`) and caches it. The introspection is
+  bounded by `defaultCallTimeout` like any other metadata call.
 - `registerGraphQLSchemaChangedCallback(catalogName, instanceType, cb)` / `unregister…(…, id)` — the
   console listens **only** on this channel (not on the catalog-schema callbacks) to avoid double
   reloads on a catalog change.
-- `refreshGraphQLSchema(catalogName, instanceType, signal?)` — backs the console's manual "Reload GraphQL
+- `refreshGraphQLSchema(catalogName, instanceType)` — backs the console's manual "Reload GraphQL
   schema" button. Re-introspects **first** and swaps + notifies only when the result really changed, so a
   reload that cannot reach the server keeps the schema the console is browsing; see
   [manual refresh](#manual-refresh-fetch-first-never-clear).
@@ -602,7 +677,7 @@ fetch-first entry points:
 |---|---|
 | `refreshCatalogSchema(catalogName)` | schema viewer reload (`SchemaViewerService.refreshSchema`) |
 | `refreshEntitySchema(catalogName, entityType)` | ditto, entity-level |
-| `refreshGraphQLSchema(catalogName, instanceType, signal?)` | GraphQL console's *Reload GraphQL schema* |
+| `refreshGraphQLSchema(catalogName, instanceType)` | GraphQL console's *Reload GraphQL schema* |
 | `EvitaClientManagement.refreshCatalogStatistics()` | background revalidation of the catalog listing |
 
 All follow **fetch → compare → swap → notify**: fetch fresh *first*; on success overwrite L1 + L2 and fire the
@@ -777,10 +852,21 @@ errors into evitaLab error types derived from `LabError` (`modules/base/exceptio
 (services/components) therefore catch evitaLab errors, not gRPC errors — display them via
 `useToaster().error(title, error)` (see [guidelines](guidelines.md#error-handling)).
 
-`ConnectError` is passed through **unchanged**, and three contracts depend on that: `Code.Unauthenticated`
+`ConnectError` is mapped by `Code`, and **only for the two codes whose raw message would otherwise reach the
+user verbatim** — everything that renders a driver error (the toaster, `TabLoadingScreen`) renders `message` as
+it is, and `[deadline_exceeded] the operation timed out` is not an answer:
+
+| `Code` | Becomes |
+|---|---|
+| `DeadlineExceeded` | `TimeoutError` — *"Request timed out. Please check your settings of connection '…'"* |
+| `Unavailable` | `EvitaDBInstanceNetworkError` |
+
+Every other code is passed through **unchanged**, and three contracts depend on that: `Code.Unauthenticated`
 (the server-dropped-session retry in `executeInSharedSession`), `Code.InvalidArgument` (the already-closed
-swallow in `session.close()`) and `Code.Canceled` (the documented `fetchFileStream` cancellation contract).
-Do not start mapping those to `LabError` types.
+swallow in `session.close()`, plus the traffic/mutation history's specific error states) and `Code.Canceled`
+(the documented `fetchFileStream` cancellation contract). All three are matched by callers *after* the
+transformation, so do not start mapping those to `LabError` types. Pinned by
+`test/modules/database-driver/errorTransformer.test.ts`.
 
 ### Telling "unreachable" apart from "failed"
 
@@ -832,7 +918,8 @@ Recovery is observed on **both transports**, and both are needed:
 
 **Every HTTP call to the evitaDB server must therefore go through `httpApiClient`** (exposed to
 `EvitaClientManagement` as `EvitaClient.httpClient`), never raw `ky`: raw calls bypass both this hook and the
-client's 5-minute timeout, and ky's 10 s default is itself a latch trigger via `TimeoutError`.
+client's [default deadline](#deadlines--cancellation), and ky's own 10 s default is itself a latch trigger via
+`TimeoutError`.
 `DemoSnippetResolver` is the one legitimate raw `ky` user — it does not talk to the evitaDB server.
 
 Recovery is otherwise self-correcting without polling: the CDC stream retries on its own backoff and the

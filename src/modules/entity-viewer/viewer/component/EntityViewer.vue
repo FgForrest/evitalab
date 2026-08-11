@@ -68,16 +68,22 @@ defineExpose<TabComponentExpose>({
                 SubjectPathItem.significant(EntityViewerTabDefinition.icon(), dataPointer.entityType)
             ]
         )
+    },
+    retry(): void {
+        initialize()
     }
 })
 
 // static data
 const title = ImmutableList.of(props.params.dataPointer.entityType)
 
-const sortedEntityPropertyKeys: string[] = []
+let sortedEntityPropertyKeys: string[] = []
 let entityPropertyDescriptors: EntityPropertyDescriptor[] = []
 const entityPropertyDescriptorIndex = ref<ImmutableMap<string, EntityPropertyDescriptor>>(ImmutableMap<string, EntityPropertyDescriptor>())
 provideEntityPropertyDescriptorIndex(entityPropertyDescriptorIndex)
+// registered at setup top level on purpose: a retry does not remount the component (the tab framework keeps
+// it alive and only re-runs `initialize()`), so this registration must outlive every retry and is released
+// exactly once, in `onUnmounted`
 const entitySchemaChangedCallbackId: string = entityViewerService.registerEntitySchemaChangeCallback(
     props.params.dataPointer,
     async () => await reloadEntityPropertyDescriptors()
@@ -192,10 +198,16 @@ watch(currentData, (data) => {
     emit('update:data', data)
 })
 
-onBeforeMount(() => {
-    // note: we can't use async/await here, because that would make this component async which currently doesn't seem to work
-    // properly in combination with dynamic <component> rendering and tabs
-
+/**
+ * Loads everything the grid needs before it can render anything — data locales, property descriptors, grid
+ * headers — and marks the tab ready. On any failure, including one of the calls exceeding the driver's call
+ * deadline, reports the error to the tab framework so it can offer a retry, instead of leaving the tab stuck
+ * behind the loading screen. Reused by both mount and retry.
+ *
+ * Note: we can't use async/await here, because that would make this component async which currently doesn't
+ * seem to work properly in combination with dynamic <component> rendering and tabs.
+ */
+function initialize(): void {
     entityViewerService.getDataLocales(props.params.dataPointer)
         .then(dl => {
             dataLocales = dl.map(x => x.languageTag)
@@ -221,8 +233,12 @@ onBeforeMount(() => {
             }
         })
         .catch(error => {
-            toaster.error('Could not initialize entity viewer', error).then() // todo lho i18n
+            emit('error', asError(error))
         })
+}
+
+onBeforeMount(() => {
+    initialize()
 })
 
 async function reloadEntityPropertyDescriptors(): Promise<void> {
@@ -243,19 +259,26 @@ async function reloadEntityPropertyDescriptors(): Promise<void> {
     displayedEntityProperties.value = displayedEntityProperties.value.filter(it => !removeDisplayProperties.includes(it.toString()))
 }
 
+/**
+ * Rebuilds both the descriptor index and the property display order from scratch. Called again on every retry
+ * and on every schema change, so neither structure may be appended to — {@link sortedEntityPropertyKeys} is
+ * replaced rather than pushed into.
+ */
 function constructEntityPropertyDescriptorIndex(entityPropertyDescriptors: EntityPropertyDescriptor[]): ImmutableMap<string, EntityPropertyDescriptor> {
     const entityPropertyDescriptorIndexBuilder: Map<string, EntityPropertyDescriptor> = new Map()
+    const propertyKeysInOrder: string[] = []
     for (const entityPropertyDescriptor of entityPropertyDescriptors) {
         entityPropertyDescriptorIndexBuilder.set(entityPropertyDescriptor.key.toString(), entityPropertyDescriptor)
         entityPropertyDescriptor.children.forEach(childPropertyDescriptor => {
             entityPropertyDescriptorIndexBuilder.set(childPropertyDescriptor.key.toString(), childPropertyDescriptor)
         })
 
-        sortedEntityPropertyKeys.push(entityPropertyDescriptor.key.toString())
+        propertyKeysInOrder.push(entityPropertyDescriptor.key.toString())
         for (const childEntityPropertyDescriptor of entityPropertyDescriptor.children) {
-            sortedEntityPropertyKeys.push(childEntityPropertyDescriptor.key.toString())
+            propertyKeysInOrder.push(childEntityPropertyDescriptor.key.toString())
         }
     }
+    sortedEntityPropertyKeys = propertyKeysInOrder
     return ImmutableMap(entityPropertyDescriptorIndexBuilder)
 }
 

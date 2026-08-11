@@ -8,6 +8,7 @@ import VDateTimeInput from '@/modules/base/component/VDateTimeInput.vue'
 import type { VForm } from 'vuetify/components'
 import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { asError } from '@/utils/error'
 
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useToaster } from '@/modules/notification/service/Toaster'
@@ -166,7 +167,13 @@ async function loadEntityTypes(): Promise<void> {
 }
 
 onMounted(async () => {
-    await loadEntityTypes()
+    // reported rather than propagated: the tab around this filter is already interactive, and without the
+    // entity types the filter merely degrades to an empty dropdown
+    try {
+        await loadEntityTypes()
+    } catch (e) {
+        await toaster.error(t('mutationHistoryViewer.filter.notification.couldNotLoadEntityTypes'), asError(e))
+    }
 })
 
 const areaTypeItems = [
