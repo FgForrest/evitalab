@@ -66,53 +66,55 @@ function openTo(): void {
 
 <template>
     <table class="properties-table">
-        <tr class="properties-table__row">
-            <td>{{ t('relationViewer.title') }}</td>
-            <td class="content-row">
-                <VChip @click="openFrom"
-                       variant="outlined"
-                       class="clickable" dense>
-                    {{ referenceSchemaPointer.entityType }}
-                    <VTooltip activator="parent">
-                        {{ t('relationViewer.managedByEvita') }}
-                    </VTooltip>
-                </VChip>
-                <div>
-                    <VIcon class="icon" :icon="icon" />
-                    <VTooltip activator="parent">
-                        {{ t(`common.cardinality.${schema.cardinality}`) }}
-                    </VTooltip>
-                </div>
-                <VChip @click="schema.referencedEntityTypeManaged ? openTo() : null"
-                       :variant="schema.referencedEntityTypeManaged ? 'outlined' : 'plain'"
-                       :class="schema.referencedEntityTypeManaged ? 'clickable' : ''" dense>
-                    <VTooltip>
-                        <template #activator="{ props }">
-                            <span v-bind="props">
-                                {{ schema.entityType }}
-                            </span>
-                        </template>
-                        <template #default>
-                            <span v-if="schema.referencedEntityTypeManaged">
-                                {{ t('relationViewer.managedByEvita') }}
-                            </span>
-                            <span v-else>
-                                {{ t('relationViewer.managedExternal') }}
-                            </span>
-                        </template>
-                    </VTooltip>
+        <tbody>
+            <tr class="properties-table__row">
+                <td>{{ t('relationViewer.title') }}</td>
+                <td class="content-row">
+                    <VChip @click="openFrom"
+                           variant="outlined"
+                           class="clickable" dense>
+                        {{ referenceSchemaPointer.entityType }}
+                        <VTooltip activator="parent">
+                            {{ t('relationViewer.managedByEvita') }}
+                        </VTooltip>
+                    </VChip>
+                    <div>
+                        <VIcon class="icon" :icon="icon" />
+                        <VTooltip activator="parent">
+                            {{ t(`common.cardinality.${schema.cardinality}`) }}
+                        </VTooltip>
+                    </div>
+                    <VChip @click="schema.referencedEntityTypeManaged ? openTo() : null"
+                           :variant="schema.referencedEntityTypeManaged ? 'outlined' : 'plain'"
+                           :class="schema.referencedEntityTypeManaged ? 'clickable' : ''" dense>
+                        <VTooltip>
+                            <template #activator="{ props }">
+                                <span v-bind="props">
+                                    {{ schema.entityType }}
+                                </span>
+                            </template>
+                            <template #default>
+                                <span v-if="schema.referencedEntityTypeManaged">
+                                    {{ t('relationViewer.managedByEvita') }}
+                                </span>
+                                <span v-else>
+                                    {{ t('relationViewer.managedExternal') }}
+                                </span>
+                            </template>
+                        </VTooltip>
 
-                    <VTooltip v-if="cardinalityWithDuplicates">
-                        <template #activator="{ props }">
-                            <VIcon class="ml-2" v-bind="props">mdi-card-multiple-outline</VIcon>
-                        </template>
-                        <template #default>
-                            {{ t('relationViewer.cardinalityWithDuplicates') }}
-                        </template>
-                    </VTooltip>
-                </VChip>
-            </td>
-        </tr>
+                        <VTooltip v-if="cardinalityWithDuplicates">
+                            <template #activator="{ props }">
+                                <VIcon class="ml-2" v-bind="props">mdi-card-multiple-outline</VIcon>
+                            </template>
+                            <template #default>
+                                {{ t('relationViewer.cardinalityWithDuplicates') }}
+                            </template>
+                        </VTooltip>
+                    </VChip>
+                </td>
+            </tr>
+        </tbody>
     </table>
 </template>
 
@@ -124,6 +126,12 @@ function openTo(): void {
     gap: 0.5rem;
     padding: 0.5rem;
     color: #FFFFFFB3;
+
+    // the table is only a flex container here; the tbody required by the HTML spec must not become
+    // a flex item itself, otherwise the rows lose their full width and mutual spacing
+    tbody {
+        display: contents;
+    }
 
     &__row {
         display: inline-grid;

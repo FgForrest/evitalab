@@ -15,24 +15,26 @@ withDefaults(defineProps<{
 <template>
     <table class="properties-table">
         <caption v-if="title != undefined" class="text-high-emphasis text-left">{{ title }}</caption>
-        <tr
-            v-for="property in properties"
-            :key="property.name"
-            :class="['properties-table__row', { 'properties-table__row--dense': dense }]"
-        >
-            <td class="text-medium-emphasis properties-table__label">
-                <span>{{ property.name }}</span>
-                <span v-if="property.description">
-                    <VIcon icon="mdi-information-outline" size="small" />
-                    <VTooltip activator="parent">
-                        <span>{{ property.description }}</span>
-                    </VTooltip>
-                </span>
-            </td>
-            <td>
-                <VPropertiesTableValue :property="property" :property-value="property.value" />
-            </td>
-        </tr>
+        <tbody>
+            <tr
+                v-for="property in properties"
+                :key="property.name"
+                :class="['properties-table__row', { 'properties-table__row--dense': dense }]"
+            >
+                <td class="text-medium-emphasis properties-table__label">
+                    <span>{{ property.name }}</span>
+                    <span v-if="property.description">
+                        <VIcon icon="mdi-information-outline" size="small" />
+                        <VTooltip activator="parent">
+                            <span>{{ property.description }}</span>
+                        </VTooltip>
+                    </span>
+                </td>
+                <td>
+                    <VPropertiesTableValue :property="property" :property-value="property.value" />
+                </td>
+            </tr>
+        </tbody>
     </table>
 </template>
 
@@ -43,6 +45,12 @@ withDefaults(defineProps<{
     flex-direction: column;
     gap: 0.5rem;
     padding: 0.5rem;
+
+    // the table is only a flex container here; the tbody required by the HTML spec must not become
+    // a flex item itself, otherwise the rows lose their full width and mutual spacing
+    tbody {
+        display: contents;
+    }
 
     // a uniform row height keeps chip rows and plain text rows on the same vertical rhythm; dense tables
     // trade that rhythm for space on purpose
