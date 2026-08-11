@@ -89,6 +89,12 @@ between the entity viewer components and query builders/executors.
 
 ### Dependency injection
 
+Not every service needs DI. `<module>/service/` is where **business logic** lives, injectable or
+not — a stateless, dependency-free transformation (`code-editor/service/formatEvitaQL.ts`) is a plain
+exported function that callers import, and it is no less a service for it. Reach for an injectable
+class when the logic has collaborators to resolve, state to hold, or an implementation to swap.
+Either way it does not belong in `model/`, which holds the data the logic works on.
+
 Each injectable service exports an injection key and a helper:
 
 ```ts

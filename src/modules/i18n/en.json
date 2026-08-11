@@ -53,7 +53,9 @@
       "makeCatalogMutable": "Make catalog mutable",
       "deactivateCatalog": "Deactivate catalog",
       "activateCatalog": "Activate catalog",
-      "cancelDownload": "Click again to cancel the download"
+      "cancelDownload": "Click again to cancel the download",
+      "prettify": "Prettify",
+      "minify": "Minify"
     },
     "notification": {
       "copiedToClipboard": "Copied to clipboard",
@@ -119,7 +121,8 @@
         },
         "error": {
           "olderThanMin": "Date time is older than the minimum allowed.",
-          "newerThanMax": "Date time is newer than the maximum allowed."
+          "newerThanMax": "Date time is newer than the maximum allowed.",
+          "unparsable": "Unrecognized date time format. Use e.g. ISO 8601: 2007-12-03T10:15:30+01:00."
         }
       }
     }
@@ -354,6 +357,8 @@
         "queryEditor": "Query editor",
         "variablesEditor": "Variables editor",
         "history": "History",
+        "prettify": "Prettify",
+        "minify": "Minify",
         "togglePanel": "Hide/show panel"
       },
       "result": {
@@ -373,6 +378,8 @@
         "variablesEditor": "Variables editor",
         "history": "History",
         "schemaViewer": "Schema viewer",
+        "prettify": "Prettify",
+        "minify": "Minify",
         "togglePanel": "Hide/show panel"
       },
       "result": {
@@ -925,7 +932,8 @@
       "resultVisualizerView": "Result visualizer — click again to hide the panel"
     },
     "notification": {
-      "failedToSaveQueryToHistory": "Failed to save query to history."
+      "failedToSaveQueryToHistory": "Failed to save query to history.",
+      "failedToFormatDocument": "Failed to format the document."
     }
   },
   "graphQLConsole": {
@@ -955,7 +963,8 @@
     },
     "notification": {
       "failedToSaveQueryToHistory": "Failed to save query to history.",
-      "failedToReloadSchema": "Failed to reload GraphQL schema."
+      "failedToReloadSchema": "Failed to reload GraphQL schema.",
+      "failedToFormatDocument": "Failed to format the document."
     }
   },
   "historyComponent": {

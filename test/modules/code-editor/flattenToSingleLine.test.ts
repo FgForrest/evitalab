@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest'
-import { flattenToSingleLine } from '../../../src/modules/code-editor/model/flattenToSingleLine'
+import { flattenToSingleLine } from '../../../src/modules/code-editor/service/flattenToSingleLine'
 
 test('Should flatten pretty printed query into single line', () => {
     expect(flattenToSingleLine(

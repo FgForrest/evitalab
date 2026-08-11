@@ -60,6 +60,8 @@ createKeyboardShortcutMapping(Command.EvitaQLConsole_ShareTab, 'Ctrl+L', 'Cmd+L'
 createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_QueryEditor, 'Ctrl+1', 'Ctrl+1')
 createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_VariablesEditor, 'Ctrl+2', 'Ctrl+2')
 createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_History, 'Ctrl+3', 'Ctrl+3')
+createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_Prettify, 'Shift+Alt+F', 'Shift+Option+F')
+createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_Minify, 'Shift+Alt+M', 'Shift+Option+M')
 createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_TogglePanel, 'Alt+2', 'Ctrl+Shift+2')
 
 createKeyboardShortcutMapping(Command.EvitaQLConsole_Result_RawResultViewer, 'Ctrl+0', 'Ctrl+0')
@@ -75,6 +77,8 @@ createKeyboardShortcutMapping(Command.GraphQLConsole_Query_QueryEditor, 'Ctrl+1'
 createKeyboardShortcutMapping(Command.GraphQLConsole_Query_VariablesEditor, 'Ctrl+2', 'Ctrl+2')
 createKeyboardShortcutMapping(Command.GraphQLConsole_Query_History, 'Ctrl+3', 'Ctrl+3')
 createKeyboardShortcutMapping(Command.GraphQLConsole_Query_SchemaViewer, 'Ctrl+4', 'Ctrl+4')
+createKeyboardShortcutMapping(Command.GraphQLConsole_Query_Prettify, 'Shift+Alt+F', 'Shift+Option+F')
+createKeyboardShortcutMapping(Command.GraphQLConsole_Query_Minify, 'Shift+Alt+M', 'Shift+Option+M')
 createKeyboardShortcutMapping(Command.GraphQLConsole_Query_TogglePanel, 'Alt+2', 'Ctrl+Shift+2')
 
 createKeyboardShortcutMapping(Command.GraphQLConsole_Result_RawResultViewer, 'Ctrl+0', 'Ctrl+0')

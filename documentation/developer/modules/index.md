@@ -41,6 +41,12 @@ Filenames follow what the file is, not which folder it sits in: `PascalCase` whe
 (class/interface/enum) or names a server-side entity, `camelCase` when it is a set of functions or
 constants.
 
+**`model/` holds data, `service/` holds behavior.** Being injectable is not what makes something a
+service — a stateless pure function that transforms a query is business logic and belongs in
+`service/` just as much as a DI-registered class does. Only the classes and types the logic operates
+*on* belong in `model/`. A module may therefore have a `service/` folder and no `ModuleRegistrar` at
+all.
+
 **This page is an index.** Each module has its own page under `documentation/developer/modules/`,
 named after its directory in `src/modules/` — that is where the detail lives. When you change a
 module, update its page; add a row here only when you add or remove a module.
