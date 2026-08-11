@@ -21,6 +21,8 @@ import { BackupViewerTabFactory } from '@/modules/backup-viewer/service/BackupVi
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 import { ApiType } from '@/modules/database-driver/request-response/status/ApiType'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import { CacheInvalidationReason } from '@/modules/database-driver/cache/CacheInvalidationReason'
+import { requestOutageReport } from '@/modules/database-driver/model/serverConnectivity'
 import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { JfrViewerTabFactory } from '@/modules/jfr-viewer/service/JfrViewerTabFactory'
@@ -67,14 +69,27 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
         this.backupViewerTabFactory = backupViewerTabFactory
     }
 
+    /**
+     * Builds the connection menu.
+     *
+     * The action callbacks have to be declared **optional and validated here**, even though they are required
+     * in practice: `MenuFactory.createItems()` is abstract with no parameters, so an override may only add
+     * parameters the compiler considers optional. The guards below therefore stand in for the type system —
+     * and they fire eagerly, because `createItems` runs while the panel is being set up, so a forgotten
+     * callback fails immediately and visibly instead of when the user clicks the item.
+     */
     async createItems(
         serverStatus?: ServerStatus,
         createCatalogCallback?: () => void,
         reloadStartedCallback?: () => void,
-        reloadFinishedCallback?: () => void
+        reloadFinishedCallback?: () => void,
+        clearLocalCacheCallback?: () => void
     ): Promise<Map<ConnectionMenuItemType, MenuItem<ConnectionMenuItemType>>> {
         if (createCatalogCallback == undefined) {
             throw new Error('createCatalogCallback is not defined!')
+        }
+        if (clearLocalCacheCallback == undefined) {
+            throw new Error('clearLocalCacheCallback is not defined!')
         }
 
         const graphQlEnabled: boolean = serverStatus != undefined && serverStatus.apiEnabled(ApiType.GraphQL)
@@ -159,13 +174,24 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
                 if (reloadStartedCallback != undefined) {
                     reloadStartedCallback()
                 }
-                this.evitaClient.clearCache()
+                // the user explicitly asked for fresh data, so a failure must be reported even if the ongoing
+                // outage already was - otherwise pressing Reload against a down server does nothing visible
+                requestOutageReport()
+                this.evitaClient.clearCache(CacheInvalidationReason.MemoryOnly)
                     .then(() => {
                         if (reloadFinishedCallback != undefined) {
                             reloadFinishedCallback()
                         }
                     })
             }
+        )
+
+        this.createMenuAction(
+            items,
+            ConnectionMenuItemType.ClearLocalCache,
+            'mdi-database-remove-outline',
+            this.getItemTitle,
+            () => clearLocalCacheCallback()
         )
 
         this.createMenuSubheader(

@@ -3,6 +3,7 @@ import { ClassifierType } from '@/modules/database-driver/data-type/ClassifierTy
 import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
+import { CacheInvalidationReason } from '@/modules/database-driver/cache/CacheInvalidationReason'
 
 export const collectionItemServiceInjectionKey: InjectionKey<CollectionItemService> = Symbol('collectionItemService')
 
@@ -20,7 +21,7 @@ export class CollectionItemService {
         await this.evitaClient.updateCatalog(catalogName, async session => {
             return await session.createCollection(entityType)
         })
-        await this.evitaClient.clearCache()
+        await this.evitaClient.clearCache(CacheInvalidationReason.ChangeEvidence)
     }
 
     async deleteCollection(catalogName: string, entityType: string): Promise<boolean> {
@@ -28,7 +29,7 @@ export class CollectionItemService {
             return await session.deleteCollection(entityType)
         })
         if (deleted) {
-            await this.evitaClient.clearCache()
+            await this.evitaClient.clearCache(CacheInvalidationReason.ChangeEvidence)
         }
         return deleted
     }
@@ -42,7 +43,7 @@ export class CollectionItemService {
             return await session.renameCollection(entityType, newName)
         })
         if (renamed) {
-            await this.evitaClient.clearCache()
+            await this.evitaClient.clearCache(CacheInvalidationReason.ChangeEvidence)
         }
         return renamed
     }

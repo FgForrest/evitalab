@@ -14,12 +14,32 @@ Typical inner structure of a module:
 <module>/
 ├── <Module>ModuleRegistrar.ts   # optional, only when the module provides/injects DI services
 ├── component/                   # Vue components of the module
-├── model/                       # domain model — classes, types, enums (immutable where possible)
-├── service/                     # business logic
+├── model/                       # the module's vocabulary (see below)
+├── exception/                   # error types, and error classification — nothing else
+├── service/                     # injectable services (business logic)
 └── workspace/                   # tab integration (TabDefinition, TabParams, TabData, factory)
     ├── model/
     └── service/
 ```
+
+### What belongs in `model/` versus `exception/`
+
+`model/` is the module's **vocabulary**, not only its classes: domain model types (immutable where
+possible), enums, and the pure functions and constants that operate on them —
+`code-editor/model/flattenToSingleLine.ts` and `traffic-viewer/model/trafficRecordHistoryPaging.ts` are
+functions, not types. It is also where a **state signal with no natural owner** goes: see
+`database-driver/model/serverConnectivity.ts`, module-scoped reactive state that cannot live in a class
+because its writers and its readers sit in different modules
+([why](../database-driver.md#offline-state--is-evitalab-offline)). Such state is rare — prefer a field on
+the service that owns the concern, and reach for a module-scoped signal only when no single service does.
+
+`exception/` is for error **types** and for classifying errors (`isConnectivityError`, `ErrorTransformer`).
+Do not file something there merely because errors are what write to it — that is proximity, not
+responsibility, and it hides the file from everyone who looks for it by what it *is*.
+
+Filenames follow what the file is, not which folder it sits in: `PascalCase` when the file is a type
+(class/interface/enum) or names a server-side entity, `camelCase` when it is a set of functions or
+constants.
 
 **`model/` holds data, `service/` holds behavior.** Being injectable is not what makes something a
 service — a stateless pure function that transforms a query is business logic and belongs in
@@ -51,7 +71,7 @@ Core evitaLab infrastructure. All of them are registered first in `src/modules/m
 | Module | Purpose |
 |--------|---------|
 | [`config`](config.md) | Runtime configuration — run mode, read-only flag, playground mode, URL system properties |
-| [`storage`](storage.md) | Persistent client-side storage (`LabStorage` over browser local storage) |
+| [`storage`](storage.md) | Persistent client-side storage (`LabStorage` over local storage, `LabServerDataCache` over IndexedDB) |
 | [`connection`](connection.md) | Connection to an evitaDB server — the `Connection` model and how the active one is resolved |
 | [`database-driver`](database-driver.md) | All communication with evitaDB (`EvitaClient` and friends, `DataCacheRefresher`) — deep-dive: [database driver](../database-driver.md) |
 | [`workspace`](workspace.md) | Overall UI structure: tabs, panels, status bar — deep-dive: [workspace & tabs](../workspace-and-tabs.md) |

@@ -33,9 +33,10 @@ import { Keyword } from '@/modules/database-driver/connector/grpc/model/Keyword'
 import { ServerStatusConverter } from '@/modules/database-driver/connector/grpc/service/converter/ServerStatusConverter'
 import { ServerFileConverter } from '@/modules/database-driver/connector/grpc/service/converter/ServerFileConverter'
 import { TaskStatusConverter } from '@/modules/database-driver/connector/grpc/service/converter/TaskStatusConverter'
-import ky from 'ky'
 import { EventType } from '@/modules/database-driver/request-response/jfr/EventType'
 import { EvitaCatalogStatisticsCache } from '@/modules/database-driver/EvitaCatalogStatisticsCache'
+import { CacheInvalidationReason } from '@/modules/database-driver/cache/CacheInvalidationReason'
+import type { PersistentCacheLayer } from '@/modules/database-driver/cache/PersistentCacheLayer'
 import { EntityCollectionStatistics } from '@/modules/database-driver/request-response/EntityCollectionStatistics'
 import { EvitaServerMetadataCache } from '@/modules/database-driver/EvitaServerMetadataCache'
 import { EngineSettings } from '@/modules/database-driver/request-response/status/EngineSettings'
@@ -108,6 +109,8 @@ export class EvitaClientManagement {
     private readonly evitaClientProvider: () => EvitaClient
     private readonly evitaManagementClientProvider: () => EvitaManagementServiceClient
 
+    private readonly persistentCacheLayerProvider: () => PersistentCacheLayer | undefined
+
     private readonly catalogStatisticsConverterProvider: () => CatalogStatisticsConverter
     private readonly serverStatusConverterProvider: () => ServerStatusConverter
     private readonly engineSettingsConverterProvider: () => EngineSettingsConverter
@@ -125,14 +128,17 @@ export class EvitaClientManagement {
                 reservedKeywordsConverterProvider: () => ReservedKeywordsConverter,
                 serverFileConverterProvider: () => ServerFileConverter,
                 taskStateConverterProvider: () => TaskStateConverter,
-                taskStatusConverterProvider: () => TaskStatusConverter) {
+                taskStatusConverterProvider: () => TaskStatusConverter,
+                persistentCacheLayerProvider: () => PersistentCacheLayer | undefined = () => undefined) {
         this.serverMetadataCache = new EvitaServerMetadataCache(
             async () => await this.fetchServerStatus.bind(this)(),
             async () => await this.fetchConfiguration.bind(this)(),
             async () => await this.fetchEngineSettings.bind(this)()
         )
+        this.persistentCacheLayerProvider = persistentCacheLayerProvider
         this.catalogStatisticsCache = new EvitaCatalogStatisticsCache(
-            async () => await this.fetchCatalogStatistics.bind(this)()
+            async () => await this.fetchCatalogStatistics.bind(this)(),
+            persistentCacheLayerProvider()?.catalogStatisticsCache()
         )
         this.errorTransformer = errorTransformer
         this.evitaClientProvider = () => evitaClient
@@ -205,9 +211,29 @@ export class EvitaClientManagement {
 
     /**
      * Clears the cache of catalog statistics. Any subsequent fetch of statistics will provide fresh data from the server.
+     *
+     * @param reason whether the persisted copy is to be dropped as well. Change-data-capture notifications and
+     *               evitaLab's own mutations pass {@link CacheInvalidationReason.ChangeEvidence}; a wholesale
+     *               or reachability-driven reset passes {@link CacheInvalidationReason.MemoryOnly}, which keeps
+     *               the copy evitaLab serves while the server is unreachable.
      */
-    async clearCatalogStatisticsCache(): Promise<void> {
-        await this.catalogStatisticsCache.clear()
+    async clearCatalogStatisticsCache(reason: CacheInvalidationReason): Promise<void> {
+        await this.catalogStatisticsCache.clear(reason)
+    }
+
+    /**
+     * Fetches the catalog listing from the server and, **only when it really differs** from the cached one,
+     * replaces it and fires the catalog-statistics change callbacks (fetch → swap → notify).
+     *
+     * Preferred over {@link clearCatalogStatisticsCache} wherever the intent is "make sure this is current":
+     * nothing is dropped before fresh data is in hand, so a failure leaves the cached listing untouched and
+     * propagates, and identical data causes no re-render at all. Backs the background revalidation of a
+     * listing served from disk.
+     *
+     * @return whether the cached listing was replaced
+     */
+    async refreshCatalogStatistics(): Promise<boolean> {
+        return await this.catalogStatisticsCache.refresh(await this.fetchCatalogStatistics())
     }
 
     /**
@@ -634,7 +660,8 @@ export class EvitaClientManagement {
      * Lists all available JFR recording event types.
      */
     async listJfrRecordingEventTypes(): Promise<EventType[]>{
-        const result = await ky.get(this.evitaClientProvider().connection.observabilityUrl + '/getRecordingEventTypes')
+        const result = await this.evitaClientProvider().httpClient
+            .get(this.evitaClientProvider().connection.observabilityUrl + '/getRecordingEventTypes')
         return (await result.json()) as EventType[]
     }
 
@@ -642,10 +669,10 @@ export class EvitaClientManagement {
      * Starts a new JFR recording for specified events.
      */
     async startJrfRecording(allowedEvents: string[]):Promise<boolean> {
-        const result = await ky.post(this.evitaClientProvider().connection.observabilityUrl + '/startRecording', {
-            json: { allowedEvents: allowedEvents }
-
-        })
+        const result = await this.evitaClientProvider().httpClient
+            .post(this.evitaClientProvider().connection.observabilityUrl + '/startRecording', {
+                json: { allowedEvents: allowedEvents }
+            })
         return result.ok
     }
 
@@ -655,7 +682,8 @@ export class EvitaClientManagement {
      * @return {Promise<boolean>} A promise that resolves to a boolean indicating whether the stop recording request was successful.
      */
     async stopJfrRecording():Promise<boolean> {
-        return (await ky.post(this.evitaClientProvider().connection.observabilityUrl + '/stopRecording')).ok
+        return (await this.evitaClientProvider().httpClient
+            .post(this.evitaClientProvider().connection.observabilityUrl + '/stopRecording')).ok
     }
 
     /**
@@ -665,6 +693,7 @@ export class EvitaClientManagement {
     private fetchCatalogStatistics = async (): Promise<ImmutableList<CatalogStatistics>> => {
         try {
             const response: GrpcEvitaCatalogStatisticsResponse = await this.evitaManagementClientProvider().getCatalogStatistics({})
+            this.persistentCacheLayerProvider()?.persistCatalogStatistics(response.catalogStatistics)
             return ImmutableList(
                 response.catalogStatistics
                     .map((x) => this.catalogStatisticsConverterProvider().convert(x))

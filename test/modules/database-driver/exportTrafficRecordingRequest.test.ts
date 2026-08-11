@@ -19,9 +19,9 @@ function sessionCapturingExportRequest(): [EvitaClientSession, GrpcExportTraffic
         }
     }
     const session = new EvitaClientSession(
-        'session-id',
         'testCatalog',
         CatalogState.Alive,
+        () => Promise.resolve({ sessionId: 'session-id', catalogState: CatalogState.Alive }),
         undefined as never,
         undefined as never,
         undefined as never,

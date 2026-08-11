@@ -1,6 +1,6 @@
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
-import type { InjectionKey } from 'vue'
+import type { InjectionKey, Ref } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { List } from 'immutable'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
@@ -41,6 +41,23 @@ export class ConnectionExplorerService {
 
     unregisterCatalogChangeCallback(id: string): void {
         this.evitaClient.management.unregisterCatalogStatisticsChangeCallback(id)
+    }
+
+    /**
+     * Reactive "evitaLab is offline" state, used to badge the panel header while the server is unreachable.
+     */
+    get serverUnreachable(): Readonly<Ref<boolean>> {
+        return this.evitaClient.serverUnreachable
+    }
+
+    /**
+     * Discards everything evitaLab has persisted about this server, so it starts cold next time.
+     *
+     * @return whether evitaLab is able to persist anything at all; `false` means there can have been nothing
+     *         to discard
+     */
+    async clearLocalCache(): Promise<boolean> {
+        return await this.evitaClient.clearPersistentCache()
     }
 }
 

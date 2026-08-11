@@ -53,6 +53,11 @@ import {
     clientVersionHeader,
     resolveClientVersion
 } from '@/modules/database-driver/connector/grpc/utils/ClientVersion.ts'
+import { isConnectivityError } from '@/modules/database-driver/exception/connectivityError'
+import {
+    markServerReachable,
+    markServerUnreachable
+} from '@/modules/database-driver/model/serverConnectivity'
 
 
 export type EvitaServiceClient = Client<typeof EvitaService>
@@ -104,7 +109,15 @@ export abstract class AbstractEvitaClient {
         this.evitaLabConfig = evitaLabConfig
         this.connection = connectionService.getConnection()
         this.httpApiClient = ky.create({
-            timeout: 300000 // 5 minutes
+            timeout: 300000, // 5 minutes
+            hooks: {
+                // the HTTP counterpart of the gRPC interceptor below: a user working only in a GraphQL console
+                // produces no gRPC traffic at all, and without this a single transient fetch failure would
+                // latch evitaLab "offline" until some unrelated gRPC call happened to succeed. Any response
+                // proves the server answered - error statuses included, and ky runs this before it throws
+                // `HTTPError` for them.
+                afterResponse: [() => { markServerReachable() }]
+            }
         })
         this.errorTransformer = new ErrorTransformer(this.connection)
     }
@@ -121,7 +134,21 @@ export abstract class AbstractEvitaClient {
                         if (clientVersion != undefined) {
                             req.header.set(clientVersionHeader, clientVersion)
                         }
-                        return await next(req)
+                        // this interceptor covers every gRPC call of all four service clients, unary and
+                        // streaming alike, which makes it one of the two places that observe the server
+                        // *answering* (the other is the `afterResponse` hook of `httpApiClient` above) - and
+                        // therefore a reliable signal that evitaLab is back online. Failures are marked here
+                        // too, so reachability does not depend on a caller reaching ErrorTransformer.
+                        try {
+                            const response = await next(req)
+                            markServerReachable()
+                            return response
+                        } catch (e) {
+                            if (isConnectivityError(e)) {
+                                markServerUnreachable()
+                            }
+                            throw e
+                        }
                     }
                 ]
             })

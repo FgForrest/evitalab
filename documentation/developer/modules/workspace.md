@@ -27,9 +27,30 @@ factories lazily — it must be able to reconstruct any tab type from a stored o
 | `tab/service/` | `SharedTabResolver`, `SharedTabTroubleshooterCallback` |
 | `tab/error/` | `InvalidConnectionInSharedTabError` |
 | `panel/` | `WorkspacePanel.vue`, `ConnectionAvatar.vue`, `ManageMenu.vue`, `ManageOptionType` |
-| `status-bar/` | `WorkspaceStatusBar.vue`, `ChangeStreamIndicator.vue`, `EditorStatus.vue`, plus `subject-path-status/` breadcrumbs and `editor-status/` models |
+| `status-bar/` | `WorkspaceStatusBar.vue`, `ChangeStreamIndicator.vue`, `CachedDataIndicator.vue`, `PersistentCacheIndicator.vue`, `EditorStatus.vue`, plus `subject-path-status/` breadcrumbs and `editor-status/` models |
 | `service/` | `WorkspaceService` (open/close/activate tabs), `DemoSnippetResolver` |
 | `store/` | `workspaceStore` (Pinia) — open tabs and workspace state, persisted via [`storage`](storage.md) |
+
+### Status-bar indicators
+
+Three of them come from the driver and answer **different** questions, so they may legitimately disagree:
+
+| Indicator | Question | Source |
+|---|---|---|
+| `ChangeStreamIndicator` | Is the live update channel working? | `DataCacheRefresher.streamStatus` |
+| `CachedDataIndicator` | Is what you are looking at verified? | `EvitaClient.dataFreshness` |
+| `PersistentCacheIndicator` | Can evitaLab cache on disk at all? | `EvitaClient.persistentCacheAvailable` |
+
+An unreachable server with nothing cached shows a broken stream and verified data. The last two can also be lit
+**together**, which is not a contradiction: storage that dies mid-session stops new hydration but leaves whatever
+was already restored from disk in memory and still unverified — "there is no cache any more" and "what you are
+looking at came from the cache" are both true at that point.
+
+**All three render nothing in their healthy state** — the absent icon is "all good", which keeps the bar quiet on
+a normal startup. `PersistentCacheIndicator` is the odd one out in that the user cannot act on it: the browser is
+refusing storage ([which cases](storage.md#when-storage-is-unusable)), and it is reported only because a lab that
+silently never remembers anything is otherwise indistinguishable from a slow one. See
+[database driver — freshness signal](../database-driver.md#freshness-signal).
 
 ## `TabType` — the registry of tab types
 

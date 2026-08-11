@@ -7,14 +7,16 @@ import {
     DataCacheRefresher,
     dataCacheRefresherInjectionKey
 } from '@/modules/database-driver/DataCacheRefresher'
+import { LabServerDataCache, labServerDataCacheInjectionKey } from '@/modules/storage/LabServerDataCache'
 
 export class DatabaseDriverModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {
         const evitaLabConfig: EvitaLabConfig = builder.inject(evitaLabConfigInjectionKey)
         const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
+        const labServerDataCache: LabServerDataCache = builder.inject(labServerDataCacheInjectionKey)
 
-        const evitaClient: EvitaClient = new EvitaClient(evitaLabConfig, connectionService)
+        const evitaClient: EvitaClient = new EvitaClient(evitaLabConfig, connectionService, labServerDataCache)
         builder.provide(evitaClientInjectionKey, evitaClient)
 
         const dataCacheRefresher: DataCacheRefresher = new DataCacheRefresher(evitaClient)

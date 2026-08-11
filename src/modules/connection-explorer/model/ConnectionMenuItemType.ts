@@ -10,6 +10,7 @@ export enum ConnectionMenuItemType {
 
     ManageSubheader = 'manageSubheader',
     Reload = 'reload',
+    ClearLocalCache = 'clearLocalCache',
 
     ModifySubheader = 'modifySubheader',
     Edit = 'edit',

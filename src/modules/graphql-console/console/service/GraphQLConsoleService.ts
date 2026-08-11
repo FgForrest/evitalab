@@ -4,6 +4,7 @@ import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import type { GraphQLResponse } from '@/modules/database-driver/connector/gql/model/GraphQLResponse'
+import { requestOutageReport } from '@/modules/database-driver/model/serverConnectivity'
 
 export const graphQLConsoleServiceInjectionKey: InjectionKey<GraphQLConsoleService> = Symbol('graphQLConsoleService')
 
@@ -48,11 +49,16 @@ export class GraphQLConsoleService {
     }
 
     /**
-     * Invalidates the cached GraphQL schema for the given GraphQL API instance, causing open consoles to
-     * reload only that schema. Does not touch any other cache.
+     * Re-runs the introspection of the given GraphQL API instance and, only if the schema really changed,
+     * swaps it in and notifies open consoles of that instance. Does not touch any other cache.
+     *
+     * Fetch-first: a reload that cannot reach the server keeps the schema the console is browsing and
+     * propagates the error instead of leaving the console without a schema.
      */
     async refreshGraphQLSchema(dataPointer: GraphQLConsoleDataPointer): Promise<void> {
-        await this.evitaClient.clearGraphQLSchemaCache(dataPointer.catalogName, dataPointer.instanceType)
+        // a user-initiated refresh must be answered even during an outage that was already reported
+        requestOutageReport()
+        await this.evitaClient.refreshGraphQLSchema(dataPointer.catalogName, dataPointer.instanceType)
     }
 
     /**

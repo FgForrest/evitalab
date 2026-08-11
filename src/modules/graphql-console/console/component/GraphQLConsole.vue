@@ -279,7 +279,8 @@ function initialize(): void {
 async function refreshGraphQLSchema(): Promise<void> {
     reloadingSchema.value = true
     try {
-        // invalidate the cached schema; the registered change callback performs the actual reload
+        // re-introspects first; only when the schema really changed does the registered change callback
+        // perform the actual reload, so a failed reload leaves the console with the schema it had
         await graphQLConsoleService.refreshGraphQLSchema(props.params.dataPointer)
     } catch (error) {
         await toaster.error(t('graphQLConsole.notification.failedToReloadSchema'), asError(error))

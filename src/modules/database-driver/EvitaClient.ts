@@ -1,17 +1,18 @@
 import { AbstractEvitaClient } from '@/modules/database-driver/AbstractEvitaClient'
+import type { KyInstance } from 'ky'
 import type {
     GrpcCatalogNamesResponse,
     GrpcDefineCatalogResponse,
     GrpcEvitaSessionResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaAPI_pb'
-import { EvitaClientSession } from '@/modules/database-driver/EvitaClientSession'
+import { EvitaClientSession, type MaterializedSession } from '@/modules/database-driver/EvitaClientSession'
 import { Code, ConnectError } from '@connectrpc/connect'
 import { EvitaClientManagement } from '@/modules/database-driver/EvitaClientManagement'
 import { EvitaSchemaCache } from '@/modules/database-driver/EvitaSchemaCache'
 import { GraphQLSchemaCache } from '@/modules/database-driver/GraphQLSchemaCache'
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema, type IntrospectionQuery } from 'graphql'
 import { Set } from 'immutable'
-import type { InjectionKey } from 'vue'
+import type { InjectionKey, Ref } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
@@ -27,6 +28,14 @@ import type {
     RegisterSystemChangeCaptureResponse
 } from '@/modules/database-driver/request-response/cdc/RegisterSystemChangeCaptureResponse.ts'
 import { SessionRetryFailedError } from '@/modules/database-driver/exception/SessionRetryFailedError.ts'
+import { CatalogState } from '@/modules/database-driver/request-response/CatalogState.ts'
+import type { LabServerDataCache } from '@/modules/storage/LabServerDataCache'
+import { PersistentCacheLayer } from '@/modules/database-driver/cache/PersistentCacheLayer'
+import { CacheInvalidationReason } from '@/modules/database-driver/cache/CacheInvalidationReason'
+import { DataFreshness } from '@/modules/database-driver/model/DataFreshness'
+import { serverUnreachableState } from '@/modules/database-driver/model/serverConnectivity'
+import type { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
+import type { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 
 export const evitaClientInjectionKey: InjectionKey<EvitaClient> = Symbol('EvitaClient')
 
@@ -37,6 +46,11 @@ export const evitaClientInjectionKey: InjectionKey<EvitaClient> = Symbol('EvitaC
  */
 interface SharedSessionExecution {
     readonly catalogName: string
+    /**
+     * State of the catalog as the client currently knows it. Seeds the session shell, which cannot ask the
+     * server for it before it materializes.
+     */
+    readonly catalogState: CatalogState
     /**
      * Whether the shared session must be created in the read-write mode. Every caller sharing a session
      * of a given catalog must agree on this, because it is derived from the catalog state, not from the caller.
@@ -75,8 +89,21 @@ export function useEvitaClient(): EvitaClient {
  */
 export class EvitaClient extends AbstractEvitaClient {
     private readonly schemaCache: Map<string, EvitaSchemaCache> = new Map()
-    private readonly graphQLSchemaCache: GraphQLSchemaCache = new GraphQLSchemaCache()
+    private _graphQLSchemaCache?: GraphQLSchemaCache
     private _management?: EvitaClientManagement
+    /**
+     * On-disk second level of every cache below.
+     *
+     * Unconditional: a browser that refuses storage does **not** show up as a missing layer, because
+     * {@link LabServerDataCache} absorbs that itself — it reports {@link LabServerDataCache.usable} and degrades
+     * every operation to a no-op. There is therefore no such thing as a client without persistence, only one
+     * whose persistence does not work.
+     */
+    private readonly _persistentCacheLayer: PersistentCacheLayer
+    /**
+     * The storage the layer above writes to, kept so its usability can be reported.
+     */
+    private readonly _persistentCache: LabServerDataCache
 
     /**
      * We don't want to create a session for each UI call to evita. Both server resources and network workload are
@@ -85,11 +112,6 @@ export class EvitaClient extends AbstractEvitaClient {
      */
     private readonly sharedSessions: Map<string, EvitaClientSession> = new Map()
     /**
-     * Shared sessions whose creation is still in flight, keyed by catalog name. Concurrent callers await
-     * the same creation instead of opening a session of their own.
-     */
-    private readonly sharedSessionsInCreation: Map<string, Promise<EvitaClientSession>> = new Map()
-    /**
      * Pending closes of shared sessions that still had in-flight callers when they were evicted, keyed by
      * catalog name. Only warming-up catalogs have to wait for them, because evitaDB permits a single
      * open session there.
@@ -97,8 +119,100 @@ export class EvitaClient extends AbstractEvitaClient {
     private readonly sharedSessionsClosing: Map<string, Promise<void>> = new Map()
 
     constructor(evitaLabConfig: EvitaLabConfig,
-                connectionService: ConnectionService) {
+                connectionService: ConnectionService,
+                persistentCache: LabServerDataCache) {
         super(evitaLabConfig, connectionService)
+        this._persistentCache = persistentCache
+        this._persistentCacheLayer = new PersistentCacheLayer(
+            persistentCache,
+            () => this,
+            () => this.catalogSchemaConverter,
+            () => this.catalogStatisticsConverter
+        )
+    }
+
+    /**
+     * On-disk second level of the client caches.
+     */
+    get persistentCacheLayer(): PersistentCacheLayer {
+        return this._persistentCacheLayer
+    }
+
+    /**
+     * Whether evitaLab is able to persist server data on disk at all. `false` when the browser refuses storage
+     * (see {@link LabServerDataCache} for which cases those are) — the status bar badges it, and the application
+     * otherwise behaves exactly as an in-memory-only one.
+     *
+     * Reactive because a working cache can break at any point: the browser may reclaim storage or the user may
+     * clear site data while evitaLab is open.
+     */
+    get persistentCacheAvailable(): Readonly<Ref<boolean>> {
+        return this._persistentCache.usable
+    }
+
+    /**
+     * Reactive signal telling whether what the client currently serves has been verified against the server.
+     * The UI badges {@link DataFreshness.Cached} uniformly; no per-read metadata is (or should be) exposed.
+     *
+     * Without persistence nothing is ever restored from disk, so this is permanently
+     * {@link DataFreshness.Live}.
+     */
+    get dataFreshness(): Ref<DataFreshness> {
+        return this._persistentCacheLayer.dataFreshness
+    }
+
+    /**
+     * Reactive count of restored values that could not be verified against the server. Feeds the badge's
+     * tooltip.
+     */
+    get unverifiedCachedRecordCount(): Ref<number> {
+        return this._persistentCacheLayer.unverifiedRecordCount
+    }
+
+    /**
+     * Reactive "evitaLab is offline" state: whether the server is currently unreachable, as observed by the
+     * driver's own failure and success funnels. Distinct from {@link dataFreshness}, which is about whether the
+     * *data on screen* has been verified — the two answer different questions and can differ (an unreachable
+     * server with nothing cached is offline with fully verified data).
+     */
+    get serverUnreachable(): Readonly<Ref<boolean>> {
+        return serverUnreachableState()
+    }
+
+    /**
+     * Discards everything evitaLab has persisted about this server, and the in-memory copies with it, so the
+     * next read goes to the server. Backs the explicit "Clear local cache" user action — no data path depends
+     * on it, and evitaLab simply starts cold next time.
+     *
+     * The purge is attempted even when persistence has broken, because storage that worked earlier may still
+     * hold records the user is asking to be rid of.
+     *
+     * @return whether evitaLab is able to persist anything at all — `false` means the purge could not have had
+     *         anything to do, and the caller should not claim success
+     */
+    async clearPersistentCache(): Promise<boolean> {
+        await this._persistentCacheLayer.clear()
+        // the in-memory copies would otherwise keep serving exactly what was just purged from disk
+        await this.clearCache(CacheInvalidationReason.MemoryOnly)
+        return this.persistentCacheAvailable.value
+    }
+
+    /**
+     * The client every HTTP call to the evitaDB server must go through: it carries evitaLab's timeout and,
+     * more importantly, the hook that observes the server answering. Raw `ky` bypasses both, which leaves the
+     * offline state latched after a transient failure on a purely HTTP workload.
+     *
+     * Exposed for {@link EvitaClientManagement}, which lives outside the class hierarchy holding it.
+     */
+    get httpClient(): KyInstance {
+        return this.httpApiClient
+    }
+
+    private get graphQLSchemaCache(): GraphQLSchemaCache {
+        if (this._graphQLSchemaCache == undefined) {
+            this._graphQLSchemaCache = new GraphQLSchemaCache(this._persistentCacheLayer.graphQLSchemaCache())
+        }
+        return this._graphQLSchemaCache
     }
 
     /**
@@ -143,8 +257,8 @@ export class EvitaClient extends AbstractEvitaClient {
                     newCatalogName
                 })
             if (response.success) {
-                this.schemaCache.delete(catalogName)
-                this.schemaCache.delete(newCatalogName)
+                await this.discardCatalogCaches(catalogName)
+                await this.discardCatalogCaches(newCatalogName)
             }
             return response.success
         } catch (e) {
@@ -171,8 +285,8 @@ export class EvitaClient extends AbstractEvitaClient {
                     catalogNameToBeReplaced
                 })
             if (response.success) {
-                this.schemaCache.delete(catalogNameToBeReplaced);
-                this.schemaCache.delete(catalogNameToBeReplacedWith);
+                await this.discardCatalogCaches(catalogNameToBeReplaced)
+                await this.discardCatalogCaches(catalogNameToBeReplacedWith)
             }
             return response.success
         } catch (e) {
@@ -190,7 +304,7 @@ export class EvitaClient extends AbstractEvitaClient {
                     catalogName
                 })
             if (response.success) {
-                this.schemaCache.delete(catalogName);
+                await this.discardCatalogCaches(catalogName)
             }
             return response.success
         } catch (e) {
@@ -209,6 +323,7 @@ export class EvitaClient extends AbstractEvitaClient {
             return (await this.executeInSharedSession<T>(
                 {
                     catalogName,
+                    catalogState: catalog.catalogState,
                     readWrite: catalog.isInWarmup,
                     warmup: catalog.isInWarmup,
                     // there is no point in forcing a new session in the warming up mode, in the warming up mode all mutations
@@ -281,15 +396,83 @@ export class EvitaClient extends AbstractEvitaClient {
         signal?: AbortSignal
     ): Promise<GraphQLSchema> {
         return this.graphQLSchemaCache.getSchema(catalogName, instanceType, async () => {
-            const introspection: GraphQLResponse = await this.queryCatalogUsingGraphQL(
+            const introspection: IntrospectionQuery = await this.fetchGraphQLIntrospection(
                 catalogName,
                 instanceType,
-                getIntrospectionQuery(),
-                {},
                 signal
             )
-            return buildClientSchema(introspection.data as IntrospectionQuery)
+            const introspectionHash: string = this._persistentCacheLayer
+                .persistGraphQLIntrospection(catalogName, instanceType, introspection)
+            return { schema: buildClientSchema(introspection), introspectionHash }
         })
+    }
+
+    /**
+     * Re-runs the GraphQL introspection and, **only when the result really differs** from the one the currently
+     * cached schema was built from, rebuilds it and fires the GraphQL schema change callbacks. Backs the
+     * console's manual "Reload GraphQL schema" action.
+     *
+     * Fetch-first, exactly like {@link refreshCatalogSchema}: a reload that cannot reach the server keeps the
+     * schema the console is browsing and propagates the error instead of clearing the cache. Comparison is by
+     * hash of the raw introspection result, the only version information the GraphQL API offers, and against
+     * the **in-memory** schema — the one the consoles are displaying, which is what the user asked about.
+     * Anything else in memory (nothing cached, or a schema of unknown provenance) rebuilds: a silent no-op is
+     * the one answer a manual reload must never give.
+     *
+     * @return whether the cached schema was replaced
+     */
+    async refreshGraphQLSchema(
+        catalogName: string,
+        instanceType: GraphQLInstanceType,
+        signal?: AbortSignal
+    ): Promise<boolean> {
+        const introspection: IntrospectionQuery = await this.fetchGraphQLIntrospection(
+            catalogName,
+            instanceType,
+            signal
+        )
+        // the disk copy is updated regardless of the outcome: it is now provably the current one
+        const freshHash: string = this._persistentCacheLayer
+            .persistGraphQLIntrospection(catalogName, instanceType, introspection)
+
+        // read **after** the fetch, exactly like refreshCatalogSchema compares at swap time: this method is
+        // also the revalidation a disk-served read schedules, and that revalidation starts *while* the
+        // hydrated schema is still on its way into the cache. Reading the hash up front would see nothing
+        // cached and swap a schema identical to the one being installed, firing the callbacks of every open
+        // console on every reload.
+        const displayedHash: string | undefined = this.graphQLSchemaCache
+            .cachedIntrospectionHash(catalogName, instanceType)
+
+        if (freshHash === displayedHash) {
+            return false
+        }
+
+        await this.graphQLSchemaCache.refresh(
+            catalogName,
+            instanceType,
+            { schema: buildClientSchema(introspection), introspectionHash: freshHash }
+        )
+        return true
+    }
+
+    /**
+     * Runs a GraphQL introspection query against an API instance and returns its raw result. Persisting is left
+     * to the caller: the two callers need the resulting hash differently (see {@link refreshGraphQLSchema}), and
+     * the raw introspection — not the built schema — is what gets persisted.
+     */
+    private async fetchGraphQLIntrospection(
+        catalogName: string,
+        instanceType: GraphQLInstanceType,
+        signal?: AbortSignal
+    ): Promise<IntrospectionQuery> {
+        const response: GraphQLResponse = await this.queryCatalogUsingGraphQL(
+            catalogName,
+            instanceType,
+            getIntrospectionQuery(),
+            {},
+            signal
+        )
+        return response.data as IntrospectionQuery
     }
 
     /**
@@ -319,10 +502,18 @@ export class EvitaClient extends AbstractEvitaClient {
     /**
      * Clears the cached GraphQL schema for a single GraphQL API instance and fires its change callbacks,
      * causing open consoles to reload just that schema. Touches nothing else (no entity caches, no
-     * catalog-schema callbacks) — used by the console's manual "Reload GraphQL schema" action.
+     * catalog-schema callbacks).
+     *
+     * The console's manual "Reload GraphQL schema" action uses {@link refreshGraphQLSchema} instead — this
+     * funnel is for callers that know the schema changed (and must therefore state whether the persisted
+     * introspection is stale too).
      */
-    async clearGraphQLSchemaCache(catalogName: string, instanceType: GraphQLInstanceType): Promise<void> {
-        await this.graphQLSchemaCache.clear(catalogName, instanceType)
+    async clearGraphQLSchemaCache(
+        catalogName: string,
+        instanceType: GraphQLInstanceType,
+        reason: CacheInvalidationReason
+    ): Promise<void> {
+        await this.graphQLSchemaCache.clear(catalogName, instanceType, reason)
     }
 
     async updateCatalog<T>(
@@ -338,6 +529,7 @@ export class EvitaClient extends AbstractEvitaClient {
                 return await this.executeInSharedSession(
                     {
                         catalogName,
+                        catalogState: catalog.catalogState,
                         readWrite: true,
                         warmup: true,
                         forceNewSession: false,
@@ -350,7 +542,7 @@ export class EvitaClient extends AbstractEvitaClient {
                 // in the alive state, we want only short lived sessions to always fetch fresh data
                 let session: EvitaClientSession | undefined = undefined
                 try {
-                    session = await this.createSession(catalogName, true)
+                    session = this.createSession(catalogName, catalog.catalogState, true, false)
                     return await updateLogic(session)
                 } finally {
                     if (session != undefined) {
@@ -381,8 +573,9 @@ export class EvitaClient extends AbstractEvitaClient {
         let session: EvitaClientSession | undefined = undefined
         let sessionClosedByUs: boolean = false
         try {
-            session = await this.getOrCreateSharedSession(
+            session = this.getOrCreateSharedSession(
                 catalogName,
+                execution.catalogState,
                 execution.readWrite,
                 execution.warmup,
                 execution.forceNewSession
@@ -457,7 +650,8 @@ export class EvitaClient extends AbstractEvitaClient {
                 () => this.reservedKeywordsConverter,
                 () => this.serverFileConverter,
                 () => this.taskStateConverter,
-                () => this.taskStatusConverter
+                () => this.taskStatusConverter,
+                () => this._persistentCacheLayer
             )
         }
         return this._management
@@ -518,30 +712,63 @@ export class EvitaClient extends AbstractEvitaClient {
     }
 
     /**
-     * Clears all client cache (statistics, schemas, ...).
+     * Clears all client cache (statistics, schemas, ...). The blunt instrument every caller reaches for that
+     * cannot say precisely what it invalidated.
+     *
+     * @param reason decides the fate of the **persisted** copies, and the two intents are genuinely different:
+     *
+     * - {@link CacheInvalidationReason.MemoryOnly} — a reachability-driven reset (the connection panel's
+     *   reload action, a recovering server). It is no evidence that anything changed, and dropping the disk
+     *   copies would destroy exactly the data that makes evitaLab usable while the server is unreachable.
+     *   Freshness is restored by the background revalidation every disk-served read schedules.
+     * - {@link CacheInvalidationReason.ChangeEvidence} — evitaLab has just mutated the database itself. The
+     *   persisted copies go too, so the next read fetches rather than serving data that is known to be
+     *   outdated. Because this funnel is catalog-agnostic it also discards persisted data of catalogs the
+     *   mutation did not concern; that is deliberate collateral — these operations are rare, explicitly
+     *   user-triggered, and the server is provably reachable, so the discarded data is simply re-fetched on
+     *   demand. The persisted purge is wholesale **by store**, so it covers the catalogs that are only on
+     *   disk as well, not merely those whose caches this session happens to hold.
      */
-    async clearCache(): Promise<void> {
+    async clearCache(reason: CacheInvalidationReason): Promise<void> {
+        // this is the "make everything current again" action, so anything that could not be verified against the
+        // server earlier is due for another attempt right away. The invalidations below re-verify whatever they
+        // drop as soon as it is read again, but a value that stayed in memory is never read from disk and would
+        // therefore keep a stale-data badge lit with nothing to clear it
+        this._persistentCacheLayer.resetRevalidationState()
         if (this._management != undefined) {
             // refresh the server status first: it is the reachability signal consumers rely on to
             // decide whether reloading catalog-level data is even worth attempting
             await this.management.clearServerMetadataCache()
-            await this.management.clearCatalogStatisticsCache()
+            await this.management.clearCatalogStatisticsCache(reason)
         }
         // we need a new session if we want to load a new data
         for (const sharedSession of this.sharedSessions.values()) {
             this.closeSession(sharedSession)
         }
+        if (reason === CacheInvalidationReason.ChangeEvidence) {
+            // by store, not per cached catalog: the loop below only knows the catalogs whose schema was read
+            // this session, while on disk the records of every catalog ever read are still there - and just as
+            // outdated
+            await this._persistentCacheLayer.deleteAllSchemas()
+        }
         const cachedCatalogs: IterableIterator<string> = this.schemaCache.keys()
         for (const cachedCatalog of cachedCatalogs) {
-            await this.schemaCache.get(cachedCatalog)!.removeLatestCatalogSchema()
+            // the persisted side was already handled wholesale above, so this only has to drop memory
+            await this.schemaCache.get(cachedCatalog)!.removeLatestCatalogSchema(CacheInvalidationReason.MemoryOnly)
         }
         // the GraphQL schema cache tracks its own (catalog, instanceType) keys that need not overlap
         // with the internal schema cache above, so clear it through its own funnel
-        await this.graphQLSchemaCache.clearAll()
+        await this.graphQLSchemaCache.clearAll(reason)
     }
 
     /**
      * Clears schema caches. The next schema fetch will provide the latest schema.
+     *
+     * **Reserved for change evidence** — a change-data-capture notification or a mutation evitaLab performed
+     * itself. It drops the persisted copies too, which is only correct when the data provably changed. UI
+     * "reload" buttons must use {@link refreshCatalogSchema} / {@link refreshEntitySchema} instead: those
+     * fetch first and keep the current data when the fetch fails, whereas this method would leave a user who
+     * pressed reload while offline with nothing at all.
      *
      * @param catalogName for which catalog to clear schemas
      * @param entityType if undefined, entire catalog cache is cleared; otherwise only entity schema for a specified
@@ -552,11 +779,18 @@ export class EvitaClient extends AbstractEvitaClient {
         // whether an internal (gRPC-model) cache exists for the catalog, because a GraphQL console may be
         // the only consumer for it (introspection is a raw HTTP call, no EvitaSchemaCache is created)
         if (entityType == undefined) {
-            await this.graphQLSchemaCache.clearForCatalog(catalogName)
+            await this.graphQLSchemaCache.clearForCatalog(catalogName, CacheInvalidationReason.ChangeEvidence)
         }
 
         const schemaCacheForCatalog: EvitaSchemaCache | undefined = this.schemaCache.get(catalogName)
         if (schemaCacheForCatalog == undefined) {
+            // no in-memory cache exists for the catalog, but a persisted copy from an earlier run may well
+            // do - and it is just as stale
+            if (entityType != undefined) {
+                await this._persistentCacheLayer.schemaCache(catalogName).deleteEntitySchema(entityType)
+            } else {
+                await this._persistentCacheLayer.deleteCatalogData(catalogName)
+            }
             return
         }
 
@@ -567,10 +801,75 @@ export class EvitaClient extends AbstractEvitaClient {
         }
 
         if (entityType != undefined) {
-            await schemaCacheForCatalog.removeLatestEntitySchema(entityType)
+            await schemaCacheForCatalog.removeLatestEntitySchema(CacheInvalidationReason.ChangeEvidence, entityType)
         } else {
-            await schemaCacheForCatalog.removeLatestCatalogSchema()
+            await schemaCacheForCatalog.removeLatestCatalogSchema(CacheInvalidationReason.ChangeEvidence)
         }
+    }
+
+    /**
+     * Fetches the catalog schema from the server and, **only when it really differs** from the one currently
+     * cached, replaces it and fires the catalog-schema change callbacks. Backs the schema viewer's manual
+     * reload button.
+     *
+     * Fetch-first on purpose: nothing is dropped before fresh data is in hand, so a reload that cannot reach
+     * the server leaves the displayed schema untouched and simply propagates the error to the caller (which
+     * reports it through its toaster). Identical data means "verified current" — no swap, no callbacks, no
+     * re-render.
+     *
+     * @return whether the cached schema was replaced
+     */
+    async refreshCatalogSchema(catalogName: string): Promise<boolean> {
+        try {
+            const catalogSchema: CatalogSchema = await this.queryCatalog(
+                catalogName,
+                async (session) => await session.fetchLatestCatalogSchema()
+            )
+            return await this.getOrCreateSchemaCache(catalogName).refreshLatestCatalogSchema(catalogSchema)
+        } catch (e) {
+            throw this.errorTransformer.transformError(e)
+        }
+    }
+
+    /**
+     * Fetches an entity schema from the server and, only when it really differs from the one currently cached,
+     * replaces it and fires the entity-schema change callbacks. The entity-level counterpart of
+     * {@link refreshCatalogSchema}.
+     *
+     * @return whether the cached schema was replaced
+     */
+    async refreshEntitySchema(catalogName: string, entityType: string): Promise<boolean> {
+        try {
+            const entitySchema: EntitySchema | undefined = await this.queryCatalog(
+                catalogName,
+                async (session) => await session.fetchLatestEntitySchema(entityType)
+            )
+            if (entitySchema == undefined) {
+                // the collection no longer exists; that is change evidence, not a refresh
+                await this.clearSchemaCache(catalogName, entityType)
+                return true
+            }
+            return await this.getOrCreateSchemaCache(catalogName).refreshLatestEntitySchema(entitySchema)
+        } catch (e) {
+            throw this.errorTransformer.transformError(e)
+        }
+    }
+
+    /**
+     * Drops every cache of a catalog, in memory and on disk. Used by the catalog-level mutations that discard
+     * the whole per-catalog cache object rather than invalidating it through the cache — without this the
+     * persisted records of a renamed or deleted catalog would survive and be served by the next read.
+     */
+    private async discardCatalogCaches(catalogName: string): Promise<void> {
+        // the shared session captured the cache object at construction, so dropping the entry below is not
+        // enough - the session would keep answering from the very cache we are discarding. Its catalog has
+        // just been renamed away, replaced or deleted, so the session is worthless anyway.
+        const sharedSession: EvitaClientSession | undefined = this.sharedSessions.get(catalogName)
+        if (sharedSession != undefined) {
+            this.closeSession(sharedSession)
+        }
+        this.schemaCache.delete(catalogName)
+        await this._persistentCacheLayer.deleteCatalogData(catalogName)
     }
 
     /**
@@ -683,22 +982,38 @@ export class EvitaClient extends AbstractEvitaClient {
     private getOrCreateSchemaCache(catalogName: string): EvitaSchemaCache {
         let entitySchemaCacheForSession: EvitaSchemaCache | undefined = this.schemaCache.get(catalogName)
         if (entitySchemaCacheForSession == undefined) {
-            entitySchemaCacheForSession = new EvitaSchemaCache()
+            entitySchemaCacheForSession = new EvitaSchemaCache(
+                this._persistentCacheLayer.schemaCache(catalogName)
+            )
             this.schemaCache.set(catalogName, entitySchemaCacheForSession)
         }
         return entitySchemaCacheForSession
     }
 
-    private async getOrCreateSharedSession(
+    /**
+     * Returns the shared session of the catalog, creating a fresh session shell when there is none (or when
+     * a new one was explicitly requested).
+     *
+     * **This method is deliberately synchronous.** A session shell needs no network, so it is installed into
+     * the shared-session registry in the very same tick — which is what makes the registry itself the
+     * single-flight: callers routinely fetch several schemas at once (a tab loads its own schema, the catalog
+     * schema and the engine settings together) and all miss the registry in the same tick. Were there an
+     * `await` before the installation below, each of them would install a session of its own: on an alive
+     * catalog that leaks all but the last one, and on a warming-up catalog — where evitaDB permits exactly
+     * one session — every call after the first one would fail outright. Deduplication of the *server* session
+     * creation is a separate concern and lives inside the session itself.
+     */
+    private getOrCreateSharedSession(
         catalogName: string,
+        catalogState: CatalogState,
         readWrite: boolean,
         warmup: boolean,
         forceNewSession: boolean
-    ): Promise<EvitaClientSession> {
+    ): EvitaClientSession {
         let sharedSession: EvitaClientSession | undefined = this.sharedSessions.get(catalogName)
 
         if (sharedSession != undefined && !sharedSession.isActive) {
-            console.warn(`Session ${sharedSession.id} has been already closed but is still in the cache, that should not happen!. `)
+            console.warn(`Session ${sharedSession.debugId} has been already closed but is still in the cache, that should not happen!. `)
             this.sharedSessions.delete(catalogName)
             sharedSession = undefined
         }
@@ -709,77 +1024,40 @@ export class EvitaClient extends AbstractEvitaClient {
         }
 
         if (sharedSession == undefined) {
-            // callers routinely fetch several schemas at once (a tab loads its own schema, the catalog schema
-            // and the engine settings together), and they all miss the cache in the same tick. Without
-            // single-flighting the creation, each of them opens its own session: on an alive catalog that
-            // leaks all but the last one, and on a warming-up catalog - where evitaDB permits exactly one
-            // session - every call after the first one fails outright.
-            //
-            // The in-flight entry is keyed by catalog name only, which relies on an invariant: every caller
-            // that shares a session for a given catalog asks for the same `readWrite` mode (it is derived
-            // from the catalog's warm-up state, not from the caller). A future caller that needs a different
-            // mode must not join this queue - it has to open its own session.
-            const sessionInCreation: Promise<EvitaClientSession> | undefined =
-                this.sharedSessionsInCreation.get(catalogName)
-            if (sessionInCreation != undefined) {
-                return await sessionInCreation
-            }
-
-            // the in-flight entry must be registered in the very same tick the creation starts (no `await`
-            // between the two statements below): `createSharedSession` may wait for an outstanding close on
-            // a warming-up catalog, and a caller slipping in meanwhile would open a second session there,
-            // which evitaDB refuses
-            const creation: Promise<EvitaClientSession> = this.createSharedSession(catalogName, readWrite, warmup)
-            this.sharedSessionsInCreation.set(catalogName, creation)
-            try {
-                return await creation
-            } finally {
-                this.sharedSessionsInCreation.delete(catalogName)
-            }
+            return this.createSharedSession(catalogName, catalogState, readWrite, warmup)
         } else {
             return sharedSession
         }
     }
 
     /**
-     * Creates a new session and installs it as the shared one for the catalog. On a warming-up catalog it
-     * first waits for a previously evicted session to actually close, because evitaDB permits exactly one
-     * open session on a non-transactional catalog.
+     * Creates a new session shell and installs it as the shared one for the catalog.
      */
-    private async createSharedSession(
+    private createSharedSession(
         catalogName: string,
+        catalogState: CatalogState,
         readWrite: boolean,
         warmup: boolean
-    ): Promise<EvitaClientSession> {
-        if (warmup) {
-            const closing: Promise<void> | undefined = this.sharedSessionsClosing.get(catalogName)
-            if (closing != undefined) {
-                await closing
-            }
-        }
+    ): EvitaClientSession {
         // because a session for warming up catalogs is shared, we need to create it in read-write mode to be able to
         // execute all operations
-        const session: EvitaClientSession = await this.createSession(catalogName, readWrite)
+        const session: EvitaClientSession = this.createSession(catalogName, catalogState, readWrite, warmup)
         this.sharedSessions.set(catalogName, session)
         return session
     }
 
-    private async createSession(catalogName: string,
-                                readWrite: boolean = false): Promise<EvitaClientSession> {
-
-        let newSession: GrpcEvitaSessionResponse
-        if (readWrite) {
-            newSession = await this.evitaClient
-                .createReadWriteSession({ catalogName })
-        } else {
-            newSession = await this.evitaClient
-                .createReadOnlySession({ catalogName })
-        }
-
+    /**
+     * Builds a session shell for the catalog. No server session is opened here — the shell does that itself
+     * on the first call that genuinely needs the network (see {@link materializeSession}).
+     */
+    private createSession(catalogName: string,
+                          catalogState: CatalogState,
+                          readWrite: boolean,
+                          warmup: boolean): EvitaClientSession {
         return new EvitaClientSession(
-            newSession.sessionId,
             catalogName,
-            this.catalogStatisticsConverter.convertCatalogState(newSession.catalogState),
+            catalogState,
+            () => this.materializeSession(catalogName, readWrite, warmup),
             this,
             this.getOrCreateSchemaCache(catalogName),
             () => this.errorTransformer,
@@ -790,8 +1068,43 @@ export class EvitaClient extends AbstractEvitaClient {
             () => this.responseConverter,
             () => this.taskStatusConverter,
             () => this.trafficRecordingConverter,
-            () => this.mutationHistoryConverter
+            () => this.mutationHistoryConverter,
+            () => this._persistentCacheLayer
         )
+    }
+
+    /**
+     * Opens the server-side session of a session shell. Called by the shell itself, at most once, on the
+     * first call that genuinely needs the network.
+     *
+     * On a warming-up catalog it first waits for a previously evicted session to actually close, because
+     * evitaDB permits exactly one open session on a non-transactional catalog. The wait sits here rather
+     * than at shell creation on purpose: the constraint concerns open *server* sessions, so it has to be
+     * honoured at the moment one is opened.
+     */
+    private async materializeSession(catalogName: string,
+                                     readWrite: boolean,
+                                     warmup: boolean): Promise<MaterializedSession> {
+        if (warmup) {
+            const closing: Promise<void> | undefined = this.sharedSessionsClosing.get(catalogName)
+            if (closing != undefined) {
+                await closing
+            }
+        }
+
+        let newSession: GrpcEvitaSessionResponse
+        if (readWrite) {
+            newSession = await this.evitaClient
+                .createReadWriteSession({ catalogName })
+        } else {
+            newSession = await this.evitaClient
+                .createReadOnlySession({ catalogName })
+        }
+
+        return {
+            sessionId: newSession.sessionId,
+            catalogState: this.catalogStatisticsConverter.convertCatalogState(newSession.catalogState)
+        }
     }
 
     /**
@@ -800,7 +1113,7 @@ export class EvitaClient extends AbstractEvitaClient {
      *
      * The pending close is intentionally not awaited: a caller asking for fresh data must not block on an
      * unrelated slow query of somebody else. Warming-up catalogs are the exception and wait for it in
-     * {@link createSharedSession}, because evitaDB permits a single open session there.
+     * {@link materializeSession}, because evitaDB permits a single open session there.
      */
     private closeSession(session: EvitaClientSession): void {
         const catalogName: string = session.catalogName
