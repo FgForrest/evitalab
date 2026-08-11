@@ -4,15 +4,21 @@ import type { InjectionKey, Ref } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { List } from 'immutable'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
+import { LabStorage } from '@/modules/storage/LabStorage'
+import { defaultPanelWidth, sanitizePanelWidth } from '@/modules/connection-explorer/model/panelWidth'
+
+const panelWidthStorageKey: string = 'connectionExplorerPanelWidth'
 
 export const connectionExplorerServiceInjectionKey: InjectionKey<ConnectionExplorerService> = Symbol('connectionExplorerService')
 
 export class ConnectionExplorerService {
 
     private readonly evitaClient: EvitaClient
+    private readonly labStorage: LabStorage
 
-    constructor(evitaClient: EvitaClient) {
+    constructor(evitaClient: EvitaClient, labStorage: LabStorage) {
         this.evitaClient = evitaClient
+        this.labStorage = labStorage
     }
 
     async getServerStatus(): Promise<ServerStatus> {
@@ -58,6 +64,22 @@ export class ConnectionExplorerService {
      */
     async clearLocalCache(): Promise<boolean> {
         return await this.evitaClient.clearPersistentCache()
+    }
+
+    /**
+     * Width of the explorer panel the user last chose, in pixels. Only sanitized, never fitted to the
+     * viewport: the persisted width is the user's preference and must survive a temporarily narrow window,
+     * fitting it to the actual viewport is the panel's job.
+     */
+    getPanelWidth(): number {
+        return sanitizePanelWidth(this.labStorage.get(panelWidthStorageKey, defaultPanelWidth))
+    }
+
+    /**
+     * Remembers the width of the explorer panel for the next lab start.
+     */
+    setPanelWidth(width: number): void {
+        this.labStorage.set(panelWidthStorageKey, sanitizePanelWidth(width))
     }
 }
 

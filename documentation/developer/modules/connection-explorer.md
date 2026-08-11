@@ -8,6 +8,7 @@ the launch point for most tabs — which is why it injects nearly every tab fact
   `collectionItemServiceInjectionKey`, `catalogItemMenuFactoryInjectionKey`,
   `collectionItemMenuFactoryInjectionKey`, `connectionExplorerPanelMenuFactoryInjectionKey`
 - **Injects:** `evitaClientInjectionKey`, `workspaceServiceInjectionKey`, `toasterInjectionKey`,
+  `labStorageInjectionKey`,
   and the tab factories for entity-viewer, evitaql-console, graphql-console, schema-viewer,
   server-viewer, task-viewer, backup-viewer, jfr-viewer, traffic-recordings, traffic-record-history and
   mutation-history
@@ -17,9 +18,10 @@ the launch point for most tabs — which is why it injects nearly every tab fact
 | Path | What's in it |
 |------|--------------|
 | `component/ConnectionExplorerPanel.vue` | The panel itself |
+| `component/ConnectionExplorerPanelResizer.vue` | The draggable right edge of the panel |
 | `component/CatalogItem.vue`, `CollectionItem.vue` | Tree items |
 | `component/*Dialog.vue` | Management dialogs — create/rename/duplicate/replace/delete catalog, create/rename/delete collection, activate/deactivate, make immutable/mutable, switch to alive state |
-| `model/` | `CatalogMenuItemType`, `CollectionMenuItemType`, `ConnectionMenuItemType`, `MutationProgressType` |
+| `model/` | `CatalogMenuItemType`, `CollectionMenuItemType`, `ConnectionMenuItemType`, `MutationProgressType`, `panelWidth` |
 | `service/*MenuFactory.ts` | Three `MenuFactory` subclasses (connection panel, catalog item, collection item) that build the ⋮ menus |
 | `service/CatalogItemService.ts`, `CollectionItemService.ts`, `ConnectionExplorerService.ts` | The actions behind the menus |
 
@@ -76,6 +78,53 @@ instead. It is deliberately not greyed out: `clearPersistentCache()` returns whe
 anything at all, and answering an explicit user action with an honest message beats a disabled item whose reason
 the user has to guess. The condition itself is badged once, by the status bar's
 [`PersistentCacheIndicator`](workspace.md#status-bar-indicators) — this panel does not repeat it.
+
+## Panel width
+
+The panel is resizable by dragging its right edge (`ConnectionExplorerPanelResizer.vue`), and the chosen width
+survives a lab restart — `ConnectionExplorerService` keeps it in [`LabStorage`](storage.md) under
+`connectionExplorerPanelWidth`. The tab area needs no help following the panel: the drawer is a Vuetify layout
+item, so `--v-layout-left` — which [`workspace`](workspace.md)'s tab window positions against — moves with it.
+
+Two widths are deliberately **not** the same thing:
+
+| | What it is |
+|---|---|
+| **preferred width** | what the user last dragged to; the only value ever persisted |
+| **rendered width** | the preferred width fitted to the current viewport by `clampPanelWidth` |
+
+A width chosen on a wide monitor would otherwise swallow a laptop viewport, and clamping it *in storage* would
+lose the preference for good — so the fit is recomputed on every window resize and never written back. The limits
+(`model/panelWidth.ts`) are `minPanelWidth` (200 px) and a viewport-derived maximum of
+`min(50 % of the viewport, viewport − 460 px)`. **The rail is budgeted inside that
+460 px rather than being a separate term**, so the maximum stays a pure function of the viewport width: the rail
+exists in standalone mode and not in driver mode, and a run-mode-aware clamp would be two behaviours to keep
+right for the sake of ~56 px at the extreme end. When a viewport is too narrow to satisfy both limits, the
+minimum wins.
+
+Notes for changing the resizer:
+
+- It renders into the drawer's **`append` slot**. Vuetify puts the default slot inside
+  `.v-navigation-drawer__content`, which scrolls — a handle placed there would scroll away with a long catalog
+  tree. `__append` is a direct child of the (positioned) drawer root, so the absolutely positioned handle spans
+  its full height.
+- Dragging uses **pointer capture**, which is what lets a drag continue over the CodeMirror editors in the tab
+  area, and gets touch and pen input for free.
+- The drawer's own transition is switched **off** (`.connection-explorer-panel { transition: none }`), not
+  merely suppressed while dragging. Vuetify animates the drawer's `width` over 0.2 s, while the tab window
+  follows `--v-layout-left` with no transition of its own — so *any* width change (drag, arrow key, double-click
+  reset, window resize) would visibly desync the two. The panel is `permanent`, so nothing else about it was
+  ever animated.
+- Moves are coalesced into one width change per animation frame (each one recomputes the whole Vuetify layout),
+  and the width is persisted only when the interaction ends — local storage is synchronous and writing per move
+  janks the drag.
+- Double-click on the handle resets to the default 325 px. The handle is **not** keyboard operable — a focusable
+  separator that only arrow keys can drive was undiscoverable, so it carries no `tabindex`, only
+  `role="separator"` and a label for screen readers.
+- **The panel header is what makes a narrow panel possible.** Its title column is `minmax(0, auto)`, so the title
+  truncates with an ellipsis instead of pushing the read-only / offline badges and the ⋮ menu out of the panel;
+  the badges themselves never shrink. Keep that constraint in mind when adding anything to the header — a new
+  fixed-size element eats directly into the title.
 
 ## Long-running catalog operations and their progress flags
 

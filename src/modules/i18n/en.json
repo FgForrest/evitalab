@@ -415,6 +415,10 @@
     "button": {
       "connect": "Connect"
     },
+    "resizer": {
+      "label": "Connection Explorer width",
+      "tooltip": "Drag to resize, double-click to reset"
+    },
     "connection": {
       "flag": {
         "preconfigured": "preconfigured"
