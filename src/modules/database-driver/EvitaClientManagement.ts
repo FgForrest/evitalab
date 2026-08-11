@@ -3,6 +3,7 @@ import { splitStringWithCaseIntoWords } from '@/utils/string'
 import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { CatalogStatisticsConverter } from '@/modules/database-driver/connector/grpc/service/converter/CatalogStatisticsConverter'
 import type { EvitaManagementServiceClient } from '@/modules/database-driver/AbstractEvitaClient'
+import { unboundedStreamOptions } from '@/modules/database-driver/AbstractEvitaClient'
 import {
     ReservedKeywordsConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/ReservedKeywordsConverter'
@@ -529,7 +530,7 @@ export class EvitaClientManagement {
                         mostSignificantBits: fileId.mostSignificantBits.toString()
                     }
                 },
-                { signal: options?.signal }
+                { ...unboundedStreamOptions, signal: options?.signal }
             )
 
             let bytesRead: bigint = 0n

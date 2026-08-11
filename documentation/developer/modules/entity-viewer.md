@@ -26,6 +26,28 @@ Everything sits under `viewer/`:
 | `keymap/scopes.ts` | The viewer's shortcut scopes |
 | `workspace/` | `EntityViewerTabDefinition`, params/data DTOs, `EntityViewerTabFactory` |
 
+## Initialization, errors & retry
+
+`EntityViewer.vue` follows the tab framework's
+[init contract](../workspace-and-tabs.md#loading-errors--retry). `initialize()` holds the whole init chain —
+data locales → property descriptors → descriptor index → grid headers → sort pruning → property preselection —
+and is called from both `onBeforeMount` and the exposed `retry()`. Any rejection becomes
+`emit('error', asError(e))`, so a failed init offers *Try again* instead of spinning forever.
+
+The chain stays a `.then()` promise chain on purpose: making the setup async breaks the component in
+combination with the dynamic `<component>` rendering the tab framework uses.
+
+Two consequences of `initialize()` being re-runnable:
+
+- **`executeOnOpen` re-runs on retry** — a retried tab behaves exactly like a freshly opened one, matching the
+  GraphQL console.
+- **Nothing may accumulate across runs.** `constructEntityPropertyDescriptorIndex()` rebuilds the property
+  display order into a fresh array and replaces `sortedEntityPropertyKeys`; appending to it would grow the
+  order on every retry and on every schema change.
+
+`retry()` is exposed rather than relying on the remount fallback, because the entity-schema change callback is
+registered at setup top level and released in `onUnmounted`, which `KeepAlive` never runs on a `:key` bump.
+
 ## Toolbar
 
 `component/Toolbar.vue` wraps `VTabToolbar`. Its `#append` slot is ordered least → most important with

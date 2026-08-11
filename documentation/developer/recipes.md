@@ -75,10 +75,17 @@ Using `evitaql-console` as the reference implementation
    `'update:data'`, exposes `path()` (see
    [workspace & tabs](workspace-and-tabs.md#tab-component-contract)); fills all available space
    and uses `VTabToolbar`.
-7. **Wire restore & sharing** — add your `TabType` to the switches in
+7. **Init & retry** — if the tab blocks its content on a server call, put that call into a single
+   `initialize()` invoked from both `onBeforeMount` and an exposed `retry()`, `emit('ready')` on
+   success and `emit('error', asError(e))` on any rejection — never a toast, or the tab renders with
+   no data and no way out. Always expose `retry()`; the `:key` remount fallback does not run
+   `onUnmounted` under `KeepAlive` and would leak setup-level registrations. Needs no timeout of its
+   own — every driver call is already bounded. See
+   [loading, errors & retry](workspace-and-tabs.md#loading-errors--retry).
+8. **Wire restore & sharing** — add your `TabType` to the switches in
    `WorkspaceService.restoreTabsFromLastSession()` / `storeOpenedTabs()` and (if shareable) to
    `SharedTabResolver`.
-8. **Open it** from wherever appropriate:
+9. **Open it** from wherever appropriate:
 
 ```ts
 workspaceService.createTab(myTabFactory.createNew(...))

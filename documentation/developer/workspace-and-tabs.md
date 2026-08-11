@@ -57,16 +57,33 @@ around it, rendering `TabLoadingScreen` until the tab is ready:
   otherwise remounts the component (a `:key` bump) to re-run `onBeforeMount`.
 
 The framework holds **no timer and no `AbortController`** — a timeout is just one kind of `'error'`,
-and it belongs to the request, not the framework. A tab that wants a bounded init owns its own
-timeout: create an `AbortSignal.timeout(ms)`, thread it through the service/`EvitaClient` call into
-ky (which aborts the request on expiry), and `emit('error', asError(e))` on any rejection. This
-turns the previous "stuck forever behind the loading screen on a hung/failed init" behaviour into a
-retryable error state.
+and it belongs to the request, not the framework. A tab needs no timeout code of its own either:
+every server call is already bounded by the driver's default call deadline (see
+[database driver — deadlines & cancellation](database-driver.md#deadlines--cancellation)), so a hung
+request becomes a rejection the tab reports like any other. A tab only threads a `timeoutMs` when it
+wants to *tighten* that bound, and `AbortSignal` is reserved for deliberate cancellation.
 
-The GraphQL console (`GraphQLConsole.vue`) is the reference example: it extracts its init into an
-`initialize()` used by both `onBeforeMount` and the exposed `retry()`, bounds schema introspection
-with `AbortSignal.timeout(15_000)`, and emits `'error'` on failure. Tabs that do neither behave
-exactly as before (they simply never leave the loading state until they emit `'ready'`).
+**The init contract a tab opts into:**
+
+1. extract initialization into a single `initialize()` function,
+2. call it from `onBeforeMount` **and** from the exposed `retry()`,
+3. on success `emit('ready')`, on any rejection `emit('error', asError(e))` — never a toast, or the
+   tab renders with no data and no way out.
+
+**Always expose `retry()`; never rely on the remount fallback.** `TabWindow` wraps the component in
+`<KeepAlive>`, where a `:key` change *deactivates and caches* the old instance instead of unmounting
+it — `onUnmounted` never runs. A tab that registers anything at setup top level (a schema-change
+callback, a subscription) and releases it in `onUnmounted` would therefore leak one live registration
+per retry, each closing over a zombie instance. The remount path remains only as a safety net for
+tabs that hold no such registrations.
+
+Tabs adopting the contract today: **GraphQL console** (`GraphQLConsole.vue`, the reference example),
+**entity viewer** (`EntityViewer.vue`) and **schema viewer** (`SchemaViewer.vue`). Tabs that emit
+`'ready'` synchronously and load their content into an in-body indicator with its own reload — the
+task / JFR / backup / traffic-recordings viewers, both history viewers, the server viewer — are
+deliberately left out: a tab-level error screen would replace a live, self-healing list with a dead
+one and blank the toolbar actions the user needs. Tabs that do neither behave exactly as before (they
+simply never leave the loading state until they emit `'ready'`).
 
 ### Opening tabs
 

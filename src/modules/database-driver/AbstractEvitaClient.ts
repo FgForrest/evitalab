@@ -1,4 +1,4 @@
-import type { Client, Transport } from '@connectrpc/connect'
+import type { CallOptions, Client, Transport } from '@connectrpc/connect'
 import { createClient } from '@connectrpc/connect'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
 import {
@@ -66,6 +66,41 @@ export type EvitaManagementServiceClient = Client<typeof EvitaManagementService>
 export type EvitaTrafficRecordingServiceClient = Client<typeof GrpcEvitaTrafficRecordingService>
 
 /**
+ * Deadline applied to every server call that has not asked for a different one - the counterpart of the
+ * official evitaDB Java driver's `ClientTimeoutOptions.timeout`. Shared by both transports: gRPC receives
+ * it as `defaultTimeoutMs` of the transport, HTTP as ky's client-wide `timeout`, so nothing the driver
+ * exposes can hang forever without a caller having opted into it.
+ *
+ * Intentionally short, because everything that inherits it is metadata - schemas, statistics, session
+ * creation, listings, introspection. Calls that are legitimately allowed to run longer opt up to
+ * {@link userQueryTimeout} at their call site, and streams opt out entirely with `{ timeoutMs: 0 }`.
+ */
+export const defaultCallTimeout: number = 15_000
+
+/**
+ * Deadline for calls that carry a **user-issued query**, which may legitimately run for minutes on a large
+ * catalog. Kept at the value the HTTP client used for everything before deadlines were classified, so no
+ * query that worked before can start failing now.
+ */
+export const userQueryTimeout: number = 300_000
+
+/**
+ * Call options every **streaming** gRPC call must pass. `timeoutMs: 0` disables the transport-wide
+ * {@link defaultCallTimeout}, which is a *whole-call* deadline and would therefore kill a perfectly healthy
+ * long-lived stream the moment it expires.
+ *
+ * Note this only removes the deadline - it does not replace it with anything. The evitaDB Java driver instead
+ * re-arms a **per-message** deadline (`ClientTimeoutOptions.streamingTimeout`, 300 s, reset after every
+ * received message), a semantic connect-web's whole-call `timeoutMs` cannot express. evitaLab's only
+ * equivalent is `DataCacheRefresher`'s heartbeat watchdog on the system-CDC stream; the other streams have
+ * none, which is a pre-existing gap rather than something these options introduce.
+ *
+ * Nothing enforces this mechanically: a new streaming call that forgets to pass these options compiles,
+ * type-checks and passes tests, and only breaks at runtime once its transfer outlives the default deadline.
+ */
+export const unboundedStreamOptions: CallOptions = { timeoutMs: 0 }
+
+/**
  * Ancestor for {@link EvitaServiceClient}. Contains all sorts of initializations that
  * would clutter the main EvitaClient.
  */
@@ -109,7 +144,7 @@ export abstract class AbstractEvitaClient {
         this.evitaLabConfig = evitaLabConfig
         this.connection = connectionService.getConnection()
         this.httpApiClient = ky.create({
-            timeout: 300000, // 5 minutes
+            timeout: defaultCallTimeout,
             hooks: {
                 // the HTTP counterpart of the gRPC interceptor below: a user working only in a GraphQL console
                 // produces no gRPC traffic at all, and without this a single transient fetch failure would
@@ -127,6 +162,9 @@ export abstract class AbstractEvitaClient {
             const clientVersion: string | undefined = resolveClientVersion(__EVITADB_API_VERSION__)
             this._transport = createGrpcWebTransport({
                 baseUrl: this.connection.grpcUrl,
+                // applies to every unary *and* streaming call made through this transport, which is why every
+                // long-lived stream has to opt out of it explicitly with `{ timeoutMs: 0 }`
+                defaultTimeoutMs: defaultCallTimeout,
                 interceptors: [
                     // declares the supported evitaDB API version to the server, so that it can pick response forms
                     // this client understands

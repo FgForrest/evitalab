@@ -1,6 +1,6 @@
 import { errorMessage } from '@/utils/error'
 import { Connection } from '@/modules/connection/model/Connection'
-import { ConnectError } from '@connectrpc/connect'
+import { Code, ConnectError } from '@connectrpc/connect'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EvitaDBInstanceServerError } from '@/modules/database-driver/exception/EvitaDBInstanceServerError'
 import { TimeoutError } from '@/modules/database-driver/exception/TimeoutError'
@@ -27,6 +27,19 @@ export class ErrorTransformer {
         }
         // todo lho rework
         if (e instanceof ConnectError) {
+            // the two codes whose raw message ("[deadline_exceeded] the operation timed out") would otherwise
+            // reach the user verbatim, because everything that renders a driver error - the toaster and the
+            // tab loading screen alike - renders `message` as it is. Every other code is passed through
+            // unchanged **on purpose**: `Code.Canceled` is the documented file-download cancellation contract,
+            // `Code.InvalidArgument` drives the traffic/mutation history's specific error states and
+            // `Code.Unauthenticated` is what `EvitaClient.executeInSharedSession` recognizes as a
+            // server-dropped session, and all three are matched by callers *after* this transformation.
+            if (e.code === Code.DeadlineExceeded) {
+                return new TimeoutError(this.connection)
+            }
+            if (e.code === Code.Unavailable) {
+                return new EvitaDBInstanceNetworkError(this.connection)
+            }
             return e
         }
         const err = e as { name?: string, response?: { status?: number } }

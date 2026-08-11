@@ -1110,7 +1110,8 @@
       }
     },
     "notification": {
-      "failedToReloadSchema": "Failed to reload schema."
+      "failedToReloadSchema": "Failed to reload schema.",
+      "couldNotLoadSchema": "Could not load schema."
     },
     "section": {
       "placeholder": {
@@ -2282,7 +2283,8 @@
       },
       "notification": {
         "invalidFilter": "Filter criteria are not valid.",
-        "couldNotApplyFilter": "Could not apply filter: {reason}"
+        "couldNotApplyFilter": "Could not apply filter: {reason}",
+        "couldNotLoadEntityTypes": "Could not load entity types."
       },
       "form": {
         "from": {
