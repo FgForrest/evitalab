@@ -43,8 +43,9 @@ key that names the module and the concern.
 It injects [`config`](config.md) because what gets persisted depends on the run mode — a driver-mode
 instance and a standalone instance do not share the same persistence expectations.
 
-Main consumers: `workspace` (open tabs, selected tab, tab history, panel state via `workspaceStore`) and
-`welcome-screen` (`welcomeScreenStore`).
+Main consumers: `workspace` (`openedTabs`, `selectedTab`, `tabHistory`), `connection-explorer`
+(`connectionExplorerPanelWidth` — see [panel width](connection-explorer.md#panel-width)) and `welcome-screen`
+(`welcomeScreenStore`).
 
 ## `LabServerDataCache`
 

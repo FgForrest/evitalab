@@ -12,6 +12,7 @@ fi
 . "${NVM_DIR}/nvm.sh"
 nvm install 22
 nvm use 22
+nvm alias default 22
 
 # install yarn
 
