@@ -1,11 +1,8 @@
 import store from 'store2'
 import type { StoreBase } from 'store2'
-import XXH from 'xxhashjs'
-import type { HashObject } from 'xxhashjs'
 import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
-
-const hasher: HashObject = XXH.h64()
+import { xxh64Hex } from '@/utils/hash'
 
 /**
  * Actual storage version of the current build.
@@ -26,7 +23,7 @@ export class LabStorage {
 
     constructor(providerName: string) {
         // obtain storage for the current build version a namespace
-        this.storage = store.namespace(`evitaLab:${hasher.update(providerName).digest().toString(16)}:${buildVersion}`)
+        this.storage = store.namespace(`evitaLab:${xxh64Hex(providerName)}:${buildVersion}`)
     }
 
     /**

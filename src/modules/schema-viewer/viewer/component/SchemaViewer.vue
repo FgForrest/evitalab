@@ -82,9 +82,14 @@ async function loadSchema(): Promise<void> {
 
 async function reloadSchema(): Promise<void> {
     reloadingSchema.value = true
-    // call registered callback which will load new schema
-    await schemaViewerService.clearSchemaCache(props.params.dataPointer)
-    reloadingSchema.value = false
+    try {
+        // fetches first and, when the schema really changed, calls the registered callback which loads it
+        await schemaViewerService.refreshSchema(props.params.dataPointer)
+    } catch (e) {
+        await toaster.error(t('schemaViewer.notification.failedToReloadSchema'), asError(e))
+    } finally {
+        reloadingSchema.value = false
+    }
 }
 
 onMounted(async () => {

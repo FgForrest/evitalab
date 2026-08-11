@@ -58,7 +58,8 @@
     "notification": {
       "copiedToClipboard": "Copied to clipboard",
       "failedToCopyToClipboard": "Failed to copy to clipboard",
-      "downloadIncomplete": "Download of '{fileName}' didn't finish. The file at the location you selected is not the requested file and should be deleted."
+      "downloadIncomplete": "Download of '{fileName}' didn't finish. The file at the location you selected is not the requested file and should be deleted.",
+      "serverUnreachable": "Cannot reach the evitaDB server. evitaLab keeps showing the data it has cached locally."
     },
     "download": {
       "preparing": "Starting download…",
@@ -92,6 +93,12 @@
         "upToDate": "Up to date. Last change: {lastChange}",
         "upToDateNoChanges": "Up to date. No changes observed yet.",
         "broken": "Live updates unavailable — reconnecting…"
+      },
+      "dataFreshness": {
+        "cached": "Showing data from the local cache: {count} item(s) could not be verified against the server."
+      },
+      "persistentCache": {
+        "unavailable": "This browser does not let evitaLab store data locally, so it cannot cache anything between reloads. Everything else works as usual."
       }
     },
     "dialog": {
@@ -397,6 +404,7 @@
   "explorer": {
     "title": "Connection Explorer",
     "readOnlyToolTip": "Server is read-only",
+    "offlineModeToolTip": "Offline — the evitaDB server cannot be reached. evitaLab keeps showing the data it has cached locally, and reconnects on its own.",
     "button": {
       "connect": "Connect"
     },
@@ -419,12 +427,16 @@
           "catalogBackups": "Catalog backups",
           "tasks": "Tasks",
           "jfrRecordings": "JFR recordings",
-          "trafficRecordings": "Traffic recordings"
+          "trafficRecordings": "Traffic recordings",
+          "clearLocalCache": "Clear local cache"
         }
       },
       "notification": {
         "couldNotLoadCatalogs": "Could not load catalogs: {reason}",
-        "couldNotLoadServerStatus": "Could not load server status: {reason}"
+        "couldNotLoadServerStatus": "Could not load server status: {reason}",
+        "localCacheCleared": "Local cache cleared.",
+        "localCacheUnavailable": "There was nothing to clear — this browser does not let evitaLab store data locally.",
+        "couldNotClearLocalCache": "Could not clear the local cache: {reason}"
       }
     },
     "catalog": {
@@ -1087,6 +1099,9 @@
         "associatedData": "associated data",
         "references": "references"
       }
+    },
+    "notification": {
+      "failedToReloadSchema": "Failed to reload schema."
     },
     "section": {
       "placeholder": {

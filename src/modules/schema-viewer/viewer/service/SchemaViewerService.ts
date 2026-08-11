@@ -8,6 +8,7 @@ import { ReferenceAttributeSchemaPointer } from '@/modules/schema-viewer/viewer/
 import { AssociatedDataSchemaPointer } from '@/modules/schema-viewer/viewer/model/AssociatedDataSchemaPointer'
 import { ReferenceSchemaPointer } from '@/modules/schema-viewer/viewer/model/ReferenceSchemaPointer'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
+import { requestOutageReport } from '@/modules/database-driver/model/serverConnectivity'
 import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
@@ -122,13 +123,23 @@ export class SchemaViewerService {
         }
     }
 
-    async clearSchemaCache(dataPointer: SchemaViewerDataPointer): Promise<void> {
+    /**
+     * Fetches the displayed schema from the server and swaps it in only if it really changed, notifying the
+     * viewer through its registered schema-change callback.
+     *
+     * Fetch-first, and deliberately not a cache invalidation: a user who presses reload while the server is
+     * unreachable must not lose the schema they are looking at. On failure the error propagates to the caller
+     * (which reports it through the toaster) and the displayed schema stays exactly as it was.
+     */
+    async refreshSchema(dataPointer: SchemaViewerDataPointer): Promise<void> {
+        // a user-initiated refresh must be answered even during an outage that was already reported
+        requestOutageReport()
         const schemaPointer: SchemaPointer = dataPointer.schemaPointer
         if (
             schemaPointer instanceof CatalogSchemaPointer ||
             schemaPointer instanceof CatalogAttributeSchemaPointer
         ) {
-            await this.evitaClient.clearSchemaCache(schemaPointer.catalogName)
+            await this.evitaClient.refreshCatalogSchema(schemaPointer.catalogName)
         } else if (
             schemaPointer instanceof EntitySchemaPointer ||
             schemaPointer instanceof EntityAttributeSchemaPointer ||
@@ -137,7 +148,7 @@ export class SchemaViewerService {
             schemaPointer instanceof ReferenceAttributeSchemaPointer ||
             schemaPointer instanceof SortableAttributeCompoundSchemaPointer
         ) {
-            await this.evitaClient.clearSchemaCache(schemaPointer.catalogName, schemaPointer.entityType)
+            await this.evitaClient.refreshEntitySchema(schemaPointer.catalogName, schemaPointer.entityType)
         } else {
             throw new UnexpectedError(`Unsupported type of schema ${schemaPointer}`)
         }

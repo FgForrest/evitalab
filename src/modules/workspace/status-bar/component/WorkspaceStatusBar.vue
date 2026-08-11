@@ -12,6 +12,8 @@ import SubjectPathStatusComponent from '@/modules/workspace/status-bar/component
 import { SubjectPathStatus } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathStatus'
 import { EditorStatus } from '@/modules/workspace/status-bar/model/editor-status/EditorStatus'
 import ChangeStreamIndicator from '@/modules/workspace/status-bar/component/ChangeStreamIndicator.vue'
+import CachedDataIndicator from '@/modules/workspace/status-bar/component/CachedDataIndicator.vue'
+import PersistentCacheIndicator from '@/modules/workspace/status-bar/component/PersistentCacheIndicator.vue'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 
@@ -33,6 +35,8 @@ const editorStatus = computed<EditorStatus>(() =>
         </div>
         <div class="right-content">
             <EditorStatusComponent :status="editorStatus" />
+            <CachedDataIndicator />
+            <PersistentCacheIndicator />
             <ChangeStreamIndicator />
         </div>
     </VAppBar>

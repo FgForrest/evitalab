@@ -45,6 +45,12 @@ const catalogChangeCallbackId: string = connectionExplorerService.registerCatalo
 })
 const showCreateCatalogDialog = ref<boolean>(false)
 
+/**
+ * Whether evitaLab is currently offline. Badged here, on the connection the outage belongs to; the status bar
+ * separately reports whether the *data on screen* is verified, which is a different question.
+ */
+const offline = connectionExplorerService.serverUnreachable
+
 const menuItems = ref<Map<ConnectionMenuItemType, MenuItem<ConnectionMenuItemType>>>()
 watch(
     serverStatus,
@@ -65,13 +71,11 @@ async function load(): Promise<void> {
     }
 
     loading.value = true
-    loaded = await loadServerStatus()
-        .then((loaded) => {
-            if (!loaded) {
-                return false
-            }
-            return loadCatalogs()
-        })
+    // the catalog listing is attempted even when the server status could not be fetched: it may be served
+    // from the persistent cache, which is what keeps the explorer usable while the server is unreachable
+    const serverReachable: boolean = await loadServerStatus()
+    const catalogsLoaded: boolean = await loadCatalogs()
+    loaded = serverReachable && catalogsLoaded
     loading.value = false
 }
 
@@ -117,19 +121,21 @@ function scheduleServerStatusRetry(): void {
 }
 
 async function loadCatalogs(): Promise<boolean> {
-    if (serverStatus.value == undefined) {
-        // the server is unreachable (per the server status) — catalogs live on it, so there is
-        // nothing to fetch and no point surfacing a second failure on top of the status error
-        return false
-    }
+    // an unreachable server (per the server status) is not a reason to skip this: the driver may still
+    // serve the catalog listing from its persistent cache, and that is exactly what makes the explorer —
+    // and with it every catalog-scoped tab — usable while the server is down
+    const serverReachable: boolean = serverStatus.value != undefined
     try {
         catalogs.value = await connectionExplorerService.getCatalogs()
         return true
     } catch (e) {
-        await toaster.error(t(
-            'explorer.connection.notification.couldNotLoadCatalogs',
-            { reason: errorMessage(e) }
-        ))
+        if (serverReachable) {
+            await toaster.error(t(
+                'explorer.connection.notification.couldNotLoadCatalogs',
+                { reason: errorMessage(e) }
+            ))
+        }
+        // nothing cached and no server: the status error already told the user, so no second failure
         return false
     }
 }
@@ -139,8 +145,32 @@ async function createMenuItems(): Promise<Map<ConnectionMenuItemType, MenuItem<C
         serverStatus.value,
         () => showCreateCatalogDialog.value = true,
         () => loading.value = true,
-        () => loading.value = false
+        () => loading.value = false,
+        () => void clearLocalCache()
     )
+}
+
+/**
+ * Discards evitaLab's on-disk copy of this server's data. Purely local: nothing on the server is touched and
+ * the data comes back on the next read, so it needs no confirmation — only feedback.
+ */
+async function clearLocalCache(): Promise<void> {
+    loading.value = true
+    try {
+        // reports whether evitaLab can persist anything at all: with storage the browser refuses, the purge
+        // cannot have had anything to do, and claiming success would be a lie
+        const cleared: boolean = await connectionExplorerService.clearLocalCache()
+        await toaster.success(t(cleared
+            ? 'explorer.connection.notification.localCacheCleared'
+            : 'explorer.connection.notification.localCacheUnavailable'))
+    } catch (e) {
+        await toaster.error(t(
+            'explorer.connection.notification.couldNotClearLocalCache',
+            { reason: errorMessage(e) }
+        ))
+    } finally {
+        loading.value = false
+    }
 }
 
 function handleAction(action: string): void {
@@ -185,6 +215,18 @@ load().then()
                             v-bind="props"
                             class="icon"
                             icon="mdi-eye-outline"
+                        />
+                      </template>
+                    </VTooltip>
+                    <VTooltip location="bottom">
+                      {{ t('explorer.offlineModeToolTip') }}
+                        <template #activator="{ props }">
+                        <VIcon
+                            v-if="offline"
+                            v-bind="props"
+                            class="icon"
+                            icon="mdi-cloud-off-outline"
+                            color="warning"
                         />
                       </template>
                     </VTooltip>

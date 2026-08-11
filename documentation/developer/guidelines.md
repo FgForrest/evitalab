@@ -47,6 +47,8 @@ error, fix the cause, do not silence the symptom:
 ## Naming conventions
 
 - Classes/services/models: `PascalCase`, one class per file, file named after the class.
+- Files that are a set of functions or constants rather than a type: `camelCase`
+  (`flattenToSingleLine.ts`, `serverConnectivity.ts`).
 - Injectable service pattern: `MyService` + `myServiceInjectionKey` + `useMyService()`.
 - Tab classes: `<Feature>TabDefinition/TabParams/TabParamsDto/TabData/TabDataDto/TabFactory`.
 - Shared Vue components: `V` prefix (`VLabDialog`); feature components without prefix.
@@ -134,6 +136,13 @@ The host delegates to thin wrappers; the collaborator owns its data and the oper
 This is the same instinct as *Where logic belongs*, applied one level down: just as logic is placed in
 the layer that owns it, state is placed in the type that owns it.
 
+**When no type can own it**, and only then, a module-scoped signal is acceptable — a shared state whose
+writers and readers sit in different modules, where threading it through dependency injection would couple
+modules that otherwise never meet (`database-driver/model/serverConnectivity.ts` is the one instance). File
+it by **what it is**, not by who writes to it: it belongs in `model/`, next to the module's other
+vocabulary, never in `exception/` just because errors are what set it. See
+[module structure](modules/index.md#what-belongs-in-model-versus-exception).
+
 ## UI
 
 Use Vuetify components as the base and the custom component set documented in
@@ -170,10 +179,17 @@ try {
 }
 ```
 
-- Toast titles come from i18n; pass the caught error as the second argument (the toaster can open
-  the error-viewer tab with details).
+- Toast titles come from i18n; **pass the caught error as the second argument** (the toaster can open
+  the error-viewer tab with details). Do *not* interpolate `errorMessage(e)` into the title instead — a
+  fair number of existing sites do, and it costs the notification layer the only thing it can classify
+  (see the next point). Prefer `error(title, e)` in new code.
 - Services generally let errors propagate to the calling component; the driver already transforms
   transport errors into `LabError` types.
+- **Do not suppress or deduplicate connectivity errors at a call site.** An unreachable server makes
+  every read fail at once, and collapsing that flood into one notification is done centrally by
+  `ConnectivityAwareToaster` — see
+  [`notification`](modules/notification.md#reporting-outages-once-not-per-failure). Just report the
+  failure as usual.
 - Never swallow errors silently.
 
 ## Localization
@@ -189,6 +205,16 @@ All user-facing strings go through vue-i18n — no hardcoded texts in templates.
   (see [database driver](database-driver.md#long-running-operations)).
 - Register/unregister change callbacks symmetrically in `onMounted`/`onUnmounted` (same for
   `Keymap.bind`/`unbind`).
+- **Session logic must be side-effect-free until it has its data.** The logic passed to
+  `queryCatalog`/`updateCatalog` may be executed more than once (the client replays it on a session it
+  evicted underneath the caller) and, because sessions materialize lazily, its cache-served prefix may run
+  even while the server is unreachable and only then fail. Read first, act on the results afterwards — see
+  [database driver — lazy materialization](database-driver.md#lazy-materialization).
+- **A UI "reload" button must refresh, not invalidate.** Use the driver's `refresh*` entry points
+  (`refreshCatalogSchema`, `refreshEntitySchema`, `refreshGraphQLSchema`, `refreshCatalogStatistics`), which
+  fetch first and keep the displayed data when the fetch fails. Clearing a cache to force a reload destroys
+  the offline copy for a user whose refresh cannot succeed — see
+  [manual refresh](database-driver.md#manual-refresh-fetch-first-never-clear).
 
 ## Documentation
 
