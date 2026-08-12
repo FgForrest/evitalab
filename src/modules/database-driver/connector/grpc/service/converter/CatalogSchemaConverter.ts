@@ -65,7 +65,7 @@ import {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import { CaptureArea } from '@/modules/database-driver/request-response/cdc/CaptureArea.ts'
 import { Operation } from '@/modules/database-driver/request-response/cdc/Operation.ts'
-import { EntityExistence } from '@/modules/database-driver/request-response/data/mutation/EntityMutation.ts'
+import { EntityExistence } from '@/modules/database-driver/request-response/data/mutation/EntityExistence.ts'
 import {
     ScopedReferenceIndexType
 } from '@/modules/database-driver/request-response/schema/mutation/reference/ScopedReferenceIndexType.ts'

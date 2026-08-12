@@ -17,7 +17,9 @@ export class UpsertPriceMutationConverter extends PriceMutationConverter<UpsertP
         }
         return new UpsertPriceMutation(
             PriceMutationConverter.buildPriceKey(mutation.priceId, mutation.priceList, mutation.currency),
-            mutation.innerRecordId || undefined, // todo pfi: how to solve it
+            // the gRPC field is an optional wrapper, so an unset id already arrives as undefined; it must not be
+            // collapsed with `||` because `0` is a legal inner record id
+            mutation.innerRecordId,
             EvitaValueConverter.convertGrpcBigDecimal(mutation.priceWithoutTax),
             EvitaValueConverter.convertGrpcBigDecimal(mutation.taxRate),
             EvitaValueConverter.convertGrpcBigDecimal(mutation.priceWithTax),

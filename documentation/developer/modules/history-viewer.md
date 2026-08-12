@@ -44,6 +44,13 @@ trigger a native form submission, i.e. a full page reload), and the submit butto
 handler — `type="submit"` alone is what runs the apply, having both fires it twice. Shortcuts reaching a
 focused `INPUT` at all is the keymaster filter override described in [`keymap`](keymap.md).
 
+The *Entity PK* field is a plain `VTextField`, so it hands over a **string** while
+`MutationHistoryCriteria.entityPrimaryKey` (and the gRPC request behind it) is a `number`. The parsing and
+validation of that input live in `service/entityPrimaryKeyFilter.ts` — the component must route the raw value
+through `parseEntityPrimaryKeyFilter()` rather than assigning it into the criteria directly, otherwise a
+string reaches the server. A malformed value is reported by `isEntityPrimaryKeyFilterValid()` as a
+validation rule and never narrows the query silently.
+
 Observed with a `VSelect`/`VCombobox` dropdown **open**: Vuetify keeps `document.activeElement` on the
 field's `input` (it does not move focus into the overlay's `.v-list-item`), so the override is what makes
 the shortcut reachable in that state too. `Ctrl+Enter` then applies the filter without selecting the

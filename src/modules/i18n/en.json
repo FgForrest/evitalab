@@ -212,6 +212,9 @@
     "placeholder": {
       "loading": "Loading, please wait ...",
       "loadingFailed": "Failed to load the tab."
+    },
+    "notification": {
+      "couldNotResolveDemoCodeSnippet": "Could not resolve demo code snippet."
     }
   },
   "tabShare": {
@@ -221,6 +224,9 @@
     },
     "tooltip": {
       "nonSharableTab": "Cannot share this tab because it is using a user-defined evitaDB connection. Only pre-configured connections can be shared."
+    },
+    "notification": {
+      "couldNotResolveSharedTab": "Could not resolve shared tab."
     },
     "sharedDialog": {
       "title": "Shared tab found",
@@ -710,7 +716,8 @@
   "entityViewer": {
     "loadedDataWarning": "Loaded query data must be manually executed.",
     "notification": {
-      "couldNotExecuteQuery": "Could not execute query"
+      "couldNotExecuteQuery": "Could not execute query",
+      "couldNotBuildOrderBy": "Could not build the order by constraint."
     },
     "toolbar": {
       "button": {
@@ -771,6 +778,15 @@
       "notification": {
         "failedToFindProperty": "Failed to find property descriptor for key: '{key}'",
         "failedToFindRequestedProperties": "These properties were requested but not found in current data: {keys}"
+      },
+      "column": {
+        "primaryKey": "Primary key",
+        "version": "Version",
+        "scope": "Scope",
+        "parent": "Parent",
+        "locales": "Locales",
+        "priceInnerRecordHandling": "Price inner record handling",
+        "prices": "Prices"
       },
       "cell": {
         "placeholder": {
@@ -936,6 +952,7 @@
       "resultVisualizerView": "Result visualizer — click again to hide the panel"
     },
     "notification": {
+      "couldNotExecuteQuery": "Could not execute query.",
       "failedToSaveQueryToHistory": "Failed to save query to history.",
       "failedToFormatDocument": "Failed to format the document."
     }
@@ -966,6 +983,7 @@
       "resultVisualizerView": "Result visualizer — click again to hide the panel"
     },
     "notification": {
+      "couldNotExecuteQuery": "Could not execute query.",
       "failedToSaveQueryToHistory": "Failed to save query to history.",
       "failedToReloadSchema": "Failed to reload GraphQL schema.",
       "failedToFormatDocument": "Failed to format the document."
@@ -1115,7 +1133,8 @@
     },
     "notification": {
       "failedToReloadSchema": "Failed to reload schema.",
-      "couldNotLoadSchema": "Could not load schema."
+      "couldNotLoadSchema": "Could not load schema.",
+      "couldNotLoadCatalog": "Could not load catalog."
     },
     "section": {
       "placeholder": {
@@ -2323,7 +2342,10 @@
         },
         "entityPrimaryKey": {
           "hint": "Entity PK",
-          "label": "Entity PK"
+          "label": "Entity PK",
+          "validations": {
+            "notValid": "Entity primary key must be a whole number."
+          }
         },
         "containerName": {
           "hint": "Container name(s)",

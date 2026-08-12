@@ -414,7 +414,9 @@ version (they used to be prepended as one block) and lets each lead its own vers
 TransactionMutation` is not a discriminator: a stream-delivered infrastructure capture converts to a
 `TransactionMutation` exactly like the synthesised overviews do. Only this method knows which records
 came from `response.changeCapture`, which is why `captureCount` is reported from here rather than
-recomputed upstream.
+recomputed upstream. Turning one overview into its synthesised capture is plain conversion and lives in
+`TransactionConverter.convertGrpcTransactionOverview`; only the merge and the provenance bookkeeping stay
+in the session.
 
 ## Caching & change callbacks
 

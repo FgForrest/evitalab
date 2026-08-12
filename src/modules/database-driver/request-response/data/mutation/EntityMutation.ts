@@ -1,12 +1,5 @@
+/**
+ * Represents a mutation operation on an entity. Base class for all entity mutation operations.
+ */
 export interface EntityMutation {
-
-
-
-
-}
-
-export enum EntityExistence { // todo pfi: move to another ts file
-    MustNotExist= "mustNotExist",
-    MayExist = "mayExist",
-    MustExist = "mustExist",
 }

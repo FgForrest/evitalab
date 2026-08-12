@@ -25,7 +25,7 @@ import { TrafficRecordHistoryCursor } from '@/modules/traffic-viewer/model/Traff
 import {
     createTrafficRecordHistoryRequest,
     prependOlderTrafficRecords
-} from '@/modules/traffic-viewer/model/trafficRecordHistoryPaging'
+} from '@/modules/traffic-viewer/service/trafficRecordHistoryPaging'
 
 // note: this is enum from vuetify, but vuetify doesn't export it
 type InfiniteScrollStatus = 'ok' | 'empty' | 'loading' | 'error';

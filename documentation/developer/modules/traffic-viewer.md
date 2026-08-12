@@ -22,7 +22,8 @@ browsing the record history of one catalog.
 | `components/ExportTrafficBufferButton.vue`, `ExportTrafficBufferDialog.vue` | On-demand buffer export (below) |
 | `components/StartPointerButton.vue`, `VLabelSelect.vue` | History start pointer, label filter input |
 | `model/` | Tab definitions/params/data, `TrafficRecordHistoryCriteria`, `UserTrafficRecordType`, `TrafficRecorderTask`, `TrafficRecordingExportTask`, visualisation contexts |
-| `model/TrafficRecordHistoryCursor.ts`, `model/trafficRecordHistoryPaging.ts` | Record history paging — the backward cursor, the capture request builder, page merging (below) |
+| `model/TrafficRecordHistoryCursor.ts` | The backward cursor of the record history paging (below) |
+| `service/trafficRecordHistoryPaging.ts` | Record history paging behavior — the capture request builder and page merging (below) |
 | `service/*ContainerVisualiser.ts` | One visualiser per record type (session start/close, query, source query + statistics, fetch, enrichment, mutation) |
 | `service/TrafficRecordHistoryVisualisationProcessor.ts` | Turns raw records into `TrafficRecordVisualisationDefinition`s |
 | `service/TrafficViewerService.ts` | The module's service |

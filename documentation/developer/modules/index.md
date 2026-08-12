@@ -14,38 +14,19 @@ Typical inner structure of a module:
 <module>/
 ├── <Module>ModuleRegistrar.ts   # optional, only when the module provides/injects DI services
 ├── component/                   # Vue components of the module
-├── model/                       # the module's vocabulary (see below)
+├── model/                       # the module's vocabulary — types, enums, constant data
 ├── exception/                   # error types, and error classification — nothing else
-├── service/                     # injectable services (business logic)
+├── service/                     # behavior over the model — injectable services and plain functions
 └── workspace/                   # tab integration (TabDefinition, TabParams, TabData, factory)
     ├── model/
     └── service/
 ```
 
-### What belongs in `model/` versus `exception/`
-
-`model/` is the module's **vocabulary**, not only its classes: domain model types (immutable where
-possible), enums, and the pure functions and constants that operate on them —
-`code-editor/model/flattenToSingleLine.ts` and `traffic-viewer/model/trafficRecordHistoryPaging.ts` are
-functions, not types. It is also where a **state signal with no natural owner** goes: see
-`database-driver/model/serverConnectivity.ts`, module-scoped reactive state that cannot live in a class
-because its writers and its readers sit in different modules
-([why](../database-driver.md#offline-state--is-evitalab-offline)). Such state is rare — prefer a field on
-the service that owns the concern, and reach for a module-scoped signal only when no single service does.
-
-`exception/` is for error **types** and for classifying errors (`isConnectivityError`, `ErrorTransformer`).
-Do not file something there merely because errors are what write to it — that is proximity, not
-responsibility, and it hides the file from everyone who looks for it by what it *is*.
-
-Filenames follow what the file is, not which folder it sits in: `PascalCase` when the file is a type
-(class/interface/enum) or names a server-side entity, `camelCase` when it is a set of functions or
-constants.
-
-**`model/` holds data, `service/` holds behavior.** Being injectable is not what makes something a
-service — a stateless pure function that transforms a query is business logic and belongs in
-`service/` just as much as a DI-registered class does. Only the classes and types the logic operates
-*on* belong in `model/`. A module may therefore have a `service/` folder and no `ModuleRegistrar` at
-all.
+Which of those directories a given file belongs in is a convention, not an index entry — see
+[guidelines — where a file goes](../guidelines.md#where-a-file-goes) for the rule and its rationale.
+One consequence worth stating here, next to the registrars: because being injectable is *not* what
+makes something a service, a module may have a `service/` folder and no `ModuleRegistrar` at all —
+`code-editor/service/` is entirely plain functions.
 
 **This page is an index.** Each module has its own page under `documentation/developer/modules/`,
 named after its directory in `src/modules/` — that is where the detail lives. When you change a

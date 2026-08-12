@@ -379,7 +379,7 @@ async function executeQuery(): Promise<void> {
         }
     } catch (error) {
         loading.value = false
-        await toaster.error('Could not execute query', asError(error)) // todo lho i18n
+        await toaster.error(t('graphQLConsole.notification.couldNotExecuteQuery'), asError(error))
     }
 }
 

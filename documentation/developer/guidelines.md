@@ -3,7 +3,8 @@
 Rules and conventions for writing evitaLab code. Each module respects the **vertical slice
 architecture** — a feature's components, models and services live together in its module
 (see [module catalog](modules/index.md)). We are big fans of **immutability** (where it makes
-sense) and Domain-Driven Design, and we try to build the codebase using these practices.
+sense) and Domain-Driven Design, and we try to build the codebase using these practices —
+which is also what decides [where a file goes](#where-a-file-goes) within a module.
 
 ## TypeScript conventions
 
@@ -44,11 +45,61 @@ error, fix the cause, do not silence the symptom:
 - If a compiler-forced change alters a code path (added guard, `.value` unwrap,
   enum conversion), add/extend a regression test under `test/`.
 
+## Where a file goes
+
+Within a module's vertical slice ([module structure](modules/index.md)), the split between `model/`,
+`service/` and `exception/` follows the Domain-Driven Design distinction, **not** the file's shape:
+whether it is a class or a set of exported functions has no bearing on where it lives.
+
+**`model/` — the module's vocabulary.** What the feature *is*:
+
+- types, interfaces, enums and DTOs;
+- immutable value objects and entities, **including methods over their own state** — a query on a
+  model object belongs on that object, not in a service (see [anemic domain
+  model](https://martinfowler.com/bliki/AnemicDomainModel.html));
+- static data and constant lookup tables (`taskStateToColorMapping.ts`, `keyboardShortcutMappings.ts`);
+- state holders that own their data together with the mutators of that data
+  (`database-driver/model/serverConnectivity.ts`) — they are stateful, so they cannot be domain
+  services (criterion 3 below).
+
+**`service/` — operations over the vocabulary.** What the feature *does*. Eric Evans' three criteria
+for a domain service apply; a file belongs here when **all three** hold:
+
+1. the operation relates to a concept that is not a natural part of a single model type;
+2. its interface is expressed in terms of model types;
+3. the operation is stateless.
+
+In practice that covers mappers and transformations between model types, factories that assemble
+model objects, predicates and policies (specifications), and — as the dependency-bearing special
+case — injectable collaborators. Injectables are services *because* they are dependency-bearing
+operations, not the other way round: **a `service/` file need not be a class and need not have an
+injection key.** Plain function modules belong here too (`code-editor/service/formatJson.ts`,
+`console/result-visualiser/service/utils/schemaMatching.ts`).
+
+**`exception/` — error types, and classifying errors** (`isConnectivityError`, `ErrorTransformer`).
+Nothing else. Do not file something there merely because errors are what write to it — that is
+proximity, not responsibility, and it hides the file from everyone who looks for it by what it *is*.
+
+The awkward cases are usually primitive obsession. Logic that parses or validates a raw `string`
+or `number` has no model type to live on, so it falls to a service by default; had the concept been
+a value object, the same logic would have been its factory. Worth noting when you hit it — it is a
+hint about the model, not a rule to act on.
+
+> **Note for readers coming from [Feature-Sliced Design](https://feature-sliced.design/docs/reference/slices-segments):**
+> FSD segments this differently — its `model` segment holds business logic including validation and
+> stores, and auxiliary helpers go to `lib`. evitaLab does **not** follow FSD; it follows the DDD
+> reading above, consistent with the intro to this document. Do not port FSD's segment semantics
+> into this codebase.
+
 ## Naming conventions
 
-- Classes/services/models: `PascalCase`, one class per file, file named after the class.
-- Files that are a set of functions or constants rather than a type: `camelCase`
-  (`flattenToSingleLine.ts`, `serverConnectivity.ts`).
+- Types (class/interface/enum), and files naming a server-side entity: `PascalCase`, one type per
+  file, file named after it.
+- Files that are a set of functions or constants rather than a type: `camelCase`.
+- Casing follows what the file **is**; the directory follows [where a file
+  goes](#where-a-file-goes) — the two are independent, as
+  `code-editor/service/flattenToSingleLine.ts` and `database-driver/model/serverConnectivity.ts`
+  illustrate: same casing, opposite directories.
 - Injectable service pattern: `MyService` + `myServiceInjectionKey` + `useMyService()`.
 - Tab classes: `<Feature>TabDefinition/TabParams/TabParamsDto/TabData/TabDataDto/TabFactory`.
 - Shared Vue components: `V` prefix (`VLabDialog`); feature components without prefix.
@@ -144,10 +195,11 @@ the layer that owns it, state is placed in the type that owns it.
 
 **When no type can own it**, and only then, a module-scoped signal is acceptable — a shared state whose
 writers and readers sit in different modules, where threading it through dependency injection would couple
-modules that otherwise never meet (`database-driver/model/serverConnectivity.ts` is the one instance). File
+modules that otherwise never meet (`database-driver/model/serverConnectivity.ts` is the one instance —
+[why](database-driver.md#offline-state--is-evitalab-offline)). File
 it by **what it is**, not by who writes to it: it belongs in `model/`, next to the module's other
-vocabulary, never in `exception/` just because errors are what set it. See
-[module structure](modules/index.md#what-belongs-in-model-versus-exception).
+vocabulary, never in `exception/` just because errors are what set it — see
+[where a file goes](#where-a-file-goes).
 
 ## UI
 

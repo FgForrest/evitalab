@@ -67,6 +67,17 @@ import type { MutationHistoryCriteria } from '../model/MutationHistoryCriteria'
  */
 export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCatalogCapture> {
 
+    /**
+     * Container types that live inside an entity. A listing already filtered to any of them sits below the entity
+     * level, hence no attribute history action is offered on its records.
+     */
+    private static readonly SUB_ENTITY_CONTAINER_TYPES: ContainerType[] = [
+        ContainerType.Attribute,
+        ContainerType.Price,
+        ContainerType.Reference,
+        ContainerType.AssociatedData
+    ]
+
     private readonly workspaceService: WorkspaceService
     private readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
 
@@ -194,21 +205,35 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
     }
 
-    // todo: fix this ugly condition
     private getAttributeAction(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture, attributeName: string | undefined): Immutable.List<Action> {
+        // without a primary key there is no entity to open the attribute history for
         if (mutationHistory.entityPrimaryKey === undefined) {
             return ImmutableList()
-        } else if (ctx.historyCriteria.mutableFilters) {
-            return this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, attributeName, ctx, mutationHistory, 'mutationHistoryViewer.record.type.attribute.action.open')
-        } else if (!ctx.historyCriteria.mutableFilters && (CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Attribute) ||
-            CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Price) ||
-            CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.Reference) ||
-            CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.AssociatedData)
-        )) {
-            return ImmutableList()
-        } else {
-            return this.constructActions([GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE], ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey, attributeName, ctx, mutationHistory, 'mutationHistoryViewer.record.type.attribute.action.open')
         }
+        // when the criteria are already narrowed down to sub-entity containers, the action would only navigate the user
+        // back to the listing they are looking at
+        if (!ctx.historyCriteria.mutableFilters && this.filtersSubEntityContainers(ctx.historyCriteria)) {
+            return ImmutableList()
+        }
+        return this.constructActions(
+            [GrpcChangeCaptureContainerType.CONTAINER_ATTRIBUTE],
+            ctx.historyCriteria.entityPrimaryKey ?? mutationHistory.entityPrimaryKey,
+            attributeName,
+            ctx,
+            mutationHistory,
+            'mutationHistoryViewer.record.type.attribute.action.open'
+        )
+    }
+
+    /**
+     * Whether the criteria restrict the listing to containers nested within an entity, i.e. to a level at which the
+     * attribute history action leads nowhere new.
+     */
+    private filtersSubEntityContainers(historyCriteria: MutationHistoryCriteria): boolean {
+        const containerTypes: Immutable.List<ContainerType> =
+            CatalogSchemaConverter.toContainerTypes(historyCriteria.containerTypeList)
+        return MutationHistoryDataVisualiser.SUB_ENTITY_CONTAINER_TYPES
+            .some(containerType => containerTypes.contains(containerType))
     }
 
     private constructEntityMetadata(mutationHistory: ChangeCatalogCapture, historyCriteria: MutationHistoryCriteria): MetadataGroup[] {

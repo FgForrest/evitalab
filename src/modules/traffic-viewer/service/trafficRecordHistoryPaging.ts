@@ -54,9 +54,10 @@ export function createTrafficRecordHistoryRequest(criteria: TrafficRecordHistory
 }
 
 /**
- * Identity of a traffic record within the history of a single catalog.
+ * Deduplication key of a traffic record within a single catalog's history. Internal to the merging below — it is not
+ * `TrafficRecord`'s identity, so it deliberately does not live on the model.
  */
-export function trafficRecordKey(record: TrafficRecord): string {
+function trafficRecordKey(record: TrafficRecord): string {
     return `${record.sessionSequenceOrder}:${record.recordSessionOffset}`
 }
 

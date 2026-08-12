@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { createTrafficRecordHistoryRequest } from '@/modules/traffic-viewer/model/trafficRecordHistoryPaging'
+import { createTrafficRecordHistoryRequest } from '@/modules/traffic-viewer/service/trafficRecordHistoryPaging'
 import { TrafficRecordHistoryCriteria } from '@/modules/traffic-viewer/model/TrafficRecordHistoryCriteria'
 import {
     TrafficRecordingCaptureRequest

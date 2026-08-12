@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { prependOlderTrafficRecords } from '@/modules/traffic-viewer/model/trafficRecordHistoryPaging'
+import { prependOlderTrafficRecords } from '@/modules/traffic-viewer/service/trafficRecordHistoryPaging'
 import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { TrafficRecordType } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordType'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'

@@ -9,7 +9,10 @@ import { EvitaLabConfig, evitaLabConfigInjectionKey } from '@/modules/config/Evi
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 import { EvitaDBDocsClient } from '@/modules/welcome-screen/service/EvitaDBDocsClient'
 
-// todo docs
+/**
+ * Registers the welcome screen module which renders the initial landing page of the lab with links to
+ * evitaDB documentation and blog posts.
+ */
 export class WelcomeScreenModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {
