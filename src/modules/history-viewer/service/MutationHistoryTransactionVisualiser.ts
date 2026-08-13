@@ -31,15 +31,36 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
 
     }
 
+    /**
+     * Matches the entire infrastructure area on purpose. The server emits only transaction mutations there, and
+     * because {@link MutationHistoryVisualisationProcessor} fails when no visualiser accepts a record, a narrower
+     * condition (e.g. on the mutation type of the body) would turn any future infrastructure mutation into a
+     * broken viewer instead of a plainly rendered record.
+     */
     canVisualise(changeCatalogCapture: ChangeCatalogCapture): boolean {
-        return changeCatalogCapture.area == CaptureArea.Infrastructure // todo pfi: better condition
+        return changeCatalogCapture.area == CaptureArea.Infrastructure
     }
 
+    /**
+     * A single page carries two transaction captures of the same catalog version whenever the version's lead event
+     * (`index = 0`) falls inside the page window: the overview synthesised by
+     * {@link EvitaClientSession.getMutationHistory} and the streamed lead event itself. Only the first one is
+     * visualised; a capture of an already rendered version is skipped regardless of its body, since the version is
+     * what identifies the record it would be rendered as (the context drops it either way).
+     *
+     * The winner is therefore whichever capture arrives first, and the driver guarantees that this is the overview —
+     * it merges overviews so that each one leads its own version, while the reverse scan puts the streamed lead event
+     * at the end of its version's block. The overview is also the capture that exists for every version on the page,
+     * so a transaction row does not change its provenance depending on where the page boundary fell.
+     */
     visualise(ctx: MutationHistoryVisualisationContext, mutationHistory: ChangeCatalogCapture): void {
-        // todo #354: unlike the sibling data/schema visualisers this one does not
-        //  de-duplicate against an already-visualised session record for the same
-        //  version before adding a new root record; a guard using
-        //  ctx.getVisualisedSessionRecord(mutationHistory.version) is likely missing.
+        const alreadyVisualisedRecord: MutationHistoryItemVisualisationDefinition | undefined =
+            ctx.getVisualisedSessionRecord(mutationHistory.version)
+        if (alreadyVisualisedRecord != undefined) {
+            ctx.attachPendingChildren(mutationHistory.version, alreadyVisualisedRecord)
+            return
+        }
+
         const visualisedRecord: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-graph-outline', i18n.global.t('mutationHistoryViewer.record.type.transaction.title', { version: mutationHistory.version }), undefined, undefined, this.constructMetadata(mutationHistory), ImmutableList())
 
 

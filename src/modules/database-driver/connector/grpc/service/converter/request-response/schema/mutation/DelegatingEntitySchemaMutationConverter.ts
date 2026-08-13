@@ -75,22 +75,22 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/attribute/ModifyAttributeSchemaNameMutationConverter.ts'
 import {
     CreateSortableAttributeCompoundSchemaMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/CreateSortableAttributeCompoundSchemaMutationConverter.ts'
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortable-attribute-compound/CreateSortableAttributeCompoundSchemaMutationConverter.ts'
 import {
     ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter.ts'
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortable-attribute-compound/ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter.ts'
 import {
     ModifySortableAttributeCompoundSchemaDescriptionMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/ModifySortableAttributeCompoundSchemaDescriptionMutationConverter.ts'
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortable-attribute-compound/ModifySortableAttributeCompoundSchemaDescriptionMutationConverter.ts'
 import {
     ModifySortableAttributeCompoundSchemaNameMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/ModifySortableAttributeCompoundSchemaNameMutationConverter.ts'
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortable-attribute-compound/ModifySortableAttributeCompoundSchemaNameMutationConverter.ts'
 import {
     RemoveSortableAttributeCompoundSchemaMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/RemoveSortableAttributeCompoundSchemaMutationConverter.ts'
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortable-attribute-compound/RemoveSortableAttributeCompoundSchemaMutationConverter.ts'
 import {
     SetSortableAttributeCompoundIndexedMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/SetSortableAttributeCompoundIndexedMutationConverter.ts'
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortable-attribute-compound/SetSortableAttributeCompoundIndexedMutationConverter.ts'
 import {
     AllowCurrencyInEntitySchemaMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/entity/AllowCurrencyInEntitySchemaMutationConverter.ts'
@@ -185,7 +185,7 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/attribute/SetAttributeSchemaConflictResolutionOverrideMutationConverter.ts'
 import {
     SetAssociatedDataSchemaConflictResolutionOverrideMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/associatedData/SetAssociatedDataSchemaConflictResolutionOverrideMutationConverter.ts'
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/associated-data/SetAssociatedDataSchemaConflictResolutionOverrideMutationConverter.ts'
 import {
     SetReferenceSchemaConflictResolutionOverrideMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/reference/SetReferenceSchemaConflictResolutionOverrideMutationConverter.ts'

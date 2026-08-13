@@ -131,6 +131,40 @@ local copy of the tab-construction code instead of reusing `entity-viewer`'s
 Its three visualisers split by capture area — **data** mutations, **schema** mutations and
 **transaction** boundaries.
 
+## Record identity in the visualisation context
+
+`MutationHistoryVisualisationContext` indexes top-level records so that the several captures the server
+reports for one catalog version collapse into a single row. The identity is the **catalog version**,
+extended with `primaryKey/referenceName` for `ReferenceMutation` bodies — one version legitimately
+carries several references of the same entity, each visualised as its own record. The two sides of the
+check must use the same key; when they did not, references of one entity overwrote each other and only
+the last survived. First record of an identity wins, later ones are dropped, and
+`addRootVisualisedRecord()` returns the record actually held under the identity — a caller that keeps
+building on a dropped record would fill in a row that is never rendered. `addVisualisedSessionRecord()`
+is first-wins for the same reason.
+
+### The duplicate transaction capture
+
+Whenever a version's transaction lead event (`index = 0`) falls inside the page window, the page carries
+**two** transaction captures of that version: the overview
+[synthesised by the driver](../database-driver.md#mutation-history-paging-getmutationhistory) and the
+streamed lead event itself. `MutationHistoryTransactionVisualiser` therefore looks the version up in the
+context before building anything and skips a capture whose version is already visualised; it used to
+build the whole definition — titles, metadata, clipboard callbacks — and rely on the context to swallow
+it.
+
+The surviving record is whichever capture arrives first, and the driver makes that the **overview**: the
+merge lets each overview lead its own version, while the reverse scan puts the streamed lead event at the
+end of its version's block. That is the intended outcome, not an accident of ordering — the overview
+exists for every version on the page, the streamed lead event only for versions whose `index = 0` fell
+inside the window, so preferring the streamed one would make a row's provenance depend on where the page
+boundary landed.
+
+The transaction visualiser accepts the **whole** infrastructure area on purpose. The server emits only
+transaction mutations there, and `MutationHistoryVisualisationProcessor` throws when no visualiser
+accepts a record — so narrowing the condition to the body type would break the viewer for any future
+infrastructure mutation instead of rendering it plainly.
+
 ## Related
 
 - [`database-driver`](database-driver.md) — `getMutationHistory`, `request-response/cdc/`, and the

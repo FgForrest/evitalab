@@ -1,6 +1,6 @@
 import {
     ModifySortableAttributeCompoundSchemaNameMutation
-} from '@/modules/database-driver/request-response/schema/mutation/sortableAttributeCompound/ModifySortableAttributeCompoundSchemaNameMutation.ts'
+} from '@/modules/database-driver/request-response/schema/mutation/sortable-attribute-compound/ModifySortableAttributeCompoundSchemaNameMutation.ts'
 import type {
     GrpcModifySortableAttributeCompoundSchemaNameMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcSortableAttributeCompoundSchemaMutations_pb.ts'

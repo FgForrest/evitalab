@@ -32,6 +32,13 @@ const selectedTypes = ref<EventType[]>()
 const changed = computed<boolean>(() =>
     selectedTypes.value != undefined && selectedTypes.value.length > 0)
 
+const allEventTypesSelected = computed<boolean>(() =>
+    eventTypes.value != undefined
+        && eventTypes.value.length > 0
+        && selectedTypes.value?.length === eventTypes.value.length)
+const someEventTypesSelected = computed<boolean>(() =>
+    !allEventTypesSelected.value && (selectedTypes.value?.length ?? 0) > 0)
+
 loadEventTypes().then()
 
 async function loadEventTypes() {
@@ -49,6 +56,14 @@ async function loadEventTypes() {
 
 function reset(): void {
     selectedTypes.value = eventTypes.value
+}
+
+/**
+ * Selects all available event types, or clears the selection when everything is already selected. Applies to the
+ * entire list, not just the items currently matching the autocomplete's search.
+ */
+function toggleAllEventTypes(): void {
+    selectedTypes.value = allEventTypesSelected.value ? [] : eventTypes.value
 }
 
 async function startRecording(): Promise<boolean> {
@@ -90,17 +105,47 @@ async function startRecording(): Promise<boolean> {
             {{ t('jfrViewer.startRecording.title') }}
         </template>
 
-<!--        todo lho singleline? -->
-<!--        todo lho add virtual select all/none item-->
         <template #default>
             <VAutocomplete
                 v-model="selectedTypes"
                 :items="eventTypes"
+                :label="t('jfrViewer.startRecording.form.events.label')"
                 :rules="selectedTypesRules"
                 item-title="name"
                 multiple
-                chips
-            />
+            >
+                <template #prepend-item>
+                    <VListItem @click="toggleAllEventTypes">
+                        <template #prepend>
+                            <VCheckboxBtn
+                                :model-value="allEventTypesSelected"
+                                :indeterminate="someEventTypesSelected"
+                            />
+                        </template>
+                        {{
+                            allEventTypesSelected
+                                ? t('jfrViewer.startRecording.form.events.button.deselectAll')
+                                : t('jfrViewer.startRecording.form.events.button.selectAll')
+                        }}
+                    </VListItem>
+                    <VDivider />
+                </template>
+
+                <template #selection="{ index }">
+                    <span
+                        v-if="index === 0"
+                        class="text-grey text-caption align-self-center text-truncate"
+                    >
+                        {{
+                            t(
+                                'jfrViewer.startRecording.form.events.valueDescriptor',
+                                selectedTypes?.length ?? 0,
+                                { named: { count: selectedTypes?.length ?? 0 } }
+                            )
+                        }}
+                    </span>
+                </template>
+            </VAutocomplete>
         </template>
 
         <template #append-form>

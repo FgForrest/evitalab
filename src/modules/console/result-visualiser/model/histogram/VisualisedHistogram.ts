@@ -40,9 +40,9 @@ export class VisualisedHistogram {
     static fromJson(json: GraphQLResultNode): VisualisedHistogram {
         const buckets = json.buckets.map((bucket: GraphQLResultNode) => VisualisedHistogramBucket.fromJson(bucket))
         return new VisualisedHistogram(
-            json.min ? new BigDecimal(json.min) : undefined,
-            json.max ? new BigDecimal(json.max) : undefined,
-            json.overallCount ? json.overallCount : undefined,
+            json.min != undefined ? new BigDecimal(json.min) : undefined,
+            json.max != undefined ? new BigDecimal(json.max) : undefined,
+            json.overallCount,
             List(buckets)
         )
     }

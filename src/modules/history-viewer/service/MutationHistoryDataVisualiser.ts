@@ -49,10 +49,10 @@ import {
 import { ContainerType } from '@/modules/database-driver/data-type/ContainerType.ts'
 import {
     AssociatedDataMutation
-} from '@/modules/database-driver/request-response/data/mutation/associatedData/AssociatedDataMutation.ts'
+} from '@/modules/database-driver/request-response/data/mutation/associated-data/AssociatedDataMutation.ts'
 import {
     UpsertAssociatedDataMutation
-} from '@/modules/database-driver/request-response/data/mutation/associatedData/UpsertAssociatedDataMutation.ts'
+} from '@/modules/database-driver/request-response/data/mutation/associated-data/UpsertAssociatedDataMutation.ts'
 import {
     SetPriceInnerRecordHandlingMutation
 } from '@/modules/database-driver/request-response/data/mutation/price/SetPriceInnerRecordHandlingMutation.ts'

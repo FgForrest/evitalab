@@ -14,7 +14,7 @@ class TestTrafficRecord extends TrafficRecord {
             recordSessionOffset,
             10,
             TrafficRecordType.Query,
-            OffsetDateTime.ofInstant(0n, '+00:00'),
+            OffsetDateTime.of(0n, 0, '+00:00'),
             Duration.fromMillis(0),
             0,
             0,

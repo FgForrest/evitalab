@@ -1,6 +1,6 @@
 import {
     AbstractModifyAssociatedDataSchemaMutation
-} from '@/modules/database-driver/request-response/schema/mutation/associatedData/AbstractModifyAssociatedDataSchemaMutation.ts'
+} from '@/modules/database-driver/request-response/schema/mutation/associated-data/AbstractModifyAssociatedDataSchemaMutation.ts'
 import type { SchemaMutation } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutation.ts'
 
 export class ModifyAssociatedDataSchemaDescriptionMutation extends AbstractModifyAssociatedDataSchemaMutation implements SchemaMutation {

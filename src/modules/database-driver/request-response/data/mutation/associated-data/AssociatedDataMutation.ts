@@ -1,7 +1,7 @@
 import type { LocalMutation } from '@/modules/database-driver/request-response/data/mutation/LocalMutation.ts'
 import type {
     AssociatedDataKey
-} from '@/modules/database-driver/request-response/data/mutation/associatedData/AssociatedDataKey.ts'
+} from '@/modules/database-driver/request-response/data/mutation/associated-data/AssociatedDataKey.ts'
 
 export abstract class AssociatedDataMutation implements LocalMutation {
     readonly associatedDataKey: AssociatedDataKey

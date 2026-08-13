@@ -270,6 +270,25 @@ recordings, CDC, server files, …), which mostly mirrors evitaDB's data model. 
   they are regenerated from the evitaDB repo (see `buf.gen.yaml`; agents can use the
   `generate-evitadb-client` skill).
 
+### Date-time values
+
+`OffsetDateTime` carries the instant (`Timestamp` — epoch seconds + nanoseconds, exactly as gRPC
+transfers it) **and** the ISO time offset the value is expressed in. Two rules follow from that:
+
+- **Never format the instant with a plain `Intl` formatter.** `Intl` would render it in the browser's
+  time zone, so a timestamp created by a server in another zone silently shifts. `toDateTime()` puts
+  the value into its own offset (`toLuxonZone()` normalizes `Z`/`±HH:MM` into a Luxon zone) and
+  `getPrettyPrintableString()` formats from there, keeping the offset marker in the output
+  (`8/12/26, 2:05:09 PM GMT+2`). `DateTimeRange` formats each end the same way.
+- **Build values through `OffsetDateTime.of(seconds, nanos, offset)`** (or `fromDateTime()` for a
+  zoned Luxon date time) rather than assembling a `Timestamp` at the call site, so the sub-second
+  part is not dropped. Luxon works in milliseconds, so `toDateTime()`/`toString()` round the
+  nanosecond fraction; the full value survives in `timestamp` and is what gets sent back.
+
+Known gap: `LocalDateTime`, `LocalDate` and `LocalTime` still reinterpret their wall-clock value in
+the browser zone — the server serializes them against its own default offset, and these three types
+carry no offset of their own to correct with.
+
 ### Attribute schema model mapping
 
 `CatalogSchemaConverter.convertAttributeSchema` picks the internal attribute-schema class from the
@@ -409,6 +428,14 @@ capture belongs to — `getTransactionOverview` compensates for that, and it is 
 server emits record-aligned pages. `mergeTransactionOverviews()` interleaves overviews by catalog
 version (they used to be prepended as one block) and lets each lead its own version, matching the
 `index = 0` lead-event contract the `history-viewer`'s visualisation processor groups by.
+
+What the viewer depends on is that invariant — *a transaction capture leads its version's block* — not the
+overview specifically. Hence a page whose lead event is inside the window carries the version's
+transaction twice, and the redundant capture is resolved in
+[`history-viewer`](modules/history-viewer.md#the-duplicate-transaction-capture) instead of here: dropping
+the overview for such versions would leave the version's only transaction capture arriving *after* its own
+children (the reverse scan puts `index = 0` last), which empties the list for container-filtered views, and
+it would save no round trip — `getTransactionOverview` runs once per page either way.
 
 **Transaction records are distinguished by provenance, not by body type.** `body instanceof
 TransactionMutation` is not a discriminator: a stream-delivered infrastructure capture converts to a

@@ -10,6 +10,7 @@ import { ContainerType } from '@/modules/database-driver/data-type/ContainerType
 import {
     ReferenceMutation
 } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceMutation.ts'
+import type { ReferenceKey } from '@/modules/database-driver/request-response/data/mutation/reference/ReferenceKey.ts'
 
 /**
  * Generic context for mutation history visualisation
@@ -52,35 +53,51 @@ export class MutationHistoryVisualisationContext {
         }
     }
 
-    // todo pfi: consultation required
-    addRootVisualisedRecord(record: MutationHistoryItemVisualisationDefinition): void {
-
-        if (record.source.body instanceof ReferenceMutation) {
-            if (this.rootVisualisedRecords.has(record.source.version.toString() + record.source.body.referenceKey.primaryKey + record.source.body.referenceKey.referenceName)) {
-                // throw new UnexpectedError(`There is already mutation history record with transaction ID '${sessionId.toString()}'`)
-            } else {
-                this.rootVisualisedRecords.set(record.source.version.toString() + record.source.body.referenceKey.primaryKey, record)
-            }
-        } else {
-
-            if (this.rootVisualisedRecords.has(record.source.version.toString())) {
-                // throw new UnexpectedError(`There is already mutation history record with transaction ID '${sessionId.toString()}'`)
-            } else {
-                this.rootVisualisedRecords.set(record.source.version.toString(), record)
-            }
+    /**
+     * Registers a top-level record. The first record wins, later records with the same identity are dropped as
+     * duplicates — the same catalog version is reported by more than one capture within a single transaction.
+     *
+     * @return the record actually held under the identity, i.e. the incumbent when the passed one is dropped; a
+     * caller that keeps building on its record would otherwise fill in a record that is never rendered
+     */
+    addRootVisualisedRecord(record: MutationHistoryItemVisualisationDefinition): MutationHistoryItemVisualisationDefinition {
+        const key: string = MutationHistoryVisualisationContext.rootVisualisedRecordKey(record)
+        const alreadyVisualisedRecord: MutationHistoryItemVisualisationDefinition | undefined =
+            this.rootVisualisedRecords.get(key)
+        if (alreadyVisualisedRecord != undefined) {
+            return alreadyVisualisedRecord
         }
+        this.rootVisualisedRecords.set(key, record)
+        return record
+    }
 
+    /**
+     * Identity of a top-level record: the catalog version, narrowed by the affected reference for reference
+     * mutations, because a single version may carry several references of the same entity, each visualised
+     * as its own record.
+     */
+    private static rootVisualisedRecordKey(record: MutationHistoryItemVisualisationDefinition): string {
+        const version: string = record.source.version.toString()
+        if (record.source.body instanceof ReferenceMutation) {
+            const referenceKey: ReferenceKey = record.source.body.referenceKey
+            return `${version}/${referenceKey.primaryKey}/${referenceKey.referenceName}`
+        }
+        return version
     }
 
     getVisualisedSessionRecord(sessionId: number): MutationHistoryItemVisualisationDefinition | undefined {
         return this.visualisedSessionRecordsIndex.get(sessionId.toString())
     }
 
+    /**
+     * Registers the record all other captures of the given catalog version nest under. First-wins, like
+     * {@link addRootVisualisedRecord}, because more than one capture of a version may be visualisable as its
+     * top-level record.
+     */
     addVisualisedSessionRecord(sessionId: number, record: MutationHistoryItemVisualisationDefinition): void {
-        if (this.visualisedSessionRecordsIndex.has(sessionId.toString())) {
-            // throw new UnexpectedError(`There is already mutation history record with transaction ID '${sessionId.toString()}'`)
-        } else {
-            this.visualisedSessionRecordsIndex.set(sessionId.toString(), record)
+        const key: string = sessionId.toString()
+        if (!this.visualisedSessionRecordsIndex.has(key)) {
+            this.visualisedSessionRecordsIndex.set(key, record)
         }
     }
 

@@ -43,6 +43,15 @@ Four families, each with its own components and `Visualised*` models
 Note the facet-summary and reference-summary families each have a `FacetStatisticsVisualiser` and a
 `VisualisedFacetStatistics` — they are distinct types in different directories, not duplicates.
 
+#### Partially fetched histograms
+
+A console renders whatever fields the user's query asked for, so any `Visualised*` property may be
+missing. `HistogramRange` therefore has two modes: the **actual** range, which needs `min`, `max` and a
+`threshold` on *every* bucket, and a **simulated** silhouette built from bucket indexes, which reports
+the missing property names through `HistogramNote`. Never assert a property is present — fall back to
+the silhouette instead, and map JSON absence with `!= undefined`, because `0` is a legitimate
+threshold, count and boundary.
+
 ## Adding a visualiser type
 
 The pieces to touch: a `Visualised*` model, a component under `result-visualiser/component/`, an

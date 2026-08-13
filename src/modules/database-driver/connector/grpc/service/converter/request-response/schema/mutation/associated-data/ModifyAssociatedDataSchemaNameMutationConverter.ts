@@ -3,7 +3,7 @@ import type {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcAssociatedDataSchemaMutations_pb.ts'
 import {
     ModifyAssociatedDataSchemaNameMutation
-} from '@/modules/database-driver/request-response/schema/mutation/associatedData/ModifyAssociatedDataSchemaNameMutation.ts'
+} from '@/modules/database-driver/request-response/schema/mutation/associated-data/ModifyAssociatedDataSchemaNameMutation.ts'
 import type {
     SchemaMutationConverter
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'

@@ -100,6 +100,9 @@ hint about the model, not a rule to act on.
   goes](#where-a-file-goes) — the two are independent, as
   `code-editor/service/flattenToSingleLine.ts` and `database-driver/model/serverConnectivity.ts`
   illustrate: same casing, opposite directories.
+- **Directories: `kebab-case`**, always — including the sub-directories that group a driver model by
+  concept (`request-response/schema/mutation/associated-data/`,
+  `.../sortable-attribute-compound/`). The one exception is `connector/grpc/gen/`, which is generated.
 - Injectable service pattern: `MyService` + `myServiceInjectionKey` + `useMyService()`.
 - Tab classes: `<Feature>TabDefinition/TabParams/TabParamsDto/TabData/TabDataDto/TabFactory`.
 - Shared Vue components: `V` prefix (`VLabDialog`); feature components without prefix.

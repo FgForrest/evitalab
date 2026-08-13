@@ -97,6 +97,9 @@ describe('mergeTransactionOverviews', () => {
         expect(merged.map(c => [c.version, c.index])).toEqual([[9, 0], [9, 1], [9, 1], [7, 0], [7, 1]])
     })
 
+    // load bearing beyond the grouping contract: MutationHistoryTransactionVisualiser keeps the first transaction
+    // capture of a version, so this ordering is what makes the overview — and not the streamed lead event — the
+    // record a transaction row is rendered from
     test('lets an overview lead its own version', () => {
         const merged: ChangeCatalogCapture[] = mergeTransactionOverviews(
             [capture(9)],

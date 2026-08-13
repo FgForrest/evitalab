@@ -3,7 +3,7 @@ import type {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcSortableAttributeCompoundSchemaMutations_pb.ts'
 import {
     ModifySortableAttributeCompoundSchemaDescriptionMutation
-} from '@/modules/database-driver/request-response/schema/mutation/sortableAttributeCompound/ModifySortableAttributeCompoundSchemaDescriptionMutation.ts'
+} from '@/modules/database-driver/request-response/schema/mutation/sortable-attribute-compound/ModifySortableAttributeCompoundSchemaDescriptionMutation.ts'
 import type {
     SchemaMutationConverter
 } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'

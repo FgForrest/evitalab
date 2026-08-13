@@ -1,7 +1,7 @@
 import type { SchemaMutation } from '@/modules/database-driver/request-response/schema/mutation/SchemaMutation.ts'
 import {
     AbstractModifyAssociatedDataSchemaMutation
-} from '@/modules/database-driver/request-response/schema/mutation/associatedData/AbstractModifyAssociatedDataSchemaMutation.ts'
+} from '@/modules/database-driver/request-response/schema/mutation/associated-data/AbstractModifyAssociatedDataSchemaMutation.ts'
 import type { Scalar } from '@/modules/database-driver/data-type/Scalar.ts'
 
 export class ModifyAssociatedDataSchemaTypeMutation extends AbstractModifyAssociatedDataSchemaMutation  implements SchemaMutation {

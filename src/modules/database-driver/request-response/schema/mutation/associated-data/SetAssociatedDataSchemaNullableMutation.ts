@@ -1,6 +1,6 @@
 import {
     AbstractModifyAssociatedDataSchemaMutation
-} from '@/modules/database-driver/request-response/schema/mutation/associatedData/AbstractModifyAssociatedDataSchemaMutation.ts'
+} from '@/modules/database-driver/request-response/schema/mutation/associated-data/AbstractModifyAssociatedDataSchemaMutation.ts'
 
 export class SetAssociatedDataSchemaNullableMutation extends AbstractModifyAssociatedDataSchemaMutation {
     readonly nullable: boolean

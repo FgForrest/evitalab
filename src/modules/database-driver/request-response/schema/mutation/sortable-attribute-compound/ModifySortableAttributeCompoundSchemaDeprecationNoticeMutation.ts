@@ -1,6 +1,6 @@
 import type {
     ReferenceSortableAttributeCompoundSchemaMutation
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/ReferenceSortableAttributeCompoundSchemaMutation.ts'
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortable-attribute-compound/ReferenceSortableAttributeCompoundSchemaMutation.ts'
 
 export class ModifySortableAttributeCompoundSchemaDeprecationNoticeMutation  implements ReferenceSortableAttributeCompoundSchemaMutation {
     readonly name: string

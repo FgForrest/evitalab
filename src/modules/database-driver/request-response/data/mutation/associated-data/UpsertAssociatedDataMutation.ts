@@ -1,10 +1,10 @@
 import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import {
     AssociatedDataMutation
-} from '@/modules/database-driver/request-response/data/mutation/associatedData/AssociatedDataMutation.ts'
+} from '@/modules/database-driver/request-response/data/mutation/associated-data/AssociatedDataMutation.ts'
 import type {
     AssociatedDataKey
-} from '@/modules/database-driver/request-response/data/mutation/associatedData/AssociatedDataKey.ts'
+} from '@/modules/database-driver/request-response/data/mutation/associated-data/AssociatedDataKey.ts'
 
 export class UpsertAssociatedDataMutation extends AssociatedDataMutation {
     static readonly TYPE = 'upsertAssociatedDataMutation' as const
