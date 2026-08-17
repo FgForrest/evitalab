@@ -43,6 +43,15 @@ Four families, each with its own components and `Visualised*` models
 Note the facet-summary and reference-summary families each have a `FacetStatisticsVisualiser` and a
 `VisualisedFacetStatistics` — they are distinct types in different directories, not duplicates.
 
+Their **title rows are a parallel copy**, though: `ReferenceGroupStatisticsVisualiser` /
+`reference-summary/FacetStatisticsVisualiser` carry the same markup, the same class names
+(`group-title`, `facet-title`) and the same styles as `FacetGroupStatisticsVisualiser` /
+`facet-summary/FacetStatisticsVisualiser`. Which pair a user sees depends on the **server**:
+`referenceSummary` replaced `facetSummary` in evitaDB's query API, so a row fix applied to one family
+only shows up on some servers and looks like the layout behaving at random. Change both, and see
+[design language — composite titles](../design-language.md#composite-titles) for the rules those rows
+implement.
+
 #### Partially fetched histograms
 
 A console renders whatever fields the user's query asked for, so any `Visualised*` property may be
