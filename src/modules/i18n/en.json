@@ -965,6 +965,7 @@
     },
     "placeholder": {
       "writeQuery": "# Write your GraphQL query for catalog {catalogName} here.\n",
+      "writeSystemQuery": "# Write your GraphQL query for the system API here.\n",
       "results": "Results will be displayed here...",
       "noPanelsVisible": "Both panels are hidden. Pick a view in the side bars to show a panel again."
     },

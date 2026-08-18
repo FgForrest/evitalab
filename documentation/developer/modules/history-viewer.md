@@ -160,6 +160,11 @@ exists for every version on the page, the streamed lead event only for versions 
 inside the window, so preferring the streamed one would make a row's provenance depend on where the page
 boundary landed.
 
+A transaction record uses the same metadata factories as the data and schema records, `MetadataItem.operation()`
+included: a capture of the infrastructure area carries `Operation.Transaction`, which the factory renders with the
+commit icon and the neutral severity. The transaction row used to route its operation through
+`MetadataItem.entityType()`, which labelled it as an entity type and coloured it like a successful data change.
+
 The transaction visualiser accepts the **whole** infrastructure area on purpose. The server emits only
 transaction mutations there, and `MutationHistoryVisualisationProcessor` throws when no visualiser
 accepts a record — so narrowing the condition to the body type would break the viewer for any future

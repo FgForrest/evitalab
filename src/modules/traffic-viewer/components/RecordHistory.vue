@@ -196,7 +196,10 @@ async function processRecords(): Promise<void> {
 
 function handleRecordFetchError(e: unknown): void {
     if (e instanceof ConnectError && e.code === Code.InvalidArgument) {
-        // todo lho rework when connect library can provide metadata
+        // the classification is message-based because nothing structured discriminates these two states yet: the
+        // server does attach a `google.rpc.ErrorInfo` whose domain is the exception class name, but the missing
+        // recording is reported as a plain `EvitaInvalidUsageException`, and the error code is derived from the throw
+        // site, so it changes between server versions. Both would need a dedicated exception type in evitaDB first.
         if (errorMessage(e).toLowerCase().includes('no on-demand traffic recording has been started')) {
             fetchError.value = TrafficFetchErrorType.NoActiveTrafficRecording
             return

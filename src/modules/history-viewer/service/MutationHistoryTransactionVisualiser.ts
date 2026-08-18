@@ -78,7 +78,7 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
         }
 
         defaultMetadata.push(MetadataItem.area(mutationHistory.area))
-        defaultMetadata.push(MetadataItem.entityType(mutationHistory.operation))
+        defaultMetadata.push(MetadataItem.operation(mutationHistory.operation))
         if (mutationHistory.body instanceof TransactionMutation) {
             defaultMetadata.push(MutationHistoryTransactionVisualiser.mutationCount((mutationHistory.body.mutationCount)))
             defaultMetadata.push(MutationHistoryTransactionVisualiser.transactionId((mutationHistory.body.transactionId)))

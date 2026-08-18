@@ -9,6 +9,7 @@ import { Currency } from '@/modules/database-driver/data-type/Currency'
 import { DateTimeRange } from '@/modules/database-driver/data-type/DateTimeRange'
 import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { Price } from '@/modules/database-driver/request-response/data/Price'
+import { serializeJsonWithBigInt } from '@/utils/JsonUtil'
 
 /**
  * Represents a single entity price.
@@ -81,7 +82,8 @@ export class EntityPrice extends EntityPropertyValue {
     }
 
     toRawString(): string {
-        return JSON.stringify(this.toRawRepresentation())
+        // the validity range carries timestamps whose seconds are a bigint, which plain stringification rejects
+        return serializeJsonWithBigInt(this.toRawRepresentation())
     }
 
     toRawRepresentation(): EvitaValue {

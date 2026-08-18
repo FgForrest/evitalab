@@ -142,6 +142,19 @@ of `TrafficRecordVisualiser` implementations (registered in `TrafficViewerModule
 this module injects the evitaQL and GraphQL console tab factories — and `SessionStartContainerVisualiser`
 links to a history tab scoped to that session, hence the self-injection of its own tab factory.
 
+A mutation record has no visual model — the driver hands over the recorded mutation as
+[canonical protobuf JSON](../database-driver.md#rendering-raw-wire-data) and `MutationContainerVisualiser`
+stringifies it into the row's detail line. It has to be that form: stringifying the received message
+instead **threw** on any mutation carrying a 64-bit value (a `LongNumberRange` attribute, for instance),
+and the failure propagated out of `processRecords()`, so a single such record emptied the whole history
+rather than its own row.
+
+Error classification in `RecordHistory` matches the server's message text, which is deliberate for now:
+evitaDB attaches a `google.rpc.ErrorInfo` whose domain is the exception class name, but the "no recording
+has been started" state is reported as a plain `EvitaInvalidUsageException`, and the error code is derived
+from the throw site and changes between versions. A structured check needs a dedicated exception type in
+evitaDB first.
+
 ## Export traffic buffer
 
 `ExportTrafficBufferButton.vue` + `ExportTrafficBufferDialog.vue` in the record-history toolbar download

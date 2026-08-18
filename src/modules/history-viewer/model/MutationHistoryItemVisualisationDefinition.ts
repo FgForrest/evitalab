@@ -4,6 +4,7 @@ import type { ChangeCatalogCapture } from '@/modules/database-driver/request-res
 import type {
     MutationHistoryMetadataItemContext
 } from '@/modules/history-viewer/model/MutationHistoryMetadataItemContext.ts'
+import { Operation } from '@/modules/database-driver/request-response/cdc/Operation.ts'
 
 /**
  * Defines how a particular mutation history record should be displayed in UI
@@ -86,14 +87,39 @@ export class MetadataItem {
         )
     }
 
-    // todo vstupuje sem i transaction
-    static operation(operationType: unknown): MetadataItem {
+    /**
+     * Renders the operation of any capture, including the transaction captures of the infrastructure area: a
+     * transaction is neither a success nor a failure of a data change, so it gets the neutral severity and the commit
+     * icon instead of being reported as an upsert.
+     */
+    static operation(operation: Operation | undefined): MetadataItem {
+        let icon: string
+        let severity: MetadataItemSeverity
+        switch (operation) {
+            case Operation.Remove:
+                icon = 'mdi-file-tree'
+                severity = MetadataItemSeverity.Error
+                break
+            case Operation.Transaction:
+                icon = 'mdi-source-commit'
+                severity = MetadataItemSeverity.Info
+                break
+            case Operation.Upsert:
+                icon = 'mdi-file-tree'
+                severity = MetadataItemSeverity.Success
+                break
+            default:
+                icon = 'mdi-help'
+                severity = MetadataItemSeverity.Info
+                break
+        }
+
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
-            'mdi-file-tree',
+            icon,
             i18n.global.t('mutationHistoryViewer.record.type.operation.tooltip'),
-            operationType == undefined ? "" : String(operationType),
-            operationType === 'remove' ? MetadataItemSeverity.Error : MetadataItemSeverity.Success,
+            operation == undefined ? "" : String(operation),
+            severity,
             undefined,
             undefined
         )

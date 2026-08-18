@@ -106,6 +106,16 @@ module's `GraphQLInstanceType`. This is the **known documented exception** to th
 not depend on feature modules" rule (see the [module catalog](index.md#module-dependency-rules)) — do not
 treat it as precedent for new cross-dependencies.
 
+## The System instance and its catalog name
+
+`GraphQLInstanceType.System` is not bound to a catalog, yet its tabs still carry one: the exported
+`systemCatalogName` constant (`console/model/GraphQLConsoleDataPointer.ts`). It is not decoration — the
+GraphQL schema cache, the console history key and the serialized tab params are all keyed by
+(catalog name, instance type), so an `undefined` there would split a System console off from its own stored
+history and change the shape of already shared links. The request path is built from the instance type
+alone (`EvitaClient.queryCatalogUsingGraphQL`), so the name never reaches the server, and everything
+user-facing — tab title, subject path, query placeholder — suppresses it.
+
 ## Result visualisation
 
 `GraphQLResultVisualiserService` implements [`console`](console.md)'s `ResultVisualiserService`, with a

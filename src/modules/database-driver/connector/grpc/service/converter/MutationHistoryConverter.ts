@@ -27,19 +27,26 @@ import type {
     GrpcInfrastructureMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcInfrastrutureMutation_pb.ts'
 import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter.ts'
+import { errorMessage } from '@/utils/error.ts'
 
 export class MutationHistoryConverter {
 
 
+    /**
+     * A capture without a body is legal even though the history is always requested with the body content: the gRPC
+     * body carries entity, local, entity schema and infrastructure mutations only, and a catalog-scoped schema
+     * mutation (a catalog description change, a global attribute change, ...) has no case among them. The server
+     * leaves the body unset for those, and the record is rendered from its header alone.
+     */
     convertGrpcMutationHistory(changeCapture: GrpcChangeCatalogCapture): ChangeCatalogCapture {
-        let mutation: Mutation | undefined // todo pfi: is possible to have it undefined?
+        const area: CaptureArea = CatalogSchemaConverter.toCaptureArea(changeCapture.area)
+        let mutation: Mutation | undefined
 
         try {
-            if (CatalogSchemaConverter.toCaptureArea(changeCapture.area) !== CaptureArea.Infrastructure &&
-                (!changeCapture.body?.value?.mutation || !changeCapture.body?.value?.mutation.case)) { // todo pfi: remove me?
-                console.error(`Issue with ${changeCapture.body}`)
+            if (area !== CaptureArea.Infrastructure &&
+                (!changeCapture.body?.value?.mutation || !changeCapture.body?.value?.mutation.case)) {
                 mutation = undefined
-            } else if (CatalogSchemaConverter.toCaptureArea(changeCapture.area) == CaptureArea.Infrastructure && changeCapture.body.value) {
+            } else if (area == CaptureArea.Infrastructure && changeCapture.body.value) {
                 mutation = DelegatingInfrastructureMutationConverter.convert(changeCapture.body.value as GrpcInfrastructureMutation)
             } else if (changeCapture.body.case == 'schemaMutation') {
                 mutation = DelegatingEntitySchemaMutationConverter.convert(changeCapture.body.value)
@@ -51,14 +58,16 @@ export class MutationHistoryConverter {
                 throw new UnexpectedError(`Unexpected type ${changeCapture.body.case}.`)
             }
         } catch (error) {
-            console.error(error)
-            throw new UnexpectedError(`Unexpected error ${changeCapture.body.case}.`)
+            throw new UnexpectedError(
+                `Could not convert mutation history capture (catalog version: ${changeCapture.version}, ` +
+                `index: ${changeCapture.index}, area: ${area}, body: ${changeCapture.body.case}): ${errorMessage(error)}`
+            )
         }
 
         return new ChangeCatalogCapture(
             Number(changeCapture.version),
             changeCapture.index || 0,
-            CatalogSchemaConverter.toCaptureArea(changeCapture.area),
+            area,
             changeCapture.entityType,
             changeCapture.entityPrimaryKey !== undefined ? changeCapture.entityPrimaryKey : (changeCapture.body.case === 'entityMutation' ? changeCapture.body.value?.mutation?.value?.entityPrimaryKey : undefined),
             CatalogSchemaConverter.toOperation(changeCapture.operation),
