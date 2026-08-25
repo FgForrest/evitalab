@@ -412,6 +412,10 @@
       "reloadRecordHistory": "Reload mutation history",
       "moveStartPointer": "Load only mutations newer than now",
       "applyFilter": "Apply filter"
+    },
+    "errorViewer": {
+      "_title": "Error viewer",
+      "shareTab": "Share tab"
     }
   },
   "explorer": {
@@ -932,6 +936,11 @@
     },
     "button": {
       "submitIssue": "Submit an issue"
+    },
+    "issue": {
+      "title": "evitaLab: {name}",
+      "body": "**What happened**\n\n<!-- Please describe what you were doing when the error occurred. -->\n\n**Error detail**\n\n```\n{detail}\n```\n\n_Reported from evitaLab {version}._\n",
+      "detailTruncated": "... (truncated, please attach the full error detail)"
     }
   },
   "evitaQLConsole": {

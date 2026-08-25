@@ -482,6 +482,12 @@ would do the same, which is what the option exists for.
 an error, and the visualisers render it from its header. Anything reading a capture body must tolerate
 `undefined`.
 
+The field stays typed as the wide `Mutation` marker. evitaDB narrows the same field to its sealed
+`CatalogBoundMutation` (entity / local / schema / transaction mutation), but the corresponding TypeScript
+interfaces are **empty markers**, so a union of them is structurally indistinguishable from `Mutation` and
+would enforce nothing. Narrowing it for real would mean giving every mutation class a discriminant — a
+separate decision, not a typing tidy-up.
+
 ## Caching & change callbacks
 
 Schemas, server status, configuration and catalog statistics are cached client-side. When a UI

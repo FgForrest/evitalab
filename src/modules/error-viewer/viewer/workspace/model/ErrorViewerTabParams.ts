@@ -1,22 +1,24 @@
 import type { TabParams } from '@/modules/workspace/tab/model/TabParams'
-import { LabError } from '@/modules/base/exception/LabError'
-import { ErrorViewerTabParamsDto } from '@/modules/error-viewer/viewer/workspace/model/ErrorViewerTabParamsDto'
+import { ErrorSummary } from '@/modules/base/exception/ErrorSummary'
+import type { ErrorViewerTabParamsDto } from '@/modules/error-viewer/viewer/workspace/model/ErrorViewerTabParamsDto'
 
 /**
  * Represents props of the LabEditorErrorViewer component.
  */
 export class ErrorViewerTabParams implements TabParams<ErrorViewerTabParamsDto> {
     /**
-     * Short error message.
+     * The reported error. Deliberately the flattened summary and not the original error object, so that the tab can be
+     * restored in the next session and shared - see {@link ErrorSummary}.
      */
-    readonly error: LabError
+    readonly error: ErrorSummary
 
-    constructor(error: LabError) {
+    constructor(error: ErrorSummary) {
         this.error = error
     }
 
     toSerializable(): ErrorViewerTabParamsDto {
-        // todo implement
-        return {}
+        return {
+            error: this.error.toSerializable()
+        }
     }
 }

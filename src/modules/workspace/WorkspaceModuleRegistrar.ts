@@ -118,7 +118,8 @@ export class WorkspaceModuleRegistrar implements ModuleRegistrar {
                 jfrViewerTabFactory,
                 trafficRecordingsViewerTabFactory,
                 trafficRecordHistoryViewerTabFactory,
-                historyViewerTabFactory
+                historyViewerTabFactory,
+                errorViewerTabFactory
             )
         )
         builder.provide(
@@ -136,7 +137,8 @@ export class WorkspaceModuleRegistrar implements ModuleRegistrar {
                 graphQLConsoleTabFactory,
                 schemaViewerTabFactory,
                 trafficRecordHistoryViewerTabFactory,
-                historyViewerTabFactory
+                historyViewerTabFactory,
+                errorViewerTabFactory
             )
         )
     }

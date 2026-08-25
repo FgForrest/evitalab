@@ -128,6 +128,13 @@ list never had that defect, because the mutation history API is reverse-only to 
 local copy of the tab-construction code instead of reusing `entity-viewer`'s
 `EntityGridCellMenuFactory`: a feature module must not depend on another feature module.
 
+One thing that is *not* mirrored: the traffic viewer classifies fetch failures into dedicated states
+(`TrafficFetchErrorType.NoActiveTrafficRecording`, `IndexCreating`) and renders a `VMissingDataIndicator`
+per state. The mutation history has no such states — evitaDB's `getMutationsHistoryPage` simply streams
+the WAL and has no comparable precondition to report — so a failed fetch is a plain error toast. The
+copied-over `fetchError` scaffolding was removed; do not reintroduce it without a server-side condition
+to map onto.
+
 Its three visualisers split by capture area — **data** mutations, **schema** mutations and
 **transaction** boundaries.
 
