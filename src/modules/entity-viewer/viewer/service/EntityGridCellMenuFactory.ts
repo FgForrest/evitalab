@@ -13,6 +13,9 @@ import {
 } from '@/modules/entity-viewer/viewer/model/entity-grid/propertyMutationHistoryContainer'
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { MutationHistoryViewerTabData } from '@/modules/history-viewer/model/MutationHistoryViewerTabData'
+import {
+    MutationHistoryViewerTabFactory
+} from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory'
 import { GrpcChangeCaptureContainerType } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb'
 import { i18n } from '@/vue-plugins/i18n'
 import { mandatoryInject } from '@/utils/reactivity'
@@ -31,10 +34,13 @@ export function useEntityGridCellMenuFactory(): EntityGridCellMenuFactory {
 export class EntityGridCellMenuFactory extends MenuFactory<EntityGridCellMenuItemType> {
 
     private readonly workspaceService: WorkspaceService
+    private readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
 
-    constructor(workspaceService: WorkspaceService) {
+    constructor(workspaceService: WorkspaceService,
+                mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory) {
         super()
         this.workspaceService = workspaceService
+        this.mutationHistoryViewerTabFactory = mutationHistoryViewerTabFactory
     }
 
     /**
@@ -175,7 +181,7 @@ export class EntityGridCellMenuFactory extends MenuFactory<EntityGridCellMenuIte
         containerNameList: string[] | undefined
     ): void {
         this.workspaceService.createTab(
-            this.workspaceService.mutationHistoryViewerTabFactory.createNew(
+            this.mutationHistoryViewerTabFactory.createNew(
                 catalogName,
                 new MutationHistoryViewerTabData(
                     undefined,

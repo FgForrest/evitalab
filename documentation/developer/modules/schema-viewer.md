@@ -5,8 +5,8 @@ sortable-compound schemas, with **deep-linkable schema paths**. Contributes `Tab
 
 - **Provides:** `schemaViewerServiceInjectionKey`, `schemaViewerTabFactoryInjectionKey`,
   `delegatingSchemaPathFactoryInjectionKey`
-- **Injects:** `evitaClientInjectionKey`, `workspaceServiceInjectionKey`,
-  `schemaViewerTabFactoryInjectionKey`
+- **Injects:** `evitaClientInjectionKey`, `connectionServiceInjectionKey`,
+  `workspaceServiceInjectionKey`, `tabFactoryRegistryInjectionKey`
 
 ## Layout
 

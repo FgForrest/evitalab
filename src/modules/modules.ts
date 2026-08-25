@@ -31,22 +31,23 @@ export const modules: ModuleRegistrar[] = [
     new ConnectionModuleRegistrar(),
     new DatabaseDriverModuleRegistrar(),
     new WorkspaceModuleRegistrar(),
-    new NotificationModuleRegistrar(),
 
-    // UI feature modules
-    new ConnectionExplorerModuleRegistrar(),
+    // UI feature modules; each of them contributes its tab factory into the workspace tab factory
+    // registry, therefore modules consuming tab factories of other modules must be registered after them
     new KeymapModuleRegistrar(),
     new WelcomeScreenModuleRegistrar(),
     new ErrorViewerModuleRegistrar(),
+    new NotificationModuleRegistrar(),
     new EvitaQLConsoleModuleRegistrar(),
     new GraphQLConsoleModuleRegistrar(),
-    new EntityViewerModuleRegistrar(),
     new SchemaViewerModuleRegistrar(),
+    new MutationHistoryViewerModuleRegistrar(),
+    new EntityViewerModuleRegistrar(),
     new ServerViewerModuleRegistrar(),
     new ServerFileViewerModuleRegistrar(),
     new BackupViewerModuleRegistrar(),
     new TaskViewerModuleRegistrar(),
     new JfrViewerModuleRegistrar(),
     new TrafficViewerModuleRegistrar(),
-    new MutationHistoryViewerModuleRegistrar()
+    new ConnectionExplorerModuleRegistrar()
 ]

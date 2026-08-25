@@ -9,6 +9,7 @@ workspace state only through the service).
 modules/workspace/
 ├── service/WorkspaceService.ts     # tabs, history, storage of workspace state
 ├── service/DemoSnippetResolver.ts  # opens demo code snippets from evitaDB docs
+├── service/DemoSnippetHandler.ts   # contract feature modules contribute snippet openers under
 ├── store/workspaceStore.ts         # Pinia store (tabs, tab data, history, status bar)
 ├── tab/                            # tab framework (models, sharing, error handling)
 ├── panel/                          # left workspace panel
@@ -23,12 +24,62 @@ by convention):
 
 | Piece | Role |
 |-------|------|
-| `TabDefinition<PARAMS, DATA>` subclass | Describes one tab instance: generated `id`, `title`, `icon`, tab `component`, `params`, `initialData`. Registered `TabType` enum value identifies it for serialization |
+| `TabDefinition<PARAMS, DATA>` subclass | Describes one tab instance: generated `id`, `title`, `icon`, tab `component`, `params`, `initialData`. Its abstract `tabType` accessor returns the `TabType` the tab is serialized under |
 | `TabParams` implementation | Immutable instantiation parameters (e.g. connection + catalog name pointer). Must implement `toSerializable(): TabParamsDto` |
 | `TabData` implementation | User-editable data (e.g. query text, variables). Pre-fills the component and is continuously updated back, so tabs can be restored. Must implement `toSerializable(): TabDataDto` |
 | `TabParamsDto` / `TabDataDto` | Plain JSON-safe DTO interfaces used for local-storage persistence and share links |
-| Tab factory (`...TabFactory`) | Injectable service with `createNew(...)` and `restoreFromJson(paramsDto, dataDto)` methods. Registered in the module's registrar and used by anything that opens the tab |
+| Tab factory (`...TabFactory`) | Injectable service implementing `TabFactory`, with a feature-specific `createNew(...)` on top. Provided under its own injection key **and** contributed into the `TabFactoryRegistry` by the module's registrar |
 | Tab component | Vue component rendered inside the tab; receives `TabComponentProps<PARAMS, DATA>` (`id`, `params`, `data`) |
+
+### Tab factory registry
+
+The workspace has to reconstruct tabs of every feature module (session restore, share links) but
+must not depend on any of them. `TabFactoryRegistry` (`tab/service/TabFactoryRegistry.ts`) is the
+[contribution point](architecture.md#contribution-points) that inverts that dependency: the
+workspace owns the registry and the `TabFactory` contract, feature modules register into it.
+
+```ts
+// in the feature module's registrar
+const tabFactoryRegistry: TabFactoryRegistry = builder.inject(tabFactoryRegistryInjectionKey)
+
+const entityViewerTabFactory: EntityViewerTabFactory = new EntityViewerTabFactory(connectionService)
+builder.provide(entityViewerTabFactoryInjectionKey, entityViewerTabFactory)  // typed access
+tabFactoryRegistry.register(entityViewerTabFactory)                          // framework access
+```
+
+Both registrations are needed and serve different callers: the typed injection key is what
+`useEntityViewerTabFactory()` returns to components wanting `createNew(...)`; the registry entry is
+what the workspace uses to deserialize by tab type id.
+
+`TabFactory` members:
+
+| Member | Meaning |
+|---|---|
+| `tabType` | Canonical `TabType` the factory is indexed under |
+| `legacyTabTypeIds?` | Historical ids the tab was serialized under by older evitaLab versions; also resolvable |
+| `restorable` | Whether the tab can be reconstructed from its serialized form. `false` excludes the tab from persistence and share links (only the error viewer today — a `LabError` is meaningless outside its session) |
+| `restoreFromJson(paramsDto, dataDto?)` | Reconstructs the tab definition. Factories ignoring the data argument simply declare fewer parameters |
+
+Lookups (`getFactory` / `findFactory`) accept the canonical value **and** every legacy id. Legacy
+ids in use:
+
+| Factory | Legacy ids |
+|---|---|
+| `EntityViewerTabFactory` | `data-grid`, `dataGrid` |
+| `EvitaQLConsoleTabFactory` | `evitaql-console` |
+| `GraphQLConsoleTabFactory` | `graphql-console` |
+| `SchemaViewerTabFactory` | `schema-viewer` |
+| `ServerViewerTabFactory` | `serverStatus` |
+
+Never remove a legacy id — users still hold sessions and links serialized under it.
+
+Because the wiring is no longer compile-checked, the registry fails fast instead: `register()`
+throws `InitializationError` on a duplicate tab type, on a legacy id already taken, or on a legacy
+id shadowing a canonical `TabType`; `validate()` — called from `main.ts` after all registrars ran —
+throws listing every `TabType` that received no factory.
+
+Timing is safe by construction: restore, share-link and demo-snippet resolution all run from
+components after mount, i.e. long after every contribution landed.
 
 ### Tab component contract
 
@@ -100,10 +151,11 @@ Other useful `WorkspaceService` methods: `getTabDefinitions()`, `getTabDefinitio
 
 ### Persistence, restore, sharing
 
-- `storeOpenedTabs()` serializes all open tabs (as `StoredTabObject`: `tabType` + params/data DTOs)
-  into `LabStorage`; `restoreTabsFromLastSession()` restores them on startup via the tab
-  factories' `restoreFromJson()`. New tab types must be wired into the restore switch in
-  `WorkspaceService`.
+- `storeOpenedTabs()` serializes all open tabs (as `StoredTabObject`: `TabDefinition.tabType` +
+  params/data DTOs) into `LabStorage`, skipping tabs whose factory is not `restorable`;
+  `restoreTabsFromLastSession()` restores them on startup by looking the tab type id up in the
+  `TabFactoryRegistry` and calling the factory's `restoreFromJson()`. Nothing in `WorkspaceService`
+  needs touching for a new tab type — contributing the factory is enough.
 - **Selected tab** — tab ids are generated per session (`uuidv4`) and are not part of
   `StoredTabObject`, so the selection is persisted as the *index* of the selected tab within the
   stored tabs (own storage key, written by `storeOpenedTabs()` together with the tabs themselves).
@@ -112,7 +164,9 @@ Other useful `WorkspaceService` methods: `getTabDefinitions()`, `getTabDefinitio
   the restore, activates `getSelectedTabId()` — restored tabs are marked as already visited, so the
   "switch to the newly opened tab" logic does not steal the selection.
 - **Share links** use `ShareTabObject` (tab type + DTOs in the `?sharedTab=` URL param — the
-  *hash*), resolved on startup by `SharedTabResolver` (via `TabSharedDialog`).
+  *hash*), resolved on startup by `SharedTabResolver` (via `TabSharedDialog`) through the same
+  `TabFactoryRegistry`; a tab type that is unknown or not `restorable` is rejected with
+  `UnexpectedError`.
   When the resulting URL exceeds the browser-safe length (`urlCharacterLimit`, 2083 chars),
   the share dialog (`ShareTabDialog`) blocks copying the link and offers *Copy hash* instead.
   A running session can import a hash or link at any time through the tab bar's `+` →
@@ -131,7 +185,12 @@ Other useful `WorkspaceService` methods: `getTabDefinitions()`, `getTabDefinitio
   See the [recipe](recipes.md#deep-link-into-evitalab-from-an-external-application) for the payload
   contract.
 - **Demo snippets** (`DemoSnippetRequest`, `DemoSnippetResolver`) open evitaQL/GraphQL examples
-  from the evitaDB documentation in a console tab.
+  from the evitaDB documentation in a console tab. The resolver only fetches the snippet and
+  dispatches on its file extension — opening it is a `DemoSnippetHandler` contributed by the
+  owning module (`EvitaQLConsoleDemoSnippetHandler` for `evitaql`,
+  `GraphQLConsoleDemoSnippetHandler` for `graphql`), registered via
+  `demoSnippetResolver.registerHandler(...)` in that module's registrar. Supporting another
+  language means contributing another handler, not editing the workspace.
 - Restored/shared tabs never auto-execute queries (performance & safety) — factories set
   `executeOnOpen: false` when restoring.
 
@@ -184,10 +243,12 @@ the tab area.
 See the full walkthrough in [recipes](recipes.md#add-a-new-tab-type). Summary:
 
 1. Add a `TabType` enum value.
-2. Create `...TabParams`(+Dto), `...TabData`(+Dto), `...TabDefinition`, `...TabFactory` in
-   `<your-module>/.../workspace/`.
+2. Create `...TabParams`(+Dto), `...TabData`(+Dto), `...TabDefinition` (implementing the `tabType`
+   accessor), `...TabFactory` (implementing `TabFactory`) in `<your-module>/.../workspace/`.
 3. Create the tab component honouring the props/events/expose contract.
-4. Provide the factory in your module registrar (`modules.ts` ordering applies).
-5. Wire the factory into `WorkspaceService.restoreTabsFromLastSession()` (and share-link resolution
-   in `SharedTabResolver`) so the tab survives restarts and can be shared.
-6. Add i18n entries and, if applicable, keymap commands.
+4. In your module registrar: construct the factory, `provide` it under its injection key **and**
+   `register` it into the injected `TabFactoryRegistry` (`modules.ts` ordering applies).
+5. Add i18n entries and, if applicable, keymap commands.
+
+Nothing in the `workspace` module is edited — persistence, restore and share links pick the tab up
+from the registry.

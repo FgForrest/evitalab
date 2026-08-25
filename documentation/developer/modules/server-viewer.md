@@ -3,7 +3,8 @@
 Feature module. Shows the connected server's status and details. Contributes `TabType.ServerViewer`.
 
 - **Provides:** `serverViewerServiceInjectionKey`, `serverViewerTabFactoryInjectionKey`
-- **Injects:** `evitaClientInjectionKey`
+- **Injects:** `evitaClientInjectionKey`, `connectionServiceInjectionKey`,
+  `tabFactoryRegistryInjectionKey`
 
 ## Contents
 

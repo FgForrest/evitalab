@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { AnyTabParams } from '@/modules/workspace/tab/model/TabParams'
 import type { AnyTabData } from '@/modules/workspace/tab/model/TabData'
 import type { TabComponentProps } from '@/modules/workspace/tab/model/TabComponentProps'
+import type { TabType } from '@/modules/workspace/tab/model/TabType'
 
 /**
  * Definition to instantiate a new workspace tab from.
@@ -34,6 +35,11 @@ export abstract class TabDefinition<PARAMS extends AnyTabParams, DATA extends An
         this.params = params
         this.initialData = initialData
     }
+
+    /**
+     * Type this tab is serialized under when persisted between sessions or shared via a link.
+     */
+    abstract get tabType(): TabType
 
     /**
      * Returns instantiation props for the tab component.

@@ -18,12 +18,32 @@ import {
     entityGridCellMenuFactoryInjectionKey
 } from '@/modules/entity-viewer/viewer/service/EntityGridCellMenuFactory'
 import { WorkspaceService, workspaceServiceInjectionKey } from '@/modules/workspace/service/WorkspaceService'
+import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
+import {
+    TabFactoryRegistry,
+    tabFactoryRegistryInjectionKey
+} from '@/modules/workspace/tab/service/TabFactoryRegistry'
+import {
+    EntityViewerTabFactory,
+    entityViewerTabFactoryInjectionKey
+} from '@/modules/entity-viewer/viewer/workspace/service/EntityViewerTabFactory'
+import {
+    MutationHistoryViewerTabFactory,
+    mutationHistoryViewerTabFactoryInjectionKey
+} from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory'
 
 export class EntityViewerModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {
         const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
+        const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
         const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
+        const tabFactoryRegistry: TabFactoryRegistry = builder.inject(tabFactoryRegistryInjectionKey)
+        const mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory = builder.inject(mutationHistoryViewerTabFactoryInjectionKey)
+
+        const entityViewerTabFactory: EntityViewerTabFactory = new EntityViewerTabFactory(connectionService)
+        builder.provide(entityViewerTabFactoryInjectionKey, entityViewerTabFactory)
+        tabFactoryRegistry.register(entityViewerTabFactory)
 
         builder.provide(
             entityViewerServiceInjectionKey,
@@ -39,9 +59,7 @@ export class EntityViewerModuleRegistrar implements ModuleRegistrar {
         )
         builder.provide(
             entityGridCellMenuFactoryInjectionKey,
-            new EntityGridCellMenuFactory(workspaceService)
+            new EntityGridCellMenuFactory(workspaceService, mutationHistoryViewerTabFactory)
         )
-        // todo lho fix circular dep
-        // builder.provide(entityViewerTabFactoryInjectionKey, new EntityViewerTabFactory(connectionService))
     }
 }

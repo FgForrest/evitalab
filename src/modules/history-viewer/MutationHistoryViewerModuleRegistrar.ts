@@ -16,14 +16,24 @@ import { type WorkspaceService, workspaceServiceInjectionKey } from '@/modules/w
 import { MutationHistorySchemaVisualiser } from '@/modules/history-viewer/service/MutationHistorySchemaVisualiser.ts'
 import { MutationHistoryDataVisualiser } from '@/modules/history-viewer/service/MutationHistoryDataVisualiser.ts'
 import {
-    type MutationHistoryViewerTabFactory, mutationHistoryViewerTabFactoryInjectionKey
+    MutationHistoryViewerTabFactory, mutationHistoryViewerTabFactoryInjectionKey
 } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
+import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
+import {
+    TabFactoryRegistry,
+    tabFactoryRegistryInjectionKey
+} from '@/modules/workspace/tab/service/TabFactoryRegistry'
 
 export class MutationHistoryViewerModuleRegistrar implements ModuleRegistrar {
     async register(builder: ModuleContextBuilder): Promise<void> {
         const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
+        const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
         const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
-        const mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory = builder.inject(mutationHistoryViewerTabFactoryInjectionKey)
+        const tabFactoryRegistry: TabFactoryRegistry = builder.inject(tabFactoryRegistryInjectionKey)
+
+        const mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory = new MutationHistoryViewerTabFactory(connectionService)
+        builder.provide(mutationHistoryViewerTabFactoryInjectionKey, mutationHistoryViewerTabFactory)
+        tabFactoryRegistry.register(mutationHistoryViewerTabFactory)
 
         const mutationHistoryViewerService: MutationHistoryViewerService = new MutationHistoryViewerService(
             evitaClient,

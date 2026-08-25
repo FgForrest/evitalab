@@ -16,10 +16,16 @@ import { MutationHistoryViewerTabData } from '@/modules/history-viewer/model/Mut
 import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto.ts'
 import { OffsetDateTime, Timestamp } from '@/modules/database-driver/data-type/OffsetDateTime.ts'
 import type { MutationHistoryViewerTabDataDto } from '@/modules/history-viewer/model/MutationHistoryViewerTabDataDto.ts'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
+import type { TabFactory } from '@/modules/workspace/tab/service/TabFactory'
 
 export const mutationHistoryViewerTabFactoryInjectionKey: InjectionKey<MutationHistoryViewerTabFactory> = Symbol('mutationHistoryViewerTabFactory')
 
-export class MutationHistoryViewerTabFactory {
+export class MutationHistoryViewerTabFactory implements TabFactory {
+
+    readonly tabType: TabType = TabType.MutationHistoryViewer
+    readonly restorable: boolean = true
+
     private readonly connectionService: ConnectionService
 
     constructor(connectionService: ConnectionService) {

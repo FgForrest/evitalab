@@ -5,7 +5,8 @@ and system APIs, with history and result visualisation. Contributes `TabType.Gra
 
 - **Provides:** `graphQLConsoleServiceInjectionKey`, `graphQLConsoleTabFactoryInjectionKey`,
   `graphQLResultVisualiserServiceInjectionKey`
-- **Injects:** `evitaClientInjectionKey`
+- **Injects:** `evitaClientInjectionKey`, `connectionServiceInjectionKey`,
+  `tabFactoryRegistryInjectionKey`, `demoSnippetResolverInjectionKey`
 
 Structurally a mirror of [`evitaql-console`](evitaql-console.md) — a change to one is usually needed in
 the other.

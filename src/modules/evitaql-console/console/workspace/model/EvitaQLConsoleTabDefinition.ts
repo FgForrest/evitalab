@@ -2,6 +2,7 @@ import EvitaQLConsole from '@/modules/evitaql-console/console/component/EvitaQLC
 import { markRaw } from 'vue'
 import type {  } from 'vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
 import { EvitaQLConsoleTabParams } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabParams'
 import { EvitaQLConsoleTabData } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabData'
 
@@ -19,6 +20,10 @@ export class EvitaQLConsoleTabDefinition extends TabDefinition<EvitaQLConsoleTab
             params,
             initialData
         )
+    }
+
+    get tabType(): TabType {
+        return TabType.EvitaQLConsole
     }
 
     static icon(): string {

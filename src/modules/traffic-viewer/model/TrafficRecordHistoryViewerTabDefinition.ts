@@ -1,4 +1,5 @@
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
 import { TrafficRecordHistoryViewerTabParams } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabParams'
 import { TrafficRecordHistoryViewerTabData } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabData'
 import { markRaw } from 'vue'
@@ -18,6 +19,10 @@ export class TrafficRecordHistoryViewerTabDefinition extends TabDefinition<Traff
             params,
             data,
         )
+    }
+
+    get tabType(): TabType {
+        return TabType.TrafficRecordHistoryViewer
     }
 
     static icon(): string {

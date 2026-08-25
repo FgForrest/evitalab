@@ -15,13 +15,19 @@ import type {
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import type { GraphQLConsoleTabDataDto } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDataDto'
 import { mandatoryInject } from '@/utils/reactivity'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
+import type { TabFactory } from '@/modules/workspace/tab/service/TabFactory'
 
 export const graphQLConsoleTabFactoryInjectionKey: InjectionKey<GraphQLConsoleTabFactory> = Symbol('graphQLConsoleTabFactory')
 
 /**
  * Factory for creating GraphQL console tab definitions.
  */
-export class GraphQLConsoleTabFactory {
+export class GraphQLConsoleTabFactory implements TabFactory {
+
+    readonly tabType: TabType = TabType.GraphQLConsole
+    readonly legacyTabTypeIds: readonly string[] = ['graphql-console']
+    readonly restorable: boolean = true
 
     private readonly connectionService: ConnectionService
 

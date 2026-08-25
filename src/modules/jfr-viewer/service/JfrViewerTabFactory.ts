@@ -7,10 +7,16 @@ import { mandatoryInject } from '@/utils/reactivity'
 import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
 import type { JfrViewerTabParamsDto } from '@/modules/jfr-viewer/model/JfrViewerTabParamsDto'
 import { i18n } from '@/vue-plugins/i18n'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
+import type { TabFactory } from '@/modules/workspace/tab/service/TabFactory'
 
 export const jfrViewerTabFactoryInjectionKey: InjectionKey<JfrViewerTabFactory> = Symbol('jfrViewerTabFactory');
 
-export class JfrViewerTabFactory {
+export class JfrViewerTabFactory implements TabFactory {
+
+    readonly tabType: TabType = TabType.JfrViewer
+    readonly restorable: boolean = true
+
     private readonly connectionService: ConnectionService
 
     constructor(connectionService: ConnectionService) {

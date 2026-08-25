@@ -7,7 +7,9 @@ renderer. Contributes `TabType.EntityViewer`.
 - **Provides:** `entityViewerServiceInjectionKey`, `entityViewerTabFactoryInjectionKey`,
   `codeDetailRendererMenuFactoryInjectionKey`, `markdownDetailRendererMenuFactoryInjectionKey`,
   `entityGridCellMenuFactoryInjectionKey`
-- **Injects:** `evitaClientInjectionKey`, `workspaceServiceInjectionKey`
+- **Injects:** `evitaClientInjectionKey`, `connectionServiceInjectionKey`,
+  `workspaceServiceInjectionKey`, `tabFactoryRegistryInjectionKey`,
+  `mutationHistoryViewerTabFactoryInjectionKey`
 
 ## Layout
 

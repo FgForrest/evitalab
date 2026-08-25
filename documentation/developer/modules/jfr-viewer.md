@@ -4,7 +4,8 @@ Feature module. Starting, stopping and downloading JFR recordings from the serve
 Contributes `TabType.JfrViewer`.
 
 - **Provides:** `jfrViewerServiceInjectionKey`, `jfrViewerTabFactoryInjectionKey`
-- **Injects:** `evitaClientInjectionKey`
+- **Injects:** `evitaClientInjectionKey`, `connectionServiceInjectionKey`,
+  `tabFactoryRegistryInjectionKey`
 
 ## Contents
 

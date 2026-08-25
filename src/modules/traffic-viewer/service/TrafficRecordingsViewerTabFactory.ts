@@ -9,10 +9,16 @@ import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
 import type { TrafficRecordingsViewerTabParamsDto } from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabParamsDto'
 import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
+import type { TabFactory } from '@/modules/workspace/tab/service/TabFactory'
 
 export const trafficRecordingsViewerTabFactoryInjectionKey: InjectionKey<TrafficRecordingsViewerTabFactory> = Symbol('trafficViewerTabFactory')
 
-export class TrafficRecordingsViewerTabFactory {
+export class TrafficRecordingsViewerTabFactory implements TabFactory {
+
+    readonly tabType: TabType = TabType.TrafficRecordingsViewer
+    readonly restorable: boolean = true
+
     private readonly connectionService: ConnectionService
 
     constructor(connectionService: ConnectionService) {

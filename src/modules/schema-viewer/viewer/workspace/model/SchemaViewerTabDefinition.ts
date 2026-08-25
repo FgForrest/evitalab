@@ -2,6 +2,7 @@ import { markRaw } from 'vue'
 import type {  } from 'vue'
 import SchemaViewer from '@/modules/schema-viewer/viewer/component/SchemaViewer.vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
 import { SchemaViewerTabParams } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabParams'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 
@@ -19,6 +20,10 @@ export class SchemaViewerTabDefinition extends TabDefinition<SchemaViewerTabPara
             params,
             new VoidTabData()
         )
+    }
+
+    get tabType(): TabType {
+        return TabType.SchemaViewer
     }
 
     static icon(): string {

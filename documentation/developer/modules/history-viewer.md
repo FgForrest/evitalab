@@ -8,8 +8,8 @@ Note the directory is `history-viewer` but its registrar and types are named
 key is `mutationHistoryViewerTabFactoryInjectionKey`.
 
 - **Provides:** `historyViewerServiceInjectionKey`, `mutationHistoryViewerTabFactoryInjectionKey`
-- **Injects:** `evitaClientInjectionKey`, `workspaceServiceInjectionKey`,
-  `mutationHistoryViewerTabFactoryInjectionKey`
+- **Injects:** `evitaClientInjectionKey`, `connectionServiceInjectionKey`,
+  `workspaceServiceInjectionKey`, `tabFactoryRegistryInjectionKey`
 
 ## Contents
 

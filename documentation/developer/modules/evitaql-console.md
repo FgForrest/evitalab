@@ -5,7 +5,8 @@ Contributes `TabType.EvitaQLConsole`.
 
 - **Provides:** `evitaQLConsoleServiceInjectionKey`, `evitaQLConsoleTabFactoryInjectionKey`,
   `evitaQLResultVisualiserServiceInjectionKey`
-- **Injects:** `evitaClientInjectionKey`
+- **Injects:** `evitaClientInjectionKey`, `connectionServiceInjectionKey`,
+  `tabFactoryRegistryInjectionKey`, `demoSnippetResolverInjectionKey`
 
 Structurally a mirror of [`graphql-console`](graphql-console.md) — the same layout with a different
 query language, so a change to one is usually needed in the other.

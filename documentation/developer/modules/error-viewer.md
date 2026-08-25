@@ -4,7 +4,7 @@ Feature module, and the smallest one that contributes a tab. Shows the full deta
 failed to open or execute properly. Contributes `TabType.ErrorViewer`.
 
 - **Provides:** `errorViewerTabFactoryInjectionKey` → `ErrorViewerTabFactory`
-- **Injects:** nothing
+- **Injects:** `tabFactoryRegistryInjectionKey`
 
 ## Contents
 
