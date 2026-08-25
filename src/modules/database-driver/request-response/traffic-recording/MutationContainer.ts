@@ -10,7 +10,8 @@ import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTi
 export class MutationContainer extends TrafficRecord {
 
     /**
-     * Serialized mutation operation.
+     * The recorded mutation in the canonical protobuf JSON form. The driver has no visual model for traffic
+     * mutations, so the raw server data is passed through for display.
      */
     readonly serializedMutation: object
 

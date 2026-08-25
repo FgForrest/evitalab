@@ -270,6 +270,49 @@ recordings, CDC, server files, …), which mostly mirrors evitaDB's data model. 
   they are regenerated from the evitaDB repo (see `buf.gen.yaml`; agents can use the
   `generate-evitadb-client` skill).
 
+### Date-time values
+
+`OffsetDateTime` carries the instant (`Timestamp` — epoch seconds + nanoseconds, exactly as gRPC
+transfers it) **and** the ISO time offset the value is expressed in. Two rules follow from that:
+
+- **Never format the instant with a plain `Intl` formatter.** `Intl` would render it in the browser's
+  time zone, so a timestamp created by a server in another zone silently shifts. `toDateTime()` puts
+  the value into its own offset (`toLuxonZone()` normalizes `Z`/`±HH:MM` into a Luxon zone) and
+  `getPrettyPrintableString()` formats from there, keeping the offset marker in the output
+  (`8/12/26, 2:05:09 PM GMT+2`). `DateTimeRange` formats each end the same way.
+- **Build values through `OffsetDateTime.of(seconds, nanos, offset)`** (or `fromDateTime()` for a
+  zoned Luxon date time) rather than assembling a `Timestamp` at the call site, so the sub-second
+  part is not dropped. Luxon works in milliseconds, so `toDateTime()`/`toString()` round the
+  nanosecond fraction; the full value survives in `timestamp` and is what gets sent back.
+
+Known gap: `LocalDateTime`, `LocalDate` and `LocalTime` still reinterpret their wall-clock value in
+the browser zone — the server serializes them against its own default offset, and these three types
+carry no offset of their own to correct with.
+
+### Rendering raw wire data
+
+A few views show server data the internal model has no representation for — the evitaQL console's raw
+result, the traffic viewer's mutation body. Those go through `grpcMessageToJson()`
+(`utils/JsonUtil.ts`), which produces the **canonical protobuf JSON** of the message.
+
+`JSON.stringify` on a received message is always wrong: a 64-bit field without the `JS_STRING` marker is
+a `bigint` and makes it **throw**, a `bytes` field turns into an object of numeric keys, every message
+carries the internal `$typeName` property, and a `oneof` shows up as the `{ case, value }` pair the
+generated code uses. The canonical form has none of those; fields at their default value are emitted as
+well, because a raw view must not silently omit what the response contains. A timestamp comes out as an
+RFC 3339 string rather than a `{ seconds, nanos }` pair.
+
+That last part is also the one thing the canonical form cannot always do: a date-time outside the years
+0001–9999 has no RFC 3339 representation and the conversion is rejected. Server-side that value would have
+to come from stored data — an unbounded range end is *left unset* rather than filled with a sentinel
+(`EvitaDataTypesConverter.toGrpcDateTimeRange`) — so it is out of reach in practice, and
+`grpcMessageToJson()` degrades such a message to the plain bigint-safe form instead of letting one value
+blank the whole view.
+
+For objects of the *internal* model there is `serializeJsonWithBigInt()` in the same file — `toJson`
+cannot be used there (no schema), and a timestamp's seconds are still a `bigint`, so anything holding a
+date-time value (a price validity, a reference attribute) needs it.
+
 ### Attribute schema model mapping
 
 `CatalogSchemaConverter.convertAttributeSchema` picks the internal attribute-schema class from the
@@ -410,11 +453,40 @@ server emits record-aligned pages. `mergeTransactionOverviews()` interleaves ove
 version (they used to be prepended as one block) and lets each lead its own version, matching the
 `index = 0` lead-event contract the `history-viewer`'s visualisation processor groups by.
 
+What the viewer depends on is that invariant — *a transaction capture leads its version's block* — not the
+overview specifically. Hence a page whose lead event is inside the window carries the version's
+transaction twice, and the redundant capture is resolved in
+[`history-viewer`](modules/history-viewer.md#the-duplicate-transaction-capture) instead of here: dropping
+the overview for such versions would leave the version's only transaction capture arriving *after* its own
+children (the reverse scan puts `index = 0` last), which empties the list for container-filtered views, and
+it would save no round trip — `getTransactionOverview` runs once per page either way.
+
 **Transaction records are distinguished by provenance, not by body type.** `body instanceof
 TransactionMutation` is not a discriminator: a stream-delivered infrastructure capture converts to a
 `TransactionMutation` exactly like the synthesised overviews do. Only this method knows which records
 came from `response.changeCapture`, which is why `captureCount` is reported from here rather than
-recomputed upstream.
+recomputed upstream. Turning one overview into its synthesised capture is plain conversion and lives in
+`TransactionConverter.convertGrpcTransactionOverview`; only the merge and the provenance bookkeeping stay
+in the session.
+
+### Captures without a body
+
+The history is always requested with `GrpcChangeCaptureContent.CHANGE_BODY`, yet a capture can still
+arrive **without one**, and `ChangeCatalogCapture.body` is legitimately `undefined`. evitaDB's capture
+body is a `oneof` with four cases — entity, local, entity schema and infrastructure mutation — and a
+catalog-scoped schema mutation (a catalog description change, a global attribute change, …) matches none
+of them, so `ChangeCaptureConverter.toGrpcChangeCatalogCapture` leaves the field unset. `HEADER` content
+would do the same, which is what the option exists for.
+
+`MutationHistoryConverter` therefore maps such a capture to a body-less record instead of treating it as
+an error, and the visualisers render it from its header. Anything reading a capture body must tolerate
+`undefined`.
+
+The field stays typed as the wide `Mutation` marker. evitaDB narrows the same field to its sealed
+`CatalogBoundMutation` (entity / local / schema / transaction mutation), but the corresponding TypeScript
+interfaces are **empty markers**, so a union of them is structurally indistinguishable from `Mutation` and
+would enforce nothing. Narrowing it for real would mean giving every mutation class a discriminant — a
+separate decision, not a typing tidy-up.
 
 ## Caching & change callbacks
 

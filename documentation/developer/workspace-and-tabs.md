@@ -57,7 +57,7 @@ what the workspace uses to deserialize by tab type id.
 |---|---|
 | `tabType` | Canonical `TabType` the factory is indexed under |
 | `legacyTabTypeIds?` | Historical ids the tab was serialized under by older evitaLab versions; also resolvable |
-| `restorable` | Whether the tab can be reconstructed from its serialized form. `false` excludes the tab from persistence and share links (only the error viewer today — a `LabError` is meaningless outside its session) |
+| `restorable` | Whether the tab can be reconstructed from its serialized form. `false` excludes the tab from persistence and share links. Every tab type is restorable today; the flag exists so a future tab whose params cannot survive its session can opt out without the workspace special-casing it |
 | `restoreFromJson(paramsDto, dataDto?)` | Reconstructs the tab definition. Factories ignoring the data argument simply declare fewer parameters |
 
 Lookups (`getFactory` / `findFactory`) accept the canonical value **and** every legacy id. Legacy

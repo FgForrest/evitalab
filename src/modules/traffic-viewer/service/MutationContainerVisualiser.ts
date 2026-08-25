@@ -25,7 +25,7 @@ export class MutationContainerVisualiser extends TrafficRecordVisualiser<Mutatio
         const visualisedRecord: TrafficRecordVisualisationDefinition = new TrafficRecordVisualisationDefinition(
             trafficRecord,
             i18n.global.t('trafficViewer.recordHistory.record.type.mutation.title'),
-            JSON.stringify(trafficRecord.serializedMutation), // todo lho do better
+            JSON.stringify(trafficRecord.serializedMutation),
             this.constructMetadata(trafficRecord, visualisedSessionRecord),
             ImmutableList()
         )

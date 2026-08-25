@@ -9,7 +9,9 @@ import {
     errorViewerTabFactoryInjectionKey
 } from '@/modules/error-viewer/viewer/workspace/service/ErrorViewerTabFactory'
 
-// todo docs
+/**
+ * Registers the error viewer module which displays details of caught errors in a dedicated tab.
+ */
 export class ErrorViewerModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {

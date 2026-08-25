@@ -43,6 +43,24 @@ Four families, each with its own components and `Visualised*` models
 Note the facet-summary and reference-summary families each have a `FacetStatisticsVisualiser` and a
 `VisualisedFacetStatistics` — they are distinct types in different directories, not duplicates.
 
+Their **title rows are a parallel copy**, though: `ReferenceGroupStatisticsVisualiser` /
+`reference-summary/FacetStatisticsVisualiser` carry the same markup, the same class names
+(`group-title`, `facet-title`) and the same styles as `FacetGroupStatisticsVisualiser` /
+`facet-summary/FacetStatisticsVisualiser`. Which pair a user sees depends on the **server**:
+`referenceSummary` replaced `facetSummary` in evitaDB's query API, so a row fix applied to one family
+only shows up on some servers and looks like the layout behaving at random. Change both, and see
+[design language — composite titles](../design-language.md#composite-titles) for the rules those rows
+implement.
+
+#### Partially fetched histograms
+
+A console renders whatever fields the user's query asked for, so any `Visualised*` property may be
+missing. `HistogramRange` therefore has two modes: the **actual** range, which needs `min`, `max` and a
+`threshold` on *every* bucket, and a **simulated** silhouette built from bucket indexes, which reports
+the missing property names through `HistogramNote`. Never assert a property is present — fall back to
+the silhouette instead, and map JSON absence with `!= undefined`, because `0` is a legitimate
+threshold, count and boundary.
+
 ## Adding a visualiser type
 
 The pieces to touch: a `Visualised*` model, a component under `result-visualiser/component/`, an

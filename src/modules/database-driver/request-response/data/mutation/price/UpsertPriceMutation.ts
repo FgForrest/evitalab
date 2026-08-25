@@ -7,7 +7,11 @@ export class UpsertPriceMutation extends PriceMutation
 {
     static readonly TYPE = 'upsertPriceMutation' as const
 
-    readonly innerRecordId: number|undefined // todo pfi: not sure about the undefined
+    /**
+     * Undefined when the price is not bound to any inner record, mirrors the nullable `Integer innerRecordId` of the
+     * evitaDB Java model. Note that `0` is a legal inner record id and must not be treated as an absent value.
+     */
+    readonly innerRecordId: number|undefined
     readonly priceWithoutTax: BigDecimal
     readonly taxRate: BigDecimal
     readonly priceWithTax: BigDecimal

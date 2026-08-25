@@ -103,15 +103,25 @@ describe('SharedTabResolver', () => {
             .rejects.toThrow(/Unsupported shared tab type 'somethingElse'/)
     })
 
+    test('resolves a shared error viewer tab, which carries a serializable error summary', async () => {
+        const restoredTab: AnyTabDefinition = {} as AnyTabDefinition
+        const restoreFromJson = vi.fn().mockReturnValue(restoredTab)
+        const resolver: SharedTabResolver = createResolver({ restoreFromJson }, TabType.ErrorViewer)
+
+        expect(await resolver.resolve(new ShareTabObject(TabType.ErrorViewer, tabParams, undefined)))
+            .toBe(restoredTab)
+    })
+
+    // every tab type is restorable today, so the opt-out is exercised against an arbitrary one
     test('rejects a tab type whose factory cannot restore tabs', async () => {
         const restoreFromJson = vi.fn()
         const resolver: SharedTabResolver = createResolver(
             { restoreFromJson, restorable: false },
-            TabType.ErrorViewer
+            TabType.EntityViewer
         )
 
-        await expect(resolver.resolve(new ShareTabObject(TabType.ErrorViewer, tabParams, tabData)))
-            .rejects.toThrow(/Unsupported shared tab type 'errorViewer'/)
+        await expect(resolver.resolve(new ShareTabObject(TabType.EntityViewer, tabParams, tabData)))
+            .rejects.toThrow(/Unsupported shared tab type 'entityViewer'/)
         expect(restoreFromJson).not.toHaveBeenCalled()
     })
 })

@@ -6,7 +6,7 @@ import { Command } from '@/modules/keymap/model/Command'
 import { keyboardShortcutMappingIndex } from '@/modules/keymap/model/keyboardShortcutMappings'
 import { KeyboardShortcut } from '@/modules/keymap/model/KeyboardShortcut'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { isKeyboardShortcutDispatchable } from '@/modules/keymap/model/keyboardShortcutEventFilter'
+import { isKeyboardShortcutDispatchable } from '@/modules/keymap/service/keyboardShortcutEventFilter'
 import { mandatoryInject } from '@/utils/reactivity'
 
 export const keymapInjectionKey: InjectionKey<Keymap> = Symbol('keymap')

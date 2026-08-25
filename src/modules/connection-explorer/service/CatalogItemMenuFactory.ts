@@ -174,7 +174,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
             this.getItemTitle
         )
 
-        this.createMenuAction( // todo pfi: update order of thi current item
+        this.createMenuAction(
             items,
             CatalogMenuItemType.MutationHistoryViewer,
             MutationHistoryViewerTabDefinition.icon(),
@@ -186,7 +186,6 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
             },
             baseEnabledFunctions
         )
-
 
         this.createMenuSubheader(
             items,

@@ -1,4 +1,3 @@
-// todo docs
 import { Connection } from '@/modules/connection/model/Connection'
 import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
 import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
@@ -20,6 +19,9 @@ import type { TabFactory } from '@/modules/workspace/tab/service/TabFactory'
 
 export const evitaQLConsoleTabFactoryInjectionKey: InjectionKey<EvitaQLConsoleTabFactory> = Symbol('evitaQLConsoleTabFactory')
 
+/**
+ * Factory for creating evitaQL console tab definitions.
+ */
 export class EvitaQLConsoleTabFactory implements TabFactory {
 
     readonly tabType: TabType = TabType.EvitaQLConsole

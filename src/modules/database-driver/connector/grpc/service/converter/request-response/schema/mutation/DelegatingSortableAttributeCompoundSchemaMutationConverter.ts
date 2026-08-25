@@ -5,22 +5,22 @@ import type {
 
 import {
     CreateSortableAttributeCompoundSchemaMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/CreateSortableAttributeCompoundSchemaMutationConverter.ts'
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortable-attribute-compound/CreateSortableAttributeCompoundSchemaMutationConverter.ts'
 import {
     ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter.ts'
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortable-attribute-compound/ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter.ts'
 import {
     ModifySortableAttributeCompoundSchemaDescriptionMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/ModifySortableAttributeCompoundSchemaDescriptionMutationConverter.ts'
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortable-attribute-compound/ModifySortableAttributeCompoundSchemaDescriptionMutationConverter.ts'
 import {
     ModifySortableAttributeCompoundSchemaNameMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/ModifySortableAttributeCompoundSchemaNameMutationConverter.ts'
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortable-attribute-compound/ModifySortableAttributeCompoundSchemaNameMutationConverter.ts'
 import {
     RemoveSortableAttributeCompoundSchemaMutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/RemoveSortableAttributeCompoundSchemaMutationConverter.ts'
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortable-attribute-compound/RemoveSortableAttributeCompoundSchemaMutationConverter.ts'
 import type {
     ReferenceSortableAttributeCompoundSchemaMutation
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortableAttributeCompound/ReferenceSortableAttributeCompoundSchemaMutation.ts'
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/sortable-attribute-compound/ReferenceSortableAttributeCompoundSchemaMutation.ts'
 
 
 export class DelegatingSortableAttributeCompoundSchemaMutationConverter {

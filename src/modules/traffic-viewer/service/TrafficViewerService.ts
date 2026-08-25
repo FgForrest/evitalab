@@ -37,8 +37,12 @@ export class TrafficViewerService {
         this.visualisationProcessor = visualisationProcessor
     }
 
+    /**
+     * Catalogs the traffic recording may be started for. Served from the client's catalog statistics cache, which
+     * verifies itself against the server in the background and is invalidated by the system CDC stream, so no forced
+     * reload is needed here.
+     */
     async getAvailableCatalogs(): Promise<ImmutableList<CatalogStatistics>> {
-        // todo lho force reload? it was there before
         return await this.evitaClient.management.getCatalogStatistics()
     }
 

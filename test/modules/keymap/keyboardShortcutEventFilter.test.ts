@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest'
 import {
     isKeyboardShortcutDispatchable
-} from '../../../src/modules/keymap/model/keyboardShortcutEventFilter'
+} from '@/modules/keymap/service/keyboardShortcutEventFilter'
 
 function event(
     tagName: string | undefined,

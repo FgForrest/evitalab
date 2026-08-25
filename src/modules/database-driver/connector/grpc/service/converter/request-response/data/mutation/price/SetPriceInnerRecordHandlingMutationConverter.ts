@@ -15,7 +15,11 @@ export class SetPriceInnerRecordHandlingMutationConverter implements LocalMutati
     public static readonly INSTANCE = new SetPriceInnerRecordHandlingMutationConverter()
 
     convert(mutation: GrpcSetPriceInnerRecordHandlingMutation): SetPriceInnerRecordHandlingMutation {
-        if (mutation.priceInnerRecordHandling === GrpcPriceInnerRecordHandling.UNKNOWN) { // todo pfi : in origin code was "UNRECOGNIZED"
+        // the Java converter guards against protobuf's `UNRECOGNIZED` sentinel, i.e. an enum number this schema
+        // version doesn't know. TypeScript has no such member, unknown numbers simply pass through the enum type,
+        // hence the reverse-mapping check. `UNKNOWN` is a legal value (handling not fetched with the entity) and
+        // must not be rejected here.
+        if (GrpcPriceInnerRecordHandling[mutation.priceInnerRecordHandling] == undefined) {
             throw new UnexpectedError('Unrecognized price inner record handling: ' + mutation.priceInnerRecordHandling)
         }
         return new SetPriceInnerRecordHandlingMutation(

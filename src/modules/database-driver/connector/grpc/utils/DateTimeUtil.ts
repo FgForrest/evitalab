@@ -9,17 +9,16 @@ export class DateTimeUtil {
         const defaultZoneOffset: string = 'UTC'
         const fromSet = !!dateTimeRange.from
         const toSet = !!dateTimeRange.to
-        const fromTimestamp = dateTimeRange.from?.timestamp?.seconds ?? 0
-        const toTimestamp = dateTimeRange.to?.timestamp?.seconds ?? 0
-
-        const from = OffsetDateTime.ofInstant(
-            fromTimestamp as bigint,
+        const from = OffsetDateTime.of(
+            dateTimeRange.from?.timestamp?.seconds ?? BigInt(0),
+            dateTimeRange.from?.timestamp?.nanos ?? 0,
             fromSet
                 ? dateTimeRange.from?.offset ?? defaultZoneOffset
                 : defaultZoneOffset
         )
-        const to = OffsetDateTime.ofInstant(
-            toTimestamp as bigint,
+        const to = OffsetDateTime.of(
+            dateTimeRange.to?.timestamp?.seconds ?? BigInt(0),
+            dateTimeRange.to?.timestamp?.nanos ?? 0,
             toSet
                 ? dateTimeRange.to?.offset ?? defaultZoneOffset
                 : defaultZoneOffset

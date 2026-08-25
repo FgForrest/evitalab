@@ -1,5 +1,6 @@
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
+import { serializeJsonWithBigInt } from '@/utils/JsonUtil'
 import {
     EntityReferenceValue
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceValue'
@@ -34,7 +35,8 @@ export class EntityReferenceAttributes extends EntityPropertyValue {
     }
 
     toRawString(): string {
-        return JSON.stringify(this.toRawRepresentation())
+        // a raw representation can hold a date-time value, whose seconds are a bigint that plain stringification rejects
+        return serializeJsonWithBigInt(this.toRawRepresentation())
     }
 
     toRawRepresentation(): EvitaValue {

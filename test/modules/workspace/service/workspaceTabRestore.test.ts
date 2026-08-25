@@ -86,16 +86,13 @@ function storeTabs(storedValues: Map<string, unknown>, tabTypeIds: string[]): vo
 describe('restoring tabs of the last session', () => {
     test('restores every tab type through the factory contributed for it', () => {
         const storedValues: Map<string, unknown> = new Map()
-        storeTabs(storedValues, Object.values(TabType).filter(it => it !== TabType.ErrorViewer))
-        const workspaceService: WorkspaceService = createWorkspaceService(
-            storedValues,
-            createRegistry(Object.values(TabType).filter(it => it !== TabType.ErrorViewer))
-        )
+        storeTabs(storedValues, Object.values(TabType))
+        const workspaceService: WorkspaceService = createWorkspaceService(storedValues, createRegistry())
 
         workspaceService.restoreTabsFromLastSession()
 
         expect(workspaceService.getTabDefinitions().map(it => it.tabType))
-            .toEqual(Object.values(TabType).filter(it => it !== TabType.ErrorViewer))
+            .toEqual(Object.values(TabType))
     })
 
     test.each([...legacyTabTypeIds].flatMap(([tabType, legacyIds]) =>
@@ -122,16 +119,17 @@ describe('restoring tabs of the last session', () => {
             .toThrow(/Unsupported stored tab type 'somethingElse'/)
     })
 
+    // every tab type is restorable today, so the opt-out is exercised against an arbitrary one
     test('rejects a stored tab type whose factory cannot restore tabs', () => {
         const storedValues: Map<string, unknown> = new Map()
-        storeTabs(storedValues, [TabType.ErrorViewer])
+        storeTabs(storedValues, [TabType.EntityViewer])
         const workspaceService: WorkspaceService = createWorkspaceService(
             storedValues,
-            createRegistry(Object.values(TabType).filter(it => it !== TabType.ErrorViewer))
+            createRegistry(Object.values(TabType).filter(it => it !== TabType.EntityViewer))
         )
 
         expect(() => workspaceService.restoreTabsFromLastSession())
-            .toThrow(/Unsupported stored tab type 'errorViewer'/)
+            .toThrow(/Unsupported stored tab type 'entityViewer'/)
     })
 })
 
@@ -146,14 +144,25 @@ describe('storing opened tabs', () => {
             .toEqual([TabType.EntityViewer])
     })
 
+    test('persists the error viewer, whose params carry a serializable error summary', () => {
+        const storedValues: Map<string, unknown> = new Map()
+        const workspaceService: WorkspaceService = createWorkspaceService(storedValues, createRegistry())
+        workspaceService.createTab(createTabDefinition(TabType.ErrorViewer))
+
+        const storedTabs: string[] = storedValues.get('openedTabs') as string[]
+        expect(storedTabs.map(it => StoredTabObject.restoreFromSerializable(it).tabType))
+            .toEqual([TabType.ErrorViewer])
+    })
+
+    // every tab type is restorable today, so the opt-out is exercised against an arbitrary one
     test('skips tabs whose factory cannot restore them', () => {
         vi.spyOn(console, 'info').mockImplementation(() => undefined)
         const storedValues: Map<string, unknown> = new Map()
         const workspaceService: WorkspaceService = createWorkspaceService(
             storedValues,
-            createRegistry(Object.values(TabType).filter(it => it !== TabType.ErrorViewer))
+            createRegistry(Object.values(TabType).filter(it => it !== TabType.SchemaViewer))
         )
-        workspaceService.createTab(createTabDefinition(TabType.ErrorViewer))
+        workspaceService.createTab(createTabDefinition(TabType.SchemaViewer))
         workspaceService.createTab(createTabDefinition(TabType.EntityViewer))
 
         const storedTabs: string[] = storedValues.get('openedTabs') as string[]

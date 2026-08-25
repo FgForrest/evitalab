@@ -212,6 +212,9 @@
     "placeholder": {
       "loading": "Loading, please wait ...",
       "loadingFailed": "Failed to load the tab."
+    },
+    "notification": {
+      "couldNotResolveDemoCodeSnippet": "Could not resolve demo code snippet."
     }
   },
   "tabShare": {
@@ -221,6 +224,9 @@
     },
     "tooltip": {
       "nonSharableTab": "Cannot share this tab because it is using a user-defined evitaDB connection. Only pre-configured connections can be shared."
+    },
+    "notification": {
+      "couldNotResolveSharedTab": "Could not resolve shared tab."
     },
     "sharedDialog": {
       "title": "Shared tab found",
@@ -406,6 +412,10 @@
       "reloadRecordHistory": "Reload mutation history",
       "moveStartPointer": "Load only mutations newer than now",
       "applyFilter": "Apply filter"
+    },
+    "errorViewer": {
+      "_title": "Error viewer",
+      "shareTab": "Share tab"
     }
   },
   "explorer": {
@@ -710,7 +720,8 @@
   "entityViewer": {
     "loadedDataWarning": "Loaded query data must be manually executed.",
     "notification": {
-      "couldNotExecuteQuery": "Could not execute query"
+      "couldNotExecuteQuery": "Could not execute query",
+      "couldNotBuildOrderBy": "Could not build the order by constraint."
     },
     "toolbar": {
       "button": {
@@ -771,6 +782,15 @@
       "notification": {
         "failedToFindProperty": "Failed to find property descriptor for key: '{key}'",
         "failedToFindRequestedProperties": "These properties were requested but not found in current data: {keys}"
+      },
+      "column": {
+        "primaryKey": "Primary key",
+        "version": "Version",
+        "scope": "Scope",
+        "parent": "Parent",
+        "locales": "Locales",
+        "priceInnerRecordHandling": "Price inner record handling",
+        "prices": "Prices"
       },
       "cell": {
         "placeholder": {
@@ -916,6 +936,11 @@
     },
     "button": {
       "submitIssue": "Submit an issue"
+    },
+    "issue": {
+      "title": "evitaLab: {name}",
+      "body": "**What happened**\n\n<!-- Please describe what you were doing when the error occurred. -->\n\n**Error detail**\n\n```\n{detail}\n```\n\n_Reported from evitaLab {version}._\n",
+      "detailTruncated": "... (truncated, please attach the full error detail)"
     }
   },
   "evitaQLConsole": {
@@ -936,6 +961,7 @@
       "resultVisualizerView": "Result visualizer — click again to hide the panel"
     },
     "notification": {
+      "couldNotExecuteQuery": "Could not execute query.",
       "failedToSaveQueryToHistory": "Failed to save query to history.",
       "failedToFormatDocument": "Failed to format the document."
     }
@@ -948,6 +974,7 @@
     },
     "placeholder": {
       "writeQuery": "# Write your GraphQL query for catalog {catalogName} here.\n",
+      "writeSystemQuery": "# Write your GraphQL query for the system API here.\n",
       "results": "Results will be displayed here...",
       "noPanelsVisible": "Both panels are hidden. Pick a view in the side bars to show a panel again."
     },
@@ -966,6 +993,7 @@
       "resultVisualizerView": "Result visualizer — click again to hide the panel"
     },
     "notification": {
+      "couldNotExecuteQuery": "Could not execute query.",
       "failedToSaveQueryToHistory": "Failed to save query to history.",
       "failedToReloadSchema": "Failed to reload GraphQL schema.",
       "failedToFormatDocument": "Failed to format the document."
@@ -1115,7 +1143,8 @@
     },
     "notification": {
       "failedToReloadSchema": "Failed to reload schema.",
-      "couldNotLoadSchema": "Could not load schema."
+      "couldNotLoadSchema": "Could not load schema.",
+      "couldNotLoadCatalog": "Could not load catalog."
     },
     "section": {
       "placeholder": {
@@ -1815,6 +1844,11 @@
       "form": {
         "events": {
           "label": "Events to record",
+          "valueDescriptor": "no events selected | 1 event selected | {count} events selected",
+          "button": {
+            "selectAll": "Select all",
+            "deselectAll": "Deselect all"
+          },
           "validations": {
             "required": "Events are required."
           }
@@ -2323,7 +2357,10 @@
         },
         "entityPrimaryKey": {
           "hint": "Entity PK",
-          "label": "Entity PK"
+          "label": "Entity PK",
+          "validations": {
+            "notValid": "Entity primary key must be a whole number."
+          }
         },
         "containerName": {
           "hint": "Container name(s)",

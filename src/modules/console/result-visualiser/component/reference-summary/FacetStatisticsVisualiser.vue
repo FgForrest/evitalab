@@ -47,27 +47,29 @@ async function copyPrimaryKey(): Promise<void> {
 
         <template #title>
             <VListItemTitle class="facet-title">
-                <span
-                    v-if="facetStatistics.primaryKey != undefined"
-                    class="text-disabled d-flex align-center"
-                    style="cursor: pointer;"
-                    @click.stop="copyPrimaryKey"
-                >
-                    <VIcon size="20" class="mr-1">mdi-key</VIcon>
-                    {{ facetStatistics.primaryKey }}{{ facetStatistics.title ? ':' : '' }}
-                </span>
-                <span :class="{ 'text-disabled': facetStatistics.impactMatchCount === 0 }">
-                    {{ facetStatistics.title || 'Unknown' }}
-                    <VTooltip v-if="!facetStatistics.title" activator="parent">
-                        <VMarkdown :source="t('resultVisualizer.facetStatisticsVisualiser.help.noRepresentativeProperty')" />
-                    </VTooltip>
-                    <VTooltip v-if="facetStatistics.impactMatchCount === 0" activator="parent">
-                        {{ t('resultVisualizer.facetStatisticsVisualiser.help.zeroImpactMatchCount') }}
-                    </VTooltip>
+                <span class="facet-title__identity">
+                    <span
+                        v-if="facetStatistics.primaryKey != undefined"
+                        class="text-disabled d-flex align-center"
+                        style="cursor: pointer;"
+                        @click.stop="copyPrimaryKey"
+                    >
+                        <VIcon size="20" class="mr-1">mdi-key</VIcon>
+                        {{ facetStatistics.primaryKey }}{{ facetStatistics.title ? ':' : '' }}
+                    </span>
+                    <span :class="['facet-title__name', { 'text-disabled': facetStatistics.impactMatchCount === 0 }]">
+                        {{ facetStatistics.title || 'Unknown' }}
+                        <VTooltip v-if="!facetStatistics.title" activator="parent">
+                            <VMarkdown :source="t('resultVisualizer.facetStatisticsVisualiser.help.noRepresentativeProperty')" />
+                        </VTooltip>
+                        <VTooltip v-if="facetStatistics.impactMatchCount === 0" activator="parent">
+                            {{ t('resultVisualizer.facetStatisticsVisualiser.help.zeroImpactMatchCount') }}
+                        </VTooltip>
+                    </span>
                 </span>
 
-                <VLazy>
-                    <VChipGroup>
+                <VLazy class="facet-title__chips">
+                    <VChipGroup column>
                         <VChip>
                             <div class="facet-title-counter">
                                 <div class="facet-title-counter__section">
@@ -132,9 +134,50 @@ async function copyPrimaryKey(): Promise<void> {
 <style lang="scss" scoped>
 .facet-title {
     display: flex;
-    column-gap: 0.5rem;
-    align-items: center;
     flex-wrap: wrap;
+    column-gap: 0.5rem;
+    row-gap: 0.25rem;
+    align-items: center;
+
+    // primary key and name shrink as one unit, so that a name too long for the row truncates instead of
+    // dropping onto a line of its own below its own primary key
+    &__identity {
+        display: flex;
+        flex: 0 1 auto;
+        min-width: 0;
+        column-gap: 0.5rem;
+        align-items: center;
+    }
+
+    // `display: flex` here voids the ellipsis Vuetify puts on `.v-list-item-title`, so the name
+    // truncates on its own; `min-width` must be reset because the automatic minimum size of a flex item
+    // is its content, which would clip the text instead of shortening it
+    &__name {
+        flex: 0 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    // the chips keep their width and move to a line of their own instead of being cut; `column` wraps
+    // them there rather than letting them slide out of sight in the group's scrollbar-less scroller
+    &__chips {
+        flex: 0 0 auto;
+        max-width: 100%;
+
+        // `column` also sets `white-space: normal` on the group: without this, a chip's own label wraps
+        // and is cut by the chip's height, and the shrinking chips - not the group - absorb the squeeze
+        :deep(.v-chip) {
+            flex: 0 0 auto;
+            white-space: nowrap;
+            // the counter chip below holds three sections and can outgrow the row; it gains height
+            // instead of having its last section cut off, while plain chips keep their default size
+            height: auto;
+            min-height: 2rem;
+        }
+    }
+
 }
 
 .facet-checkbox--disabled {
@@ -143,7 +186,9 @@ async function copyPrimaryKey(): Promise<void> {
 
 .facet-title-counter {
     display: flex;
+    flex-wrap: wrap;
     column-gap: 0.625rem;
+    row-gap: 0.125rem;
     align-items: center;
 
     &__section {

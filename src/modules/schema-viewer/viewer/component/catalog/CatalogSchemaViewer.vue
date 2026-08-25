@@ -27,6 +27,7 @@ import { resolveCatalogPolicy } from '@/modules/schema-viewer/viewer/service/Con
 import {
     useDefaultConflictResolution
 } from '@/modules/schema-viewer/viewer/component/conflict-resolution/useDefaultConflictResolution.ts'
+import { asError } from '@/utils/error.ts'
 
 const { t } = useI18n()
 
@@ -68,7 +69,7 @@ schemaViewerService
         catalogId.value = x.catalogId
         loaded.value = true
     })
-    .catch((e) => toaster.error('Could not load catalog', e)) // todo lho i18n
+    .catch((e) => toaster.error(t('schemaViewer.notification.couldNotLoadCatalog'), asError(e)))
 
 props.schema
     .entitySchemas()

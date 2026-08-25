@@ -23,8 +23,7 @@ import {
     type GrpcFullBackupCatalogResponse,
     type GrpcGoLiveAndCloseResponse,
     type GrpcQueryResponse,
-    type GrpcRenameCollectionResponse,
-    type GrpcTransactionOverview
+    type GrpcRenameCollectionResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaSessionAPI_pb'
 import {
     CatalogSchemaConverter
@@ -56,10 +55,7 @@ import type { EntitySchemaAccessor } from '@/modules/database-driver/request-res
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
-import {
-    GrpcChangeCaptureArea,
-    GrpcChangeCaptureContent
-} from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
+import { GrpcChangeCaptureContent } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import type {
     MutationHistoryConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/MutationHistoryConverter.ts'
@@ -74,8 +70,9 @@ import type {
     TrafficRecordingCaptureRequest
 } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordingCaptureRequest.ts'
 import type { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord.ts'
-import { TransactionMutation } from '@/modules/database-driver/request-response/transaction/TransactionMutation.ts'
-import { Operation } from '@/modules/database-driver/request-response/cdc/Operation.ts'
+import {
+    TransactionConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/TransactionConverter.ts'
 import { v4 as uuidv4 } from 'uuid'
 import { CacheInvalidationReason } from '@/modules/database-driver/cache/CacheInvalidationReason.ts'
 import type { PersistentCacheLayer } from '@/modules/database-driver/cache/PersistentCacheLayer.ts'
@@ -737,7 +734,8 @@ export class EvitaClientSession {
             if (mutationHistoryRequest.loadTransaction) {
                 const transactionRequest: GetTransactionOverviewRequest = {catalogVersion: catalogVersionIdList} as GetTransactionOverviewRequest
                 const transactionResponse: GetTransactionOverviewResponse = await this.evitaSessionClientProvider().getTransactionOverview(transactionRequest, await this.callOptions(userQueryTimeout))
-                transactionCaptures = transactionResponse.transactionOverviews.map(i => this.convertGrpcTransactionOverview(i));
+                transactionCaptures = transactionResponse.transactionOverviews
+                    .map(overview => TransactionConverter.convertGrpcTransactionOverview(overview));
             }
 
             // the transaction header of a group is streamed only once, so pages beyond the first do not
@@ -750,31 +748,6 @@ export class EvitaClientSession {
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
         }
-    }
-
-    // todo move me to a separate class
-    private convertGrpcTransactionOverview(grpcTransactionOverview: GrpcTransactionOverview): ChangeCatalogCapture {
-
-
-        const mutation =  new TransactionMutation(
-            EvitaValueConverter.convertGrpcUuid(grpcTransactionOverview.transactionId!).toString(),
-            Number(grpcTransactionOverview.catalogVersion),
-            grpcTransactionOverview.transactionChanges.reduce((acc, i) => acc + i.mutationCount, 0),
-            Number(grpcTransactionOverview.transactionChanges.reduce((acc, i) => acc + Number(i.walSizeInBytes), 0)),
-            EvitaValueConverter.convertGrpcOffsetDateTime(grpcTransactionOverview.commitTimestamp!)
-        )
-
-        return new ChangeCatalogCapture(
-            Number(grpcTransactionOverview.catalogVersion),
-             0,
-            CatalogSchemaConverter.toCaptureArea(GrpcChangeCaptureArea.INFRASTRUCTURE),
-            undefined,
-            undefined,
-            Operation.Transaction,
-            mutation,
-            EvitaValueConverter.convertGrpcOffsetDateTime(grpcTransactionOverview.commitTimestamp!)
-        )
-
     }
 
     /**

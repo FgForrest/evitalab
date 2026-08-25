@@ -28,7 +28,7 @@ export class VisualisedHistogramBucket {
 
     static fromJson(json: GraphQLResultNode): VisualisedHistogramBucket {
         return new VisualisedHistogramBucket(
-            json.threshold ? new BigDecimal(json.threshold) : undefined,
+            json.threshold != undefined ? new BigDecimal(json.threshold) : undefined,
             json.occurrences,
             json.requested
         )

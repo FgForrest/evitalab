@@ -24,6 +24,10 @@ import {
 import { useEvitaClient } from '@/modules/database-driver/EvitaClient'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import { Command } from '@/modules/keymap/model/Command.ts'
+import {
+    isEntityPrimaryKeyFilterValid,
+    parseEntityPrimaryKeyFilter
+} from '@/modules/history-viewer/service/entityPrimaryKeyFilter.ts'
 
 const evitaClient = useEvitaClient()
 const toaster: Toaster = useToaster()
@@ -110,28 +114,25 @@ watch(operationList, async (newValue) => {
     }
 })
 
-const entityPrimaryKey = ref<number | undefined>(criteria.value.entityPrimaryKey || undefined)
+// the text field hands over a raw string, whereas the criteria (and ultimately the gRPC request) needs a number
+const entityPrimaryKey = ref<string | undefined>(
+    criteria.value.entityPrimaryKey != undefined
+        ? String(criteria.value.entityPrimaryKey)
+        : undefined
+)
 watch(entityPrimaryKey, async (newValue) => {
     if (await assertFormValidated()) {
-        if (newValue == undefined || newValue === 0) {
-            criteria.value.entityPrimaryKey = undefined
-        } else {
-            criteria.value.entityPrimaryKey = newValue
-        }
+        const parsedEntityPrimaryKey: number | undefined = parseEntityPrimaryKeyFilter(newValue)
+        criteria.value.entityPrimaryKey = parsedEntityPrimaryKey === 0
+            ? undefined
+            : parsedEntityPrimaryKey
     }
 })
 
 const entityPrimaryKeyRules = [
     (value: string): boolean | string => {
-        if (value == undefined || value === '') {
-            return true
-        }
-        // todo number validation
-        // const uuidPattern: RegExp = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/
-        // if (!uuidPattern.exec(value)) {
-        //     return t('mutationHistoryViewer.recordHistory.filter.form.entityPrimaryKey.validations.notValid')
-        // }
-        return true
+        return isEntityPrimaryKeyFilterValid(value)
+            || t('mutationHistoryViewer.filter.form.entityPrimaryKey.validations.notValid')
     }
 ]
 
@@ -415,10 +416,11 @@ defineExpose({ apply: applyChangedCriteria })
     display: flex;
     gap: 0.5rem;
     flex-wrap: nowrap;
-    justify-content: space-evenly;
     align-items: center;
     padding: 0 0.25rem;
-    // todo lho not working properly
+    // the fields keep a readable minimum width and the row scrolls horizontally once they no longer
+    // fit; it deliberately does not wrap, because the filter is rendered into a toolbar extension of
+    // a fixed height owned by the viewer component
     overflow-x: auto;
 
     &__label {

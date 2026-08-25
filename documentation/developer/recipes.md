@@ -249,8 +249,8 @@ send one.
 type needs (see `SchemaViewerTabFactory.restoreTabParamsFromSerializable`).
 
 The table lists the tab types worth deep-linking into. Technically `SharedTabResolver` accepts any
-`TabType` whose factory is `restorable` (the server / task / backup / JFR viewers restore fine but
-carry no parameters worth linking); only the error viewer is rejected outright.
+`TabType` whose factory is `restorable`, which today means all of them — the server / task / backup /
+JFR viewers simply carry no parameters worth linking.
 
 The tab types `data-grid`, `dataGrid`, `evitaql-console`, `graphql-console`, `schema-viewer` and
 `serverStatus` are still accepted for backward compatibility — **deprecated**, new integrations must
