@@ -1,10 +1,10 @@
 import type {
     AssociatedDataMutation
-} from '@/modules/database-driver/request-response/data/mutation/associatedData/AssociatedDataMutation.ts'
+} from '@/modules/database-driver/request-response/data/mutation/associated-data/AssociatedDataMutation.ts'
 import type { GrpcLocale } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaDataTypes_pb.ts'
 import {
     AssociatedDataKey
-} from '@/modules/database-driver/request-response/data/mutation/associatedData/AssociatedDataKey.ts'
+} from '@/modules/database-driver/request-response/data/mutation/associated-data/AssociatedDataKey.ts'
 import {
     CatalogSchemaConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'

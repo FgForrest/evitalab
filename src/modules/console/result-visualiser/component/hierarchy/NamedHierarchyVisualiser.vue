@@ -35,10 +35,10 @@ function initialize(): void {
                 </template>
                 <template #title>
                     <VListItemTitle class="named-hierarchy-title">
-                        <span>{{ namedHierarchyEntry.name }}</span>
+                        <span class="named-hierarchy-title__name">{{ namedHierarchyEntry.name }}</span>
 
-                        <VLazy>
-                            <VChipGroup>
+                        <VLazy class="named-hierarchy-title__chips">
+                            <VChipGroup column>
                                 <VChip prepend-icon="mdi-file-tree">
                                     <span>
                                         {{ namedHierarchyEntry.hierarchy.count }}
@@ -79,10 +79,36 @@ function initialize(): void {
 </template>
 
 <style lang="scss" scoped>
-// todo lho better handling for small widths
 .named-hierarchy-title {
     display: flex;
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    column-gap: 0.5rem;
+    row-gap: 0.25rem;
     align-items: center;
+
+    // `display: flex` here voids the ellipsis Vuetify puts on `.v-list-item-title`, so the name
+    // truncates on its own; `min-width` must be reset because the automatic minimum size of a flex item
+    // is its content, which would clip the text instead of shortening it
+    &__name {
+        flex: 0 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    // the chips keep their width and move to a line of their own instead of being cut; `column` wraps
+    // them there rather than letting them slide out of sight in the group's scrollbar-less scroller
+    &__chips {
+        flex: 0 0 auto;
+        max-width: 100%;
+
+        // `column` also sets `white-space: normal` on the group: without this, a chip's own label wraps
+        // and is cut by the chip's height, and the shrinking chips - not the group - absorb the squeeze
+        :deep(.v-chip) {
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+    }
 }
 </style>

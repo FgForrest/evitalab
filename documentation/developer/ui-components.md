@@ -144,6 +144,30 @@ registered). For combined date-time input use the custom `VDateTimeInput` (retur
   unfocused it shows the localized pretty form. Unparsable input and `min`/`max` violations are
   reported as field errors and leave the model untouched.
 
+### Hand-rolled clear icons
+
+A field whose model Vuetify's own `clearable` cannot handle (a wrapper over a non-trivial value, such as
+`VDateTimeInput` or `traffic-viewer`'s `VLabelSelect`) renders the clear icon itself in `#append-inner`.
+Two things belong on it:
+
+```vue
+<template #append-inner>
+    <VIcon v-if="clearable && model != undefined" @mousedown.prevent @click="clear">
+        mdi-close-circle
+    </VIcon>
+</template>
+```
+
+- **Gate visibility on the value, never on focus.** `#append-inner` hands the slot an `isFocused` flag,
+  and gating the icon on it makes the affordance unreachable: the mousedown that would hit the icon
+  arrives while the field is still unfocused, so the icon is not there yet.
+- **`@mousedown.prevent`** keeps the field from losing focus (or, for a wrapper that opens a menu from
+  its root, from toggling that menu) before the click resolves. Add `.stop` to the click as well when the
+  field itself is a `VMenu` activator, otherwise clearing also opens the menu.
+
+Honour the component's own `clearable` prop in the condition — a wrapper that ignores it silently offers
+a clear button the caller did not ask for.
+
 ## Viewer helpers
 
 - `VDownloadServerFileButton` (`viewer-support`) — download button for server files, with determinate

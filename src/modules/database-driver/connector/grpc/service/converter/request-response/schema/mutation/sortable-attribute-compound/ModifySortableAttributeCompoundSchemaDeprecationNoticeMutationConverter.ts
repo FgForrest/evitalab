@@ -1,0 +1,20 @@
+import type {
+    GrpcModifySortableAttributeCompoundSchemaDeprecationNoticeMutation
+} from '@/modules/database-driver/connector/grpc/gen/GrpcSortableAttributeCompoundSchemaMutations_pb.ts'
+import {
+    ModifySortableAttributeCompoundSchemaDeprecationNoticeMutation
+} from '@/modules/database-driver/request-response/schema/mutation/sortable-attribute-compound/ModifySortableAttributeCompoundSchemaDeprecationNoticeMutation.ts'
+import type {
+    SchemaMutationConverter
+} from '@/modules/database-driver/request-response/schema/mutation/SchemaMutationConverter.ts'
+
+export class ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter implements SchemaMutationConverter<ModifySortableAttributeCompoundSchemaDeprecationNoticeMutation, GrpcModifySortableAttributeCompoundSchemaDeprecationNoticeMutation> {
+    public static readonly INSTANCE = new ModifySortableAttributeCompoundSchemaDeprecationNoticeMutationConverter()
+
+    convert(mutation: GrpcModifySortableAttributeCompoundSchemaDeprecationNoticeMutation): ModifySortableAttributeCompoundSchemaDeprecationNoticeMutation {
+        return new ModifySortableAttributeCompoundSchemaDeprecationNoticeMutation(
+            mutation.name,
+            mutation.deprecationNotice
+        )
+    }
+}

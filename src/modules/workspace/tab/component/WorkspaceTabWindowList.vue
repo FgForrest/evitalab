@@ -124,7 +124,7 @@ async function resolveDemoCodeSnippet(urlSearchParams: URLSearchParams): Promise
     try {
         return await demoCodeSnippetResolver.resolve(demoSnippetRequestSerialized)
     } catch (e) {
-        await toaster.error('Could not resolve demo code snippet', asError(e)) // todo lho i18n
+        await toaster.error(t('tab.notification.couldNotResolveDemoCodeSnippet'), asError(e))
     }
 }
 

@@ -12,7 +12,6 @@ import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import { List as ImmutableList } from 'immutable'
 import VListItemDivider from '@/modules/base/component/VListItemDivider.vue'
-import { Code, ConnectError } from '@connectrpc/connect'
 import type { MutationHistoryCriteria } from '@/modules/history-viewer/model/MutationHistoryCriteria.ts'
 import type { MutationHistoryDataPointer } from '@/modules/history-viewer/model/MutationHistoryDataPointer.ts'
 import {
@@ -37,10 +36,6 @@ import MutationHistoryItem from '@/modules/history-viewer/component/MutationHist
 
 // note: this is enum from vuetify, but vuetify doesn't export it
 type InfiniteScrollStatus = 'ok' | 'empty' | 'loading' | 'error';
-
-enum MutationHistoryFetchErrorType {
-
-}
 
 /**
  * Reverse-pagination state of the list. `sinceVersion`/`sinceIndex` anchor the scan at the newest
@@ -115,7 +110,6 @@ const emit = defineEmits<{
     (e: 'update:startPointerActive', value: boolean): void
 }>()
 
-const fetchError = ref<MutationHistoryFetchErrorType | undefined>(undefined)
 let records: ChangeCatalogCapture[] = []
 const history = ref<MutationHistoryItemVisualisationDefinition[]>([])
 
@@ -163,7 +157,6 @@ async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) 
             nextPagePointer.value.nextPage()
         }
         const fetchedPage: MutationHistoryPage = await fetchRecords()
-        fetchError.value = undefined
 
         nextPagePointer.value.setLastFetchedCount(fetchedPage.captureCount)
         if (fetchedPage.records.size === 0) {
@@ -186,7 +179,6 @@ async function reloadHistory(): Promise<void> {
     nextPagePointer.value.reset()
     records = []
     history.value = []
-    fetchError.value = undefined
 
     try {
         const fetchedPage: MutationHistoryPage = await fetchRecords()
@@ -258,9 +250,6 @@ async function processRecords(): Promise<void> {
 }
 
 function handleRecordFetchError(e: unknown): void {
-    if (e instanceof ConnectError && e.code === Code.InvalidArgument) {
-// todp pfi: do I need to fix this?
-    }
     toaster.error(t(
         'mutationHistoryViewer.notification.couldNotLoadRecords',
         { reason: errorMessage(e) }
@@ -304,7 +293,7 @@ defineExpose<{
 </script>
 
 <template>
-    <VList v-if="fetchError == undefined && history.length > 0">
+    <VList v-if="history.length > 0">
         <VInfiniteScroll
             mode="manual"
             side="end"

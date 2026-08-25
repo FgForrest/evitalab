@@ -40,7 +40,7 @@ import LuxonExtensions from '@/vue-plugins/luxonExtensions'
 LuxonExtensions.install!(undefined as unknown as App, {})
 
 const catalogName: string = 'testCatalog'
-const created: OffsetDateTime = OffsetDateTime.ofInstant(0n, '+00:00')
+const created: OffsetDateTime = OffsetDateTime.of(0n, 0, '+00:00')
 const noDuration: Duration = Duration.fromMillis(0)
 
 /**

@@ -22,7 +22,8 @@ browsing the record history of one catalog.
 | `components/ExportTrafficBufferButton.vue`, `ExportTrafficBufferDialog.vue` | On-demand buffer export (below) |
 | `components/StartPointerButton.vue`, `VLabelSelect.vue` | History start pointer, label filter input |
 | `model/` | Tab definitions/params/data, `TrafficRecordHistoryCriteria`, `UserTrafficRecordType`, `TrafficRecorderTask`, `TrafficRecordingExportTask`, visualisation contexts |
-| `model/TrafficRecordHistoryCursor.ts`, `model/trafficRecordHistoryPaging.ts` | Record history paging — the backward cursor, the capture request builder, page merging (below) |
+| `model/TrafficRecordHistoryCursor.ts` | The backward cursor of the record history paging (below) |
+| `service/trafficRecordHistoryPaging.ts` | Record history paging behavior — the capture request builder and page merging (below) |
 | `service/*ContainerVisualiser.ts` | One visualiser per record type (session start/close, query, source query + statistics, fetch, enrichment, mutation) |
 | `service/TrafficRecordHistoryVisualisationProcessor.ts` | Turns raw records into `TrafficRecordVisualisationDefinition`s |
 | `service/TrafficViewerService.ts` | The module's service |
@@ -140,6 +141,19 @@ of `TrafficRecordVisualiser` implementations (registered in `TrafficViewerModule
 `TrafficRecordVisualisationDefinition`s. Several visualisers link out to a query console — which is why
 this module injects the evitaQL and GraphQL console tab factories — and `SessionStartContainerVisualiser`
 links to a history tab scoped to that session, hence the self-injection of its own tab factory.
+
+A mutation record has no visual model — the driver hands over the recorded mutation as
+[canonical protobuf JSON](../database-driver.md#rendering-raw-wire-data) and `MutationContainerVisualiser`
+stringifies it into the row's detail line. It has to be that form: stringifying the received message
+instead **threw** on any mutation carrying a 64-bit value (a `LongNumberRange` attribute, for instance),
+and the failure propagated out of `processRecords()`, so a single such record emptied the whole history
+rather than its own row.
+
+Error classification in `RecordHistory` matches the server's message text, which is deliberate for now:
+evitaDB attaches a `google.rpc.ErrorInfo` whose domain is the exception class name, but the "no recording
+has been started" state is reported as a plain `EvitaInvalidUsageException`, and the error code is derived
+from the throw site and changes between versions. A structured check needs a dedicated exception type in
+evitaDB first.
 
 ## Export traffic buffer
 

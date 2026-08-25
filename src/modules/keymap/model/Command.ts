@@ -97,5 +97,7 @@ export enum Command {
     MutationHistoryViewer_ShareTab = 'mutationHistoryViewer.shareTab',
     MutationHistoryViewer_ReloadRecordHistory = 'mutationHistoryViewer.reloadRecordHistory',
     MutationHistoryViewer_MoveStartPointer = 'mutationHistoryViewer.moveStartPointer',
-    MutationHistoryViewer_ApplyFilter = 'mutationHistoryViewer.applyFilter'
+    MutationHistoryViewer_ApplyFilter = 'mutationHistoryViewer.applyFilter',
+
+    ErrorViewer_ShareTab = 'errorViewer.shareTab'
 }

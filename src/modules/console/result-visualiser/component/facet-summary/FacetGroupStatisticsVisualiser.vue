@@ -52,23 +52,25 @@ async function copyPrimaryKey(): Promise<void> {
                 </template>
                 <template #title>
                     <VListItemTitle class="group-title">
-                        <span
-                            v-if="facetGroup.groupStatistics.primaryKey != undefined"
-                            class="text-disabled d-flex align-center"
-                            @click.stop="copyPrimaryKey"
-                        >
-                             <VIcon size="20" class="mr-1">mdi-key</VIcon>
-                            {{ facetGroup.groupStatistics.primaryKey }}{{ facetGroup.groupStatistics.title ? ':' : '' }}
-                        </span>
-                        <span>
-                            {{ facetGroup.groupStatistics.title ?? 'Unknown' }}
-                            <VTooltip v-if="!facetGroup.groupStatistics.title" activator="parent">
-                                <VMarkdown :source="t('resultVisualizer.facetStatisticsVisualiser.help.noPrimaryKeyProperty')" />
-                            </VTooltip>
+                        <span class="group-title__identity">
+                            <span
+                                v-if="facetGroup.groupStatistics.primaryKey != undefined"
+                                class="text-disabled d-flex align-center"
+                                @click.stop="copyPrimaryKey"
+                            >
+                                 <VIcon size="20" class="mr-1">mdi-key</VIcon>
+                                {{ facetGroup.groupStatistics.primaryKey }}{{ facetGroup.groupStatistics.title ? ':' : '' }}
+                            </span>
+                            <span class="group-title__name">
+                                {{ facetGroup.groupStatistics.title ?? 'Unknown' }}
+                                <VTooltip v-if="!facetGroup.groupStatistics.title" activator="parent">
+                                    <VMarkdown :source="t('resultVisualizer.facetStatisticsVisualiser.help.noPrimaryKeyProperty')" />
+                                </VTooltip>
+                            </span>
                         </span>
 
-                        <VLazy>
-                            <VChipGroup>
+                        <VLazy class="group-title__chips">
+                            <VChipGroup column>
                                 <VChip prepend-icon="mdi-counter">
                                     <span>
                                         {{ facetGroup.groupStatistics.count ?? '-' }}
@@ -109,10 +111,46 @@ async function copyPrimaryKey(): Promise<void> {
 </template>
 
 <style lang="scss" scoped>
-// todo lho better handling for small widths
 .group-title {
     display: flex;
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    column-gap: 0.5rem;
+    row-gap: 0.25rem;
     align-items: center;
+
+    // primary key and name shrink as one unit, so that a name too long for the row truncates instead of
+    // dropping onto a line of its own below its own primary key
+    &__identity {
+        display: flex;
+        flex: 0 1 auto;
+        min-width: 0;
+        column-gap: 0.5rem;
+        align-items: center;
+    }
+
+    // `display: flex` here voids the ellipsis Vuetify puts on `.v-list-item-title`, so the name
+    // truncates on its own; `min-width` must be reset because the automatic minimum size of a flex item
+    // is its content, which would clip the text instead of shortening it
+    &__name {
+        flex: 0 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    // the chips keep their width and move to a line of their own instead of being cut; `column` wraps
+    // them there rather than letting them slide out of sight in the group's scrollbar-less scroller
+    &__chips {
+        flex: 0 0 auto;
+        max-width: 100%;
+
+        // `column` also sets `white-space: normal` on the group: without this, a chip's own label wraps
+        // and is cut by the chip's height, and the shrinking chips - not the group - absorb the squeeze
+        :deep(.v-chip) {
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+    }
 }
 </style>

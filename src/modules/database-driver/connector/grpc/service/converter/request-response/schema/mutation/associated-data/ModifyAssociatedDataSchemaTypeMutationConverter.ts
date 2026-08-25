@@ -3,7 +3,7 @@ import type {
 } from '@/modules/database-driver/connector/grpc/gen/GrpcAssociatedDataSchemaMutations_pb.ts'
 import {
     ModifyAssociatedDataSchemaTypeMutation
-} from '@/modules/database-driver/request-response/schema/mutation/associatedData/ModifyAssociatedDataSchemaTypeMutation.ts'
+} from '@/modules/database-driver/request-response/schema/mutation/associated-data/ModifyAssociatedDataSchemaTypeMutation.ts'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 import { ScalarConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScalarConverter.ts'
 import type {

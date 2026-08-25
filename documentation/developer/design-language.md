@@ -161,6 +161,10 @@ the tab area. The canonical skeleton, used by all three reference pages:
   come-and-go actions belongs at the front rather than in the middle of the row.
 - **extension slot** — a second toolbar row for always-visible query inputs (entity viewer's
   filter/order bar). Use it when the page's main interaction is "type constraint → run".
+  Its height is a **fixed** `:extension-height`, mirrored by the page body's `grid-template-rows` and
+  absolute `top` offset, so a row of filters that does not fit **scrolls horizontally** (fields keep a
+  `10rem` minimum) — it must not wrap, which would need all three numbers to become two-state. Both
+  history viewers' filter bars work this way.
 
 ### Panes
 
@@ -284,6 +288,47 @@ List rows representing identified data follow one title grammar (facet rows, gro
 flex row, `0.5rem` column gap, muted `mdi-key` + primary key prefix (click = copy), title
 (`'Unknown'` + explanatory tooltip when unresolvable), then chips. Unknown/zero-impact rows are
 dimmed with disabled opacity rather than removed.
+
+At narrow widths (the visualiser lives in a console pane, and a group row there has well under 200 px
+of usable width, so this is the normal case) the row degrades in one direction only: **the title
+truncates, the chips wrap.** Nothing is ever cut off. The structure that produces this:
+
+```
+.x-title            display: flex; flex-wrap: wrap; column-gap .5rem; row-gap .25rem
+  &__identity       display: flex; flex: 0 1 auto; min-width: 0      // keys + title, one unit
+    (key prefixes)  natural width, not shrinkable
+    &__name         flex: 0 1 auto; min-width: 0; nowrap + ellipsis
+  &__chips          flex: 0 0 auto; max-width: 100%                  // VChipGroup, `column`
+```
+
+Each rule answers a specific failure, all of them observed in the browser:
+
+- **Group the keys with the title.** A flex line breaks on an item's *content* width, so a title long
+  enough to not fit next to its own primary key drops to a line below it instead of truncating. Inside
+  one shrinking `__identity` unit the line break happens before the keys, and the name truncates.
+- **The name must not grow** (`flex: 0 1 auto`, never `1 1 auto`): a growing name fills the leftover
+  space and shoves the chips against the row's right edge, far from the text they belong to.
+- **The name owns its ellipsis.** `display: flex` on `.v-list-item-title` voids the `text-overflow:
+  ellipsis` Vuetify sets there, and `min-width` must be reset because a flex item's automatic minimum
+  size is its content — with the inherited `white-space: nowrap` that minimum is the *whole string*, so
+  the title cannot shrink at all and is **hard-clipped mid-word with no ellipsis**.
+- **The chips keep their width** (`flex: 0 0 auto`) and move to a line of their own. Shrinking them
+  instead makes them vanish: `VChipGroup` is a slide group whose container is `overflow-x: auto` with
+  `scrollbar-width: none`, so anything that does not fit **disappears with neither scrollbar nor
+  arrows** — and, being a scroll container, its `min-content` width is `0`, so `min-width: min-content`
+  is no protection either.
+- **`column` needs two corrections.** It wraps the chips (good), but it also sets `white-space: normal`
+  on the group, so a chip's own label wraps and is then cut by the chip's fixed height; and the chips,
+  being shrinkable, absorb the squeeze themselves instead of wrapping. Add
+  `:deep(.v-chip) { flex: 0 0 auto; white-space: nowrap }`.
+- A chip holding **several sections** (the facet counter: entities / impact / count) can still outgrow
+  the row. Let that one grow in height — `height: auto; min-height: 2rem` on the chip plus `flex-wrap:
+  wrap` on its inner row — rather than lose its last section.
+
+Both `result-visualiser/facet-summary/` and `result-visualiser/reference-summary/` ship a *parallel
+copy* of the group row and the facet row (same class names, same CSS). Which pair renders depends on
+the server: `referenceSummary` replaced `facetSummary` in the query API, so a change applied to only
+one family looks like the layout randomly behaving differently per server. Change both.
 
 ### Key-value details: `VPropertiesTable`
 

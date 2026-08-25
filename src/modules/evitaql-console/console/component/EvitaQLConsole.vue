@@ -317,7 +317,7 @@ async function executeQuery(): Promise<void> {
             focusRawResultEditor()
         }
     } catch (error) {
-        await toaster.error('Could not execute query', asError(error)) // todo lho i18n
+        await toaster.error(t('evitaQLConsole.notification.couldNotExecuteQuery'), asError(error))
         loading.value = false
     }
 }

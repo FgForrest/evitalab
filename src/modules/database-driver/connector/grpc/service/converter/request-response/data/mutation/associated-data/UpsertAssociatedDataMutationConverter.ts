@@ -3,7 +3,7 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/data/mutation/associated-data/AssociatedDataMutationConverter.ts'
 import {
     UpsertAssociatedDataMutation
-} from '@/modules/database-driver/request-response/data/mutation/associatedData/UpsertAssociatedDataMutation.ts'
+} from '@/modules/database-driver/request-response/data/mutation/associated-data/UpsertAssociatedDataMutation.ts'
 import type {
     GrpcUpsertAssociatedDataMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcAssociatedDataMutations_pb.ts'

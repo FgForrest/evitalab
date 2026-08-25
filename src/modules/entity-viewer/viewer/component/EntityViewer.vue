@@ -370,7 +370,7 @@ async function rebuildOrderByFromSortBy(columns: { key: string, order?: 'asc' | 
     try {
         orderByCode.value = await entityViewerService.buildOrderByFromGridColumns(props.params.dataPointer, selectedQueryLanguage.value, columns)
     } catch (error) {
-        await toaster.error('Could not build orderBy', asError(error)) // todo lho i18n
+        await toaster.error(t('entityViewer.notification.couldNotBuildOrderBy'), asError(error))
     }
 }
 

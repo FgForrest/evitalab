@@ -17,6 +17,7 @@ import { ConnectionNotFoundError } from '@/modules/connection/exception/Connecti
 import {
     MutationHistoryViewerTabFactory
 } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory'
+import { ErrorViewerTabFactory } from '@/modules/error-viewer/viewer/workspace/service/ErrorViewerTabFactory'
 
 export const sharedTabResolverInjectionKey: InjectionKey<SharedTabResolver> = Symbol('sharedTabResolver')
 
@@ -30,19 +31,22 @@ export class SharedTabResolver {
     private readonly schemaViewerTabFactory: SchemaViewerTabFactory
     private readonly trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory
     private readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
+    private readonly errorViewerTabFactory: ErrorViewerTabFactory
 
     constructor(entityViewerTabFactory: EntityViewerTabFactory,
                 evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory,
                 graphQLConsoleTabFactory: GraphQLConsoleTabFactory,
                 schemaViewerTabFactory: SchemaViewerTabFactory,
                 trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory,
-                mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory) {
+                mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory,
+                errorViewerTabFactory: ErrorViewerTabFactory) {
         this.entityViewerTabFactory = entityViewerTabFactory
         this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
         this.graphQLConsoleTabFactory = graphQLConsoleTabFactory
         this.schemaViewerTabFactory = schemaViewerTabFactory
         this.trafficRecordHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
         this.mutationHistoryViewerTabFactory = mutationHistoryViewerTabFactory
+        this.errorViewerTabFactory = errorViewerTabFactory
     }
 
     async resolve(shareTabObject: ShareTabObject): Promise<AnyTabDefinition> {
@@ -65,6 +69,8 @@ export class SharedTabResolver {
                     return this.trafficRecordHistoryViewerTabFactory.restoreFromJson(shareTabObject.tabParams, shareTabObject.tabData)
                 case TabType.MutationHistoryViewer:
                     return this.mutationHistoryViewerTabFactory.restoreFromJson(shareTabObject.tabParams, shareTabObject.tabData)
+                case TabType.ErrorViewer:
+                    return this.errorViewerTabFactory.restoreFromJson(shareTabObject.tabParams)
                 default:
                     throw new UnexpectedError(`Unsupported shared tab type '${shareTabObject.tabType}'.`)
             }

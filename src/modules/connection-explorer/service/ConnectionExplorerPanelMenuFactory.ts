@@ -14,6 +14,7 @@ import { ServerViewerTabDefinition } from '@/modules/server-viewer/model/ServerV
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { ServerViewerTabFactory } from '@/modules/server-viewer/service/ServerViewerTabFactory'
 import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
+import { systemCatalogName } from '@/modules/graphql-console/console/model/GraphQLConsoleDataPointer'
 import { TaskViewerTabFactory } from '@/modules/task-viewer/services/TaskViewerTabFactory'
 import { TrafficRecordingsViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordingsViewerTabFactory'
 import { GraphQLConsoleTabFactory } from '@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFactory'
@@ -153,7 +154,7 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
             () =>
                 this.workspaceService.createTab(
                     this.graphQLConsoleTabFactory.createNew(
-                        'system', // todo lho: this is not needed
+                        systemCatalogName,
                         GraphQLInstanceType.System
                     )
                 ),

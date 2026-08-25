@@ -143,7 +143,11 @@ const graphQLSchemaChangeCallbackId = graphQLConsoleService.registerGraphQLSchem
 const reloadingSchema = ref<boolean>(false)
 
 const queryEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
-const queryCode = ref<string>(props.data.query ? props.data.query : t('graphQLConsole.placeholder.writeQuery', { catalogName: props.params.dataPointer.catalogName }))
+// the System instance is not bound to a catalog, it only carries a placeholder catalog name for keying purposes
+const queryPlaceholder: string = props.params.dataPointer.instanceType === GraphQLInstanceType.System
+    ? t('graphQLConsole.placeholder.writeSystemQuery')
+    : t('graphQLConsole.placeholder.writeQuery', { catalogName: props.params.dataPointer.catalogName })
+const queryCode = ref<string>(props.data.query ? props.data.query : queryPlaceholder)
 // GraphQL language support is swapped in place through a CodeMirror compartment so the
 // editor's extensions array reference stays stable; reassigning it would force the editor
 // to fully remount on every schema (re)load.
@@ -379,7 +383,7 @@ async function executeQuery(): Promise<void> {
         }
     } catch (error) {
         loading.value = false
-        await toaster.error('Could not execute query', asError(error)) // todo lho i18n
+        await toaster.error(t('graphQLConsole.notification.couldNotExecuteQuery'), asError(error))
     }
 }
 

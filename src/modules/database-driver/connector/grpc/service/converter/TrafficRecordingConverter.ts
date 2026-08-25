@@ -10,7 +10,12 @@ import type {
     GrpcTrafficRecord,
     GrpcTrafficRecordingCaptureCriteria
 } from '@/modules/database-driver/connector/grpc/gen/GrpcTrafficRecording_pb'
-import { GrpcTrafficRecordingContent, GrpcTrafficRecordingType } from '@/modules/database-driver/connector/grpc/gen/GrpcTrafficRecording_pb'
+import {
+    GrpcTrafficMutationContainerSchema,
+    GrpcTrafficRecordingContent,
+    GrpcTrafficRecordingType
+} from '@/modules/database-driver/connector/grpc/gen/GrpcTrafficRecording_pb'
+import { grpcMessageToJson } from '@/utils/JsonUtil'
 import { MutationContainer } from '@/modules/database-driver/request-response/traffic-recording/MutationContainer'
 import { QueryContainer } from '@/modules/database-driver/request-response/traffic-recording/QueryContainer'
 import {
@@ -59,7 +64,7 @@ export class TrafficRecordingConverter {
                 header.sessionSequenceOrder, header.sessionId, header.recordSessionOffset, header.sessionRecordsCount,
                 header.type, header.created, header.duration, header.ioFetchedSizeBytes, header.ioFetchCount,
                 header.finishedWithError,
-                grpcTrafficRecord.body.value.mutation //  todo lho serialize to json?
+                grpcMessageToJson(GrpcTrafficMutationContainerSchema, grpcTrafficRecord.body.value)
             );
             case 'query': return new QueryContainer(
                 header.sessionSequenceOrder, header.sessionId, header.recordSessionOffset, header.sessionRecordsCount,

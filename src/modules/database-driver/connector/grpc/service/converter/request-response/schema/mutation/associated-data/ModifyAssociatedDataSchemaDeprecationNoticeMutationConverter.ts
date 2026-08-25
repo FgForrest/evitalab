@@ -1,6 +1,6 @@
 import {
     ModifyAssociatedDataSchemaDeprecationNoticeMutation
-} from '@/modules/database-driver/request-response/schema/mutation/associatedData/ModifyAssociatedDataSchemaDeprecationNoticeMutation.ts'
+} from '@/modules/database-driver/request-response/schema/mutation/associated-data/ModifyAssociatedDataSchemaDeprecationNoticeMutation.ts'
 import type {
     GrpcModifyAssociatedDataSchemaDeprecationNoticeMutation
 } from '@/modules/database-driver/connector/grpc/gen/GrpcAssociatedDataSchemaMutations_pb.ts'

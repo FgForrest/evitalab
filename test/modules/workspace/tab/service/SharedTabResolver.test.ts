@@ -8,6 +8,7 @@ vi.mock('@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFa
 vi.mock('@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory', () => ({ SchemaViewerTabFactory: class {} }))
 vi.mock('@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory', () => ({ TrafficRecordHistoryViewerTabFactory: class {} }))
 vi.mock('@/modules/history-viewer/service/MutationHistoryViewerTabFactory', () => ({ MutationHistoryViewerTabFactory: class {} }))
+vi.mock('@/modules/error-viewer/viewer/workspace/service/ErrorViewerTabFactory', () => ({ ErrorViewerTabFactory: class {} }))
 
 import { SharedTabResolver } from '@/modules/workspace/tab/service/SharedTabResolver'
 import { ShareTabObject } from '@/modules/workspace/tab/model/ShareTabObject'
@@ -31,6 +32,7 @@ import type { SchemaViewerTabFactory } from '@/modules/schema-viewer/viewer/work
 import type {
     TrafficRecordHistoryViewerTabFactory
 } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
+import type { ErrorViewerTabFactory } from '@/modules/error-viewer/viewer/workspace/service/ErrorViewerTabFactory'
 
 const unusableFactory: never = new Proxy({}, {
     get(): never {
@@ -45,7 +47,8 @@ function createResolver(mutationHistoryViewerTabFactory: MutationHistoryViewerTa
         unusableFactory as GraphQLConsoleTabFactory,
         unusableFactory as SchemaViewerTabFactory,
         unusableFactory as TrafficRecordHistoryViewerTabFactory,
-        mutationHistoryViewerTabFactory
+        mutationHistoryViewerTabFactory,
+        unusableFactory as ErrorViewerTabFactory
     )
 }
 

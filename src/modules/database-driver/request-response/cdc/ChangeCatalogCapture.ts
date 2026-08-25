@@ -16,8 +16,15 @@ export class ChangeCatalogCapture  {
     entityPrimaryKey: number | undefined;
     /** The operation that was performed */
     operation: Operation;
-    /** Optional body of the operation when it is requested by the ChangeSystemCaptureRequest content */
-    body: Mutation | undefined; // todo pfi: change it to CatalogBoundMutation
+    /**
+     * Optional body of the operation when it is requested by the ChangeSystemCaptureRequest content.
+     *
+     * evitaDB narrows the same field to its sealed `CatalogBoundMutation` (an entity, local, schema or
+     * transaction mutation). The wider marker is kept here on purpose: the corresponding TypeScript
+     * interfaces are empty markers, so a union of them would be structurally indistinguishable from
+     * `Mutation` and would constrain nothing.
+     */
+    body: Mutation | undefined;
 
     commitTimestamp: OffsetDateTime | undefined
 

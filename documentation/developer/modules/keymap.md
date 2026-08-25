@@ -14,8 +14,8 @@ the feature tab that lists all shortcuts to the user.
 | `model/Command.ts` | The `Command` enum — **every** user-facing action has an entry |
 | `model/keyboardShortcutMappings.ts` | `Command` → key combination |
 | `model/KeyboardShortcut.ts` | Shortcut model |
-| `model/keyboardShortcutEventFilter.ts` | `isKeyboardShortcutDispatchable` — which `keydown` events may reach handlers |
 | `model/SystemType.ts` | OS-dependent rendering (⌘ vs Ctrl) |
+| `service/keyboardShortcutEventFilter.ts` | `isKeyboardShortcutDispatchable` — which `keydown` events may reach handlers |
 | `service/Keymap.ts` | `bind` / `unbind` / `bindGlobal`, `pushScope` / `popScope`, `prettyPrint` |
 | `viewer/component/KeymapViewer.vue` | The tab listing all shortcuts |
 | `viewer/workspace/` | `KeymapViewerTabDefinition`, `KeymapViewerTabFactory` (`TabType.KeymapViewer`) |

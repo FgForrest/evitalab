@@ -360,10 +360,11 @@ defineExpose({ apply: applyChangedCriteria })
     display: flex;
     gap: 0.5rem;
     flex-wrap: nowrap;
-    justify-content: space-evenly;
     align-items: center;
     padding: 0 0.25rem;
-    // todo lho not working properly
+    // the fields keep a readable minimum width and the row scrolls horizontally once they no longer
+    // fit; it deliberately does not wrap, because the filter is rendered into a toolbar extension of
+    // a fixed height owned by the viewer component
     overflow-x: auto;
 
     &__label {

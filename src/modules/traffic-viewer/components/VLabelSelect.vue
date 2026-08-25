@@ -100,9 +100,12 @@ function clear(): void {
         :hint="hint"
         :hide-details="hideDetails"
     >
-        <template v-if="modelValue.length > 0" #append-inner="{ isFocused }">
-            <!--            todo lho fix hide icon when not focused  -->
-            <VIcon v-show="isFocused" @click="clear">
+        <template #append-inner>
+            <VIcon
+                v-if="clearable && modelValue.length > 0"
+                @mousedown.prevent
+                @click.stop="clear"
+            >
                 mdi-close-circle
             </VIcon>
         </template>
