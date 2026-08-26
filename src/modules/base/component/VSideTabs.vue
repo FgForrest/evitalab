@@ -11,7 +11,6 @@
 
 import { computed } from 'vue'
 
-// todo lho the slider is currently disabled because i don't know how to move it between sides
 enum Side {
     Left = 'left',
     Right = 'right'
@@ -64,7 +63,6 @@ function handleTabChange(value: unknown): void {
 
 <template>
     <VTabs
-        hide-slider
         :model-value="selectedTab"
         :mandatory="collapsible === true ? false : 'force'"
         @update:model-value="handleTabChange($event)"
@@ -87,15 +85,25 @@ function handleTabChange(value: unknown): void {
 
     &--right {
         border-left: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+
+        // Vuetify anchors the slider of vertical tabs to the left edge of the tab, which is the outer
+        // edge of a left-side strip only; the right-side strip mirrors it so that the indicator always
+        // sits on the edge facing away from the panel it controls
+        & :deep(.v-tab__slider) {
+            left: auto;
+            right: 0;
+        }
     }
 
+    // the tabs fill the content box rather than the full 3rem of the strip, otherwise they overflow the
+    // strip's border by its width and the slider of the right-side strip gets clipped
     & :deep(.v-btn) {
-        min-width: 3rem;
-        width: 3rem;
+        min-width: 100%;
+        width: 100%;
         padding: 0 0 0 1rem !important;
 
         &:after {
-            width: 3rem;
+            width: 100%;
         }
     }
 }

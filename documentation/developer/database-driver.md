@@ -891,6 +891,11 @@ task without listing all of them, `EvitaClientManagement.getTaskStatus(taskId)` 
 it returns `undefined` once the server no longer knows the task, which callers must treat as a
 terminal state (the traffic-viewer's export button does).
 
+evitaLab keeps **no client-side registry of server tasks**: methods returning a `TaskStatus` (catalog
+backup, for instance) hand it straight to the caller and nothing else is notified. A task tracker was
+considered and dropped — the CDC stream already keeps the affected views current, so a second
+tracking mechanism would only duplicate it.
+
 ## Downloading server files
 
 `EvitaClientManagement` exposes two entry points for the files the server offers for download

@@ -463,17 +463,6 @@ function focusResultVisualiser(): void {
                     :command="Command.GraphQLConsole_ShareTab"
                 />
 
-                <!-- TODO implement -->
-<!--                <VBtn-->
-<!--                    icon-->
-<!--                    density="compact"-->
-<!--                >-->
-<!--                    <VIcon>mdi-information-outline</VIcon>-->
-<!--                    <VTooltip activator="parent">-->
-<!--                        {{ t('graphQLConsole.button.instanceDetails') }}-->
-<!--                    </VTooltip>-->
-<!--                </VBtn>-->
-
                 <VBtn :loading="reloadingSchema" icon density="compact" @click="refreshGraphQLSchema()">
                     <VIcon>mdi-refresh</VIcon>
                     <VActionTooltip activator="parent">

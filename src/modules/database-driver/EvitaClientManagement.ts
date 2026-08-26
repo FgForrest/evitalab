@@ -97,8 +97,6 @@ export interface FetchFileOptions {
  */
 export class EvitaClientManagement {
 
-    // todo lho task tracker
-
     private readonly classifierFormatPattern: RegExp = /^[A-Za-z][A-Za-z0-9_.\-~]{0,254}$/
 
     private reservedKeywords?: ImmutableMap<ClassifierType, ImmutableList<Keyword>>

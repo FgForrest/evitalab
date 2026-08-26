@@ -503,7 +503,6 @@ export class EvitaClientSession {
                 },
                 await this.callMetadata()
             )
-            // todo lho send to management task tracker
             return this.taskStatusConverterProvider().convert(response.taskStatus!)
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)

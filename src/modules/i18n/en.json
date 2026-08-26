@@ -979,7 +979,6 @@
       "noPanelsVisible": "Both panels are hidden. Pick a view in the side bars to show a panel again."
     },
     "button": {
-      "instanceDetails": "GraphQL API instance details",
       "reloadSchema": "Reload GraphQL schema",
       "showQueryPanel": "Show query panel",
       "showResultPanel": "Show result panel"
