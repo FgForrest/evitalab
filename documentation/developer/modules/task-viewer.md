@@ -5,7 +5,8 @@ Feature module. Monitors evitaDB's background tasks. Contributes `TabType.TaskVi
 provider despite being a feature module.
 
 - **Provides:** `taskViewerServiceInjectionKey`, `taskViewerTabFactoryInjectionKey`
-- **Injects:** `evitaClientInjectionKey`
+- **Injects:** `evitaClientInjectionKey`, `connectionServiceInjectionKey`,
+  `tabFactoryRegistryInjectionKey`
 
 ## Contents
 

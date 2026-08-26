@@ -1,4 +1,5 @@
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
 import type {  } from 'vue'
 import { markRaw } from 'vue'
 import type { MutationHistoryViewerTabParams } from '@/modules/history-viewer/model/MutationHistoryViewerTabParams.ts'
@@ -18,6 +19,10 @@ export class MutationHistoryViewerTabDefinition extends TabDefinition<MutationHi
             params,
             data
         )
+    }
+
+    get tabType(): TabType {
+        return TabType.MutationHistoryViewer
     }
 
     static icon(): string {

@@ -8,36 +8,12 @@ import { TabType } from '@/modules/workspace/tab/model/TabType'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { StoredTabObject } from '@/modules/workspace/tab/model/StoredTabObject'
 import { TabHistoryKey } from '@/modules/workspace/tab/model/TabHistoryKey'
-import { GraphQLConsoleTabFactory } from '@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFactory'
-import { GraphQLConsoleTabDefinition } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
-import { EntityViewerTabFactory } from '@/modules/entity-viewer/viewer/workspace/service/EntityViewerTabFactory'
-import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
-import { SchemaViewerTabFactory } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
-import { KeymapViewerTabFactory } from '@/modules/keymap/viewer/workspace/service/KeymapViewerTabFactory'
-import { EntityViewerTabDefinition } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabDefinition'
-import { EvitaQLConsoleTabDefinition } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabDefinition'
-import { SchemaViewerTabDefinition } from '@/modules/schema-viewer/viewer/workspace/model/SchemaViewerTabDefinition'
-import { KeymapViewerTabDefinition } from '@/modules/keymap/viewer/workspace/model/KeymapViewerTabDefinition'
+import { TabFactoryRegistry } from '@/modules/workspace/tab/service/TabFactoryRegistry'
+import type { TabFactory } from '@/modules/workspace/tab/service/TabFactory'
 import { mandatoryInject } from '@/utils/reactivity'
-import { ServerViewerTabFactory } from '@/modules/server-viewer/service/ServerViewerTabFactory'
-import { ServerViewerTabDefinition } from '@/modules/server-viewer/model/ServerViewerTabDefinition'
-import { TaskViewerTabFactory } from '@/modules/task-viewer/services/TaskViewerTabFactory'
-import { TaskViewerTabDefinition } from '@/modules/task-viewer/model/TaskViewerTabDefinition'
-import { BackupViewerTabDefinition } from '@/modules/backup-viewer/model/BackupViewerTabDefinition'
-import { JfrViewerTabDefinition } from '@/modules/jfr-viewer/model/JfrViewerTabDefinition'
-import { BackupViewerTabFactory } from '@/modules/backup-viewer/service/BackupViewerTabFactory'
-import { JfrViewerTabFactory } from '@/modules/jfr-viewer/service/JfrViewerTabFactory'
 import { SubjectPathStatus } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPathStatus'
 import { EditorStatus } from '@/modules/workspace/status-bar/model/editor-status/EditorStatus'
-import { TrafficRecordingsViewerTabDefinition } from '@/modules/traffic-viewer/model/TrafficRecordingsViewerTabDefinition'
-import { TrafficRecordingsViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordingsViewerTabFactory'
-import { TrafficRecordHistoryViewerTabDefinition } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabDefinition'
-import { TrafficRecordHistoryViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
 import { EvitaLabConfig } from '@/modules/config/EvitaLabConfig'
-import type { MutationHistoryViewerTabFactory } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
-import { MutationHistoryViewerTabDefinition } from '@/modules/history-viewer/model/MutationHistoryViewerTabDefinition.ts'
-import { ErrorViewerTabDefinition } from '@/modules/error-viewer/viewer/workspace/model/ErrorViewerTabDefinition'
-import type { ErrorViewerTabFactory } from '@/modules/error-viewer/viewer/workspace/service/ErrorViewerTabFactory'
 
 const openedTabsStorageKey: string = 'openedTabs'
 const selectedTabStorageKey: string = 'selectedTab'
@@ -52,54 +28,17 @@ export class WorkspaceService {
     private readonly evitaLabConfig: EvitaLabConfig
     private readonly store: WorkspaceStore
     private readonly labStorage: LabStorage
-
-    private readonly entityViewerTabFactory: EntityViewerTabFactory
-    private readonly evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory
-    private readonly graphQLConsoleTabFactory: GraphQLConsoleTabFactory
-    private readonly schemaViewerTabFactory: SchemaViewerTabFactory
-    private readonly keymapViewerTabFactory: KeymapViewerTabFactory
-    private readonly serverViewerTabFactory: ServerViewerTabFactory
-    private readonly taskViewerTabFactory: TaskViewerTabFactory
-    private readonly backupViewerTabFactory: BackupViewerTabFactory
-    private readonly jfrViewerTabFactory: JfrViewerTabFactory
-    private readonly trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory
-    private readonly trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory
-    readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
-    private readonly errorViewerTabFactory: ErrorViewerTabFactory
+    private readonly tabFactoryRegistry: TabFactoryRegistry
 
     constructor(evitaLabConfig: EvitaLabConfig,
                 store: WorkspaceStore,
                 labStorage: LabStorage,
-                entityViewerTabFactory: EntityViewerTabFactory,
-                evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory,
-                graphQLConsoleTabFactory: GraphQLConsoleTabFactory,
-                schemaViewerTabFactory: SchemaViewerTabFactory,
-                keymapViewerTabFactory: KeymapViewerTabFactory,
-                serverViewerTabFactory: ServerViewerTabFactory,
-                taskViewerTabFactory: TaskViewerTabFactory,
-                backupViewerTabFactory: BackupViewerTabFactory,
-                jfrViewerTabFactory: JfrViewerTabFactory,
-                trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory,
-                trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory,
-                historyViewerTabFactory: MutationHistoryViewerTabFactory,
-                errorViewerTabFactory: ErrorViewerTabFactory
+                tabFactoryRegistry: TabFactoryRegistry
     ) {
         this.evitaLabConfig = evitaLabConfig
         this.store = store
         this.labStorage = labStorage
-        this.entityViewerTabFactory = entityViewerTabFactory
-        this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
-        this.graphQLConsoleTabFactory = graphQLConsoleTabFactory
-        this.schemaViewerTabFactory = schemaViewerTabFactory
-        this.keymapViewerTabFactory = keymapViewerTabFactory
-        this.serverViewerTabFactory = serverViewerTabFactory
-        this.taskViewerTabFactory = taskViewerTabFactory
-        this.backupViewerTabFactory = backupViewerTabFactory
-        this.jfrViewerTabFactory = jfrViewerTabFactory
-        this.trafficRecordingsViewerTabFactory = trafficRecordingsViewerTabFactory
-        this.trafficRecordHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
-        this.mutationHistoryViewerTabFactory = historyViewerTabFactory
-        this.errorViewerTabFactory = errorViewerTabFactory
+        this.tabFactoryRegistry = tabFactoryRegistry
     }
 
     getTabDefinitions(): AnyTabDefinition[] {
@@ -201,42 +140,12 @@ export class WorkspaceService {
         let restoredTabsDataCount: number = 0
         const restoredTabDefinitions: AnyTabDefinition[] = lastOpenedTabs
             .map(storedTabObject => {
-                switch (storedTabObject.tabType as string) {
-                    case 'data-grid':
-                    case 'dataGrid':
-                    case TabType.EntityViewer:
-                        return this.entityViewerTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
-                    case 'evitaql-console':
-                    case TabType.EvitaQLConsole:
-                        return this.evitaQLConsoleTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
-                    case 'graphql-console':
-                    case TabType.GraphQLConsole:
-                        return this.graphQLConsoleTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
-                    case 'schema-viewer':
-                    case TabType.SchemaViewer:
-                        return this.schemaViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
-                    case TabType.KeymapViewer:
-                        return this.keymapViewerTabFactory.createNew()
-                    case 'serverStatus':
-                    case TabType.ServerViewer:
-                        return this.serverViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
-                    case TabType.TaskViewer:
-                        return this.taskViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
-                    case TabType.BackupViewer:
-                        return this.backupViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
-                    case TabType.JfrViewer:
-                        return this.jfrViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
-                    case TabType.TrafficRecordingsViewer:
-                        return this.trafficRecordingsViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
-                    case TabType.TrafficRecordHistoryViewer:
-                        return this.trafficRecordHistoryViewerTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
-                    case TabType.MutationHistoryViewer:
-                        return this.mutationHistoryViewerTabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
-                    case TabType.ErrorViewer:
-                        return this.errorViewerTabFactory.restoreFromJson(storedTabObject.tabParams)
-                    default:
-                        throw new UnexpectedError(`Unsupported stored tab type '${storedTabObject.tabType}'.`)
+                const tabTypeId: string = storedTabObject.tabType as string
+                const tabFactory: TabFactory | undefined = this.tabFactoryRegistry.findFactory(tabTypeId)
+                if (tabFactory == undefined || !tabFactory.restorable) {
+                    throw new UnexpectedError(`Unsupported stored tab type '${tabTypeId}'.`)
                 }
+                return tabFactory.restoreFromJson(storedTabObject.tabParams, storedTabObject.tabData)
             })
 
         restoredTabDefinitions.forEach(tabDefinition => {
@@ -270,7 +179,7 @@ export class WorkspaceService {
         let selectedTabIndex: number = -1
         const tabsToStore: string[] = []
         for (const tabRequest of this.getTabDefinitions()) {
-            const tabType: TabType | undefined = WorkspaceService.resolveStorableTabType(tabRequest)
+            const tabType: TabType | undefined = this.resolveStorableTabType(tabRequest)
             if (tabType == undefined) {
                 console.info(undefined, `Unsupported tab type '${tabRequest.constructor.name}'. Not storing for next session.`)
                 continue
@@ -303,36 +212,10 @@ export class WorkspaceService {
      * Resolves type under which the tab definition is persisted between sessions. Returns undefined for tabs
      * that cannot be persisted.
      */
-    private static resolveStorableTabType(tabDefinition: AnyTabDefinition): TabType | undefined {
-        if (tabDefinition instanceof EntityViewerTabDefinition) {
-            return TabType.EntityViewer
-        } else if (tabDefinition instanceof EvitaQLConsoleTabDefinition) {
-            return TabType.EvitaQLConsole
-        } else if (tabDefinition instanceof GraphQLConsoleTabDefinition) {
-            return TabType.GraphQLConsole
-        } else if (tabDefinition instanceof SchemaViewerTabDefinition) {
-            return TabType.SchemaViewer
-        } else if (tabDefinition instanceof KeymapViewerTabDefinition) {
-            return TabType.KeymapViewer
-        } else if (tabDefinition instanceof ServerViewerTabDefinition) {
-            return TabType.ServerViewer
-        } else if (tabDefinition instanceof TaskViewerTabDefinition) {
-            return TabType.TaskViewer
-        } else if (tabDefinition instanceof BackupViewerTabDefinition) {
-            return TabType.BackupViewer
-        } else if (tabDefinition instanceof JfrViewerTabDefinition) {
-            return TabType.JfrViewer
-        } else if (tabDefinition instanceof TrafficRecordingsViewerTabDefinition) {
-            return TabType.TrafficRecordingsViewer
-        } else if (tabDefinition instanceof TrafficRecordHistoryViewerTabDefinition) {
-            return TabType.TrafficRecordHistoryViewer
-        } else if (tabDefinition instanceof MutationHistoryViewerTabDefinition) {
-            return TabType.MutationHistoryViewer
-        } else if (tabDefinition instanceof ErrorViewerTabDefinition) {
-            return TabType.ErrorViewer
-        } else {
-            return undefined
-        }
+    private resolveStorableTabType(tabDefinition: AnyTabDefinition): TabType | undefined {
+        const tabType: TabType = tabDefinition.tabType
+        const tabFactory: TabFactory | undefined = this.tabFactoryRegistry.findFactory(tabType)
+        return tabFactory != undefined && tabFactory.restorable ? tabType : undefined
     }
 
     /**

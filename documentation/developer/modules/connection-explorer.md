@@ -2,7 +2,8 @@
 
 Feature module. The left panel tree of catalogs and collections of the connected server, including
 catalog/collection management actions (create, rename, drop, …). It is a **panel**, not a tab, but it is
-the launch point for most tabs — which is why it injects nearly every tab factory in the app.
+the launch point for most tabs — which is why it injects nearly every tab factory in the app, and why
+it is registered **last** in `modules.ts` (a registrar may only inject what earlier ones provided).
 
 - **Provides:** `connectionExplorerServiceInjectionKey`, `catalogItemServiceInjectionKey`,
   `collectionItemServiceInjectionKey`, `catalogItemMenuFactoryInjectionKey`,

@@ -1,6 +1,7 @@
 import { markRaw } from 'vue'
 import type {  } from 'vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
 import { VoidTabParams } from '@/modules/workspace/tab/model/void/VoidTabParams'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import KeymapViewer from '@/modules/keymap/viewer/component/KeymapViewer.vue'
@@ -19,6 +20,10 @@ export class KeymapViewerTabDefinition extends TabDefinition<VoidTabParams, Void
             new VoidTabParams(),
             new VoidTabData()
         )
+    }
+
+    get tabType(): TabType {
+        return TabType.KeymapViewer
     }
 
     static icon(): string {

@@ -13,6 +13,7 @@ import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 import luxonExtensions from '@/vue-plugins/luxonExtensions'
 import { LabRunMode } from '@/LabRunMode'
 import { evitaLabConfigInjectionKey } from '@/modules/config/EvitaLabConfig'
+import { tabFactoryRegistryInjectionKey } from '@/modules/workspace/tab/service/TabFactoryRegistry'
 
 /**
  * Bootstraps the entire evitaLab.
@@ -36,6 +37,9 @@ async function bootstrap(): Promise<void> {
     for (const module of modules) {
         await module.register(moduleContextBuilder)
     }
+    // all tab factory contributions are collected by now, a missing one would only surface when the user
+    // opens or restores such a tab, hence the eager check
+    moduleContextBuilder.inject(tabFactoryRegistryInjectionKey).validate()
 
     const mounted: ComponentPublicInstance = app.mount('#app')
     if (moduleContextBuilder.inject(evitaLabConfigInjectionKey).runMode === LabRunMode.Driver) {

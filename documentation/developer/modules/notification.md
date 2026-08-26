@@ -1,6 +1,7 @@
 # `notification` — toast notifications
 
-Generic module, registered sixth (after [`workspace`](workspace.md), whose service it needs).
+Generic module, registered among the feature modules — right after [`error-viewer`](error-viewer.md),
+whose tab factory it needs (and after [`workspace`](workspace.md), whose service it needs).
 All user feedback in evitaLab goes through this module.
 
 - **Provides:** `toasterInjectionKey` → `Toaster` (`useToaster()`)

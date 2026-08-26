@@ -1,4 +1,5 @@
 import { TabDefinition } from "@/modules/workspace/tab/model/TabDefinition";
+import { TabType } from '@/modules/workspace/tab/model/TabType'
 import { VoidTabData } from "@/modules/workspace/tab/model/void/VoidTabData";
 import type {  } from "vue";
 import { markRaw } from 'vue'
@@ -16,6 +17,10 @@ export class BackupViewerTabDefinition extends TabDefinition<BackupViewerTabPara
             params,
             new VoidTabData()
         )
+    }
+
+    get tabType(): TabType {
+        return TabType.BackupViewer
     }
 
     static icon(): string {

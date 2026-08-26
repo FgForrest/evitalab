@@ -5,7 +5,7 @@ the feature tab that lists all shortcuts to the user.
 
 - **Provides:** `keymapInjectionKey` → `Keymap` (`useKeymap()`),
   `keymapViewerTabFactoryInjectionKey` → `KeymapViewerTabFactory`
-- **Injects:** nothing
+- **Injects:** `tabFactoryRegistryInjectionKey`
 
 ## Contents
 

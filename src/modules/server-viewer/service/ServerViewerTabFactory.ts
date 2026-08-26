@@ -7,10 +7,17 @@ import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
 import type { ServerViewerTabParamsDto } from '../model/ServerViewerTabParamsDto'
 import { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { i18n } from '@/vue-plugins/i18n'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
+import type { TabFactory } from '@/modules/workspace/tab/service/TabFactory'
 
 export const serverViewerTabFactoryInjectionKey: InjectionKey<ServerViewerTabFactory> = Symbol('serverStatusTabFactory')
 
-export class ServerViewerTabFactory {
+export class ServerViewerTabFactory implements TabFactory {
+
+    readonly tabType: TabType = TabType.ServerViewer
+    readonly legacyTabTypeIds: readonly string[] = ['serverStatus']
+    readonly restorable: boolean = true
+
     private readonly connectionService: ConnectionService
 
     constructor(connectionService: ConnectionService) {

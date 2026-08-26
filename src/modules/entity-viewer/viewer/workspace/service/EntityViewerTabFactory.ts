@@ -11,10 +11,16 @@ import type { EntityViewerTabParamsDto } from '@/modules/entity-viewer/viewer/wo
 import type { EntityViewerTabDataDto } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabDataDto'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
 import { mandatoryInject } from '@/utils/reactivity'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
+import type { TabFactory } from '@/modules/workspace/tab/service/TabFactory'
 
 export const entityViewerTabFactoryInjectionKey: InjectionKey<EntityViewerTabFactory> = Symbol('entityViewerTabFactory')
 
-export class EntityViewerTabFactory {
+export class EntityViewerTabFactory implements TabFactory {
+
+    readonly tabType: TabType = TabType.EntityViewer
+    readonly legacyTabTypeIds: readonly string[] = ['data-grid', 'dataGrid']
+    readonly restorable: boolean = true
 
     private readonly connectionService: ConnectionService
 

@@ -6,9 +6,9 @@ browsing the record history of one catalog.
 
 - **Provides:** `trafficViewerServiceInjectionKey`,
   `trafficRecordingsViewerTabFactoryInjectionKey`, `trafficRecordHistoryViewerTabFactoryInjectionKey`
-- **Injects:** `evitaClientInjectionKey`, `workspaceServiceInjectionKey`,
-  `evitaQLConsoleTabFactoryInjectionKey`, `graphQLConsoleTabFactoryInjectionKey`,
-  `trafficRecordHistoryViewerTabFactoryInjectionKey`
+- **Injects:** `evitaClientInjectionKey`, `connectionServiceInjectionKey`,
+  `workspaceServiceInjectionKey`, `tabFactoryRegistryInjectionKey`,
+  `evitaQLConsoleTabFactoryInjectionKey`, `graphQLConsoleTabFactoryInjectionKey`
 
 ## Layout
 

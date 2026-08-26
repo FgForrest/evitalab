@@ -2,6 +2,7 @@ import GraphQLConsole from '@/modules/graphql-console/console/component/GraphQLC
 import { markRaw } from 'vue'
 import type {  } from 'vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
 import { GraphQLConsoleTabParams } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabParams'
 import { GraphQLConsoleTabData } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabData'
 
@@ -19,6 +20,10 @@ export class GraphQLConsoleTabDefinition extends TabDefinition<GraphQLConsoleTab
             params,
             initialData
         )
+    }
+
+    get tabType(): TabType {
+        return TabType.GraphQLConsole
     }
 
     static icon(): string {

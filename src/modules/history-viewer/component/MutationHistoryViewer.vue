@@ -32,6 +32,10 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogSchemaConverter.ts'
 import { ContainerType } from '@/modules/database-driver/data-type/ContainerType.ts'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService.ts'
+import {
+    type MutationHistoryViewerTabFactory,
+    useHistoryViewerTabFactory
+} from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
 import { GrpcChangeCaptureContainerType } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { useToaster } from '@/modules/notification/service/Toaster'
@@ -42,6 +46,7 @@ const toaster: Toaster = useToaster()
 const { t } = useI18n()
 
 const workspaceService: WorkspaceService = useWorkspaceService()
+const mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory = useHistoryViewerTabFactory()
 const props = defineProps<TabComponentProps<MutationHistoryViewerTabParams, MutationHistoryViewerTabData>>()
 const emit = defineEmits<TabComponentEvents>()
 defineExpose<TabComponentExpose>({
@@ -186,7 +191,7 @@ const openEntityMutationHistory = () => {
     const entityPrimaryKey = props.data.entityPrimaryKey
 
     workspaceService.createTab(
-        workspaceService.mutationHistoryViewerTabFactory.createNew(
+        mutationHistoryViewerTabFactory.createNew(
             props.params.dataPointer.catalogName,
             new MutationHistoryViewerTabData(
                 undefined,

@@ -7,10 +7,16 @@ import type { TabParamsDto } from "@/modules/workspace/tab/model/TabParamsDto";
 import type { BackupViewerTabParamsDto } from "../model/BackupViewerTabParamsDto";
 import { BackupViewerTabParams } from '@/modules/backup-viewer/model/BackupViewerTabParams'
 import { i18n } from '@/vue-plugins/i18n'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
+import type { TabFactory } from '@/modules/workspace/tab/service/TabFactory'
 
 export const backupViewerTabFactoryInjectionKey: InjectionKey<BackupViewerTabFactory> = Symbol('BackupsTabFactory')
 
-export class BackupViewerTabFactory {
+export class BackupViewerTabFactory implements TabFactory {
+
+    readonly tabType: TabType = TabType.BackupViewer
+    readonly restorable: boolean = true
+
     private readonly connectionService: ConnectionService
 
     constructor(connectionService: ConnectionService){

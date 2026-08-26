@@ -1,6 +1,7 @@
 import { markRaw } from 'vue'
 import type {  } from 'vue'
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import { ErrorViewerTabParams } from '@/modules/error-viewer/viewer/workspace/model/ErrorViewerTabParams'
 import ErrorViewer from '@/modules/error-viewer/viewer/component/ErrorViewer.vue'
@@ -19,6 +20,10 @@ export class ErrorViewerTabDefinition extends TabDefinition<ErrorViewerTabParams
             params,
             new VoidTabData()
         )
+    }
+
+    get tabType(): TabType {
+        return TabType.ErrorViewer
     }
 
     static icon(): string {

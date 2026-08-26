@@ -1,4 +1,5 @@
 import { TabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
 import { VoidTabData } from '@/modules/workspace/tab/model/void/VoidTabData'
 import { markRaw } from 'vue'
 import type {  } from 'vue'
@@ -15,6 +16,10 @@ export class TaskViewerTabDefinition extends TabDefinition<TaskViewerTabParams, 
             params,
             new VoidTabData()
         )
+    }
+
+    get tabType(): TabType {
+        return TabType.TaskViewer
     }
 
     static icon(): string {

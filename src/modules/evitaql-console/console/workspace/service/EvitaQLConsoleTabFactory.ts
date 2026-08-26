@@ -14,13 +14,19 @@ import type {
 } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabParamsDto'
 import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
+import type { TabFactory } from '@/modules/workspace/tab/service/TabFactory'
 
 export const evitaQLConsoleTabFactoryInjectionKey: InjectionKey<EvitaQLConsoleTabFactory> = Symbol('evitaQLConsoleTabFactory')
 
 /**
  * Factory for creating evitaQL console tab definitions.
  */
-export class EvitaQLConsoleTabFactory {
+export class EvitaQLConsoleTabFactory implements TabFactory {
+
+    readonly tabType: TabType = TabType.EvitaQLConsole
+    readonly legacyTabTypeIds: readonly string[] = ['evitaql-console']
+    readonly restorable: boolean = true
 
     private readonly connectionService: ConnectionService
 

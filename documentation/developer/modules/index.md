@@ -47,7 +47,9 @@ of their own.
 
 ## Generic modules
 
-Core evitaLab infrastructure. All of them are registered first in `src/modules/modules.ts`.
+Core evitaLab infrastructure. `config`, `storage`, `connection`, `database-driver` and `workspace`
+are registered first in `src/modules/modules.ts`; `notification` sits among the feature modules
+because it needs the error viewer's tab factory.
 
 | Module | Purpose |
 |--------|---------|
@@ -86,8 +88,15 @@ User-facing features. Each one typically contributes one or more tab types and/o
 ## Module dependency rules
 
 - Feature modules may depend on abstract and generic modules; avoid dependencies between feature
-  modules (known exception: `EvitaClient.queryCatalogUsingGraphQL()` references
-  `graphql-console`'s `GraphQLInstanceType`).
+  modules. Known exceptions: `EvitaClient.queryCatalogUsingGraphQL()` references
+  `graphql-console`'s `GraphQLInstanceType`; `traffic-viewer`'s record visualisers open both console
+  tabs; `entity-viewer`'s `EntityGridCellMenuFactory` opens a `history-viewer` tab.
+- Generic modules must not import feature modules. Where the framework needs feature-provided
+  behaviour (building a tab of any type, opening a demo snippet), the feature module contributes it
+  into a registry the generic module owns — see
+  [architecture — contribution points](../architecture.md#contribution-points).
+- A registrar consuming another module's tab factory must be ordered after it in `modules.ts`.
+  `connection-explorer` needs twelve of them and is therefore registered last.
 - Abstract modules must not depend on feature modules.
 - The `base` module must not depend on any other module.
 - Cross-module access goes through injected services, never by reaching into another module's

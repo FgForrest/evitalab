@@ -1,21 +1,29 @@
 # `workspace` — overall UI structure
 
-Generic module, registered fifth. Owns the shell every feature module plugs into: the tab framework,
-the left panel, the status bar, and the top-level views.
+Generic module, registered last among the base generic modules. Owns the shell every feature module
+plugs into: the tab framework, the left panel, the status bar, and the top-level views.
 
 > **This module has a dedicated deep-dive: [workspace & tabs](../workspace-and-tabs.md).**
 > That document is the reference for the tab lifecycle, params/data serialisation and tab sharing.
 > This page is orientation only.
 
-- **Provides:** `workspaceServiceInjectionKey` → `WorkspaceService`,
+- **Provides:** `tabFactoryRegistryInjectionKey` → `TabFactoryRegistry`,
+  `workspaceServiceInjectionKey` → `WorkspaceService`,
   `sharedTabResolverInjectionKey` → `SharedTabResolver`,
   `demoSnippetResolverInjectionKey` → `DemoSnippetResolver`
-- **Injects:** `evitaLabConfigInjectionKey`, `connectionServiceInjectionKey`,
-  `labStorageInjectionKey`, and **every** tab factory it can restore
-  (entity-viewer, evitaql-console, graphql-console, schema-viewer, keymap-viewer, …)
+- **Injects:** `evitaLabConfigInjectionKey`, `labStorageInjectionKey`
 
-That last point is why `workspace` is registered before the feature modules but resolves their
-factories lazily — it must be able to reconstruct any tab type from a stored or shared descriptor.
+The registrar and the three services above import **no** feature module, even though they have to
+reconstruct any tab type from a stored or shared descriptor: they do so through contracts the
+workspace owns itself — `TabFactory` entries in the `TabFactoryRegistry` and `DemoSnippetHandler`s in
+the `DemoSnippetResolver` — which feature modules contribute into during their own registration. See
+[architecture — contribution points](../architecture.md#contribution-points).
+
+The shell **components** are a different story and still compose feature components directly:
+`view/*MainView.vue` embed `ConnectionExplorerPanel`, `WorkspaceTabWindowList` embeds
+`WelcomeScreen`, and several components use the `keymap` module's `Command`/`Keymap`/
+`KeymapViewerTabFactory`. That is composition of the shell's own layout, not deserialization
+dispatch, and it is deliberately left as is.
 
 ## Layout
 
@@ -24,11 +32,11 @@ factories lazily — it must be able to reconstruct any tab type from a stored o
 | `view/` | `Layout.vue`, `StandaloneMainView.vue`, `DriverMainView.vue` — the two run-mode shells |
 | `tab/model/` | `TabDefinition`, `TabType`, `TabParams`/`TabParamsDto`, `TabData`/`TabDataDto`, `TabComponentProps`/`Events`/`Expose`, `TabHistoryKey`, `void/` no-op variants |
 | `tab/component/` | `TabWindow`, `WorkspaceTabWindowList`, `TabLoadingScreen`, `ShareTabButton`/`ShareTabDialog`, `OpenSharedTabDialog`, `TabSharedDialog`, `TabSharedTroubleshooterDialog` |
-| `tab/service/` | `SharedTabResolver`, `SharedTabTroubleshooterCallback` |
+| `tab/service/` | `TabFactory` (contract), `TabFactoryRegistry`, `SharedTabResolver`, `SharedTabTroubleshooterCallback` |
 | `tab/error/` | `InvalidConnectionInSharedTabError` |
 | `panel/` | `WorkspacePanel.vue`, `ConnectionAvatar.vue`, `ManageMenu.vue`, `ManageOptionType` |
 | `status-bar/` | `WorkspaceStatusBar.vue`, `ChangeStreamIndicator.vue`, `CachedDataIndicator.vue`, `PersistentCacheIndicator.vue`, `EditorStatus.vue`, plus `subject-path-status/` breadcrumbs and `editor-status/` models |
-| `service/` | `WorkspaceService` (open/close/activate tabs), `DemoSnippetResolver` |
+| `service/` | `WorkspaceService` (open/close/activate tabs), `DemoSnippetResolver`, `DemoSnippetHandler` (contract) |
 | `store/` | `workspaceStore` (Pinia) — open tabs and workspace state, persisted via [`storage`](storage.md) |
 
 ### Status-bar indicators
@@ -57,13 +65,16 @@ silently never remembers anything is otherwise indistinguishable from a slow one
 `tab/model/TabType.ts` enumerates every tab that exists: `entityViewer`, `evitaQLConsole`,
 `graphQLConsole`, `schemaViewer`, `keymapViewer`, `errorViewer`, `serverViewer`, `taskViewer`,
 `backupViewer`, `jfrViewer`, `trafficRecordingsViewer`, `trafficRecordHistoryViewer`,
-`mutationHistoryViewer`. A new tab type must be added here as well as in its own module.
+`mutationHistoryViewer`. A new tab type must be added here as well as in its own module — and its
+factory contributed into the `TabFactoryRegistry`, which `main.ts` checks for completeness against
+this very enum right after bootstrap.
 
 ## Sharing and demo snippets
 
-`SharedTabResolver` reconstructs a tab from a `ShareTabObject` in a URL, dispatching on `TabType` to
-the right factory. Because a shared tab may name a connection this instance does not have, it can fail
-with `InvalidConnectionInSharedTabError`, which the troubleshooter dialog handles. Queries arriving
+`SharedTabResolver` reconstructs a tab from a `ShareTabObject` in a URL, resolving the tab type id
+(canonical or legacy) through the `TabFactoryRegistry`. Because a shared tab may name a connection
+this instance does not have, it can fail with `InvalidConnectionInSharedTabError`, which the
+troubleshooter dialog handles. Queries arriving
 this way are **not** executed automatically — see the consent gate in
 [design language](../design-language.md#feedback--safety).
 
@@ -72,6 +83,10 @@ base64/base64url encoded JSON, which lets external applications build a deep lin
 evitaLab internals. Such payloads omit `connectionId` and are resolved against the single connection
 of the running instance; see [workspace & tabs](../workspace-and-tabs.md#persistence-restore-sharing) and
 the [recipe](../recipes.md#deep-link-into-evitalab-from-an-external-application).
+
+`DemoSnippetResolver` fetches the snippet from the evitaDB repository and delegates opening it to a
+`DemoSnippetHandler` registered for the snippet's file extension by the evitaQL / GraphQL console
+modules.
 
 ## Related
 

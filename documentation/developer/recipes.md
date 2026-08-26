@@ -67,10 +67,18 @@ Using `evitaql-console` as the reference implementation
 3. **Data** — `MyTabData implements TabData<MyTabDataDto>` for user-editable content (may be an
    empty class if the tab has none).
 4. **Definition** — `MyTabDefinition extends TabDefinition<MyTabParams, MyTabData>`, passing
-   title, `mdi-*` icon and `markRaw(MyTabComponent)` to the super constructor.
-5. **Factory** — injectable `MyTabFactory` with `createNew(...)` and
-   `restoreFromJson(paramsDto, dataDto)`; provide it in your module registrar. Restored tabs must
-   not auto-execute queries.
+   title, `mdi-*` icon and `markRaw(MyTabComponent)` to the super constructor, and implementing the
+   abstract `tabType` accessor:
+
+   ```ts
+   get tabType(): TabType {
+       return TabType.MyTab
+   }
+   ```
+5. **Factory** — injectable `MyTabFactory implements TabFactory`, declaring `tabType`, `restorable`
+   and (only when the tab was ever serialized under a different id) `legacyTabTypeIds`, with
+   `restoreFromJson(paramsDto, dataDto?)` and a feature-specific `createNew(...)` on top. Restored
+   tabs must not auto-execute queries.
 6. **Component** — accepts `TabComponentProps<MyTabParams, MyTabData>`, emits `'ready'` and
    `'update:data'`, exposes `path()` (see
    [workspace & tabs](workspace-and-tabs.md#tab-component-contract)); fills all available space
@@ -82,9 +90,22 @@ Using `evitaql-console` as the reference implementation
    `onUnmounted` under `KeepAlive` and would leak setup-level registrations. Needs no timeout of its
    own — every driver call is already bounded. See
    [loading, errors & retry](workspace-and-tabs.md#loading-errors--retry).
-8. **Wire restore & sharing** — add your `TabType` to the switches in
-   `WorkspaceService.restoreTabsFromLastSession()` / `storeOpenedTabs()` and (if shareable) to
-   `SharedTabResolver`.
+8. **Register in your module registrar** — provide the factory under its injection key so
+   components can create tabs, and contribute it into the `TabFactoryRegistry` so the workspace can
+   restore and share them:
+
+   ```ts
+   const tabFactoryRegistry: TabFactoryRegistry = builder.inject(tabFactoryRegistryInjectionKey)
+
+   const myTabFactory: MyTabFactory = new MyTabFactory(connectionService)
+   builder.provide(myTabFactoryInjectionKey, myTabFactory)
+   tabFactoryRegistry.register(myTabFactory)
+   ```
+
+   Nothing inside the `workspace` module is edited — persistence, restore and share links resolve
+   the tab through the registry, and `TabFactoryRegistry.validate()` fails the bootstrap if the
+   contribution is forgotten. If another module's registrar needs your factory, make sure it is
+   ordered after yours in `modules.ts`.
 9. **Open it** from wherever appropriate:
 
 ```ts
@@ -227,9 +248,13 @@ send one.
 `catalogName` / `entityType` / `referenceName` / `attributeName` / `associatedDataName` that the
 type needs (see `SchemaViewerTabFactory.restoreTabParamsFromSerializable`).
 
-The tab types `data-grid`, `dataGrid`, `evitaql-console`, `graphql-console` and `schema-viewer` are
-still accepted by `SharedTabResolver` for backward compatibility — **deprecated**, new integrations
-must use the values above.
+The table lists the tab types worth deep-linking into. Technically `SharedTabResolver` accepts any
+`TabType` whose factory is `restorable`, which today means all of them — the server / task / backup /
+JFR viewers simply carry no parameters worth linking.
+
+The tab types `data-grid`, `dataGrid`, `evitaql-console`, `graphql-console`, `schema-viewer` and
+`serverStatus` are still accepted for backward compatibility — **deprecated**, new integrations must
+use the values above.
 
 **Worked examples** (unpadded base64url):
 

@@ -33,14 +33,32 @@ import {
     TrafficRecordHistoryViewerTabFactory, trafficRecordHistoryViewerTabFactoryInjectionKey
 } from '@/modules/traffic-viewer/service/TrafficRecordHistoryViewerTabFactory'
 import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
+import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
+import {
+    TabFactoryRegistry,
+    tabFactoryRegistryInjectionKey
+} from '@/modules/workspace/tab/service/TabFactoryRegistry'
+import {
+    TrafficRecordingsViewerTabFactory,
+    trafficRecordingsViewerTabFactoryInjectionKey
+} from '@/modules/traffic-viewer/service/TrafficRecordingsViewerTabFactory'
 
 export class TrafficViewerModuleRegistrar implements ModuleRegistrar {
     async register(builder: ModuleContextBuilder): Promise<void> {
         const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
+        const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
         const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
+        const tabFactoryRegistry: TabFactoryRegistry = builder.inject(tabFactoryRegistryInjectionKey)
         const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory = builder.inject(evitaQLConsoleTabFactoryInjectionKey)
         const graphQLConsoleTabFactory: GraphQLConsoleTabFactory = builder.inject(graphQLConsoleTabFactoryInjectionKey)
-        const trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory = builder.inject(trafficRecordHistoryViewerTabFactoryInjectionKey)
+
+        const trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory = new TrafficRecordingsViewerTabFactory(connectionService)
+        builder.provide(trafficRecordingsViewerTabFactoryInjectionKey, trafficRecordingsViewerTabFactory)
+        tabFactoryRegistry.register(trafficRecordingsViewerTabFactory)
+
+        const trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory = new TrafficRecordHistoryViewerTabFactory(connectionService)
+        builder.provide(trafficRecordHistoryViewerTabFactoryInjectionKey, trafficRecordHistoryViewerTabFactory)
+        tabFactoryRegistry.register(trafficRecordHistoryViewerTabFactory)
 
         const trafficViewerService: TrafficViewerService = new TrafficViewerService(
             evitaClient,

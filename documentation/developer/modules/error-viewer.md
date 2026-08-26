@@ -4,7 +4,7 @@ Feature module, and the smallest one that contributes a tab. Shows the full deta
 failed to open or execute properly. Contributes `TabType.ErrorViewer`.
 
 - **Provides:** `errorViewerTabFactoryInjectionKey` → `ErrorViewerTabFactory`
-- **Injects:** nothing
+- **Injects:** `tabFactoryRegistryInjectionKey`
 
 ## Contents
 
@@ -29,10 +29,11 @@ detail back to `undefined`, which is the state that renders the *No details avai
 An error carrying neither a detail nor a stack therefore reaches that placeholder; `LabError.detail`
 itself never returns `undefined`, so nothing else can.
 
-Error tabs are persisted (`resolveStorableTabType()` → `TabType.ErrorViewer`, plus the restore switch)
-and shareable (`ShareTabButton`, `Command.ErrorViewer_ShareTab` = `Ctrl+L`, resolved by
-`SharedTabResolver`). A shared error travels with its whole stack trace — that is the point of sharing
-one, but it is worth knowing before pasting the link into a public channel.
+Error tabs are persisted and shareable (`ShareTabButton`, `Command.ErrorViewer_ShareTab` = `Ctrl+L`,
+resolved by `SharedTabResolver`). Both paths go through the factory's `restorable: true` entry in the
+`TabFactoryRegistry` — the workspace needs no branch of its own. A shared error travels with its whole
+stack trace — that is the point of sharing one, but it is worth knowing before pasting the link into a
+public channel.
 
 ## Reporting an error to evitaDB
 
@@ -50,12 +51,12 @@ renders the form and the user submits it.
 
 It sits before [`notification`](notification.md) in `src/modules/modules.ts` because the `Toaster`
 injects `errorViewerTabFactoryInjectionKey`: an error toast can offer to open the full error here, which
-is the main way this tab gets created. [`workspace`](workspace.md) also injects the factory, both so a failed
-tab restore can be surfaced as an error tab instead of vanishing and so `WorkspaceService` /
-`SharedTabResolver` can restore an error tab of their own.
+is the main way this tab gets created.
 
-Because it injects nothing itself, it stays safe to register this early — it is the natural home for
-"something went wrong" without dragging dependencies into the bootstrap order.
+Because it injects only the tab factory registry, it stays safe to register this early — it is the
+natural home for "something went wrong" without dragging dependencies into the bootstrap order.
+[`workspace`](workspace.md) no longer needs the factory itself: it restores and shares error tabs
+through the registry contribution made here.
 
 ## Related
 

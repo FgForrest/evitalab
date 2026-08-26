@@ -1,16 +1,24 @@
 import type { ModuleRegistrar } from '@/ModuleRegistrar'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
+import {
+    TabFactoryRegistry,
+    tabFactoryRegistryInjectionKey
+} from '@/modules/workspace/tab/service/TabFactoryRegistry'
+import {
+    ErrorViewerTabFactory,
+    errorViewerTabFactoryInjectionKey
+} from '@/modules/error-viewer/viewer/workspace/service/ErrorViewerTabFactory'
 
 /**
  * Registers the error viewer module which displays details of caught errors in a dedicated tab.
- *
- * The module currently provides nothing on its own because its tab factory has to be instantiated by
- * the workspace module, see the note below.
  */
 export class ErrorViewerModuleRegistrar implements ModuleRegistrar {
 
-    async register(_builder: ModuleContextBuilder): Promise<void> {
-        // todo lho fix circular dep
-        // builder.provide(errorViewerTabFactoryInjectionKey, new ErrorViewerTabFactory())
+    async register(builder: ModuleContextBuilder): Promise<void> {
+        const tabFactoryRegistry: TabFactoryRegistry = builder.inject(tabFactoryRegistryInjectionKey)
+
+        const errorViewerTabFactory: ErrorViewerTabFactory = new ErrorViewerTabFactory()
+        builder.provide(errorViewerTabFactoryInjectionKey, errorViewerTabFactory)
+        tabFactoryRegistry.register(errorViewerTabFactory)
     }
 }
