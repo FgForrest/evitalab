@@ -68,7 +68,7 @@ area).
 | `VMarkdown` | Rendering markdown (`source` prop; markdown-it + highlight.js + DOMPurify) |
 | `VTreeViewItem` / `VTreeViewEmptyItem` | Tree menu structures (openable/loading states, flags, item actions) |
 | `VListItemDivider` | Divider between list items in **every** non-menu list |
-| `VListItemLazyIterator` | Client-side "load next" paging for long lists (`items`, `page`, `pageSize`) — use to keep the DOM small |
+| `VListItemLazyIterator` | Client-side "load next" paging for long lists (`items: List<T>`, `page`, `pageSize`) — use to keep the DOM small. `items` takes an Immutable `List` only; it used to accept a plain array as well and branch on the shape at runtime |
 | `VExpansionPanelLazyIterator` | Same paging pattern for expansion panels |
 | `VMissingDataIndicator` | Placeholder when there is nothing to show (icon + message) |
 | `VLoadingCircular` | Loading spinner |

@@ -240,8 +240,7 @@ export class ExtraResultConverter {
                     levelInfo.queriedEntityCount,
                     levelInfo.entity
                         ? this.entityConverter.convert(levelInfo.entity)
-                        : undefined,
-                    this.convertEntityReference(levelInfo.entityReference)
+                        : this.convertEntityReference(levelInfo.entityReference)
                 )
             )
         }
@@ -259,8 +258,7 @@ export class ExtraResultConverter {
                     info.queriedEntityCount,
                     info.entity
                         ? this.entityConverter.convert(info.entity)
-                        : undefined,
-                    this.convertEntityReference(info.entityReference)
+                        : this.convertEntityReference(info.entityReference)
                 )
             )
         }

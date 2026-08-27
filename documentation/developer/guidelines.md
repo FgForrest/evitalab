@@ -13,7 +13,17 @@ which is also what decides [where a file goes](#where-a-file-goes) within a modu
 - Prefer `undefined` over `null`; check with `== undefined`.
 - Domain model classes are immutable: `readonly` properties, initialization in the constructor,
   [Immutable.js](https://immutable-js.com/) collections (`List`, `Map`, `Set`) instead of mutable
-  arrays/maps in models and service APIs.
+  arrays/maps in models and service APIs. **Strict in the engine** — the `database-driver` internal
+  model and its service APIs; **recommended in view models**, where the point is to prevent bugs rather
+  than to satisfy the rule. Two consequences worth knowing:
+  - A `readonly` field holding a plain array is not immutable, and it invites exactly the bug the rule
+    exists to prevent: the visualiser DTOs used to advertise `readonly children: X[]` while
+    `GraphQLHierarchyResultParser` filled that array *after* constructing the node. An `Immutable.List`
+    forces the honest order — collect first, construct once complete.
+  - Where a view model is handed to a third-party component that reads it by plain property access
+    (Vuetify's data table rows, for instance), a plain object is the right call; say so in its JSDoc so
+    the exception is not mistaken for an oversight. `readonly` plus `noUncheckedIndexedAccess` already
+    gives compile-time immutability and undefined-safe reads there.
 - Use evitaLab data types (`modules/database-driver/data-type/`) for evitaDB values — never raw
   strings/numbers for `BigDecimal`, date-times, locales, currencies, UUIDs etc.
 - Enums are string-valued (`enum TabType { EntityViewer = 'entityViewer', ... }`).

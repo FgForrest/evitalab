@@ -300,7 +300,9 @@ export class WorkspaceService {
      * Restores last stored tab history from lab storage
      */
     restoreTabHistory(): boolean {
-        // todo we should somehow validate each restored key to ensure it's still valid (connections may have been removed, static key may have been renamed, ...)
+        // restored keys are intentionally not validated: the key is a one-way hash of the connection, tab type
+        // and section path, so a stored entry carries nothing to validate against. An entry whose key no longer
+        // matches any live section is inert - it is simply never looked up again.
 
         const serializedTabHistory: string | undefined = this.labStorage.get(tabHistoryStorageKey)
         if (serializedTabHistory == undefined) {

@@ -2,7 +2,9 @@
 
 Abstract module, one file: `HistoryComponent.vue`. Renders a list of previously executed inputs so a
 user can pick one and re-run it. No `ModuleRegistrar`, no injectable services, no model of its own —
-it is generic over whatever record type the caller stores.
+it is generic over whatever record type the caller stores (`<script setup generic="R">`), so it does
+not import from the modules that use it. A generic component has no `InstanceType`, so callers type their
+template ref by what it exposes (`ref<{ focus: () => void } | undefined>()`).
 
 Used by the query consoles, which pair it with their own history keys and records:
 

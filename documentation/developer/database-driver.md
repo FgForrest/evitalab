@@ -276,6 +276,14 @@ each occurrence points at a different entity — `reference(name, referencedPrim
 and `referenceNames` reports each name once. All of them read a name-keyed index built on first use, so
 grid pipelines can look references up per row without rescanning the list.
 
+Where evitaDB's model has a single `EntityClassifier`, the internal model uses the class hierarchy it
+already has: `Entity extends EntityReferenceWithParent extends EntityReference`. `LevelInfo` (hierarchy
+statistics) therefore holds **one** `entity: EntityReference | undefined` typed by that common ancestor,
+even though the wire message has separate `entity` and `entityReference` fields - the server fills
+exactly one of them, depending on whether the query asked for the entity body. Consumers narrow with
+`instanceof` (`EntityReferenceWithParent` for the parent, `Entity` for attributes) instead of choosing
+between two fields.
+
 ### Date-time values
 
 `OffsetDateTime` carries the instant (`Timestamp` — epoch seconds + nanoseconds, exactly as gRPC

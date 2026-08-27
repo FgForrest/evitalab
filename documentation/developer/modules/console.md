@@ -52,6 +52,22 @@ only shows up on some servers and looks like the layout behaving at random. Chan
 [design language — composite titles](../design-language.md#composite-titles) for the rules those rows
 implement.
 
+#### Collections in the `Visualised*` models
+
+The list-valued properties the visualisers page through — `children`, `trees`, `groups`, `facets`,
+`histograms` — are Immutable `List`s, and `VListItemLazyIterator` accepts nothing else. That is not
+decoration: the GraphQL hierarchy arrives **flat and level-ordered**, and
+`GraphQLHierarchyResultParser` rebuilds the tree with a stack. It used to construct a
+`VisualisedHierarchyTreeNode` around an empty `children` array and keep pushing into it as the stack
+unwound — a node was therefore incomplete for as long as its subtree was still being read, behind a
+`readonly` field that suggested otherwise. The stack now holds `PendingHierarchyNode` records and the
+node is built at flush time, when its children are final. `test/modules/graphql-console/.../
+graphQLHierarchyResultParser.test.ts` pins the traversal (nesting, multi-level climbs, the requested
+node's identity), because nothing else does.
+
+The evitaQL parser was already recursive and built children first, so for it the change is only the
+wrapping.
+
 #### Partially fetched histograms
 
 A console renders whatever fields the user's query asked for, so any `Visualised*` property may be

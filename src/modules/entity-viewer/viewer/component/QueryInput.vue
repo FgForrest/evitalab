@@ -72,7 +72,6 @@ const tabProps = useTabProps()
 
 const queryLanguageSelectorRef = ref<InstanceType<typeof QueryLanguageSelector> | undefined>()
 
-// todo this approach to autocompletion in grid is temporary until i'm able to pass the entire query with cropped view
 const filterByInputView = ref<EditorView>()
 const filterByInputLangSupportCompartment = new Compartment()
 const filterByInputExtensions: Extension[] = [filterByInputLangSupportCompartment.of(createFilterByLangSupportExtension(props.selectedQueryLanguage))]

@@ -63,12 +63,10 @@ import {
 } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabDefinition'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
 import { minifyEvitaQL, prettifyEvitaQL } from '@/modules/code-editor/service/formatEvitaQL'
-import { minifyJson, prettifyJson } from '@/modules/code-editor/service/formatJson'
 import { DocumentFormattingMode } from '@/modules/code-editor/model/DocumentFormattingMode'
 
 enum EditorTabType {
     Query = 'query',
-    Variables = 'variables',
     History = 'history',
 }
 
@@ -134,12 +132,6 @@ const queryCode = ref<string>(
 )
 const queryExtensions: Extension[] = [evitaQL()]
 
-const variablesEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
-const variablesCode = ref<string>(
-    props.data.variables ? props.data.variables : '{\n  \n}'
-)
-const variablesExtensions: Extension[] = [json()]
-
 const historyRef = ref<InstanceType<typeof EvitaQLConsoleHistory> | undefined>()
 const historyKey = computed<EvitaQLConsoleHistoryKey>(() =>
     createEvitaQLConsoleHistoryKey(props.params.dataPointer)
@@ -151,7 +143,6 @@ const historyRecords = computed<EvitaQLConsoleHistoryRecord[]>(() => {
 })
 function pickHistoryRecord(record: EvitaQLConsoleHistoryRecord): void {
     queryCode.value = record[1] || ''
-    variablesCode.value = record[2] || ''
     editorTab.value = EditorTabType.Query
     queryPanelVisible.value = true
 }
@@ -179,7 +170,7 @@ const resultVisualiserRef = ref<
 const loading = ref<boolean>(false)
 
 const currentData = computed<EvitaQLConsoleTabData>(() => {
-    return new EvitaQLConsoleTabData(queryCode.value, variablesCode.value)
+    return new EvitaQLConsoleTabData(queryCode.value)
 })
 watch(currentData, (data) => {
     emit('update:data', data)
@@ -188,27 +179,21 @@ watch(currentData, (data) => {
 const formattingAvailable = computed<boolean>(() =>
     queryPanelVisible.value &&
     focusedPanel.value === 'query' &&
-    (editorTab.value === EditorTabType.Query || editorTab.value === EditorTabType.Variables)
+    editorTab.value === EditorTabType.Query
 )
 
 /**
- * Reformats the editor the caret sits in — the query with the evitaQL printer, the variables as JSON.
- * The new document is assigned to the bound model, which resets the caret to the document start.
+ * Reformats the query with the evitaQL printer. The new document is assigned to the bound model, which
+ * resets the caret to the document start.
  */
 async function formatFocusedEditor(mode: DocumentFormattingMode): Promise<void> {
     if (!formattingAvailable.value) {
         return
     }
     try {
-        if (editorTab.value === EditorTabType.Query) {
-            queryCode.value = mode === DocumentFormattingMode.Prettify
-                ? prettifyEvitaQL(queryCode.value)
-                : minifyEvitaQL(queryCode.value)
-        } else {
-            variablesCode.value = mode === DocumentFormattingMode.Prettify
-                ? prettifyJson(variablesCode.value)
-                : minifyJson(variablesCode.value)
-        }
+        queryCode.value = mode === DocumentFormattingMode.Prettify
+            ? prettifyEvitaQL(queryCode.value)
+            : minifyEvitaQL(queryCode.value)
     } catch (e) {
         await toaster.error(
             t('evitaQLConsole.notification.failedToFormatDocument'),
@@ -227,11 +212,6 @@ onMounted(() => {
         editorTab.value = EditorTabType.Query
         queryPanelVisible.value = true
         focusQueryEditor()
-    })
-    keymap.bind(Command.EvitaQLConsole_Query_VariablesEditor, props.id, () => {
-        editorTab.value = EditorTabType.Variables
-        queryPanelVisible.value = true
-        focusVariablesEditor()
     })
     keymap.bind(Command.EvitaQLConsole_Query_History, props.id, () => {
         editorTab.value = EditorTabType.History
@@ -272,7 +252,6 @@ onUnmounted(() => {
     keymap.unbind(Command.EvitaQLConsole_ExecuteQuery, props.id)
     keymap.unbind(Command.EvitaQLConsole_ShareTab, props.id)
     keymap.unbind(Command.EvitaQLConsole_Query_QueryEditor, props.id)
-    keymap.unbind(Command.EvitaQLConsole_Query_VariablesEditor, props.id)
     keymap.unbind(Command.EvitaQLConsole_Query_History, props.id)
     keymap.unbind(Command.EvitaQLConsole_Query_Prettify, props.id)
     keymap.unbind(Command.EvitaQLConsole_Query_Minify, props.id)
@@ -286,10 +265,7 @@ async function executeQuery(): Promise<void> {
     try {
         workspaceService.addTabHistoryRecord(
             historyKey.value,
-            createEvitaQLConsoleHistoryRecord(
-                queryCode.value,
-                variablesCode.value
-            )
+            createEvitaQLConsoleHistoryRecord(queryCode.value)
         )
     } catch (e) {
         await toaster.error(
@@ -302,8 +278,7 @@ async function executeQuery(): Promise<void> {
     try {
         result.value = await evitaQLConsoleService.executeEvitaQLQuery(
             props.params.dataPointer,
-            queryCode.value,
-            // JSON.parse(variablesCode.value) // todo lho support
+            queryCode.value
         )
         loading.value = false
         enteredQueryCode.value = queryCode.value
@@ -328,10 +303,6 @@ async function executeQuery(): Promise<void> {
 function focusQueryEditor(): void {
     focusedPanel.value = 'query'
     setTimeout(() => queryEditorRef.value?.focus())
-}
-function focusVariablesEditor(): void {
-    focusedPanel.value = 'query'
-    setTimeout(() => variablesEditorRef.value?.focus())
 }
 function focusHistory(): void {
     focusedPanel.value = 'query'
@@ -415,16 +386,6 @@ if (props.params.executeOnOpen) {
                             {{ t('evitaQLConsole.tooltip.queryEditorView') }}
                         </VActionTooltip>
                     </VTab>
-                    <VTab :value="EditorTabType.Variables">
-                        <VIcon>mdi-variable</VIcon>
-                        <VActionTooltip
-                            :command="
-                                Command.EvitaQLConsole_Query_VariablesEditor
-                            "
-                        >
-                            {{ t('evitaQLConsole.tooltip.variablesEditorView') }}
-                        </VActionTooltip>
-                    </VTab>
                     <VTab :value="EditorTabType.History">
                         <VIcon>mdi-history</VIcon>
                         <VActionTooltip
@@ -458,14 +419,6 @@ if (props.params.executeOnOpen) {
                                     ref="queryEditorRef"
                                     v-model="queryCode"
                                     :additional-extensions="queryExtensions"
-                                />
-                            </VWindowItem>
-
-                            <VWindowItem :value="EditorTabType.Variables">
-                                <VQueryEditor
-                                    ref="variablesEditorRef"
-                                    v-model="variablesCode"
-                                    :additional-extensions="variablesExtensions"
                                 />
                             </VWindowItem>
 

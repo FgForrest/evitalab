@@ -25,7 +25,6 @@ export class ErrorTransformer {
         if (isConnectivityError(e)) {
             markServerUnreachable()
         }
-        // todo lho rework
         if (e instanceof ConnectError) {
             // the two codes whose raw message ("[deadline_exceeded] the operation timed out") would otherwise
             // reach the user verbatim, because everything that renders a driver error - the toaster and the

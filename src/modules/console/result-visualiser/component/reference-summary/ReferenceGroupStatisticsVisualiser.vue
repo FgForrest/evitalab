@@ -26,8 +26,8 @@ const props = defineProps<{
 const facetStatisticsInitialized = ref<boolean>(false)
 const facetStatisticsResultsPage = ref<number>(1)
 
-const hasFacets = computed<boolean>(() => props.facetGroup.facets.length > 0)
-const hasHistograms = computed<boolean>(() => props.facetGroup.histograms.length > 0)
+const hasFacets = computed<boolean>(() => !props.facetGroup.facets.isEmpty())
+const hasHistograms = computed<boolean>(() => !props.facetGroup.histograms.isEmpty())
 const hasBothTypes = computed<boolean>(() => hasFacets.value && hasHistograms.value)
 
 function initializeFacets(): void {
@@ -85,7 +85,7 @@ async function copyPrimaryKey(): Promise<void> {
                                 </VChip>
                                 <VChip v-if="hasHistograms" prepend-icon="mdi-chart-bar">
                                     <span>
-                                        {{ facetGroup.histograms.length }}
+                                        {{ facetGroup.histograms.size }}
                                         <VTooltip activator="parent">
                                             {{ t('resultVisualizer.referenceSummaryVisualiser.help.histogramIndexCount') }}
                                         </VTooltip>

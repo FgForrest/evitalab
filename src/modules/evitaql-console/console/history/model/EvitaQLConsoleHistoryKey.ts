@@ -11,7 +11,9 @@ import { TabType } from '@/modules/workspace/tab/model/TabType'
 export type EvitaQLConsoleHistoryKey = TabHistoryKey<EvitaQLConsoleHistoryRecord>
 
 /**
- * Creates new history key for currently opened tab
+ * Creates new history key for currently opened tab. The `queryAndVariables` segment is part of the storage
+ * key, so it is kept even though the console no longer has a variables editor - renaming it would orphan
+ * the history already stored in the browser.
  */
 export function createEvitaQLConsoleHistoryKey(instancePointer: EvitaQLConsoleDataPointer): EvitaQLConsoleHistoryKey {
     return new TabHistoryKey<EvitaQLConsoleHistoryRecord>(

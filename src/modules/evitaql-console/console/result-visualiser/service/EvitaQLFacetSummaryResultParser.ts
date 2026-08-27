@@ -1,3 +1,4 @@
+import { List as ImmutableList } from 'immutable'
 import type { FacetSummaryResultParser } from '@/modules/console/result-visualiser/service/FacetSummaryResultParser'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import {
@@ -62,10 +63,10 @@ export class EvitaQLFacetSummaryResultParser implements FacetSummaryResultParser
                 const facets = groupStats.facetStatistics.toArray().map((facetStats: FacetStatistics) =>
                     this.resolveFacetStatistics(queryResult, facetStats, facetRepresentativeAttributes)
                 )
-                return new VisualisedFacetGroup(groupStatistics, facets)
+                return new VisualisedFacetGroup(groupStatistics, ImmutableList(facets))
             })
 
-            references.push(new VisualisedReferenceFacets(referenceSchema, groups))
+            references.push(new VisualisedReferenceFacets(referenceSchema, ImmutableList(groups)))
         }
 
         return new VisualisedFacetSummary(references)

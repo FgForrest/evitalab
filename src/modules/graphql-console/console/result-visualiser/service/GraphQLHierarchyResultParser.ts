@@ -13,6 +13,22 @@ import { findSchemaByName } from '@/modules/console/result-visualiser/service/ut
 import { resolveRepresentativeAttributes } from '@/modules/console/result-visualiser/service/utils/representativeAttributes'
 import { buildRepresentativeTitle, toPrintableAttributeValue } from '@/modules/console/result-visualiser/service/utils/representativeTitle'
 import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
+import { List as ImmutableList } from 'immutable'
+
+/**
+ * A node whose own data is already known but whose children are still being collected as the flat,
+ * level-ordered result is walked. The {@link VisualisedHierarchyTreeNode} is built from it only once its
+ * children are complete, because the node holds them as an immutable list.
+ */
+type PendingHierarchyNode = {
+    readonly primaryKey: number | undefined
+    readonly parentPrimaryKey: number | undefined
+    readonly title: string | undefined
+    readonly requested: boolean | undefined
+    readonly childrenCount: number | undefined
+    readonly queriedEntityCount: number | undefined
+    readonly children: VisualisedHierarchyTreeNode[]
+}
 
 /**
  * {@link HierarchyResultParser} for GraphQL query language. Builds hierarchy trees from
@@ -77,9 +93,10 @@ export class GraphQLHierarchyResultParser implements HierarchyResultParser {
     ): VisualisedNamedHierarchy {
         const trees: VisualisedHierarchyTreeNode[] = []
         let requestedNode: VisualisedHierarchyTreeNode | undefined = undefined
+        let requestedPendingNode: PendingHierarchyNode | undefined = undefined
 
         let currentLevel: number = -1
-        const nodesStack: { node: VisualisedHierarchyTreeNode; children: VisualisedHierarchyTreeNode[] }[] = []
+        const nodesStack: PendingHierarchyNode[] = []
 
         for (const nodeResult of namedHierarchyResult) {
             const level: number = nodeResult['level'] || 1
@@ -95,44 +112,68 @@ export class GraphQLHierarchyResultParser implements HierarchyResultParser {
             if (level <= currentLevel) {
                 const levelDiff = currentLevel - level + 1
                 for (let i = 0; i < levelDiff; i++) {
-                    this.flushCurrentNodeToUpper(trees, nodesStack)
+                    const flushed = this.flushCurrentNodeToUpper(trees, nodesStack)
+                    if (flushed.pending === requestedPendingNode) {
+                        requestedNode = flushed.node
+                    }
                 }
             }
 
             currentLevel = level
-            const children: VisualisedHierarchyTreeNode[] = []
-            const node = new VisualisedHierarchyTreeNode(
+            const pendingNode: PendingHierarchyNode = {
                 primaryKey,
                 parentPrimaryKey,
                 title,
                 requested,
                 childrenCount,
                 queriedEntityCount,
-                children
-            )
-            nodesStack.push({ node, children })
+                children: []
+            }
+            nodesStack.push(pendingNode)
             if (requested) {
-                requestedNode = node
+                requestedPendingNode = pendingNode
             }
         }
 
         while (nodesStack.length > 0) {
-            this.flushCurrentNodeToUpper(trees, nodesStack)
+            const flushed = this.flushCurrentNodeToUpper(trees, nodesStack)
+            if (flushed.pending === requestedPendingNode) {
+                requestedNode = flushed.node
+            }
         }
 
-        return new VisualisedNamedHierarchy(trees, namedHierarchyResult.length, requestedNode)
+        return new VisualisedNamedHierarchy(
+            ImmutableList(trees),
+            namedHierarchyResult.length,
+            requestedNode
+        )
     }
 
+    /**
+     * Pops the deepest pending node, builds it now that its children are complete, and files it under its
+     * own parent — or as a root, when there is no parent left on the stack.
+     */
     private flushCurrentNodeToUpper(
         trees: VisualisedHierarchyTreeNode[],
-        stack: { node: VisualisedHierarchyTreeNode; children: VisualisedHierarchyTreeNode[] }[]
-    ): void {
-        const prev = stack.pop()!
-        if (stack.length === 0) {
-            trees.push(prev.node)
+        stack: PendingHierarchyNode[]
+    ): { pending: PendingHierarchyNode, node: VisualisedHierarchyTreeNode } {
+        const pending: PendingHierarchyNode = stack.pop()!
+        const node: VisualisedHierarchyTreeNode = new VisualisedHierarchyTreeNode(
+            pending.primaryKey,
+            pending.parentPrimaryKey,
+            pending.title,
+            pending.requested,
+            pending.childrenCount,
+            pending.queriedEntityCount,
+            ImmutableList(pending.children)
+        )
+        const parent: PendingHierarchyNode | undefined = stack.at(-1)
+        if (parent == undefined) {
+            trees.push(node)
         } else {
-            stack.at(-1)!.children.push(prev.node)
+            parent.children.push(node)
         }
+        return { pending, node }
     }
 
     private resolveRepresentativeTitle(entityResult: GraphQLResultNode | undefined, representativeAttributes: string[]): string | undefined {

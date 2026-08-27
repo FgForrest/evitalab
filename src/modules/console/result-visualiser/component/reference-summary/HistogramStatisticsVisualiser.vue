@@ -2,12 +2,13 @@
 /**
  * Renders a list of histogram statistics as expansion panels, each containing a HistogramVisualiser.
  */
+import type { List as ImmutableList } from 'immutable'
 import { VisualisedHistogramStatistics } from '@/modules/console/result-visualiser/model/reference-summary/VisualisedHistogramStatistics'
 import HistogramVisualiser
     from '@/modules/console/result-visualiser/component/histogram/HistogramVisualiser.vue'
 
 defineProps<{
-    histograms: VisualisedHistogramStatistics[]
+    histograms: ImmutableList<VisualisedHistogramStatistics>
 }>()
 </script>
 

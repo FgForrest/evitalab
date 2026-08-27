@@ -354,7 +354,6 @@
       "query": {
         "_title": "Query",
         "queryEditor": "Query editor",
-        "variablesEditor": "Variables editor",
         "history": "History",
         "prettify": "Prettify",
         "minify": "Minify",
@@ -948,7 +947,6 @@
     },
     "tooltip": {
       "queryEditorView": "Query editor — click again to hide the panel",
-      "variablesEditorView": "Variables editor — click again to hide the panel",
       "historyView": "History — click again to hide the panel",
       "rawResultViewerView": "Raw result viewer — click again to hide the panel",
       "resultVisualizerView": "Result visualizer — click again to hide the panel"

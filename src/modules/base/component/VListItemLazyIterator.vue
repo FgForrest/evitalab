@@ -6,13 +6,11 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { List } from 'immutable'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 
 const { t } = useI18n()
 
-// todo lho try to get rid of array support
 const props = defineProps<{
-    items: T[] | List<T>,
+    items: List<T>,
     page: number,
     pageSize: number
 }>()
@@ -20,27 +18,11 @@ const emit = defineEmits<{
     (e: 'update:page', page: number): void
 }>()
 
-const itemsSize = computed(() => {
-    if (props.items instanceof Array) {
-        return props.items.length
-    } else if (props.items instanceof List) {
-        return props.items.size
-    } else {
-        throw new UnexpectedError('Expected array or list of items')
-    }
-})
-
 const lastPage = computed<number>(() => {
-    return Math.ceil(itemsSize.value / props.pageSize)
+    return Math.ceil(props.items.size / props.pageSize)
 })
-const pageOfItems = computed<T[]>(() => {
-    if (props.items instanceof Array) {
-        return props.items.slice(0, props.page * props.pageSize)
-    } else if (props.items instanceof List) {
-        return props.items.slice(0, props.page * props.pageSize).toArray()
-    } else {
-        throw new UnexpectedError('Expected array or list of items')
-    }
+const pageOfItems = computed<List<T>>(() => {
+    return props.items.slice(0, props.page * props.pageSize)
 })
 </script>
 

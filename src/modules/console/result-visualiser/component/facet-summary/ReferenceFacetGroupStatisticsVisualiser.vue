@@ -4,7 +4,8 @@
  * expandable group headers or flat facet lists for ungrouped references.
  */
 import { computed, ref } from 'vue'
-import { VisualisedReferenceFacets } from '@/modules/console/result-visualiser/model/facet-summary/VisualisedFacetSummary'
+import { List as ImmutableList } from 'immutable'
+import { VisualisedFacetGroup, VisualisedReferenceFacets } from '@/modules/console/result-visualiser/model/facet-summary/VisualisedFacetSummary'
 import { VisualisedFacetStatistics } from '@/modules/console/result-visualiser/model/facet-summary/VisualisedFacetStatistics'
 import VListItemLazyIterator from '@/modules/base/component/VListItemLazyIterator.vue'
 import FacetGroupStatisticsVisualiser
@@ -24,10 +25,10 @@ const isGroupedFacets = computed<boolean>(() => {
     return props.referenceFacets.referenceSchema.referencedGroupType != undefined
 })
 
-const ungroupedFacets = computed<VisualisedFacetStatistics[]>(() => {
-    if (isGroupedFacets.value) return []
-    const firstGroup = props.referenceFacets.groups[0]
-    if (firstGroup == undefined) return []
+const ungroupedFacets = computed<ImmutableList<VisualisedFacetStatistics>>(() => {
+    if (isGroupedFacets.value) return ImmutableList()
+    const firstGroup: VisualisedFacetGroup | undefined = props.referenceFacets.groups.first()
+    if (firstGroup == undefined) return ImmutableList()
     return firstGroup.facets
 })
 const facetStatisticsResultsPage = ref<number>(1)
