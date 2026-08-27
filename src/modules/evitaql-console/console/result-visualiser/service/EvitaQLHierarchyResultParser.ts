@@ -15,6 +15,10 @@ import { EvitaResponse } from '@/modules/database-driver/request-response/data/E
 import { Hierarchy } from '@/modules/database-driver/request-response/data/Hierarchy'
 import { LevelInfo } from '@/modules/database-driver/request-response/data/LevelInfo'
 import { Entity } from '@/modules/database-driver/request-response/data/Entity'
+import { EntityReference } from '@/modules/database-driver/request-response/data/EntityReference'
+import {
+    EntityReferenceWithParent
+} from '@/modules/database-driver/request-response/data/EntityReferenceWithParent'
 import { List as ImmutableList } from 'immutable'
 
 /**
@@ -110,7 +114,7 @@ export class EvitaQLHierarchyResultParser implements HierarchyResultParser<Evita
             }
         })
 
-        return new VisualisedNamedHierarchy(trees, count, requestedNode)
+        return new VisualisedNamedHierarchy(ImmutableList(trees), count, requestedNode)
     }
 
     private resolveHierarchyTreeNode(
@@ -121,14 +125,13 @@ export class EvitaQLHierarchyResultParser implements HierarchyResultParser<Evita
         let nodeCount = 1
         let requestedNode: VisualisedHierarchyTreeNode | undefined = undefined
 
-        const primaryKey: number | undefined = nodeResult.entity != undefined
-            ? nodeResult.entity.primaryKey
-            : nodeResult.entityReference?.primaryKey
+        const entity: EntityReference | undefined = nodeResult.entity
+        const primaryKey: number | undefined = entity?.primaryKey
         let parentPrimaryKey: number | undefined = undefined
-        if (level === 1 && nodeResult.entity != undefined) {
-            parentPrimaryKey = nodeResult.entity.parentEntity?.primaryKey
+        if (level === 1 && entity instanceof EntityReferenceWithParent) {
+            parentPrimaryKey = entity.parentEntity?.primaryKey
         }
-        const title = this.resolveRepresentativeTitle(nodeResult.entity, entityRepresentativeAttributes)
+        const title = this.resolveRepresentativeTitle(entity, entityRepresentativeAttributes)
         const requested: boolean | undefined = nodeResult.requested
         const childrenCount: number | undefined = nodeResult.childrenCount
         const queriedEntityCount: number | undefined = nodeResult.queriedEntityCount
@@ -156,7 +159,7 @@ export class EvitaQLHierarchyResultParser implements HierarchyResultParser<Evita
             requested,
             childrenCount,
             queriedEntityCount,
-            children
+            ImmutableList(children)
         )
         if (requested) {
             requestedNode = node
@@ -165,8 +168,11 @@ export class EvitaQLHierarchyResultParser implements HierarchyResultParser<Evita
         return { node, nodeCount, requested: requestedNode }
     }
 
-    private resolveRepresentativeTitle(entity: Entity | undefined, representativeAttributes: string[]): string | undefined {
-        if (!entity) return undefined
+    /**
+     * Only a node whose entity body was fetched can have a title - a bare reference carries no attributes.
+     */
+    private resolveRepresentativeTitle(entity: EntityReference | undefined, representativeAttributes: string[]): string | undefined {
+        if (!(entity instanceof Entity)) return undefined
 
         const possibleAttributes: { value: unknown; isRepresentative: boolean }[] = []
         entity.allAttributes.forEach(it => {

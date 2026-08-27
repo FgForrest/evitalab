@@ -76,6 +76,15 @@ export class CatalogStatistics {
         return this.catalogState === CatalogState.WarmingUp
     }
 
+    /**
+     * Records how far a running operation on this catalog has got, so the explorer can flag it. A completed
+     * operation (100 %) carries no progress any more and is dropped right away.
+     *
+     * Reaching 100 is **not** the only way a progress ends: a stream may stop reporting below it, or end
+     * because the operation failed. Every caller therefore has to {@link removeProgress} once its stream is
+     * over — otherwise the flag would outlive the operation, and because progresses live in memory only,
+     * nothing short of a page reload would clear it.
+     */
     setProgress(type: MutationProgressType, value: number):void {
         if(value !== 100)
             this.progresses.set(type, value)
@@ -83,6 +92,9 @@ export class CatalogStatistics {
             this.progresses.delete(type)
     }
 
+    /**
+     * Drops the progress of an operation that is no longer running, whatever its outcome.
+     */
     removeProgress(type: MutationProgressType):void {
         this.progresses.delete(type)
     }

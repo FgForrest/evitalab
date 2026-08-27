@@ -1,7 +1,5 @@
-import {
-    EntityExistence,
-    type EntityMutation
-} from '@/modules/database-driver/request-response/data/mutation/EntityMutation.ts'
+import type { EntityMutation } from '@/modules/database-driver/request-response/data/mutation/EntityMutation.ts'
+import { EntityExistence } from '@/modules/database-driver/request-response/data/mutation/EntityExistence.ts'
 import type { LocalMutation } from '@/modules/database-driver/request-response/data/mutation/LocalMutation.ts'
 import { List as ImmutableList } from 'immutable'
 

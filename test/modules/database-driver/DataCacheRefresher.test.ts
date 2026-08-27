@@ -110,6 +110,7 @@ interface StubClient {
     registerSystemChangeCapture: ReturnType<typeof vi.fn>
     clearSchemaCache: ReturnType<typeof vi.fn>
     clearCatalogStatisticsCache: ReturnType<typeof vi.fn>
+    resetRevalidationState: ReturnType<typeof vi.fn>
 }
 
 function makeClient(attempts: Attempt[]): StubClient {
@@ -122,12 +123,20 @@ function makeClient(attempts: Attempt[]): StubClient {
         index++
         return attempt(options.signal)
     })
+    const resetRevalidationState = vi.fn(() => {})
     const evitaClient = {
         registerSystemChangeCapture,
         clearSchemaCache,
-        management: { clearCatalogStatisticsCache }
+        management: { clearCatalogStatisticsCache },
+        persistentCacheLayer: { resetRevalidationState }
     } as unknown as EvitaClient
-    return { evitaClient, registerSystemChangeCapture, clearSchemaCache, clearCatalogStatisticsCache }
+    return {
+        evitaClient,
+        registerSystemChangeCapture,
+        clearSchemaCache,
+        clearCatalogStatisticsCache,
+        resetRevalidationState
+    }
 }
 
 describe('DataCacheRefresher', () => {
@@ -150,6 +159,40 @@ describe('DataCacheRefresher', () => {
 
         expect(stub.registerSystemChangeCapture).toHaveBeenCalledTimes(1)
         expect(refresher.streamStatus.value).toBe(ChangeStreamStatus.UpToDate)
+        refresher.stop()
+    })
+
+    test('a first connect does not re-verify the persisted cache', async () => {
+        const stub = makeClient([yieldThenBlock([ack()])])
+        const refresher = new DataCacheRefresher(stub.evitaClient)
+
+        refresher.start()
+        await vi.advanceTimersByTimeAsync(1)
+
+        // nothing could have changed unobserved yet — re-verifying every persisted value on the very first
+        // acknowledgement would fire a pointless burst of refreshes on every startup
+        expect(stub.resetRevalidationState).not.toHaveBeenCalled()
+        refresher.stop()
+    })
+
+    test('a genuine reconnect re-verifies the persisted cache', async () => {
+        const stub = makeClient([
+            yieldThenThrow([]),
+            yieldThenBlock([ack()])
+        ])
+        const refresher = new DataCacheRefresher(stub.evitaClient)
+
+        refresher.start()
+        await vi.advanceTimersByTimeAsync(1)
+        expect(refresher.streamStatus.value).toBe(ChangeStreamStatus.Broken)
+        expect(stub.resetRevalidationState).not.toHaveBeenCalled()
+
+        // the stream was Broken and is acknowledged again: data may well have changed while evitaLab could
+        // not observe it, so everything restored from disk is due for another verification
+        await vi.advanceTimersByTimeAsync(5_000)
+
+        expect(refresher.streamStatus.value).toBe(ChangeStreamStatus.UpToDate)
+        expect(stub.resetRevalidationState).toHaveBeenCalledTimes(1)
         refresher.stop()
     })
 

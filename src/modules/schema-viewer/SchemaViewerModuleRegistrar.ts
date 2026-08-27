@@ -14,13 +14,23 @@ import {
     delegatingSchemaPathFactoryInjectionKey
 } from '@/modules/schema-viewer/viewer/service/schema-path-factory/DelegatingSchemaPathFactory'
 import { EvitaClient, evitaClientInjectionKey } from '@/modules/database-driver/EvitaClient'
+import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
+import {
+    TabFactoryRegistry,
+    tabFactoryRegistryInjectionKey
+} from '@/modules/workspace/tab/service/TabFactoryRegistry'
 
 export class SchemaViewerModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {
         const evitaClient: EvitaClient = builder.inject(evitaClientInjectionKey)
+        const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
         const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
-        const schemaViewerTabFactory: SchemaViewerTabFactory = builder.inject(schemaViewerTabFactoryInjectionKey)
+        const tabFactoryRegistry: TabFactoryRegistry = builder.inject(tabFactoryRegistryInjectionKey)
+
+        const schemaViewerTabFactory: SchemaViewerTabFactory = new SchemaViewerTabFactory(connectionService)
+        builder.provide(schemaViewerTabFactoryInjectionKey, schemaViewerTabFactory)
+        tabFactoryRegistry.register(schemaViewerTabFactory)
 
         builder.provide(
             schemaViewerServiceInjectionKey,
@@ -30,10 +40,5 @@ export class SchemaViewerModuleRegistrar implements ModuleRegistrar {
             delegatingSchemaPathFactoryInjectionKey,
             new DelegatingSchemaPathFactory(workspaceService, schemaViewerTabFactory)
         )
-        // todo lho fix circular dep
-        // builder.provide(
-        //     schemaViewerTabFactoryInjectionKey,
-        //     new SchemaViewerTabFactory(connectionService)
-        // )
     }
 }

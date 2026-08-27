@@ -66,6 +66,7 @@ import {
     type MutationHistoryViewerTabFactory,
     mutationHistoryViewerTabFactoryInjectionKey
 } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
+import { LabStorage, labStorageInjectionKey } from '@/modules/storage/LabStorage'
 
 export class ConnectionExplorerModuleRegistrar implements ModuleRegistrar {
 
@@ -84,8 +85,12 @@ export class ConnectionExplorerModuleRegistrar implements ModuleRegistrar {
         const trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory = builder.inject(trafficRecordHistoryViewerTabFactoryInjectionKey)
         const mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory = builder.inject(mutationHistoryViewerTabFactoryInjectionKey)
         const toaster: Toaster = builder.inject(toasterInjectionKey)
+        const labStorage: LabStorage = builder.inject(labStorageInjectionKey)
 
-        const connectionExplorerService: ConnectionExplorerService = new ConnectionExplorerService(evitaClient)
+        const connectionExplorerService: ConnectionExplorerService = new ConnectionExplorerService(
+            evitaClient,
+            labStorage
+        )
         const connectionExplorerPanelMenuFactory: ConnectionExplorerPanelMenuFactory = new ConnectionExplorerPanelMenuFactory(
             evitaClient,
             workspaceService,

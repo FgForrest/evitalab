@@ -1,3 +1,6 @@
+import {
+    mutationConverterRegistry
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/mutation/MutationConverterRegistry.ts'
 import type { GrpcLocalMutation } from '@/modules/database-driver/connector/grpc/gen/GrpcLocalMutation_pb.ts'
 import type { LocalMutation } from '@/modules/database-driver/request-response/data/mutation/LocalMutation.ts'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
@@ -52,8 +55,7 @@ import {
 
 export class DelegatingLocalMutationConverter {
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- heterogeneous mutation-converter registry keyed by grpc oneof case
-    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([
+    private static readonly TO_TYPESCRIPT_CONVERTERS = mutationConverterRegistry<LocalMutation>([
         ['applyDeltaAttributeMutation', ApplyDeltaAttributeMutationConverter.INSTANCE],
         ['upsertAttributeMutation', UpsertAttributeMutationConverter.INSTANCE],
         ['removeAttributeMutation', RemoveAttributeMutationConverter.INSTANCE],

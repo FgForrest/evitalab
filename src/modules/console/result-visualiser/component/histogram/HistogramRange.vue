@@ -41,86 +41,101 @@ const rangeInfo = computed<RangeInfo>(() => {
     const sampleBucket: VisualisedHistogramBucket = props.histogram.buckets.get(0)! // there is always at least one bucket
     if (sampleBucket.requested == undefined) {
         // we don't know the requested range, there is nothing to display
-        const missingRequiredProperties: string[] = []
-        if (sampleBucket.requested == undefined) {
-            missingRequiredProperties.push('requested')
-        }
         return new RangeInfo(
             0,
             10,
             [5, 5],
-            t('resultVisualizer.histogram.placeholder.missingPropertiesForSimulatedRange', { properties: missingRequiredProperties.map(it => '`' + it + '`').join(", ") })
+            t('resultVisualizer.histogram.placeholder.missingPropertiesForSimulatedRange', { properties: formatProperties(['requested']) })
         )
-    } else {
-        if (props.histogram.min != undefined &&
-            props.histogram.max != undefined &&
-            sampleBucket.threshold != undefined) {
-            // we have all properties to compute actual range with proper thresholds
-            const min = props.histogram.min.toFloat()
-            const max = props.histogram.max.toFloat()
-            const middle = (min + max) / 2
-
-            // const step = roundStep((max - min) / props.histogram.buckets.length, getRequiredDecimalPlaces(props.histogram.buckets))
-            const leftRequestedThreshold: BigDecimal | undefined = props.histogram.buckets.find((bucket) => bucket.requested ?? false)?.threshold
-            let rightRequestedThreshold: number | undefined = undefined
-            if (leftRequestedThreshold != undefined) {
-                // there must be last requested bucket if there is first requested bucket, even if it's the same bucket
-                const rightRequestedIndex = props.histogram.buckets.findLastIndex((bucket) => bucket.requested ?? false)!
-                if (rightRequestedIndex < props.histogram.buckets.size - 1) {
-                    // todo lho fix nullable threshold
-                    rightRequestedThreshold = props.histogram.buckets.get(rightRequestedIndex + 1)!.threshold!.toFloat()
-                } else {
-                    rightRequestedThreshold = max
-                }
-            }
-
-            return new RangeInfo(
-                min,
-                max,
-                [
-                    leftRequestedThreshold != undefined ? leftRequestedThreshold.toFloat() : middle,
-                    rightRequestedThreshold != undefined ? rightRequestedThreshold : middle
-                ]
-            )
-        } else {
-            // we are missing some properties, but we can only simulate the range by indexes of buckets
-            const missingPropertiesForActualValues: string[] = []
-            if (props.histogram.min == undefined) {
-                missingPropertiesForActualValues.push('min')
-            }
-            if (props.histogram.max == undefined) {
-                missingPropertiesForActualValues.push('max')
-            }
-            if (sampleBucket?.threshold == undefined) {
-                missingPropertiesForActualValues.push('threshold')
-            }
-
-            const min = 0
-            const max = props.histogram.buckets.size
-            const middle = (min + max) / 2
-
-            let leftRequestedIndex: number | undefined = props.histogram.buckets.findIndex((bucket) => bucket.requested ?? false)
-            if (leftRequestedIndex == -1) {
-                leftRequestedIndex = undefined
-            }
-            let rightRequestedIndex: number | undefined = undefined
-            if (leftRequestedIndex != undefined) {
-                // there must be last requested bucket if there is first requested bucket, even if it's the same bucket
-                rightRequestedIndex = props.histogram.buckets.findLastIndex((bucket) => bucket.requested ?? false)! + 1
-            }
-
-            return new RangeInfo(
-                min,
-                max,
-                [
-                    leftRequestedIndex != undefined ? leftRequestedIndex : middle,
-                    rightRequestedIndex != undefined ? rightRequestedIndex : middle
-                ],
-                t('resultVisualizer.histogram.placeholder.missingPropertiesForActualRange', { properties: missingPropertiesForActualValues.map(it => '`' + it + '`').join(', ') })
-            )
-        }
     }
+    return actualRange() ?? simulatedRange()
 })
+
+/**
+ * Range built from the real histogram values. Undefined when the result does not carry everything needed for
+ * it — the histogram boundaries and a threshold of every bucket.
+ */
+function actualRange(): RangeInfo | undefined {
+    const histogramMin: BigDecimal | undefined = props.histogram.min
+    const histogramMax: BigDecimal | undefined = props.histogram.max
+    if (histogramMin == undefined || histogramMax == undefined || missingActualProperties().length > 0) {
+        return undefined
+    }
+
+    const min: number = histogramMin.toFloat()
+    const max: number = histogramMax.toFloat()
+    const middle: number = (min + max) / 2
+
+    const leftRequestedThreshold: BigDecimal | undefined = props.histogram.buckets.find((bucket) => bucket.requested ?? false)?.threshold
+    let rightRequestedThreshold: number | undefined = undefined
+    if (leftRequestedThreshold != undefined) {
+        // there must be last requested bucket if there is first requested bucket, even if it's the same bucket
+        const rightRequestedIndex: number = props.histogram.buckets.findLastIndex((bucket) => bucket.requested ?? false)
+        rightRequestedThreshold = rightRequestedIndex < props.histogram.buckets.size - 1
+            ? props.histogram.buckets.get(rightRequestedIndex + 1)?.threshold?.toFloat()
+            : max
+    }
+
+    return new RangeInfo(
+        min,
+        max,
+        [
+            leftRequestedThreshold != undefined ? leftRequestedThreshold.toFloat() : middle,
+            rightRequestedThreshold != undefined ? rightRequestedThreshold : middle
+        ]
+    )
+}
+
+/**
+ * Range silhouette built from bucket indexes, used when actual values are not available. The reason is reported
+ * to the user, so that the displayed values are not mistaken for real thresholds.
+ */
+function simulatedRange(): RangeInfo {
+    const min: number = 0
+    const max: number = props.histogram.buckets.size
+    const middle: number = (min + max) / 2
+
+    let leftRequestedIndex: number | undefined = props.histogram.buckets.findIndex((bucket) => bucket.requested ?? false)
+    if (leftRequestedIndex == -1) {
+        leftRequestedIndex = undefined
+    }
+    let rightRequestedIndex: number | undefined = undefined
+    if (leftRequestedIndex != undefined) {
+        // there must be last requested bucket if there is first requested bucket, even if it's the same bucket
+        rightRequestedIndex = props.histogram.buckets.findLastIndex((bucket) => bucket.requested ?? false) + 1
+    }
+
+    return new RangeInfo(
+        min,
+        max,
+        [
+            leftRequestedIndex != undefined ? leftRequestedIndex : middle,
+            rightRequestedIndex != undefined ? rightRequestedIndex : middle
+        ],
+        t('resultVisualizer.histogram.placeholder.missingPropertiesForActualRange', { properties: formatProperties(missingActualProperties()) })
+    )
+}
+
+/**
+ * Names of the properties a range with actual values needs but the fetched histogram does not contain.
+ */
+function missingActualProperties(): string[] {
+    const missingProperties: string[] = []
+    if (props.histogram.min == undefined) {
+        missingProperties.push('min')
+    }
+    if (props.histogram.max == undefined) {
+        missingProperties.push('max')
+    }
+    if (props.histogram.buckets.some((bucket) => bucket.threshold == undefined)) {
+        missingProperties.push('threshold')
+    }
+    return missingProperties
+}
+
+function formatProperties(properties: string[]): string {
+    return properties.map(it => '`' + it + '`').join(', ')
+}
 </script>
 
 <template>

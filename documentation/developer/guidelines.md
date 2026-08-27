@@ -3,7 +3,8 @@
 Rules and conventions for writing evitaLab code. Each module respects the **vertical slice
 architecture** — a feature's components, models and services live together in its module
 (see [module catalog](modules/index.md)). We are big fans of **immutability** (where it makes
-sense) and Domain-Driven Design, and we try to build the codebase using these practices.
+sense) and Domain-Driven Design, and we try to build the codebase using these practices —
+which is also what decides [where a file goes](#where-a-file-goes) within a module.
 
 ## TypeScript conventions
 
@@ -12,7 +13,17 @@ sense) and Domain-Driven Design, and we try to build the codebase using these pr
 - Prefer `undefined` over `null`; check with `== undefined`.
 - Domain model classes are immutable: `readonly` properties, initialization in the constructor,
   [Immutable.js](https://immutable-js.com/) collections (`List`, `Map`, `Set`) instead of mutable
-  arrays/maps in models and service APIs.
+  arrays/maps in models and service APIs. **Strict in the engine** — the `database-driver` internal
+  model and its service APIs; **recommended in view models**, where the point is to prevent bugs rather
+  than to satisfy the rule. Two consequences worth knowing:
+  - A `readonly` field holding a plain array is not immutable, and it invites exactly the bug the rule
+    exists to prevent: the visualiser DTOs used to advertise `readonly children: X[]` while
+    `GraphQLHierarchyResultParser` filled that array *after* constructing the node. An `Immutable.List`
+    forces the honest order — collect first, construct once complete.
+  - Where a view model is handed to a third-party component that reads it by plain property access
+    (Vuetify's data table rows, for instance), a plain object is the right call; say so in its JSDoc so
+    the exception is not mistaken for an oversight. `readonly` plus `noUncheckedIndexedAccess` already
+    gives compile-time immutability and undefined-safe reads there.
 - Use evitaLab data types (`modules/database-driver/data-type/`) for evitaDB values — never raw
   strings/numbers for `BigDecimal`, date-times, locales, currencies, UUIDs etc.
 - Enums are string-valued (`enum TabType { EntityViewer = 'entityViewer', ... }`).
@@ -44,9 +55,64 @@ error, fix the cause, do not silence the symptom:
 - If a compiler-forced change alters a code path (added guard, `.value` unwrap,
   enum conversion), add/extend a regression test under `test/`.
 
+## Where a file goes
+
+Within a module's vertical slice ([module structure](modules/index.md)), the split between `model/`,
+`service/` and `exception/` follows the Domain-Driven Design distinction, **not** the file's shape:
+whether it is a class or a set of exported functions has no bearing on where it lives.
+
+**`model/` — the module's vocabulary.** What the feature *is*:
+
+- types, interfaces, enums and DTOs;
+- immutable value objects and entities, **including methods over their own state** — a query on a
+  model object belongs on that object, not in a service (see [anemic domain
+  model](https://martinfowler.com/bliki/AnemicDomainModel.html));
+- static data and constant lookup tables (`taskStateToColorMapping.ts`, `keyboardShortcutMappings.ts`);
+- state holders that own their data together with the mutators of that data
+  (`database-driver/model/serverConnectivity.ts`) — they are stateful, so they cannot be domain
+  services (criterion 3 below).
+
+**`service/` — operations over the vocabulary.** What the feature *does*. Eric Evans' three criteria
+for a domain service apply; a file belongs here when **all three** hold:
+
+1. the operation relates to a concept that is not a natural part of a single model type;
+2. its interface is expressed in terms of model types;
+3. the operation is stateless.
+
+In practice that covers mappers and transformations between model types, factories that assemble
+model objects, predicates and policies (specifications), and — as the dependency-bearing special
+case — injectable collaborators. Injectables are services *because* they are dependency-bearing
+operations, not the other way round: **a `service/` file need not be a class and need not have an
+injection key.** Plain function modules belong here too (`code-editor/service/formatJson.ts`,
+`console/result-visualiser/service/utils/schemaMatching.ts`).
+
+**`exception/` — error types, and classifying errors** (`isConnectivityError`, `ErrorTransformer`).
+Nothing else. Do not file something there merely because errors are what write to it — that is
+proximity, not responsibility, and it hides the file from everyone who looks for it by what it *is*.
+
+The awkward cases are usually primitive obsession. Logic that parses or validates a raw `string`
+or `number` has no model type to live on, so it falls to a service by default; had the concept been
+a value object, the same logic would have been its factory. Worth noting when you hit it — it is a
+hint about the model, not a rule to act on.
+
+> **Note for readers coming from [Feature-Sliced Design](https://feature-sliced.design/docs/reference/slices-segments):**
+> FSD segments this differently — its `model` segment holds business logic including validation and
+> stores, and auxiliary helpers go to `lib`. evitaLab does **not** follow FSD; it follows the DDD
+> reading above, consistent with the intro to this document. Do not port FSD's segment semantics
+> into this codebase.
+
 ## Naming conventions
 
-- Classes/services/models: `PascalCase`, one class per file, file named after the class.
+- Types (class/interface/enum), and files naming a server-side entity: `PascalCase`, one type per
+  file, file named after it.
+- Files that are a set of functions or constants rather than a type: `camelCase`.
+- Casing follows what the file **is**; the directory follows [where a file
+  goes](#where-a-file-goes) — the two are independent, as
+  `code-editor/service/flattenToSingleLine.ts` and `database-driver/model/serverConnectivity.ts`
+  illustrate: same casing, opposite directories.
+- **Directories: `kebab-case`**, always — including the sub-directories that group a driver model by
+  concept (`request-response/schema/mutation/associated-data/`,
+  `.../sortable-attribute-compound/`). The one exception is `connector/grpc/gen/`, which is generated.
 - Injectable service pattern: `MyService` + `myServiceInjectionKey` + `useMyService()`.
 - Tab classes: `<Feature>TabDefinition/TabParams/TabParamsDto/TabData/TabDataDto/TabFactory`.
 - Shared Vue components: `V` prefix (`VLabDialog`); feature components without prefix.
@@ -86,6 +152,12 @@ between the entity viewer components and query builders/executors.
 ![Component-service hierarchy](assets/component-service-hierarchy.svg)
 
 ### Dependency injection
+
+Not every service needs DI. `<module>/service/` is where **business logic** lives, injectable or
+not — a stateless, dependency-free transformation (`code-editor/service/formatEvitaQL.ts`) is a plain
+exported function that callers import, and it is no less a service for it. Reach for an injectable
+class when the logic has collaborators to resolve, state to hold, or an implementation to swap.
+Either way it does not belong in `model/`, which holds the data the logic works on.
 
 Each injectable service exports an injection key and a helper:
 
@@ -134,6 +206,14 @@ The host delegates to thin wrappers; the collaborator owns its data and the oper
 This is the same instinct as *Where logic belongs*, applied one level down: just as logic is placed in
 the layer that owns it, state is placed in the type that owns it.
 
+**When no type can own it**, and only then, a module-scoped signal is acceptable — a shared state whose
+writers and readers sit in different modules, where threading it through dependency injection would couple
+modules that otherwise never meet (`database-driver/model/serverConnectivity.ts` is the one instance —
+[why](database-driver.md#offline-state--is-evitalab-offline)). File
+it by **what it is**, not by who writes to it: it belongs in `model/`, next to the module's other
+vocabulary, never in `exception/` just because errors are what set it — see
+[where a file goes](#where-a-file-goes).
+
 ## UI
 
 Use Vuetify components as the base and the custom component set documented in
@@ -170,10 +250,17 @@ try {
 }
 ```
 
-- Toast titles come from i18n; pass the caught error as the second argument (the toaster can open
-  the error-viewer tab with details).
+- Toast titles come from i18n; **pass the caught error as the second argument** (the toaster can open
+  the error-viewer tab with details). Do *not* interpolate `errorMessage(e)` into the title instead — a
+  fair number of existing sites do, and it costs the notification layer the only thing it can classify
+  (see the next point). Prefer `error(title, e)` in new code.
 - Services generally let errors propagate to the calling component; the driver already transforms
   transport errors into `LabError` types.
+- **Do not suppress or deduplicate connectivity errors at a call site.** An unreachable server makes
+  every read fail at once, and collapsing that flood into one notification is done centrally by
+  `ConnectivityAwareToaster` — see
+  [`notification`](modules/notification.md#reporting-outages-once-not-per-failure). Just report the
+  failure as usual.
 - Never swallow errors silently.
 
 ## Localization
@@ -189,6 +276,16 @@ All user-facing strings go through vue-i18n — no hardcoded texts in templates.
   (see [database driver](database-driver.md#long-running-operations)).
 - Register/unregister change callbacks symmetrically in `onMounted`/`onUnmounted` (same for
   `Keymap.bind`/`unbind`).
+- **Session logic must be side-effect-free until it has its data.** The logic passed to
+  `queryCatalog`/`updateCatalog` may be executed more than once (the client replays it on a session it
+  evicted underneath the caller) and, because sessions materialize lazily, its cache-served prefix may run
+  even while the server is unreachable and only then fail. Read first, act on the results afterwards — see
+  [database driver — lazy materialization](database-driver.md#lazy-materialization).
+- **A UI "reload" button must refresh, not invalidate.** Use the driver's `refresh*` entry points
+  (`refreshCatalogSchema`, `refreshEntitySchema`, `refreshGraphQLSchema`, `refreshCatalogStatistics`), which
+  fetch first and keep the displayed data when the fetch fails. Clearing a cache to force a reload destroys
+  the offline copy for a user whose refresh cannot succeed — see
+  [manual refresh](database-driver.md#manual-refresh-fetch-first-never-clear).
 
 ## Documentation
 

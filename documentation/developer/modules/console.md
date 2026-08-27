@@ -43,6 +43,40 @@ Four families, each with its own components and `Visualised*` models
 Note the facet-summary and reference-summary families each have a `FacetStatisticsVisualiser` and a
 `VisualisedFacetStatistics` — they are distinct types in different directories, not duplicates.
 
+Their **title rows are a parallel copy**, though: `ReferenceGroupStatisticsVisualiser` /
+`reference-summary/FacetStatisticsVisualiser` carry the same markup, the same class names
+(`group-title`, `facet-title`) and the same styles as `FacetGroupStatisticsVisualiser` /
+`facet-summary/FacetStatisticsVisualiser`. Which pair a user sees depends on the **server**:
+`referenceSummary` replaced `facetSummary` in evitaDB's query API, so a row fix applied to one family
+only shows up on some servers and looks like the layout behaving at random. Change both, and see
+[design language — composite titles](../design-language.md#composite-titles) for the rules those rows
+implement.
+
+#### Collections in the `Visualised*` models
+
+The list-valued properties the visualisers page through — `children`, `trees`, `groups`, `facets`,
+`histograms` — are Immutable `List`s, and `VListItemLazyIterator` accepts nothing else. That is not
+decoration: the GraphQL hierarchy arrives **flat and level-ordered**, and
+`GraphQLHierarchyResultParser` rebuilds the tree with a stack. It used to construct a
+`VisualisedHierarchyTreeNode` around an empty `children` array and keep pushing into it as the stack
+unwound — a node was therefore incomplete for as long as its subtree was still being read, behind a
+`readonly` field that suggested otherwise. The stack now holds `PendingHierarchyNode` records and the
+node is built at flush time, when its children are final. `test/modules/graphql-console/.../
+graphQLHierarchyResultParser.test.ts` pins the traversal (nesting, multi-level climbs, the requested
+node's identity), because nothing else does.
+
+The evitaQL parser was already recursive and built children first, so for it the change is only the
+wrapping.
+
+#### Partially fetched histograms
+
+A console renders whatever fields the user's query asked for, so any `Visualised*` property may be
+missing. `HistogramRange` therefore has two modes: the **actual** range, which needs `min`, `max` and a
+`threshold` on *every* bucket, and a **simulated** silhouette built from bucket indexes, which reports
+the missing property names through `HistogramNote`. Never assert a property is present — fall back to
+the silhouette instead, and map JSON absence with `!= undefined`, because `0` is a legitimate
+threshold, count and boundary.
+
 ## Adding a visualiser type
 
 The pieces to touch: a `Visualised*` model, a component under `result-visualiser/component/`, an

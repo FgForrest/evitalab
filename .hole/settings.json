@@ -1,8 +1,8 @@
 {
   "hooks": {
-    "setup": {
+    "setup": [{
       "script": ".hole/setup.sh"
-    }
+    }]
   },
   "libraries": {
     "$HOME/www/oss/evita/evitaDB": {
@@ -23,7 +23,7 @@
     ]
   },
   "network": {
-    "domainWhitelist": [
+    "allow": [
       "mcp.context7.com",
       "registry-1.docker.io",
       "auth.docker.io",

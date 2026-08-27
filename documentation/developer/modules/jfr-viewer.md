@@ -4,7 +4,8 @@ Feature module. Starting, stopping and downloading JFR recordings from the serve
 Contributes `TabType.JfrViewer`.
 
 - **Provides:** `jfrViewerServiceInjectionKey`, `jfrViewerTabFactoryInjectionKey`
-- **Injects:** `evitaClientInjectionKey`
+- **Injects:** `evitaClientInjectionKey`, `connectionServiceInjectionKey`,
+  `tabFactoryRegistryInjectionKey`
 
 ## Contents
 
@@ -32,6 +33,16 @@ backoff and one toast per outage).
 `StartRecordingDialog` offers the server's available JFR event types, fetched via
 `EvitaClient.management.listJfrRecordingEventTypes()`; recording itself is
 `startJrfRecording(allowedEvents)` / `stopJfrRecording()`.
+
+Servers expose dozens of event types and the dialog pre-selects **all** of them, so the picker does not
+render the selection as chips — a `#selection` slot collapses it to a `{count} events selected` caption on
+the first item only, keeping the field one line high. This is the same pattern as the type filters in
+[`traffic-viewer`](traffic-viewer.md) and [`history-viewer`](history-viewer.md).
+
+A `#prepend-item` row toggles the whole list (*Select all* / *Deselect all*, with an indeterminate
+checkbox for a partial selection). It deliberately ignores the autocomplete's current search text and
+always applies to every event type — Vuetify does not expose the filtered item set to that slot, and a
+toggle whose meaning depended on an invisible filter would be worse than one that does not.
 
 ## Related
 

@@ -53,12 +53,15 @@
       "makeCatalogMutable": "Make catalog mutable",
       "deactivateCatalog": "Deactivate catalog",
       "activateCatalog": "Activate catalog",
-      "cancelDownload": "Click again to cancel the download"
+      "cancelDownload": "Click again to cancel the download",
+      "prettify": "Prettify",
+      "minify": "Minify"
     },
     "notification": {
       "copiedToClipboard": "Copied to clipboard",
       "failedToCopyToClipboard": "Failed to copy to clipboard",
-      "downloadIncomplete": "Download of '{fileName}' didn't finish. The file at the location you selected is not the requested file and should be deleted."
+      "downloadIncomplete": "Download of '{fileName}' didn't finish. The file at the location you selected is not the requested file and should be deleted.",
+      "serverUnreachable": "Cannot reach the evitaDB server. evitaLab keeps showing the data it has cached locally."
     },
     "download": {
       "preparing": "Starting download…",
@@ -92,6 +95,12 @@
         "upToDate": "Up to date. Last change: {lastChange}",
         "upToDateNoChanges": "Up to date. No changes observed yet.",
         "broken": "Live updates unavailable — reconnecting…"
+      },
+      "dataFreshness": {
+        "cached": "Showing data from the local cache: {count} item(s) could not be verified against the server."
+      },
+      "persistentCache": {
+        "unavailable": "This browser does not let evitaLab store data locally, so it cannot cache anything between reloads. Everything else works as usual."
       }
     },
     "dialog": {
@@ -112,7 +121,8 @@
         },
         "error": {
           "olderThanMin": "Date time is older than the minimum allowed.",
-          "newerThanMax": "Date time is newer than the maximum allowed."
+          "newerThanMax": "Date time is newer than the maximum allowed.",
+          "unparsable": "Unrecognized date time format. Use e.g. ISO 8601: 2007-12-03T10:15:30+01:00."
         }
       }
     }
@@ -122,23 +132,15 @@
       "manage": "Manage evitaLab"
     },
     "manage": {
-      "manage": {
-        "title": "Manage",
+      "menu": {
         "item": {
-          "keymap": "Keymap"
-        }
-      },
-      "evitaLabHelp": {
-        "title": "evitaLab Help",
-        "item": {
+          "manageSubheader": "Manage",
+          "keymap": "Keymap",
+          "evitaLabHelpSubheader": "evitaLab Help",
           "evitaLabGithub": "evitaLab GitHub",
           "discussEvitaLab": "Discuss evitaLab",
-          "reportEvitaLabIssue": "Report evitaLab issue"
-        }
-      },
-      "evitaDBHelp": {
-        "title": "evitaDB Help",
-        "item": {
+          "reportEvitaLabIssue": "Report evitaLab issue",
+          "evitaDBHelpSubheader": "evitaDB Help",
           "evitaDBDocumentation": "evitaDB Documentation",
           "evitaDBGithub": "evitaDB GitHub",
           "discussEvitaDB": "Discuss evitaDB",
@@ -202,6 +204,9 @@
     "placeholder": {
       "loading": "Loading, please wait ...",
       "loadingFailed": "Failed to load the tab."
+    },
+    "notification": {
+      "couldNotResolveDemoCodeSnippet": "Could not resolve demo code snippet."
     }
   },
   "tabShare": {
@@ -211,6 +216,9 @@
     },
     "tooltip": {
       "nonSharableTab": "Cannot share this tab because it is using a user-defined evitaDB connection. Only pre-configured connections can be shared."
+    },
+    "notification": {
+      "couldNotResolveSharedTab": "Could not resolve shared tab."
     },
     "sharedDialog": {
       "title": "Shared tab found",
@@ -273,6 +281,7 @@
     "system": {
       "_title": "System",
       "keymap": "Keymap",
+      "manageMenu": "Manage menu",
       "panels": {
         "_title": "Panels",
         "connection": "Connection"
@@ -345,13 +354,16 @@
       "query": {
         "_title": "Query",
         "queryEditor": "Query editor",
-        "variablesEditor": "Variables editor",
-        "history": "History"
+        "history": "History",
+        "prettify": "Prettify",
+        "minify": "Minify",
+        "togglePanel": "Hide/show panel"
       },
       "result": {
         "_title": "Result",
         "rawResultViewer": "Raw result viewer",
-        "resultVisualizer": "Result visualizer"
+        "resultVisualizer": "Result visualizer",
+        "togglePanel": "Hide/show panel"
       }
     },
     "graphQLConsole": {
@@ -363,12 +375,16 @@
         "queryEditor": "Query editor",
         "variablesEditor": "Variables editor",
         "history": "History",
-        "schemaViewer": "Schema viewer"
+        "schemaViewer": "Schema viewer",
+        "prettify": "Prettify",
+        "minify": "Minify",
+        "togglePanel": "Hide/show panel"
       },
       "result": {
         "_title": "Result",
         "rawResultViewer": "Raw result viewer",
-        "resultVisualizer": "Result visualizer"
+        "resultVisualizer": "Result visualizer",
+        "togglePanel": "Hide/show panel"
       }
     },
     "schemaViewer": {
@@ -388,13 +404,22 @@
       "reloadRecordHistory": "Reload mutation history",
       "moveStartPointer": "Load only mutations newer than now",
       "applyFilter": "Apply filter"
+    },
+    "errorViewer": {
+      "_title": "Error viewer",
+      "shareTab": "Share tab"
     }
   },
   "explorer": {
     "title": "Connection Explorer",
     "readOnlyToolTip": "Server is read-only",
+    "offlineModeToolTip": "Offline — the evitaDB server cannot be reached. evitaLab keeps showing the data it has cached locally, and reconnects on its own.",
     "button": {
       "connect": "Connect"
+    },
+    "resizer": {
+      "label": "Connection Explorer width",
+      "tooltip": "Drag to resize, double-click to reset"
     },
     "connection": {
       "flag": {
@@ -415,12 +440,16 @@
           "catalogBackups": "Catalog backups",
           "tasks": "Tasks",
           "jfrRecordings": "JFR recordings",
-          "trafficRecordings": "Traffic recordings"
+          "trafficRecordings": "Traffic recordings",
+          "clearLocalCache": "Clear local cache"
         }
       },
       "notification": {
         "couldNotLoadCatalogs": "Could not load catalogs: {reason}",
-        "couldNotLoadServerStatus": "Could not load server status: {reason}"
+        "couldNotLoadServerStatus": "Could not load server status: {reason}",
+        "localCacheCleared": "Local cache cleared.",
+        "localCacheUnavailable": "There was nothing to clear — this browser does not let evitaLab store data locally.",
+        "couldNotClearLocalCache": "Could not clear the local cache: {reason}"
       }
     },
     "catalog": {
@@ -683,7 +712,13 @@
   "entityViewer": {
     "loadedDataWarning": "Loaded query data must be manually executed.",
     "notification": {
-      "couldNotExecuteQuery": "Could not execute query"
+      "couldNotExecuteQuery": "Could not execute query",
+      "couldNotBuildOrderBy": "Could not build the order by constraint."
+    },
+    "toolbar": {
+      "button": {
+        "openEntitySchema": "Open entity schema"
+      }
     },
     "dataLocaleSelector": {
       "item": {
@@ -697,6 +732,10 @@
     "queryInput": {
       "notification": {
         "failedToSaveQueryToHistory": "Failed to save query to history."
+      },
+      "orderByOwnership": {
+        "grid": "Ordering follows the sort buttons in the column headers. Writing your own order by here replaces it and clears the column sorting.",
+        "manual": "Ordering is your own text. Using a sort button in a column header replaces it."
       }
     },
     "layerSelector": {
@@ -735,6 +774,15 @@
       "notification": {
         "failedToFindProperty": "Failed to find property descriptor for key: '{key}'",
         "failedToFindRequestedProperties": "These properties were requested but not found in current data: {keys}"
+      },
+      "column": {
+        "primaryKey": "Primary key",
+        "version": "Version",
+        "scope": "Scope",
+        "parent": "Parent",
+        "locales": "Locales",
+        "priceInnerRecordHandling": "Price inner record handling",
+        "prices": "Prices"
       },
       "cell": {
         "placeholder": {
@@ -880,15 +928,33 @@
     },
     "button": {
       "submitIssue": "Submit an issue"
+    },
+    "issue": {
+      "title": "evitaLab: {name}",
+      "body": "**What happened**\n\n<!-- Please describe what you were doing when the error occurred. -->\n\n**Error detail**\n\n```\n{detail}\n```\n\n_Reported from evitaLab {version}._\n",
+      "detailTruncated": "... (truncated, please attach the full error detail)"
     }
   },
   "evitaQLConsole": {
     "placeholder": {
       "writeQuery": "// Write your EvitaQL query for catalog {catalogName} here.\n",
-      "results": "Results will be displayed here..."
+      "results": "Results will be displayed here...",
+      "noPanelsVisible": "Both panels are hidden. Pick a view in the side bars to show a panel again."
+    },
+    "button": {
+      "showQueryPanel": "Show query panel",
+      "showResultPanel": "Show result panel"
+    },
+    "tooltip": {
+      "queryEditorView": "Query editor — click again to hide the panel",
+      "historyView": "History — click again to hide the panel",
+      "rawResultViewerView": "Raw result viewer — click again to hide the panel",
+      "resultVisualizerView": "Result visualizer — click again to hide the panel"
     },
     "notification": {
-      "failedToSaveQueryToHistory": "Failed to save query to history."
+      "couldNotExecuteQuery": "Could not execute query.",
+      "failedToSaveQueryToHistory": "Failed to save query to history.",
+      "failedToFormatDocument": "Failed to format the document."
     }
   },
   "graphQLConsole": {
@@ -899,15 +965,28 @@
     },
     "placeholder": {
       "writeQuery": "# Write your GraphQL query for catalog {catalogName} here.\n",
-      "results": "Results will be displayed here..."
+      "writeSystemQuery": "# Write your GraphQL query for the system API here.\n",
+      "results": "Results will be displayed here...",
+      "noPanelsVisible": "Both panels are hidden. Pick a view in the side bars to show a panel again."
     },
     "button": {
-      "instanceDetails": "GraphQL API instance details",
-      "reloadSchema": "Reload GraphQL schema"
+      "reloadSchema": "Reload GraphQL schema",
+      "showQueryPanel": "Show query panel",
+      "showResultPanel": "Show result panel"
+    },
+    "tooltip": {
+      "queryEditorView": "Query editor — click again to hide the panel",
+      "variablesEditorView": "Variables editor — click again to hide the panel",
+      "historyView": "History — click again to hide the panel",
+      "schemaViewerView": "Schema viewer — click again to hide the panel",
+      "rawResultViewerView": "Raw result viewer — click again to hide the panel",
+      "resultVisualizerView": "Result visualizer — click again to hide the panel"
     },
     "notification": {
+      "couldNotExecuteQuery": "Could not execute query.",
       "failedToSaveQueryToHistory": "Failed to save query to history.",
-      "failedToReloadSchema": "Failed to reload GraphQL schema."
+      "failedToReloadSchema": "Failed to reload GraphQL schema.",
+      "failedToFormatDocument": "Failed to format the document."
     }
   },
   "historyComponent": {
@@ -1051,6 +1130,11 @@
         "associatedData": "associated data",
         "references": "references"
       }
+    },
+    "notification": {
+      "failedToReloadSchema": "Failed to reload schema.",
+      "couldNotLoadSchema": "Could not load schema.",
+      "couldNotLoadCatalog": "Could not load catalog."
     },
     "section": {
       "placeholder": {
@@ -1750,6 +1834,11 @@
       "form": {
         "events": {
           "label": "Events to record",
+          "valueDescriptor": "no events selected | 1 event selected | {count} events selected",
+          "button": {
+            "selectAll": "Select all",
+            "deselectAll": "Deselect all"
+          },
           "validations": {
             "required": "Events are required."
           }
@@ -1913,13 +2002,19 @@
         "couldNotExportBuffer": "Traffic buffer export failed: {reason}",
         "couldNotDownloadExportedFile": "Could not download the exported traffic buffer: {reason}",
         "unknownExportFailureReason": "the server didn't report a reason",
-        "exportTaskLost": "The traffic buffer export is no longer tracked by the server. Check the traffic recordings for its result."
+        "exportTaskLost": "The traffic buffer export is no longer tracked by the server. Check the traffic recordings for its result.",
+        "sharedSessionCloseRequested": "Close of the shared session for catalog \"{catalogName}\" has been requested. Its traffic becomes visible after the next flush of the server traffic buffer.",
+        "couldNotCloseSharedSession": "Could not close the shared session: {reason}"
       },
       "button": {
         "reloadRecordHistory": "Reload record history",
         "moveStartPointerToNewest": "Load only records newer than now",
         "removeStartPointer": "Load entire record history",
         "modifyStartPointer": "Change start of loaded record history",
+        "recordVisibility": "Why recent traffic is missing",
+        "recordVisibilityHelp": "A record shows up here only after its session is closed and the server flushes its traffic buffer to disk (every minute by default, see the server property server.trafficRecording.trafficFlushIntervalInMilliseconds). Traffic of the last few moments — and of any still open session — is therefore expected to be missing. Reload the history again a moment later.",
+        "closeSharedSession": "Close shared session",
+        "closeSharedSessionHelp": "evitaLab runs its own queries in one long-lived session per catalog, and an open session is never written to the traffic buffer, so traffic generated from evitaLab itself never appears here. This requests a close of that session once its in-flight calls finish; the records then appear at the next flush of the traffic buffer, not immediately. Traffic of other clients is not affected.",
         "exportTrafficBuffer": "Export traffic buffer",
         "exportTrafficBufferHelp": "Downloads a point-in-time snapshot of the rolling traffic buffer the server keeps in memory. No recording needs to be running; the snapshot covers whatever fits into the buffer window at this moment.",
         "exportTrafficBufferUnavailable": "Traffic recording is not active for this catalog, so there is no traffic buffer to export. Enable traffic recording in the server configuration, or start an on-demand recording in Traffic Recordings."
@@ -2017,10 +2112,11 @@
           "noRecords": "There are no traffic records for defined filter. The traffic buffer of the {catalogName} catalog may still hold records excluded by the filter — use the \"Export traffic buffer\" action in the toolbar to download a snapshot of its entire content."
         },
         "button": {
-          "loadMore": "Load more"
+          "loadOlder": "Load older"
         },
         "notification": {
-          "noNewerRecords": "No newer records exist."
+          "noNewerRecords": "No newer records exist.",
+          "noOlderRecords": "No older records exist."
         }
       },
       "record": {
@@ -2215,7 +2311,8 @@
       },
       "notification": {
         "invalidFilter": "Filter criteria are not valid.",
-        "couldNotApplyFilter": "Could not apply filter: {reason}"
+        "couldNotApplyFilter": "Could not apply filter: {reason}",
+        "couldNotLoadEntityTypes": "Could not load entity types."
       },
       "form": {
         "from": {
@@ -2238,7 +2335,6 @@
         "entityType": {
           "hint": "Entity type",
           "label": "Entity type"
-
         },
         "areaType": {
           "hint": "Area scope",
@@ -2251,7 +2347,10 @@
         },
         "entityPrimaryKey": {
           "hint": "Entity PK",
-          "label": "Entity PK"
+          "label": "Entity PK",
+          "validations": {
+            "notValid": "Entity primary key must be a whole number."
+          }
         },
         "containerName": {
           "hint": "Container name(s)",

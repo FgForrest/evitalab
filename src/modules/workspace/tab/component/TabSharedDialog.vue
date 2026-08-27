@@ -43,7 +43,7 @@ watch(
                     // there is nothing to confirm, close the dialog instead of leaving it empty
                     sharedTab.value = undefined
                     emit('update:modelValue', false)
-                    await toaster.error('Could not resolve shared tab', asError(e)) // todo lho i18n
+                    await toaster.error(t('tabShare.notification.couldNotResolveSharedTab'), asError(e))
                 }
             }
         }

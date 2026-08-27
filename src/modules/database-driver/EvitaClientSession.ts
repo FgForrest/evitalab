@@ -1,9 +1,11 @@
 import { List as ImmutableList } from 'immutable'
 import { Code, ConnectError } from '@connectrpc/connect'
+import type { CallOptions } from '@connectrpc/connect'
 import type {
     EvitaSessionServiceClient,
     EvitaTrafficRecordingServiceClient
 } from '@/modules/database-driver/AbstractEvitaClient'
+import { userQueryTimeout } from '@/modules/database-driver/AbstractEvitaClient'
 import { CatalogSchema } from '@/modules/database-driver/request-response/schema/CatalogSchema'
 import { InstanceTerminatedError } from '@/modules/database-driver/exception/InstanceTerminatedError'
 import {
@@ -21,8 +23,7 @@ import {
     type GrpcFullBackupCatalogResponse,
     type GrpcGoLiveAndCloseResponse,
     type GrpcQueryResponse,
-    type GrpcRenameCollectionResponse,
-    type GrpcTransactionOverview
+    type GrpcRenameCollectionResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaSessionAPI_pb'
 import {
     CatalogSchemaConverter
@@ -54,10 +55,7 @@ import type { EntitySchemaAccessor } from '@/modules/database-driver/request-res
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
-import {
-    GrpcChangeCaptureArea,
-    GrpcChangeCaptureContent
-} from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
+import { GrpcChangeCaptureContent } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb.ts'
 import type {
     MutationHistoryConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/MutationHistoryConverter.ts'
@@ -72,8 +70,20 @@ import type {
     TrafficRecordingCaptureRequest
 } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordingCaptureRequest.ts'
 import type { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord.ts'
-import { TransactionMutation } from '@/modules/database-driver/request-response/transaction/TransactionMutation.ts'
-import { Operation } from '@/modules/database-driver/request-response/cdc/Operation.ts'
+import {
+    TransactionConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/TransactionConverter.ts'
+import { v4 as uuidv4 } from 'uuid'
+import { CacheInvalidationReason } from '@/modules/database-driver/cache/CacheInvalidationReason.ts'
+import type { PersistentCacheLayer } from '@/modules/database-driver/cache/PersistentCacheLayer.ts'
+
+/**
+ * Identity of a server-side session, as reported by evitaDB when the session was really created.
+ */
+export interface MaterializedSession {
+    readonly sessionId: string
+    readonly catalogState: CatalogState
+}
 
 /**
  * Session are created by the clients to envelope a "piece of work" with evitaDB. In web environment it's a good idea
@@ -85,13 +95,33 @@ import { Operation } from '@/modules/database-driver/request-response/cdc/Operat
  * EvitaSession transaction behave like <a href="https://en.wikipedia.org/wiki/Snapshot_isolation">Snapshot</a>
  * transaction. When no transaction is explicitly opened - each query to Evita behaves as one small transaction. Data
  * updates are not allowed without explicitly opened transaction.
+ *
+ * A session is constructed as a **cheap local shell**: no server session exists until the first call that
+ * genuinely needs the network asks for it (see {@link materialize}). Reads answered from a client-side cache
+ * therefore never open a server session at all, which is what makes cached schemas readable while the server
+ * is unreachable.
  */
 export class EvitaClientSession {
 
-    private readonly _id: string
+    /**
+     * Client-generated identifier that is stable for the whole lifetime of the shell, unlike {@link id},
+     * which does not exist before materialization. Used in log messages only.
+     */
+    private readonly _debugId: string = uuidv4()
+    private _id?: string
     private readonly _catalogName: string
-    private readonly _catalogState: CatalogState
+    private _catalogState: CatalogState
     private _active: boolean = true
+    /**
+     * Materialization of the server-side session, in flight or already finished. Single-flighted: concurrent
+     * callers share one creation. Cleared again when the creation fails, so a later call may retry.
+     */
+    private _materialization?: Promise<void>
+    /**
+     * Opens the server-side session. Supplied by {@link EvitaClient}, which knows how the session is to be
+     * created (read-only/read-write, waiting for an outstanding close on a warming-up catalog).
+     */
+    private readonly sessionMaterializer: () => Promise<MaterializedSession>
     /**
      * Number of callers currently executing their logic against this session (see {@link acquire}).
      */
@@ -101,7 +131,10 @@ export class EvitaClientSession {
      * session is actually closed.
      */
     private _pendingClose?: { promise: Promise<void>, resolve: () => void }
-    private readonly _callMetadata: { headers: Record<string, string> }
+    /**
+     * gRPC call metadata identifying the server-side session. Present only once materialized.
+     */
+    private _callMetadata?: { headers: Record<string, string> }
 
     private readonly clientEntitySchemaAccessor: EntitySchemaAccessor
 
@@ -115,10 +148,15 @@ export class EvitaClientSession {
     private readonly taskStatusConverterProvider: () => TaskStatusConverter
     private readonly trafficRecordingConverterProvider: () => TrafficRecordingConverter
     private readonly mutationHistoryConverterProvider: () => MutationHistoryConverter
+    /**
+     * Access to the on-disk cache, used to persist raw schema payloads right where they arrive. Absent when
+     * persistence is unavailable.
+     */
+    private readonly persistentCacheLayerProvider: () => PersistentCacheLayer | undefined
 
-    constructor(id: string,
-                catalogName: string,
+    constructor(catalogName: string,
                 catalogState: CatalogState,
+                sessionMaterializer: () => Promise<MaterializedSession>,
                 evitaClient: EvitaClient,
                 schemaCache: EvitaSchemaCache,
                 errorTransformerProvider: () => ErrorTransformer,
@@ -129,11 +167,12 @@ export class EvitaClientSession {
                 responseConverterProvider: () => EvitaResponseConverter,
                 taskStatusConverterProvider: () => TaskStatusConverter,
                 trafficRecordingConverterProvider: () => TrafficRecordingConverter,
-                mutationHistoryConverterProvider: () => MutationHistoryConverter
+                mutationHistoryConverterProvider: () => MutationHistoryConverter,
+                persistentCacheLayerProvider: () => PersistentCacheLayer | undefined = () => undefined
     ) {
-        this._id = id
         this._catalogName = catalogName
         this._catalogState = catalogState
+        this.sessionMaterializer = sessionMaterializer
 
         this.evitaClient = evitaClient
         this.schemaCache = schemaCache
@@ -147,24 +186,34 @@ export class EvitaClientSession {
         this.taskStatusConverterProvider = taskStatusConverterProvider
         this.trafficRecordingConverterProvider = trafficRecordingConverterProvider
         this.mutationHistoryConverterProvider = mutationHistoryConverterProvider
-
-        this._callMetadata = {
-            headers: {
-                sessionId: id
-            }
-        }
+        this.persistentCacheLayerProvider = persistentCacheLayerProvider
 
         this.clientEntitySchemaAccessor = new ClientEntitySchemaAccessor(this)
     }
 
-    get id(): string {
+    /**
+     * Identifier of the server-side session, or `undefined` while the session is still an unmaterialized
+     * shell. Use {@link debugId} for logging, it is always available.
+     */
+    get id(): string | undefined {
         return this._id
+    }
+
+    /**
+     * Client-generated identifier of this session, stable from construction on. Intended for log messages.
+     */
+    get debugId(): string {
+        return this._debugId
     }
 
     get catalogName(): string {
         return this._catalogName
     }
 
+    /**
+     * State of the catalog this session is tied to. Seeded from the catalog statistics the client already
+     * holds and refreshed from the server's answer once the session materializes.
+     */
     get catalogState(): CatalogState {
         return this._catalogState
     }
@@ -173,12 +222,77 @@ export class EvitaClientSession {
         return this._active
     }
 
+    /**
+     * Whether the server-side session has already been opened.
+     */
+    get isMaterialized(): boolean {
+        return this._callMetadata != undefined
+    }
+
     private assertActive(): void {
         if (!this.isActive) {
             throw new InstanceTerminatedError(
-                `Session '${this.id}' is not active.`
+                `Session '${this._debugId}' is not active.`
             )
         }
+    }
+
+    /**
+     * Opens the server-side session on the first call that genuinely needs the network, and does nothing
+     * on every subsequent call. Concurrent callers share a single creation; a failed attempt is forgotten,
+     * so a later call retries against a server that may have recovered in the meantime (the awaiters of
+     * the failed attempt all observe its failure).
+     *
+     * A closed shell refuses to materialize: opening a server session nobody can close any more would leak
+     * it. The resulting {@link InstanceTerminatedError} is exactly what
+     * {@link EvitaClient.executeInSharedSession} recognizes as "we closed this session underneath the
+     * caller" and replays on a fresh session.
+     */
+    private materialize(): Promise<void> {
+        this.assertActive()
+        if (this._callMetadata != undefined) {
+            return Promise.resolve()
+        }
+        if (this._materialization == undefined) {
+            this._materialization = this.sessionMaterializer()
+                .then((materialized: MaterializedSession) => {
+                    this._id = materialized.sessionId
+                    this._catalogState = materialized.catalogState
+                    this._callMetadata = { headers: { sessionId: materialized.sessionId } }
+                })
+                .catch((e: unknown) => {
+                    this._materialization = undefined
+                    throw e
+                })
+        }
+        return this._materialization
+    }
+
+    /**
+     * Returns the gRPC call metadata identifying the server-side session, opening the session first if it
+     * does not exist yet. **Every server-touching method obtains its metadata through this method** — it is
+     * the single point where a session shell turns into a real server session, so a call that needs the
+     * network can never accidentally skip the creation.
+     */
+    private async callMetadata(): Promise<{ headers: Record<string, string> }> {
+        await this.materialize()
+        const callMetadata: { headers: Record<string, string> } | undefined = this._callMetadata
+        if (callMetadata == undefined) {
+            throw new UnexpectedError(`Session '${this._debugId}' has not been materialized.`)
+        }
+        return callMetadata
+    }
+
+    /**
+     * Returns the {@link callMetadata} widened with an explicit deadline for a single call. Without one, the
+     * transport-wide default deadline applies; pass one only for calls that are legitimately allowed to run
+     * longer than metadata, which on this session means anything carrying a user-issued query.
+     *
+     * The classification lives here rather than in the callers above the driver: this class is what knows
+     * which gRPC method is a query, and no signature outside the driver has to mention timeouts because of it.
+     */
+    private async callOptions(timeoutMs: number): Promise<CallOptions> {
+        return { ...(await this.callMetadata()), timeoutMs }
     }
 
     /**
@@ -187,7 +301,7 @@ export class EvitaClientSession {
     async getCatalogSchema(): Promise<CatalogSchema> {
         this.assertActive()
         return this.schemaCache.getLatestCatalogSchema(
-            async () => await this.fetchCatalogSchema.bind(this)()
+            async () => await this.fetchLatestCatalogSchema.bind(this)()
         )
     }
 
@@ -197,7 +311,7 @@ export class EvitaClientSession {
     async getAllEntityTypes(): Promise<ImmutableList<string>> {
         this.assertActive()
         try {
-            const response: GrpcEntityTypesResponse = await this.evitaSessionClientProvider().getAllEntityTypes({}, this._callMetadata)
+            const response: GrpcEntityTypesResponse = await this.evitaSessionClientProvider().getAllEntityTypes({}, await this.callMetadata())
             return ImmutableList(response.entityTypes)
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
@@ -211,7 +325,7 @@ export class EvitaClientSession {
         this.assertActive()
         return await this.schemaCache.getLatestEntitySchema(
             entityType,
-            async () => await this.fetchEntitySchema.bind(this)(entityType)
+            async () => await this.fetchLatestEntitySchema.bind(this)(entityType)
         )
     }
 
@@ -237,7 +351,8 @@ export class EvitaClientSession {
         this.assertActive()
         try {
             const response: GrpcGoLiveAndCloseResponse = await this.evitaSessionClientProvider()
-                .goLiveAndClose({}, this._callMetadata)
+                // the whole warm-up-to-alive transition happens inside this call, so it is patient by nature
+                .goLiveAndClose({}, await this.callOptions(userQueryTimeout))
 
             if (response.success) {
                 this._active = false
@@ -258,7 +373,7 @@ export class EvitaClientSession {
             const response: GrpcDefineEntitySchemaResponse = await this.evitaSessionClientProvider()
                 .defineEntitySchema(
                     { entityType },
-                    this._callMetadata
+                    await this.callMetadata()
                 )
             const entitySchema: EntitySchema = this.catalogSchemaConverterProvider()
                 .convertEntitySchema(response.entitySchema!)
@@ -289,10 +404,10 @@ export class EvitaClientSession {
                         entityType,
                         newName
                     },
-                    this._callMetadata
+                    await this.callMetadata()
                 )
             if (response.renamed) {
-                this.schemaCache.removeLatestEntitySchema(entityType)
+                await this.schemaCache.removeLatestEntitySchema(CacheInvalidationReason.ChangeEvidence, entityType)
             }
 
             return response.renamed
@@ -310,10 +425,10 @@ export class EvitaClientSession {
                         {
                             entityType
                         },
-                        this._callMetadata
+                        await this.callMetadata()
                     )
             if (response.deleted) {
-                this.schemaCache.removeLatestEntitySchema(entityType)
+                await this.schemaCache.removeLatestEntitySchema(CacheInvalidationReason.ChangeEvidence, entityType)
             }
 
             return response.deleted
@@ -335,14 +450,19 @@ export class EvitaClientSession {
                     {
                         query
                     },
-                    this._callMetadata
+                    // a query the user wrote; on a large catalog it may legitimately run for minutes
+                    await this.callOptions(userQueryTimeout)
                 )
 
             for (const entity of queryResponse.recordPage?.sealedEntities || []) {
-                const latestKnownEntitySchemaVersion: number | undefined = await this.schemaCache.getLatestEntitySchemaVersion(entity.entityType)
+                const latestKnownEntitySchemaVersion: number | undefined =
+                    this.schemaCache.getLatestEntitySchemaVersionInMemory(entity.entityType)
                 if (latestKnownEntitySchemaVersion != undefined && latestKnownEntitySchemaVersion < entity.schemaVersion) {
                     await this.close()
-                    await this.schemaCache.removeLatestEntitySchema(entity.entityType)
+                    await this.schemaCache.removeLatestEntitySchema(
+                        CacheInvalidationReason.ChangeEvidence,
+                        entity.entityType
+                    )
                 }
             }
 
@@ -356,7 +476,7 @@ export class EvitaClientSession {
         this.assertActive()
         try {
             const result: GrpcCatalogVersionAtResponse = await this.evitaSessionClientProvider()
-                .getCatalogVersionAt({}, this._callMetadata)
+                .getCatalogVersionAt({}, await this.callMetadata())
 
             return new CatalogVersionAtResponse(
                 BigInt(result.startVersion),
@@ -381,9 +501,8 @@ export class EvitaClientSession {
                         }
                         : undefined
                 },
-                this._callMetadata
+                await this.callMetadata()
             )
-            // todo lho send to management task tracker
             return this.taskStatusConverterProvider().convert(response.taskStatus!)
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
@@ -393,7 +512,7 @@ export class EvitaClientSession {
     async fullBackupCatalog(): Promise<TaskStatus> {
         this.assertActive()
         try {
-            const response: GrpcFullBackupCatalogResponse = await this.evitaSessionClientProvider().fullBackupCatalog({}, this._callMetadata)
+            const response: GrpcFullBackupCatalogResponse = await this.evitaSessionClientProvider().fullBackupCatalog({}, await this.callMetadata())
             return this.taskStatusConverterProvider().convert(response.taskStatus!)
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
@@ -412,7 +531,8 @@ export class EvitaClientSession {
                         nameStartsWith,
                         limit
                     },
-                    this._callMetadata
+                    // a cardinality scan over the whole recording buffer, not a metadata lookup
+                    await this.callOptions(userQueryTimeout)
                 )
             return ImmutableList(response.labelName || [])
         } catch (e) {
@@ -437,7 +557,8 @@ export class EvitaClientSession {
                         valueStartsWith,
                         limit
                     },
-                    this._callMetadata
+                    // a cardinality scan over the whole recording buffer, not a metadata lookup
+                    await this.callOptions(userQueryTimeout)
                 )
             return ImmutableList(response.labelValue || [])
         } catch (e) {
@@ -464,7 +585,7 @@ export class EvitaClientSession {
                         maxFileSizeInBytes,
                         chunkFileSizeInBytes
                     },
-                    this._callMetadata
+                    await this.callMetadata()
                 )
             return this.taskStatusConverterProvider().convert(trafficResponse.taskStatus!)
         } catch (e) {
@@ -491,7 +612,7 @@ export class EvitaClientSession {
                             ? chunkFileSizeInBytes
                             : undefined
                     },
-                    this._callMetadata
+                    await this.callMetadata()
                 )
             return this.taskStatusConverterProvider().convert(response.taskStatus!)
         } catch (e) {
@@ -513,7 +634,7 @@ export class EvitaClientSession {
                             leastSignificantBits: taskId.leastSignificantBits.toString()
                         }
                     },
-                    this._callMetadata
+                    await this.callMetadata()
                 )
             return this.taskStatusConverterProvider().convert(response.taskStatus!)
         } catch (e) {
@@ -541,12 +662,14 @@ export class EvitaClientSession {
             } as GetTrafficHistoryListRequest
 
             let response: GetTrafficHistoryListResponse
+            // a criteria search over the recording buffer, which on a busy catalog behaves like a user query
+            const callOptions: CallOptions = await this.callOptions(userQueryTimeout)
             if (!reverse) {
                 response = await this.evitaTrafficRecordingClientProvider()
-                    .getTrafficRecordingHistoryList(request, this._callMetadata)
+                    .getTrafficRecordingHistoryList(request, callOptions)
             } else {
                 response = await this.evitaTrafficRecordingClientProvider()
-                    .getTrafficRecordingHistoryListReversed(request, this._callMetadata)
+                    .getTrafficRecordingHistoryListReversed(request, callOptions)
             }
             return this.trafficRecordingConverterProvider()
                 .convertGrpcTrafficRecords(response.trafficRecord)
@@ -590,7 +713,8 @@ export class EvitaClientSession {
             } as GetMutationsHistoryPageRequest;
 
 
-            const response: GetMutationsHistoryPageResponse = await this.evitaSessionClientProvider().getMutationsHistoryPage(request, this._callMetadata)
+            // a wide time range over a busy catalog scans the WAL, so this is a query rather than metadata
+            const response: GetMutationsHistoryPageResponse = await this.evitaSessionClientProvider().getMutationsHistoryPage(request, await this.callOptions(userQueryTimeout))
             const captures: ChangeCatalogCapture[] = truncateBelowBoundary(
                 response.changeCapture.map(i => this.mutationHistoryConverterProvider().convertGrpcMutationHistory(i)),
                 mutationHistoryRequest.newerThanVersion
@@ -608,8 +732,9 @@ export class EvitaClientSession {
             let transactionCaptures:ChangeCatalogCapture[] = [];
             if (mutationHistoryRequest.loadTransaction) {
                 const transactionRequest: GetTransactionOverviewRequest = {catalogVersion: catalogVersionIdList} as GetTransactionOverviewRequest
-                const transactionResponse: GetTransactionOverviewResponse = await this.evitaSessionClientProvider().getTransactionOverview(transactionRequest, this._callMetadata)
-                transactionCaptures = transactionResponse.transactionOverviews.map(i => this.convertGrpcTransactionOverview(i));
+                const transactionResponse: GetTransactionOverviewResponse = await this.evitaSessionClientProvider().getTransactionOverview(transactionRequest, await this.callOptions(userQueryTimeout))
+                transactionCaptures = transactionResponse.transactionOverviews
+                    .map(overview => TransactionConverter.convertGrpcTransactionOverview(overview));
             }
 
             // the transaction header of a group is streamed only once, so pages beyond the first do not
@@ -622,31 +747,6 @@ export class EvitaClientSession {
         } catch (e) {
             throw this.errorTransformerProvider().transformError(e)
         }
-    }
-
-    // todo move me to a separate class
-    private convertGrpcTransactionOverview(grpcTransactionOverview: GrpcTransactionOverview): ChangeCatalogCapture {
-
-
-        const mutation =  new TransactionMutation(
-            EvitaValueConverter.convertGrpcUuid(grpcTransactionOverview.transactionId!).toString(),
-            Number(grpcTransactionOverview.catalogVersion),
-            grpcTransactionOverview.transactionChanges.reduce((acc, i) => acc + i.mutationCount, 0),
-            Number(grpcTransactionOverview.transactionChanges.reduce((acc, i) => acc + Number(i.walSizeInBytes), 0)),
-            EvitaValueConverter.convertGrpcOffsetDateTime(grpcTransactionOverview.commitTimestamp!)
-        )
-
-        return new ChangeCatalogCapture(
-            Number(grpcTransactionOverview.catalogVersion),
-             0,
-            CatalogSchemaConverter.toCaptureArea(GrpcChangeCaptureArea.INFRASTRUCTURE),
-            undefined,
-            undefined,
-            Operation.Transaction,
-            mutation,
-            EvitaValueConverter.convertGrpcOffsetDateTime(grpcTransactionOverview.commitTimestamp!)
-        )
-
     }
 
     /**
@@ -700,6 +800,10 @@ export class EvitaClientSession {
 
     /**
      * Close the session. If already closed, does nothing.
+     *
+     * A shell that never materialized closes purely locally — there is no server-side session to close. A
+     * close that races an in-flight materialization waits for its outcome first, so a session that did get
+     * created is never left open on the server.
      */
     async close(): Promise<void> {
         if (!this.isActive) {
@@ -707,32 +811,55 @@ export class EvitaClientSession {
         }
         this._active = false
 
+        const materialization: Promise<void> | undefined = this._materialization
+        if (materialization != undefined) {
+            try {
+                await materialization
+            } catch {
+                // the server session was never created, there is nothing to close
+            }
+        }
+
+        const callMetadata: { headers: Record<string, string> } | undefined = this._callMetadata
+        if (callMetadata == undefined) {
+            return
+        }
+
         try {
             await this.evitaSessionClientProvider()
                 .close(
                     {},
-                    this._callMetadata
+                    callMetadata
                 )
         } catch (e) {
             if (e instanceof ConnectError && e.code === Code.InvalidArgument) {
                 // ignore, session already closed
                 return
             }
-            console.error(`Could not close the session '${this.id}': `, e)
+            console.error(`Could not close the session '${this._debugId}': `, e)
         }
     }
 
     /**
-     * This internal method will physically call over the network and fetch actual {@link CatalogSchema}.
-     * @private
+     * Fetches the {@link CatalogSchema} straight from the server, bypassing every cache, and persists the raw
+     * payload on the way. Ordinary reads must go through {@link getCatalogSchema} — this method exists for the
+     * fetch-first refresh paths, which need to know the server's current version before deciding anything.
+     *
+     * This is also the write-through point of the persistent cache: the raw protobuf message is only available
+     * here, and persisting it here means a cached schema and a freshly fetched one always went through the very
+     * same converter.
      */
-    private async fetchCatalogSchema(): Promise<CatalogSchema> {
+    async fetchLatestCatalogSchema(): Promise<CatalogSchema> {
+        this.assertActive()
         try {
             const schemaRes: GrpcCatalogSchemaResponse = await this.evitaSessionClientProvider()
                 .getCatalogSchema(
                     { nameVariants: true },
-                    this._callMetadata
+                    await this.callMetadata()
                 )
+
+            this.persistentCacheLayerProvider()
+                ?.persistCatalogSchema(this._catalogName, schemaRes.catalogSchema!)
 
             return this.catalogSchemaConverterProvider().convert(
                 schemaRes.catalogSchema!,
@@ -744,10 +871,11 @@ export class EvitaClientSession {
     }
 
     /**
-     * This internal method will physically call over the network and fetch actual {@link EntitySchema}.
-     * @private
+     * Fetches the {@link EntitySchema} straight from the server, bypassing every cache, and persists the raw
+     * payload on the way. The entity-level counterpart of {@link fetchLatestCatalogSchema}.
      */
-    private async fetchEntitySchema(entityType: string): Promise<EntitySchema | undefined> {
+    async fetchLatestEntitySchema(entityType: string): Promise<EntitySchema | undefined> {
+        this.assertActive()
         try {
             const response: GrpcEntitySchemaResponse = await this.evitaSessionClientProvider()
                 .getEntitySchema(
@@ -755,12 +883,15 @@ export class EvitaClientSession {
                         nameVariants: true,
                         entityType
                     },
-                    this._callMetadata
+                    await this.callMetadata()
                 )
 
             if (response.entitySchema == undefined) {
                 return undefined
             }
+
+            this.persistentCacheLayerProvider()
+                ?.persistEntitySchema(this._catalogName, response.entitySchema)
 
             return this.catalogSchemaConverterProvider().convertEntitySchema(
                 response.entitySchema

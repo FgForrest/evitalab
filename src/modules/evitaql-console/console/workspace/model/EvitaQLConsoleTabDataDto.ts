@@ -5,5 +5,4 @@ import type { TabDataDto } from '@/modules/workspace/tab/model/TabDataDto'
  */
 export interface EvitaQLConsoleTabDataDto extends TabDataDto {
     readonly query?: string
-    readonly variables?: string
 }

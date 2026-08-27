@@ -33,6 +33,9 @@ export class Entity extends EntityReferenceWithParent {
     readonly locales: List<Locale>
     readonly scope: EntityScope
 
+    /** References grouped by their name, built on first use of any of the reference accessors. */
+    private _referenceIndex: Map<string, List<Reference>> | undefined = undefined
+
     constructor(
         entityType: string,
         primaryKey: number,
@@ -94,5 +97,47 @@ export class Entity extends EntityReferenceWithParent {
         return this._associatedData.allAssociatedData
     }
 
-    // todo lho references
+    /**
+     * Returns all references of the passed name, or an empty list when the entity has none. A reference
+     * name may repeat, because a reference with the `ZERO_OR_MORE` / `EXACTLY_ONE` cardinality points to
+     * a different entity in each of its occurrences.
+     */
+    referencesOfName(referenceName: string): List<Reference> {
+        return this.referenceIndex.get(referenceName) ?? List()
+    }
+
+    /**
+     * Returns the reference of the passed name pointing to the passed entity primary key, or undefined
+     * when the entity has no such reference.
+     */
+    reference(referenceName: string, referencedPrimaryKey: number): Reference | undefined {
+        return this.referencesOfName(referenceName)
+            .find(reference => reference.referencedPrimaryKey === referencedPrimaryKey)
+    }
+
+    /**
+     * Names of all references the entity has, each reported once regardless of how many entities it
+     * points to.
+     */
+    get referenceNames(): Set<string> {
+        return Set(this.referenceIndex.keys())
+    }
+
+    private get referenceIndex(): Map<string, List<Reference>> {
+        if (this._referenceIndex == undefined) {
+            const index: Map<string, Reference[]> = new Map()
+            for (const reference of this.references) {
+                const referencesOfName: Reference[] | undefined = index.get(reference.referenceName)
+                if (referencesOfName == undefined) {
+                    index.set(reference.referenceName, [reference])
+                } else {
+                    referencesOfName.push(reference)
+                }
+            }
+            this._referenceIndex = new Map(
+                Array.from(index, ([referenceName, referencesOfName]) => [referenceName, List(referencesOfName)])
+            )
+        }
+        return this._referenceIndex
+    }
 }

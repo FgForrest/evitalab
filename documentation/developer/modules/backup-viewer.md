@@ -3,7 +3,8 @@
 Feature module. Creating catalog backups and restoring from them. Contributes `TabType.BackupViewer`.
 
 - **Provides:** `backupViewerServiceInjectionKey`, `backupViewerTabFactoryInjectionKey`
-- **Injects:** `evitaClientInjectionKey`
+- **Injects:** `evitaClientInjectionKey`, `connectionServiceInjectionKey`,
+  `tabFactoryRegistryInjectionKey`
 
 ## Contents
 

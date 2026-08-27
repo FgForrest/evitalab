@@ -17,11 +17,17 @@ import type {
     TrafficRecordHistoryViewerTabDataDto
 } from '@/modules/traffic-viewer/model/TrafficRecordHistoryViewerTabDataDto'
 import { Uuid } from '@/modules/database-driver/data-type/Uuid'
-import { OffsetDateTime, Timestamp } from '@/modules/database-driver/data-type/OffsetDateTime'
+import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
+import type { TabFactory } from '@/modules/workspace/tab/service/TabFactory'
 
 export const trafficRecordHistoryViewerTabFactoryInjectionKey: InjectionKey<TrafficRecordHistoryViewerTabFactory> = Symbol('trafficRecordingHistoryViewerTabFactory')
 
-export class TrafficRecordHistoryViewerTabFactory {
+export class TrafficRecordHistoryViewerTabFactory implements TabFactory {
+
+    readonly tabType: TabType = TabType.TrafficRecordHistoryViewer
+    readonly restorable: boolean = true
+
     private readonly connectionService: ConnectionService
 
     constructor(connectionService: ConnectionService) {
@@ -81,10 +87,7 @@ export class TrafficRecordHistoryViewerTabFactory {
         const dto: TrafficRecordHistoryViewerTabDataDto = json as TrafficRecordHistoryViewerTabDataDto
         return new TrafficRecordHistoryViewerTabData(
             dto.since != undefined
-                ? new OffsetDateTime(
-                    new Timestamp(BigInt(dto.since.seconds), dto.since.nanos),
-                    dto.since.offset
-                )
+                ? OffsetDateTime.of(BigInt(dto.since.seconds), dto.since.nanos, dto.since.offset)
                 : undefined,
             dto.types,
             dto.sessionId != undefined ? Uuid.fromCode(dto.sessionId) : undefined,

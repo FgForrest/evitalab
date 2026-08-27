@@ -1,11 +1,11 @@
 import type { Mutation } from '../Mutation'
 import type { LocalMutation } from '../data/mutation/LocalMutation'
 import { UpsertAttributeMutation } from '../data/mutation/attribute/UpsertAttributeMutation'
-import { UpsertAssociatedDataMutation } from '../data/mutation/associatedData/UpsertAssociatedDataMutation'
+import { UpsertAssociatedDataMutation } from '../data/mutation/associated-data/UpsertAssociatedDataMutation'
 import { UpsertPriceMutation } from '../data/mutation/price/UpsertPriceMutation'
 import { InsertReferenceMutation } from '../data/mutation/reference/InsertReferenceMutation'
 import { RemoveAttributeMutation } from '../data/mutation/attribute/RemoveAttributeMutation'
-import { RemoveAssociatedDataMutation } from '../data/mutation/associatedData/RemoveAssociatedDataMutation'
+import { RemoveAssociatedDataMutation } from '../data/mutation/associated-data/RemoveAssociatedDataMutation'
 import { RemovePriceMutation } from '../data/mutation/price/RemovePriceMutation'
 import { RemoveReferenceMutation } from '../data/mutation/reference/RemoveReferenceMutation'
 

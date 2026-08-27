@@ -84,11 +84,14 @@ The lab has an established icon vocabulary — reuse it, don't invent synonyms:
 | `mdi-file-code` | Schema (code form) |
 | `mdi-code-braces` | Raw (JSON) result / output format |
 | `mdi-file-tree-outline` | Visualised / structured result |
+| `mdi-arrow-expand-horizontal` | Hidden/collapsed panel |
 | `mdi-view-column-outline` | Column/property selection |
 | `mdi-counter` | Count metric |
 | `mdi-check` / `mdi-close` | Flag on / off |
 | `mdi-refresh` | Reload data from server |
-| `mdi-auto-fix` | Automatic ("pretty print") mode |
+| `mdi-auto-fix` | Automatic ("pretty print") mode, prettify action |
+| `mdi-arrow-collapse-vertical` | Minify action (collapse a document onto one line) |
+| `mdi-pencil-outline` / `mdi-pencil-off-outline` | Content is hand-written by the user / derived by the lab from another control |
 | `mdi-information-outline` | Neutral explanation tooltip |
 | `mdi-alert-outline` (warning color) | Warning note tooltip |
 
@@ -146,9 +149,22 @@ the tab area. The canonical skeleton, used by all three reference pages:
   results change meaning, it belongs here.
 - **append slot** — icon buttons, ordered least → most important, with the **primary action
   last**: `ShareTabButton`, secondary actions (reload `mdi-refresh`, …), then
-  `VExecuteQueryButton`/`VTabMainActionButton`.
+  `VExecuteQueryButton`/`VTabMainActionButton`. Actions that act on the **content being edited**
+  rather than on the tab (prettify/minify in the consoles) go **first**, wrapped in
+  `VTabToolbarActionGroup`, which closes them with a vertical separator so they do not read as part
+  of the tab's own actions. The separator is trailing, so a group placed last would leave it
+  dangling at the toolbar's edge.
+- Buttons in *append* may appear conditionally. The append group is right-anchored
+  (`.v-toolbar__append { margin-inline: auto 4px }`, with `.v-toolbar-title` taking the slack via
+  `flex: 1 1`), so it grows leftwards and the primary action never moves. What does shift is
+  everything to the **left** of the appearing button — which is the other reason a group of
+  come-and-go actions belongs at the front rather than in the middle of the row.
 - **extension slot** — a second toolbar row for always-visible query inputs (entity viewer's
   filter/order bar). Use it when the page's main interaction is "type constraint → run".
+  Its height is a **fixed** `:extension-height`, mirrored by the page body's `grid-template-rows` and
+  absolute `top` offset, so a row of filters that does not fit **scrolls horizontally** (fields keep a
+  `10rem` minimum) — it must not wrap, which would need all three numbers to become two-state. Both
+  history viewers' filter bars work this way.
 
 ### Panes
 
@@ -156,7 +172,9 @@ the tab area. The canonical skeleton, used by all three reference pages:
   left, output right — each wrapped by a `VWindow` whose views are switched by a 3-rem
   `VSideTabs` strip on the outer edge (left strip switches input views: query, variables,
   history, schema; right strip switches output views: raw, visualiser). Side-tab items are
-  icon-only `VTab`s with a `VActionTooltip` bound to the switching command.
+  icon-only `VTab`s with a `VActionTooltip` bound to the switching command. Either panel can be
+  **collapsed** by clicking its already-active side tab (the strip is `collapsible` with a
+  `v-model:visible`); with both collapsed the page shows a `VMissingDataIndicator` over the panes area.
 - A **grid-type page** (entity viewer) is a single main pane; a detail pane splits in
   on demand (`Splitpanes` with the detail `Pane` appearing at ~30 % when a cell is opened,
   `min-size` guarded).
@@ -167,6 +185,14 @@ the tab area. The canonical skeleton, used by all three reference pages:
 - Heavy pane content (raw result editor, visualiser) is instantiated lazily —
   `v-if` on the active view, or initialize-on-first-open (GraphQL schema editor) — so opening a
   tab stays cheap.
+- **Collapsing a pane that holds editable content is a view operation, never an unmount.** Hide it with
+  `position: absolute; visibility: hidden` at its existing size and give the sibling `width: 100%`;
+  this preserves caret, undo history and scroll offset, and leaves the split ratio intact. The lazy-
+  instantiation rule above applies to the *views inside* a pane, not to the pane itself.
+  Anchor the collapsed pane to the edge it already occupies so that leaving the flow does not move it,
+  keep it **below** the surviving pane in stacking order so a composited editor layer cannot linger on
+  top of it, and make the collapse **instant** — with splitpanes' default `transition: width .2s` left
+  on, the surviving pane snaps to the container edge and only then sweeps out to full width.
 
 ## Interaction language
 
@@ -220,7 +246,8 @@ row is the open action; non-openable items are `disabled`.
 ### Empty, loading and error states
 
 - Each distinct "nothing to show" cause gets its own `VMissingDataIndicator` with a
-  cause-specific icon and i18n message (no queries found ≠ no query selected ≠ no data selected).
+  cause-specific icon and i18n message (no queries found ≠ no query selected ≠ no data selected ≠
+  all panels collapsed).
 - In-progress states use `VLoadingCircular` (inside `VMissingDataIndicator` for pane-level
   loading) or the `loading` prop on buttons/tables; the primary action button shows the spinner
   while its work runs.
@@ -261,6 +288,47 @@ List rows representing identified data follow one title grammar (facet rows, gro
 flex row, `0.5rem` column gap, muted `mdi-key` + primary key prefix (click = copy), title
 (`'Unknown'` + explanatory tooltip when unresolvable), then chips. Unknown/zero-impact rows are
 dimmed with disabled opacity rather than removed.
+
+At narrow widths (the visualiser lives in a console pane, and a group row there has well under 200 px
+of usable width, so this is the normal case) the row degrades in one direction only: **the title
+truncates, the chips wrap.** Nothing is ever cut off. The structure that produces this:
+
+```
+.x-title            display: flex; flex-wrap: wrap; column-gap .5rem; row-gap .25rem
+  &__identity       display: flex; flex: 0 1 auto; min-width: 0      // keys + title, one unit
+    (key prefixes)  natural width, not shrinkable
+    &__name         flex: 0 1 auto; min-width: 0; nowrap + ellipsis
+  &__chips          flex: 0 0 auto; max-width: 100%                  // VChipGroup, `column`
+```
+
+Each rule answers a specific failure, all of them observed in the browser:
+
+- **Group the keys with the title.** A flex line breaks on an item's *content* width, so a title long
+  enough to not fit next to its own primary key drops to a line below it instead of truncating. Inside
+  one shrinking `__identity` unit the line break happens before the keys, and the name truncates.
+- **The name must not grow** (`flex: 0 1 auto`, never `1 1 auto`): a growing name fills the leftover
+  space and shoves the chips against the row's right edge, far from the text they belong to.
+- **The name owns its ellipsis.** `display: flex` on `.v-list-item-title` voids the `text-overflow:
+  ellipsis` Vuetify sets there, and `min-width` must be reset because a flex item's automatic minimum
+  size is its content — with the inherited `white-space: nowrap` that minimum is the *whole string*, so
+  the title cannot shrink at all and is **hard-clipped mid-word with no ellipsis**.
+- **The chips keep their width** (`flex: 0 0 auto`) and move to a line of their own. Shrinking them
+  instead makes them vanish: `VChipGroup` is a slide group whose container is `overflow-x: auto` with
+  `scrollbar-width: none`, so anything that does not fit **disappears with neither scrollbar nor
+  arrows** — and, being a scroll container, its `min-content` width is `0`, so `min-width: min-content`
+  is no protection either.
+- **`column` needs two corrections.** It wraps the chips (good), but it also sets `white-space: normal`
+  on the group, so a chip's own label wraps and is then cut by the chip's fixed height; and the chips,
+  being shrinkable, absorb the squeeze themselves instead of wrapping. Add
+  `:deep(.v-chip) { flex: 0 0 auto; white-space: nowrap }`.
+- A chip holding **several sections** (the facet counter: entities / impact / count) can still outgrow
+  the row. Let that one grow in height — `height: auto; min-height: 2rem` on the chip plus `flex-wrap:
+  wrap` on its inner row — rather than lose its last section.
+
+Both `result-visualiser/facet-summary/` and `result-visualiser/reference-summary/` ship a *parallel
+copy* of the group row and the facet row (same class names, same CSS). Which pair renders depends on
+the server: `referenceSummary` replaced `facetSummary` in the query API, so a change applied to only
+one family looks like the layout randomly behaving differently per server. Change both.
 
 ### Key-value details: `VPropertiesTable`
 

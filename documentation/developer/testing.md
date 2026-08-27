@@ -53,6 +53,14 @@ UI components and server-dependent flows are currently verified manually against
 instance (see [running development version](running-development-version.md) and
 [evitaDB server](evitadb-server.md)).
 
+**There is no DOM in the test environment** — Vitest runs on the default `node` environment and no
+`jsdom`/`happy-dom` is installed. That bites on *imports*, not only on rendering: anything reaching
+`WorkspaceService` transitively loads `keymaster`, which touches `document` at import time and fails the
+whole suite file with `ReferenceError: document is not defined`. When a service under test only needs such
+a dependency for callbacks that the test never invokes, pick a sibling that does not pull it in — e.g.
+`test/modules/history-viewer/service/MutationHistoryTransactionVisualiser.test.ts` nests a *schema*
+capture, because `MutationHistoryDataVisualiser` cannot be imported at all.
+
 ## Slot names
 
 `test/components/slotNames.test.ts` is the one exception to the pure-logic focus: it parses every

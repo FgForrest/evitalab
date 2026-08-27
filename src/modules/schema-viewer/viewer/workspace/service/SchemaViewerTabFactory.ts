@@ -18,10 +18,16 @@ import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import type { InjectionKey } from 'vue'
 import { mandatoryInject } from '@/utils/reactivity'
 import { SortableAttributeCompoundSchemaPointer } from '@/modules/schema-viewer/viewer/model/SortableAttributeCompoundSchemaPointer.ts'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
+import type { TabFactory } from '@/modules/workspace/tab/service/TabFactory'
 
 export const schemaViewerTabFactoryInjectionKey: InjectionKey<SchemaViewerTabFactory> = Symbol('schemaViewerTabFactory')
 
-export class SchemaViewerTabFactory {
+export class SchemaViewerTabFactory implements TabFactory {
+
+    readonly tabType: TabType = TabType.SchemaViewer
+    readonly legacyTabTypeIds: readonly string[] = ['schema-viewer']
+    readonly restorable: boolean = true
 
     private readonly connectionService: ConnectionService
 

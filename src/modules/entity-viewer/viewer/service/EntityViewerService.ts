@@ -44,6 +44,7 @@ import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
 import { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
 import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
+import { i18n } from '@/vue-plugins/i18n'
 
 export const entityViewerServiceInjectionKey: InjectionKey<EntityViewerService> = Symbol('entityViewerService')
 
@@ -395,66 +396,34 @@ export class EntityViewerService {
     async getEntityPropertyDescriptors(dataPointer: EntityViewerDataPointer): Promise<EntityPropertyDescriptor[]> {
         const entitySchema = await this.getEntitySchema(dataPointer)
         const descriptors: EntityPropertyDescriptor[] = []
-        // todo lho i18n
-        descriptors.push(new EntityPropertyDescriptor(
-            EntityPropertyType.Entity,
-            EntityPropertyKey.entity(StaticEntityProperties.PrimaryKey),
-            'Primary key',
-            'Primary key',
-            undefined,
-            undefined,
-            ImmutableList()
+        descriptors.push(this.createStaticEntityPropertyDescriptor(
+            StaticEntityProperties.PrimaryKey,
+            'entityViewer.grid.column.primaryKey'
         ))
-        descriptors.push(new EntityPropertyDescriptor(
-            EntityPropertyType.Entity,
-            EntityPropertyKey.entity(StaticEntityProperties.Version),
-            'Version',
-            'Version',
-            undefined,
-            undefined,
-            ImmutableList()
+        descriptors.push(this.createStaticEntityPropertyDescriptor(
+            StaticEntityProperties.Version,
+            'entityViewer.grid.column.version'
         ))
-
-        descriptors.push(new EntityPropertyDescriptor(
-            EntityPropertyType.Entity,
-            EntityPropertyKey.entity(StaticEntityProperties.Scope),
-            'Scope',
-            'Scope',
-            undefined,
-            undefined,
-            ImmutableList()
+        descriptors.push(this.createStaticEntityPropertyDescriptor(
+            StaticEntityProperties.Scope,
+            'entityViewer.grid.column.scope'
         ))
         if (entitySchema.withHierarchy) {
-            descriptors.push(new EntityPropertyDescriptor(
-                EntityPropertyType.Entity,
-                EntityPropertyKey.entity(StaticEntityProperties.ParentPrimaryKey),
-                'Parent',
-                'Parent',
-                undefined,
-                undefined,
-                ImmutableList()
+            descriptors.push(this.createStaticEntityPropertyDescriptor(
+                StaticEntityProperties.ParentPrimaryKey,
+                'entityViewer.grid.column.parent'
             ))
         }
         if (entitySchema.locales.size > 0) {
-            descriptors.push(new EntityPropertyDescriptor(
-                EntityPropertyType.Entity,
-                EntityPropertyKey.entity(StaticEntityProperties.Locales),
-                'Locales',
-                'Locales',
-                undefined,
-                undefined,
-                ImmutableList()
+            descriptors.push(this.createStaticEntityPropertyDescriptor(
+                StaticEntityProperties.Locales,
+                'entityViewer.grid.column.locales'
             ))
         }
         if (entitySchema.withPrice) {
-            descriptors.push(new EntityPropertyDescriptor(
-                EntityPropertyType.Entity,
-                EntityPropertyKey.entity(StaticEntityProperties.PriceInnerRecordHandling),
-                'Price inner record handling',
-                'Price inner record handling',
-                undefined,
-                undefined,
-                ImmutableList()
+            descriptors.push(this.createStaticEntityPropertyDescriptor(
+                StaticEntityProperties.PriceInnerRecordHandling,
+                'entityViewer.grid.column.priceInnerRecordHandling'
             ))
         }
 
@@ -486,8 +455,8 @@ export class EntityViewerService {
             descriptors.push(new EntityPropertyDescriptor(
                 EntityPropertyType.Prices,
                 EntityPropertyKey.prices(),
-                'Prices',
-                'Prices',
+                i18n.global.t('entityViewer.grid.column.prices'),
+                i18n.global.t('entityViewer.grid.column.prices'),
                 undefined,
                 undefined,
                 ImmutableList()
@@ -526,6 +495,25 @@ export class EntityViewerService {
     }
 
     /**
+     * Creates a descriptor of a static entity property, i.e. a property every entity has regardless of its schema.
+     *
+     * @param property static property the descriptor is created for
+     * @param titleKey i18n key of the grid column title
+     */
+    private createStaticEntityPropertyDescriptor(property: StaticEntityProperties, titleKey: string): EntityPropertyDescriptor {
+        const title: string = i18n.global.t(titleKey)
+        return new EntityPropertyDescriptor(
+            EntityPropertyType.Entity,
+            EntityPropertyKey.entity(property),
+            title,
+            title,
+            undefined,
+            undefined,
+            ImmutableList()
+        )
+    }
+
+    /**
      * Formats given value into string representation in given language. If it fails, it will use fallback formatter.
      *
      * @param value raw value to be formatted into string into given language
@@ -533,7 +521,6 @@ export class EntityViewerService {
      * @param prettyPrint if value should be pretty printed
      */
     formatEntityPropertyValue(value: EntityPropertyValue | EntityPropertyValue[], language: EntityPropertyValueSupportedCodeLanguage, prettyPrint: boolean = false): string {
-        // todo lho maybe markdown pretty printing logic should be here as well
         const formatter: EntityPropertyValueFormatter | undefined = this.entityPropertyValueFormatters.get(language)
         if (formatter == undefined) {
             throw new UnexpectedError(`Property value formatter for language ${language} is not registered.`)

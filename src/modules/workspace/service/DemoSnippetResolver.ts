@@ -2,12 +2,9 @@ import ky from 'ky'
 import type { InjectionKey } from 'vue'
 import type { AnyTabDefinition } from '@/modules/workspace/tab/model/TabDefinition'
 import type { DemoSnippetRequest } from '@/modules/workspace/tab/model/DemoSnippetRequest'
+import type { DemoSnippetHandler } from '@/modules/workspace/service/DemoSnippetHandler'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
-import { GraphQLConsoleTabFactory } from '@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFactory'
-import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
-import { EvitaQLConsoleTabData } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabData'
-import { GraphQLConsoleTabData } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabData'
+import { InitializationError } from '@/modules/base/exception/InitializationError'
 import { mandatoryInject } from '@/utils/reactivity'
 import { decodeBase64ToUtf8 } from '@/utils/base64'
 
@@ -20,13 +17,18 @@ export const demoSnippetResolverInjectionKey: InjectionKey<DemoSnippetResolver> 
  * Resolves demo code snippet requests from URL into {@link TabRequest}s.
  */
 export class DemoSnippetResolver {
-    private readonly evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory
-    private readonly graphQLConsoleTabFactory: GraphQLConsoleTabFactory
+    private readonly handlers: Map<string, DemoSnippetHandler> = new Map()
 
-    constructor(evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory,
-                graphQLConsoleTabFactory: GraphQLConsoleTabFactory) {
-        this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
-        this.graphQLConsoleTabFactory = graphQLConsoleTabFactory
+    /**
+     * Contributes a handler able to open demo code snippets of a single language.
+     */
+    registerHandler(handler: DemoSnippetHandler): void {
+        if (this.handlers.has(handler.codeSnippetType)) {
+            throw new InitializationError(
+                `There is already registered demo snippet handler for type '${handler.codeSnippetType}'.`
+            )
+        }
+        this.handlers.set(handler.codeSnippetType, handler)
     }
 
     /**
@@ -44,34 +46,14 @@ export class DemoSnippetResolver {
         }
 
         const extension: string = request.path.substring(request.path.lastIndexOf(".") + 1)
-        switch (extension) {
-            case CodeSnippetType.EvitaQL:
-                return this.evitaQLConsoleTabFactory.createNew(
-                    demoCatalog,
-                    new EvitaQLConsoleTabData(codeSnippetContent),
-                    true
-                )
-            case CodeSnippetType.GraphQL:
-                return this.graphQLConsoleTabFactory.createNew(
-                    demoCatalog,
-                    GraphQLInstanceType.Data,
-                    new GraphQLConsoleTabData(codeSnippetContent),
-                    true
-                )
-            default:
-                throw new UnexpectedError(`Unsupported demo code snippet type: ${extension}`)
+        const handler: DemoSnippetHandler | undefined = this.handlers.get(extension)
+        if (handler == undefined) {
+            throw new UnexpectedError(`Unsupported demo code snippet type: ${extension}`)
         }
+        return handler.createTab(demoCatalog, codeSnippetContent)
     }
 }
 
 export const useDemoSnippetResolver = (): DemoSnippetResolver => {
     return mandatoryInject(demoSnippetResolverInjectionKey) as DemoSnippetResolver
-}
-
-/**
- * Supported demo code snippet types.
- */
-enum CodeSnippetType {
-    EvitaQL = "evitaql",
-    GraphQL = "graphql",
 }

@@ -70,7 +70,6 @@ export class EntitySchema extends AbstractSchema {
      */
     readonly conflictResolution: ConflictResolution | undefined
 
-    // todo lho maybe add getter methods that will throw exception when particular item doesnt exist under specified name
     readonly attributes: Map<string, EntityAttributeSchema>
     readonly sortableAttributeCompounds: Map<string, SortableAttributeCompoundSchema>
     readonly associatedData: Map<string, AssociatedDataSchema>

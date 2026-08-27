@@ -1,3 +1,4 @@
+import { List as ImmutableList } from 'immutable'
 import type { FacetSummaryResultParser } from '@/modules/console/result-visualiser/service/FacetSummaryResultParser'
 import type { GraphQLResultNode } from '@/modules/database-driver/connector/gql/model/GraphQLResultNode'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
@@ -62,10 +63,10 @@ export class GraphQLFacetSummaryResultParser implements FacetSummaryResultParser
                 const facets = facetStatisticsResults.map((facetResult: GraphQLResultNode) =>
                     this.resolveFacetStatistics(result, facetResult, facetRepresentativeAttributes)
                 )
-                return new VisualisedFacetGroup(groupStatistics, facets)
+                return new VisualisedFacetGroup(groupStatistics, ImmutableList(facets))
             })
 
-            references.push(new VisualisedReferenceFacets(referenceSchema, groups))
+            references.push(new VisualisedReferenceFacets(referenceSchema, ImmutableList(groups)))
         }
 
         return new VisualisedFacetSummary(references)

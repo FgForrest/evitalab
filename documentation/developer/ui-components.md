@@ -51,10 +51,11 @@ guards against this repository-wide — see [testing](testing.md#slot-names).
 | Component | Use for |
 |-----------|---------|
 | `VTabToolbar` | Toolbar of every tab window. Props: `prependIcon`, `title: List<string>` (path segments), `flags?`, `extensionHeight?`; slots for append actions and extension row |
+| `VTabToolbarActionGroup` | Groups related actions inside the toolbar's append slot and closes them with a vertical separator; place before the ungrouped actions |
 | `VTabToolbarTitle` | Title rendering inside the toolbar |
 | `VTabMainActionButton` | Primary action button of a tab (`prependIcon`, `loading?`, `disabled?`) |
 | `VExecuteQueryButton` | Query execution button; integrates with keymap (`command` prop shows the shortcut) — use together with query editors |
-| `VSideTabs` | Vertical tab strip on the left/right edge of a tab window (`side: 'left' | 'right'`) |
+| `VSideTabs` | Vertical tab strip on the left/right edge of a tab window (`side: 'left' | 'right'`). Two independent models: `v-model` = which view is displayed (always set), `v-model:visible` = whether the panel the strip controls is on screen. With `collapsible`, clicking the active tab collapses the panel (`update:visible = false`) while keeping the remembered view; clicking any tab of a collapsed panel restores it. The active view is indicated by its icon turning `primary-lightest` — a global rule in `settings.scss` keyed off Vuetify's `v-tab--selected`, guarded by `test/styles/activeTabClass.test.ts` because a Vuetify upgrade already renamed that class once — and by Vuetify's slider on the strip's outer edge (Vuetify anchors the vertical slider to the tab's left edge, so the `--right` strip mirrors it to the right; the tabs fill the strip's content box rather than its full `3rem`, otherwise they overflow the strip border and clip that slider). While the panel is collapsed no tab is highlighted and no slider is drawn |
 
 All tab windows must fill the available space (the tab component stretches to 100 % of the tab
 area).
@@ -67,7 +68,7 @@ area).
 | `VMarkdown` | Rendering markdown (`source` prop; markdown-it + highlight.js + DOMPurify) |
 | `VTreeViewItem` / `VTreeViewEmptyItem` | Tree menu structures (openable/loading states, flags, item actions) |
 | `VListItemDivider` | Divider between list items in **every** non-menu list |
-| `VListItemLazyIterator` | Client-side "load next" paging for long lists (`items`, `page`, `pageSize`) — use to keep the DOM small |
+| `VListItemLazyIterator` | Client-side "load next" paging for long lists (`items: List<T>`, `page`, `pageSize`) — use to keep the DOM small. `items` takes an Immutable `List` only; it used to accept a plain array as well and branch on the shape at runtime |
 | `VExpansionPanelLazyIterator` | Same paging pattern for expansion panels |
 | `VMissingDataIndicator` | Placeholder when there is nothing to show (icon + message) |
 | `VLoadingCircular` | Loading spinner |
@@ -101,7 +102,7 @@ CodeMirror 6 wrappers — never instantiate CodeMirror directly:
 | Component | Use for |
 |-----------|---------|
 | `VQueryEditor` | Full-size query editor (`modelValue`, `additionalExtensions?` for language support, `placeholder?`; emits `update:editor` with the CodeMirror `ViewUpdate` so callers can reach the `EditorView`) |
-| `VInlineQueryEditor` | Single-line/inline editor variant (also emits `update:editor`) |
+| `VInlineQueryEditor` | Single-line/inline editor variant (also emits `update:editor`). Optional `appendInnerIcon` + `appendInnerIconTooltip` render a non-interactive trailing glyph explaining the state of the content — always pass both, an icon without a tooltip is a bug |
 | `VPreviewEditor` | Read-only code/text preview |
 | `VPreviewEditorDialog` | Preview editor in a dialog |
 
@@ -126,6 +127,46 @@ JSON/XML/YAML via `@codemirror/lang-*`. Editors integrate with the workspace sta
 Primarily use Vuetify date/time components (`VDateInput`, `VTimePicker` labs components are
 registered). For combined date-time input use the custom `VDateTimeInput` (returns evitaLab
 `OffsetDateTime`-compatible values, offset picking via `VTimeOffsetPicker`).
+
+`VDateTimeInput` supports two entry modes:
+
+- **Picker wizard** — opened via the calendar icon; three steps (date → time → time offset)
+  confirmed as a whole. While the wizard is open the text field is read-only so that typed text
+  cannot diverge from the wizard state.
+- **Manual text entry** — the field is editable; typed or pasted values are committed on
+  <kbd>Enter</kbd> or blur. Parsing (`parseDateTimeInput` in `src/utils/dateTime.ts`) accepts
+  ISO 8601, SQL-like (`2007-12-03 10:15:30`), RFC 2822 and locale-based formats (derived from
+  `Intl` for the browser locale, incl. the app's own pretty-printed form with a trailing
+  `GMT±X`/`UTC` zone name — so date times displayed elsewhere in the lab can be copied straight
+  in). When the input carries an explicit time offset it is committed directly; **when it has no
+  offset, the wizard opens at the time offset step so the user picks the offset instead of the
+  component guessing one**. While focused the field shows the canonical ISO form (editable),
+  unfocused it shows the localized pretty form. Unparsable input and `min`/`max` violations are
+  reported as field errors and leave the model untouched.
+
+### Hand-rolled clear icons
+
+A field whose model Vuetify's own `clearable` cannot handle (a wrapper over a non-trivial value, such as
+`VDateTimeInput` or `traffic-viewer`'s `VLabelSelect`) renders the clear icon itself in `#append-inner`.
+Two things belong on it:
+
+```vue
+<template #append-inner>
+    <VIcon v-if="clearable && model != undefined" @mousedown.prevent @click="clear">
+        mdi-close-circle
+    </VIcon>
+</template>
+```
+
+- **Gate visibility on the value, never on focus.** `#append-inner` hands the slot an `isFocused` flag,
+  and gating the icon on it makes the affordance unreachable: the mousedown that would hit the icon
+  arrives while the field is still unfocused, so the icon is not there yet.
+- **`@mousedown.prevent`** keeps the field from losing focus (or, for a wrapper that opens a menu from
+  its root, from toggling that menu) before the click resolves. Add `.stop` to the click as well when the
+  field itself is a `VMenu` activator, otherwise clearing also opens the menu.
+
+Honour the component's own `clearable` prop in the condition — a wrapper that ignores it silently offers
+a clear button the caller did not ask for.
 
 ## Viewer helpers
 

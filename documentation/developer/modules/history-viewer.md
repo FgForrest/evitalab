@@ -8,8 +8,8 @@ Note the directory is `history-viewer` but its registrar and types are named
 key is `mutationHistoryViewerTabFactoryInjectionKey`.
 
 - **Provides:** `historyViewerServiceInjectionKey`, `mutationHistoryViewerTabFactoryInjectionKey`
-- **Injects:** `evitaClientInjectionKey`, `workspaceServiceInjectionKey`,
-  `mutationHistoryViewerTabFactoryInjectionKey`
+- **Injects:** `evitaClientInjectionKey`, `connectionServiceInjectionKey`,
+  `workspaceServiceInjectionKey`, `tabFactoryRegistryInjectionKey`
 
 ## Contents
 
@@ -43,6 +43,13 @@ Two things this depends on: the form is `@submit.prevent` (a bare `@submit` lets
 trigger a native form submission, i.e. a full page reload), and the submit button carries **no** `@click`
 handler — `type="submit"` alone is what runs the apply, having both fires it twice. Shortcuts reaching a
 focused `INPUT` at all is the keymaster filter override described in [`keymap`](keymap.md).
+
+The *Entity PK* field is a plain `VTextField`, so it hands over a **string** while
+`MutationHistoryCriteria.entityPrimaryKey` (and the gRPC request behind it) is a `number`. The parsing and
+validation of that input live in `service/entityPrimaryKeyFilter.ts` — the component must route the raw value
+through `parseEntityPrimaryKeyFilter()` rather than assigning it into the criteria directly, otherwise a
+string reaches the server. A malformed value is reported by `isEntityPrimaryKeyFilterValid()` as a
+validation rule and never narrows the query silently.
 
 Observed with a `VSelect`/`VCombobox` dropdown **open**: Vuetify keeps `document.activeElement` on the
 field's `input` (it does not move focus into the overlay's `.v-list-item`), so the override is what makes
@@ -114,12 +121,61 @@ not depend on each other), so a fix in one usually needs porting to the other.
 
 The `Ctrl+Enter` apply, the `@submit.prevent` fix, the removed duplicate `@click` and the always-visible
 apply button are in **both**. The paging and start-pointer rework above is **not** portable: it exists
-precisely because the two APIs read their `since*` fields in opposite directions. So is the reason `MutationHistoryViewer`'s entity-history button keeps a
+precisely because the two APIs read their `since*` fields in opposite directions. `traffic-viewer` has
+since moved its record history to newest-first reverse paging too
+([record history paging](traffic-viewer.md#record-history-paging)), but with a cursor of its own — this
+list never had that defect, because the mutation history API is reverse-only to begin with. So is the reason `MutationHistoryViewer`'s entity-history button keeps a
 local copy of the tab-construction code instead of reusing `entity-viewer`'s
 `EntityGridCellMenuFactory`: a feature module must not depend on another feature module.
 
+One thing that is *not* mirrored: the traffic viewer classifies fetch failures into dedicated states
+(`TrafficFetchErrorType.NoActiveTrafficRecording`, `IndexCreating`) and renders a `VMissingDataIndicator`
+per state. The mutation history has no such states — evitaDB's `getMutationsHistoryPage` simply streams
+the WAL and has no comparable precondition to report — so a failed fetch is a plain error toast. The
+copied-over `fetchError` scaffolding was removed; do not reintroduce it without a server-side condition
+to map onto.
+
 Its three visualisers split by capture area — **data** mutations, **schema** mutations and
 **transaction** boundaries.
+
+## Record identity in the visualisation context
+
+`MutationHistoryVisualisationContext` indexes top-level records so that the several captures the server
+reports for one catalog version collapse into a single row. The identity is the **catalog version**,
+extended with `primaryKey/referenceName` for `ReferenceMutation` bodies — one version legitimately
+carries several references of the same entity, each visualised as its own record. The two sides of the
+check must use the same key; when they did not, references of one entity overwrote each other and only
+the last survived. First record of an identity wins, later ones are dropped, and
+`addRootVisualisedRecord()` returns the record actually held under the identity — a caller that keeps
+building on a dropped record would fill in a row that is never rendered. `addVisualisedSessionRecord()`
+is first-wins for the same reason.
+
+### The duplicate transaction capture
+
+Whenever a version's transaction lead event (`index = 0`) falls inside the page window, the page carries
+**two** transaction captures of that version: the overview
+[synthesised by the driver](../database-driver.md#mutation-history-paging-getmutationhistory) and the
+streamed lead event itself. `MutationHistoryTransactionVisualiser` therefore looks the version up in the
+context before building anything and skips a capture whose version is already visualised; it used to
+build the whole definition — titles, metadata, clipboard callbacks — and rely on the context to swallow
+it.
+
+The surviving record is whichever capture arrives first, and the driver makes that the **overview**: the
+merge lets each overview lead its own version, while the reverse scan puts the streamed lead event at the
+end of its version's block. That is the intended outcome, not an accident of ordering — the overview
+exists for every version on the page, the streamed lead event only for versions whose `index = 0` fell
+inside the window, so preferring the streamed one would make a row's provenance depend on where the page
+boundary landed.
+
+A transaction record uses the same metadata factories as the data and schema records, `MetadataItem.operation()`
+included: a capture of the infrastructure area carries `Operation.Transaction`, which the factory renders with the
+commit icon and the neutral severity. The transaction row used to route its operation through
+`MetadataItem.entityType()`, which labelled it as an entity type and coloured it like a successful data change.
+
+The transaction visualiser accepts the **whole** infrastructure area on purpose. The server emits only
+transaction mutations there, and `MutationHistoryVisualisationProcessor` throws when no visualiser
+accepts a record — so narrowing the condition to the body type would break the viewer for any future
+infrastructure mutation instead of rendering it plainly.
 
 ## Related
 

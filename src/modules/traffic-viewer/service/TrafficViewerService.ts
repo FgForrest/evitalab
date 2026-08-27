@@ -37,8 +37,12 @@ export class TrafficViewerService {
         this.visualisationProcessor = visualisationProcessor
     }
 
+    /**
+     * Catalogs the traffic recording may be started for. Served from the client's catalog statistics cache, which
+     * verifies itself against the server in the background and is invalidated by the system CDC stream, so no forced
+     * reload is needed here.
+     */
     async getAvailableCatalogs(): Promise<ImmutableList<CatalogStatistics>> {
-        // todo lho force reload? it was there before
         return await this.evitaClient.management.getCatalogStatistics()
     }
 
@@ -110,6 +114,16 @@ export class TrafficViewerService {
      */
     async fetchExportedFile(fileId: Uuid, options?: FetchFileOptions): Promise<Blob> {
         return await this.evitaClient.management.fetchFile(fileId, options)
+    }
+
+    /**
+     * Requests a close of the shared session evitaLab uses for the passed catalog. Traffic of an open
+     * session is never written into the server's traffic buffer, so this is what makes evitaLab's own
+     * queries eligible to appear in the record history. The close only happens once the in-flight calls
+     * of the session finish and the records still wait for the next flush of the traffic buffer.
+     */
+    async closeSharedSession(catalogName: string): Promise<void> {
+        await this.evitaClient.closeSharedSession(catalogName)
     }
 
     async getRecordHistoryList(catalogName: string,

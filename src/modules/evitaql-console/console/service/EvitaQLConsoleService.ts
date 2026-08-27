@@ -28,8 +28,6 @@ export class EvitaQLConsoleService {
                session => session.query(query),
                true // we want to always fetch fresh data
            )
-            const cleanedString = result.rawResponse.replace(/"?\$typeName"?\s*:\s*".*?",?\s*/g, '');
-           result = new EvitaResponse(result.recordPage, result.extraResults, cleanedString);
         } catch (e) {
             if (e instanceof QueryError) {
                 result = e.error as EvitaResponse

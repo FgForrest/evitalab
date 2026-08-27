@@ -45,10 +45,12 @@ import VPreviewEditor from '@/modules/code-editor/component/VPreviewEditor.vue'
 import ResultVisualiser from '@/modules/console/result-visualiser/component/ResultVisualiser.vue'
 import { Command } from '@/modules/keymap/model/Command'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
+import VTabToolbarActionGroup from '@/modules/base/component/VTabToolbarActionGroup.vue'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import VExecuteQueryButton from '@/modules/base/component/VExecuteQueryButton.vue'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import VSideTabs from '@/modules/base/component/VSideTabs.vue'
+import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
 import { List } from 'immutable'
 import type { TabComponentExpose } from '@/modules/workspace/tab/model/TabComponentExpose'
 import { SubjectPath } from '@/modules/workspace/status-bar/model/subject-path-status/SubjectPath'
@@ -60,10 +62,11 @@ import {
     EvitaQLConsoleTabDefinition
 } from '@/modules/evitaql-console/console/workspace/model/EvitaQLConsoleTabDefinition'
 import { EvitaResponse } from '@/modules/database-driver/request-response/data/EvitaResponse'
+import { minifyEvitaQL, prettifyEvitaQL } from '@/modules/code-editor/service/formatEvitaQL'
+import { DocumentFormattingMode } from '@/modules/code-editor/model/DocumentFormattingMode'
 
 enum EditorTabType {
     Query = 'query',
-    Variables = 'variables',
     History = 'history',
 }
 
@@ -101,6 +104,22 @@ const title: List<string> = List.of(props.params.dataPointer.catalogName)
 const editorTab = ref<EditorTabType>(EditorTabType.Query)
 const resultTab = ref<ResultTabType>(ResultTabType.Raw)
 
+const queryPanelVisible = ref<boolean>(true)
+const resultPanelVisible = ref<boolean>(props.params.executeOnOpen)
+/**
+ * Panel the caret currently sits in. Both panels are visible at once, so the selected view alone does not
+ * say which editor a formatting action should apply to. The state is sticky — it only changes when the
+ * other panel takes focus — so clicking a toolbar button cannot make that button disappear under the
+ * cursor.
+ */
+const focusedPanel = ref<'query' | 'result'>('query')
+const bothPanelsHidden = computed<boolean>(() => !queryPanelVisible.value && !resultPanelVisible.value)
+/**
+ * The result panel starts hidden so that a fresh console offers the full width to the query, and opens
+ * itself when the first result arrives. Any later execution respects whatever the user chose since.
+ */
+let firstResultPending: boolean = true
+
 const shareTabButtonRef = ref<InstanceType<typeof ShareTabButton> | undefined>()
 
 const queryEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
@@ -113,12 +132,6 @@ const queryCode = ref<string>(
 )
 const queryExtensions: Extension[] = [evitaQL()]
 
-const variablesEditorRef = ref<InstanceType<typeof VQueryEditor> | undefined>()
-const variablesCode = ref<string>(
-    props.data.variables ? props.data.variables : '{\n  \n}'
-)
-const variablesExtensions: Extension[] = [json()]
-
 const historyRef = ref<InstanceType<typeof EvitaQLConsoleHistory> | undefined>()
 const historyKey = computed<EvitaQLConsoleHistoryKey>(() =>
     createEvitaQLConsoleHistoryKey(props.params.dataPointer)
@@ -130,8 +143,8 @@ const historyRecords = computed<EvitaQLConsoleHistoryRecord[]>(() => {
 })
 function pickHistoryRecord(record: EvitaQLConsoleHistoryRecord): void {
     queryCode.value = record[1] || ''
-    variablesCode.value = record[2] || ''
     editorTab.value = EditorTabType.Query
+    queryPanelVisible.value = true
 }
 function clearHistory(): void {
     workspaceService.clearTabHistory(historyKey.value)
@@ -157,11 +170,37 @@ const resultVisualiserRef = ref<
 const loading = ref<boolean>(false)
 
 const currentData = computed<EvitaQLConsoleTabData>(() => {
-    return new EvitaQLConsoleTabData(queryCode.value, variablesCode.value)
+    return new EvitaQLConsoleTabData(queryCode.value)
 })
 watch(currentData, (data) => {
     emit('update:data', data)
 })
+
+const formattingAvailable = computed<boolean>(() =>
+    queryPanelVisible.value &&
+    focusedPanel.value === 'query' &&
+    editorTab.value === EditorTabType.Query
+)
+
+/**
+ * Reformats the query with the evitaQL printer. The new document is assigned to the bound model, which
+ * resets the caret to the document start.
+ */
+async function formatFocusedEditor(mode: DocumentFormattingMode): Promise<void> {
+    if (!formattingAvailable.value) {
+        return
+    }
+    try {
+        queryCode.value = mode === DocumentFormattingMode.Prettify
+            ? prettifyEvitaQL(queryCode.value)
+            : minifyEvitaQL(queryCode.value)
+    } catch (e) {
+        await toaster.error(
+            t('evitaQLConsole.notification.failedToFormatDocument'),
+            asError(e)
+        )
+    }
+}
 
 onMounted(() => {
     // register console specific keyboard shortcuts
@@ -171,18 +210,26 @@ onMounted(() => {
     )
     keymap.bind(Command.EvitaQLConsole_Query_QueryEditor, props.id, () => {
         editorTab.value = EditorTabType.Query
+        queryPanelVisible.value = true
         focusQueryEditor()
-    })
-    keymap.bind(Command.EvitaQLConsole_Query_VariablesEditor, props.id, () => {
-        editorTab.value = EditorTabType.Variables
-        focusVariablesEditor()
     })
     keymap.bind(Command.EvitaQLConsole_Query_History, props.id, () => {
         editorTab.value = EditorTabType.History
+        queryPanelVisible.value = true
         focusHistory()
+    })
+    keymap.bind(Command.EvitaQLConsole_Query_Prettify, props.id, () =>
+        formatFocusedEditor(DocumentFormattingMode.Prettify)
+    )
+    keymap.bind(Command.EvitaQLConsole_Query_Minify, props.id, () =>
+        formatFocusedEditor(DocumentFormattingMode.Minify)
+    )
+    keymap.bind(Command.EvitaQLConsole_Query_TogglePanel, props.id, () => {
+        queryPanelVisible.value = !queryPanelVisible.value
     })
     keymap.bind(Command.EvitaQLConsole_Result_RawResultViewer, props.id, () => {
         resultTab.value = ResultTabType.Raw
+        resultPanelVisible.value = true
         focusRawResultEditor()
     })
     keymap.bind(
@@ -190,9 +237,13 @@ onMounted(() => {
         props.id,
         () => {
             resultTab.value = ResultTabType.Visualiser
+            resultPanelVisible.value = true
             focusResultVisualiser()
         }
     )
+    keymap.bind(Command.EvitaQLConsole_Result_TogglePanel, props.id, () => {
+        resultPanelVisible.value = !resultPanelVisible.value
+    })
 
     focusQueryEditor()
 })
@@ -201,20 +252,20 @@ onUnmounted(() => {
     keymap.unbind(Command.EvitaQLConsole_ExecuteQuery, props.id)
     keymap.unbind(Command.EvitaQLConsole_ShareTab, props.id)
     keymap.unbind(Command.EvitaQLConsole_Query_QueryEditor, props.id)
-    keymap.unbind(Command.EvitaQLConsole_Query_VariablesEditor, props.id)
     keymap.unbind(Command.EvitaQLConsole_Query_History, props.id)
+    keymap.unbind(Command.EvitaQLConsole_Query_Prettify, props.id)
+    keymap.unbind(Command.EvitaQLConsole_Query_Minify, props.id)
+    keymap.unbind(Command.EvitaQLConsole_Query_TogglePanel, props.id)
     keymap.unbind(Command.EvitaQLConsole_Result_RawResultViewer, props.id)
     keymap.unbind(Command.EvitaQLConsole_Result_ResultVisualizer, props.id)
+    keymap.unbind(Command.EvitaQLConsole_Result_TogglePanel, props.id)
 })
 
 async function executeQuery(): Promise<void> {
     try {
         workspaceService.addTabHistoryRecord(
             historyKey.value,
-            createEvitaQLConsoleHistoryRecord(
-                queryCode.value,
-                variablesCode.value
-            )
+            createEvitaQLConsoleHistoryRecord(queryCode.value)
         )
     } catch (e) {
         await toaster.error(
@@ -227,34 +278,42 @@ async function executeQuery(): Promise<void> {
     try {
         result.value = await evitaQLConsoleService.executeEvitaQLQuery(
             props.params.dataPointer,
-            queryCode.value,
-            // JSON.parse(variablesCode.value) // todo lho support
+            queryCode.value
         )
         loading.value = false
         enteredQueryCode.value = queryCode.value
+
+        if (firstResultPending) {
+            firstResultPending = false
+            resultPanelVisible.value = true
+        }
 
         if (resultTab.value === ResultTabType.Raw) {
             focusRawResultEditor()
         }
     } catch (error) {
-        await toaster.error('Could not execute query', asError(error)) // todo lho i18n
+        await toaster.error(t('evitaQLConsole.notification.couldNotExecuteQuery'), asError(error))
         loading.value = false
     }
 }
 
+// the focused panel is recorded up front rather than left to the `focusin` the deferred focus() will
+// fire — a view that is not mounted yet swallows the call, and the state would keep pointing at the
+// panel the caret has just left
 function focusQueryEditor(): void {
+    focusedPanel.value = 'query'
     setTimeout(() => queryEditorRef.value?.focus())
 }
-function focusVariablesEditor(): void {
-    setTimeout(() => variablesEditorRef.value?.focus())
-}
 function focusHistory(): void {
+    focusedPanel.value = 'query'
     setTimeout(() => historyRef.value?.focus())
 }
 function focusRawResultEditor(): void {
+    focusedPanel.value = 'result'
     setTimeout(() => rawResultEditorRef.value?.focus())
 }
 function focusResultVisualiser(): void {
+    focusedPanel.value = 'result'
     setTimeout(() => resultVisualiserRef.value?.focus())
 }
 
@@ -269,6 +328,30 @@ if (props.params.executeOnOpen) {
     <div class="evitaql-editor">
         <VTabToolbar :prepend-icon="EvitaQLConsoleTabDefinition.icon()" :title="title">
             <template #append>
+                <VTabToolbarActionGroup v-if="formattingAvailable">
+                    <VBtn
+                        icon
+                        density="compact"
+                        @click="formatFocusedEditor(DocumentFormattingMode.Prettify)"
+                    >
+                        <VIcon>mdi-auto-fix</VIcon>
+                        <VActionTooltip :command="Command.EvitaQLConsole_Query_Prettify">
+                            {{ t('common.button.prettify') }}
+                        </VActionTooltip>
+                    </VBtn>
+
+                    <VBtn
+                        icon
+                        density="compact"
+                        @click="formatFocusedEditor(DocumentFormattingMode.Minify)"
+                    >
+                        <VIcon>mdi-arrow-collapse-vertical</VIcon>
+                        <VActionTooltip :command="Command.EvitaQLConsole_Query_Minify">
+                            {{ t('common.button.minify') }}
+                        </VActionTooltip>
+                    </VBtn>
+                </VTabToolbarActionGroup>
+
                 <ShareTabButton
                     ref="shareTabButtonRef"
                     :tab-type="TabType.EvitaQLConsole"
@@ -289,98 +372,137 @@ if (props.params.executeOnOpen) {
 
         <div class="evitaql-editor__body">
             <VSheet class="evitaql-editor-query-sections">
-                <VSideTabs v-model="editorTab" side="left">
+                <VSideTabs
+                    v-model="editorTab"
+                    v-model:visible="queryPanelVisible"
+                    side="left"
+                    collapsible
+                >
                     <VTab :value="EditorTabType.Query">
                         <VIcon>mdi-database-search</VIcon>
                         <VActionTooltip
                             :command="Command.EvitaQLConsole_Query_QueryEditor"
-                        />
-                    </VTab>
-                    <VTab :value="EditorTabType.Variables">
-                        <VIcon>mdi-variable</VIcon>
-                        <VActionTooltip
-                            :command="
-                                Command.EvitaQLConsole_Query_VariablesEditor
-                            "
-                        />
+                        >
+                            {{ t('evitaQLConsole.tooltip.queryEditorView') }}
+                        </VActionTooltip>
                     </VTab>
                     <VTab :value="EditorTabType.History">
                         <VIcon>mdi-history</VIcon>
                         <VActionTooltip
                             :command="Command.EvitaQLConsole_Query_History"
-                        />
+                        >
+                            {{ t('evitaQLConsole.tooltip.historyView') }}
+                        </VActionTooltip>
                     </VTab>
                 </VSideTabs>
             </VSheet>
 
-            <Splitpanes vertical>
-                <Pane class="evitaql-editor-pane">
-                    <VWindow v-model="editorTab" direction="vertical">
-                        <VWindowItem :value="EditorTabType.Query">
-                            <VQueryEditor
-                                ref="queryEditorRef"
-                                v-model="queryCode"
-                                :additional-extensions="queryExtensions"
-                            />
-                        </VWindowItem>
+            <div class="evitaql-editor__panes-area">
+                <Splitpanes
+                    vertical
+                    :class="[
+                        'evitaql-editor__panes',
+                        { 'evitaql-editor__panes--collapsed': !queryPanelVisible || !resultPanelVisible }
+                    ]"
+                >
+                    <Pane
+                        :class="[
+                            'evitaql-editor-pane',
+                            { 'evitaql-editor-pane--hidden': !queryPanelVisible },
+                            { 'evitaql-editor-pane--full': queryPanelVisible && !resultPanelVisible }
+                        ]"
+                        @focusin="focusedPanel = 'query'"
+                    >
+                        <VWindow v-model="editorTab" direction="vertical">
+                            <VWindowItem :value="EditorTabType.Query">
+                                <VQueryEditor
+                                    ref="queryEditorRef"
+                                    v-model="queryCode"
+                                    :additional-extensions="queryExtensions"
+                                />
+                            </VWindowItem>
 
-                        <VWindowItem :value="EditorTabType.Variables">
-                            <VQueryEditor
-                                ref="variablesEditorRef"
-                                v-model="variablesCode"
-                                :additional-extensions="variablesExtensions"
-                            />
-                        </VWindowItem>
+                            <VWindowItem :value="EditorTabType.History">
+                                <EvitaQLConsoleHistory
+                                    ref="historyRef"
+                                    :items="historyRecords"
+                                    @select-history-record="pickHistoryRecord"
+                                    @update:clear-history="clearHistory"
+                                />
+                            </VWindowItem>
+                        </VWindow>
+                    </Pane>
 
-                        <VWindowItem :value="EditorTabType.History">
-                            <EvitaQLConsoleHistory
-                                ref="historyRef"
-                                :items="historyRecords"
-                                @select-history-record="pickHistoryRecord"
-                                @update:clear-history="clearHistory"
-                            />
-                        </VWindowItem>
-                    </VWindow>
-                </Pane>
+                    <Pane
+                        min-size="20"
+                        :class="[
+                            'evitaql-editor-pane',
+                            { 'evitaql-editor-pane--hidden': !resultPanelVisible },
+                            { 'evitaql-editor-pane--full': resultPanelVisible && !queryPanelVisible }
+                        ]"
+                        @focusin="focusedPanel = 'result'"
+                    >
+                        <VWindow v-model="resultTab" direction="vertical">
+                            <VWindowItem :value="ResultTabType.Raw">
+                                <VPreviewEditor
+                                    v-if="resultTab === ResultTabType.Raw"
+                                    ref="rawResultEditorRef"
+                                    :model-value="rawResult"
+                                    :placeholder="
+                                        t('evitaQLConsole.placeholder.results')
+                                    "
+                                    read-only
+                                    :additional-extensions="resultExtensions"
+                                />
+                            </VWindowItem>
 
-                <Pane min-size="20" class="evitaql-editor-pane">
-                    <VWindow v-model="resultTab" direction="vertical">
-                        <VWindowItem :value="ResultTabType.Raw">
-                            <VPreviewEditor
-                                v-if="resultTab === ResultTabType.Raw"
-                                ref="rawResultEditorRef"
-                                :model-value="rawResult"
-                                :placeholder="
-                                    t('evitaQLConsole.placeholder.results')
-                                "
-                                read-only
-                                :additional-extensions="resultExtensions"
-                            />
-                        </VWindowItem>
+                            <VWindowItem :value="ResultTabType.Visualiser">
+                                <ResultVisualiser
+                                    v-if="resultTab === ResultTabType.Visualiser"
+                                    ref="resultVisualiserRef"
+                                    :catalog-pointer="params.dataPointer"
+                                    :visualiser-service="visualiserService"
+                                    :input-query="enteredQueryCode || ''"
+                                    :result="result"
+                                />
+                            </VWindowItem>
+                        </VWindow>
+                    </Pane>
+                </Splitpanes>
 
-                        <VWindowItem :value="ResultTabType.Visualiser">
-                            <ResultVisualiser
-                                v-if="resultTab === ResultTabType.Visualiser"
-                                ref="resultVisualiserRef"
-                                :catalog-pointer="params.dataPointer"
-                                :visualiser-service="visualiserService"
-                                :input-query="enteredQueryCode || ''"
-                                :result="result"
-                            />
-                        </VWindowItem>
-                    </VWindow>
-                </Pane>
-            </Splitpanes>
+                <VMissingDataIndicator
+                    v-if="bothPanelsHidden"
+                    class="evitaql-editor__no-panels"
+                    icon="mdi-arrow-expand-horizontal"
+                    :title="t('evitaQLConsole.placeholder.noPanelsVisible')"
+                >
+                    <template #actions>
+                        <VBtn variant="outlined" @click="queryPanelVisible = true">
+                            {{ t('evitaQLConsole.button.showQueryPanel') }}
+                        </VBtn>
+                        <VBtn variant="outlined" @click="resultPanelVisible = true">
+                            {{ t('evitaQLConsole.button.showResultPanel') }}
+                        </VBtn>
+                    </template>
+                </VMissingDataIndicator>
+            </div>
 
             <VSheet class="evitaql-editor-result-sections">
-                <VSideTabs v-model="resultTab" side="right">
+                <VSideTabs
+                    v-model="resultTab"
+                    v-model:visible="resultPanelVisible"
+                    side="right"
+                    collapsible
+                >
                     <VTab :value="ResultTabType.Raw">
                         <VIcon>mdi-code-braces</VIcon>
                         <VActionTooltip
                             :command="
                                 Command.EvitaQLConsole_Result_RawResultViewer
                             "
-                        />
+                        >
+                            {{ t('evitaQLConsole.tooltip.rawResultViewerView') }}
+                        </VActionTooltip>
                     </VTab>
                     <VTab :value="ResultTabType.Visualiser">
                         <VIcon>mdi-file-tree-outline</VIcon>
@@ -388,7 +510,9 @@ if (props.params.executeOnOpen) {
                             :command="
                                 Command.EvitaQLConsole_Result_ResultVisualizer
                             "
-                        />
+                        >
+                            {{ t('evitaQLConsole.tooltip.resultVisualizerView') }}
+                        </VActionTooltip>
                     </VTab>
                 </VSideTabs>
             </VSheet>
@@ -405,9 +529,38 @@ if (props.params.executeOnOpen) {
         display: grid;
         grid-template-columns: 3rem 1fr 3rem;
     }
+
+    // takes the place of the panes in the body grid so that the both-panels-hidden indicator can
+    // overlay only the panes, not the side tab strips
+    &__panes-area {
+        position: relative;
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    &__panes {
+        // a collapsed pane is positioned against the panes container, not the whole tab area
+        position: relative;
+
+        &--collapsed :deep(.splitpanes__splitter) {
+            display: none;
+        }
+    }
+
+    &__no-panels {
+        position: absolute;
+        inset: 0;
+        background: rgb(var(--v-theme-background));
+    }
 }
 
 .evitaql-editor-pane {
+    // collapsing a panel is a discrete state change; splitpanes' width animation and the compositor
+    // promotion that goes with it would both turn it into a visible two-step
+    transition: none !important;
+    will-change: auto !important;
+
     & :deep(.v-window) {
         // we need to override the default tab window styles used in LabEditor
         position: absolute;
@@ -415,6 +568,32 @@ if (props.params.executeOnOpen) {
         right: 0 !important;
         top: 0 !important;
         bottom: 0 !important;
+    }
+
+    // A collapsed pane keeps its box at its original size, and stays anchored to the edge it already
+    // sits at, so the editors inside never re-measure and never appear to move. It also has to stay
+    // below its surviving sibling — the editors are composited scrollers whose layer can outlive the
+    // frame that hid them.
+    &--hidden {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        visibility: hidden;
+        z-index: 0;
+
+        &:first-child {
+            left: 0;
+        }
+
+        &:last-child {
+            right: 0;
+        }
+    }
+
+    // the width overrides the inline one splitpanes writes on the pane element
+    &--full {
+        width: 100% !important;
+        z-index: 1;
     }
 }
 

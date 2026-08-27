@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon'
 import type { PrettyPrintable } from "./PrettyPrintable";
 
 /**
@@ -9,8 +10,12 @@ export class LocalDate implements PrettyPrintable {
     constructor(isoDate: string){
         this.isoDate = isoDate
     }
+    /**
+     * The value is parsed by Luxon rather than by `new Date(...)`, which reads a bare ISO date as UTC
+     * midnight and would render the previous day for viewers behind Greenwich.
+     */
     getPrettyPrintableString(): string {
-        throw new Error("Method not implemented.");
+        return DateTime.fromISO(this.isoDate).toLocaleString({ dateStyle: 'medium' })
     }
 
     toString():string{

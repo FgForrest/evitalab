@@ -5,7 +5,7 @@ the feature tab that lists all shortcuts to the user.
 
 - **Provides:** `keymapInjectionKey` → `Keymap` (`useKeymap()`),
   `keymapViewerTabFactoryInjectionKey` → `KeymapViewerTabFactory`
-- **Injects:** nothing
+- **Injects:** `tabFactoryRegistryInjectionKey`
 
 ## Contents
 
@@ -14,8 +14,8 @@ the feature tab that lists all shortcuts to the user.
 | `model/Command.ts` | The `Command` enum — **every** user-facing action has an entry |
 | `model/keyboardShortcutMappings.ts` | `Command` → key combination |
 | `model/KeyboardShortcut.ts` | Shortcut model |
-| `model/keyboardShortcutEventFilter.ts` | `isKeyboardShortcutDispatchable` — which `keydown` events may reach handlers |
 | `model/SystemType.ts` | OS-dependent rendering (⌘ vs Ctrl) |
+| `service/keyboardShortcutEventFilter.ts` | `isKeyboardShortcutDispatchable` — which `keydown` events may reach handlers |
 | `service/Keymap.ts` | `bind` / `unbind` / `bindGlobal`, `pushScope` / `popScope`, `prettyPrint` |
 | `viewer/component/KeymapViewer.vue` | The tab listing all shortcuts |
 | `viewer/workspace/` | `KeymapViewerTabDefinition`, `KeymapViewerTabFactory` (`TabType.KeymapViewer`) |
@@ -47,9 +47,9 @@ the caret sat in a `VTextField` / `VSelect` / `VCombobox` / `VDateTimeInput`. (T
 **`Alt` is deliberately excluded.** On Central-European layouts **AltGr is reported as Ctrl+Alt**, and
 `AltGr+letter` is how `@ # & { } [ ]` are typed; bare `Option+letter` composes characters on macOS.
 Since shortcut handlers return `false` — which makes keymaster call `preventDefault()` — relaxing
-`Ctrl+Alt` would let `Ctrl+Alt+K` (`System_Keymap`) and `Ctrl+Alt+PageUp/PageDown` swallow ordinary
-character input. The deliberate consequence is that those two, plus `Alt+1`
-(`System_Panels_Connection`), still do not fire from inside a field.
+`Ctrl+Alt` would let `Ctrl+Alt+K` (`System_Keymap`), `Ctrl+Alt+M` (`System_ManageMenu`) and
+`Ctrl+Alt+PageUp/PageDown` swallow ordinary character input. The deliberate consequence is that those,
+plus `Alt+1` (`System_Panels_Connection`), still do not fire from inside a field.
 
 The rule is safe for everything else because no text-editing combination (`Ctrl+A/C/V/X/Z/Y`,
 `Ctrl+Backspace`, `Ctrl+Arrow`, `Home`/`End`) is mapped at all, and the only modifier-less mapping —

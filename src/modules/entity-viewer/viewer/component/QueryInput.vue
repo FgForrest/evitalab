@@ -47,6 +47,11 @@ const props = defineProps<{
     selectedQueryLanguage: QueryLanguage,
     filterBy: string,
     orderBy: string,
+    /**
+     * Which of the two mutually exclusive writers currently owns the order by: the grid column sort
+     * (`grid`), the user's own text (`manual`), or neither because no ordering is defined.
+     */
+    orderByOwnership: 'grid' | 'manual' | undefined,
     dataLocales: List<string>,
     selectedScope: SelectedScope[],
     selectedDataLocale: string | undefined,
@@ -67,7 +72,6 @@ const tabProps = useTabProps()
 
 const queryLanguageSelectorRef = ref<InstanceType<typeof QueryLanguageSelector> | undefined>()
 
-// todo this approach to autocompletion in grid is temporary until i'm able to pass the entire query with cropped view
 const filterByInputView = ref<EditorView>()
 const filterByInputLangSupportCompartment = new Compartment()
 const filterByInputExtensions: Extension[] = [filterByInputLangSupportCompartment.of(createFilterByLangSupportExtension(props.selectedQueryLanguage))]
@@ -82,6 +86,20 @@ const orderByInputExtensions: Extension[] = [orderByInputLangSupportCompartment.
 const orderByHistoryKey = computed<OrderByHistoryKey>(() => createOrderByByHistoryKey(tabProps.params.dataPointer))
 const orderByHistoryRecords = computed<OrderByHistoryRecord[]>(() => {
     return [...workspaceService.getTabHistoryRecords(orderByHistoryKey.value)].reverse()
+})
+
+/**
+ * Glyph telling the user who owns the order by, because the two writers overwrite each other:
+ * typing replaces a grid-driven ordering, clicking a column header replaces a hand-written one.
+ */
+const orderByOwnershipIcon = computed<string | undefined>(() => {
+    if (props.orderByOwnership === 'grid') return 'mdi-pencil-off-outline'
+    if (props.orderByOwnership === 'manual') return 'mdi-pencil-outline'
+    return undefined
+})
+const orderByOwnershipTooltip = computed<string | undefined>(() => {
+    if (props.orderByOwnership == undefined) return undefined
+    return t(`entityViewer.queryInput.orderByOwnership.${props.orderByOwnership}`)
 })
 
 watch(() => props.selectedQueryLanguage, (newValue) => {
@@ -182,6 +200,8 @@ onUnmounted(() => {
             <VInlineQueryEditor
                 :model-value="orderBy"
                 prepend-inner-icon="mdi-sort"
+                :append-inner-icon="orderByOwnershipIcon"
+                :append-inner-icon-tooltip="orderByOwnershipTooltip"
                 :placeholder="`Order by (${keymap.prettyPrint(Command.EntityViewer_OrderBy)})`"
                 @update:model-value="emit('update:orderBy', $event)"
                 @update:history-clear="workspaceService.clearTabHistory(orderByHistoryKey)"

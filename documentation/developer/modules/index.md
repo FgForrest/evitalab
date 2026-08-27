@@ -14,12 +14,19 @@ Typical inner structure of a module:
 <module>/
 ├── <Module>ModuleRegistrar.ts   # optional, only when the module provides/injects DI services
 ├── component/                   # Vue components of the module
-├── model/                       # domain model classes (immutable where possible)
-├── service/                     # injectable services (business logic)
+├── model/                       # the module's vocabulary — types, enums, constant data
+├── exception/                   # error types, and error classification — nothing else
+├── service/                     # behavior over the model — injectable services and plain functions
 └── workspace/                   # tab integration (TabDefinition, TabParams, TabData, factory)
     ├── model/
     └── service/
 ```
+
+Which of those directories a given file belongs in is a convention, not an index entry — see
+[guidelines — where a file goes](../guidelines.md#where-a-file-goes) for the rule and its rationale.
+One consequence worth stating here, next to the registrars: because being injectable is *not* what
+makes something a service, a module may have a `service/` folder and no `ModuleRegistrar` at all —
+`code-editor/service/` is entirely plain functions.
 
 **This page is an index.** Each module has its own page under `documentation/developer/modules/`,
 named after its directory in `src/modules/` — that is where the detail lives. When you change a
@@ -40,12 +47,14 @@ of their own.
 
 ## Generic modules
 
-Core evitaLab infrastructure. All of them are registered first in `src/modules/modules.ts`.
+Core evitaLab infrastructure. `config`, `storage`, `connection`, `database-driver` and `workspace`
+are registered first in `src/modules/modules.ts`; `notification` sits among the feature modules
+because it needs the error viewer's tab factory.
 
 | Module | Purpose |
 |--------|---------|
 | [`config`](config.md) | Runtime configuration — run mode, read-only flag, playground mode, URL system properties |
-| [`storage`](storage.md) | Persistent client-side storage (`LabStorage` over browser local storage) |
+| [`storage`](storage.md) | Persistent client-side storage (`LabStorage` over local storage, `LabServerDataCache` over IndexedDB) |
 | [`connection`](connection.md) | Connection to an evitaDB server — the `Connection` model and how the active one is resolved |
 | [`database-driver`](database-driver.md) | All communication with evitaDB (`EvitaClient` and friends, `DataCacheRefresher`) — deep-dive: [database driver](../database-driver.md) |
 | [`workspace`](workspace.md) | Overall UI structure: tabs, panels, status bar — deep-dive: [workspace & tabs](../workspace-and-tabs.md) |
@@ -79,8 +88,15 @@ User-facing features. Each one typically contributes one or more tab types and/o
 ## Module dependency rules
 
 - Feature modules may depend on abstract and generic modules; avoid dependencies between feature
-  modules (known exception: `EvitaClient.queryCatalogUsingGraphQL()` references
-  `graphql-console`'s `GraphQLInstanceType`).
+  modules. Known exceptions: `EvitaClient.queryCatalogUsingGraphQL()` references
+  `graphql-console`'s `GraphQLInstanceType`; `traffic-viewer`'s record visualisers open both console
+  tabs; `entity-viewer`'s `EntityGridCellMenuFactory` opens a `history-viewer` tab.
+- Generic modules must not import feature modules. Where the framework needs feature-provided
+  behaviour (building a tab of any type, opening a demo snippet), the feature module contributes it
+  into a registry the generic module owns — see
+  [architecture — contribution points](../architecture.md#contribution-points).
+- A registrar consuming another module's tab factory must be ordered after it in `modules.ts`.
+  `connection-explorer` needs twelve of them and is therefore registered last.
 - Abstract modules must not depend on feature modules.
 - The `base` module must not depend on any other module.
 - Cross-module access goes through injected services, never by reaching into another module's

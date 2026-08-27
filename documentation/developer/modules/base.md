@@ -11,7 +11,7 @@ no injectable services — everything in it is imported directly.
 | Directory | What's in it |
 |-----------|--------------|
 | `component/` | The `V*` component library (27 components) — see [UI components](../ui-components.md) for the full catalog and when to use which |
-| `exception/` | `LabError.ts` (base class every evitaLab error derives from), `UnexpectedError.ts`, `InitializationError.ts` |
+| `exception/` | `LabError.ts` (base class every evitaLab error derives from), `UnexpectedError.ts`, `InitializationError.ts`, `ErrorSummary.ts` (the serializable flattening of an error — see [`error-viewer`](error-viewer.md)) |
 | `model/dialog/` | `DangerousConfirmType` — controls whether a confirm button asks a second time |
 | `model/menu/` | `MenuItem`, `MenuAction`, `MenuSubheader` — the menu model that `MenuFactory` subclasses build |
 | `model/properties-table/` | `Property`, `PropertyValue` and the special value types rendered by `VPropertiesTable`: `ExtendedValue`, `KeywordValue`, `MultiValueFlagValue`, `NotApplicableValue`, `PlaceholderValue`, `ProgressValue`, `RangeValue` |
@@ -25,7 +25,9 @@ Grouped by what they are for (details in [UI components](../ui-components.md)):
 - **Dialogs** — `VLabDialog`, `VFormDialog`, `VConfirmDialog`, and their buttons
   (`VConfirmDialogButton`, `VRejectDialogButton`, `VAlternativeActionDialogButton`).
   Note `VFormDialog`'s confirm label slot is **`confirm-button-body`**.
-- **Tab chrome** — `VTabToolbar`, `VTabToolbarTitle`, `VTabMainActionButton`, `VSideTabs`.
+- **Tab chrome** — `VTabToolbar`, `VTabToolbarTitle`, `VTabMainActionButton`, `VSideTabs` (its
+  `collapsible` + `v-model:visible` pair lets the strip collapse the panel it controls; the `v-model`
+  view stays set while collapsed so the panel reopens where it was).
 - **Properties tables** — `VPropertiesTable` plus `VPropertiesTableValue`,
   `VPropertiesTableValueItem`, `VPropertiesTableValueList`.
 - **Tree view** — `VTreeViewItem`, `VTreeViewEmptyItem`.
@@ -33,7 +35,9 @@ Grouped by what they are for (details in [UI components](../ui-components.md)):
   lists (see [design language](../design-language.md)).
 - **Misc** — `VActionTooltip` (tooltip that renders a `Command`'s keyboard shortcut), `VMarkdown`,
   `VMissingDataIndicator`, `VLoadingCircular`, `VListItemDivider`, `VCardTitleWithActions`,
-  `VDateTimeInput`, `VTimeOffsetPicker`, `VExecuteQueryButton`.
+  `VDateTimeInput` (combined date-time input with manual text entry and a picker wizard, see
+  [UI components — date & time](../ui-components.md#date--time)), `VTimeOffsetPicker`,
+  `VExecuteQueryButton`.
 
 ## Related
 

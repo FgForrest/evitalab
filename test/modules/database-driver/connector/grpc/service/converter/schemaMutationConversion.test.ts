@@ -25,7 +25,7 @@ import {
 } from '../../../../../../../src/modules/database-driver/request-response/schema/mutation/attribute/SetAttributeSchemaConflictResolutionOverrideMutation'
 import {
     SetAssociatedDataSchemaConflictResolutionOverrideMutation
-} from '../../../../../../../src/modules/database-driver/request-response/schema/mutation/associatedData/SetAssociatedDataSchemaConflictResolutionOverrideMutation'
+} from '../../../../../../../src/modules/database-driver/request-response/schema/mutation/associated-data/SetAssociatedDataSchemaConflictResolutionOverrideMutation'
 import {
     SetReferenceSchemaConflictResolutionOverrideMutation
 } from '../../../../../../../src/modules/database-driver/request-response/schema/mutation/reference/SetReferenceSchemaConflictResolutionOverrideMutation'

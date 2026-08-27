@@ -10,7 +10,10 @@ import { EvitaLabConfig, evitaLabConfigInjectionKey } from '@/modules/config/Evi
 import { ToasterFactory } from '@/modules/notification/service/ToasterFactory'
 import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
 
-// todo lho docs
+/**
+ * Registers the notification module which provides the toaster used across the lab to report
+ * successes and errors to the user.
+ */
 export class NotificationModuleRegistrar implements ModuleRegistrar {
 
     async register(builder: ModuleContextBuilder): Promise<void> {

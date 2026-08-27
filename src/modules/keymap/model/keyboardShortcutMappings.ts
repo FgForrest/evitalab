@@ -9,6 +9,7 @@ function createKeyboardShortcutMapping(command: Command, baseShortcut: string, m
 // system
 
 createKeyboardShortcutMapping(Command.System_Keymap, 'Ctrl+Alt+K', 'Cmd+Option+K')
+createKeyboardShortcutMapping(Command.System_ManageMenu, 'Ctrl+Alt+M', 'Cmd+Option+M')
 
 createKeyboardShortcutMapping(Command.System_Panels_Connection, 'Alt+1', 'Ctrl+Shift+1')
 
@@ -58,11 +59,14 @@ createKeyboardShortcutMapping(Command.EvitaQLConsole_ExecuteQuery, 'Ctrl+Enter',
 createKeyboardShortcutMapping(Command.EvitaQLConsole_ShareTab, 'Ctrl+L', 'Cmd+L')
 
 createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_QueryEditor, 'Ctrl+1', 'Ctrl+1')
-createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_VariablesEditor, 'Ctrl+2', 'Ctrl+2')
 createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_History, 'Ctrl+3', 'Ctrl+3')
+createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_Prettify, 'Shift+Alt+F', 'Shift+Option+F')
+createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_Minify, 'Shift+Alt+M', 'Shift+Option+M')
+createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_TogglePanel, 'Alt+2', 'Ctrl+Shift+2')
 
 createKeyboardShortcutMapping(Command.EvitaQLConsole_Result_RawResultViewer, 'Ctrl+0', 'Ctrl+0')
 createKeyboardShortcutMapping(Command.EvitaQLConsole_Result_ResultVisualizer, 'Ctrl+9', 'Ctrl+9')
+createKeyboardShortcutMapping(Command.EvitaQLConsole_Result_TogglePanel, 'Alt+3', 'Ctrl+Shift+3')
 
 // GraphQL console
 
@@ -73,9 +77,13 @@ createKeyboardShortcutMapping(Command.GraphQLConsole_Query_QueryEditor, 'Ctrl+1'
 createKeyboardShortcutMapping(Command.GraphQLConsole_Query_VariablesEditor, 'Ctrl+2', 'Ctrl+2')
 createKeyboardShortcutMapping(Command.GraphQLConsole_Query_History, 'Ctrl+3', 'Ctrl+3')
 createKeyboardShortcutMapping(Command.GraphQLConsole_Query_SchemaViewer, 'Ctrl+4', 'Ctrl+4')
+createKeyboardShortcutMapping(Command.GraphQLConsole_Query_Prettify, 'Shift+Alt+F', 'Shift+Option+F')
+createKeyboardShortcutMapping(Command.GraphQLConsole_Query_Minify, 'Shift+Alt+M', 'Shift+Option+M')
+createKeyboardShortcutMapping(Command.GraphQLConsole_Query_TogglePanel, 'Alt+2', 'Ctrl+Shift+2')
 
 createKeyboardShortcutMapping(Command.GraphQLConsole_Result_RawResultViewer, 'Ctrl+0', 'Ctrl+0')
 createKeyboardShortcutMapping(Command.GraphQLConsole_Result_ResultVisualizer, 'Ctrl+9', 'Ctrl+9')
+createKeyboardShortcutMapping(Command.GraphQLConsole_Result_TogglePanel, 'Alt+3', 'Ctrl+Shift+3')
 
 // Schema viewer
 
@@ -94,5 +102,9 @@ createKeyboardShortcutMapping(Command.MutationHistoryViewer_ShareTab, 'Ctrl+L', 
 createKeyboardShortcutMapping(Command.MutationHistoryViewer_ReloadRecordHistory, 'Ctrl+D', 'Cmd+D')
 createKeyboardShortcutMapping(Command.MutationHistoryViewer_MoveStartPointer, 'Ctrl+M', 'Cmd+M')
 createKeyboardShortcutMapping(Command.MutationHistoryViewer_ApplyFilter, 'Ctrl+Enter', 'Cmd+Enter')
+
+// Error viewer
+
+createKeyboardShortcutMapping(Command.ErrorViewer_ShareTab, 'Ctrl+L', 'Cmd+L')
 
 export { keyboardShortcutMappingIndex }

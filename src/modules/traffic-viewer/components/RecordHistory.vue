@@ -6,8 +6,8 @@ import { errorMessage } from '@/utils/error'
  */
 
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { computed, ref, watch } from 'vue'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { TrafficViewerService, useTrafficViewerService } from '@/modules/traffic-viewer/service/TrafficViewerService'
@@ -20,16 +20,12 @@ import {
     TrafficRecordVisualisationDefinition
 } from '@/modules/traffic-viewer/model/TrafficRecordVisualisationDefinition'
 import RecordHistoryItem from '@/modules/traffic-viewer/components/RecordHistoryItem.vue'
-import { convertUserToSystemRecordType } from '@/modules/traffic-viewer/model/UserTrafficRecordType'
 import { Code, ConnectError } from '@connectrpc/connect'
-import { Duration } from 'luxon'
-import { parseHumanDurationToMs } from '@/utils/duration'
-import { parseHumanByteSizeToNumber } from '@/utils/number'
-import { TrafficRecordType } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordType'
+import { TrafficRecordHistoryCursor } from '@/modules/traffic-viewer/model/TrafficRecordHistoryCursor'
 import {
-    TrafficRecordingCaptureRequest
-} from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordingCaptureRequest'
-import { TrafficRecordContent } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecordContent'
+    createTrafficRecordHistoryRequest,
+    prependOlderTrafficRecords
+} from '@/modules/traffic-viewer/service/trafficRecordHistoryPaging'
 
 // note: this is enum from vuetify, but vuetify doesn't export it
 type InfiniteScrollStatus = 'ok' | 'empty' | 'loading' | 'error';
@@ -39,36 +35,14 @@ enum TrafficFetchErrorType {
     IndexCreating = 'indexCreating'
 }
 
+/**
+ * Oldest session the record history may reach. Set by the user through the start pointer button.
+ */
 class StartRecordsPointer {
     readonly sinceSessionSequenceId: bigint
-    readonly sinceRecordSessionOffset: number
 
     constructor(sinceSessionSequenceId: bigint) {
         this.sinceSessionSequenceId = sinceSessionSequenceId
-        this.sinceRecordSessionOffset = 0
-    }
-}
-
-class RecordsPointer {
-    private _sinceSessionSequenceId: bigint = 1n
-    private _sinceRecordSessionOffset: number = 0
-
-    get sinceSessionSequenceId(): bigint {
-        return this._sinceSessionSequenceId
-    }
-
-    get sinceRecordSessionOffset(): number {
-        return this._sinceRecordSessionOffset
-    }
-
-    reset(startPointer?: StartRecordsPointer): void {
-        this._sinceSessionSequenceId = startPointer?.sinceSessionSequenceId || 1n
-        this._sinceRecordSessionOffset = startPointer?.sinceRecordSessionOffset || 0
-    }
-
-    move(sinceSessionSequenceId: bigint, sinceRecordSessionOffset: number) {
-        this._sinceSessionSequenceId = sinceSessionSequenceId
-        this._sinceRecordSessionOffset = sinceRecordSessionOffset
     }
 }
 
@@ -93,71 +67,40 @@ const history = ref<TrafficRecordVisualisationDefinition[]>([])
 
 const startPointer = ref<StartRecordsPointer | undefined>(undefined)
 watch(startPointer, () => reloadHistory(), { deep: true })
-const nextPagePointer = ref<RecordsPointer>(new RecordsPointer())
-const limit = ref<number>(pageSize)
+let cursor: TrafficRecordHistoryCursor = new TrafficRecordHistoryCursor()
 
 const fetchingNewRecordsWhenThereArentAny = ref<boolean>(false)
 
-const selectedSystemRecordTypes = computed<ImmutableList<TrafficRecordType> | undefined>(() => {
-    if (props.criteria.types == undefined) {
-        return undefined
+/**
+ * Loads the page of records preceding the ones already loaded and prepends it, i.e. extends the list
+ * towards older traffic.
+ */
+async function loadOlderHistory({ done }: { done: (status: InfiniteScrollStatus) => void }): Promise<void> {
+    if (cursor.exhausted) {
+        await toaster.info(t('trafficViewer.recordHistory.list.notification.noOlderRecords'))
+        done('ok')
+        return
     }
-    return ImmutableList([
-        ...(props.criteria.types.flatMap(userType => convertUserToSystemRecordType(userType)!))
-    ])
-})
-const nextPageRequest = computed<TrafficRecordingCaptureRequest>(() => {
-    return new TrafficRecordingCaptureRequest(
-        TrafficRecordContent.Body,
-        props.criteria.since,
-        nextPagePointer.value.sinceSessionSequenceId,
-        nextPagePointer.value.sinceRecordSessionOffset,
-        selectedSystemRecordTypes.value,
-        props.criteria.sessionId != undefined
-            ? ImmutableList([])
-            : undefined,
-        props.criteria.longerThanInHumanFormat != undefined
-            ? Duration.fromMillis(Number(parseHumanDurationToMs(props.criteria.longerThanInHumanFormat)))
-            : undefined,
-        props.criteria.fetchingMoreBytesThanInHumanFormat != undefined
-            ? parseHumanByteSizeToNumber(props.criteria.fetchingMoreBytesThanInHumanFormat)[0]
-            : undefined,
-        ImmutableList(props.criteria.labels)
-    )
-})
-const lastRecordRequest = computed<TrafficRecordingCaptureRequest>(() => {
-    return new TrafficRecordingCaptureRequest(
-        TrafficRecordContent.Body,
-        props.criteria.since,
-        undefined,
-        undefined,
-        selectedSystemRecordTypes.value,
-        props.criteria.sessionId != undefined
-            ? ImmutableList([])
-            : undefined,
-        props.criteria.longerThanInHumanFormat != undefined
-            ? Duration.fromMillis(Number(parseHumanDurationToMs(props.criteria.longerThanInHumanFormat)))
-            : undefined,
-        props.criteria.fetchingMoreBytesThanInHumanFormat != undefined
-            ? parseHumanByteSizeToNumber(props.criteria.fetchingMoreBytesThanInHumanFormat)[0]
-            : undefined,
-        ImmutableList(props.criteria.labels)
-    )
-})
 
-async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) => void }): Promise<void> {
     try {
         const fetchedRecords: ImmutableList<TrafficRecord> = await fetchRecords()
         fetchError.value = undefined
 
         if (fetchedRecords.size === 0) {
-            await toaster.info(t('trafficViewer.recordHistory.list.notification.noNewerRecords'))
+            await toaster.info(t('trafficViewer.recordHistory.list.notification.noOlderRecords'))
             done('ok')
             return
         }
 
-        moveNextPagePointer(fetchedRecords)
-        pushNewRecords(fetchedRecords)
+        moveCursorBeforeFetchedPage(fetchedRecords)
+        const reachableRecords: TrafficRecord[] = keepReachableRecords(fetchedRecords)
+        if (reachableRecords.length === 0) {
+            await toaster.info(t('trafficViewer.recordHistory.list.notification.noOlderRecords'))
+            done('ok')
+            return
+        }
+
+        records = prependOlderTrafficRecords(records, reachableRecords)
         await processRecords()
         done('ok')
     } catch (e) {
@@ -168,8 +111,12 @@ async function loadNextHistory({ done }: { done: (status: InfiniteScrollStatus) 
     }
 }
 
+/**
+ * Discards everything loaded so far and re-anchors the list at the newest records the server has. This is
+ * how new traffic enters the list.
+ */
 async function reloadHistory(): Promise<void> {
-    nextPagePointer.value.reset(startPointer.value)
+    cursor = new TrafficRecordHistoryCursor(startPointer.value?.sinceSessionSequenceId)
     records = []
     history.value = []
     fetchError.value = undefined
@@ -180,8 +127,11 @@ async function reloadHistory(): Promise<void> {
             return
         }
 
-        moveNextPagePointer(fetchedRecords)
-        pushNewRecords(fetchedRecords)
+        moveCursorBeforeFetchedPage(fetchedRecords)
+        records = prependOlderTrafficRecords([], keepReachableRecords(fetchedRecords))
+        if (records.length === 0) {
+            return
+        }
         await processRecords()
     } catch (e) {
         handleRecordFetchError(e)
@@ -208,37 +158,48 @@ async function tryReloadHistoryForPossibleNewRecords(): Promise<void> {
     }
 }
 
+/**
+ * Reads a page of the history from the current cursor position. The read is always reversed, so the page
+ * arrives with its newest record first.
+ */
 async function fetchRecords(): Promise<ImmutableList<TrafficRecord>> {
     return await trafficViewerService.getRecordHistoryList(
         props.dataPointer.catalogName,
-        nextPageRequest.value,
-        limit.value
+        createTrafficRecordHistoryRequest(props.criteria, cursor.sinceSessionSequenceId, cursor.sinceRecordSessionOffset),
+        pageSize,
+        true
     )
 }
 
-function moveNextPagePointer(fetchedRecords: ImmutableList<TrafficRecord>): void {
-    const lastFetchedRecord: TrafficRecord = fetchedRecords.last()!
-    if (lastFetchedRecord.recordSessionOffset < (lastFetchedRecord.sessionRecordsCount - 1)) {
-        nextPagePointer.value.move(lastFetchedRecord.sessionSequenceOrder, lastFetchedRecord.recordSessionOffset + 1)
-    } else {
-        nextPagePointer.value.move(lastFetchedRecord.sessionSequenceOrder + 1n, 0)
-    }
+function moveCursorBeforeFetchedPage(fetchedRecords: ImmutableList<TrafficRecord>): void {
+    const oldestFetchedRecord: TrafficRecord = fetchedRecords.last()!
+    cursor.moveBefore(oldestFetchedRecord.sessionSequenceOrder, oldestFetchedRecord.recordSessionOffset)
 }
 
-function pushNewRecords(newRecords: ImmutableList<TrafficRecord>): void {
-    for (const newRecord of newRecords) {
-        records.push(newRecord)
-    }
+/**
+ * Drops records the start pointer excludes. The server cannot express such lower bound on a reversed read.
+ */
+function keepReachableRecords(fetchedRecords: ImmutableList<TrafficRecord>): TrafficRecord[] {
+    return fetchedRecords
+        .filter(record => cursor.covers(record.sessionSequenceOrder))
+        .toArray()
 }
 
 async function processRecords(): Promise<void> {
     // note: we compute the history manually here because for some reason, computed ref wasn't working
-    history.value = (await trafficViewerService.processRecords(props.dataPointer.catalogName, props.criteria, records)).toArray()
+    const visualisedRecords: ImmutableList<TrafficRecordVisualisationDefinition> =
+        await trafficViewerService.processRecords(props.dataPointer.catalogName, props.criteria, records)
+    // the records have to be processed oldest first, so that a record can be attached to the session it
+    // belongs to, but the list shows the newest traffic at the top
+    history.value = visualisedRecords.reverse().toArray()
 }
 
 function handleRecordFetchError(e: unknown): void {
     if (e instanceof ConnectError && e.code === Code.InvalidArgument) {
-        // todo lho rework when connect library can provide metadata
+        // the classification is message-based because nothing structured discriminates these two states yet: the
+        // server does attach a `google.rpc.ErrorInfo` whose domain is the exception class name, but the missing
+        // recording is reported as a plain `EvitaInvalidUsageException`, and the error code is derived from the throw
+        // site, so it changes between server versions. Both would need a dedicated exception type in evitaDB first.
         if (errorMessage(e).toLowerCase().includes('no on-demand traffic recording has been started')) {
             fetchError.value = TrafficFetchErrorType.NoActiveTrafficRecording
             return
@@ -258,7 +219,7 @@ async function moveStartPointerToNewest(): Promise<void> {
     try {
         const latestRecords: ImmutableList<TrafficRecord> = await trafficViewerService.getRecordHistoryList(
             props.dataPointer.catalogName,
-            lastRecordRequest.value,
+            createTrafficRecordHistoryRequest(props.criteria),
             1,
             true
         )
@@ -301,7 +262,7 @@ defineExpose<{
         <VInfiniteScroll
             mode="manual"
             side="end"
-            @load="loadNextHistory"
+            @load="loadOlderHistory"
         >
             <template
                 v-for="(visualisationDefinition, index) in history"
@@ -313,7 +274,7 @@ defineExpose<{
 
             <template #load-more="{ props }">
                 <VBtn v-bind="props">
-                    {{ t('trafficViewer.recordHistory.list.button.loadMore') }}
+                    {{ t('trafficViewer.recordHistory.list.button.loadOlder') }}
                 </VBtn>
             </template>
         </VInfiniteScroll>

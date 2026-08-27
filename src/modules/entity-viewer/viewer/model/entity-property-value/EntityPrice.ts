@@ -9,11 +9,13 @@ import { Currency } from '@/modules/database-driver/data-type/Currency'
 import { DateTimeRange } from '@/modules/database-driver/data-type/DateTimeRange'
 import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { Price } from '@/modules/database-driver/request-response/data/Price'
+import { serializeJsonWithBigInt } from '@/utils/JsonUtil'
 
 /**
- * Represents a single entity price.
+ * Represents a single entity price. It stays a view value wrapping the driver's {@link Price}, because it
+ * is an {@link EntityPropertyValue} — moving it into the driver would make the driver depend on the entity
+ * viewer's model.
  */
-// todo lho this should be probably in driver too and the computePrice logic aswell
 export class EntityPrice extends EntityPropertyValue {
     readonly priceId: number | undefined
     readonly priceList: string
@@ -81,7 +83,8 @@ export class EntityPrice extends EntityPropertyValue {
     }
 
     toRawString(): string {
-        return JSON.stringify(this.toRawRepresentation())
+        // the validity range carries timestamps whose seconds are a bigint, which plain stringification rejects
+        return serializeJsonWithBigInt(this.toRawRepresentation())
     }
 
     toRawRepresentation(): EvitaValue {

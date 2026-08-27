@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest'
 import {
     isKeyboardShortcutDispatchable
-} from '../../../src/modules/keymap/model/keyboardShortcutEventFilter'
+} from '@/modules/keymap/service/keyboardShortcutEventFilter'
 
 function event(
     tagName: string | undefined,
@@ -19,6 +19,10 @@ describe('isKeyboardShortcutDispatchable', () => {
         expect(isKeyboardShortcutDispatchable(event('DIV'))).toBe(true)
         expect(isKeyboardShortcutDispatchable(event('BODY', { altKey: true }))).toBe(true)
         expect(isKeyboardShortcutDispatchable(event(undefined))).toBe(true)
+    })
+
+    test('lets Shift+Alt through from a CodeMirror editor, which is a contenteditable DIV', () => {
+        expect(isKeyboardShortcutDispatchable(event('DIV', { altKey: true }))).toBe(true)
     })
 
     test.each(['INPUT', 'SELECT', 'TEXTAREA'])('blocks unmodified keys in %s', (tagName) => {

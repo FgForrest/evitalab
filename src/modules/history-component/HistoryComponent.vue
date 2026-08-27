@@ -1,15 +1,18 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="R">
+/**
+ * Generic history list shared by the query consoles. The record type is a type parameter, so the
+ * component stays independent of the modules that use it.
+ */
+
 import { useI18n } from 'vue-i18n'
-import type { GraphQLConsoleHistoryRecord } from '../graphql-console/console/history/model/GraphQLConsoleHistoryRecord';
-import type { EvitaQLConsoleHistoryRecord } from '../evitaql-console/console/history/model/EvitaQLConsoleHistoryRecord';
 const { t } = useI18n()
 
 const props = defineProps<{
-    items: { key: string, preview: string[], value: GraphQLConsoleHistoryRecord | EvitaQLConsoleHistoryRecord }[],
+    items: { key: string, preview: string[], value: R }[],
 }>()
 
 const emit = defineEmits<{
-    (e: 'selectHistoryRecord', value: GraphQLConsoleHistoryRecord | EvitaQLConsoleHistoryRecord): void,
+    (e: 'selectHistoryRecord', value: R): void,
     (e: 'update:clearHistory'): void
 }>()
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { errorMessage } from '@/utils/error'
-import { computed, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { List as ImmutableList } from 'immutable'
 import CreateCatalogDialog from '@/modules/connection-explorer/component/CreateCatalogDialog.vue'
@@ -21,6 +21,8 @@ import {
 import {
     ConnectionExplorerPanelMenuFactory, useConnectionExplorerPanelMenuFactory
 } from '@/modules/connection-explorer/service/ConnectionExplorerPanelMenuFactory'
+import ConnectionExplorerPanelResizer from '@/modules/connection-explorer/component/ConnectionExplorerPanelResizer.vue'
+import { clampPanelWidth, maxPanelWidth, minPanelWidth } from '@/modules/connection-explorer/model/panelWidth'
 
 const retryInterval: number = 5000
 
@@ -45,6 +47,36 @@ const catalogChangeCallbackId: string = connectionExplorerService.registerCatalo
 })
 const showCreateCatalogDialog = ref<boolean>(false)
 
+/**
+ * Whether evitaLab is currently offline. Badged here, on the connection the outage belongs to; the status bar
+ * separately reports whether the *data on screen* is verified, which is a different question.
+ */
+const offline = connectionExplorerService.serverUnreachable
+
+/**
+ * The width the user chose, as restored from the previous lab run. Kept separately from the width the panel
+ * actually gets, so that a preference too wide for the current viewport comes back when the window grows again.
+ */
+const preferredPanelWidth = ref<number>(connectionExplorerService.getPanelWidth())
+const viewportWidth = ref<number>(window.innerWidth)
+const maxWidth = computed<number>(() => maxPanelWidth(viewportWidth.value))
+
+/**
+ * Width the panel is rendered with - the preferred width fitted to the current viewport.
+ */
+const panelWidth = computed<number>({
+    get: () => clampPanelWidth(preferredPanelWidth.value, viewportWidth.value),
+    set: (width: number) => preferredPanelWidth.value = width
+})
+
+function updateViewportWidth(): void {
+    viewportWidth.value = window.innerWidth
+}
+
+function persistPanelWidth(): void {
+    connectionExplorerService.setPanelWidth(preferredPanelWidth.value)
+}
+
 const menuItems = ref<Map<ConnectionMenuItemType, MenuItem<ConnectionMenuItemType>>>()
 watch(
     serverStatus,
@@ -65,13 +97,11 @@ async function load(): Promise<void> {
     }
 
     loading.value = true
-    loaded = await loadServerStatus()
-        .then((loaded) => {
-            if (!loaded) {
-                return false
-            }
-            return loadCatalogs()
-        })
+    // the catalog listing is attempted even when the server status could not be fetched: it may be served
+    // from the persistent cache, which is what keeps the explorer usable while the server is unreachable
+    const serverReachable: boolean = await loadServerStatus()
+    const catalogsLoaded: boolean = await loadCatalogs()
+    loaded = serverReachable && catalogsLoaded
     loading.value = false
 }
 
@@ -117,19 +147,21 @@ function scheduleServerStatusRetry(): void {
 }
 
 async function loadCatalogs(): Promise<boolean> {
-    if (serverStatus.value == undefined) {
-        // the server is unreachable (per the server status) — catalogs live on it, so there is
-        // nothing to fetch and no point surfacing a second failure on top of the status error
-        return false
-    }
+    // an unreachable server (per the server status) is not a reason to skip this: the driver may still
+    // serve the catalog listing from its persistent cache, and that is exactly what makes the explorer —
+    // and with it every catalog-scoped tab — usable while the server is down
+    const serverReachable: boolean = serverStatus.value != undefined
     try {
         catalogs.value = await connectionExplorerService.getCatalogs()
         return true
     } catch (e) {
-        await toaster.error(t(
-            'explorer.connection.notification.couldNotLoadCatalogs',
-            { reason: errorMessage(e) }
-        ))
+        if (serverReachable) {
+            await toaster.error(t(
+                'explorer.connection.notification.couldNotLoadCatalogs',
+                { reason: errorMessage(e) }
+            ))
+        }
+        // nothing cached and no server: the status error already told the user, so no second failure
         return false
     }
 }
@@ -139,8 +171,32 @@ async function createMenuItems(): Promise<Map<ConnectionMenuItemType, MenuItem<C
         serverStatus.value,
         () => showCreateCatalogDialog.value = true,
         () => loading.value = true,
-        () => loading.value = false
+        () => loading.value = false,
+        () => void clearLocalCache()
     )
+}
+
+/**
+ * Discards evitaLab's on-disk copy of this server's data. Purely local: nothing on the server is touched and
+ * the data comes back on the next read, so it needs no confirmation — only feedback.
+ */
+async function clearLocalCache(): Promise<void> {
+    loading.value = true
+    try {
+        // reports whether evitaLab can persist anything at all: with storage the browser refuses, the purge
+        // cannot have had anything to do, and claiming success would be a lie
+        const cleared: boolean = await connectionExplorerService.clearLocalCache()
+        await toaster.success(t(cleared
+            ? 'explorer.connection.notification.localCacheCleared'
+            : 'explorer.connection.notification.localCacheUnavailable'))
+    } catch (e) {
+        await toaster.error(t(
+            'explorer.connection.notification.couldNotClearLocalCache',
+            { reason: errorMessage(e) }
+        ))
+    } finally {
+        loading.value = false
+    }
 }
 
 function handleAction(action: string): void {
@@ -153,10 +209,15 @@ function handleAction(action: string): void {
     }
 }
 
+onMounted(() => {
+    window.addEventListener('resize', updateViewportWidth)
+})
+
 onUnmounted(() => {
     connectionExplorerService.unregisterServerStatusChangeCallback(serverStatusChangeCallbackId)
     connectionExplorerService.unregisterCatalogChangeCallback(catalogChangeCallbackId)
     cancelServerStatusRetry()
+    window.removeEventListener('resize', updateViewportWidth)
 })
 
 load().then()
@@ -165,9 +226,9 @@ load().then()
 <template>
     <VNavigationDrawer
         permanent
-        :width="325"
+        :width="panelWidth"
         @update:model-value="$emit('update:modelValue', $event)"
-        class="bg-primary"
+        class="bg-primary connection-explorer-panel"
     >
         <VList
             density="compact"
@@ -175,8 +236,8 @@ load().then()
         >
             <div class="panel-header">
                 <span class="text-gray-light text-sm-body-2 font-weight-medium">
-                  <span class="d-inline-flex align-center">
-                    {{ t('explorer.title') }}
+                  <span class="d-inline-flex align-center panel-title">
+                    <span class="panel-title-text">{{ t('explorer.title') }}</span>
                     <VTooltip location="bottom">
                       {{ t('explorer.readOnlyToolTip') }}
                         <template #activator="{ props }">
@@ -185,6 +246,18 @@ load().then()
                             v-bind="props"
                             class="icon"
                             icon="mdi-eye-outline"
+                        />
+                      </template>
+                    </VTooltip>
+                    <VTooltip location="bottom">
+                      {{ t('explorer.offlineModeToolTip') }}
+                        <template #activator="{ props }">
+                        <VIcon
+                            v-if="offline"
+                            v-bind="props"
+                            class="icon"
+                            icon="mdi-cloud-off-outline"
+                            color="warning"
                         />
                       </template>
                     </VTooltip>
@@ -247,18 +320,55 @@ load().then()
                 v-model="showCreateCatalogDialog"
             />
         </VList>
+
+        <template #append>
+            <ConnectionExplorerPanelResizer
+                v-model="panelWidth"
+                :min="minPanelWidth"
+                :max="maxWidth"
+                @resize-end="persistPanelWidth"
+            />
+        </template>
     </VNavigationDrawer>
 </template>
 
 <style lang="scss" scoped>
+// the tab area follows the panel through `--v-layout-left`, which is not animated - so the drawer must not
+// animate its width either, otherwise the two visibly desync on every width change. The panel is permanent,
+// so nothing else about it was ever animated
+.connection-explorer-panel {
+    transition: none;
+}
+
 .panel-header {
     width: 100%;
     display: inline-grid;
-    grid-template-columns: auto 1.5rem;
+    // `minmax(0, auto)` lets the title column shrink below its content, which is what allows the title to
+    // truncate instead of pushing the status badges and the menu out of a narrow panel
+    grid-template-columns: minmax(0, auto) 1.5rem;
     gap: 0.5rem;
     padding: 0 0.5rem 0 0.5rem;
     height: 2rem;
     align-items: center;
+
+    > span {
+        min-width: 0;
+    }
+}
+
+.panel-title {
+    // the badges keep their size, only the title gives way
+    max-width: 100%;
+
+    > :not(.panel-title-text) {
+        flex: 0 0 auto;
+    }
+}
+
+.panel-title-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .connection-loading {

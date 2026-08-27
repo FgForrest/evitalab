@@ -4,6 +4,7 @@ import { DateTime } from 'luxon'
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { ChangeStreamStatus } from '@/modules/database-driver/model/ChangeStreamStatus'
+import { CacheInvalidationReason } from '@/modules/database-driver/cache/CacheInvalidationReason'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
 import { CaptureResponseType } from '@/modules/database-driver/request-response/cdc/CaptureResponseType'
 import type {
@@ -151,6 +152,12 @@ export class DataCacheRefresher {
                             acknowledged = true
                             consecutiveFailures = 0
                             resumeAttemptFailures = 0
+                            if (this.streamStatus.value === ChangeStreamStatus.Broken) {
+                                // a genuine reconnect (not the first connect, which starts from `Connecting`):
+                                // data may well have changed while evitaLab could not observe it, so every
+                                // persisted value is due for another verification on its next read
+                                this.evitaClient.persistentCacheLayer.resetRevalidationState()
+                            }
                             this.streamStatus.value = ChangeStreamStatus.UpToDate
                             if (response.heartBeat != undefined) {
                                 this.rememberVersion(BigInt(response.heartBeat.lastObservedVersion))
@@ -195,7 +202,10 @@ export class DataCacheRefresher {
                         this.resumeVersion = undefined
                         resumeAttemptFailures = 0
                         try {
-                            await this.evitaClient.management.clearCatalogStatisticsCache()
+                            // we only know that changes may have been missed, not that anything did change,
+                            // and the persisted listing is what an unreachable server is served from - so the
+                            // disk copy stays and the revalidation of the next read verifies it
+                            await this.evitaClient.management.clearCatalogStatisticsCache(CacheInvalidationReason.MemoryOnly)
                         } catch (clearError) {
                             console.warn('Failed to clear catalog statistics cache after a rejected resume', clearError)
                         }
@@ -228,7 +238,7 @@ export class DataCacheRefresher {
         const body = capture.body
         if (body == undefined) {
             console.warn('Unknown change capture (header-only); defensively clearing catalog statistics cache.')
-            await this.evitaClient.management.clearCatalogStatisticsCache()
+            await this.evitaClient.management.clearCatalogStatisticsCache(CacheInvalidationReason.ChangeEvidence)
             return
         }
 
@@ -237,21 +247,21 @@ export class DataCacheRefresher {
             body instanceof DuplicateCatalogMutation ||
             body instanceof RestoreCatalogSchemaMutation
         ) {
-            await this.evitaClient.management.clearCatalogStatisticsCache()
+            await this.evitaClient.management.clearCatalogStatisticsCache(CacheInvalidationReason.ChangeEvidence)
         } else if (body instanceof RemoveCatalogSchemaMutation) {
-            await this.evitaClient.management.clearCatalogStatisticsCache()
+            await this.evitaClient.management.clearCatalogStatisticsCache(CacheInvalidationReason.ChangeEvidence)
             await this.evitaClient.clearSchemaCache(body.catalogName)
         } else if (body instanceof MarkCatalogMissingMutation) {
             // catalog stays listed in MISSING state, but its schema is no longer servable
-            await this.evitaClient.management.clearCatalogStatisticsCache()
+            await this.evitaClient.management.clearCatalogStatisticsCache(CacheInvalidationReason.ChangeEvidence)
             await this.evitaClient.clearSchemaCache(body.catalogName)
         } else if (body instanceof ModifyCatalogSchemaNameMutation) {
-            await this.evitaClient.management.clearCatalogStatisticsCache()
+            await this.evitaClient.management.clearCatalogStatisticsCache(CacheInvalidationReason.ChangeEvidence)
             await this.evitaClient.clearSchemaCache(body.catalogName)
             await this.evitaClient.clearSchemaCache(body.newCatalogName)
         } else if (body instanceof ModifyCatalogSchemaMutation) {
             await this.evitaClient.clearSchemaCache(body.catalogName)
-            await this.evitaClient.management.clearCatalogStatisticsCache()
+            await this.evitaClient.management.clearCatalogStatisticsCache(CacheInvalidationReason.ChangeEvidence)
         } else if (
             body instanceof MakeCatalogAliveMutation ||
             body instanceof SetCatalogStateMutation ||
@@ -260,7 +270,7 @@ export class DataCacheRefresher {
         ) {
             // UpgradeCatalogFormatMutation drives OUT_OF_DATE → BEING_UPGRADED → prior state; the
             // explorer picks up the state change from the refreshed statistics
-            await this.evitaClient.management.clearCatalogStatisticsCache()
+            await this.evitaClient.management.clearCatalogStatisticsCache(CacheInvalidationReason.ChangeEvidence)
         }
         // TransactionMutation and any other mutation carry no catalog reference — nothing to invalidate
     }

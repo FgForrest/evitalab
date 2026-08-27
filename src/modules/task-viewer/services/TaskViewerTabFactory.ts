@@ -7,10 +7,16 @@ import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
 import type { TaskViewerTabParamsDto } from '@/modules/task-viewer/model/TaskViewerTabParamsDto'
 import { mandatoryInject } from '@/utils/reactivity'
 import { i18n } from '@/vue-plugins/i18n'
+import { TabType } from '@/modules/workspace/tab/model/TabType'
+import type { TabFactory } from '@/modules/workspace/tab/service/TabFactory'
 
 export const taskViewerTabFactoryInjectionKey: InjectionKey<TaskViewerTabFactory> = Symbol('taskViewerTabFactory')
 
-export class TaskViewerTabFactory {
+export class TaskViewerTabFactory implements TabFactory {
+
+    readonly tabType: TabType = TabType.TaskViewer
+    readonly restorable: boolean = true
+
     private readonly connectionService: ConnectionService
 
     constructor(connectionService: ConnectionService) {

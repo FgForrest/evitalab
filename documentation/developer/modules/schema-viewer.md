@@ -5,8 +5,8 @@ sortable-compound schemas, with **deep-linkable schema paths**. Contributes `Tab
 
 - **Provides:** `schemaViewerServiceInjectionKey`, `schemaViewerTabFactoryInjectionKey`,
   `delegatingSchemaPathFactoryInjectionKey`
-- **Injects:** `evitaClientInjectionKey`, `workspaceServiceInjectionKey`,
-  `schemaViewerTabFactoryInjectionKey`
+- **Injects:** `evitaClientInjectionKey`, `connectionServiceInjectionKey`,
+  `workspaceServiceInjectionKey`, `tabFactoryRegistryInjectionKey`
 
 ## Layout
 
@@ -19,6 +19,22 @@ Everything under `viewer/`:
 | `service/` | `SchemaViewerService` |
 | `service/schema-path-factory/` | `SchemaPathFactory`, `AbstractSchemaPathFactory`, `DelegatingSchemaPathFactory` + one factory per kind |
 | `workspace/` | `SchemaViewerTabDefinition`, params DTOs, `SchemaViewerTabFactory` |
+
+## Initialization, errors & retry
+
+`SchemaViewer.vue` follows the tab framework's
+[init contract](../workspace-and-tabs.md#loading-errors--retry):
+
+- **One fetch per open.** `initialize()` — called from `onBeforeMount` and from the exposed `retry()` — is the
+  only init caller. The tab title is a synchronous `const` derived from
+  `params.dataPointer.schemaPointer` alone, so it needs no fetch; the tab body is gated on `schemaLoaded`.
+- **Throw vs. toast is split by path.** `loadSchema()` throws. `initialize()` catches and
+  `emit('error', asError(e))`, which puts the tab on the error screen with a *Try again* button instead of
+  rendering an empty schema body. The **reload** paths — the toolbar's reload button (`reloadSchema()`) and the
+  registered schema-change callback — catch and `toaster.error(...)` instead: a background reload must never
+  replace working content with an error screen.
+- **`retry()` is exposed rather than relying on the remount fallback**, because the schema-change callback is
+  registered at setup top level and released in `onUnmounted`, which `KeepAlive` never runs on a `:key` bump.
 
 ## Schema pointers and paths
 

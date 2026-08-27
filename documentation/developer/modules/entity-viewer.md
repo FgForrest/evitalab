@@ -7,7 +7,9 @@ renderer. Contributes `TabType.EntityViewer`.
 - **Provides:** `entityViewerServiceInjectionKey`, `entityViewerTabFactoryInjectionKey`,
   `codeDetailRendererMenuFactoryInjectionKey`, `markdownDetailRendererMenuFactoryInjectionKey`,
   `entityGridCellMenuFactoryInjectionKey`
-- **Injects:** `evitaClientInjectionKey`, `workspaceServiceInjectionKey`
+- **Injects:** `evitaClientInjectionKey`, `connectionServiceInjectionKey`,
+  `workspaceServiceInjectionKey`, `tabFactoryRegistryInjectionKey`,
+  `mutationHistoryViewerTabFactoryInjectionKey`
 
 ## Layout
 
@@ -25,6 +27,56 @@ Everything sits under `viewer/`:
 | `history/` | `FilterByHistoryKey`/`Record`, `OrderByHistoryKey`/`Record` |
 | `keymap/scopes.ts` | The viewer's shortcut scopes |
 | `workspace/` | `EntityViewerTabDefinition`, params/data DTOs, `EntityViewerTabFactory` |
+
+## Initialization, errors & retry
+
+`EntityViewer.vue` follows the tab framework's
+[init contract](../workspace-and-tabs.md#loading-errors--retry). `initialize()` holds the whole init chain —
+data locales → property descriptors → descriptor index → grid headers → sort pruning → property preselection —
+and is called from both `onBeforeMount` and the exposed `retry()`. Any rejection becomes
+`emit('error', asError(e))`, so a failed init offers *Try again* instead of spinning forever.
+
+The chain stays a `.then()` promise chain on purpose: making the setup async breaks the component in
+combination with the dynamic `<component>` rendering the tab framework uses.
+
+Two consequences of `initialize()` being re-runnable:
+
+- **`executeOnOpen` re-runs on retry** — a retried tab behaves exactly like a freshly opened one, matching the
+  GraphQL console.
+- **Nothing may accumulate across runs.** `constructEntityPropertyDescriptorIndex()` rebuilds the property
+  display order into a fresh array and replaces `sortedEntityPropertyKeys`; appending to it would grow the
+  order on every retry and on every schema change.
+
+`retry()` is exposed rather than relying on the remount fallback, because the entity-schema change callback is
+registered at setup top level and released in `onUnmounted`, which `KeepAlive` never runs on a `:key` bump.
+
+## Toolbar
+
+`component/Toolbar.vue` wraps `VTabToolbar`. Its `#append` slot is ordered least → most important with
+the primary action last:
+
+| Button | What it does |
+|---|---|
+| `ShareTabButton` | shares the tab (`Command.EntityViewer_ShareTab`) |
+| **Open entity schema** (`mdi-graph-outline`) | opens the schema of *this tab's own collection* in a new Schema viewer tab |
+| `VExecuteQueryButton` | runs the query (`Command.EntityViewer_ExecuteQuery`) |
+
+The *Open entity schema* button builds an `EntitySchemaPointer` from
+`tabProps.params.dataPointer` (catalog name + entity type) and hands it to
+`SchemaViewerTabFactory.createNew()`. It uses `SchemaViewerTabDefinition.icon()` — the canonical icon
+of the tab type it opens, the same one `CollectionItemMenuFactory` uses for its *Schema* item.
+
+It **complements, not replaces**, the per-item *Open schema* affordances in the property selector
+(`PropertySectionEntityItem.vue` and friends): those open the schema of an individual attribute,
+associated data, reference or price, while the toolbar button opens the collection's entity schema,
+which previously had no route out of the viewer at all.
+
+The action deliberately has **no `Command` and no keyboard shortcut**. Shortcut space in the
+entity-viewer scope is kept free for future features (notably `Cmd+K` for search), and a `Command`
+without a matching entry in `keyboardShortcutMappings.ts` would make `Keymap.getKeyboardShortcut`
+throw `UnexpectedError` the moment `VActionTooltip` calls `prettyPrint` on it. Per the
+[design language](../design-language.md), a button without a command therefore uses a plain
+`VTooltip` rather than `VActionTooltip`.
 
 ## Cell interaction model
 
@@ -65,6 +117,105 @@ all rather than created disabled:
 *Entity history* is always offered. Container names come from the **property key**, not from the
 descriptor's schema: a reference attribute's schema is the *attribute* schema, so a schema-derived name
 would filter the history by the attribute where evitaDB expects the reference.
+
+## The filter by / order by inputs
+
+`QueryInput.vue` renders both as `VInlineQueryEditor`, which is a strictly single-line editor. Multiline
+text — a pretty-printed query pasted or dropped into the input — is accepted and **flattened into one
+line**, not rejected; see [the single-line invariant](code-editor.md#the-single-line-invariant) for the
+rule, the `Enter` no-op and the trailing-line-comment limitation.
+
+`filterByCode`/`orderByCode` seeded from `EntityViewerTabData` (session restore, share links) bypass the
+editor's transaction filter, so `EntityViewer.vue` flattens them with `flattenToSingleLine` when
+initializing the refs. Normalizing at the seed rather than at the display boundary keeps the executed
+query identical to the visible one.
+
+## Column sorting
+
+### What is sortable
+
+`EntityPropertyDescriptor.isSortable(scopes)` is the **single source of truth**. It is evaluated once per
+scope selection by `EntityViewer.initializeGridHeaders`, stored in `GridHeader.sortable`, and only
+mirrored by `EntityGridColumnHeader.vue` (`props.column.sortable`) — the header never re-derives it.
+
+With `S` = the scopes currently checked in the scope selector (`selectedScopes` filtered to
+`value === true`, exposed as the `activeScopes` computed):
+
+| Column kind | Sortable when |
+|---|---|
+| `primaryKey` (static) | **always** — `entityPrimaryKeyNatural` needs no attribute index |
+| `Attributes` | `S.every(scope => schema.sortableInScopes.includes(scope))` |
+| `ReferenceAttributes` | the same **and** `S.every(scope => parentSchema.isIndexedInScope(scope))` |
+| everything else (associated data, prices, references, other static properties) | never |
+
+Two rules that are easy to get backwards:
+
+- **ALL, not ANY.** evitaDB validates sortability with `allMatch` over the *requested* scopes, so an
+  attribute sortable only in `Live` is not sortable while both `Live` and `Archive` are checked —
+  offering it would produce an `AttributeNotSortableException` at query time. Reference attributes are
+  additionally rejected with `ReferenceNotIndexedException` if the owning reference is not indexed in
+  every requested scope.
+- **Empty selection ⇒ vacuously true.** No scope checked degrades the query to a bare
+  `query(collection(…))` with no scope restriction at all, so no sortability restriction applies either.
+  `Array.prototype.every` on `[]` already returns `true`. The visible consequence is that with no scope
+  selected **every** column appears sortable, including attributes that are sortable nowhere — this is
+  intended, not a bug: the query carries no `orderBy` in that state, and re-checking a scope prunes
+  whatever became invalid.
+
+Sortability is duck-typed through `isSortableSchema` on `SortableSchema.sortableInScopes`. To stop a
+future rename from silently degrading every column to non-sortable, `AttributeSchema`
+**declares `implements SortableSchema`** — that declaration is what turns the rename into a compile error.
+
+Changing the scope selection rebuilds the grid headers (and `displayedGridHeaders`, which holds
+references to the old header objects), so columns gain and lose their sort affordance live.
+
+### Who owns the order by
+
+`orderByCode` has two possible writers — the grid and the user's own text — and they are **mutually
+exclusive**, tracked by `orderByDefinedManually`:
+
+| `orderByDefinedManually` | Order by is | `sortBy` | Column arrows | Order by input glyph |
+|---|---|---|---|---|
+| `false` (default) | **derived** from the grid sort | authoritative | shown | `mdi-pencil-off-outline` |
+| `true` | **hand-written** text owned by the user | empty | none | `mdi-pencil-outline` |
+
+Because the two writers silently overwrite each other, the owner is surfaced to the user: the order by
+input carries a trailing glyph whose tooltip says what will replace the current ordering. The
+`orderByOwnership` computed drives it and is `undefined` when no ordering is defined at all, so an empty
+input stays unadorned.
+
+- Editing the order by input (or picking a history record) sets the flag and clears `sortBy` — the
+  direction arrow disappears, because it would otherwise claim a column ordering that no longer drives
+  the query.
+- Clicking a column header clears the flag and regenerates `orderByCode` from the new sort, replacing any
+  hand-written text. This hand-off is the only thing that takes ownership back.
+- Every other `update:options` emit from `VDataTableServer` (mount, page, page size) leaves `sortBy`
+  unchanged, and `gridUpdated` guards on an **actual sort change**, so a hand-written order by is never
+  overwritten.
+- Switching the query language clears `filterByCode`/`orderByCode` (language-specific source text) and
+  resets the flag, but deliberately **keeps `sortBy`** — it is language-agnostic — and immediately
+  regenerates the order by in the new language.
+
+Because `gridUpdated` no longer rebuilds the order by on every emit, **every site that changes `sortBy`
+programmatically must call `rebuildOrderByFromSortBy` itself**; by the time the change echoes back
+through `update:options` the two are already equal and the guard suppresses the rebuild.
+
+`EntityGrid.vue` binds `:sort-by` **one-way** on purpose. Adding an `update:sortBy` listener would put
+Vuetify's `useProxiedModel` into controlled mode, where the parent must write the value back
+synchronously — which would make every user sort look identical to a programmatic one and defeat the
+guard above.
+
+### Persistence
+
+`sortBy` (`{ key, order }[]`) and `orderByDefinedManually` are stored in `EntityViewerTabData`, so a grid
+sort survives session restore and share links. Both are optional and appended last in the positional
+constructor: tab data written before they existed simply restores them as `undefined`, and a newer share
+link opened by an older evitaLab ignores them. No DTO versioning is involved.
+
+`pruneSortsInvalidInSelectedScopes` runs at all three points where a sort can become invalid: a scope
+change, `onBeforeMount` (a restored tab can carry a sort its own restored scopes no longer allow), and
+`reloadEntityPropertyDescriptors` (a schema change can drop a property or its sortability). Pruning drops
+only the invalidated entries — sorts that stay valid survive.
 
 ## The two-language query abstraction
 
@@ -112,6 +263,19 @@ referenced entity, or the referenced group (`referencedGroupType`) when that ref
 item rows show `{referenced entity PK} / {referenced group PK}`. The group primary key is carried on
 `EntityReferenceValue.groupPrimaryKey`, populated only for managed group types — evitaQL reads it from
 the reference's group reference by default, GraphQL fetches `groupEntity { primaryKey }`.
+
+### Human-readable values
+
+The type-driven formatting lives on the values themselves (`EntityPropertyValue.toPrettyPrintString()`,
+which delegates to `getPrettyPrintableString()` of the driver's data types), not in the renderers. Grid
+cells print that string bare; `MarkdownDetailRenderer` only *decorates* it — an icon plus a code span
+(`📅 \`7/27/26, 10:32:08 AM GMT+2\``), a fenced block for JSON/XML strings and complex objects, a plain
+paragraph for prose. The renderer used to carry its own `Intl` formatters, which let the two views drift
+apart for the same value; changing the shared format now moves both at once.
+
+Note that `EntityViewerService.formatEntityPropertyValue` is a **different axis** — it formats a value in
+a *code language* (raw / JSON / XML) for the code detail renderer, and is deliberately not where the
+human-readable formatting belongs.
 
 ## Note for automated UI testing
 

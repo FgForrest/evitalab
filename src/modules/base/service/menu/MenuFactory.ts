@@ -1,3 +1,4 @@
+import type { Command } from '@/modules/keymap/model/Command'
 import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
 import { MenuAction } from '@/modules/base/model/menu/MenuAction'
 import { MenuSubheader } from '@/modules/base/model/menu/MenuSubheader'
@@ -31,14 +32,15 @@ export abstract class MenuFactory<T> {
         prependIcon: string,
         titleBuilder: (actionType: T) => string,
         execute: () => void,
-        enabled: boolean = true
+        enabled: boolean = true,
+        command?: Command
     ): void {
         const action: MenuAction<T> = new MenuAction(
             actionType,
             titleBuilder(actionType),
             prependIcon,
             execute,
-            undefined,
+            command,
             !enabled
         )
         items.set(actionType, action)

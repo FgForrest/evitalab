@@ -1,3 +1,4 @@
+import { List as ImmutableList } from 'immutable'
 import type { ReferenceSummaryResultParser } from '@/modules/console/result-visualiser/service/ReferenceSummaryResultParser'
 import type { GraphQLResultNode } from '@/modules/database-driver/connector/gql/model/GraphQLResultNode'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
@@ -68,10 +69,10 @@ export class GraphQLReferenceSummaryResultParser implements ReferenceSummaryResu
                         VisualisedHistogram.fromJson(histogramStatisticsResult[indexName])
                     ))
                 }
-                return new VisualisedReferenceGroup(groupStatistics, facets, histograms)
+                return new VisualisedReferenceGroup(groupStatistics, ImmutableList(facets), ImmutableList(histograms))
             })
 
-            references.push(new VisualisedReferenceStatistics(referenceSchema, groups))
+            references.push(new VisualisedReferenceStatistics(referenceSchema, ImmutableList(groups)))
         }
 
         return new VisualisedReferenceSummary(references)

@@ -6,17 +6,14 @@ import type { EvitaQLConsoleTabDataDto } from '@/modules/evitaql-console/console
  */
 export class EvitaQLConsoleTabData implements TabData<EvitaQLConsoleTabDataDto> {
     readonly query?: string
-    readonly variables?: string
 
-    constructor(query?: string, variables?: string) {
+    constructor(query?: string) {
         this.query = query
-        this.variables = variables
     }
 
     toSerializable(): EvitaQLConsoleTabDataDto {
         return {
-            query: this.query,
-            variables: this.variables
+            query: this.query
         }
     }
 }
