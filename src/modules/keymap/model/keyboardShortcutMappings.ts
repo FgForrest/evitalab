@@ -9,6 +9,7 @@ function createKeyboardShortcutMapping(command: Command, baseShortcut: string, m
 // system
 
 createKeyboardShortcutMapping(Command.System_Keymap, 'Ctrl+Alt+K', 'Cmd+Option+K')
+createKeyboardShortcutMapping(Command.System_ManageMenu, 'Ctrl+Alt+M', 'Cmd+Option+M')
 
 createKeyboardShortcutMapping(Command.System_Panels_Connection, 'Alt+1', 'Ctrl+Shift+1')
 
@@ -58,7 +59,6 @@ createKeyboardShortcutMapping(Command.EvitaQLConsole_ExecuteQuery, 'Ctrl+Enter',
 createKeyboardShortcutMapping(Command.EvitaQLConsole_ShareTab, 'Ctrl+L', 'Cmd+L')
 
 createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_QueryEditor, 'Ctrl+1', 'Ctrl+1')
-createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_VariablesEditor, 'Ctrl+2', 'Ctrl+2')
 createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_History, 'Ctrl+3', 'Ctrl+3')
 createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_Prettify, 'Shift+Alt+F', 'Shift+Option+F')
 createKeyboardShortcutMapping(Command.EvitaQLConsole_Query_Minify, 'Shift+Alt+M', 'Shift+Option+M')

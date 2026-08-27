@@ -218,6 +218,17 @@ workspaceService.clearTabHistory(historyKey)
 The value type must be JSON-serializable. Rendering history lists is what the shared
 `history-component` module's `HistoryComponent.vue` is for.
 
+Two consequences of the storage format are easy to trip over:
+
+- **The key is a one-way hash** of connection id + tab type + section path, and only
+  `Map<hash, records[]>` is persisted. Restored keys are therefore **not validated** — an entry whose
+  section no longer exists is inert (never looked up again), and nothing but the user's *Clear history*
+  ever removes one. Validating would require self-describing entries, i.e. a storage-format change.
+- **A section path segment is part of the storage key.** Renaming one orphans everybody's stored
+  history, which is why the evitaQL console still uses `'queryAndVariables'` although its variables
+  editor is gone. Records are also read positionally, so changing a record's shape has to stay
+  backward-compatible for the same reason params/data DTOs do.
+
 ## Panels
 
 `panel/component/WorkspacePanel.vue` renders the left vertical panel (connection avatar, panel

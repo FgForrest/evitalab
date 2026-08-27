@@ -12,9 +12,10 @@ import { Price } from '@/modules/database-driver/request-response/data/Price'
 import { serializeJsonWithBigInt } from '@/utils/JsonUtil'
 
 /**
- * Represents a single entity price.
+ * Represents a single entity price. It stays a view value wrapping the driver's {@link Price}, because it
+ * is an {@link EntityPropertyValue} — moving it into the driver would make the driver depend on the entity
+ * viewer's model.
  */
-// todo lho this should be probably in driver too and the computePrice logic aswell
 export class EntityPrice extends EntityPropertyValue {
     readonly priceId: number | undefined
     readonly priceList: string

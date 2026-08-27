@@ -28,17 +28,6 @@ const { t } = useI18n()
 
 const whiteSpacePattern = /\s+/
 
-const offsetDateTimeFormatter = new Intl.DateTimeFormat([], {
-    dateStyle: 'medium',
-    timeStyle: 'long',
-})
-const localDateTimeFormatter = new Intl.DateTimeFormat([], {
-    dateStyle: 'medium',
-    timeStyle: 'medium',
-})
-const localDateFormatter = new Intl.DateTimeFormat([], { dateStyle: 'medium' })
-const localTimeFormatter = new Intl.DateTimeFormat([], { timeStyle: 'medium' })
-
 const props = withDefaults(
     defineProps<{
         value: EntityPropertyValue | EntityPropertyValue[]
@@ -108,87 +97,24 @@ const formattedValue = computed<string>(() => {
             case Scalar.Character:
             case Scalar.BigDecimal:
             case Scalar.UUID:
-                return (
-                    '`' +
-                    (props.value as EntityPropertyValue).value().toString() +
-                    '`'
-                )
-            case Scalar.OffsetDateTime:
-                return (
-                    '📅 `' +
-                    offsetDateTimeFormatter.format(
-                        new Date(
-                            (props.value as EntityPropertyValue)
-                                .value()
-                                .toString()
-                        )
-                    ) +
-                    '`'
-                )
-            case Scalar.LocalDateTime:
-                return (
-                    '📅 `' +
-                    localDateTimeFormatter.format(
-                        new Date(
-                            (props.value as EntityPropertyValue)
-                                .value()
-                                .toString()
-                        )
-                    ) +
-                    '`'
-                )
-            case Scalar.LocalDate:
-                return (
-                    '📅 `' +
-                    localDateFormatter.format(
-                        new Date(
-                            (props.value as EntityPropertyValue)
-                                .value()
-                                .toString()
-                        )
-                    ) +
-                    '`'
-                )
-            case Scalar.LocalTime:
-                return (
-                    '📅 `' +
-                    localTimeFormatter.format(
-                        new Date(
-                            '1970-01-01' +
-                                (props.value as EntityPropertyValue)
-                                    .value()
-                                    .toString()
-                        )
-                    ) +
-                    '`'
-                )
-            case Scalar.DateTimeRange:
-                return prettyPrintRangeValue(props.value, '📅 ')
             case Scalar.ByteNumberRange:
             case Scalar.ShortNumberRange:
             case Scalar.IntegerNumberRange:
-                return prettyPrintRangeValue(props.value, '')
             case Scalar.BigDecimalNumberRange:
             case Scalar.LongNumberRange:
-                return prettyPrintRangeValue(props.value, '')
+                return prettyPrintValue(props.value, '')
+            case Scalar.OffsetDateTime:
+            case Scalar.LocalDateTime:
+            case Scalar.LocalDate:
+            case Scalar.LocalTime:
+            case Scalar.DateTimeRange:
+                return prettyPrintValue(props.value, '📅 ')
             case Scalar.Locale:
-                return (
-                    '🌐 `' +
-                    (props.value as EntityPropertyValue).value().toString() +
-                    '`'
-                )
+                return prettyPrintValue(props.value, '🌐 ')
             case Scalar.Currency:
-                return (
-                    '💰 `' +
-                    (props.value as EntityPropertyValue).value().toString() +
-                    '`'
-                )
+                return prettyPrintValue(props.value, '💰 ')
             case Scalar.Predecessor:
-                return (
-                    '↻ `' +
-                    (props.value as EntityPropertyValue).value().toString() +
-                    '`'
-                )
+                return prettyPrintValue(props.value, '↻ ')
             case Scalar.ComplexDataObject:
             case ExtraEntityObjectType.Prices:
             case ExtraEntityObjectType.ReferenceAttributes:
@@ -214,17 +140,22 @@ const formattedValue = computed<string>(() => {
     }
 })
 
-function prettyPrintRangeValue(
-    rawRange: EntityPropertyValue | EntityPropertyValue[],
+/**
+ * Decorates the value's own human-readable form for Markdown: an optional icon and a code span. The
+ * formatting itself belongs to the value (`toPrettyPrintString`), so that the entity grid, which renders
+ * the same values without any decoration, cannot drift away from this renderer.
+ */
+function prettyPrintValue(
+    value: EntityPropertyValue | EntityPropertyValue[],
     prefix: string
 ): string {
-    if (rawRange instanceof EntityPropertyValue) {
-        return prefix + '`' + rawRange.toPrettyPrintString() + '`'
+    if (value instanceof EntityPropertyValue) {
+        return prefix + '`' + value.toPrettyPrintString() + '`'
     } else {
         return (
             prefix +
             '`' +
-            rawRange.map((x) => x.toPrettyPrintString()).join(',') +
+            value.map((it) => it.toPrettyPrintString()).join(',') +
             '`'
         )
     }

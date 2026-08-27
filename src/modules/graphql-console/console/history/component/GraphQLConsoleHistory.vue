@@ -27,7 +27,8 @@ const historyListItems = computed<{ key: string, preview: string[], value: Graph
     })
 })
 
-const historyComponentRef = ref<InstanceType<typeof HistoryComponent> | undefined>()
+// the shared history component is generic, so it has no `InstanceType`; it is referenced by what it exposes
+const historyComponentRef = ref<{ focus: () => void } | undefined>()
 
 function focus(): void {
     historyComponentRef.value?.focus()

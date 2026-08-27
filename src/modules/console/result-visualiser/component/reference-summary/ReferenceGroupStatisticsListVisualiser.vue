@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { List as ImmutableList } from 'immutable'
 import { useI18n } from 'vue-i18n'
-import { VisualisedReferenceStatistics } from '@/modules/console/result-visualiser/model/reference-summary/VisualisedReferenceSummary'
+import { VisualisedReferenceStatistics, VisualisedReferenceGroup } from '@/modules/console/result-visualiser/model/reference-summary/VisualisedReferenceSummary'
 import { VisualisedFacetStatistics } from '@/modules/console/result-visualiser/model/reference-summary/VisualisedFacetStatistics'
 import { VisualisedHistogramStatistics } from '@/modules/console/result-visualiser/model/reference-summary/VisualisedHistogramStatistics'
 import VListItemLazyIterator from '@/modules/base/component/VListItemLazyIterator.vue'
@@ -26,22 +27,22 @@ const isGroupedFacets = computed<boolean>(() => {
     return props.referenceStatistics.referenceSchema.referencedGroupType != undefined
 })
 
-const ungroupedFacets = computed<VisualisedFacetStatistics[]>(() => {
-    if (isGroupedFacets.value) return []
-    const firstGroup = props.referenceStatistics.groups[0]
-    if (firstGroup == undefined) return []
+const ungroupedFacets = computed<ImmutableList<VisualisedFacetStatistics>>(() => {
+    if (isGroupedFacets.value) return ImmutableList()
+    const firstGroup: VisualisedReferenceGroup | undefined = props.referenceStatistics.groups.first()
+    if (firstGroup == undefined) return ImmutableList()
     return firstGroup.facets
 })
 
-const ungroupedHistograms = computed<VisualisedHistogramStatistics[]>(() => {
-    if (isGroupedFacets.value) return []
-    const firstGroup = props.referenceStatistics.groups[0]
-    if (firstGroup == undefined) return []
+const ungroupedHistograms = computed<ImmutableList<VisualisedHistogramStatistics>>(() => {
+    if (isGroupedFacets.value) return ImmutableList()
+    const firstGroup: VisualisedReferenceGroup | undefined = props.referenceStatistics.groups.first()
+    if (firstGroup == undefined) return ImmutableList()
     return firstGroup.histograms
 })
 
-const hasUngroupedFacets = computed<boolean>(() => ungroupedFacets.value.length > 0)
-const hasUngroupedHistograms = computed<boolean>(() => ungroupedHistograms.value.length > 0)
+const hasUngroupedFacets = computed<boolean>(() => !ungroupedFacets.value.isEmpty())
+const hasUngroupedHistograms = computed<boolean>(() => !ungroupedHistograms.value.isEmpty())
 const hasBothUngroupedTypes = computed<boolean>(() => hasUngroupedFacets.value && hasUngroupedHistograms.value)
 
 const facetStatisticsResultsPage = ref<number>(1)

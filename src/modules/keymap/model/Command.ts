@@ -5,6 +5,7 @@ export enum Command {
     // system
 
     System_Keymap = 'system.keymap',
+    System_ManageMenu = 'system.manageMenu',
 
     System_Panels_Connection = 'system.panels.connection',
 
@@ -54,7 +55,6 @@ export enum Command {
     EvitaQLConsole_ShareTab = 'evitaQLConsole.shareTab',
 
     EvitaQLConsole_Query_QueryEditor = 'evitaQLConsole.query.queryEditor',
-    EvitaQLConsole_Query_VariablesEditor = 'evitaQLConsole.query.variablesEditor',
     EvitaQLConsole_Query_History = 'evitaQLConsole.query.history',
     EvitaQLConsole_Query_Prettify = 'evitaQLConsole.query.prettify',
     EvitaQLConsole_Query_Minify = 'evitaQLConsole.query.minify',

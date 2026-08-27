@@ -93,7 +93,7 @@ export class EvitaQLConsoleTabFactory implements TabFactory {
             return new EvitaQLConsoleTabData()
         }
         const dto: EvitaQLConsoleTabDataDto = json as EvitaQLConsoleTabDataDto
-        return new EvitaQLConsoleTabData(dto.query, dto.variables)
+        return new EvitaQLConsoleTabData(dto.query)
     }
 }
 

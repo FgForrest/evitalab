@@ -521,7 +521,6 @@ export class EntityViewerService {
      * @param prettyPrint if value should be pretty printed
      */
     formatEntityPropertyValue(value: EntityPropertyValue | EntityPropertyValue[], language: EntityPropertyValueSupportedCodeLanguage, prettyPrint: boolean = false): string {
-        // todo lho maybe markdown pretty printing logic should be here as well
         const formatter: EntityPropertyValueFormatter | undefined = this.entityPropertyValueFormatters.get(language)
         if (formatter == undefined) {
             throw new UnexpectedError(`Property value formatter for language ${language} is not registered.`)

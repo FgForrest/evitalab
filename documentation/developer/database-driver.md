@@ -270,6 +270,20 @@ recordings, CDC, server files, …), which mostly mirrors evitaDB's data model. 
   they are regenerated from the evitaDB repo (see `buf.gen.yaml`; agents can use the
   `generate-evitadb-client` skill).
 
+`Entity` mirrors evitaDB's `ReferencesContract` for reading references: `references` is the whole list
+(`getReferences()`), `referencesOfName(name)` narrows it to one reference name — a name repeats, because
+each occurrence points at a different entity — `reference(name, referencedPrimaryKey)` picks a single one,
+and `referenceNames` reports each name once. All of them read a name-keyed index built on first use, so
+grid pipelines can look references up per row without rescanning the list.
+
+Where evitaDB's model has a single `EntityClassifier`, the internal model uses the class hierarchy it
+already has: `Entity extends EntityReferenceWithParent extends EntityReference`. `LevelInfo` (hierarchy
+statistics) therefore holds **one** `entity: EntityReference | undefined` typed by that common ancestor,
+even though the wire message has separate `entity` and `entityReference` fields - the server fills
+exactly one of them, depending on whether the query asked for the entity body. Consumers narrow with
+`instanceof` (`EntityReferenceWithParent` for the parent, `Entity` for attributes) instead of choosing
+between two fields.
+
 ### Date-time values
 
 `OffsetDateTime` carries the instant (`Timestamp` — epoch seconds + nanoseconds, exactly as gRPC
@@ -284,6 +298,12 @@ transfers it) **and** the ISO time offset the value is expressed in. Two rules f
   zoned Luxon date time) rather than assembling a `Timestamp` at the call site, so the sub-second
   part is not dropped. Luxon works in milliseconds, so `toDateTime()`/`toString()` round the
   nanosecond fraction; the full value survives in `timestamp` and is what gets sent back.
+
+The three zone-less types format through Luxon for the same reason: `new Date(...)` reads a bare ISO
+date as **UTC** midnight (rendering the previous day for viewers behind Greenwich) and rejects a bare
+ISO time outright. `LocalDate.getPrettyPrintableString()` used to be an unimplemented stub that threw,
+and `LocalTime`'s threw `Invalid time value`, which broke every entity-grid cell holding such a value —
+`NativeValue.toPrettyPrintString()` calls them unguarded.
 
 Known gap: `LocalDateTime`, `LocalDate` and `LocalTime` still reinterpret their wall-clock value in
 the browser zone — the server serializes them against its own default offset, and these three types
@@ -881,6 +901,18 @@ For the same reason each delegating registry is **built on first use, not at cla
 converter modules form import cycles (a mutation contains mutations that delegate back), and a statically
 initialised map captures `undefined` for whichever module the bundler evaluates first.
 
+Registries are typed as `MutationConverterRegistry<J>` and built with `mutationConverterRegistry<J>([…])`
+rather than a bare `new Map<string, any>`. The input message type is erased to `Message` — an entry
+accepts only its own branch of the gRPC `oneof`, which the key alone cannot express, and the delegating
+converter has already narrowed the value by that key — while the produced mutation type `J` stays exact.
+The type argument has to be passed explicitly, otherwise it is inferred from the first entry and every
+other converter is rejected against it.
+
+Both that alias and the `MutationConverter` contract it builds on live in
+`converter/request-response/mutation/`, not under `schema/mutation/`: they are generic over
+`Mutation`, and the data-mutation converters (`DelegatingEntityMutationConverter`,
+`DelegatingLocalMutationConverter`, …) use them just as much as the schema ones.
+
 ## Long-running operations
 
 Some server operations report progress as async iterables (e.g.
@@ -890,6 +922,11 @@ infrastructure (`request-response/task/`, surfaced by the `task-viewer` module).
 task without listing all of them, `EvitaClientManagement.getTaskStatus(taskId)` polls a single task;
 it returns `undefined` once the server no longer knows the task, which callers must treat as a
 terminal state (the traffic-viewer's export button does).
+
+evitaLab keeps **no client-side registry of server tasks**: methods returning a `TaskStatus` (catalog
+backup, for instance) hand it straight to the caller and nothing else is notified. A task tracker was
+considered and dropped — the CDC stream already keeps the affected views current, so a second
+tracking mechanism would only duplicate it.
 
 ## Downloading server files
 

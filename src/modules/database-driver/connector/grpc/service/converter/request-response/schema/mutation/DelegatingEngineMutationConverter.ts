@@ -1,3 +1,6 @@
+import {
+    mutationConverterRegistry
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/mutation/MutationConverterRegistry.ts'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError.ts'
 import type {
     GrpcEngineMutation
@@ -42,8 +45,7 @@ import {
 
 export class DelegatingEngineMutationConverter {
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- heterogeneous mutation-converter registry keyed by grpc oneof case
-    private static readonly TO_TYPESCRIPT_CONVERTERS = new Map<string, any>([
+    private static readonly TO_TYPESCRIPT_CONVERTERS = mutationConverterRegistry<SchemaMutation>([
         ['createCatalogSchemaMutation', CreateCatalogSchemaMutationConverter.INSTANCE],
         ['modifyCatalogSchemaNameMutation', ModifyCatalogSchemaNameMutationConverter.INSTANCE],
         ['modifyCatalogSchemaMutation', ModifyCatalogSchemaMutationConverter.INSTANCE],

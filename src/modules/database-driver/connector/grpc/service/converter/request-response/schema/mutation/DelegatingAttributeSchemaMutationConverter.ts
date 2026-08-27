@@ -1,3 +1,9 @@
+import type {
+    MutationConverterRegistry
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/mutation/MutationConverterRegistry.ts'
+import {
+    mutationConverterRegistry
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/mutation/MutationConverterRegistry.ts'
 import {
     CreateAttributeSchemaMutationConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/attribute/CreateAttributeSchemaMutationConverter.ts'
@@ -56,9 +62,7 @@ import {
 
 export class DelegatingAttributeSchemaMutationConverter {
 
-     
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- heterogeneous mutation-converter registry keyed by grpc oneof case
-    private static converters: Map<string, any> | undefined
+    private static converters: MutationConverterRegistry<SortableAttributeCompoundSchemaMutation> | undefined
 
     /**
      * The registry is built on first use rather than during class initialisation: nested mutation
@@ -66,11 +70,9 @@ export class DelegatingAttributeSchemaMutationConverter {
      * mutation contains an entity-schema mutation, …), and with a statically initialised map the
      * entry for whichever module the bundler happens to evaluate first would capture `undefined`.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see the field above
-    private static registry(): Map<string, any> {
+    private static registry(): MutationConverterRegistry<SortableAttributeCompoundSchemaMutation> {
         if (DelegatingAttributeSchemaMutationConverter.converters == undefined) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see the field above
-            DelegatingAttributeSchemaMutationConverter.converters = new Map<string, any>([
+            DelegatingAttributeSchemaMutationConverter.converters = mutationConverterRegistry<SortableAttributeCompoundSchemaMutation>([
                 ['createAttributeSchemaMutation',
                     CreateAttributeSchemaMutationConverter.INSTANCE
                 ],

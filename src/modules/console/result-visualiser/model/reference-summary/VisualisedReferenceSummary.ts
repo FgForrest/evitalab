@@ -1,3 +1,4 @@
+import type { List as ImmutableList } from 'immutable'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { VisualisedReferenceGroupStatistics } from './VisualisedReferenceGroupStatistics'
 import { VisualisedFacetStatistics } from './VisualisedFacetStatistics'
@@ -13,32 +14,32 @@ export class VisualisedReferenceSummary {
 
 export class VisualisedReferenceStatistics {
     readonly referenceSchema: ReferenceSchema
-    readonly groups: VisualisedReferenceGroup[]
+    readonly groups: ImmutableList<VisualisedReferenceGroup>
 
-    constructor(referenceSchema: ReferenceSchema, groups: VisualisedReferenceGroup[]) {
+    constructor(referenceSchema: ReferenceSchema, groups: ImmutableList<VisualisedReferenceGroup>) {
         this.referenceSchema = referenceSchema
         this.groups = groups
     }
 
     statisticsCount(): number {
         if (this.referenceSchema.referencedGroupType != undefined) {
-            return this.groups.length
+            return this.groups.size
         }
-        const firstGroup = this.groups[0]
+        const firstGroup: VisualisedReferenceGroup | undefined = this.groups.first()
         if (firstGroup == undefined) return 0
-        return firstGroup.facets.length + firstGroup.histograms.length
+        return firstGroup.facets.size + firstGroup.histograms.size
     }
 }
 
 export class VisualisedReferenceGroup {
     readonly groupStatistics: VisualisedReferenceGroupStatistics
-    readonly facets: VisualisedFacetStatistics[]
-    readonly histograms: VisualisedHistogramStatistics[]
+    readonly facets: ImmutableList<VisualisedFacetStatistics>
+    readonly histograms: ImmutableList<VisualisedHistogramStatistics>
 
     constructor(
         groupStatistics: VisualisedReferenceGroupStatistics,
-        facets: VisualisedFacetStatistics[],
-        histograms: VisualisedHistogramStatistics[]
+        facets: ImmutableList<VisualisedFacetStatistics>,
+        histograms: ImmutableList<VisualisedHistogramStatistics>
     ) {
         this.groupStatistics = groupStatistics
         this.facets = facets

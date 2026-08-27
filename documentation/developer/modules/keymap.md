@@ -47,9 +47,9 @@ the caret sat in a `VTextField` / `VSelect` / `VCombobox` / `VDateTimeInput`. (T
 **`Alt` is deliberately excluded.** On Central-European layouts **AltGr is reported as Ctrl+Alt**, and
 `AltGr+letter` is how `@ # & { } [ ]` are typed; bare `Option+letter` composes characters on macOS.
 Since shortcut handlers return `false` — which makes keymaster call `preventDefault()` — relaxing
-`Ctrl+Alt` would let `Ctrl+Alt+K` (`System_Keymap`) and `Ctrl+Alt+PageUp/PageDown` swallow ordinary
-character input. The deliberate consequence is that those two, plus `Alt+1`
-(`System_Panels_Connection`), still do not fire from inside a field.
+`Ctrl+Alt` would let `Ctrl+Alt+K` (`System_Keymap`), `Ctrl+Alt+M` (`System_ManageMenu`) and
+`Ctrl+Alt+PageUp/PageDown` swallow ordinary character input. The deliberate consequence is that those,
+plus `Alt+1` (`System_Panels_Connection`), still do not fire from inside a field.
 
 The rule is safe for everything else because no text-editing combination (`Ctrl+A/C/V/X/Z/Y`,
 `Ctrl+Backspace`, `Ctrl+Arrow`, `Home`/`End`) is mapped at all, and the only modifier-less mapping —

@@ -1,3 +1,4 @@
+import type { List as ImmutableList } from 'immutable'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { VisualisedFacetGroupStatistics } from './VisualisedFacetGroupStatistics'
 import { VisualisedFacetStatistics } from './VisualisedFacetStatistics'
@@ -19,9 +20,9 @@ export class VisualisedFacetSummary {
  */
 export class VisualisedReferenceFacets {
     readonly referenceSchema: ReferenceSchema
-    readonly groups: VisualisedFacetGroup[]
+    readonly groups: ImmutableList<VisualisedFacetGroup>
 
-    constructor(referenceSchema: ReferenceSchema, groups: VisualisedFacetGroup[]) {
+    constructor(referenceSchema: ReferenceSchema, groups: ImmutableList<VisualisedFacetGroup>) {
         this.referenceSchema = referenceSchema
         this.groups = groups
     }
@@ -31,10 +32,10 @@ export class VisualisedReferenceFacets {
      */
     facetCount(): number {
         if (this.referenceSchema.referencedGroupType != undefined) {
-            return this.groups.length
+            return this.groups.size
         }
-        const firstGroup = this.groups[0]
-        return firstGroup != undefined ? firstGroup.facets.length : 0
+        const firstGroup: VisualisedFacetGroup | undefined = this.groups.first()
+        return firstGroup != undefined ? firstGroup.facets.size : 0
     }
 }
 
@@ -43,11 +44,11 @@ export class VisualisedReferenceFacets {
  */
 export class VisualisedFacetGroup {
     readonly groupStatistics: VisualisedFacetGroupStatistics
-    readonly facets: VisualisedFacetStatistics[]
+    readonly facets: ImmutableList<VisualisedFacetStatistics>
 
     constructor(
         groupStatistics: VisualisedFacetGroupStatistics,
-        facets: VisualisedFacetStatistics[]
+        facets: ImmutableList<VisualisedFacetStatistics>
     ) {
         this.groupStatistics = groupStatistics
         this.facets = facets

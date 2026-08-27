@@ -9,7 +9,16 @@ Contributes `TabType.EvitaQLConsole`.
   `tabFactoryRegistryInjectionKey`, `demoSnippetResolverInjectionKey`
 
 Structurally a mirror of [`graphql-console`](graphql-console.md) — the same layout with a different
-query language, so a change to one is usually needed in the other.
+query language, so a change to one is usually needed in the other. One deliberate asymmetry: this console
+has **no variables editor**. evitaQL query variables are not implemented on the server side and are not
+expected to be, so the view, its `Ctrl+2` shortcut and the `variables` half of the tab data were removed.
+`Ctrl+2` is left unassigned rather than reused for the history view, which keeps `Ctrl+3` = history the
+same in both consoles. Removing the field is backward compatible in both directions: a stored tab or share
+link written by an older evitaLab still restores (`restoreTabDataFromSerializable` reads only `query`, and
+the DTO is a plain cast with no schema validation), and a link written by a newer one opens in an older
+evitaLab with an empty variables document. History records shortened from `[id, query, variables]` to
+`[id, query]` for the same reason — records are read positionally, so the stored 3-element ones keep
+working.
 
 ## Layout
 
@@ -20,7 +29,7 @@ Everything under `console/`:
 | `component/` | The console UI (editor + results), built on [`code-editor`](code-editor.md)'s `VQueryEditor` |
 | `service/EvitaQLConsoleService.ts` | Executes queries through `EvitaClient` |
 | `model/EvitaQLConsoleDataPointer.ts` | What the tab points at (connection + catalog) |
-| `history/` | `EvitaQLConsoleHistoryKey`, `EvitaQLConsoleHistoryRecord` |
+| `history/` | `EvitaQLConsoleHistoryKey`, `EvitaQLConsoleHistoryRecord` (`[id, query]`) |
 | `result-visualiser/service/` | The concrete parsers (below) |
 | `workspace/` | `EvitaQLConsoleTabDefinition`, params/data DTOs, `EvitaQLConsoleTabFactory` |
 
@@ -60,9 +69,8 @@ undo history.
 
 Two toolbar buttons (`mdi-auto-fix` / `mdi-arrow-collapse-vertical`, `Shift+Alt+F` / `Shift+Alt+M`)
 wrapped in a `VTabToolbarActionGroup` at the front of the toolbar's append slot — separated from the
-tab's own actions, and first in the row so that coming and going shifts nothing else — reformat the
-editor the caret sits in — the query with the evitaQL printer, the variables document as
-JSON. Both come from [`code-editor`](code-editor.md#document-formatters), which also documents what the
+tab's own actions, and first in the row so that coming and going shifts nothing else — reformat the query
+with the evitaQL printer. Both come from [`code-editor`](code-editor.md#document-formatters), which also documents what the
 formatters refuse and why minify drops `//` comments.
 
 The formatted document is **assigned to the bound `ref`**, not dispatched as a CodeMirror transaction —
@@ -73,7 +81,7 @@ marked dirty and a shared link carries the reformatted query; that is expected.
 ### Why the buttons come and go
 
 The buttons are shown only when `formattingAvailable` holds: the query panel is visible, the caret is in
-that panel, and the selected view is the query or the variables editor. Both panels are visible at once,
+that panel, and the selected view is the query editor. Both panels are visible at once,
 so `editorTab` alone does not say where the caret is; the panel is tracked in `focusedPanel` by a single
 `@focusin` listener on each `Pane`, plus the `focus*()` helpers, which set it directly.
 
@@ -90,7 +98,7 @@ pointing at the panel the caret has just left, and the buttons would then format
 not looking at.
 
 The accepted consequence is that executing a query moves focus to the raw result viewer, so the buttons
-disappear until the user clicks (or `Ctrl+1` / `Ctrl+2`s) back into the query panel. The keyboard
+disappear until the user clicks (or `Ctrl+1`s) back into the query panel. The keyboard
 shortcuts apply the same guard, so a shortcut pressed while the result viewer has focus is a visible
 no-op rather than a hidden action.
 

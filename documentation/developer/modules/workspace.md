@@ -34,10 +34,25 @@ dispatch, and it is deliberately left as is.
 | `tab/component/` | `TabWindow`, `WorkspaceTabWindowList`, `TabLoadingScreen`, `ShareTabButton`/`ShareTabDialog`, `OpenSharedTabDialog`, `TabSharedDialog`, `TabSharedTroubleshooterDialog` |
 | `tab/service/` | `TabFactory` (contract), `TabFactoryRegistry`, `SharedTabResolver`, `SharedTabTroubleshooterCallback` |
 | `tab/error/` | `InvalidConnectionInSharedTabError` |
-| `panel/` | `WorkspacePanel.vue`, `ConnectionAvatar.vue`, `ManageMenu.vue`, `ManageOptionType` |
+| `panel/` | `WorkspacePanel.vue`, `ConnectionAvatar.vue`, `ManageMenu.vue`, `ManageMenuFactory`, `ManageOptionType` |
 | `status-bar/` | `WorkspaceStatusBar.vue`, `ChangeStreamIndicator.vue`, `CachedDataIndicator.vue`, `PersistentCacheIndicator.vue`, `EditorStatus.vue`, plus `subject-path-status/` breadcrumbs and `editor-status/` models |
 | `service/` | `WorkspaceService` (open/close/activate tabs), `DemoSnippetResolver`, `DemoSnippetHandler` (contract) |
 | `store/` | `workspaceStore` (Pinia) — open tabs and workspace state, persisted via [`storage`](storage.md) |
+
+### The manage menu
+
+`ManageMenu.vue` renders whatever `ManageMenuFactory` produces — subheaders and `MenuAction`s keyed by
+`ManageOptionType`, exactly like the connection explorer's item menus — and dispatches a click by calling
+the selected action's `execute()`. There is no `switch` over option types in the component and no
+per-option markup; adding an entry means adding an enum member, a factory line and its
+`panel.manage.menu.item.<type>` translation.
+
+The factory takes the *open keymap* callback as an argument instead of injecting
+`KeymapViewerTabFactory`: the keymap module is registered after the workspace one, so the factory cannot
+inject it at registration time. Everything else the menu does is a `window.open` of a fixed URL.
+
+`Command.System_ManageMenu` (`Ctrl+Alt+M` / `Cmd+Option+M`) toggles the menu open, and the *Keymap* item
+carries `Command.System_Keymap`, so both show their shortcut in the keymap viewer and in the tooltips.
 
 ### Status-bar indicators
 

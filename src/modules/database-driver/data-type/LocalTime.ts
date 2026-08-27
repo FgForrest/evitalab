@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon'
 import type { PrettyPrintable } from "./PrettyPrintable"
 
 /**
@@ -9,9 +10,12 @@ export class LocalTime implements PrettyPrintable {
     constructor(isoTime: string){
         this.isoTime = isoTime
     }
+    /**
+     * The value carries no date, which `new Date(...)` rejects outright; Luxon reads a bare ISO time
+     * against the current day instead, and the date part is dropped by the format anyway.
+     */
     getPrettyPrintableString(): string {
-        const localTimeFormatter = new Intl.DateTimeFormat([], { timeStyle: 'medium' })
-        return localTimeFormatter.format(new Date(this.isoTime))
+        return DateTime.fromISO(this.isoTime).toLocaleString({ timeStyle: 'medium' })
     }
 
     toString():string{

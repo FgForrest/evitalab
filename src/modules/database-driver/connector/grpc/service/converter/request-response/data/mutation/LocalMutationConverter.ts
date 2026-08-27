@@ -2,7 +2,7 @@ import type { LocalMutation } from '@/modules/database-driver/request-response/d
 import type { Message } from '@bufbuild/protobuf'
 import type {
     MutationConverter
-} from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/MutationConverter.ts'
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/mutation/MutationConverter.ts'
 
 /**
  * Ancestor for all converters converting implementations of {@link LocalMutation}.
