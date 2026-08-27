@@ -85,7 +85,6 @@ const nullValue = computed<boolean>(() => {
     return props.propertyValue == undefined
 })
 
-// todo lho we could format certain data types more human readable like we do in markdown pretty printer
 function toPrintablePropertyValue(value: EntityPropertyValue | EntityPropertyValue[] | undefined): string {
     if (value == undefined) {
         return ''

@@ -11,6 +11,7 @@ import {
 } from '@/modules/workspace/tab/service/TabFactoryRegistry'
 import { ModuleContextBuilder } from '@/ModuleContextBuilder'
 import { EvitaLabConfig, evitaLabConfigInjectionKey } from '@/modules/config/EvitaLabConfig'
+import { ManageMenuFactory, manageMenuFactoryInjectionKey } from '@/modules/workspace/panel/service/ManageMenuFactory'
 
 export class WorkspaceModuleRegistrar implements ModuleRegistrar {
 
@@ -41,6 +42,10 @@ export class WorkspaceModuleRegistrar implements ModuleRegistrar {
         builder.provide(
             sharedTabResolverInjectionKey,
             new SharedTabResolver(tabFactoryRegistry)
+        )
+        builder.provide(
+            manageMenuFactoryInjectionKey,
+            new ManageMenuFactory()
         )
     }
 }

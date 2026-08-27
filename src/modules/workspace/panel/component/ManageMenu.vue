@@ -3,12 +3,10 @@
  * Menu for managing evitaLab and getting help
  */
 
-import { onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
-import { useToaster } from '@/modules/notification/service/Toaster'
-import type { Toaster } from '@/modules/notification/service/Toaster'
 import { Command } from '@/modules/keymap/model/Command'
 import {
     KeymapViewerTabFactory,
@@ -16,144 +14,81 @@ import {
 } from '@/modules/keymap/viewer/workspace/service/KeymapViewerTabFactory'
 import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import { ManageOptionType } from '@/modules/workspace/panel/model/ManageOptionType'
+import { ManageMenuFactory, useManageMenuFactory } from '@/modules/workspace/panel/service/ManageMenuFactory'
+import type { MenuItem } from '@/modules/base/model/menu/MenuItem'
+import { MenuAction } from '@/modules/base/model/menu/MenuAction'
 
 const keymap: Keymap = useKeymap()
 const workspaceService: WorkspaceService = useWorkspaceService()
 const keymapViewerTabFactory: KeymapViewerTabFactory = useKeymapViewerTabFactory()
-const toaster: Toaster = useToaster()
+const manageMenuFactory: ManageMenuFactory = useManageMenuFactory()
 const { t } = useI18n()
 
-// todo convert to VList component and add key board shortcut to keymap
-// todo lho think about how to transform it into MenuAction items
-const options = [
-    { type: 'subheader', title: t(`panel.manage.manage.title`) },
-    {
-        title: t(`panel.manage.manage.item.${ManageOptionType.Keymap}`),
-        value: ManageOptionType.Keymap,
-        command: Command.System_Keymap,
-        props: {
-            prependIcon: 'mdi-keyboard-outline'
-        }
-    },
-    { type: 'subheader', title: t(`panel.manage.evitaLabHelp.title`) },
-    {
-        title: t(`panel.manage.evitaLabHelp.item.${ManageOptionType.EvitaLabGithub}`),
-        value: ManageOptionType.EvitaLabGithub,
-        props: {
-            prependIcon: 'mdi-github'
-        }
-    },
-    {
-        title: t(`panel.manage.evitaLabHelp.item.${ManageOptionType.DiscussEvitaLab}`),
-        value: ManageOptionType.DiscussEvitaLab,
-        props: {
-            prependIcon: 'mdi-forum-outline'
-        }
-    },
-    {
-        title: t(`panel.manage.evitaLabHelp.item.${ManageOptionType.ReportEvitaLabIssue}`),
-        value: ManageOptionType.ReportEvitaLabIssue,
-        props: {
-            prependIcon: 'mdi-bug'
-        }
-    },
-    { type: 'subheader', title: t(`panel.manage.evitaDBHelp.title`)},
-    {
-        title: t(`panel.manage.evitaDBHelp.item.${ManageOptionType.EvitaDBDocumentation}`),
-        value: ManageOptionType.EvitaDBDocumentation,
-        props: {
-            prependIcon: 'mdi-book-open-variant'
-        }
-    },
-    {
-        title: t(`panel.manage.evitaDBHelp.item.${ManageOptionType.EvitaDBGithub}`),
-        value: ManageOptionType.EvitaDBGithub,
-        props: {
-            prependIcon: 'mdi-github'
-        }
-    },
-    {
-        title: t(`panel.manage.evitaDBHelp.item.${ManageOptionType.DiscussEvitaDB}`),
-        value: ManageOptionType.DiscussEvitaDB,
-        props: {
-            prependIcon: 'mdi-forum-outline'
-        }
-    },
-    {
-        title: t(`panel.manage.evitaDBHelp.item.${ManageOptionType.ReportEvitaDBIssue}`),
-        value: ManageOptionType.ReportEvitaDBIssue,
-        props: {
-            prependIcon: 'mdi-bug'
-        }
-    },
-]
+const opened = ref<boolean>(false)
 
-function openKeymap() {
+const menuItems = ref<Map<ManageOptionType, MenuItem<ManageOptionType>>>()
+const menuItemList = computed<MenuItem<ManageOptionType>[]>(() => {
+    if (menuItems.value == undefined) {
+        return []
+    }
+    return Array.from(menuItems.value.values())
+})
+
+function openKeymap(): void {
     workspaceService.createTab(keymapViewerTabFactory.createNew())
 }
 
-function handleOptionClick(selected: unknown): void {
-    if (Array.isArray(selected) && selected.length > 0) {
-        const option: ManageOptionType = selected[0] as ManageOptionType
-        switch (option) {
-            case ManageOptionType.Keymap:
-                openKeymap()
-                break
-            case ManageOptionType.EvitaLabGithub:
-                window.open('https://github.com/FgForrest/evitalab', '_blank');
-                break
-            case ManageOptionType.DiscussEvitaLab:
-                window.open('https://discord.gg/VsNBWxgmSw', '_blank');
-                break
-            case ManageOptionType.ReportEvitaLabIssue:
-                window.open('https://github.com/FgForrest/evitalab/issues', '_blank');
-                break
-            case ManageOptionType.EvitaDBDocumentation:
-                window.open('https://evitadb.io/documentation', '_blank');
-                break
-            case ManageOptionType.EvitaDBGithub:
-                window.open('https://github.com/FgForrest/evitaDB', '_blank');
-                break
-            case ManageOptionType.DiscussEvitaDB:
-                window.open('https://discord.gg/VsNBWxgmSw', '_blank');
-                break
-            case ManageOptionType.ReportEvitaDBIssue:
-                window.open('https://github.com/FgForrest/evitaDB/issues', '_blank');
-                break
-            default:
-                toaster.error(`Unknown manage option ${selected[0]}`).then()
-        }
+/**
+ * Vuetify hands the raw item back in the `title` slot, but types it by the `items` prop, which knows
+ * nothing about the shortcut an action may carry.
+ */
+function commandOf(item: unknown): Command | undefined {
+    return item instanceof MenuAction ? item.command : undefined
+}
+
+function handleActionClick(action: unknown): void {
+    const item: MenuItem<ManageOptionType> | undefined = menuItems.value?.get(action as ManageOptionType)
+    if (item instanceof MenuAction) {
+        item.execute()
     }
 }
 
-onMounted(() => {
+onMounted(async () => {
+    menuItems.value = await manageMenuFactory.createItems(openKeymap)
+
     // register manage menu keyboard shortcuts
     keymap.bindGlobal(Command.System_Keymap, openKeymap)
+    keymap.bindGlobal(Command.System_ManageMenu, () => opened.value = !opened.value)
 })
 onUnmounted(() => {
     // unregister manage menu keyboard shortcuts
     keymap.unbindGlobal(Command.System_Keymap)
+    keymap.unbindGlobal(Command.System_ManageMenu)
 })
 </script>
 
 <template>
-    <VMenu>
+    <VMenu v-model="opened">
         <template #activator="{ props }">
             <VBtn v-bind="props" icon variant="text" class="manage-button">
                 <slot />
 
-                <VTooltip activator="parent">
+                <VActionTooltip :command="Command.System_ManageMenu">
                     {{ t('panel.button.manage') }}
-                </VTooltip>
+                </VActionTooltip>
             </VBtn>
         </template>
 
-        <VList :items="options" @update:selected="handleOptionClick">
+        <VList
+            density="compact"
+            :items="menuItemList"
+            @click:select="handleActionClick($event.id)"
+        >
             <template #title="{ item }">
                 <VListItemTitle>
                     {{ item.title }}
 
-                    <VActionTooltip v-if="item.command != undefined" :command="item.command">
+                    <VActionTooltip v-if="commandOf(item) != undefined" :command="commandOf(item)">
                         {{ item.title }}
                     </VActionTooltip>
                 </VListItemTitle>

@@ -1,3 +1,9 @@
+import type {
+    MutationConverterRegistry
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/mutation/MutationConverterRegistry.ts'
+import {
+    mutationConverterRegistry
+} from '@/modules/database-driver/connector/grpc/service/converter/request-response/mutation/MutationConverterRegistry.ts'
 import {
     UnknownSchemaMutation
 } from '@/modules/database-driver/request-response/schema/mutation/UnknownSchemaMutation.ts'
@@ -191,9 +197,7 @@ import {
 } from '@/modules/database-driver/connector/grpc/service/converter/request-response/schema/mutation/reference/SetReferenceSchemaConflictResolutionOverrideMutationConverter.ts'
 export class DelegatingEntitySchemaMutationConverter {
 
-     
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- heterogeneous mutation-converter registry keyed by grpc oneof case
-    private static converters: Map<string, any> | undefined
+    private static converters: MutationConverterRegistry<SchemaMutation> | undefined
 
     /**
      * The registry is built on first use rather than during class initialisation: nested mutation
@@ -201,11 +205,9 @@ export class DelegatingEntitySchemaMutationConverter {
      * mutation contains an entity-schema mutation, …), and with a statically initialised map the
      * entry for whichever module the bundler happens to evaluate first would capture `undefined`.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see the field above
-    private static registry(): Map<string, any> {
+    private static registry(): MutationConverterRegistry<SchemaMutation> {
         if (DelegatingEntitySchemaMutationConverter.converters == undefined) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see the field above
-            DelegatingEntitySchemaMutationConverter.converters = new Map<string, any>([
+            DelegatingEntitySchemaMutationConverter.converters = mutationConverterRegistry<SchemaMutation>([
                 // associated data schema mutations
                 ['createAssociatedDataSchemaMutation', CreateAssociatedDataSchemaMutationConverter.INSTANCE],
                 ['modifyEntitySchemaConflictResolutionMutation', ModifyEntitySchemaConflictResolutionMutationConverter.INSTANCE],

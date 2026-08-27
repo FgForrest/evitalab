@@ -264,6 +264,19 @@ item rows show `{referenced entity PK} / {referenced group PK}`. The group prima
 `EntityReferenceValue.groupPrimaryKey`, populated only for managed group types — evitaQL reads it from
 the reference's group reference by default, GraphQL fetches `groupEntity { primaryKey }`.
 
+### Human-readable values
+
+The type-driven formatting lives on the values themselves (`EntityPropertyValue.toPrettyPrintString()`,
+which delegates to `getPrettyPrintableString()` of the driver's data types), not in the renderers. Grid
+cells print that string bare; `MarkdownDetailRenderer` only *decorates* it — an icon plus a code span
+(`📅 \`7/27/26, 10:32:08 AM GMT+2\``), a fenced block for JSON/XML strings and complex objects, a plain
+paragraph for prose. The renderer used to carry its own `Intl` formatters, which let the two views drift
+apart for the same value; changing the shared format now moves both at once.
+
+Note that `EntityViewerService.formatEntityPropertyValue` is a **different axis** — it formats a value in
+a *code language* (raw / JSON / XML) for the code detail renderer, and is deliberately not where the
+human-readable formatting belongs.
+
 ## Note for automated UI testing
 
 `agent-browser click @ref` does **not** fire the grid's `@mousedown` cell handler; dispatch native

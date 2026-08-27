@@ -5,6 +5,7 @@ export enum Command {
     // system
 
     System_Keymap = 'system.keymap',
+    System_ManageMenu = 'system.manageMenu',
 
     System_Panels_Connection = 'system.panels.connection',
 

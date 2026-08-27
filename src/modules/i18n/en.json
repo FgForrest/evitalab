@@ -132,23 +132,15 @@
       "manage": "Manage evitaLab"
     },
     "manage": {
-      "manage": {
-        "title": "Manage",
+      "menu": {
         "item": {
-          "keymap": "Keymap"
-        }
-      },
-      "evitaLabHelp": {
-        "title": "evitaLab Help",
-        "item": {
+          "manageSubheader": "Manage",
+          "keymap": "Keymap",
+          "evitaLabHelpSubheader": "evitaLab Help",
           "evitaLabGithub": "evitaLab GitHub",
           "discussEvitaLab": "Discuss evitaLab",
-          "reportEvitaLabIssue": "Report evitaLab issue"
-        }
-      },
-      "evitaDBHelp": {
-        "title": "evitaDB Help",
-        "item": {
+          "reportEvitaLabIssue": "Report evitaLab issue",
+          "evitaDBHelpSubheader": "evitaDB Help",
           "evitaDBDocumentation": "evitaDB Documentation",
           "evitaDBGithub": "evitaDB GitHub",
           "discussEvitaDB": "Discuss evitaDB",
@@ -289,6 +281,7 @@
     "system": {
       "_title": "System",
       "keymap": "Keymap",
+      "manageMenu": "Manage menu",
       "panels": {
         "_title": "Panels",
         "connection": "Connection"
