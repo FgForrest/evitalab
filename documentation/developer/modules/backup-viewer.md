@@ -20,7 +20,7 @@ Feature module. Creating catalog backups and restoring from them. Contributes `T
 | `components/RestoreBackupFileButton.vue` + `RestoreBackupFileDialog.vue` | Restore from a file already on the server |
 | `components/RestoreLocalBackupFileButton.vue` + `RestoreLocalBackupFileDialog.vue` | Upload a local file and restore from it |
 | `model/BackupType.ts` | The backup kinds |
-| `model/BackupTask.ts`, `FullBackupTask.ts`, `SystemBackupTask.ts`, `SystemFullBackupTask.ts`, `RestoreTask.ts` | Server task-type name constants |
+| `model/BackupTask.ts`, `FullBackupTask.ts`, `SystemBackupTask.ts`, `SystemFullBackupTask.ts`, `RestoreTask.ts`, `RestoreToVersionTask.ts` | Server task-type name constants |
 | `service/BackupViewerService.ts`, `BackupViewerTabFactory.ts` | Service and tab wiring |
 
 ## Three backup kinds, four task names
@@ -63,10 +63,15 @@ local path uploads the file in chunks through
 server-side path calls `restoreCatalogFromServerFile` with a file id. Both are long-running and end up as
 tasks.
 
+A third restore is not started from here at all: [`catalog-viewer`](catalog-viewer.md#restore-to-this-version)'s
+*Restore to this version* asks the server to put a catalog back to an earlier version in one operation
+(`restoreCatalogToVersion`). Its task type `RestoreCatalogToVersionTask` is listed among the task types
+this viewer shows, so the operation is followed from the same place as the other restores.
+
 ## Related
 
 - [`database-driver`](database-driver.md) — `backupCatalog`, `fullBackupCatalog`, `restoreCatalog`,
-  `restoreCatalogFromServerFile`, `getEngineSettings`
+  `restoreCatalogFromServerFile`, `restoreCatalogToVersion`, `getEngineSettings`
 - [`task-viewer`](task-viewer.md) — where backup/restore tasks show up
 - [`server-file-viewer`](server-file-viewer.md) — the resulting files
 - [`viewer-support`](viewer-support.md) — download button

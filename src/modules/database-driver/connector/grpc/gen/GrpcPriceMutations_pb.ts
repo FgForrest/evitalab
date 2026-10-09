@@ -118,6 +118,7 @@ export type GrpcUpsertPriceMutation = Message<"io.evitadb.externalApi.grpc.gener
    * entity but won't be considered when evaluating search query. These prices may be
    * used for "informational" prices such as reference price (the crossed out price often found on e-commerce sites
    * as "usual price") but are not considered as the "selling" price.
+   * Deprecated since 2024.10 - RENAMED TO "indexed"
    *
    * @generated from field: bool sellable = 9 [deprecated = true];
    * @deprecated
@@ -143,6 +144,8 @@ export const GrpcUpsertPriceMutationSchema: GenMessage<GrpcUpsertPriceMutation> 
   messageDesc(file_GrpcPriceMutations, 1);
 
 /**
+ * This mutation allows to remove an existing `price` of the entity, identified by price ID, price list and currency.
+ *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcRemovePriceMutation
  */
 export type GrpcRemovePriceMutation = Message<"io.evitadb.externalApi.grpc.generated.GrpcRemovePriceMutation"> & {

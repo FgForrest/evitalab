@@ -14,6 +14,7 @@ Typical inner structure of a module:
 <module>/
 ├── <Module>ModuleRegistrar.ts   # optional, only when the module provides/injects DI services
 ├── component/                   # Vue components of the module
+├── composable/                  # optional — Vue composables (`useX`) that own reactive state for a component tree
 ├── model/                       # the module's vocabulary — types, enums, constant data
 ├── exception/                   # error types, and error classification — nothing else
 ├── service/                     # behavior over the model — injectable services and plain functions
@@ -75,6 +76,7 @@ User-facing features. Each one typically contributes one or more tab types and/o
 | [`evitaql-console`](evitaql-console.md) | Console tab for executing evitaQL queries |
 | [`graphql-console`](graphql-console.md) | Console tab for executing GraphQL queries (data / schema / system APIs) |
 | [`schema-viewer`](schema-viewer.md) | Browsing schemas with deep-linkable schema paths and representative flags |
+| [`catalog-viewer`](catalog-viewer.md) | Catalog preview — statistics, drill-down and degraded-state handling for one catalog |
 | [`server-viewer`](server-viewer.md) | Server status/details view, and the poll other modules depend on |
 | [`server-file-viewer`](server-file-viewer.md) | Listing and downloading files exposed by the server |
 | [`backup-viewer`](backup-viewer.md) | Catalog backup & restore management |
@@ -90,7 +92,12 @@ User-facing features. Each one typically contributes one or more tab types and/o
 - Feature modules may depend on abstract and generic modules; avoid dependencies between feature
   modules. Known exceptions: `EvitaClient.queryCatalogUsingGraphQL()` references
   `graphql-console`'s `GraphQLInstanceType`; `traffic-viewer`'s record visualisers open both console
-  tabs; `entity-viewer`'s `EntityGridCellMenuFactory` opens a `history-viewer` tab.
+  tabs; `entity-viewer`'s `EntityGridCellMenuFactory` opens a `history-viewer` tab;
+  `catalog-viewer` links out through the `entity-viewer`, `schema-viewer` and `history-viewer` tab
+  factories (plus `schema-viewer`'s schema pointers) and reads catalog versions through
+  `history-viewer`'s `MutationHistoryRequest`; `connection-explorer` injects `catalog-viewer`'s tab
+  factory to open the catalog preview, which is why `catalog-viewer` is registered before it in
+  `modules.ts`.
 - Generic modules must not import feature modules. Where the framework needs feature-provided
   behaviour (building a tab of any type, opening a demo snippet), the feature module contributes it
   into a registry the generic module owns — see

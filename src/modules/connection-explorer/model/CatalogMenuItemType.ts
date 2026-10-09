@@ -3,6 +3,7 @@
  * List of actions that can be performed on a catalog.
  */
 export enum CatalogMenuItemType {
+    CatalogPreview = 'catalogPreview',
     EvitaQLConsole = 'evitaQLConsole',
     GraphQLDataAPIConsole = 'graphQLDataApiConsole',
     GraphQLSchemaAPIConsole = 'graphQLSchemaApiConsole',

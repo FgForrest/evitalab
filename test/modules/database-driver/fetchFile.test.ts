@@ -58,6 +58,7 @@ function management(client: EvitaManagementServiceClient): EvitaClientManagement
         notUsed,
         notUsed,
         notUsed,
+        notUsed,
         notUsed
     )
 }

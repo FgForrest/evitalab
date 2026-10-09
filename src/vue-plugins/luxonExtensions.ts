@@ -3,10 +3,26 @@ import type { DurationLikeObject, DurationUnit, ToHumanDurationOptions } from 'l
 import type { App, Plugin } from 'vue'
 import { round } from '@/utils/number'
 
+/**
+ * Options this plugin's {@link Duration.toHuman} accepts on top of luxon's own.
+ *
+ * `smallestUnit` defaults to seconds, so a millisecond-scale duration reads `0 sec` unless the caller asks for a
+ * finer unit.
+ */
+export interface ExtendedToHumanDurationOptions extends ToHumanDurationOptions {
+    stripZeroUnits?: 'all' | 'end' | 'none'
+    precision?: DurationLikeObject
+    maxUnits?: number
+    smallestUnit?: DurationUnit
+    biggestUnit?: DurationUnit
+}
+
 declare module 'luxon' {
     interface Duration {
         /** Original, unpatched {@link Duration.toHuman}, preserved by this plugin. */
         __toHuman__?: (opts?: ToHumanDurationOptions) => string
+        /** Extended-options overload installed by this plugin. */
+        toHuman(opts?: ExtendedToHumanDurationOptions): string
         /** Compact human-readable duration (e.g. `1.5 h`, `30 s`), added by this plugin. */
         toShortHuman(): string
     }

@@ -157,6 +157,26 @@ async function closeSharedSession(): Promise<void> {
     }
 }
 
+/**
+ * Expands/collapses the item through the click handler `VListGroup` hands to its activator. Only the leading arrow
+ * reaches this - a click anywhere else on the row opens the catalog preview instead.
+ */
+function toggleOpen(activatorProps: Record<string, unknown>, event: MouseEvent): void {
+    const toggle = activatorProps.onClick as ((event: MouseEvent) => void) | undefined
+    toggle?.(event)
+}
+
+/**
+ * Opens the catalog preview - by executing the menu action of the same name, so that the row click and the menu
+ * item cannot drift apart, and both stay unavailable for a catalog that cannot be read at all.
+ */
+function openCatalogPreview(): void {
+    const action: MenuItem<CatalogMenuItemType> | undefined = menuItems.value?.get(CatalogMenuItemType.CatalogPreview)
+    if (action instanceof MenuAction && !action.disabled) {
+        (action as MenuAction<CatalogMenuItemType>).execute()
+    }
+}
+
 function handleAction(action: string): void {
     const foundedAction = menuItems.value?.get(action as CatalogMenuItemType)
     if (foundedAction && foundedAction instanceof MenuAction) {
@@ -187,10 +207,11 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
 
 <template>
     <VListGroup :value="catalog.name">
-        <template #activator="{ isOpen, props }">
+        <template #activator="{ isOpen, props: activatorProps }">
             <VTreeViewItem
-                v-bind="props"
+                v-bind="{ ...activatorProps, onClick: undefined }"
                 :openable="openable"
+                openable-by-arrow-only
                 :is-open="isOpen"
                 :prepend-icon="catalog.readOnly ? 'mdi-database-eye-outline' : 'mdi-database-outline'"
                 :loading="loading"
@@ -198,6 +219,8 @@ async function createMenuItems(): Promise<Map<CatalogMenuItemType, MenuItem<Cata
                 :actions="menuItemList"
                 :is-read-only="serverStatus?.readOnly"
                 :catalog-name="catalog.name"
+                @click="openCatalogPreview"
+                @click:open="event => toggleOpen(activatorProps, event)"
                 @click:action="handleAction"
                 class="text-gray-light"
             >

@@ -393,7 +393,7 @@ export type GrpcSetEntitySchemaWithPriceMutation = Message<"io.evitadb.externalA
    * can define its price), but it is not possible to work with the price information in any other way (calculating
    * price histogram, filtering, sorting by price, etc.).
    *
-   * Prices can be also set as non-indexed individually by setting {@link PriceContract#indexed()} to false.
+   * Prices can be also set as non-indexed individually via the individual price's own `indexed` flag.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope indexedInScopes = 3;
    */

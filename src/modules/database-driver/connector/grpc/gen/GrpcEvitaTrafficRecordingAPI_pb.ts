@@ -18,20 +18,24 @@ export const file_GrpcEvitaTrafficRecordingAPI: GenFile = /*@__PURE__*/
   fileDesc("CiJHcnBjRXZpdGFUcmFmZmljUmVjb3JkaW5nQVBJLnByb3RvEiVpby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkIosBChxHZXRUcmFmZmljSGlzdG9yeUxpc3RSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFElwKCGNyaXRlcmlhGAIgASgLMkouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVHJhZmZpY1JlY29yZGluZ0NhcHR1cmVDcml0ZXJpYSJwCh1HZXRUcmFmZmljSGlzdG9yeUxpc3RSZXNwb25zZRJPCg10cmFmZmljUmVjb3JkGAEgAygLMjguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVHJhZmZpY1JlY29yZCJ4ChhHZXRUcmFmZmljSGlzdG9yeVJlcXVlc3QSXAoIY3JpdGVyaWEYASABKAsySi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUcmFmZmljUmVjb3JkaW5nQ2FwdHVyZUNyaXRlcmlhImwKGUdldFRyYWZmaWNIaXN0b3J5UmVzcG9uc2USTwoNdHJhZmZpY1JlY29yZBgBIAMoCzI4LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1RyYWZmaWNSZWNvcmQiawokR2V0VHJhZmZpY1JlY29yZGluZ0xhYmVsTmFtZXNSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFEjQKDm5hbWVTdGFydHNXaXRoGAIgASgLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlIjoKJUdldFRyYWZmaWNSZWNvcmRpbmdMYWJlbE5hbWVzUmVzcG9uc2USEQoJbGFiZWxOYW1lGAEgAygJIoABCiVHZXRUcmFmZmljUmVjb3JkaW5nVmFsdWVzTmFtZXNSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFEhEKCWxhYmVsTmFtZRgCIAEoCRI1Cg92YWx1ZVN0YXJ0c1dpdGgYAyABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUiPAomR2V0VHJhZmZpY1JlY29yZGluZ1ZhbHVlc05hbWVzUmVzcG9uc2USEgoKbGFiZWxWYWx1ZRgBIAMoCSKAAgogR3JwY1N0YXJ0VHJhZmZpY1JlY29yZGluZ1JlcXVlc3QSFAoMc2FtcGxpbmdSYXRlGAEgASgFEhIKCmV4cG9ydEZpbGUYAiABKAgSPgoZbWF4RHVyYXRpb25Jbk1pbGxpc2Vjb25kcxgDIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQ2NFZhbHVlEjcKEm1heEZpbGVTaXplSW5CeXRlcxgEIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQ2NFZhbHVlEjkKFGNodW5rRmlsZVNpemVJbkJ5dGVzGAUgASgLMhsuZ29vZ2xlLnByb3RvYnVmLkludDY0VmFsdWUiaAofR3JwY1N0b3BUcmFmZmljUmVjb3JkaW5nUmVxdWVzdBJFCgx0YXNrU3RhdHVzSWQYASABKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNVdWlkIl4KIUdycGNFeHBvcnRUcmFmZmljUmVjb3JkaW5nUmVxdWVzdBI5ChRjaHVua0ZpbGVTaXplSW5CeXRlcxgBIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQ2NFZhbHVlIm4KIUdldFRyYWZmaWNSZWNvcmRpbmdTdGF0dXNSZXNwb25zZRJJCgp0YXNrU3RhdHVzGAEgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVGFza1N0YXR1czLXCwogR3JwY0V2aXRhVHJhZmZpY1JlY29yZGluZ1NlcnZpY2USqwEKHkdldFRyYWZmaWNSZWNvcmRpbmdIaXN0b3J5TGlzdBJDLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR2V0VHJhZmZpY0hpc3RvcnlMaXN0UmVxdWVzdBpELmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR2V0VHJhZmZpY0hpc3RvcnlMaXN0UmVzcG9uc2USswEKJkdldFRyYWZmaWNSZWNvcmRpbmdIaXN0b3J5TGlzdFJldmVyc2VkEkMuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HZXRUcmFmZmljSGlzdG9yeUxpc3RSZXF1ZXN0GkQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HZXRUcmFmZmljSGlzdG9yeUxpc3RSZXNwb25zZRKhAQoaR2V0VHJhZmZpY1JlY29yZGluZ0hpc3RvcnkSPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdldFRyYWZmaWNIaXN0b3J5UmVxdWVzdBpALmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR2V0VHJhZmZpY0hpc3RvcnlSZXNwb25zZTABEs8BCjJHZXRUcmFmZmljUmVjb3JkaW5nTGFiZWxzTmFtZXNPcmRlcmVkQnlDYXJkaW5hbGl0eRJLLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR2V0VHJhZmZpY1JlY29yZGluZ0xhYmVsTmFtZXNSZXF1ZXN0GkwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HZXRUcmFmZmljUmVjb3JkaW5nTGFiZWxOYW1lc1Jlc3BvbnNlEtEBCjJHZXRUcmFmZmljUmVjb3JkaW5nTGFiZWxWYWx1ZXNPcmRlcmVkQnlDYXJkaW5hbGl0eRJMLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR2V0VHJhZmZpY1JlY29yZGluZ1ZhbHVlc05hbWVzUmVxdWVzdBpNLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR2V0VHJhZmZpY1JlY29yZGluZ1ZhbHVlc05hbWVzUmVzcG9uc2USqgEKFVN0YXJ0VHJhZmZpY1JlY29yZGluZxJHLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1N0YXJ0VHJhZmZpY1JlY29yZGluZ1JlcXVlc3QaSC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdldFRyYWZmaWNSZWNvcmRpbmdTdGF0dXNSZXNwb25zZRKoAQoUU3RvcFRyYWZmaWNSZWNvcmRpbmcSRi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTdG9wVHJhZmZpY1JlY29yZGluZ1JlcXVlc3QaSC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdldFRyYWZmaWNSZWNvcmRpbmdTdGF0dXNSZXNwb25zZRKsAQoWRXhwb3J0VHJhZmZpY1JlY29yZGluZxJILmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V4cG9ydFRyYWZmaWNSZWNvcmRpbmdSZXF1ZXN0GkguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HZXRUcmFmZmljUmVjb3JkaW5nU3RhdHVzUmVzcG9uc2VCiAIKKWNvbS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkQiFHcnBjRXZpdGFUcmFmZmljUmVjb3JkaW5nQVBJUHJvdG9QAaICBUlFRUdHqgIlSW8uRXZpdGFkYi5FeHRlcm5hbEFwaS5HcnBjLkdlbmVyYXRlZMoCJUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWTiAjFJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVkXEdQQk1ldGFkYXRh6gIpSW86OkV2aXRhZGI6OkV4dGVybmFsQXBpOjpHcnBjOjpHZW5lcmF0ZWRiBnByb3RvMw", [file_GrpcEvitaDataTypes, file_google_protobuf_wrappers, file_GrpcTrafficRecording]);
 
 /**
- * Request to GetTrafficHistoryList request.
+ * Request for a single bounded batch of past traffic records matching the given criteria.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GetTrafficHistoryListRequest
  */
 export type GetTrafficHistoryListRequest = Message<"io.evitadb.externalApi.grpc.generated.GetTrafficHistoryListRequest"> & {
   /**
-   * The limit of records to return
+   * Maximum number of matching traffic records to return in this response. This is a plain result cap - not
+   * page-based or offset-based pagination - and the server enforces no upper bound of its own beyond it. To
+   * continue fetching beyond this limit, issue a new request with `criteria.sinceSessionSequenceId` and
+   * `criteria.sinceRecordSessionOffset` set to the position right after the last record already received.
    *
    * @generated from field: int32 limit = 1;
    */
   limit: number;
 
   /**
-   * The criteria of the traffic recording, allows to define constraints on the returned records
+   * The criteria of the traffic recording, allowing constraints on the returned records. If unset, no filters
+   * are applied and all recorded traffic (up to `limit`) is eligible.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTrafficRecordingCaptureCriteria criteria = 2;
    */
@@ -52,7 +56,7 @@ export const GetTrafficHistoryListRequestSchema: GenMessage<GetTrafficHistoryLis
  */
 export type GetTrafficHistoryListResponse = Message<"io.evitadb.externalApi.grpc.generated.GetTrafficHistoryListResponse"> & {
   /**
-   * The list of traffic records that match the criteria
+   * The matching traffic records, up to the requested `limit`.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcTrafficRecord trafficRecord = 1;
    */
@@ -67,13 +71,15 @@ export const GetTrafficHistoryListResponseSchema: GenMessage<GetTrafficHistoryLi
   messageDesc(file_GrpcEvitaTrafficRecordingAPI, 1);
 
 /**
- * Request to GetTrafficHistory request.
+ * Request for the streaming variant of the traffic history query; unlike GetTrafficHistoryListRequest, all
+ * matching records are streamed back without a result cap.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GetTrafficHistoryRequest
  */
 export type GetTrafficHistoryRequest = Message<"io.evitadb.externalApi.grpc.generated.GetTrafficHistoryRequest"> & {
   /**
-   * The criteria of the traffic recording, allows to define constraints on the returned records
+   * The criteria of the traffic recording, allowing constraints on the returned records. If unset, no filters
+   * are applied and all recorded traffic is streamed back.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTrafficRecordingCaptureCriteria criteria = 1;
    */
@@ -88,13 +94,14 @@ export const GetTrafficHistoryRequestSchema: GenMessage<GetTrafficHistoryRequest
   messageDesc(file_GrpcEvitaTrafficRecordingAPI, 2);
 
 /**
- * Response to GetTrafficHistory request.
+ * A single streamed response frame carrying traffic records.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GetTrafficHistoryResponse
  */
 export type GetTrafficHistoryResponse = Message<"io.evitadb.externalApi.grpc.generated.GetTrafficHistoryResponse"> & {
   /**
-   * The list of traffic records that match the criteria
+   * The traffic records carried by this streamed frame (the current server implementation emits exactly one
+   * record per frame).
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcTrafficRecord trafficRecord = 1;
    */
@@ -109,20 +116,22 @@ export const GetTrafficHistoryResponseSchema: GenMessage<GetTrafficHistoryRespon
   messageDesc(file_GrpcEvitaTrafficRecordingAPI, 3);
 
 /**
- * Response to GetTrafficRecordingLabelsNamesOrderedByCardinality request.
+ * Request to GetTrafficRecordingLabelsNamesOrderedByCardinality request.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GetTrafficRecordingLabelNamesRequest
  */
 export type GetTrafficRecordingLabelNamesRequest = Message<"io.evitadb.externalApi.grpc.generated.GetTrafficRecordingLabelNamesRequest"> & {
   /**
-   * The limit of records to return
+   * Maximum number of label names to return, ordered by descending cardinality (most frequently used labels
+   * first). This is a plain result cap, not page-based or offset-based pagination; repeated calls do not support
+   * continuation.
    *
    * @generated from field: int32 limit = 1;
    */
   limit: number;
 
   /**
-   * Allows to filter the returned labels by the name prefix
+   * Only label names starting with this prefix are returned. If unset, no prefix filter is applied.
    *
    * @generated from field: google.protobuf.StringValue nameStartsWith = 2;
    */
@@ -137,13 +146,13 @@ export const GetTrafficRecordingLabelNamesRequestSchema: GenMessage<GetTrafficRe
   messageDesc(file_GrpcEvitaTrafficRecordingAPI, 4);
 
 /**
- * Response to GetTrafficRecordingLabelsNamesOrderedByCardinality response.
+ * Response to GetTrafficRecordingLabelsNamesOrderedByCardinality request.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GetTrafficRecordingLabelNamesResponse
  */
 export type GetTrafficRecordingLabelNamesResponse = Message<"io.evitadb.externalApi.grpc.generated.GetTrafficRecordingLabelNamesResponse"> & {
   /**
-   * The list of labels names that match the criteria
+   * The label names that match the criteria, ordered by descending cardinality (most frequently used labels first).
    *
    * @generated from field: repeated string labelName = 1;
    */
@@ -158,13 +167,15 @@ export const GetTrafficRecordingLabelNamesResponseSchema: GenMessage<GetTrafficR
   messageDesc(file_GrpcEvitaTrafficRecordingAPI, 5);
 
 /**
- * Response to GetTrafficRecordingLabelsValuesOrderedByCardinality request.
+ * Request to GetTrafficRecordingLabelsValuesOrderedByCardinality request.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GetTrafficRecordingValuesNamesRequest
  */
 export type GetTrafficRecordingValuesNamesRequest = Message<"io.evitadb.externalApi.grpc.generated.GetTrafficRecordingValuesNamesRequest"> & {
   /**
-   * The limit of records to return
+   * Maximum number of label values to return, ordered by descending cardinality (most frequently used values
+   * first). This is a plain result cap, not page-based or offset-based pagination; repeated calls do not support
+   * continuation.
    *
    * @generated from field: int32 limit = 1;
    */
@@ -178,7 +189,7 @@ export type GetTrafficRecordingValuesNamesRequest = Message<"io.evitadb.external
   labelName: string;
 
   /**
-   * Allows to filter the returned labels by the name prefix
+   * Only label values starting with this prefix are returned. If unset, no prefix filter is applied.
    *
    * @generated from field: google.protobuf.StringValue valueStartsWith = 3;
    */
@@ -193,13 +204,13 @@ export const GetTrafficRecordingValuesNamesRequestSchema: GenMessage<GetTrafficR
   messageDesc(file_GrpcEvitaTrafficRecordingAPI, 6);
 
 /**
- * Response to GetTrafficRecordingLabelsValuesOrderedByCardinality response.
+ * Response to GetTrafficRecordingLabelsValuesOrderedByCardinality request.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GetTrafficRecordingValuesNamesResponse
  */
 export type GetTrafficRecordingValuesNamesResponse = Message<"io.evitadb.externalApi.grpc.generated.GetTrafficRecordingValuesNamesResponse"> & {
   /**
-   * The list of labels values that match the criteria
+   * The label values that match the criteria, ordered by descending cardinality (most frequently used values first).
    *
    * @generated from field: repeated string labelValue = 1;
    */
@@ -214,7 +225,8 @@ export const GetTrafficRecordingValuesNamesResponseSchema: GenMessage<GetTraffic
   messageDesc(file_GrpcEvitaTrafficRecordingAPI, 7);
 
 /**
- * Request to StartTrafficRecording request.
+ * Request to start a new traffic recording session. Only one recording may be in progress at a time; starting a
+ * new one while another is still running fails.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcStartTrafficRecordingRequest
  */
@@ -235,21 +247,24 @@ export type GrpcStartTrafficRecordingRequest = Message<"io.evitadb.externalApi.g
   exportFile: boolean;
 
   /**
-   * The duration of the recording in milliseconds, after this time the recording will be stopped automatically.
+   * The maximum duration of the recording (milliseconds); the recording stops automatically once this much time
+   * has elapsed. If unset, the recording keeps running until explicitly stopped via StopTrafficRecording.
    *
    * @generated from field: google.protobuf.Int64Value maxDurationInMilliseconds = 3;
    */
   maxDurationInMilliseconds?: bigint;
 
   /**
-   * The size of the recording in bytes, after this size the recording will be stopped automatically.
+   * The maximum size of the recorded traffic data (bytes); the recording stops automatically once this much data
+   * has been captured. If unset, no size-based automatic stop is applied.
    *
    * @generated from field: google.protobuf.Int64Value maxFileSizeInBytes = 4;
    */
   maxFileSizeInBytes?: bigint;
 
   /**
-   * The size of the chunk file in bytes. Individual files in the export file will be approximately this size.
+   * The target size of each individual chunk file within the export (bytes); exported files are split into chunks
+   * of approximately this size. If unset, or set to zero, the server-configured default chunk size is used.
    *
    * @generated from field: google.protobuf.Int64Value chunkFileSizeInBytes = 5;
    */
@@ -291,7 +306,8 @@ export const GrpcStopTrafficRecordingRequestSchema: GenMessage<GrpcStopTrafficRe
  */
 export type GrpcExportTrafficRecordingRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcExportTrafficRecordingRequest"> & {
   /**
-   * The size of the chunk file in bytes. Individual files in the export file will be approximately this size.
+   * The target size of each individual chunk file within the export (bytes); exported files are split into chunks
+   * of approximately this size. If unset, or set to zero, the server-configured default chunk size is used.
    *
    * @generated from field: google.protobuf.Int64Value chunkFileSizeInBytes = 1;
    */
@@ -306,7 +322,7 @@ export const GrpcExportTrafficRecordingRequestSchema: GenMessage<GrpcExportTraff
   messageDesc(file_GrpcEvitaTrafficRecordingAPI, 10);
 
 /**
- * Response to StartTrafficRecording and  request.
+ * Response to StartTrafficRecording, StopTrafficRecording, and ExportTrafficRecording requests.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GetTrafficRecordingStatusResponse
  */
@@ -327,6 +343,10 @@ export const GetTrafficRecordingStatusResponseSchema: GenMessage<GetTrafficRecor
   messageDesc(file_GrpcEvitaTrafficRecordingAPI, 11);
 
 /**
+ * This service contains RPCs that could be called by gRPC clients on evitaDB's catalog by usage of a before created
+ * session. Main purpose of this service is to provide a way to query and manage recorded traffic (queries, mutations,
+ * session lifecycle events) captured for diagnostics.
+ *
  * @generated from service io.evitadb.externalApi.grpc.generated.GrpcEvitaTrafficRecordingService
  */
 export const GrpcEvitaTrafficRecordingService: GenService<{
@@ -387,7 +407,8 @@ export const GrpcEvitaTrafficRecordingService: GenService<{
     output: typeof GetTrafficRecordingValuesNamesResponseSchema;
   },
   /**
-   * Procedure that starts the traffic recording for the given criteria and settings
+   * Procedure that starts the traffic recording for the given criteria and settings. Fails if a recording is
+   * already in progress - only one recording may run at a time.
    *
    * @generated from rpc io.evitadb.externalApi.grpc.generated.GrpcEvitaTrafficRecordingService.StartTrafficRecording
    */

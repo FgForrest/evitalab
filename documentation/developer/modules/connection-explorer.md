@@ -62,6 +62,22 @@ Two behaviours worth knowing before changing this panel:
 The panel does not poll for server status on its own — [`server-viewer`](server-viewer.md)'s poll fires
 the server-status callbacks that keep this panel's menu in sync.
 
+## Catalog preview
+
+`CatalogItemMenuFactory` opens the ⋮ menu of every catalog with **Catalog preview**
+([`catalog-viewer`](catalog-viewer.md)). It is the one catalog action that stays enabled for a
+`CORRUPTED` catalog — statistics are exactly what someone opens when a catalog is broken, and the
+engine still reports its disk footprint. Only a deactivated catalog disables it.
+
+**Clicking a catalog row opens that preview**; the row's leading arrow, and only it, expands the
+catalog into its collections. `CatalogItem` gets this by handing `VTreeViewItem` the
+`openableByArrowOnly` prop and forwarding the arrow's `click:open` to the toggle `VListGroup` provides
+for its activator, while the row's own click executes the *Catalog preview* menu action — the same
+action, so the two cannot drift apart, and both stay unavailable for a catalog that cannot be read.
+
+`catalog-viewer` is registered *before* this module in `modules.ts`, so `CatalogItemMenuFactory` can
+inject its tab factory.
+
 ## Cache actions
 
 Two entries under the menu's **Manage** subheader, easy to confuse:

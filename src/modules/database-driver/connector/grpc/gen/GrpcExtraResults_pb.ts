@@ -7,7 +7,7 @@ import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import { file_google_protobuf_wrappers } from "@bufbuild/protobuf/wkt";
 import type { GrpcEntityReference, GrpcSealedEntity } from "./GrpcEntity_pb";
 import { file_GrpcEntity } from "./GrpcEntity_pb";
-import type { GrpcBigDecimal } from "./GrpcEvitaDataTypes_pb";
+import type { GrpcBigDecimal, GrpcOffsetDateTime } from "./GrpcEvitaDataTypes_pb";
 import { file_GrpcEvitaDataTypes } from "./GrpcEvitaDataTypes_pb";
 import type { GrpcQueryPhase } from "./GrpcEnums_pb";
 import { file_GrpcEnums } from "./GrpcEnums_pb";
@@ -17,7 +17,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file GrpcExtraResults.proto.
  */
 export const file_GrpcExtraResults: GenFile = /*@__PURE__*/
-  fileDesc("ChZHcnBjRXh0cmFSZXN1bHRzLnByb3RvEiVpby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkIv4ECg1HcnBjSGlzdG9ncmFtEkIKA21pbhgBIAEoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0JpZ0RlY2ltYWwSQgoDbWF4GAIgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQmlnRGVjaW1hbBIUCgxvdmVyYWxsQ291bnQYAyABKAUSUAoHYnVja2V0cxgEIAMoCzI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpc3RvZ3JhbS5HcnBjQnVja2V0ElQKE21pblJlZmVyZW5jZWRFbnRpdHkYBSABKAsyNy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTZWFsZWRFbnRpdHkSVAoTbWF4UmVmZXJlbmNlZEVudGl0eRgGIAEoCzI3LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1NlYWxlZEVudGl0eRrQAQoKR3JwY0J1Y2tldBJICgl0aHJlc2hvbGQYAiABKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNCaWdEZWNpbWFsEhMKC29jY3VycmVuY2VzGAMgASgFEhEKCXJlcXVlc3RlZBgEIAEoCBJQChFyZWxhdGl2ZUZyZXF1ZW5jeRgFIAEoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0JpZ0RlY2ltYWwirgQKHEdycGNSZWZlcmVuY2VHcm91cFN0YXRpc3RpY3MSFQoNcmVmZXJlbmNlTmFtZRgBIAEoCRJYChRncm91cEVudGl0eVJlZmVyZW5jZRgCIAEoCzI6LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVJlZmVyZW5jZRJMCgtncm91cEVudGl0eRgDIAEoCzI3LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1NlYWxlZEVudGl0eRINCgVjb3VudBgEIAEoBRJTCg9mYWNldFN0YXRpc3RpY3MYBSADKAsyOi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGYWNldFN0YXRpc3RpY3MSeQoTaGlzdG9ncmFtU3RhdGlzdGljcxgGIAMoCzJcLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1JlZmVyZW5jZUdyb3VwU3RhdGlzdGljcy5IaXN0b2dyYW1TdGF0aXN0aWNzRW50cnkacAoYSGlzdG9ncmFtU3RhdGlzdGljc0VudHJ5EgsKA2tleRgBIAEoCRJDCgV2YWx1ZRgCIAEoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpc3RvZ3JhbToCOAEiwQIKGEdycGNGYWNldEdyb3VwU3RhdGlzdGljcxIVCg1yZWZlcmVuY2VOYW1lGAEgASgJElgKFGdyb3VwRW50aXR5UmVmZXJlbmNlGAIgASgLMjouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5UmVmZXJlbmNlEkwKC2dyb3VwRW50aXR5GAMgASgLMjcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU2VhbGVkRW50aXR5Eg0KBWNvdW50GAQgASgFElMKD2ZhY2V0U3RhdGlzdGljcxgFIAMoCzI6LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZhY2V0U3RhdGlzdGljczoCGAEizwIKE0dycGNGYWNldFN0YXRpc3RpY3MSWAoUZmFjZXRFbnRpdHlSZWZlcmVuY2UYASABKAsyOi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlSZWZlcmVuY2USTAoLZmFjZXRFbnRpdHkYAiABKAsyNy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTZWFsZWRFbnRpdHkSEQoJcmVxdWVzdGVkGAMgASgIEg0KBWNvdW50GAQgASgFEisKBmltcGFjdBgFIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQzMlZhbHVlEi8KCm1hdGNoQ291bnQYBiABKAsyGy5nb29nbGUucHJvdG9idWYuSW50MzJWYWx1ZRIQCghoYXNTZW5zZRgHIAEoCCLQAQoNR3JwY0hpZXJhcmNoeRJWCgloaWVyYXJjaHkYASADKAsyQy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNIaWVyYXJjaHkuSGllcmFyY2h5RW50cnkaZwoOSGllcmFyY2h5RW50cnkSCwoDa2V5GAEgASgJEkQKBXZhbHVlGAIgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTGV2ZWxJbmZvczoCOAEiWgoOR3JwY0xldmVsSW5mb3MSSAoKbGV2ZWxJbmZvcxgBIAMoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0xldmVsSW5mbyLyAgoNR3JwY0xldmVsSW5mbxJTCg9lbnRpdHlSZWZlcmVuY2UYASABKAsyOi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlSZWZlcmVuY2USRwoGZW50aXR5GAIgASgLMjcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU2VhbGVkRW50aXR5EjcKEnF1ZXJpZWRFbnRpdHlDb3VudBgDIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQzMlZhbHVlEjIKDWNoaWxkcmVuQ291bnQYBCABKAsyGy5nb29nbGUucHJvdG9idWYuSW50MzJWYWx1ZRJDCgVpdGVtcxgFIAMoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0xldmVsSW5mbxIRCglyZXF1ZXN0ZWQYBiABKAgi5QEKEkdycGNRdWVyeVRlbGVtZXRyeRJICglvcGVyYXRpb24YASABKA4yNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNRdWVyeVBoYXNlEhEKBXN0YXJ0GAIgASgDQgIwARJICgVzdGVwcxgDIAMoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1F1ZXJ5VGVsZW1ldHJ5EhEKCWFyZ3VtZW50cxgEIAMoCRIVCglzcGVudFRpbWUYBSABKANCAjABIusGChBHcnBjRXh0cmFSZXN1bHRzEmsKEmF0dHJpYnV0ZUhpc3RvZ3JhbRgBIAMoCzJPLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V4dHJhUmVzdWx0cy5BdHRyaWJ1dGVIaXN0b2dyYW1FbnRyeRJMCg5wcmljZUhpc3RvZ3JhbRgCIAEoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpc3RvZ3JhbRJhChRmYWNldEdyb3VwU3RhdGlzdGljcxgDIAMoCzI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZhY2V0R3JvdXBTdGF0aXN0aWNzQgIYARJLCg1zZWxmSGllcmFyY2h5GAQgASgLMjQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjSGllcmFyY2h5ElkKCWhpZXJhcmNoeRgFIAMoCzJGLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V4dHJhUmVzdWx0cy5IaWVyYXJjaHlFbnRyeRJRCg5xdWVyeVRlbGVtZXRyeRgGIAEoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1F1ZXJ5VGVsZW1ldHJ5EmUKGHJlZmVyZW5jZUdyb3VwU3RhdGlzdGljcxgHIAMoCzJDLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1JlZmVyZW5jZUdyb3VwU3RhdGlzdGljcxpvChdBdHRyaWJ1dGVIaXN0b2dyYW1FbnRyeRILCgNrZXkYASABKAkSQwoFdmFsdWUYAiABKAsyNC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNIaXN0b2dyYW06AjgBGmYKDkhpZXJhcmNoeUVudHJ5EgsKA2tleRgBIAEoCRJDCgV2YWx1ZRgCIAEoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpZXJhcmNoeToCOAFC/AEKKWNvbS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkQhVHcnBjRXh0cmFSZXN1bHRzUHJvdG9QAaICBUlFRUdHqgIlSW8uRXZpdGFkYi5FeHRlcm5hbEFwaS5HcnBjLkdlbmVyYXRlZMoCJUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWTiAjFJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVkXEdQQk1ldGFkYXRh6gIpSW86OkV2aXRhZGI6OkV4dGVybmFsQXBpOjpHcnBjOjpHZW5lcmF0ZWRiBnByb3RvMw", [file_google_protobuf_wrappers, file_GrpcEntity, file_GrpcEvitaDataTypes, file_GrpcEnums]);
+  fileDesc("ChZHcnBjRXh0cmFSZXN1bHRzLnByb3RvEiVpby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkIv4ECg1HcnBjSGlzdG9ncmFtEkIKA21pbhgBIAEoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0JpZ0RlY2ltYWwSQgoDbWF4GAIgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQmlnRGVjaW1hbBIUCgxvdmVyYWxsQ291bnQYAyABKAUSUAoHYnVja2V0cxgEIAMoCzI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpc3RvZ3JhbS5HcnBjQnVja2V0ElQKE21pblJlZmVyZW5jZWRFbnRpdHkYBSABKAsyNy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTZWFsZWRFbnRpdHkSVAoTbWF4UmVmZXJlbmNlZEVudGl0eRgGIAEoCzI3LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1NlYWxlZEVudGl0eRrQAQoKR3JwY0J1Y2tldBJICgl0aHJlc2hvbGQYAiABKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNCaWdEZWNpbWFsEhMKC29jY3VycmVuY2VzGAMgASgFEhEKCXJlcXVlc3RlZBgEIAEoCBJQChFyZWxhdGl2ZUZyZXF1ZW5jeRgFIAEoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0JpZ0RlY2ltYWwirgQKHEdycGNSZWZlcmVuY2VHcm91cFN0YXRpc3RpY3MSFQoNcmVmZXJlbmNlTmFtZRgBIAEoCRJYChRncm91cEVudGl0eVJlZmVyZW5jZRgCIAEoCzI6LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVJlZmVyZW5jZRJMCgtncm91cEVudGl0eRgDIAEoCzI3LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1NlYWxlZEVudGl0eRINCgVjb3VudBgEIAEoBRJTCg9mYWNldFN0YXRpc3RpY3MYBSADKAsyOi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGYWNldFN0YXRpc3RpY3MSeQoTaGlzdG9ncmFtU3RhdGlzdGljcxgGIAMoCzJcLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1JlZmVyZW5jZUdyb3VwU3RhdGlzdGljcy5IaXN0b2dyYW1TdGF0aXN0aWNzRW50cnkacAoYSGlzdG9ncmFtU3RhdGlzdGljc0VudHJ5EgsKA2tleRgBIAEoCRJDCgV2YWx1ZRgCIAEoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpc3RvZ3JhbToCOAEiwQIKGEdycGNGYWNldEdyb3VwU3RhdGlzdGljcxIVCg1yZWZlcmVuY2VOYW1lGAEgASgJElgKFGdyb3VwRW50aXR5UmVmZXJlbmNlGAIgASgLMjouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5UmVmZXJlbmNlEkwKC2dyb3VwRW50aXR5GAMgASgLMjcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU2VhbGVkRW50aXR5Eg0KBWNvdW50GAQgASgFElMKD2ZhY2V0U3RhdGlzdGljcxgFIAMoCzI6LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZhY2V0U3RhdGlzdGljczoCGAEizwIKE0dycGNGYWNldFN0YXRpc3RpY3MSWAoUZmFjZXRFbnRpdHlSZWZlcmVuY2UYASABKAsyOi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlSZWZlcmVuY2USTAoLZmFjZXRFbnRpdHkYAiABKAsyNy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTZWFsZWRFbnRpdHkSEQoJcmVxdWVzdGVkGAMgASgIEg0KBWNvdW50GAQgASgFEisKBmltcGFjdBgFIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQzMlZhbHVlEi8KCm1hdGNoQ291bnQYBiABKAsyGy5nb29nbGUucHJvdG9idWYuSW50MzJWYWx1ZRIQCghoYXNTZW5zZRgHIAEoCCLQAQoNR3JwY0hpZXJhcmNoeRJWCgloaWVyYXJjaHkYASADKAsyQy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNIaWVyYXJjaHkuSGllcmFyY2h5RW50cnkaZwoOSGllcmFyY2h5RW50cnkSCwoDa2V5GAEgASgJEkQKBXZhbHVlGAIgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTGV2ZWxJbmZvczoCOAEiWgoOR3JwY0xldmVsSW5mb3MSSAoKbGV2ZWxJbmZvcxgBIAMoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0xldmVsSW5mbyLyAgoNR3JwY0xldmVsSW5mbxJTCg9lbnRpdHlSZWZlcmVuY2UYASABKAsyOi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlSZWZlcmVuY2USRwoGZW50aXR5GAIgASgLMjcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU2VhbGVkRW50aXR5EjcKEnF1ZXJpZWRFbnRpdHlDb3VudBgDIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQzMlZhbHVlEjIKDWNoaWxkcmVuQ291bnQYBCABKAsyGy5nb29nbGUucHJvdG9idWYuSW50MzJWYWx1ZRJDCgVpdGVtcxgFIAMoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0xldmVsSW5mbxIRCglyZXF1ZXN0ZWQYBiABKAgigQQKEkdycGNRdWVyeVRlbGVtZXRyeRJICglvcGVyYXRpb24YASABKA4yNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNRdWVyeVBoYXNlEhEKBXN0YXJ0GAIgASgDQgIwARJICgVzdGVwcxgDIAMoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1F1ZXJ5VGVsZW1ldHJ5EhEKCWFyZ3VtZW50cxgEIAMoCRIVCglzcGVudFRpbWUYBSABKANCAjABEkwKCXN0YXJ0ZWRBdBgGIAEoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY09mZnNldERhdGVUaW1lEhQKCHNlbGZUaW1lGAcgASgDQgIwARJWCgdtZXRyaWNzGAggASgLMkAuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUXVlcnlUZWxlbWV0cnlNZXRyaWNzSACIAQESSQoEcGxhbhgJIAEoCzI2LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0Zvcm11bGFQbGFuSAGIAQFCCgoIX21ldHJpY3NCBwoFX3BsYW4isgIKD0dycGNGb3JtdWxhUGxhbhIKCgJpZBgBIAEoBRISCgVyZWZUbxgCIAEoBUgAiAEBEhAKBGhhc2gYAyABKANCAjABEhgKC2Rlc2NyaXB0aW9uGAQgASgJSAGIAQESGQoNZXN0aW1hdGVkQ29zdBgFIAEoA0ICMAESGwoKYWN0dWFsQ29zdBgGIAEoA0ICMAFIAogBARIYCgtyZXN1bHRDb3VudBgHIAEoBUgDiAEBEkgKCGNoaWxkcmVuGAggAygLMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRm9ybXVsYVBsYW5CCAoGX3JlZlRvQg4KDF9kZXNjcmlwdGlvbkINCgtfYWN0dWFsQ29zdEIOCgxfcmVzdWx0Q291bnQivQMKGUdycGNRdWVyeVRlbGVtZXRyeU1ldHJpY3MSJQoUZXN0aW1hdGVkQ2FyZGluYWxpdHkYASABKANCAjABSACIAQESIgoRYWN0dWFsQ2FyZGluYWxpdHkYAiABKANCAjABSAGIAQESHgoNZXN0aW1hdGVkQ29zdBgDIAEoA0ICMAFIAogBARIbCgphY3R1YWxDb3N0GAQgASgDQgIwAUgDiAEBEiAKD3JlY29yZHNSZXR1cm5lZBgFIAEoA0ICMAFIBIgBARIdCgxpb0ZldGNoQ291bnQYBiABKANCAjABSAWIAQESIwoSaW9GZXRjaGVkU2l6ZUJ5dGVzGAcgASgDQgIwAUgGiAEBEhcKCnByZWZldGNoZWQYCCABKAhIB4gBAUIXChVfZXN0aW1hdGVkQ2FyZGluYWxpdHlCFAoSX2FjdHVhbENhcmRpbmFsaXR5QhAKDl9lc3RpbWF0ZWRDb3N0Qg0KC19hY3R1YWxDb3N0QhIKEF9yZWNvcmRzUmV0dXJuZWRCDwoNX2lvRmV0Y2hDb3VudEIVChNfaW9GZXRjaGVkU2l6ZUJ5dGVzQg0KC19wcmVmZXRjaGVkIusGChBHcnBjRXh0cmFSZXN1bHRzEmsKEmF0dHJpYnV0ZUhpc3RvZ3JhbRgBIAMoCzJPLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V4dHJhUmVzdWx0cy5BdHRyaWJ1dGVIaXN0b2dyYW1FbnRyeRJMCg5wcmljZUhpc3RvZ3JhbRgCIAEoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpc3RvZ3JhbRJhChRmYWNldEdyb3VwU3RhdGlzdGljcxgDIAMoCzI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZhY2V0R3JvdXBTdGF0aXN0aWNzQgIYARJLCg1zZWxmSGllcmFyY2h5GAQgASgLMjQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjSGllcmFyY2h5ElkKCWhpZXJhcmNoeRgFIAMoCzJGLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V4dHJhUmVzdWx0cy5IaWVyYXJjaHlFbnRyeRJRCg5xdWVyeVRlbGVtZXRyeRgGIAEoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1F1ZXJ5VGVsZW1ldHJ5EmUKGHJlZmVyZW5jZUdyb3VwU3RhdGlzdGljcxgHIAMoCzJDLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1JlZmVyZW5jZUdyb3VwU3RhdGlzdGljcxpvChdBdHRyaWJ1dGVIaXN0b2dyYW1FbnRyeRILCgNrZXkYASABKAkSQwoFdmFsdWUYAiABKAsyNC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNIaXN0b2dyYW06AjgBGmYKDkhpZXJhcmNoeUVudHJ5EgsKA2tleRgBIAEoCRJDCgV2YWx1ZRgCIAEoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpZXJhcmNoeToCOAFC/AEKKWNvbS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkQhVHcnBjRXh0cmFSZXN1bHRzUHJvdG9QAaICBUlFRUdHqgIlSW8uRXZpdGFkYi5FeHRlcm5hbEFwaS5HcnBjLkdlbmVyYXRlZMoCJUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWTiAjFJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVkXEdQQk1ldGFkYXRh6gIpSW86OkV2aXRhZGI6OkV4dGVybmFsQXBpOjpHcnBjOjpHZW5lcmF0ZWRiBnByb3RvMw", [file_google_protobuf_wrappers, file_GrpcEntity, file_GrpcEvitaDataTypes, file_GrpcEnums]);
 
 /**
  * Histogram can be computed only for numeric based properties. It visualises which property values are more common
@@ -117,11 +117,12 @@ export type GrpcHistogram_GrpcBucket = Message<"io.evitadb.externalApi.grpc.gene
   requested: boolean;
 
   /**
-   * Relative frequency value used for visualization purposes.
-   * For standard histograms: percentage of total occurrences (0-100).
-   * For equalized histograms: normalized value density (0-100) accounting for both
-   * occurrences and bucket width, scaled so all buckets sum to 100. Higher values
-   * indicate denser data concentration in this bucket.
+   * Rendering intensity of the bucket's bar, on a 0-100 scale. Never a count and never a probability.
+   * For standard histograms: percentage of total occurrences, summing to 100 across the histogram.
+   * For equalized histograms: the smoothed value density at the bucket, normalised against the maximum
+   * of the density curve, so the value lies in (0, 100] where 100 is the tallest point of the
+   * distribution. These values do NOT sum to 100 and there are no empty buckets - scale bars against
+   * the constant 100, never against the sum or the tallest returned bucket.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcBigDecimal relativeFrequency = 5;
    */
@@ -194,7 +195,9 @@ export const GrpcReferenceGroupStatisticsSchema: GenMessage<GrpcReferenceGroupSt
 
 /**
  * This DTO contains information about single facet group and statistics of the facets that relates to it.
- * TOBEDONE: remove when FacetSummary constraint is removed
+ * Deprecated since 2026.2 - deprecated in favor of `GrpcReferenceGroupStatistics`, produced by the
+ * `referenceSummary` requirement
+ * TOBEDONE: remove when FacetSummary constraint is removed (https://github.com/FgForrest/evitaDB/issues/538)
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcFacetGroupStatistics
  * @deprecated
@@ -428,7 +431,8 @@ export type GrpcQueryTelemetry = Message<"io.evitadb.externalApi.grpc.generated.
   operation: GrpcQueryPhase;
 
   /**
-   * Date and time of the start of this step in nanoseconds.
+   * Number of nanoseconds elapsed since the root step of this telemetry tree began - the root step itself
+   * therefore always reports 0. This is not a wall-clock timestamp and must not be rendered as a date.
    *
    * @generated from field: int64 start = 2 [jstype = JS_STRING];
    */
@@ -449,11 +453,51 @@ export type GrpcQueryTelemetry = Message<"io.evitadb.externalApi.grpc.generated.
   arguments: string[];
 
   /**
-   * Duration in nanoseconds.
+   * Duration in nanoseconds, covering this step and everything nested below it.
    *
    * @generated from field: int64 spentTime = 5 [jstype = JS_STRING];
    */
   spentTime: string;
+
+  /**
+   * Wall-clock instant at which the query began. Set only on the root step - it anchors the whole tree in time,
+   * so the wall-clock position of any other node is startedAt plus that node's start offset.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcOffsetDateTime startedAt = 6;
+   */
+  startedAt?: GrpcOffsetDateTime;
+
+  /**
+   * Duration in nanoseconds this step spent on its own work - its spentTime less the time accounted for by its
+   * direct children. A parent's spentTime is not the sum of its children's, so this is the number that says how
+   * much of a phase is the phase itself rather than the phases inside it.
+   *
+   * This is a server-derived convenience, not part of the telemetry object's identity: the engine does not track
+   * it, and the Java driver does not reconstruct it when it rebuilds the tree from this message. It is emitted so
+   * that clients which consume the wire format directly do not each have to sum the children themselves.
+   *
+   * @generated from field: int64 selfTime = 7 [jstype = JS_STRING];
+   */
+  selfTime: string;
+
+  /**
+   * Typed numeric measurements recorded for this step - cardinalities, costs and I/O counters the engine computed
+   * while answering the query. Unlike `arguments`, which is prose, these are values a client can compare and chart
+   * without parsing English. Absent when nothing was measured for this step, which is the case for every step but
+   * the root.
+   *
+   * @generated from field: optional io.evitadb.externalApi.grpc.generated.GrpcQueryTelemetryMetrics metrics = 8;
+   */
+  metrics?: GrpcQueryTelemetryMetrics;
+
+  /**
+   * Structure of the formula this phase built or ran. Present only when the query asked for it with
+   * queryTelemetry(PLAN), and then only on the phases that own a formula: each PLANNING_FILTER_ALTERNATIVE step
+   * carries the candidate it costed - including the ones that lost - and the root carries the plan that ran.
+   *
+   * @generated from field: optional io.evitadb.externalApi.grpc.generated.GrpcFormulaPlan plan = 9;
+   */
+  plan?: GrpcFormulaPlan;
 };
 
 /**
@@ -462,6 +506,175 @@ export type GrpcQueryTelemetry = Message<"io.evitadb.externalApi.grpc.generated.
  */
 export const GrpcQueryTelemetrySchema: GenMessage<GrpcQueryTelemetry> = /*@__PURE__*/
   messageDesc(file_GrpcExtraResults, 7);
+
+/**
+ * One node of the formula plan a query phase was carried out with - the structural counterpart of the timings.
+ *
+ * The plan is a DAG rather than a tree: a formula's result is memoized per instance, so a subtree reachable by two
+ * paths is computed once and every later occurrence of it is free. `refTo` is what keeps a reader from counting such
+ * a subtree twice - the first occurrence is described in full, and every later one is a bare node pointing back at
+ * it by id, with no children of its own.
+ *
+ * actualCost and resultCount are absent whenever the formula was not computed, which is the normal state for a
+ * rejected plan alternative and for a short-circuited branch of the winning one. They are absent rather than 0
+ * because the plan is rendered without ever computing anything: filling them in would make asking for the plan
+ * change what the query does.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcFormulaPlan
+ */
+export type GrpcFormulaPlan = Message<"io.evitadb.externalApi.grpc.generated.GrpcFormulaPlan"> & {
+  /**
+   * Identity of the formula instance this node stands for, unique within the plan and stable across its
+   * occurrences - it is what makes "computed once, reused twice" visible.
+   *
+   * @generated from field: int32 id = 1;
+   */
+  id: number;
+
+  /**
+   * Absent on the occurrence that describes the instance; equal to `id` on every later occurrence, which carries no
+   * detail and no children and means "see the node with this id".
+   *
+   * @generated from field: optional int32 refTo = 2;
+   */
+  refTo?: number;
+
+  /**
+   * Structural hash of the formula, i.e. what the cache keys on. Two nodes with the same hash are interchangeable
+   * computations, whereas two nodes with the same id are the same object - the two answer different questions.
+   *
+   * @generated from field: int64 hash = 3 [jstype = JS_STRING];
+   */
+  hash: string;
+
+  /**
+   * Human readable description of the formula. Absent on a back-reference node.
+   *
+   * @generated from field: optional string description = 4;
+   */
+  description?: string;
+
+  /**
+   * Cost the planner estimated for this formula before running anything.
+   *
+   * @generated from field: int64 estimatedCost = 5 [jstype = JS_STRING];
+   */
+  estimatedCost: string;
+
+  /**
+   * Cost the formula really incurred. Absent when it was never computed.
+   *
+   * @generated from field: optional int64 actualCost = 6 [jstype = JS_STRING];
+   */
+  actualCost?: string;
+
+  /**
+   * Number of records the formula produced. Absent when it was never computed.
+   *
+   * @generated from field: optional int32 resultCount = 7;
+   */
+  resultCount?: number;
+
+  /**
+   * Inner formulas. Always empty on a back-reference node.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcFormulaPlan children = 8;
+   */
+  children: GrpcFormulaPlan[];
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcFormulaPlan.
+ * Use `create(GrpcFormulaPlanSchema)` to create a new message.
+ */
+export const GrpcFormulaPlanSchema: GenMessage<GrpcFormulaPlan> = /*@__PURE__*/
+  messageDesc(file_GrpcExtraResults, 8);
+
+/**
+ * Typed numeric measurements recorded for a single query telemetry step.
+ *
+ * Every field is optional and absence is meaningful: a metric is recorded where the engine happens to compute the
+ * number, so a missing one means "not measured for this phase". That is deliberately distinct from a measured 0,
+ * which recordsReturned, ioFetchCount, ioFetchedSizeBytes and prefetched can all legitimately be - which is also
+ * why these are `optional` rather than plain scalars, since proto3 implicit presence cannot tell the two apart.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcQueryTelemetryMetrics
+ */
+export type GrpcQueryTelemetryMetrics = Message<"io.evitadb.externalApi.grpc.generated.GrpcQueryTelemetryMetrics"> & {
+  /**
+   * How many records the planner expected the filtering formula to match. Compare against actualCardinality - an
+   * estimate that is orders of magnitude off is why the engine chose the index it chose, and it is the usual
+   * explanation for a plan that looks wrong.
+   *
+   * @generated from field: optional int64 estimatedCardinality = 1 [jstype = JS_STRING];
+   */
+  estimatedCardinality?: string;
+
+  /**
+   * How many records the filtering formula really matched, before the requested page was cut out of them. This
+   * counts what the filter found, not what was returned - recordsReturned is the latter.
+   *
+   * @generated from field: optional int64 actualCardinality = 2 [jstype = JS_STRING];
+   */
+  actualCardinality?: string;
+
+  /**
+   * Cost the planner estimated for the filtering formula it chose. This is the unitless scale candidate indexes are
+   * ranked on - comparable between plans of the same query, meaningless in absolute terms. Absent when the estimate
+   * overflowed.
+   *
+   * @generated from field: optional int64 estimatedCost = 3 [jstype = JS_STRING];
+   */
+  estimatedCost?: string;
+
+  /**
+   * Cost the filtering formula really incurred, computed from the real cardinalities once it ran. Compare against
+   * estimatedCost on the same scale. Absent when the formula was never computed.
+   *
+   * @generated from field: optional int64 actualCost = 4 [jstype = JS_STRING];
+   */
+  actualCost?: string;
+
+  /**
+   * How many records were actually handed back, i.e. the size of the page cut out of actualCardinality.
+   * Legitimately 0 for a query whose requested page lies past the end of the result.
+   *
+   * @generated from field: optional int64 recordsReturned = 5 [jstype = JS_STRING];
+   */
+  recordsReturned?: string;
+
+  /**
+   * How many times the storage was read while assembling the response. Legitimately 0 - a query answered entirely
+   * from indexes, or one returning bare primary keys, never touches storage.
+   *
+   * @generated from field: optional int64 ioFetchCount = 6 [jstype = JS_STRING];
+   */
+  ioFetchCount?: string;
+
+  /**
+   * How many bytes were read from the storage while assembling the response. Reported alongside ioFetchCount
+   * because many small reads and one large read cost very differently.
+   *
+   * @generated from field: optional int64 ioFetchedSizeBytes = 7 [jstype = JS_STRING];
+   */
+  ioFetchedSizeBytes?: string;
+
+  /**
+   * Whether the planner prefetched entity bodies and filtered over them instead of consulting indexes. It explains
+   * the shape of the rest of the profile rather than measuring anything: a prefetched query spends its time in
+   * EXECUTION_PREFETCH and barely touches the index phases.
+   *
+   * @generated from field: optional bool prefetched = 8;
+   */
+  prefetched?: boolean;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcQueryTelemetryMetrics.
+ * Use `create(GrpcQueryTelemetryMetricsSchema)` to create a new message.
+ */
+export const GrpcQueryTelemetryMetricsSchema: GenMessage<GrpcQueryTelemetryMetrics> = /*@__PURE__*/
+  messageDesc(file_GrpcExtraResults, 9);
 
 /**
  * This DTO contains extra results that are computed based on the query results.
@@ -508,7 +721,7 @@ export type GrpcExtraResults = Message<"io.evitadb.externalApi.grpc.generated.Gr
   /**
    * Contains a collection of FacetGroupStatistics DTOs where each of them contains information about single facet group
    * (if they belong in one) and statistics of the facets that relates to it.
-   * deprecated renamed to `referenceGroupStatistics`
+   * Deprecated since 2026.2 - renamed to `referenceGroupStatistics`
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcFacetGroupStatistics facetGroupStatistics = 3 [deprecated = true];
    * @deprecated
@@ -553,5 +766,5 @@ export type GrpcExtraResults = Message<"io.evitadb.externalApi.grpc.generated.Gr
  * Use `create(GrpcExtraResultsSchema)` to create a new message.
  */
 export const GrpcExtraResultsSchema: GenMessage<GrpcExtraResults> = /*@__PURE__*/
-  messageDesc(file_GrpcExtraResults, 8);
+  messageDesc(file_GrpcExtraResults, 10);
 

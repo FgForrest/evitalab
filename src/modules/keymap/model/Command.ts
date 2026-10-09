@@ -99,5 +99,10 @@ export enum Command {
     MutationHistoryViewer_MoveStartPointer = 'mutationHistoryViewer.moveStartPointer',
     MutationHistoryViewer_ApplyFilter = 'mutationHistoryViewer.applyFilter',
 
+    // Catalog viewer
+
+    CatalogViewer_ShareTab = 'catalogViewer.shareTab',
+    CatalogViewer_Reload = 'catalogViewer.reload',
+
     ErrorViewer_ShareTab = 'errorViewer.shareTab'
 }

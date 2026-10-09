@@ -508,6 +508,54 @@ interfaces are **empty markers**, so a union of them is structurally indistingui
 would enforce nothing. Narrowing it for real would mean giving every mutation class a discriminant — a
 separate decision, not a typing tidy-up.
 
+### Catalog statistics snapshots
+
+Four `EvitaClientManagement` methods back the [`catalog-viewer`](modules/catalog-viewer.md), and they
+are the **component-selected** statistics API evitaDB 2026.3 introduced
+([evitaDB#1339](https://github.com/FgForrest/evitaDB/issues/1339)). They are distinct from the
+long-standing `getCatalogStatistics()` catalog *listing*, which is cached and drives the explorer.
+
+| Method | gRPC | Cost |
+|---|---|---|
+| `getCatalogStatisticsSnapshot(catalogName, components)` | `GetCatalogStatisticsSnapshot` | depends entirely on the components asked for |
+| `getEntityCollectionStatisticsSnapshot(catalogName, entityType, components)` | `GetEntityCollectionStatisticsSnapshot` | ditto; `INDEX_CARDINALITY` here walks the collection's indexes |
+| `browseIndexes(criteria)` | `BrowseIndexes` | cheap — a paged listing carrying **no heap figure at all** |
+| `getIndexDetail(catalogName, entityType, indexPrimaryKey)` | `GetIndexDetail` | **expensive** — walks the one named index |
+
+**None of them is cached, and that is deliberate**: a snapshot is a measurement taken at one instant
+for the components the caller chose to pay for, so serving a previous reading would silently answer a
+different question. `getIndexDetail` in particular must only ever be called from an explicit user
+action — never in a loop over a page, never on a poll.
+
+The internal model lives in `request-response/statistics/` (`CatalogStatisticsSnapshot`,
+`EntityCollectionStatisticsSnapshot`, `BrowsedIndexPage`, `IndexDetail` and their sub-messages) and is
+produced by `CatalogStatisticsSnapshotConverter`. Four conversion rules are load-bearing:
+
+- **an absent optional wire field becomes `undefined`, never `0`.** The engine reports genuine absence
+  that way on purpose — `BrowsedIndex.entityCount` is unset for a catalog index, which has no
+  primary-key bitmap, and `0` would read as "covers nothing";
+- **an absent `measured` flag decodes as `true`.** A server predating the flag had no switch to turn
+  usage counting off, so its counts are real; only an explicit `false` means the operator switched it
+  off;
+- **a classification is derived from the finest field that decoded.** `StoragePartUsage` carries
+  both `group` (fourteen values) and `kind` (three), and the converter derives the kind *from the
+  group* whenever the group is one this build knows, exactly as the Java driver does, so the pair on
+  a row cannot contradict itself. The wire `kind` is read only when the group number is unknown — a
+  newer server — which is the reason it travels as its own field rather than being derived
+  server-side only. Both decode to `undefined` rather than to a default, so a row the server did not
+  classify stays visibly unclassified;
+- **the `-1` sentinels stay in the model.** An unusable catalog's `catalogVersion` and
+  `entityCollectionCount` really are `-1` on the wire; `CatalogIdentity.knownCatalogVersion` /
+  `knownEntityCollectionCount` are the accessors that turn them into `undefined`, so no consumer
+  compares against the sentinel itself.
+
+Per-component availability is carried by `CatalogStatisticsSnapshot.statusOf(component)`, which
+returns `undefined` for a component the request never named. That distinction is the whole point of
+the status list: without it a client cannot tell "I never asked" from "the engine could not compute
+it", which is how a corrupted catalog ends up rendering as an empty one. An availability value this
+build does not recognize converts to `ComponentAvailability.Unknown` — never to `Delivered`, since the
+sub-message may well be absent.
+
 ## Caching & change callbacks
 
 Schemas, server status, configuration and catalog statistics are cached client-side. When a UI
@@ -921,7 +969,15 @@ consume them with `for await`. Others return a `TaskStatus` and are tracked via 
 infrastructure (`request-response/task/`, surfaced by the `task-viewer` module). To follow one known
 task without listing all of them, `EvitaClientManagement.getTaskStatus(taskId)` polls a single task;
 it returns `undefined` once the server no longer knows the task, which callers must treat as a
-terminal state (the traffic-viewer's export button does).
+terminal state (the traffic-viewer's export button and the catalog viewer's `followTask` do).
+
+`EvitaClientManagement.restoreCatalogToVersion(catalogName, catalogVersion, pastMoment, targetCatalogName)`
+(gRPC `RestoreCatalogToVersion`) is the one `TaskStatus`-returning call that **destroys data**: the
+server backs the requested version up, restores it into a temporary catalog and swaps it in under the
+target name, purging whatever was served there and every write after the selected version. The version
+is a `bigint` (a 64-bit `Int64Value` on the wire), the moment is an `OffsetDateTime` the version takes
+precedence over, and an `undefined` target means the source catalog itself. The restored catalog has no
+mutation history. It is consumed by [`catalog-viewer`](modules/catalog-viewer.md#restore-to-this-version).
 
 evitaLab keeps **no client-side registry of server tasks**: methods returning a `TaskStatus` (catalog
 backup, for instance) hand it straight to the caller and nothing else is notified. A task tracker was

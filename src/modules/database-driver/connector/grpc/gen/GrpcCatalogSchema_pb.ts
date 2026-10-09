@@ -6,7 +6,7 @@ import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { GrpcAttributeUniquenessType, GrpcCatalogEvolutionMode, GrpcConflictResolution, GrpcConflictResolutionOverride, GrpcEntityScope, GrpcEvitaDataType, GrpcGlobalAttributeUniquenessType } from "./GrpcEnums_pb";
 import { file_GrpcEnums } from "./GrpcEnums_pb";
-import type { GrpcEvitaValue, GrpcNameVariant, GrpcScopedAttributeUniquenessType, GrpcScopedGlobalAttributeUniquenessType } from "./GrpcEvitaDataTypes_pb";
+import type { GrpcEvitaValue, GrpcNameVariant, GrpcScopedAttributeFilterAccelerators, GrpcScopedAttributeUniquenessType, GrpcScopedGlobalAttributeUniquenessType } from "./GrpcEvitaDataTypes_pb";
 import { file_GrpcEvitaDataTypes } from "./GrpcEvitaDataTypes_pb";
 import { file_google_protobuf_wrappers } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
@@ -15,9 +15,14 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file GrpcCatalogSchema.proto.
  */
 export const file_GrpcCatalogSchema: GenFile = /*@__PURE__*/
-  fileDesc("ChdHcnBjQ2F0YWxvZ1NjaGVtYS5wcm90bxIlaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZCK/BAoRR3JwY0NhdGFsb2dTY2hlbWESDAoEbmFtZRgBIAEoCRIPCgd2ZXJzaW9uGAIgASgFEjEKC2Rlc2NyaXB0aW9uGAMgASgLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlEl0KFGNhdGFsb2dFdm9sdXRpb25Nb2RlGAQgAygOMj8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2F0YWxvZ0V2b2x1dGlvbk1vZGUSXAoKYXR0cmlidXRlcxgFIAMoCzJILmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NhdGFsb2dTY2hlbWEuQXR0cmlidXRlc0VudHJ5EksKC25hbWVWYXJpYW50GAYgAygLMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTmFtZVZhcmlhbnQSWQoSY29uZmxpY3RSZXNvbHV0aW9uGAcgASgLMj0uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ29uZmxpY3RSZXNvbHV0aW9uGnMKD0F0dHJpYnV0ZXNFbnRyeRILCgNrZXkYASABKAkSTwoFdmFsdWUYAiABKAsyQC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNHbG9iYWxBdHRyaWJ1dGVTY2hlbWE6AjgBIqEJChlHcnBjR2xvYmFsQXR0cmlidXRlU2NoZW1hEgwKBG5hbWUYASABKAkSMQoLZGVzY3JpcHRpb24YAiABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSNwoRZGVwcmVjYXRpb25Ob3RpY2UYAyABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSVgoGdW5pcXVlGAQgASgOMkIuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQXR0cmlidXRlVW5pcXVlbmVzc1R5cGVCAhgBEhYKCmZpbHRlcmFibGUYBSABKAhCAhgBEhQKCHNvcnRhYmxlGAYgASgIQgIYARIRCglsb2NhbGl6ZWQYByABKAgSEAoIbnVsbGFibGUYCCABKAgSFgoOcmVwcmVzZW50YXRpdmUYCSABKAgSRgoEdHlwZRgKIAEoDjI4LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhRGF0YVR5cGUSSwoMZGVmYXVsdFZhbHVlGAsgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZpdGFWYWx1ZRIcChRpbmRleGVkRGVjaW1hbFBsYWNlcxgMIAEoBRJkCg51bmlxdWVHbG9iYWxseRgNIAEoDjJILmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0dsb2JhbEF0dHJpYnV0ZVVuaXF1ZW5lc3NUeXBlQgIYARJLCgtuYW1lVmFyaWFudBgOIAMoCzI2LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY05hbWVWYXJpYW50EmAKDnVuaXF1ZUluU2NvcGVzGA8gAygLMkguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU2NvcGVkQXR0cmlidXRlVW5pcXVlbmVzc1R5cGUSUgoSZmlsdGVyYWJsZUluU2NvcGVzGBAgAygOMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5U2NvcGUSUAoQc29ydGFibGVJblNjb3BlcxgRIAMoDjI2LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjb3BlEm4KFnVuaXF1ZUdsb2JhbGx5SW5TY29wZXMYEiADKAsyTi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTY29wZWRHbG9iYWxBdHRyaWJ1dGVVbmlxdWVuZXNzVHlwZRJpChpjb25mbGljdFJlc29sdXRpb25PdmVycmlkZRgTIAEoDjJFLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NvbmZsaWN0UmVzb2x1dGlvbk92ZXJyaWRlQv0BCiljb20uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZEIWR3JwY0NhdGFsb2dTY2hlbWFQcm90b1ABogIFSUVFR0eqAiVJby5Fdml0YWRiLkV4dGVybmFsQXBpLkdycGMuR2VuZXJhdGVkygIlSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZOICMUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWRcR1BCTWV0YWRhdGHqAilJbzo6RXZpdGFkYjo6RXh0ZXJuYWxBcGk6OkdycGM6OkdlbmVyYXRlZGIGcHJvdG8z", [file_GrpcEnums, file_GrpcEvitaDataTypes, file_google_protobuf_wrappers]);
+  fileDesc("ChdHcnBjQ2F0YWxvZ1NjaGVtYS5wcm90bxIlaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZCK/BAoRR3JwY0NhdGFsb2dTY2hlbWESDAoEbmFtZRgBIAEoCRIPCgd2ZXJzaW9uGAIgASgFEjEKC2Rlc2NyaXB0aW9uGAMgASgLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlEl0KFGNhdGFsb2dFdm9sdXRpb25Nb2RlGAQgAygOMj8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2F0YWxvZ0V2b2x1dGlvbk1vZGUSXAoKYXR0cmlidXRlcxgFIAMoCzJILmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NhdGFsb2dTY2hlbWEuQXR0cmlidXRlc0VudHJ5EksKC25hbWVWYXJpYW50GAYgAygLMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTmFtZVZhcmlhbnQSWQoSY29uZmxpY3RSZXNvbHV0aW9uGAcgASgLMj0uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ29uZmxpY3RSZXNvbHV0aW9uGnMKD0F0dHJpYnV0ZXNFbnRyeRILCgNrZXkYASABKAkSTwoFdmFsdWUYAiABKAsyQC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNHbG9iYWxBdHRyaWJ1dGVTY2hlbWE6AjgBIo0KChlHcnBjR2xvYmFsQXR0cmlidXRlU2NoZW1hEgwKBG5hbWUYASABKAkSMQoLZGVzY3JpcHRpb24YAiABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSNwoRZGVwcmVjYXRpb25Ob3RpY2UYAyABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSVgoGdW5pcXVlGAQgASgOMkIuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQXR0cmlidXRlVW5pcXVlbmVzc1R5cGVCAhgBEhYKCmZpbHRlcmFibGUYBSABKAhCAhgBEhQKCHNvcnRhYmxlGAYgASgIQgIYARIRCglsb2NhbGl6ZWQYByABKAgSEAoIbnVsbGFibGUYCCABKAgSFgoOcmVwcmVzZW50YXRpdmUYCSABKAgSRgoEdHlwZRgKIAEoDjI4LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhRGF0YVR5cGUSSwoMZGVmYXVsdFZhbHVlGAsgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZpdGFWYWx1ZRIcChRpbmRleGVkRGVjaW1hbFBsYWNlcxgMIAEoBRJkCg51bmlxdWVHbG9iYWxseRgNIAEoDjJILmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0dsb2JhbEF0dHJpYnV0ZVVuaXF1ZW5lc3NUeXBlQgIYARJLCgtuYW1lVmFyaWFudBgOIAMoCzI2LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY05hbWVWYXJpYW50EmAKDnVuaXF1ZUluU2NvcGVzGA8gAygLMkguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU2NvcGVkQXR0cmlidXRlVW5pcXVlbmVzc1R5cGUSUgoSZmlsdGVyYWJsZUluU2NvcGVzGBAgAygOMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5U2NvcGUSUAoQc29ydGFibGVJblNjb3BlcxgRIAMoDjI2LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjb3BlEm4KFnVuaXF1ZUdsb2JhbGx5SW5TY29wZXMYEiADKAsyTi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTY29wZWRHbG9iYWxBdHRyaWJ1dGVVbmlxdWVuZXNzVHlwZRJpChpjb25mbGljdFJlc29sdXRpb25PdmVycmlkZRgTIAEoDjJFLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NvbmZsaWN0UmVzb2x1dGlvbk92ZXJyaWRlEmoKFGFjY2VsZXJhdG9yc0luU2NvcGVzGBQgAygLMkwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU2NvcGVkQXR0cmlidXRlRmlsdGVyQWNjZWxlcmF0b3JzQv0BCiljb20uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZEIWR3JwY0NhdGFsb2dTY2hlbWFQcm90b1ABogIFSUVFR0eqAiVJby5Fdml0YWRiLkV4dGVybmFsQXBpLkdycGMuR2VuZXJhdGVkygIlSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZOICMUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWRcR1BCTWV0YWRhdGHqAilJbzo6RXZpdGFkYjo6RXh0ZXJuYWxBcGk6OkdycGM6OkdlbmVyYXRlZGIGcHJvdG8z", [file_GrpcEnums, file_GrpcEvitaDataTypes, file_google_protobuf_wrappers]);
 
 /**
+ * Represents the schema of a single catalog - the top-level container that groups related entity collections
+ * together (analogous to a database / schema in a relational system). Holds the catalog name, its schema version,
+ * optional description, evolution mode settings, catalog-wide (global) attributes shared across entity types,
+ * name variants and the conflict resolution policy inherited by entity schemas that don't override it.
+ *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcCatalogSchema
  */
 export type GrpcCatalogSchema = Message<"io.evitadb.externalApi.grpc.generated.GrpcCatalogSchema"> & {
@@ -112,6 +117,9 @@ export const GrpcCatalogSchemaSchema: GenMessage<GrpcCatalogSchema> = /*@__PURE_
  */
 export type GrpcGlobalAttributeSchema = Message<"io.evitadb.externalApi.grpc.generated.GrpcGlobalAttributeSchema"> & {
   /**
+   * Contains unique name of the attribute. Case-sensitive. Distinguishes one attribute from another within
+   * a single entity type or, for global attributes, within the entire catalog.
+   *
    * @generated from field: string name = 1;
    */
   name: string;
@@ -136,7 +144,7 @@ export type GrpcGlobalAttributeSchema = Message<"io.evitadb.externalApi.grpc.gen
    *
    * As an example of unique attribute can be EAN - there is no sense in having two entities with same EAN, and it's
    * better to have this ensured by the database engine.
-   * deprecated in favor of `uniqueInScopes`
+   * Deprecated since 2024.12 - deprecated in favor of `uniqueInScopes`
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeUniquenessType unique = 4 [deprecated = true];
    * @deprecated
@@ -150,7 +158,7 @@ export type GrpcGlobalAttributeSchema = Message<"io.evitadb.externalApi.grpc.gen
    *
    * When attribute is filterable, extra result `attributeHistogram`
    * can be requested for this attribute.
-   * deprecated in favor of `filterableInScopes`
+   * Deprecated since 2024.12 - deprecated in favor of `filterableInScopes`
    *
    * @generated from field: bool filterable = 5 [deprecated = true];
    * @deprecated
@@ -161,7 +169,7 @@ export type GrpcGlobalAttributeSchema = Message<"io.evitadb.externalApi.grpc.gen
    * When attribute is sortable, it is possible to sort entities by this attribute. Do not mark attribute
    * as sortable unless you know that you'll sort entities along this attribute. Each sortable attribute occupies
    * (memory/disk) space in the form of index..
-   * deprecated in favor of `sortableInScopes`
+   * Deprecated since 2024.12 - deprecated in favor of `sortableInScopes`
    *
    * @generated from field: bool sortable = 6 [deprecated = true];
    * @deprecated
@@ -212,8 +220,8 @@ export type GrpcGlobalAttributeSchema = Message<"io.evitadb.externalApi.grpc.gen
 
   /**
    * Determines how many fractional places are important when entities are compared during filtering or sorting. It is
-   * significant to know that all values of this attribute will be converted to {@link java.lang.Integer}, so the attribute
-   * number must not ever exceed maximum limits of {@link java.lang.Integer} type when scaling the number by the power
+   * significant to know that all values of this attribute will be converted to `Integer`, so the attribute
+   * number must not ever exceed maximum limits of `Integer` type when scaling the number by the power
    * of ten using `indexedDecimalPlaces` as exponent.
    *
    * @generated from field: int32 indexedDecimalPlaces = 12;
@@ -226,7 +234,7 @@ export type GrpcGlobalAttributeSchema = Message<"io.evitadb.externalApi.grpc.gen
    *
    * As an example of unique attribute can be URL - there is no sense in having two entities with same URL, and it's
    * better to have this ensured by the database engine.
-   * deprecated in favor of `uniqueGloballyInScopes`
+   * Deprecated since 2024.12 - deprecated in favor of `uniqueGloballyInScopes`
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcGlobalAttributeUniquenessType uniqueGlobally = 13 [deprecated = true];
    * @deprecated
@@ -290,6 +298,15 @@ export type GrpcGlobalAttributeSchema = Message<"io.evitadb.externalApi.grpc.gen
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcConflictResolutionOverride conflictResolutionOverride = 19;
    */
   conflictResolutionOverride: GrpcConflictResolutionOverride;
+
+  /**
+   * The optional accelerations the attribute's filter index maintains, per scope. Only scopes the attribute has a
+   * filter index in - i.e. is filterable or unique in - may appear here. An empty list - which is what an older
+   * server sends - means no acceleration anywhere.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcScopedAttributeFilterAccelerators acceleratorsInScopes = 20;
+   */
+  acceleratorsInScopes: GrpcScopedAttributeFilterAccelerators[];
 };
 
 /**

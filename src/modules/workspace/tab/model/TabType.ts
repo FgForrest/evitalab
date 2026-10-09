@@ -9,6 +9,7 @@ export enum TabType {
     KeymapViewer = 'keymapViewer',
     ErrorViewer = 'errorViewer',
     ServerViewer = 'serverViewer',
+    CatalogViewer = 'catalogViewer',
     TaskViewer = 'taskViewer',
     BackupViewer = 'backupViewer',
     JfrViewer = 'jfrViewer',

@@ -10,6 +10,7 @@ import { TaskState } from '@/modules/database-driver/request-response/task/TaskS
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import { backupTaskName } from '@/modules/backup-viewer/model/BackupTask'
 import { restoreTaskName } from '@/modules/backup-viewer/model/RestoreTask'
+import { restoreToVersionTaskName } from '@/modules/backup-viewer/model/RestoreToVersionTask'
 import TaskList from '@/modules/task-viewer/components/TaskList.vue'
 import BackupList from '@/modules/backup-viewer/components/BackupList.vue'
 import BackupCatalogButton from '@/modules/backup-viewer/components/BackupCatalogButton.vue'
@@ -26,7 +27,14 @@ import { systemBackupTaskName } from '@/modules/backup-viewer/model/SystemBackup
 import { systemFullBackupTaskName } from '@/modules/backup-viewer/model/SystemFullBackupTask.ts'
 
 const shownTaskStates: TaskState[] = [TaskState.WaitingForPrecondition, TaskState.Running, TaskState.Queued, TaskState.Failed]
-const shownTaskTypes: string[] = [backupTaskName, systemBackupTaskName, restoreTaskName, fullBackupTaskName, systemFullBackupTaskName]
+const shownTaskTypes: string[] = [
+    backupTaskName,
+    systemBackupTaskName,
+    restoreTaskName,
+    restoreToVersionTaskName,
+    fullBackupTaskName,
+    systemFullBackupTaskName
+]
 
 const { t } = useI18n()
 
