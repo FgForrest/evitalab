@@ -1,22 +1,30 @@
 {
+  "$schema": "https://raw.githubusercontent.com/lukashornych/hole/main/assets/schema/settings.schema.json",
   "hooks": {
     "setup": [{
       "script": ".hole/setup.sh"
     }]
   },
+  "environment": {
+    "OSS_PROJECT_PATH": "$OSS_PROJECT_PATH"
+  },
   "libraries": {
-    "$HOME/www/oss/evita/evitaDB": {
-      "path": "$HOME/www/oss/evita/evitaDB",
+    "$OSS_PROJECT_PATH/evita/evitaDB": {
+      "path": "$OSS_PROJECT_PATH/evita/evitaDB",
       "readwrite": true
     },
-    "$HOME/www/oss/evita/codemirror-lang-evitaql": {
-      "path": "$HOME/www/oss/evita/codemirror-lang-evitaql",
+    "$OSS_PROJECT_PATH/evita/evitaDB-dev": {
+      "path": "$OSS_PROJECT_PATH/evita/evitaDB-dev",
+      "readwrite": true
+    },
+    "$OSS_PROJECT_PATH/evita/codemirror-lang-evitaql": {
+      "path": "$OSS_PROJECT_PATH/evita/codemirror-lang-evitaql",
       "readwrite": true
     }
   },
   "files": {
     "include": {
-      "$HOME/www/oss/evita/evitaDB/data": "/evita-data"
+      "$OSS_PROJECT_PATH/evita/evitaDB/data": "/evita-data"
     },
     "exclude": [
       "node_modules"
@@ -26,14 +34,15 @@
     "allow": [
       "mcp.context7.com",
       "registry-1.docker.io",
-      "auth.docker.io",
-      "production.cloudflare.docker.com",
+      "*.docker.io",
+      "*.cloudflare.docker.com",
       "production.cloudfront.docker.com",
       "mcp-proxy.anthropic.com",
       "registry.npmjs.org",
-      "github.com",
+      "*.github.com",
       "raw.githubusercontent.com",
       "evitadb.io",
+      "demo.evitadb.io",
       "registry.yarnpkg.com"
     ]
   }
