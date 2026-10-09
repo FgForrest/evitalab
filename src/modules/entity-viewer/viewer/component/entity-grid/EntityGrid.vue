@@ -228,12 +228,14 @@ function closePropertyDetail(): void {
 }
 
 .data-grid__grid {
-    & :deep(th[class^="data-grid-column-header"]) {
+    // separators between the cells come from the global table style; the grid fills its whole tab, so
+    // unlike a table embedded in a page it also closes its own trailing and bottom edges
+    & :deep(th[class^="data-grid-column-header"]:last-child),
+    & :deep(td:last-child) {
         border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
     }
 
-    & :deep(td) {
-        border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+    & :deep(tbody > tr:last-child > td) {
         border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
     }
 }

@@ -9,6 +9,9 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web'
 import {
     CatalogStatisticsConverter
 } from '@/modules/database-driver/connector/grpc/service/converter/CatalogStatisticsConverter'
+import {
+    CatalogStatisticsSnapshotConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/CatalogStatisticsSnapshotConverter'
 import { EntityConverter } from '@/modules/database-driver/connector/grpc/service/converter/EntityConverter'
 import { ExtraResultConverter } from '@/modules/database-driver/connector/grpc/service/converter/ExtraResultConverter'
 import {
@@ -122,6 +125,7 @@ export abstract class AbstractEvitaClient {
     private _evitaValueConverter?: EvitaValueConverter
     private _scopeConverter?: ScopesConverter
     private _catalogStatisticsConverter?: CatalogStatisticsConverter
+    private _catalogStatisticsSnapshotConverter?: CatalogStatisticsSnapshotConverter
     private _catalogSchemaConverter?: CatalogSchemaConverter
     private _entityConverter?: EntityConverter
     private _extraResultConverter?: ExtraResultConverter
@@ -253,6 +257,15 @@ export abstract class AbstractEvitaClient {
             this._catalogStatisticsConverter = new CatalogStatisticsConverter()
         }
         return this._catalogStatisticsConverter
+    }
+
+    protected get catalogStatisticsSnapshotConverter(): CatalogStatisticsSnapshotConverter {
+        if (this._catalogStatisticsSnapshotConverter == undefined) {
+            this._catalogStatisticsSnapshotConverter = new CatalogStatisticsSnapshotConverter(
+                () => this.catalogStatisticsConverter
+            )
+        }
+        return this._catalogStatisticsSnapshotConverter
     }
 
     protected get catalogSchemaConverter(): CatalogSchemaConverter {

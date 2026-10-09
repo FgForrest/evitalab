@@ -10,13 +10,41 @@ import {
 import { TaskStateConverter } from '@/modules/database-driver/connector/grpc/service/converter/TaskStateConverter'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import type {
+    GrpcCatalogStatisticsSnapshotRequest,
+    GrpcCatalogStatisticsSnapshotResponse,
     GrpcDeleteFileToFetchResponse,
+    GrpcEntityCollectionStatisticsSnapshotRequest,
+    GrpcEntityCollectionStatisticsSnapshotResponse,
     GrpcEvitaCatalogStatisticsResponse,
     GrpcEvitaConfigurationResponse,
     GrpcEvitaEngineSettingsResponse,
-    GrpcEvitaServerStatusResponse, GrpcReservedKeywordsResponse, GrpcRestoreCatalogUnaryRequest,
-    GrpcRestoreCatalogUnaryResponse, GrpcTaskStatusResponse
+    GrpcEvitaServerStatusResponse,
+    GrpcIndexBrowseRequest,
+    GrpcIndexBrowseResponse,
+    GrpcIndexDetailRequest,
+    GrpcIndexDetailResponse,
+    GrpcReservedKeywordsResponse,
+    GrpcRestoreCatalogToVersionResponse,
+    GrpcRestoreCatalogUnaryRequest,
+    GrpcRestoreCatalogUnaryResponse,
+    GrpcTaskStatusResponse
 } from '@/modules/database-driver/connector/grpc/gen/GrpcEvitaManagementAPI_pb'
+import {
+    CatalogStatisticsSnapshotConverter
+} from '@/modules/database-driver/connector/grpc/service/converter/CatalogStatisticsSnapshotConverter'
+import { ScopesConverter } from '@/modules/database-driver/connector/grpc/service/converter/ScopesConverter'
+import {
+    CatalogStatisticsComponent
+} from '@/modules/database-driver/request-response/statistics/CatalogStatisticsComponent'
+import {
+    CatalogStatisticsSnapshot
+} from '@/modules/database-driver/request-response/statistics/CatalogStatisticsSnapshot'
+import {
+    EntityCollectionStatisticsSnapshot
+} from '@/modules/database-driver/request-response/statistics/EntityCollectionStatisticsSnapshot'
+import { IndexBrowseCriteria } from '@/modules/database-driver/request-response/statistics/IndexBrowseCriteria'
+import { BrowsedIndexPage } from '@/modules/database-driver/request-response/statistics/BrowsedIndexPage'
+import { IndexDetail } from '@/modules/database-driver/request-response/statistics/IndexDetail'
 import { ErrorTransformer } from '@/modules/database-driver/exception/ErrorTransformer'
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
@@ -111,6 +139,7 @@ export class EvitaClientManagement {
     private readonly persistentCacheLayerProvider: () => PersistentCacheLayer | undefined
 
     private readonly catalogStatisticsConverterProvider: () => CatalogStatisticsConverter
+    private readonly catalogStatisticsSnapshotConverterProvider: () => CatalogStatisticsSnapshotConverter
     private readonly serverStatusConverterProvider: () => ServerStatusConverter
     private readonly engineSettingsConverterProvider: () => EngineSettingsConverter
     private readonly reservedKeywordsConverterProvider: () => ReservedKeywordsConverter
@@ -122,6 +151,7 @@ export class EvitaClientManagement {
                 evitaClient: EvitaClient,
                 evitaManagementClientProvider: () => EvitaManagementServiceClient,
                 catalogStatisticsConverterProvider: () => CatalogStatisticsConverter,
+                catalogStatisticsSnapshotConverterProvider: () => CatalogStatisticsSnapshotConverter,
                 serverStatusConverterProvider: () => ServerStatusConverter,
                 engineSettingsConverterProvider: () => EngineSettingsConverter,
                 reservedKeywordsConverterProvider: () => ReservedKeywordsConverter,
@@ -143,6 +173,7 @@ export class EvitaClientManagement {
         this.evitaClientProvider = () => evitaClient
         this.evitaManagementClientProvider = evitaManagementClientProvider
         this.catalogStatisticsConverterProvider = catalogStatisticsConverterProvider
+        this.catalogStatisticsSnapshotConverterProvider = catalogStatisticsSnapshotConverterProvider
         this.serverStatusConverterProvider = serverStatusConverterProvider
         this.engineSettingsConverterProvider = engineSettingsConverterProvider
         this.reservedKeywordsConverterProvider = reservedKeywordsConverterProvider
@@ -289,6 +320,125 @@ export class EvitaClientManagement {
     }
 
     /**
+     * Returns a component-selected statistics snapshot of one catalog.
+     *
+     * Deliberately **uncached**: a snapshot is a measurement taken at one instant, and the caller chose which
+     * components to pay for. Serving a previous reading from a cache would silently answer a different question.
+     *
+     * @param catalogName catalog to describe; one the server does not know is an error, not an empty response
+     * @param components  components to compute. `IDENTITY` is delivered whether or not it is named, and an empty
+     *                    list is rejected by the server
+     */
+    async getCatalogStatisticsSnapshot(
+        catalogName: string,
+        components: ImmutableList<CatalogStatisticsComponent>
+    ): Promise<CatalogStatisticsSnapshot> {
+        try {
+            const converter: CatalogStatisticsSnapshotConverter = this.catalogStatisticsSnapshotConverterProvider()
+            const response: GrpcCatalogStatisticsSnapshotResponse = await this.evitaManagementClientProvider()
+                .getCatalogStatisticsSnapshot({
+                    catalogName,
+                    components: components.map(it => converter.convertComponentToGrpc(it)).toArray()
+                } as GrpcCatalogStatisticsSnapshotRequest)
+            if (response.catalogStatistics == undefined) {
+                throw new UnexpectedError(`No statistics returned for catalog '${catalogName}'.`)
+            }
+            return converter.convertCatalogSnapshot(response.catalogStatistics)
+        } catch (e) {
+            throw this.errorTransformer.transformError(e)
+        }
+    }
+
+    /**
+     * Returns a component-selected statistics snapshot of one entity collection.
+     *
+     * Naming a catalog-only component (`SESSIONS`, `COMMIT_PIPELINE`, `ACTIVITY`, `HISTORY`, `DURABILITY`) is
+     * rejected by the server, and so is a collection the catalog does not hold. `INDEX_CARDINALITY` is the
+     * expensive one here — it walks the collection's own indexes and must never join a polled refresh.
+     */
+    async getEntityCollectionStatisticsSnapshot(
+        catalogName: string,
+        entityType: string,
+        components: ImmutableList<CatalogStatisticsComponent>
+    ): Promise<EntityCollectionStatisticsSnapshot> {
+        try {
+            const converter: CatalogStatisticsSnapshotConverter = this.catalogStatisticsSnapshotConverterProvider()
+            const response: GrpcEntityCollectionStatisticsSnapshotResponse = await this.evitaManagementClientProvider()
+                .getEntityCollectionStatisticsSnapshot({
+                    catalogName,
+                    entityType,
+                    components: components.map(it => converter.convertComponentToGrpc(it)).toArray()
+                } as GrpcEntityCollectionStatisticsSnapshotRequest)
+            if (response.entityCollectionStatistics == undefined) {
+                throw new UnexpectedError(
+                    `No statistics returned for collection '${entityType}' of catalog '${catalogName}'.`
+                )
+            }
+            return converter.convertCollectionSnapshot(response.entityCollectionStatistics)
+        } catch (e) {
+            throw this.errorTransformer.transformError(e)
+        }
+    }
+
+    /**
+     * Returns one page of the indexes held by one entity collection, or of those the catalog holds itself
+     * (`criteria.entityType === undefined`).
+     *
+     * Cheap — the rows carry no heap figure at all. Measuring one of them is {@link getIndexDetail}.
+     */
+    async browseIndexes(criteria: IndexBrowseCriteria): Promise<BrowsedIndexPage> {
+        try {
+            const converter: CatalogStatisticsSnapshotConverter = this.catalogStatisticsSnapshotConverterProvider()
+            const response: GrpcIndexBrowseResponse = await this.evitaManagementClientProvider()
+                .browseIndexes({
+                    catalogName: criteria.catalogName,
+                    entityType: criteria.entityType,
+                    pageNumber: criteria.pageNumber,
+                    pageSize: criteria.pageSize,
+                    ordering: converter.convertOrderingToGrpc(criteria.ordering),
+                    direction: converter.convertOrderDirectionToGrpc(criteria.direction),
+                    indexTypes: criteria.indexTypes.map(it => converter.convertIndexTypeToGrpc(it)).toArray(),
+                    scopes: criteria.scopes.map(it => ScopesConverter.convertToGrpcEntityScope(it)).toArray(),
+                    referenceNames: criteria.referenceNames.toArray()
+                } as GrpcIndexBrowseRequest)
+            return converter.convertIndexBrowsePage(response)
+        } catch (e) {
+            throw this.errorTransformer.transformError(e)
+        }
+    }
+
+    /**
+     * Describes one index in full, including the best-effort estimate of the heap it occupies.
+     *
+     * **Expensive by design** — the estimate walks the named index (about 4 µs for the median index, 151 ms for the
+     * worst one measured on a production catalog), and no cache can amortise it. Call it only on an explicit user
+     * action, never in a loop over a page and never on a poll.
+     *
+     * @param entityType collection holding the index, or `undefined` for an index the catalog holds itself
+     */
+    async getIndexDetail(
+        catalogName: string,
+        entityType: string | undefined,
+        indexPrimaryKey: number
+    ): Promise<IndexDetail> {
+        try {
+            const converter: CatalogStatisticsSnapshotConverter = this.catalogStatisticsSnapshotConverterProvider()
+            const response: GrpcIndexDetailResponse = await this.evitaManagementClientProvider()
+                .getIndexDetail({
+                    catalogName,
+                    entityType,
+                    indexPrimaryKey
+                } as GrpcIndexDetailRequest)
+            if (response.indexDetail == undefined) {
+                throw new UnexpectedError(`No detail returned for index '${indexPrimaryKey}'.`)
+            }
+            return converter.convertIndexDetail(response.indexDetail)
+        } catch (e) {
+            throw this.errorTransformer.transformError(e)
+        }
+    }
+
+    /**
      * Creates a backup of the specified catalog and returns an InputStream to read the binary data of the zip file.
      *
      * @param catalogName   the name of the catalog to backup
@@ -410,6 +560,48 @@ export class EvitaClientManagement {
                     }
                 })
             return this.taskStatusConverterProvider().convert(result.task!)
+        } catch (e) {
+            throw this.errorTransformer.transformError(e)
+        }
+    }
+
+    /**
+     * Puts a catalog back to the state it had at an earlier version, in one server-tracked operation: the server
+     * backs the requested version up, restores the archive into a temporary catalog, loads it and swaps it in under
+     * the target name. Nothing is uploaded, and the source catalog keeps serving until the final swap.
+     *
+     * **This destroys data.** The catalog served under the target name is purged with its whole history, the
+     * restored catalog carries no mutation history (the write-ahead log is deliberately excluded), and writes
+     * committed after the selected version — including ones committed while the operation runs — are lost.
+     *
+     * @param catalogName       the catalog whose past state is to be restored
+     * @param catalogVersion    the catalog version to restore to, as reported by the mutation history; `undefined`
+     *                          falls back to `pastMoment`, or to the current state when that is unset too
+     * @param pastMoment        the moment to restore to, ignored when `catalogVersion` is set
+     * @param targetCatalogName the catalog the restored state replaces; `undefined` (or the source name) replaces
+     *                          the source catalog itself, a free name creates a new catalog
+     * @return the task tracking the whole operation; it completes once the restored catalog is the one being served
+     */
+    async restoreCatalogToVersion(
+        catalogName: string,
+        catalogVersion: bigint | undefined,
+        pastMoment: OffsetDateTime | undefined,
+        targetCatalogName: string | undefined
+    ): Promise<TaskStatus> {
+        try {
+            const result: GrpcRestoreCatalogToVersionResponse = await this.evitaManagementClientProvider()
+                .restoreCatalogToVersion({
+                    catalogName,
+                    catalogVersion,
+                    pastMoment: pastMoment != undefined
+                        ? EvitaValueConverter.convertOffsetDateTime(pastMoment)
+                        : undefined,
+                    targetCatalogName
+                })
+            if (result.task == undefined) {
+                throw new UnexpectedError(`No task returned for the restore of catalog '${catalogName}'.`)
+            }
+            return this.taskStatusConverterProvider().convert(result.task)
         } catch (e) {
             throw this.errorTransformer.transformError(e)
         }

@@ -103,7 +103,7 @@ export type GrpcCreateReferenceSchemaMutation = Message<"io.evitadb.externalApi.
    * Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed,
    * the entity cannot be looked up by reference attributes or relation existence itself, but the data is loaded
    * alongside other references if requested.
-   * deprecated in favor of `indexedInScopes`
+   * Deprecated since 2024.12 - deprecated in favor of `indexedInScopes`
    *
    * @generated from field: bool filterable = 9 [deprecated = true];
    * @deprecated
@@ -118,7 +118,7 @@ export type GrpcCreateReferenceSchemaMutation = Message<"io.evitadb.externalApi.
    * Do not mark reference as faceted unless you want it among `FacetStatistics`. Each faceted reference
    * occupies (memory/disk) space in the form of index.
    * Reference that was marked as faceted is called Facet.
-   * deprecated in favor of `facetedInScopes`
+   * Deprecated since 2024.12 - deprecated in favor of `facetedInScopes`
    *
    * @generated from field: bool faceted = 10 [deprecated = true];
    * @deprecated
@@ -134,7 +134,7 @@ export type GrpcCreateReferenceSchemaMutation = Message<"io.evitadb.externalApi.
    * Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed,
    * the entity cannot be looked up by reference attributes or relation existence itself, but the data is loaded
    * alongside other references if requested.
-   * deprecated in favor of `scopedIndexTypes`
+   * Deprecated since 2025.6 - deprecated in favor of `scopedIndexTypes`
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope indexedInScopes = 11 [deprecated = true];
    * @deprecated
@@ -273,6 +273,7 @@ export type GrpcCreateReflectedReferenceSchemaMutation = Message<"io.evitadb.ext
    * Do not mark reference as faceted unless you want it among `FacetStatistics`. Each faceted reference
    * occupies (memory/disk) space in the form of index.
    * Reference that was marked as faceted is called Facet.
+   * Deprecated since 2024.12 - deprecated in favor of `facetedInScopes`
    *
    * @generated from field: google.protobuf.BoolValue faceted = 7 [deprecated = true];
    * @deprecated
@@ -311,7 +312,7 @@ export type GrpcCreateReflectedReferenceSchemaMutation = Message<"io.evitadb.ext
    * Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed,
    * the entity cannot be looked up by reference attributes or relation existence itself, but the data is loaded
    * alongside other references if requested.
-   * deprecated in favor of `scopedIndexTypes`
+   * Deprecated since 2025.6 - deprecated in favor of `scopedIndexTypes`
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope indexedInScopes = 11 [deprecated = true];
    * @deprecated
@@ -718,7 +719,7 @@ export type GrpcSetReferenceSchemaFacetedMutation = Message<"io.evitadb.external
    * Do not mark reference as faceted unless you want it among `FacetStatistics`. Each faceted reference
    * occupies (memory/disk) space in the form of index.
    * Reference that was marked as faceted is called Facet.
-   * deprecated in favor of `facetedInScopes`
+   * Deprecated since 2024.12 - deprecated in favor of `facetedInScopes`
    *
    * @generated from field: bool faceted = 2 [deprecated = true];
    * @deprecated
@@ -830,7 +831,7 @@ export type GrpcSetReferenceSchemaIndexedMutation = Message<"io.evitadb.external
    * Each indexed reference occupies (memory/disk) space in the form of index. When reference is not indexed,
    * the entity cannot be looked up by reference attributes or relation existence itself, but the data is loaded
    * alongside other references if requested.
-   * deprecated in favor of `scopedIndexTypes`
+   * Deprecated since 2025.6 - deprecated in favor of `scopedIndexTypes`
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope indexedInScopes = 3 [deprecated = true];
    * @deprecated

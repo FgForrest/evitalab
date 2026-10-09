@@ -43,6 +43,10 @@ import {
     catalogItemMenuFactoryInjectionKey
 } from '@/modules/connection-explorer/service/CatalogItemMenuFactory'
 import {
+    CatalogViewerTabFactory,
+    catalogViewerTabFactoryInjectionKey
+} from '@/modules/catalog-viewer/service/CatalogViewerTabFactory'
+import {
     EvitaQLConsoleTabFactory,
     evitaQLConsoleTabFactoryInjectionKey
 } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
@@ -84,6 +88,7 @@ export class ConnectionExplorerModuleRegistrar implements ModuleRegistrar {
         const schemaViewerTabFactory: SchemaViewerTabFactory = builder.inject(schemaViewerTabFactoryInjectionKey)
         const trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory = builder.inject(trafficRecordHistoryViewerTabFactoryInjectionKey)
         const mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory = builder.inject(mutationHistoryViewerTabFactoryInjectionKey)
+        const catalogViewerTabFactory: CatalogViewerTabFactory = builder.inject(catalogViewerTabFactoryInjectionKey)
         const toaster: Toaster = builder.inject(toasterInjectionKey)
         const labStorage: LabStorage = builder.inject(labStorageInjectionKey)
 
@@ -107,7 +112,8 @@ export class ConnectionExplorerModuleRegistrar implements ModuleRegistrar {
             graphQLConsoleTabFactory,
             schemaViewerTabFactory,
             trafficRecordHistoryViewerTabFactory,
-            mutationHistoryViewerTabFactory
+            mutationHistoryViewerTabFactory,
+            catalogViewerTabFactory
         )
         const collectionItemMenuFactory: CollectionItemMenuFactory = new CollectionItemMenuFactory(
             workspaceService,

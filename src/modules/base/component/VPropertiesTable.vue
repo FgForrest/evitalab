@@ -23,7 +23,7 @@ withDefaults(defineProps<{
             >
                 <td class="text-medium-emphasis properties-table__label">
                     <span>{{ property.name }}</span>
-                    <span v-if="property.description">
+                    <span v-if="property.description" class="properties-table__help">
                         <VIcon icon="mdi-information-outline" size="small" />
                         <VTooltip activator="parent">
                             <span>{{ property.description }}</span>
@@ -65,10 +65,17 @@ withDefaults(defineProps<{
         align-items: center;
     }
 
+    // the help icon annotates the label text and is laid out in its flow, not as a flex item beside it: a flex
+    // sibling gets pushed to the right edge of the label column as soon as the name wraps onto a second line,
+    // which reads as an icon belonging to the value rather than to the label
     &__label {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
+        display: block;
+    }
+
+    &__help {
+        display: inline-flex;
+        vertical-align: middle;
+        margin-left: 0.25rem;
     }
 
     &__row--dense {

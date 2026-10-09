@@ -103,6 +103,11 @@ createKeyboardShortcutMapping(Command.MutationHistoryViewer_ReloadRecordHistory,
 createKeyboardShortcutMapping(Command.MutationHistoryViewer_MoveStartPointer, 'Ctrl+M', 'Cmd+M')
 createKeyboardShortcutMapping(Command.MutationHistoryViewer_ApplyFilter, 'Ctrl+Enter', 'Cmd+Enter')
 
+// Catalog viewer
+
+createKeyboardShortcutMapping(Command.CatalogViewer_ShareTab, 'Ctrl+L', 'Cmd+L')
+createKeyboardShortcutMapping(Command.CatalogViewer_Reload, 'Ctrl+D', 'Cmd+D')
+
 // Error viewer
 
 createKeyboardShortcutMapping(Command.ErrorViewer_ShareTab, 'Ctrl+L', 'Cmd+L')

@@ -6,7 +6,7 @@ import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { GrpcAttributeSpecialValueArray, GrpcBigDecimal, GrpcBigDecimalArray, GrpcBigDecimalNumberRange, GrpcBigDecimalNumberRangeArray, GrpcBooleanArray, GrpcCurrency, GrpcCurrencyArray, GrpcDateTimeRange, GrpcDateTimeRangeArray, GrpcEmptyHierarchicalEntityBehaviourArray, GrpcEntityScopeArray, GrpcFacetStatisticsDepthArray, GrpcHistogramBehaviorTypeArray, GrpcIntegerArray, GrpcIntegerNumberRange, GrpcIntegerNumberRangeArray, GrpcLocale, GrpcLocaleArray, GrpcLongArray, GrpcLongNumberRange, GrpcLongNumberRangeArray, GrpcOffsetDateTime, GrpcOffsetDateTimeArray, GrpcOrderDirectionArray, GrpcPriceContentModeArray, GrpcQueryPriceModeArray, GrpcStatisticsBaseArray, GrpcStatisticsTypeArray, GrpcStringArray } from "./GrpcEvitaDataTypes_pb";
 import { file_GrpcEvitaDataTypes } from "./GrpcEvitaDataTypes_pb";
-import type { GrpcAttributeSpecialValue, GrpcEmptyHierarchicalEntityBehaviour, GrpcEntityScope, GrpcFacetGroupRelationLevel, GrpcFacetRelationType, GrpcFacetStatisticsDepth, GrpcHistogramBehavior, GrpcManagedReferencesBehaviour, GrpcOrderDirection, GrpcPriceContentMode, GrpcQueryPriceMode, GrpcStatisticsBase, GrpcStatisticsType, GrpcTraversalMode } from "./GrpcEnums_pb";
+import type { GrpcAttributeSpecialValue, GrpcEmptyHierarchicalEntityBehaviour, GrpcEntityScope, GrpcFacetGroupRelationLevel, GrpcFacetRelationType, GrpcFacetStatisticsDepth, GrpcHierarchyParentsBehaviour, GrpcHistogramBehavior, GrpcManagedReferencesBehaviour, GrpcOrderDirection, GrpcPriceContentMode, GrpcQueryPriceMode, GrpcStatisticsBase, GrpcStatisticsType, GrpcTraversalMode } from "./GrpcEnums_pb";
 import { file_GrpcEnums } from "./GrpcEnums_pb";
 import type { Message } from "@bufbuild/protobuf";
 
@@ -14,7 +14,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file GrpcQueryParam.proto.
  */
 export const file_GrpcQueryParam: GenFile = /*@__PURE__*/
-  fileDesc("ChRHcnBjUXVlcnlQYXJhbS5wcm90bxIlaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZCKLIgoOR3JwY1F1ZXJ5UGFyYW0SFQoLc3RyaW5nVmFsdWUYASABKAlIABIWCgxpbnRlZ2VyVmFsdWUYAiABKAVIABIXCglsb25nVmFsdWUYAyABKANCAjABSAASFgoMYm9vbGVhblZhbHVlGAQgASgISAASUAoPYmlnRGVjaW1hbFZhbHVlGAUgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQmlnRGVjaW1hbEgAElYKEmRhdGVUaW1lUmFuZ2VWYWx1ZRgGIAEoCzI4LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0RhdGVUaW1lUmFuZ2VIABJgChdpbnRlZ2VyTnVtYmVyUmFuZ2VWYWx1ZRgHIAEoCzI9LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ludGVnZXJOdW1iZXJSYW5nZUgAEloKFGxvbmdOdW1iZXJSYW5nZVZhbHVlGAggASgLMjouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTG9uZ051bWJlclJhbmdlSAASZgoaYmlnRGVjaW1hbE51bWJlclJhbmdlVmFsdWUYCSABKAsyQC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNCaWdEZWNpbWFsTnVtYmVyUmFuZ2VIABJYChNvZmZzZXREYXRlVGltZVZhbHVlGAogASgLMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjT2Zmc2V0RGF0ZVRpbWVIABJICgtsb2NhbGVWYWx1ZRgLIAEoCzIxLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0xvY2FsZUgAEkwKDWN1cnJlbmN5VmFsdWUYDCABKAsyMy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDdXJyZW5jeUgAEmQKGWZhY2V0U3RhdGlzdGljc0RlcHRoVmFsdWUYDSABKA4yPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGYWNldFN0YXRpc3RpY3NEZXB0aEgAElkKFHF1ZXJ5UHJpY2VNb2RlbFZhbHVlGA4gASgOMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUXVlcnlQcmljZU1vZGVIABJcChVwcmljZUNvbnRlbnRNb2RlVmFsdWUYDyABKA4yOy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNQcmljZUNvbnRlbnRNb2RlSAASYQoVYXR0cmlidXRlU3BlY2lhbFZhbHVlGBAgASgOMkAuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQXR0cmlidXRlU3BlY2lhbFZhbHVlSAASWAoTb3JkZXJEaXJlY3Rpb25WYWx1ZRgRIAEoDjI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY09yZGVyRGlyZWN0aW9uSAASdwogZW1wdHlIaWVyYXJjaGljYWxFbnRpdHlCZWhhdmlvdXIYEiABKA4ySy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbXB0eUhpZXJhcmNoaWNhbEVudGl0eUJlaGF2aW91ckgAElMKDnN0YXRpc3RpY3NCYXNlGBMgASgOMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU3RhdGlzdGljc0Jhc2VIABJTCg5zdGF0aXN0aWNzVHlwZRgUIAEoDjI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1N0YXRpc3RpY3NUeXBlSAASWQoRaGlzdG9ncmFtQmVoYXZpb3IYFSABKA4yPC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNIaXN0b2dyYW1CZWhhdmlvckgAEmsKGm1hbmFnZWRSZWZlcmVuY2VzQmVoYXZpb3VyGBYgASgOMkUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTWFuYWdlZFJlZmVyZW5jZXNCZWhhdmlvdXJIABIZCg9leHByZXNzaW9uVmFsdWUYFyABKAlIABJHCgVzY29wZRgYIAEoDjI2LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjb3BlSAASWQoRZmFjZXRSZWxhdGlvblR5cGUYGSABKA4yPC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGYWNldFJlbGF0aW9uVHlwZUgAEmUKF2ZhY2V0R3JvdXBSZWxhdGlvbkxldmVsGBogASgOMkIuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRmFjZXRHcm91cFJlbGF0aW9uTGV2ZWxIABJRCg10cmF2ZXJzYWxNb2RlGBsgASgOMjguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVHJhdmVyc2FsTW9kZUgAElIKEHN0cmluZ0FycmF5VmFsdWUYZSABKAsyNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTdHJpbmdBcnJheUgAElQKEWludGVnZXJBcnJheVZhbHVlGGYgASgLMjcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjSW50ZWdlckFycmF5SAASTgoObG9uZ0FycmF5VmFsdWUYZyABKAsyNC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNMb25nQXJyYXlIABJUChFib29sZWFuQXJyYXlWYWx1ZRhoIAEoCzI3LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0Jvb2xlYW5BcnJheUgAEloKFGJpZ0RlY2ltYWxBcnJheVZhbHVlGGkgASgLMjouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQmlnRGVjaW1hbEFycmF5SAASYAoXZGF0ZVRpbWVSYW5nZUFycmF5VmFsdWUYaiABKAsyPS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNEYXRlVGltZVJhbmdlQXJyYXlIABJqChxpbnRlZ2VyTnVtYmVyUmFuZ2VBcnJheVZhbHVlGGsgASgLMkIuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjSW50ZWdlck51bWJlclJhbmdlQXJyYXlIABJkChlsb25nTnVtYmVyUmFuZ2VBcnJheVZhbHVlGGwgASgLMj8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTG9uZ051bWJlclJhbmdlQXJyYXlIABJwCh9iaWdEZWNpbWFsTnVtYmVyUmFuZ2VBcnJheVZhbHVlGG0gASgLMkUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQmlnRGVjaW1hbE51bWJlclJhbmdlQXJyYXlIABJiChhvZmZzZXREYXRlVGltZUFycmF5VmFsdWUYbiABKAsyPi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNPZmZzZXREYXRlVGltZUFycmF5SAASUgoQbG9jYWxlQXJyYXlWYWx1ZRhvIAEoCzI2LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0xvY2FsZUFycmF5SAASVgoSY3VycmVuY3lBcnJheVZhbHVlGHAgASgLMjguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ3VycmVuY3lBcnJheUgAEm4KHmZhY2V0U3RhdGlzdGljc0RlcHRoQXJyYXlWYWx1ZRhxIAEoCzJELmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZhY2V0U3RhdGlzdGljc0RlcHRoQXJyYXlIABJjChlxdWVyeVByaWNlTW9kZWxBcnJheVZhbHVlGHIgASgLMj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUXVlcnlQcmljZU1vZGVBcnJheUgAEmYKGnByaWNlQ29udGVudE1vZGVBcnJheVZhbHVlGHMgASgLMkAuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUHJpY2VDb250ZW50TW9kZUFycmF5SAASawoaYXR0cmlidXRlU3BlY2lhbEFycmF5VmFsdWUYdCABKAsyRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBdHRyaWJ1dGVTcGVjaWFsVmFsdWVBcnJheUgAEmIKGG9yZGVyRGlyZWN0aW9uQXJyYXlWYWx1ZRh1IAEoCzI+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY09yZGVyRGlyZWN0aW9uQXJyYXlIABKGAQoqZW1wdHlIaWVyYXJjaGljYWxFbnRpdHlCZWhhdmlvdXJBcnJheVZhbHVlGHYgASgLMlAuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW1wdHlIaWVyYXJjaGljYWxFbnRpdHlCZWhhdmlvdXJBcnJheUgAEmIKGHN0YXRpc3RpY3NCYXNlQXJyYXlWYWx1ZRh3IAEoCzI+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1N0YXRpc3RpY3NCYXNlQXJyYXlIABJiChhzdGF0aXN0aWNzVHlwZUFycmF5VmFsdWUYeCABKAsyPi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTdGF0aXN0aWNzVHlwZUFycmF5SAAScAofaGlzdG9ncmFtQmVoYXZpb3JUeXBlQXJyYXlWYWx1ZRh5IAEoCzJFLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hpc3RvZ3JhbUJlaGF2aW9yVHlwZUFycmF5SAASVgoPc2NvcGVBcnJheVZhbHVlGHogASgLMjsuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5U2NvcGVBcnJheUgAQgwKCnF1ZXJ5UGFyYW1C+gEKKWNvbS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkQhNHcnBjUXVlcnlQYXJhbVByb3RvUAGiAgVJRUVHR6oCJUlvLkV2aXRhZGIuRXh0ZXJuYWxBcGkuR3JwYy5HZW5lcmF0ZWTKAiVJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVk4gIxSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZFxHUEJNZXRhZGF0YeoCKUlvOjpFdml0YWRiOjpFeHRlcm5hbEFwaTo6R3JwYzo6R2VuZXJhdGVkYgZwcm90bzM", [file_GrpcEvitaDataTypes, file_GrpcEnums]);
+  fileDesc("ChRHcnBjUXVlcnlQYXJhbS5wcm90bxIlaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZCL2IgoOR3JwY1F1ZXJ5UGFyYW0SFQoLc3RyaW5nVmFsdWUYASABKAlIABIWCgxpbnRlZ2VyVmFsdWUYAiABKAVIABIXCglsb25nVmFsdWUYAyABKANCAjABSAASFgoMYm9vbGVhblZhbHVlGAQgASgISAASUAoPYmlnRGVjaW1hbFZhbHVlGAUgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQmlnRGVjaW1hbEgAElYKEmRhdGVUaW1lUmFuZ2VWYWx1ZRgGIAEoCzI4LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0RhdGVUaW1lUmFuZ2VIABJgChdpbnRlZ2VyTnVtYmVyUmFuZ2VWYWx1ZRgHIAEoCzI9LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ludGVnZXJOdW1iZXJSYW5nZUgAEloKFGxvbmdOdW1iZXJSYW5nZVZhbHVlGAggASgLMjouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTG9uZ051bWJlclJhbmdlSAASZgoaYmlnRGVjaW1hbE51bWJlclJhbmdlVmFsdWUYCSABKAsyQC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNCaWdEZWNpbWFsTnVtYmVyUmFuZ2VIABJYChNvZmZzZXREYXRlVGltZVZhbHVlGAogASgLMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjT2Zmc2V0RGF0ZVRpbWVIABJICgtsb2NhbGVWYWx1ZRgLIAEoCzIxLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0xvY2FsZUgAEkwKDWN1cnJlbmN5VmFsdWUYDCABKAsyMy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDdXJyZW5jeUgAEmQKGWZhY2V0U3RhdGlzdGljc0RlcHRoVmFsdWUYDSABKA4yPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGYWNldFN0YXRpc3RpY3NEZXB0aEgAElkKFHF1ZXJ5UHJpY2VNb2RlbFZhbHVlGA4gASgOMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUXVlcnlQcmljZU1vZGVIABJcChVwcmljZUNvbnRlbnRNb2RlVmFsdWUYDyABKA4yOy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNQcmljZUNvbnRlbnRNb2RlSAASYQoVYXR0cmlidXRlU3BlY2lhbFZhbHVlGBAgASgOMkAuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQXR0cmlidXRlU3BlY2lhbFZhbHVlSAASWAoTb3JkZXJEaXJlY3Rpb25WYWx1ZRgRIAEoDjI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY09yZGVyRGlyZWN0aW9uSAASdwogZW1wdHlIaWVyYXJjaGljYWxFbnRpdHlCZWhhdmlvdXIYEiABKA4ySy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbXB0eUhpZXJhcmNoaWNhbEVudGl0eUJlaGF2aW91ckgAElMKDnN0YXRpc3RpY3NCYXNlGBMgASgOMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU3RhdGlzdGljc0Jhc2VIABJTCg5zdGF0aXN0aWNzVHlwZRgUIAEoDjI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1N0YXRpc3RpY3NUeXBlSAASWQoRaGlzdG9ncmFtQmVoYXZpb3IYFSABKA4yPC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNIaXN0b2dyYW1CZWhhdmlvckgAEmsKGm1hbmFnZWRSZWZlcmVuY2VzQmVoYXZpb3VyGBYgASgOMkUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTWFuYWdlZFJlZmVyZW5jZXNCZWhhdmlvdXJIABIZCg9leHByZXNzaW9uVmFsdWUYFyABKAlIABJHCgVzY29wZRgYIAEoDjI2LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjb3BlSAASWQoRZmFjZXRSZWxhdGlvblR5cGUYGSABKA4yPC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGYWNldFJlbGF0aW9uVHlwZUgAEmUKF2ZhY2V0R3JvdXBSZWxhdGlvbkxldmVsGBogASgOMkIuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRmFjZXRHcm91cFJlbGF0aW9uTGV2ZWxIABJRCg10cmF2ZXJzYWxNb2RlGBsgASgOMjguaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVHJhdmVyc2FsTW9kZUgAEmkKGWhpZXJhcmNoeVBhcmVudHNCZWhhdmlvdXIYHCABKA4yRC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNIaWVyYXJjaHlQYXJlbnRzQmVoYXZpb3VySAASUgoQc3RyaW5nQXJyYXlWYWx1ZRhlIAEoCzI2LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1N0cmluZ0FycmF5SAASVAoRaW50ZWdlckFycmF5VmFsdWUYZiABKAsyNy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNJbnRlZ2VyQXJyYXlIABJOCg5sb25nQXJyYXlWYWx1ZRhnIAEoCzI0LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0xvbmdBcnJheUgAElQKEWJvb2xlYW5BcnJheVZhbHVlGGggASgLMjcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQm9vbGVhbkFycmF5SAASWgoUYmlnRGVjaW1hbEFycmF5VmFsdWUYaSABKAsyOi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNCaWdEZWNpbWFsQXJyYXlIABJgChdkYXRlVGltZVJhbmdlQXJyYXlWYWx1ZRhqIAEoCzI9LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0RhdGVUaW1lUmFuZ2VBcnJheUgAEmoKHGludGVnZXJOdW1iZXJSYW5nZUFycmF5VmFsdWUYayABKAsyQi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNJbnRlZ2VyTnVtYmVyUmFuZ2VBcnJheUgAEmQKGWxvbmdOdW1iZXJSYW5nZUFycmF5VmFsdWUYbCABKAsyPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNMb25nTnVtYmVyUmFuZ2VBcnJheUgAEnAKH2JpZ0RlY2ltYWxOdW1iZXJSYW5nZUFycmF5VmFsdWUYbSABKAsyRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNCaWdEZWNpbWFsTnVtYmVyUmFuZ2VBcnJheUgAEmIKGG9mZnNldERhdGVUaW1lQXJyYXlWYWx1ZRhuIAEoCzI+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY09mZnNldERhdGVUaW1lQXJyYXlIABJSChBsb2NhbGVBcnJheVZhbHVlGG8gASgLMjYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjTG9jYWxlQXJyYXlIABJWChJjdXJyZW5jeUFycmF5VmFsdWUYcCABKAsyOC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDdXJyZW5jeUFycmF5SAASbgoeZmFjZXRTdGF0aXN0aWNzRGVwdGhBcnJheVZhbHVlGHEgASgLMkQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRmFjZXRTdGF0aXN0aWNzRGVwdGhBcnJheUgAEmMKGXF1ZXJ5UHJpY2VNb2RlbEFycmF5VmFsdWUYciABKAsyPi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNRdWVyeVByaWNlTW9kZUFycmF5SAASZgoacHJpY2VDb250ZW50TW9kZUFycmF5VmFsdWUYcyABKAsyQC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNQcmljZUNvbnRlbnRNb2RlQXJyYXlIABJrChphdHRyaWJ1dGVTcGVjaWFsQXJyYXlWYWx1ZRh0IAEoCzJFLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0F0dHJpYnV0ZVNwZWNpYWxWYWx1ZUFycmF5SAASYgoYb3JkZXJEaXJlY3Rpb25BcnJheVZhbHVlGHUgASgLMj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjT3JkZXJEaXJlY3Rpb25BcnJheUgAEoYBCiplbXB0eUhpZXJhcmNoaWNhbEVudGl0eUJlaGF2aW91ckFycmF5VmFsdWUYdiABKAsyUC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbXB0eUhpZXJhcmNoaWNhbEVudGl0eUJlaGF2aW91ckFycmF5SAASYgoYc3RhdGlzdGljc0Jhc2VBcnJheVZhbHVlGHcgASgLMj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU3RhdGlzdGljc0Jhc2VBcnJheUgAEmIKGHN0YXRpc3RpY3NUeXBlQXJyYXlWYWx1ZRh4IAEoCzI+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1N0YXRpc3RpY3NUeXBlQXJyYXlIABJwCh9oaXN0b2dyYW1CZWhhdmlvclR5cGVBcnJheVZhbHVlGHkgASgLMkUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjSGlzdG9ncmFtQmVoYXZpb3JUeXBlQXJyYXlIABJWCg9zY29wZUFycmF5VmFsdWUYeiABKAsyOy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlTY29wZUFycmF5SABCDAoKcXVlcnlQYXJhbUL6AQopY29tLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWRCE0dycGNRdWVyeVBhcmFtUHJvdG9QAaICBUlFRUdHqgIlSW8uRXZpdGFkYi5FeHRlcm5hbEFwaS5HcnBjLkdlbmVyYXRlZMoCJUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWTiAjFJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVkXEdQQk1ldGFkYXRh6gIpSW86OkV2aXRhZGI6OkV4dGVybmFsQXBpOjpHcnBjOjpHZW5lcmF0ZWRiBnByb3RvMw", [file_GrpcEvitaDataTypes, file_GrpcEnums]);
 
 /**
  * Structure that supports storing all possible parameters that could be used within query.
@@ -23,13 +23,25 @@ export const file_GrpcQueryParam: GenFile = /*@__PURE__*/
  */
 export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.GrpcQueryParam"> & {
   /**
-   * The value of the parameter.
+   * Exactly one of the following arms must be set. An unset `queryParam` is a client error:
+   * `QueryConverter.convertQueryParam` dispatches on the set arm and throws
+   * `EvitaInvalidUsageException` if none matches.
+   *
+   * Positional parameters (query strings using `?` placeholders) bind to entries of the enclosing
+   * message's `positionalQueryParams` list in the order the `?` placeholders are encountered in the
+   * query text — the first `?` binds to index 0, and so on. A query with more `?` placeholders than
+   * available entries fails with `EvitaInvalidUsageException("Missing argument of index N.")`.
+   *
+   * Named parameters (query strings using `@name` placeholders) bind to entries of the enclosing
+   * message's `namedQueryParams` map by the name embedded in the query text. A placeholder with no
+   * matching key fails with `EvitaInvalidUsageException("Missing argument of name `name`.")`.
    *
    * @generated from oneof io.evitadb.externalApi.grpc.generated.GrpcQueryParam.queryParam
    */
   queryParam: {
     /**
-     * The string value.
+     * Binds a string parameter into the query, e.g. a string literal compared by `attributeEquals`,
+     * `attributeContains` or similar constraints, or a classifier name (entity type, attribute name).
      *
      * @generated from field: string stringValue = 1;
      */
@@ -37,7 +49,7 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "stringValue";
   } | {
     /**
-     * The integer value.
+     * Binds an `int32` parameter into the query, typically used for primary keys or numeric literals.
      *
      * @generated from field: int32 integerValue = 2;
      */
@@ -45,7 +57,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "integerValue";
   } | {
     /**
-     * The long value.
+     * Binds a `long` parameter into the query, typically used for primary keys or numeric literals
+     * that exceed the `int32` range.
      *
      * @generated from field: int64 longValue = 3 [jstype = JS_STRING];
      */
@@ -53,7 +66,7 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "longValue";
   } | {
     /**
-     * The boolean value.
+     * Binds a boolean parameter into the query.
      *
      * @generated from field: bool booleanValue = 4;
      */
@@ -61,7 +74,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "booleanValue";
   } | {
     /**
-     * The big decimal value.
+     * Binds an arbitrary-precision decimal parameter into the query, typically used for price or
+     * other monetary/decimal literals.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcBigDecimal bigDecimalValue = 5;
      */
@@ -69,7 +83,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "bigDecimalValue";
   } | {
     /**
-     * The date time range value.
+     * Binds a date-time range parameter into the query, e.g. used with `entityValidIn`/`priceValidIn`
+     * style constraints that test whether a given instant falls within a validity range.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcDateTimeRange dateTimeRangeValue = 6;
      */
@@ -77,7 +92,7 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "dateTimeRangeValue";
   } | {
     /**
-     * The integer number range value.
+     * Binds an `int32` range parameter into the query, e.g. used with `between`-style range constraints.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcIntegerNumberRange integerNumberRangeValue = 7;
      */
@@ -85,7 +100,7 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "integerNumberRangeValue";
   } | {
     /**
-     * The long number range value.
+     * Binds a `long` range parameter into the query, e.g. used with `between`-style range constraints.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcLongNumberRange longNumberRangeValue = 8;
      */
@@ -93,7 +108,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "longNumberRangeValue";
   } | {
     /**
-     * The big decimal number range value.
+     * Binds an arbitrary-precision decimal range parameter into the query, e.g. used with `between`-
+     * style range constraints over prices or other decimal values.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcBigDecimalNumberRange bigDecimalNumberRangeValue = 9;
      */
@@ -101,7 +117,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "bigDecimalNumberRangeValue";
   } | {
     /**
-     * The offset date time value.
+     * Binds a single point-in-time parameter (date, time and offset) into the query, e.g. used with
+     * `priceValidIn` to test price validity at a specific instant.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcOffsetDateTime offsetDateTimeValue = 10;
      */
@@ -109,7 +126,7 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "offsetDateTimeValue";
   } | {
     /**
-     * The locale value.
+     * Binds a `Locale` parameter into the query, e.g. used with `entityLocaleEquals`.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcLocale localeValue = 11;
      */
@@ -117,7 +134,7 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "localeValue";
   } | {
     /**
-     * The currency value.
+     * Binds a `Currency` parameter into the query, e.g. used with `priceInCurrency`.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCurrency currencyValue = 12;
      */
@@ -125,7 +142,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "currencyValue";
   } | {
     /**
-     * The facet statistics depth enum value.
+     * Binds a `GrpcFacetStatisticsDepth` enum parameter into the query, e.g. used with the
+     * `facetSummary` requirement to select whether only counts or also selection impact is computed.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcFacetStatisticsDepth facetStatisticsDepthValue = 13;
      */
@@ -133,7 +151,10 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "facetStatisticsDepthValue";
   } | {
     /**
-     * The query price mode enum value.
+     * Binds a `GrpcQueryPriceMode` enum parameter into the query, used by price-related filtering
+     * constraints to select whether tax-inclusive or tax-exclusive prices are considered. Field name
+     * is a legacy typo ("Model" instead of "Mode"); kept as-is because renaming would break generated
+     * accessors and JSON field mapping for existing clients.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcQueryPriceMode queryPriceModelValue = 14;
      */
@@ -141,7 +162,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "queryPriceModelValue";
   } | {
     /**
-     * The price content mode enum value.
+     * Binds a `GrpcPriceContentMode` enum parameter into the query, e.g. used with the `priceContent`
+     * requirement to select which prices are fetched along with the entity.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcPriceContentMode priceContentModeValue = 15;
      */
@@ -149,7 +171,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "priceContentModeValue";
   } | {
     /**
-     * The attribute special value enum value.
+     * Binds a `GrpcAttributeSpecialValue` enum parameter into the query, e.g. used with `attributeIs`
+     * to test whether an attribute value is `NULL` or `NOT_NULL`.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeSpecialValue attributeSpecialValue = 16;
      */
@@ -157,7 +180,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "attributeSpecialValue";
   } | {
     /**
-     * The order direction enum value.
+     * Binds a `GrpcOrderDirection` enum parameter into the query, e.g. used with `attributeNatural`
+     * and other ordering constraints to select ascending or descending order.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcOrderDirection orderDirectionValue = 17;
      */
@@ -165,7 +189,9 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "orderDirectionValue";
   } | {
     /**
-     * The empty hierarchical entity behaviour enum value.
+     * Binds a `GrpcEmptyHierarchicalEntityBehaviour` enum parameter into the query, used by hierarchy
+     * statistics requirements to select whether hierarchy nodes with no referring entities are kept
+     * in or removed from the result tree.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEmptyHierarchicalEntityBehaviour emptyHierarchicalEntityBehaviour = 18;
      */
@@ -173,7 +199,9 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "emptyHierarchicalEntityBehaviour";
   } | {
     /**
-     * The statistics base enum value.
+     * Binds a `GrpcStatisticsBase` enum parameter into the query, used by hierarchy statistics
+     * requirements to select which part of the `filterBy` constraint is considered when computing
+     * cardinalities.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcStatisticsBase statisticsBase = 19;
      */
@@ -181,7 +209,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "statisticsBase";
   } | {
     /**
-     * The statistics type enum value.
+     * Binds a `GrpcStatisticsType` enum parameter into the query, used by hierarchy statistics
+     * requirements to select whether children counts or queried-entity counts are produced.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcStatisticsType statisticsType = 20;
      */
@@ -189,7 +218,9 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "statisticsType";
   } | {
     /**
-     * The histogram behavior enum value.
+     * Binds a `GrpcHistogramBehavior` enum parameter into the query, used by histogram requirements
+     * to select whether the histogram always has exactly the requested bucket count or an optimized,
+     * more compact bucket layout.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcHistogramBehavior histogramBehavior = 21;
      */
@@ -197,7 +228,9 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "histogramBehavior";
   } | {
     /**
-     * The managed references behaviour
+     * Binds a `GrpcManagedReferencesBehaviour` enum parameter into the query, used by the
+     * `referenceContent` requirement to select whether references to a managed entity that no longer
+     * exists are still returned.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcManagedReferencesBehaviour managedReferencesBehaviour = 22;
      */
@@ -205,7 +238,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "managedReferencesBehaviour";
   } | {
     /**
-     * The expression
+     * Binds a raw EvitaQL expression string into the query, evaluated via `ExpressionFactory` — e.g.
+     * used as the size argument of the `gap` requirement to compute spacing between paginated results.
      *
      * @generated from field: string expressionValue = 23;
      */
@@ -213,7 +247,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "expressionValue";
   } | {
     /**
-     * The scope enum value.
+     * Binds a `GrpcEntityScope` enum parameter into the query, used by scope-aware constraints to
+     * select whether live or archived entities are considered.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntityScope scope = 24;
      */
@@ -221,7 +256,9 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "scope";
   } | {
     /**
-     * The facetRelationType enum value.
+     * Binds a `GrpcFacetRelationType` enum parameter into the query, used by facet summary impact
+     * calculation to select the logical relation (disjunction, conjunction, negation, exclusivity)
+     * applied between facets.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcFacetRelationType facetRelationType = 25;
      */
@@ -229,7 +266,9 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "facetRelationType";
   } | {
     /**
-     * The facetGroupRelationLevel enum value.
+     * Binds a `GrpcFacetGroupRelationLevel` enum parameter into the query, used by facet summary
+     * impact calculation to select whether the relation applies between facets in the same group or
+     * across different groups/references.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcFacetGroupRelationLevel facetGroupRelationLevel = 26;
      */
@@ -237,7 +276,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "facetGroupRelationLevel";
   } | {
     /**
-     * The facet traversal mode enum value.
+     * Binds a `GrpcTraversalMode` enum parameter into the query, used by the
+     * `traverseByEntityProperty` ordering constraint to select depth-first or breadth-first traversal.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTraversalMode traversalMode = 27;
      */
@@ -245,7 +285,21 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "traversalMode";
   } | {
     /**
-     * The string array value.
+     * Binds a `GrpcHierarchyParentsBehaviour` enum parameter into the query, used by the `hierarchyContent`
+     * requirement to select what happens to an ancestor whose requested body cannot be materialized - whether the
+     * parent chain is cut below it, or continues above it with that ancestor reported as a bodyless pointer.
+     *
+     * A query that leaves the argument out simply carries no placeholder for it, so no entry of this arm is sent at
+     * all and the requirement keeps its own default, `MATCHING`.
+     *
+     * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcHierarchyParentsBehaviour hierarchyParentsBehaviour = 28;
+     */
+    value: GrpcHierarchyParentsBehaviour;
+    case: "hierarchyParentsBehaviour";
+  } | {
+    /**
+     * Binds a list of string parameters into the query, e.g. used with `inSet`-style constraints such
+     * as `attributeInSet` over string-typed attributes.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcStringArray stringArrayValue = 101;
      */
@@ -253,7 +307,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "stringArrayValue";
   } | {
     /**
-     * The integer array value.
+     * Binds a list of `int32` parameters into the query, e.g. used with `entityPrimaryKeyInSet` or
+     * `attributeInSet` over integer-typed attributes.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcIntegerArray integerArrayValue = 102;
      */
@@ -261,7 +316,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "integerArrayValue";
   } | {
     /**
-     * The long array value.
+     * Binds a list of `long` parameters into the query, e.g. used with `inSet`-style constraints over
+     * long-typed values that exceed the `int32` range.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcLongArray longArrayValue = 103;
      */
@@ -269,7 +325,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "longArrayValue";
   } | {
     /**
-     * The boolean array value.
+     * Binds a list of boolean parameters into the query, e.g. used with `inSet`-style constraints over
+     * boolean-typed attributes.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcBooleanArray booleanArrayValue = 104;
      */
@@ -277,7 +334,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "booleanArrayValue";
   } | {
     /**
-     * The big decimal array value.
+     * Binds a list of arbitrary-precision decimal parameters into the query, e.g. used with
+     * `inSet`-style constraints over decimal-typed attributes.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcBigDecimalArray bigDecimalArrayValue = 105;
      */
@@ -285,7 +343,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "bigDecimalArrayValue";
   } | {
     /**
-     * The date time range array value.
+     * Binds a list of date-time range parameters into the query, e.g. used with `inSet`-style
+     * constraints over range-typed attributes.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcDateTimeRangeArray dateTimeRangeArrayValue = 106;
      */
@@ -293,7 +352,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "dateTimeRangeArrayValue";
   } | {
     /**
-     * The integer number range array value.
+     * Binds a list of `int32` range parameters into the query, e.g. used with `inSet`-style
+     * constraints over integer-range-typed attributes.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcIntegerNumberRangeArray integerNumberRangeArrayValue = 107;
      */
@@ -301,7 +361,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "integerNumberRangeArrayValue";
   } | {
     /**
-     * The long number range array value.
+     * Binds a list of `long` range parameters into the query, e.g. used with `inSet`-style constraints
+     * over long-range-typed attributes.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcLongNumberRangeArray longNumberRangeArrayValue = 108;
      */
@@ -309,7 +370,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "longNumberRangeArrayValue";
   } | {
     /**
-     * The big decimal number range array value.
+     * Binds a list of arbitrary-precision decimal range parameters into the query, e.g. used with
+     * `inSet`-style constraints over decimal-range-typed attributes.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcBigDecimalNumberRangeArray bigDecimalNumberRangeArrayValue = 109;
      */
@@ -317,7 +379,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "bigDecimalNumberRangeArrayValue";
   } | {
     /**
-     * The offset date time array value.
+     * Binds a list of point-in-time parameters into the query, e.g. used with `inSet`-style
+     * constraints over date-time-typed attributes.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcOffsetDateTimeArray offsetDateTimeArrayValue = 110;
      */
@@ -325,7 +388,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "offsetDateTimeArrayValue";
   } | {
     /**
-     * The locale array value.
+     * Binds a list of `Locale` parameters into the query, e.g. used to enumerate multiple locales in
+     * a single constraint or requirement.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcLocaleArray localeArrayValue = 111;
      */
@@ -333,7 +397,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "localeArrayValue";
   } | {
     /**
-     * The currency array value.
+     * Binds a list of `Currency` parameters into the query, e.g. used to enumerate multiple currencies
+     * in a single constraint or requirement.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCurrencyArray currencyArrayValue = 112;
      */
@@ -341,7 +406,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "currencyArrayValue";
   } | {
     /**
-     * The facet statistics depth array value.
+     * Binds a list of `GrpcFacetStatisticsDepth` enum parameters into the query, used where the
+     * placeholder resolves to a list rather than a single value.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcFacetStatisticsDepthArray facetStatisticsDepthArrayValue = 113;
      */
@@ -349,7 +415,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "facetStatisticsDepthArrayValue";
   } | {
     /**
-     * The query price mode array value.
+     * Binds a list of `GrpcQueryPriceMode` enum parameters into the query, used where the placeholder
+     * resolves to a list rather than a single value.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcQueryPriceModeArray queryPriceModelArrayValue = 114;
      */
@@ -357,7 +424,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "queryPriceModelArrayValue";
   } | {
     /**
-     * The price content mode array value.
+     * Binds a list of `GrpcPriceContentMode` enum parameters into the query, used where the
+     * placeholder resolves to a list rather than a single value.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcPriceContentModeArray priceContentModeArrayValue = 115;
      */
@@ -365,7 +433,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "priceContentModeArrayValue";
   } | {
     /**
-     * The attribute special value array value.
+     * Binds a list of `GrpcAttributeSpecialValue` enum parameters into the query, used where the
+     * placeholder resolves to a list rather than a single value.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcAttributeSpecialValueArray attributeSpecialArrayValue = 116;
      */
@@ -373,7 +442,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "attributeSpecialArrayValue";
   } | {
     /**
-     * The order direction array value.
+     * Binds a list of `GrpcOrderDirection` enum parameters into the query, used where the placeholder
+     * resolves to a list rather than a single value.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcOrderDirectionArray orderDirectionArrayValue = 117;
      */
@@ -381,7 +451,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "orderDirectionArrayValue";
   } | {
     /**
-     * The empty hierarchical entity behaviour array value.
+     * Binds a list of `GrpcEmptyHierarchicalEntityBehaviour` enum parameters into the query, used
+     * where the placeholder resolves to a list rather than a single value.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEmptyHierarchicalEntityBehaviourArray emptyHierarchicalEntityBehaviourArrayValue = 118;
      */
@@ -389,7 +460,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "emptyHierarchicalEntityBehaviourArrayValue";
   } | {
     /**
-     * The statistics base array value.
+     * Binds a list of `GrpcStatisticsBase` enum parameters into the query, used where the placeholder
+     * resolves to a list rather than a single value.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcStatisticsBaseArray statisticsBaseArrayValue = 119;
      */
@@ -397,7 +469,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "statisticsBaseArrayValue";
   } | {
     /**
-     * The statistics type array value.
+     * Binds a list of `GrpcStatisticsType` enum parameters into the query, used where the placeholder
+     * resolves to a list rather than a single value.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcStatisticsTypeArray statisticsTypeArrayValue = 120;
      */
@@ -405,7 +478,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "statisticsTypeArrayValue";
   } | {
     /**
-     * The histogram behavior enum value.
+     * Binds a list of `GrpcHistogramBehavior` enum parameters into the query, used where the
+     * placeholder resolves to a list rather than a single value.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcHistogramBehaviorTypeArray histogramBehaviorTypeArrayValue = 121;
      */
@@ -413,7 +487,8 @@ export type GrpcQueryParam = Message<"io.evitadb.externalApi.grpc.generated.Grpc
     case: "histogramBehaviorTypeArrayValue";
   } | {
     /**
-     * The scope enum value.
+     * Binds a list of `GrpcEntityScope` enum parameters into the query, e.g. used with constraints
+     * that accept multiple scopes (live, archived) at once.
      *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntityScopeArray scopeArrayValue = 122;
      */

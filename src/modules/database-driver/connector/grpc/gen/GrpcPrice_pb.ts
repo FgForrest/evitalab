@@ -69,14 +69,14 @@ export type GrpcPrice = Message<"io.evitadb.externalApi.grpc.generated.GrpcPrice
   priceWithoutTax?: GrpcBigDecimal;
 
   /**
-   * Price with tax.
+   * Tax rate percentage (i.e. for 19% it'll be 19.00)
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcBigDecimal taxRate = 6;
    */
   taxRate?: GrpcBigDecimal;
 
   /**
-   * Tax rate percentage (i.e. for 19% it'll be 19.00)
+   * Price with tax.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcBigDecimal priceWithTax = 7;
    */
@@ -94,7 +94,7 @@ export type GrpcPrice = Message<"io.evitadb.externalApi.grpc.generated.GrpcPrice
    * entity but won't be considered when evaluating search. These prices may be
    * used for "informational" prices such as reference price (the crossed out price often found on e-commerce sites
    * as "usual price") but are not considered as the "selling" price.
-   * RENAMED TO "indexed"
+   * Deprecated since 2024.10 - RENAMED TO "indexed"
    *
    * @generated from field: bool sellable = 9 [deprecated = true];
    * @deprecated

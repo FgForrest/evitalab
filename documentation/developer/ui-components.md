@@ -21,7 +21,11 @@ The single dark theme defines the palette: `background`/`surface`/`primary` (`#1
 `primary-dark` (`#131323`), `primary-light` (`#23355C`), `primary-lightest` (`#21BFE3` — the
 accent), `gray-light` (`#A5ACBC`), plus `warning`/`error`. Component defaults (compact density,
 solo-filled inputs, plain chips, no ripple, tooltip styling) are set globally — don't repeat them
-per component. Global SCSS lives in `src/styles/` (Vuetify SASS settings in `settings.scss`).
+per component. Global SCSS lives in `src/styles/` (Vuetify SASS settings in `settings.scss`) — which
+is also where every Vuetify table gets its between-cell separators (`table.scss`, see
+[design language](design-language.md#tables)) and where the chip variants get the interaction
+affordances that make the variant a statement about clickability (`chip.scss`, see
+[design language](design-language.md#chips-the-variant-is-a-promise-about-interaction)).
 Icons are [Material Design Icons](https://pictogrammers.com/library/mdi/) (`mdi-*` strings).
 
 ## Dialogs
@@ -66,7 +70,7 @@ area).
 |-----------|---------|
 | `VPropertiesTable` | Key-value listing of object properties (`title?`, `properties: Property[]`, `dense?`). Property model in `modules/base/model/properties-table/` supports typed values (`VPropertiesTableValue*`) |
 | `VMarkdown` | Rendering markdown (`source` prop; markdown-it + highlight.js + DOMPurify) |
-| `VTreeViewItem` / `VTreeViewEmptyItem` | Tree menu structures (openable/loading states, flags, item actions) |
+| `VTreeViewItem` / `VTreeViewEmptyItem` | Tree menu structures (openable/loading states, flags, item actions). `openableByArrowOnly` reserves expanding for the leading arrow and reports its click as `click:open`, freeing the row click for a meaning of its own — the catalog row uses it to open the catalog preview |
 | `VListItemDivider` | Divider between list items in **every** non-menu list |
 | `VListItemLazyIterator` | Client-side "load next" paging for long lists (`items: List<T>`, `page`, `pageSize`) — use to keep the DOM small. `items` takes an Immutable `List` only; it used to accept a plain array as well and branch on the shape at runtime |
 | `VExpansionPanelLazyIterator` | Same paging pattern for expansion panels |
@@ -79,7 +83,10 @@ area).
 
 `Property(name, value, description?)` is one row. The optional `description` renders a muted
 `mdi-information-outline` icon with a tooltip after the row label — use it for row-level help, not for
-explaining a single value. Per-value affordances live on the value objects instead:
+explaining a single value. The icon sits **in the label's text flow**, not as a flex item beside it,
+so that a name too long for the fixed label column keeps the icon next to its last word instead of
+having it pushed to the column's right edge, where it reads as belonging to the value.
+Per-value affordances live on the value objects instead:
 
 | Want | Use |
 |---|---|

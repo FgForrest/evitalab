@@ -221,6 +221,24 @@ background — global defaults):
   state plus a tooltip saying *which* property was missing from the query and how to request it.
 - Warnings attach as an `mdi-alert-outline` (warning color) icon with tooltip; neutral
   explanations as `mdi-information-outline`.
+- A section title takes its explanation the same way — an `mdi-information-outline` after the
+  heading, never a paragraph of prose under it. Body text reads like a narration of the page
+  instead of part of it.
+- **What an action costs is documented on the action, not above the page.** A `VAlert` banner over a
+  page is read once and then permanently ignored, and it takes vertical space from the data on every
+  later visit; the figure is needed at the moment of clicking, so it belongs in that control's own
+  tooltip. The Memory page's measurement cost rides on the *Measure* button of each row.
+- **A disabled `VListItem` is `pointer-events: none`** (Vuetify's own rule), so a `VTooltip` with
+  `activator="parent"` nested in one never opens. An option that is offered but unavailable carries
+  its reason as a `VListItemSubtitle` instead — rendered through the select's `#item` slot, which is
+  also the only way to style it, because scoped CSS reaches slot content in the teleported menu but
+  not the list items `VSelect` renders itself. Give it `white-space: normal` and
+  `-webkit-line-clamp: unset` to escape the subtitle's one-line clamp.
+- **`activator="parent"` anchors the tooltip to the element the `VTooltip` is nested in, so the
+  icon needs a wrapper of its own** whenever the surrounding element is wider than the icon
+  (a label filling a grid column, a table cell). Anchored to the wide parent, the tooltip opens
+  centred on it — visually next to the value on the other side of the row, not next to the icon
+  that offered the help.
 
 ### Navigation opens tabs
 
@@ -262,10 +280,64 @@ row is the open action; non-openable items are `disabled`.
 
 ## Data display language
 
-### Chips are metadata badges
+### Chips: the variant is a promise about interaction
 
-The plain, gray-light chip (global default) is the lab's unit of secondary metadata. It is never
-a filter control; it annotates:
+The chip is the lab's unit of secondary metadata, and **its variant states whether it can be
+clicked**. The global styles in `src/styles/chip.scss` enforce that reading, so the variant is never
+a look to pick from:
+
+| Variant | What the global styles do with it | Use for |
+|---------|-----------------------------------|---------|
+| `plain` — the global default (`gray-light` on `gray-dark`) | `cursor: default` | metadata that only labels the thing beside it; most chips in the lab |
+| `outlined` | `gray-light` border, hover fades border and text to `primary-lightest`, and `.v-chip--selected` paints both solid `primary-lightest` | a chip that **does something when clicked** — opens a tab, selects an item, toggles a filter |
+| `flat` + `color` | `cursor: default`, solid colored background | a state badge whose color is the whole message (the catalog state on the Overview header) |
+
+The rules that follow from it:
+
+- Nothing carries `outlined` unless clicking it changes something, and nothing clickable is left
+  `plain`. Where a chip is conditionally actionable, the two travel together as
+  `:variant="propertyValue.action ? 'outlined' : 'plain'"` — `VPropertiesTableValueItem`,
+  `RecordMetadataItem` and the reference viewer's relation diagram (`RelationViewer`) are the
+  reference implementations. Outside a chip group add `class="clickable"` (`cursor: pointer`) as
+  `RelationViewer` does; a chip inside a group is clickable to Vuetify and gets the pointer itself.
+- **A `VChipGroup` selects, so its chips are `outlined`** — set `variant="outlined"` on the *group*:
+  the global default for `VChipGroup` is `plain` and the group forwards its own variant to every chip
+  it holds.
+- **Do not override a group's `selected-class`.** It defaults to `v-chip--selected`, which is the
+  hook `chip.scss` highlights the selection with; replacing it with a color class silently drops
+  that highlight.
+- **A chip group used as a filter is labelled.** Chips carry the values, not the dimension, so two
+  adjacent groups read as one undifferentiated row of options. Put a `text-medium-emphasis`
+  `0.75rem` caption above each group naming it ("Index type", "Scope"). A `VSelect` filtering
+  alongside them takes the caption too and drops its own floating `label` (its empty state becomes a
+  `placeholder`): a label inside the field sits on a different line from the captions and reads as a
+  separate control rather than the next filter of the same row.
+- **A measured quantity is not a chip; the verdict on it is.** Chips carry low-cardinality values —
+  keywords, enum items, states. A duration, a byte size, a count or a timestamp is a plain value, and
+  wrapping it in a chip both misuses the register and hides the number among the metadata. Where a
+  measurement has a verdict attached, the two are separate: the Activity page's *Last fence depth* is a
+  plain `1 sec, 17 ms` and, only when it exceeds the configured interval, an `above interval` /
+  `far above interval` chip beside it, built as a `List<PropertyValue>` (a plain string value first, a
+  `KeywordValue` second) so the properties table renders them side by side, with the explanatory
+  sentence in the chip's tooltip. The same rule holds
+  outside a table: the commit pipeline diagram states its version lags and its depth as labelled
+  values in bordered boxes, colored `text-warning` when they are non-zero, rather than as chips.
+  A catalog version is a measurement too — the History page states *Oldest available version* as a
+  plain `764 913 · 14 Aug 2026 01:27:53`, not as a chip with the timestamp hidden behind it.
+- **A timestamp beside a value is part of the value, not a `PropertyValue` note.** A note renders as
+  `mdi-alert-outline` in `warning` — it is the "something is off here" affordance — so putting an
+  ordinary timestamp in one paints a warning on a healthy row. Join the two into one string
+  (`{version} · {timestamp}`) and keep the note for what actually deserves the icon.
+- **Severity and state ride on `base-color`, not on the variant.** For `plain` and `outlined`
+  Vuetify turns the color into a text-color class, so a plain chip with `base-color="warning"` is
+  colored *and* still reads as non-interactive — which is what the unavailable-component chips and
+  the "compaction due" verdict use. **Pass `color` as well** whenever the chip is written by hand:
+  the global `VChip` default is `color: 'gray-light'`, and a default beats a `base-color` that was
+  given without a `color` beside it, so the chip comes out grey and the state silently disappears.
+  `VPropertiesTableValueItem` passes both for that reason; a state badge (`flat`) needs `color`
+  anyway, since that is what fills it.
+
+Its content annotates:
 
 - **Toolbar flags** — ambient query state (locale, scope).
 - **Schema flags** — representative flags on schema list items (`SchemaContainerSectionListItem`),
@@ -359,13 +431,67 @@ references, …). Sections contain `SchemaContainerSectionList*` rows whose clic
 schema **in a new tab** via a `SchemaPointer` + `SchemaViewerTabFactory`. Empty sections are
 omitted entirely (`v-if` on size), not rendered empty.
 
+### Tables
+
+Every Vuetify table in the lab separates its **columns** as well as its rows: a global rule in
+`src/styles/table.scss` gives each `th`/`td` a hairline right border (theme border variables), on top
+of the horizontal separators Vuetify draws itself. The tables here hold numbers that are read across
+a row — a size next to a count next to a ratio — and an unseparated row invites reading a value under
+the wrong heading.
+
+The **trailing** column is deliberately left without one, so a table embedded in a page does not draw
+a box around itself. A table that fills its whole tab is the exception and closes its own trailing and
+bottom edges locally (see the entity grid below). Do not restate the between-cell borders per
+component, and do not opt a table out of them.
+
+**An action that produces one cell's value belongs in that cell**, not in a trailing action column.
+A column that is empty until the user asks for it then explains itself — the value is missing because
+nobody requested it, and the control that requests it is where the value will appear — and it needs
+neither a "done" marker (the value's presence is the marker) nor a column of its own. Once the value
+is there the action stays as a trailing icon button beside it (`mdi-refresh` to recompute), with the
+cost in its tooltip. The Memory page's *Estimated size* column is the reference implementation.
+
+**A row that is a sum may open; a row that is one thing may not.** When a breakdown folds several
+measurements into one row, give *that* row a chevron and leave the rows that fold nothing without
+one — a chevron revealing a copy of the line above it is noise. The Storage tab's composition is the
+reference: *Indexes* opens into the index groups it summed, the five entity-data rows do not open,
+and the sub-rows are indented siblings inside the same table rather than a table of their own, so
+the numbers stay in their columns.
+
+**Group by a classification the source declares, not by a name the client parses.** A label the
+client derives from a class name breaks the moment the engine adds a type; a value the server
+declares does not. Where an unknown value can still arrive, fall back to the coarser axis and show
+what is left over as its own row — never fold the unknown into whichever bucket happens to be the
+catch-all.
+
+**A compact row height is a floor, not a ceiling.** A cell holding chips, or anything else that
+wraps, has to lay them out itself — a flex container with `flex-wrap` and a gap — and the vertical
+padding that keeps the second line off the row separators belongs **on that container, not on the
+`td`**: Vuetify's own `td` rule is more specific than a single component class, so a cell-level
+padding is silently dropped and the fix only looks applied. The *Declared as* column of
+`IndexCardinalityTable` is the reference: in a narrow window its two chips land on separate lines
+with `0.25rem` above and below, and everything else in the row keeps the compact height.
+
+Key-value data is not a table in this sense — it goes through `VPropertiesTable` (below), which has
+no borders at all.
+
 ### Data grids
 
 - Server-driven tables use `VDataTableServer` with `density="compact"`, `fixed-header`,
   `fixed-footer`, `multi-sort` and explicit page-size options (10 … 1000).
-- Cells and headers get right/bottom hairline borders (theme border variables) so the grid reads
-  as a spreadsheet; rows are `2.25rem` tall, values clipped (no wrapping) with full value in the
-  tooltip.
+- **Paging is the table's own footer, never a hand-rolled row of buttons.** Bind
+  `v-model:page`, `v-model:items-per-page`, `:items-length` and `:items-per-page-options` (omit the
+  `-1`/"All" entry when the rows come from a server page) and let `VDataTableFooter` render the page
+  size, the range and the pagination. Anything else the paging needs goes into the `footer.prepend`
+  slot — its name has a dot, so bind it as a dynamic slot name rather than as `#footer.prepend`,
+  which Vue parses as the slot `footer` with a `prepend` modifier.
+- **A server ordering is a control, not a column sort.** When the server orders by something no
+  column shows (a map order, a maintained counter spanning two columns), offer it as a `VSelect` in
+  `footer.prepend`, next to the pages it is applied before, and mark every column `sortable: false`.
+  A sortable header beside it would offer a second, client-side order of one page and contradict it.
+- The grid fills its tab, so it adds the outer edges the shared table style leaves off (right border
+  on the last column, bottom border on the last row); rows are `2.25rem` tall, values clipped (no
+  wrapping) with full value in the tooltip.
 - Custom column headers show: property-type icon, title, `mdi-translate` when localized, and a
   sort affordance (`mdi-sort` when sortable, the active sort icon when sorted). Only sortable
   columns get the pointer cursor.
@@ -419,6 +545,24 @@ rounded bars, sparkline mode (no axes chrome), and **custom dark HTML tooltips**
 mini properties table (muted property-name column). Data quality problems (missing optional
 properties) are stated in a note under the chart instead of failing silently.
 
+**Series colours are the one sanctioned exception to "no hex values in components".** ApexCharts and
+the CSS-drawn bars of the Storage tab take literal colours, so a series table (`HistogramChart`,
+`StoragePage`, `ActiveRecordShareGauge`, `CollectionStorageBar`, `model/storageComposition.ts`) spells
+the palette out. Reuse the theme values first; the Storage composition legend needs more distinct
+hues than the palette has and adds `#8e6fd8`, `#23a5a5` and `#e0698c` for *References*, *Metadata*
+and *Other entity data* — keep any new series colour in such a table, next to the ones it is read
+against, never inline in a template.
+
+**A chart takes the column it is given.** Do not cap a chart's container with a `max-width` — the
+column already is the constraint, and a narrower cap leaves the page half empty on a wide window.
+ApexCharts sizes itself from its container: a semi-circle radial bar renders
+`min(height / 2, width / 2)` tall, so the `height` prop acts as the *ceiling* while the column's
+width drives the actual size (`ActiveRecordShareGauge` passes `height="500"`, i.e. "grow with the
+column, stop at 250 px tall"). Anything placed beside a chart — a legend, a verdict — keeps a fixed
+basis, so every pixel the column gains goes to the chart itself. Note that label offsets
+(`dataLabels.value.offsetY`) are absolute pixels measured from the chart's centre and do **not**
+scale with it, which is the second reason for keeping a ceiling on the size.
+
 ## Language & i18n
 
 - Every user-facing string goes through `src/modules/i18n/en.json`. Established key families:
@@ -427,6 +571,10 @@ properties) are stated in a note under the chart instead of failing silently.
   `<feature>.notification.*`, `<feature>.tooltip.*`.
 - Tone: short, imperative labels ("Run", "Reload"); tooltips are full sentences; help texts may
   use Markdown (rendered via `VMarkdown`) to reference query constraints in backticks.
+- **A chip is a label, so it is capitalised** ("Alive", "Transactional", "Time travel") — an enum
+  value translated straight from its lower-case wire name reads as a leftover next to the chips
+  beside it. The exception is a chip that completes the sentence of the value it sits next to, the
+  way the durability verdict reads `1 200 ms · above interval`.
 
 ## New-page checklist
 
@@ -438,8 +586,9 @@ properties) are stated in a note under the chart instead of failing silently.
    `VActionTooltip`; every icon button has a tooltip.
 4. All strings via i18n; placeholders for null/empty as muted italic text; explanations as
    delayed tooltips, warnings as warning-icon tooltips.
-5. Metadata as plain chips; enums as `KeywordValue` chips; scope-dependent flags as
-   `MultiValueFlagValue` chips; key-value data via `VPropertiesTable`.
+5. Metadata as plain chips and clickable ones as `outlined` (chip groups included); enums as
+   `KeywordValue` chips; scope-dependent flags as `MultiValueFlagValue` chips; key-value data via
+   `VPropertiesTable`.
 6. Navigation elsewhere = new tab (`workspaceService.createTab`) + `mdi-open-in-new`.
 7. Feedback via `useToaster()`; loading via `VLoadingCircular`/`loading` props; each empty state
    its own `VMissingDataIndicator`.

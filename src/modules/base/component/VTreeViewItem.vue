@@ -10,7 +10,13 @@ export interface Props {
     prependIcon: string,
     loading?: boolean,
     flags?: ItemFlag[],
-    actions?: MenuItem<unknown>[]
+    actions?: MenuItem<unknown>[],
+    /**
+     * Reserves expanding the item for its leading arrow, and reports the arrow click as `click:open` instead of
+     * letting it reach the row. An item that does so gives the row click a meaning of its own — typically opening
+     * the thing the row represents.
+     */
+    openableByArrowOnly?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -18,15 +24,26 @@ const props = withDefaults(defineProps<Props>(), {
     isOpen: false,
     loading: false,
     flags: () => [],
-    actions: () => []
+    actions: () => [],
+    openableByArrowOnly: false
 })
 
 const actionsOpened = ref<boolean>(false)
 
 const emit = defineEmits<{
     (e: 'click:action', value: string): void,
-    (e: 'click:actionMenu'): void
+    (e: 'click:actionMenu'): void,
+    (e: 'click:open', event: MouseEvent): void
 }>()
+
+function handleOpenClick(event: MouseEvent): void {
+    if (!props.openableByArrowOnly) {
+        // the row itself is the toggle - let the click bubble to it
+        return
+    }
+    event.stopPropagation()
+    emit('click:open', event)
+}
 
 function openActions(): void {
     emit('click:actionMenu')
@@ -45,6 +62,8 @@ function openActions(): void {
         <div class="tree-view-item__content">
             <VIcon
                 v-if="openable"
+                :class="{ 'tree-view-item__open-icon--standalone': openableByArrowOnly }"
+                @click="handleOpenClick"
             >
                 {{ isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
             </VIcon>
@@ -104,7 +123,7 @@ function openActions(): void {
                     <VIcon
                         v-bind="props"
                         class="text-gray-light"
-                        @click="emit('click:actionMenu')"
+                        @click.stop="emit('click:actionMenu')"
                     >
                         mdi-dots-vertical
                     </VIcon>
@@ -141,6 +160,15 @@ function openActions(): void {
         grid-template-columns: 1.5rem 1.5rem 1fr 1.5rem;
         column-gap: 0.5rem;
         align-items: center;
+    }
+
+    &__open-icon--standalone {
+        // the arrow is the only way to expand such an item, so it advertises itself as separately clickable
+        border-radius: 50%;
+
+        &:hover {
+            background-color: rgba(var(--v-theme-on-surface), 0.1);
+        }
     }
 
     &__text {

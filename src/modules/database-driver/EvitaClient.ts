@@ -655,6 +655,7 @@ export class EvitaClient extends AbstractEvitaClient {
                 this,
                 () => this.evitaManagementClient,
                 () => this.catalogStatisticsConverter,
+                () => this.catalogStatisticsSnapshotConverter,
                 () => this.serverStatusConverter,
                 () => this.engineSettingsConverter,
                 () => this.reservedKeywordsConverter,

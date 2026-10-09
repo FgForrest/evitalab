@@ -18,6 +18,7 @@ import { JfrViewerModuleRegistrar } from '@/modules/jfr-viewer/JfrViewerModuleRe
 import { ServerFileViewerModuleRegistrar } from '@/modules/server-file-viewer/ServerFileViewerModuleRegistrar'
 import { TrafficViewerModuleRegistrar } from '@/modules/traffic-viewer/TrafficViewerModuleRegistrar'
 import { ConnectionExplorerModuleRegistrar } from '@/modules/connection-explorer/ConnectionExplorerModuleRegistrar'
+import { CatalogViewerModuleRegistrar } from '@/modules/catalog-viewer/CatalogViewerModuleRegistrar'
 import { DatabaseDriverModuleRegistrar } from '@/modules/database-driver/DatabaseDriverModuleRegistrar'
 import { MutationHistoryViewerModuleRegistrar } from '@/modules/history-viewer/MutationHistoryViewerModuleRegistrar.ts'
 
@@ -44,6 +45,7 @@ export const modules: ModuleRegistrar[] = [
     new MutationHistoryViewerModuleRegistrar(),
     new EntityViewerModuleRegistrar(),
     new ServerViewerModuleRegistrar(),
+    new CatalogViewerModuleRegistrar(),
     new ServerFileViewerModuleRegistrar(),
     new BackupViewerModuleRegistrar(),
     new TaskViewerModuleRegistrar(),
