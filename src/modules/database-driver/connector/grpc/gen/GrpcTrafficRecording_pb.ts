@@ -20,73 +20,78 @@ export const file_GrpcTrafficRecording: GenFile = /*@__PURE__*/
   fileDesc("ChpHcnBjVHJhZmZpY1JlY29yZGluZy5wcm90bxIlaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZCKTBQojR3JwY1RyYWZmaWNSZWNvcmRpbmdDYXB0dXJlQ3JpdGVyaWESUwoHY29udGVudBgBIAEoDjJCLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1RyYWZmaWNSZWNvcmRpbmdDb250ZW50EkgKBXNpbmNlGAIgASgLMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjT2Zmc2V0RGF0ZVRpbWUSOwoWc2luY2VTZXNzaW9uU2VxdWVuY2VJZBgDIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQ2NFZhbHVlEj0KGHNpbmNlUmVjb3JkU2Vzc2lvbk9mZnNldBgEIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQzMlZhbHVlEk0KBHR5cGUYBSADKA4yPy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUcmFmZmljUmVjb3JkaW5nVHlwZRJCCglzZXNzaW9uSWQYBiADKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNVdWlkEjsKFmxvbmdlclRoYW5NaWxsaXNlY29uZHMYByABKAsyGy5nb29nbGUucHJvdG9idWYuSW50MzJWYWx1ZRI6ChVmZXRjaGluZ01vcmVCeXRlc1RoYW4YCCABKAsyGy5nb29nbGUucHJvdG9idWYuSW50MzJWYWx1ZRJFCgZsYWJlbHMYCSADKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNRdWVyeUxhYmVsIt0JChFHcnBjVHJhZmZpY1JlY29yZBIgChRzZXNzaW9uU2VxdWVuY2VPcmRlchgBIAEoA0ICMAESQgoJc2Vzc2lvbklkGAIgASgLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVXVpZBIbChNyZWNvcmRTZXNzaW9uT2Zmc2V0GAMgASgFEhsKE3Nlc3Npb25SZWNvcmRzQ291bnQYBCABKAUSTQoEdHlwZRgFIAEoDjI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1RyYWZmaWNSZWNvcmRpbmdUeXBlEkoKB2NyZWF0ZWQYBiABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNPZmZzZXREYXRlVGltZRIeChZkdXJhdGlvbkluTWlsbGlzZWNvbmRzGAcgASgFEhoKEmlvRmV0Y2hlZFNpemVCeXRlcxgIIAEoBRIUCgxpb0ZldGNoQ291bnQYCSABKAUSNwoRZmluaXNoZWRXaXRoRXJyb3IYCiABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSVwoIbXV0YXRpb24YZSABKAsyQy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUcmFmZmljTXV0YXRpb25Db250YWluZXJIABJRCgVxdWVyeRhmIAEoCzJALmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1RyYWZmaWNRdWVyeUNvbnRhaW5lckgAEmEKCmVucmljaG1lbnQYZyABKAsySy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUcmFmZmljRW50aXR5RW5yaWNobWVudENvbnRhaW5lckgAElcKBWZldGNoGGggASgLMkYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVHJhZmZpY0VudGl0eUZldGNoQ29udGFpbmVySAASXwoMc2Vzc2lvbkNsb3NlGGkgASgLMkcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVHJhZmZpY1Nlc3Npb25DbG9zZUNvbnRhaW5lckgAEl8KDHNlc3Npb25TdGFydBhqIAEoCzJHLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1RyYWZmaWNTZXNzaW9uU3RhcnRDb250YWluZXJIABJdCgtzb3VyY2VRdWVyeRhrIAEoCzJGLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1RyYWZmaWNTb3VyY2VRdWVyeUNvbnRhaW5lckgAEnEKFXNvdXJjZVF1ZXJ5U3RhdGlzdGljcxhsIAEoCzJQLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1RyYWZmaWNTb3VyY2VRdWVyeVN0YXRpc3RpY3NDb250YWluZXJIAEIGCgRib2R5ItoBChxHcnBjVHJhZmZpY011dGF0aW9uQ29udGFpbmVyElMKDmVudGl0eU11dGF0aW9uGAEgASgLMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW50aXR5TXV0YXRpb25IABJZCg5zY2hlbWFNdXRhdGlvbhgCIAEoCzI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjaGVtYU11dGF0aW9uSABCCgoIbXV0YXRpb24iugEKGUdycGNUcmFmZmljUXVlcnlDb250YWluZXISGAoQcXVlcnlEZXNjcmlwdGlvbhgBIAEoCRINCgVxdWVyeRgCIAEoCRIYChB0b3RhbFJlY29yZENvdW50GAMgASgFEhMKC3ByaW1hcnlLZXlzGAQgAygFEkUKBmxhYmVscxgFIAMoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1F1ZXJ5TGFiZWwiSQokR3JwY1RyYWZmaWNFbnRpdHlFbnJpY2htZW50Q29udGFpbmVyEg0KBXF1ZXJ5GAEgASgJEhIKCnByaW1hcnlLZXkYAiABKAUiRAofR3JwY1RyYWZmaWNFbnRpdHlGZXRjaENvbnRhaW5lchINCgVxdWVyeRgBIAEoCRISCgpwcmltYXJ5S2V5GAIgASgFIj4KIEdycGNUcmFmZmljU2Vzc2lvblN0YXJ0Q29udGFpbmVyEhoKDmNhdGFsb2dWZXJzaW9uGAEgASgDQgIwASLAAQogR3JwY1RyYWZmaWNTZXNzaW9uQ2xvc2VDb250YWluZXISGgoOY2F0YWxvZ1ZlcnNpb24YASABKANCAjABEhoKEnRyYWZmaWNSZWNvcmRDb3VudBgCIAEoBRISCgpxdWVyeUNvdW50GAMgASgFEhgKEGVudGl0eUZldGNoQ291bnQYBCABKAUSFQoNbXV0YXRpb25Db3VudBgFIAEoBRIfChd0cmFmZmljUmVjb3Jkc01pc3NlZE91dBgGIAEoBSLFAQofR3JwY1RyYWZmaWNTb3VyY2VRdWVyeUNvbnRhaW5lchJGCg1zb3VyY2VRdWVyeUlkGAEgASgLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVXVpZBITCgtzb3VyY2VRdWVyeRgCIAEoCRJFCgZsYWJlbHMYAyADKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNRdWVyeUxhYmVsIqoBCilHcnBjVHJhZmZpY1NvdXJjZVF1ZXJ5U3RhdGlzdGljc0NvbnRhaW5lchJGCg1zb3VyY2VRdWVyeUlkGAEgASgLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVXVpZBIbChNyZXR1cm5lZFJlY29yZENvdW50GAIgASgFEhgKEHRvdGFsUmVjb3JkQ291bnQYAyABKAUiLQoOR3JwY1F1ZXJ5TGFiZWwSDAoEbmFtZRgBIAEoCRINCgV2YWx1ZRgCIAEoCSpXChtHcnBjVHJhZmZpY1JlY29yZGluZ0NvbnRlbnQSHAoYVFJBRkZJQ19SRUNPUkRJTkdfSEVBREVSEAASGgoWVFJBRkZJQ19SRUNPUkRJTkdfQk9EWRABKrQCChhHcnBjVHJhZmZpY1JlY29yZGluZ1R5cGUSIwofVFJBRkZJQ19SRUNPUkRJTkdfU0VTU0lPTl9TVEFSVBAAEiQKIFRSQUZGSUNfUkVDT1JESU5HX1NFU1NJT05fRklOSVNIEAESIgoeVFJBRkZJQ19SRUNPUkRJTkdfU09VUkNFX1FVRVJZEAISLQopVFJBRkZJQ19SRUNPUkRJTkdfU09VUkNFX1FVRVJZX1NUQVRJU1RJQ1MQAxIbChdUUkFGRklDX1JFQ09SRElOR19RVUVSWRAEEhsKF1RSQUZGSUNfUkVDT1JESU5HX0ZFVENIEAUSIAocVFJBRkZJQ19SRUNPUkRJTkdfRU5SSUNITUVOVBAGEh4KGlRSQUZGSUNfUkVDT1JESU5HX01VVEFUSU9OEAdCgAIKKWNvbS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkQhlHcnBjVHJhZmZpY1JlY29yZGluZ1Byb3RvUAGiAgVJRUVHR6oCJUlvLkV2aXRhZGIuRXh0ZXJuYWxBcGkuR3JwYy5HZW5lcmF0ZWTKAiVJb1xFdml0YWRiXEV4dGVybmFsQXBpXEdycGNcR2VuZXJhdGVk4gIxSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZFxHUEJNZXRhZGF0YeoCKUlvOjpFdml0YWRiOjpFeHRlcm5hbEFwaTo6R3JwYzo6R2VuZXJhdGVkYgZwcm90bzM", [file_google_protobuf_wrappers, file_GrpcEvitaDataTypes, file_GrpcEntityMutation, file_GrpcEntitySchemaMutation]);
 
 /**
- * Record for the criteria of the capture request allowing to limit mutations to specific area of interest an its
+ * Record for the criteria of the capture request allowing to limit mutations to specific area of interest and its
  * properties.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcTrafficRecordingCaptureCriteria
  */
 export type GrpcTrafficRecordingCaptureCriteria = Message<"io.evitadb.externalApi.grpc.generated.GrpcTrafficRecordingCaptureCriteria"> & {
   /**
-   * content determines whether only basic information about the traffic recording is returned or the actual content
+   * Determines whether only basic information about the traffic recording is returned, or the actual event
+   * content as well (see the `body` oneof on `GrpcTrafficRecord`).
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTrafficRecordingContent content = 1;
    */
   content: GrpcTrafficRecordingContent;
 
   /**
-   * since specifies the time from which the traffic recording should be returned
+   * The lower time bound (inclusive) for returned traffic records. If unset, no time-based lower bound is applied.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcOffsetDateTime since = 2;
    */
   since?: GrpcOffsetDateTime;
 
   /**
-   * sinceSessionSequenceId specifies the session sequence ID from which the traffic recording should be returned
+   * The session sequence ID (see `GrpcTrafficRecord#sessionSequenceOrder`) from which the traffic recording should
+   * be returned (inclusive). If unset, no session-sequence lower bound is applied.
    *
    * @generated from field: google.protobuf.Int64Value sinceSessionSequenceId = 3;
    */
   sinceSessionSequenceId?: bigint;
 
   /**
-   * sinceRecordSessionOffset specifies the record session offset from which the traffic recording should be returned
-   *                          (the offset is relative to the session sequence ID and starts from 0), offset allows
-   *                          to continue fetching the traffic recording from the last fetched record when session
-   *                          was not fully fetched
+   * The record offset within the session identified by `sinceSessionSequenceId` from which the traffic recording
+   * should be returned (the offset is relative to the session sequence ID and starts from 0); allows continuing to
+   * fetch a session's traffic recording from the last fetched record when the session was not fully fetched in a
+   * previous call. If unset, records are returned from the start of the session.
    *
    * @generated from field: google.protobuf.Int32Value sinceRecordSessionOffset = 4;
    */
   sinceRecordSessionOffset?: number;
 
   /**
-   * type specifies the types of traffic recording to be returned
+   * The types of traffic recording to be returned. If empty, records of all types are returned.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcTrafficRecordingType type = 5;
    */
   type: GrpcTrafficRecordingType[];
 
   /**
-   * sessionId specifies the session ID from which the traffic recording should be returned
+   * The session IDs to limit the returned traffic recording to. If empty, records from all sessions are considered.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcUuid sessionId = 6;
    */
   sessionId: GrpcUuid[];
 
   /**
-   * longerThan specifies the minimum duration in milliseconds of the traffic recording to be returned
+   * The minimum duration (milliseconds) the traffic recording operation must have taken to be returned. If unset,
+   * no minimum-duration filter is applied.
    *
    * @generated from field: google.protobuf.Int32Value longerThanMilliseconds = 7;
    */
   longerThanMilliseconds?: number;
 
   /**
-   * fetchingMoreBytesThan specifies the minimum number of bytes that record should have fetched from the disk
+   * The minimum number of bytes the record must have fetched from the permanent storage to be returned. If unset,
+   * no minimum-size filter is applied.
    *
    * @generated from field: google.protobuf.Int32Value fetchingMoreBytesThan = 8;
    */
   fetchingMoreBytesThan?: number;
 
   /**
-   * labels specifies the client labels that the traffic recording must have (both name and value must match)
+   * The client labels the traffic recording must have (both name and value must match). If empty, no label filter
+   * is applied.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcQueryLabel labels = 9;
    */
@@ -172,61 +177,82 @@ export type GrpcTrafficRecord = Message<"io.evitadb.externalApi.grpc.generated.G
   ioFetchCount: number;
 
   /**
-   * Returns non-null error message if the action the recording relates to finished with an error.
+   * The error message the operation this record represents finished with. If unset, the operation completed
+   * without error.
    *
    * @generated from field: google.protobuf.StringValue finishedWithError = 10;
    */
   finishedWithError?: string;
 
   /**
-   * optional body of the traffic recording when it is requested by the GrpcTrafficCaptureContent
+   * The body of the traffic recording, present only when body content was requested via the capture criteria's
+   * `content` field (`TRAFFIC_RECORDING_BODY`); entirely absent when only headers were requested
+   * (`TRAFFIC_RECORDING_HEADER`). When present, exactly one of the following members is set, matching this
+   * record's `type`.
    *
    * @generated from oneof io.evitadb.externalApi.grpc.generated.GrpcTrafficRecord.body
    */
   body: {
     /**
+     * Present when `type` is `TRAFFIC_RECORDING_MUTATION` - the entity or schema mutation that was executed.
+     *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTrafficMutationContainer mutation = 101;
      */
     value: GrpcTrafficMutationContainer;
     case: "mutation";
   } | {
     /**
+     * Present when `type` is `TRAFFIC_RECORDING_QUERY` - the internal evitaDB query (evitaQL) that was executed.
+     *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTrafficQueryContainer query = 102;
      */
     value: GrpcTrafficQueryContainer;
     case: "query";
   } | {
     /**
+     * Present when `type` is `TRAFFIC_RECORDING_ENRICHMENT` - the entity enrichment call that was executed.
+     *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTrafficEntityEnrichmentContainer enrichment = 103;
      */
     value: GrpcTrafficEntityEnrichmentContainer;
     case: "enrichment";
   } | {
     /**
+     * Present when `type` is `TRAFFIC_RECORDING_FETCH` - the single entity fetch call that was executed.
+     *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTrafficEntityFetchContainer fetch = 104;
      */
     value: GrpcTrafficEntityFetchContainer;
     case: "fetch";
   } | {
     /**
+     * Present when `type` is `TRAFFIC_RECORDING_SESSION_FINISH` - statistics collected over the closed session.
+     *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTrafficSessionCloseContainer sessionClose = 105;
      */
     value: GrpcTrafficSessionCloseContainer;
     case: "sessionClose";
   } | {
     /**
+     * Present when `type` is `TRAFFIC_RECORDING_SESSION_START` - metadata about the newly opened session.
+     *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTrafficSessionStartContainer sessionStart = 106;
      */
     value: GrpcTrafficSessionStartContainer;
     case: "sessionStart";
   } | {
     /**
+     * Present when `type` is `TRAFFIC_RECORDING_SOURCE_QUERY` - the raw, unparsed query as received from the client.
+     *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTrafficSourceQueryContainer sourceQuery = 107;
      */
     value: GrpcTrafficSourceQueryContainer;
     case: "sourceQuery";
   } | {
     /**
+     * Present when `type` is `TRAFFIC_RECORDING_SOURCE_QUERY_STATISTICS` - statistics aggregated over all
+     * operations related to a single source query.
+     *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTrafficSourceQueryStatisticsContainer sourceQueryStatistics = 108;
      */
     value: GrpcTrafficSourceQueryStatisticsContainer;
@@ -248,7 +274,7 @@ export const GrpcTrafficRecordSchema: GenMessage<GrpcTrafficRecord> = /*@__PURE_
  */
 export type GrpcTrafficMutationContainer = Message<"io.evitadb.externalApi.grpc.generated.GrpcTrafficMutationContainer"> & {
   /**
-   * The mutation operation.
+   * The mutation operation; exactly one of the following is set.
    *
    * @generated from oneof io.evitadb.externalApi.grpc.generated.GrpcTrafficMutationContainer.mutation
    */
@@ -510,14 +536,14 @@ export type GrpcTrafficSourceQueryStatisticsContainer = Message<"io.evitadb.exte
   sourceQueryId?: GrpcUuid;
 
   /**
-   * The total number of records returned by the query ({@link EvitaResponse#getRecordData()} size)
+   * The number of records actually returned by the query, i.e. the size of the fetched data chunk after pagination.
    *
    * @generated from field: int32 returnedRecordCount = 2;
    */
   returnedRecordCount: number;
 
   /**
-   * The total number of records calculated by the query ({@link EvitaResponse#getTotalRecordCount()})
+   * The total number of records matching the query, before pagination is applied.
    *
    * @generated from field: int32 totalRecordCount = 3;
    */
@@ -600,7 +626,7 @@ export enum GrpcTrafficRecordingType {
   TRAFFIC_RECORDING_SESSION_START = 0,
 
   /**
-   * * evitaDB session closed.
+   * evitaDB session closed.
    *
    * @generated from enum value: TRAFFIC_RECORDING_SESSION_FINISH = 1;
    */

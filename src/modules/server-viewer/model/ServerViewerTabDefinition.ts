@@ -23,6 +23,6 @@ export class ServerViewerTabDefinition extends TabDefinition<ServerViewerTabPara
     }
 
     static icon(): string {
-        return 'mdi-database-outline'
+        return 'mdi-server-outline'
     }
 }

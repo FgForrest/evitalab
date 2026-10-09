@@ -28,6 +28,10 @@ import {
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState.ts'
 import type { MutationHistoryViewerTabFactory } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
 import { MutationHistoryViewerTabDefinition } from '@/modules/history-viewer/model/MutationHistoryViewerTabDefinition.ts'
+import {
+    CatalogViewerTabDefinition
+} from '@/modules/catalog-viewer/model/CatalogViewerTabDefinition'
+import type { CatalogViewerTabFactory } from '@/modules/catalog-viewer/service/CatalogViewerTabFactory'
 
 export const catalogItemMenuFactoryInjectionKey: symbol = Symbol('catalogItemMenuFactoryInjectionKey')
 
@@ -46,6 +50,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
     private readonly schemaViewerTabFactory: SchemaViewerTabFactory
     private readonly trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory
     private readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
+    private readonly catalogViewerTabFactory: CatalogViewerTabFactory
 
     constructor(
         workspaceService: WorkspaceService,
@@ -53,7 +58,8 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         graphQLConsoleTabFactory: GraphQLConsoleTabFactory,
         schemaViewerTabFactory: SchemaViewerTabFactory,
         trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory,
-        mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
+        mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory,
+        catalogViewerTabFactory: CatalogViewerTabFactory
     ) {
         super()
         this.workspaceService = workspaceService
@@ -62,6 +68,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         this.schemaViewerTabFactory = schemaViewerTabFactory
         this.trafficRecordHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
         this.mutationHistoryViewerTabFactory = mutationHistoryViewerTabFactory
+        this.catalogViewerTabFactory = catalogViewerTabFactory
     }
 
     async createItems(
@@ -103,6 +110,20 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         const items: Map<CatalogMenuItemType, MenuItem<CatalogMenuItemType>> = new Map()
 
 
+
+        this.createMenuAction(
+            items,
+            CatalogMenuItemType.CatalogPreview,
+            CatalogViewerTabDefinition.icon(),
+            this.getItemTitle,
+            () => {
+                this.workspaceService.createTab(
+                    this.catalogViewerTabFactory.createNew(catalog.name)
+                )
+            },
+            // statistics render for a corrupted catalog too - that is exactly when someone opens this screen
+            !deactivated
+        )
 
         this.createMenuAction(
             items,

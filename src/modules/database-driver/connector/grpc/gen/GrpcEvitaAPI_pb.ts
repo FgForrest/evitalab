@@ -57,7 +57,10 @@ export type GrpcEvitaSessionRequest = Message<"io.evitadb.externalApi.grpc.gener
   catalogName: string;
 
   /**
-   * Commit behaviour
+   * Default commit behaviour applied when the session is closed implicitly via `close()` - determines how far a
+   * transaction must be durably persisted before the close is considered complete. Can be overridden per call by
+   * closing the session explicitly with a specific behaviour instead. See `GrpcCommitBehavior` for the available
+   * durability/performance trade-offs.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCommitBehavior commitBehavior = 2;
    */
@@ -92,14 +95,16 @@ export type GrpcEvitaSessionResponse = Message<"io.evitadb.externalApi.grpc.gene
   sessionId: string;
 
   /**
-   * Type of the created session.
+   * Type of the created session - read-only vs. read-write, and whether fetched entities are returned in binary
+   * form for the Java driver (`BINARY_*` variants). See `GrpcSessionType`.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcSessionType sessionType = 2;
    */
   sessionType: GrpcSessionType;
 
   /**
-   * Commit behaviour
+   * Effective commit behaviour of the created session, applied when the session is closed implicitly via
+   * `close()`. See `GrpcCommitBehavior` for the available durability/performance trade-offs.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCommitBehavior commitBehaviour = 3;
    */
@@ -218,7 +223,7 @@ export const GrpcGetCatalogStateRequestSchema: GenMessage<GrpcGetCatalogStateReq
  */
 export type GrpcGetCatalogStateResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcGetCatalogStateResponse"> & {
   /**
-   * State of the catalog.
+   * State of the catalog. Unset if no catalog with the requested name exists.
    *
    * @generated from field: optional io.evitadb.externalApi.grpc.generated.GrpcCatalogState catalogState = 1;
    */
@@ -330,14 +335,18 @@ export const GrpcRenameCatalogResponseSchema: GenMessage<GrpcRenameCatalogRespon
  */
 export type GrpcReplaceCatalogRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcReplaceCatalogRequest"> & {
   /**
-   * Name of the catalog that will become the successor of the original catalog (old name)
+   * Name of the source catalog whose content takes over. After a successful replace, this name no longer exists -
+   * the catalog is consumed and its content is now served under `catalogNameToBeReplaced`. If the operation fails,
+   * the state of this catalog is unknown and must be treated as damaged.
    *
    * @generated from field: string catalogNameToBeReplacedWith = 1;
    */
   catalogNameToBeReplacedWith: string;
 
   /**
-   * Name of the catalog that will be replaced and dropped (new name)
+   * Name of the target catalog to replace. Its existing content is dropped and replaced by the content of
+   * `catalogNameToBeReplacedWith`, while the name itself is preserved and keeps serving requests under it. If the
+   * operation fails, this catalog is guaranteed to remain untouched.
    *
    * @generated from field: string catalogNameToBeReplaced = 2;
    */
@@ -710,27 +719,35 @@ export const GrpcApplyMutationResponseSchema: GenMessage<GrpcApplyMutationRespon
   messageDesc(file_GrpcEvitaAPI, 29);
 
 /**
- * Response to apply mutation on engine level.
+ * Streamed progress report for any of evitaDB's long-running catalog-lifecycle operations that support progress
+ * tracking (apply mutation, rename, replace, make mutable/immutable/alive, duplicate, activate, deactivate - see
+ * the `*WithProgress` RPCs on `EvitaService`). One or more intermediate messages are streamed as the operation
+ * advances, followed by exactly one final message with `progressInPercent` set to 100.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcApplyMutationWithProgressResponse
  */
 export type GrpcApplyMutationWithProgressResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcApplyMutationWithProgressResponse"> & {
   /**
-   * The progress of the go live operation in percents.
+   * Progress of the tracked operation (percent, 0-100). Intermediate updates are throttled (only sent on an
+   * increase, at most once per second); the final message of the stream always carries 100.
    *
    * @generated from field: int32 progressInPercent = 1;
    */
   progressInPercent: number;
 
   /**
-   * Contains catalog version when operation finishes (only if the mutation relates to a catalog)
+   * Catalog version reached by the operation. Set only on the final message (`progressInPercent` = 100), and only
+   * if the operation produced a catalog version (i.e. relates to a catalog rather than being purely engine-level);
+   * unset on every intermediate update.
    *
    * @generated from field: google.protobuf.Int64Value catalogVersion = 2;
    */
   catalogVersion?: bigint;
 
   /**
-   * Contains catalog schema version when operation finishes (only if the mutation relates to a catalog)
+   * Catalog schema version reached by the operation. Set only on the final message (`progressInPercent` = 100),
+   * and only if the operation produced a catalog schema version (i.e. relates to a catalog rather than being
+   * purely engine-level); unset on every intermediate update.
    *
    * @generated from field: google.protobuf.Int32Value catalogSchemaVersion = 3;
    */
@@ -751,14 +768,17 @@ export const GrpcApplyMutationWithProgressResponseSchema: GenMessage<GrpcApplyMu
  */
 export type GrpcRegisterSystemChangeCaptureRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcRegisterSystemChangeCaptureRequest"> & {
   /**
-   * Starting point for the search (engine version)
+   * Starting point for the search (engine version). If `null`, the capture starts live-tailing from the most
+   * recent / greatest available engine version rather than replaying history from the beginning.
    *
    * @generated from field: google.protobuf.Int64Value sinceVersion = 1;
    */
   sinceVersion?: bigint;
 
   /**
-   * Starting point for the search (index of the mutation within engine version - currently each engine level transaction contains only one mutation)
+   * Continuation point within `sinceVersion` (index of the mutation within the engine version - currently each
+   * engine level transaction contains only one mutation). If `null`, the capture starts at the beginning of
+   * `sinceVersion` rather than resuming mid-transaction.
    *
    * @generated from field: google.protobuf.Int32Value sinceIndex = 2;
    */
@@ -796,29 +816,33 @@ export const GrpcRegisterSystemChangeCaptureRequestSchema: GenMessage<GrpcRegist
  */
 export type GrpcRegisterSystemChangeCaptureResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcRegisterSystemChangeCaptureResponse"> & {
   /**
-   * Identification of the registered capture
+   * Identification of the registered subscription. Set on `ACKNOWLEDGEMENT` and `HEARTBEAT` responses (when a
+   * subscription id is available), unset on `CHANGE` responses.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcUuid uuid = 1;
    */
   uuid?: GrpcUuid;
 
   /**
-   * The list of mutations (CDC events) that match the criteria
+   * A single captured CDC event that matched the subscription's criteria - each stream message carries at most
+   * one event, not a batch. Set only when `responseType` is `CHANGE`; unset on `ACKNOWLEDGEMENT` and `HEARTBEAT`
+   * responses.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcChangeSystemCapture capture = 2;
    */
   capture?: GrpcChangeSystemCapture;
 
   /**
-   * The type of the response - when subscription is set-up, acknowledgement is sent
-   * Then with each capture event, the type is set to `change`
+   * The kind of this response: `ACKNOWLEDGEMENT` is sent exactly once, when the subscription is set up; `CHANGE`
+   * is sent for each matching capture event; `HEARTBEAT` is sent periodically as a keep-alive while no matching
+   * event has occurred.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCaptureResponseType responseType = 3;
    */
   responseType: GrpcCaptureResponseType;
 
   /**
-   * Optional heartbeat information, is non-null only if the response is a heartbeat or acknowledgement
+   * Heartbeat information. Set only on `ACKNOWLEDGEMENT` and `HEARTBEAT` responses, unset on `CHANGE` responses.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcHeartBeat heartBeat = 4;
    */
@@ -861,35 +885,43 @@ export const GrpcGetProgressRequestSchema: GenMessage<GrpcGetProgressRequest> = 
  */
 export type GrpcGetProgressResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcGetProgressResponse"> & {
   /**
-   * contains information whether the progress was found or not
+   * True when a mutation progress was being tracked for `catalogName` at the moment this call was received. If
+   * `false`, none of the fields below carry information - either no mutation is currently in flight for this
+   * catalog, or a previously tracked one already finished (and its progress entry was cleared) before this call
+   * arrived; the call must be made while the operation is still running in order to observe it.
    *
    * @generated from field: bool found = 1;
    */
   found: boolean;
 
   /**
-   * The progress of the top-level engine mutation in percents.
+   * Current progress of the tracked mutation (percent, 0-100). Unset iff `found` is `false`. The final streamed
+   * message carries 100; intermediate updates are throttled (only sent on an increase, at most once per second).
    *
    * @generated from field: google.protobuf.Int32Value progressInPercent = 2;
    */
   progressInPercent?: number;
 
   /**
-   * Contains catalog name copied from the request (if the progress is related to a catalog)
+   * Catalog name copied from the request. Empty when `found` is `false`.
    *
    * @generated from field: string catalogName = 3;
    */
   catalogName: string;
 
   /**
-   * Contains catalog version when operation finishes (only if the mutation relates to a catalog)
+   * Catalog version reached by the operation. Set only on the final streamed message (`progressInPercent` = 100),
+   * and only if the operation produced a catalog version (i.e. relates to a catalog rather than being purely
+   * engine-level); unset on every intermediate update.
    *
    * @generated from field: google.protobuf.Int64Value catalogVersion = 4;
    */
   catalogVersion?: bigint;
 
   /**
-   * Contains catalog schema version when operation finishes (only if the mutation relates to a catalog)
+   * Catalog schema version reached by the operation. Set only on the final streamed message
+   * (`progressInPercent` = 100), and only if the operation produced a catalog schema version (i.e. relates to a
+   * catalog rather than being purely engine-level); unset on every intermediate update.
    *
    * @generated from field: google.protobuf.Int32Value catalogSchemaVersion = 5;
    */

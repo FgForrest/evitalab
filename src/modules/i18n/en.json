@@ -12,6 +12,25 @@
       "oneOrMoreWithDuplicates": "1:1…*",
       "notSpecified": "N/A"
     },
+    "scope": {
+      "live": "Live",
+      "archive": "Archived"
+    },
+    "catalogState": {
+      "unknown": "Unknown",
+      "warmingUp": "Warming up",
+      "alive": "Alive",
+      "beingActivated": "Being activated",
+      "beingCreated": "Being created",
+      "beingDeactivated": "Being deactivated",
+      "beingDeleted": "Being deleted",
+      "corrupted": "Corrupted",
+      "goingAlive": "Going alive",
+      "inactive": "Inactive",
+      "missing": "Missing",
+      "outOfDate": "Out of date",
+      "beingUpgraded": "Being upgraded"
+    },
     "placeholder": {
       "empty": "<empty>",
       "emptyArray": "<empty array>",
@@ -408,6 +427,11 @@
     "errorViewer": {
       "_title": "Error viewer",
       "shareTab": "Share tab"
+    },
+    "catalogViewer": {
+      "_title": "Catalog preview",
+      "shareTab": "Share tab",
+      "reload": "Reload statistics"
     }
   },
   "explorer": {
@@ -500,7 +524,8 @@
           "switchToMutable": "Switch to mutable",
           "switchToImmutable": "Switch to immutable",
           "historySubheader": "History",
-          "mutationHistoryViewer": "Mutation history"
+          "mutationHistoryViewer": "Mutation history",
+          "catalogPreview": "Catalog preview"
         }
       },
       "notification": {
@@ -2521,5 +2546,629 @@
     "managedByEvita": "This entity is managed by evitaDB.",
     "managedExternal": "This entity is managed externally.",
     "cardinalityWithDuplicates": "Allows multiple relations with an identical referenced entity primary key. This may be necessary in cases where the distinguishing factor is a reference attribute value."
+  },
+  "catalogViewer": {
+    "title": "Catalog preview",
+    "button": {
+      "reload": "Reload statistics"
+    },
+    "notification": {
+      "couldNotLoadCatalog": "Could not load catalog '{catalogName}'"
+    },
+    "unavailable": {
+      "title": "The catalog could not be loaded. It may have been dropped, or the server may be unreachable."
+    },
+    "placeholder": {
+      "notApplicable": "—"
+    },
+    "page": {
+      "overview": "Overview",
+      "storage": "Storage",
+      "indexes": "Indexes",
+      "memory": "Memory",
+      "activity": "Activity",
+      "history": "History"
+    },
+    "state": {
+      "corrupted": "This catalog could not be loaded. Only its disk footprint is readable — state, version and every counter are unavailable. Restore and drop stay available.",
+      "warmingUp": "This catalog is warming up. Writes are applied in bulk with no transactional guarantees — a failure mid-write can leave partial data.",
+      "inTransition": "This catalog is changing state. The numbers below are not final yet."
+    },
+    "component": {
+      "label": "{component} {availability}",
+      "notRequested": "This section was not requested from the server.",
+      "name": {
+        "identity": "IDENTITY",
+        "recordCounts": "RECORD COUNTS",
+        "collections": "COLLECTIONS",
+        "sessions": "SESSIONS",
+        "commitPipeline": "COMMIT PIPELINE",
+        "activity": "ACTIVITY",
+        "storageSize": "STORAGE SIZE",
+        "storageComposition": "STORAGE COMPOSITION",
+        "fragmentation": "FRAGMENTATION",
+        "history": "HISTORY",
+        "durability": "DURABILITY",
+        "indexSummary": "INDEX SUMMARY",
+        "indexCardinality": "INDEX CARDINALITY",
+        "volatileState": "VOLATILE STATE"
+      },
+      "availability": {
+        "catalogUnusable": "unavailable",
+        "featureDisabled": "disabled",
+        "unknown": "unavailable"
+      },
+      "reason": {
+        "catalogUnusable": "The catalog is corrupted and could not be loaded, and this section reads state only a loaded catalog has.",
+        "featureDisabled": "This section depends on an engine feature switched off in the current configuration. A configuration change makes it available.",
+        "unknown": "The server declined this section for a reason this version of evitaLab does not recognize."
+      }
+    },
+    "overview": {
+      "notification": {
+        "couldNotLoad": "Could not load catalog overview"
+      },
+      "flag": {
+        "transactional": "Transactional",
+        "nonTransactional": "Non-transactional",
+        "readOnly": "Read only",
+        "version": "Version {version}"
+      },
+      "note": {
+        "nonTransactional": "Writes bypass the transactional pipeline — a failure mid-write can leave partial data."
+      },
+      "identity": {
+        "title": "Identity",
+        "catalogName": "Catalog name",
+        "catalogId": "Catalog ID",
+        "transactional": "Transactional",
+        "readOnly": "Read-only",
+        "entityCollections": "Entity collections"
+      },
+      "counters": {
+        "title": "Counters",
+        "totalRecords": "Total records",
+        "liveRecords": "Live records",
+        "archivedRecords": "Archived records",
+        "indexes": "Indexes",
+        "openSessions": "Open sessions",
+        "openSessionsValue": "{total} · {readOnly} read-only / {readWrite} read-write"
+      },
+      "help": {
+        "catalogName": "Unique name of the catalog within this evitaDB instance.",
+        "catalogId": "Stable UUID assigned at creation. Survives renames — use it, not the name, to correlate backups and logs.",
+        "state": "Lifecycle state of the catalog. Warming up accepts fast bulk writes without transactional guarantees; alive serves full ACID transactions; inactive exists on disk but is not loaded; corrupted failed to load.",
+        "transactional": "Whether commits to this catalog are transactional. While warming up they are not — a failure mid-write can leave partial data.",
+        "readOnly": "Whether the catalog rejects mutations. Can come from the catalog itself or from the whole server running read-only.",
+        "catalogVersion": "Monotonic version, incremented by every committed transaction. The coordinate used by time travel and point-in-time restore.",
+        "entityCollections": "Number of entity types stored in this catalog.",
+        "totalRecords": "All entity records across all collections, live and archived together.",
+        "liveRecords": "Records in the live scope — what ordinary queries see.",
+        "archivedRecords": "Records moved to the archived scope. They still occupy storage and indexes; only queries that explicitly ask for the archived scope return them.",
+        "indexes": "Total number of indexes across the whole catalog, including the catalog index itself.",
+        "openSessions": "Sessions currently held against this catalog, split read-only / read-write. Check this before renaming, deactivating or dropping — those operations contend with open sessions."
+      },
+      "collections": {
+        "title": "Entity collections",
+        "notification": {
+          "couldNotLoad": "Could not load collection statistics"
+        },
+        "column": {
+          "entityType": "Entity type",
+          "records": "Live / archived",
+          "size": "Size",
+          "indexes": "Indexes",
+          "lastModified": "Last modified"
+        },
+        "help": {
+          "entityType": "Name of the entity collection. Click to open it in the entity viewer.",
+          "records": "Record counts per scope. A large archived share means storage and index cost you are paying for data ordinary queries never see.",
+          "size": "Disk footprint of this collection — live data plus reclaimable waste.",
+          "indexes": "Number of indexes maintained for this collection. Expand for the breakdown by type — a large number is usually normal (one index per referenced entity), not a problem.",
+          "lastModified": "When this collection's storage was last written. A compaction moves it forward without the data itself having changed, so read it as a storage timestamp rather than as a data-modification audit trail."
+        },
+        "value": {
+          "records": "{live} / {archived}"
+        },
+        "placeholder": {
+          "unavailable": "The collection inventory is not available for this catalog.",
+          "lastModifiedUnknown": "unknown",
+          "noIndexes": "No indexes reported for this collection."
+        },
+        "detail": {
+          "storage": "Storage",
+          "indexesByType": "Indexes by type",
+          "inspectIndexes": "Inspect indexes",
+          "openInEntityViewer": "Open in entity viewer",
+          "openSchema": "Open schema"
+        }
+      }
+    },
+    "storage": {
+      "notification": {
+        "couldNotLoad": "Could not load storage statistics"
+      },
+      "total": {
+        "title": "Total size on disk"
+      },
+      "label": {
+        "total": "Total",
+        "liveData": "Live data",
+        "reclaimableWaste": "Reclaimable waste",
+        "writeAheadLog": "Write-ahead log",
+        "awaitingDeletion": "Awaiting deletion",
+        "blockedByActiveReader": "held by the deletion floor",
+        "purgeable": "awaiting purge",
+        "versionIndex": "Version index",
+        "unaccounted": "Unaccounted"
+      },
+      "help": {
+        "total": "Total bytes of the catalog directory, measured from file lengths. Covers live data, reclaimable waste, retained history and storage bookkeeping.",
+        "liveData": "Bytes of current records and index structures in the active data files. Excludes superseded record versions and retained history.",
+        "reclaimableWaste": "Bytes held by superseded record versions inside the active data files. Released by compaction, which rewrites the file without them.",
+        "writeAheadLog": "Bytes of retained write-ahead log files, which determine how far back the catalog can be read. Bounded by the configured maximum file size and file count; zero when time travel is disabled.",
+        "awaitingDeletion": "Bytes of data files superseded by compaction and not yet deleted, split below by the reason they are retained. Reported with time travel both enabled and disabled.",
+        "blockedByActiveReader": "Bytes in files still referenced by an open reader or writer. Not deletable until those sessions close, independently of the time-travel setting. See the deletion floor on the History page.",
+        "purgeable": "Bytes in files no longer referenced by any session. With time travel enabled they are released when the write-ahead log files covering them are purged; with it disabled, within seconds of becoming unreferenced.",
+        "versionIndex": "Bytes of the bootstrap file holding the catalog-version history.",
+        "unaccounted": "Bytes in the catalog directory attributed to none of the categories above — temporary files of a running compaction, restore-in-progress markers, partial backups. Expected to be zero.",
+        "wasteAccumulationRate": "Current rate at which superseded record versions accumulate, in bytes per second.",
+        "wasteBytesGenerated": "Bytes stranded by record rewrites and removals, counted per data store since it was opened or last compacted. A different quantity from reclaimable waste, and reset by a server restart.",
+        "estimatedCompaction": "Projected time at which the first data store not already eligible crosses the compaction threshold at the current accumulation rate. Unset when the current rate yields no crossing.",
+        "fileSizeThreshold": "Configured minimum data file size below which compaction never triggers.",
+        "minCompactionInterval": "Configured minimum interval between two compactions of the same data file.",
+        "catalogDataStore": "Portion of the figures above belonging to the catalog's own data store — catalog schema, collection headers and catalog-level indexes — excluding every entity collection.",
+        "collectionsCount": "Number of entity collection data stores folded into the catalog-wide figures above.",
+        "compactionVerdict": "The engine's per-file compaction predicate: satisfied when at least one data store of this catalog is eligible. Evaluated per data file against its own length, not against the catalog-wide share.",
+        "pendingFlush": "Records and bytes written to the data stores but not yet persisted to disk.",
+        "retainedInMemory": "Size of the data stores including record versions held in memory for open sessions.",
+        "oldestRetainedVersion": "Creation timestamp of the oldest record version still held in memory for an open session."
+      },
+      "placeholder": {
+        "nothingStored": "Nothing stored yet."
+      },
+      "fragmentation": {
+        "title": "Fragmentation & compaction",
+        "activeRecordShare": "Active record share",
+        "aggregateCaveat": "Catalog-wide ratio of live bytes to live plus waste bytes, folded across the catalog's own data store and every collection. The compaction predicate is evaluated per data file, so this value is not the quantity the thresholds are compared against.",
+        "verdict": {
+          "eligible": "compaction due",
+          "notDue": "no data file due"
+        },
+        "eligibleNow": "eligible now",
+        "noCrossingProjected": "no crossing projected at the current write rate",
+        "wasteAccumulationRate": "Waste accumulation rate",
+        "wasteAccumulationRateValue": "{rate} / s",
+        "wasteBytesGenerated": "Waste generated since last compaction",
+        "estimatedCompaction": "Estimated compaction",
+        "fileSizeThreshold": "File size threshold",
+        "minCompactionInterval": "Minimum compaction interval",
+        "catalogDataStore": "Catalog's own data store",
+        "catalogDataStoreValue": "{live} live · {waste} waste",
+        "catalogDataStoreEligible": "The catalog's own data store already satisfies the compaction predicate.",
+        "collectionsCount": "Collections folded in",
+        "band": {
+          "dueRegardless": "< {share} — due immediately",
+          "dueAfterInterval": "< {share} — due after interval",
+          "healthy": "≥ {share} — not due"
+        }
+      },
+      "composition": {
+        "title": "Storage composition",
+        "help": "Per collection, what kind of data occupies the space. Bytes and record counts are both listed because they rank the kinds differently, and both are measured on the flushed state of the data store.",
+        "notification": {
+          "couldNotLoad": "Could not load storage composition"
+        },
+        "placeholder": {
+          "unavailable": "The collection inventory is not available for this catalog."
+        },
+        "column": {
+          "type": "Type",
+          "records": "Records",
+          "bytes": "Bytes",
+          "averageSize": "Average size",
+          "share": "Share"
+        },
+        "catalogStore": "Catalog's own store",
+        "catalogStoreHelp": "The catalog's own data store, held apart from the collections: the catalog schema, the collection headers and the catalog-level indexes.",
+        "totalHelp": "Record payload of this data store — the sum of the breakdown. It is smaller than the size on disk the Overview tab reports, which also counts reclaimable waste and the offset index that finds the records.",
+        "partTypes": "Storage parts: {types}",
+        "bucket": {
+          "label": {
+            "entityBodies": "Entity bodies",
+            "attributes": "Attributes",
+            "references": "References",
+            "prices": "Prices",
+            "associatedData": "Associated data",
+            "indexes": "Indexes",
+            "metadata": "Schema & headers",
+            "otherEntityData": "Other entity data",
+            "unclassified": "Unclassified"
+          },
+          "help": {
+            "entityBodies": "The entities themselves — primary keys, scope, locales, structural data.",
+            "attributes": "Attribute values, both global and localized.",
+            "references": "References to other entities and their attributes.",
+            "prices": "Price records, including internal price identifiers.",
+            "associatedData": "Associated data blobs. Usually the largest single contributor when a collection is unexpectedly big.",
+            "indexes": "Persisted index structures — the index manifest and every attribute, price, reference, facet and hierarchy index under it, summed. Every byte here was asked for by a schema flag and is rebuilt by a reindex.",
+            "metadata": "Schema and header records — what the data store needs to describe itself. Neither data nor index, and nothing that can be acted on.",
+            "otherEntityData": "Entity data this evitaLab build has no label for: the server classified it with a group added after this build was generated. Upgrading evitaLab splits it out.",
+            "unclassified": "Rows the server classified as nothing at all. Normally none — bytes reported here are worth reporting as a bug."
+          }
+        },
+        "group": {
+          "label": {
+            "entityBody": "Entity bodies",
+            "attributeData": "Attributes",
+            "associatedData": "Associated data",
+            "priceData": "Prices",
+            "referenceData": "References",
+            "indexManifest": "Index manifest",
+            "attributeIndex": "Attribute index",
+            "priceIndex": "Price index",
+            "referenceIndex": "Reference index",
+            "facetIndex": "Facet index",
+            "hierarchyIndex": "Hierarchy index",
+            "referenceHistogramIndex": "Reference histogram index",
+            "schema": "Schemas",
+            "header": "Headers"
+          },
+          "help": {
+            "entityBody": "The entity's own record — primary key, scope, locales, parent and the manifest of the parts it owns.",
+            "attributeData": "Attribute values as stored, one record per entity and locale.",
+            "associatedData": "Associated data values as stored. Usually the largest data group — this is where documents and images end up.",
+            "priceData": "Prices as stored, one record per entity.",
+            "referenceData": "References to other entities as stored, including their own attributes.",
+            "indexManifest": "An index's own record rather than the values it indexes: which sub-indexes exist and which entities they cover. Deliberately small — the structures below are stored apart so this record is not rewritten whenever they change.",
+            "attributeIndex": "Index structures stored for attributes declared filterable, sortable, unique or part of a sortable compound. Read against Attributes, the pair says what indexing the attributes costs against what storing them costs.",
+            "priceIndex": "Index structures stored so that prices can be filtered and ordered by — price lists, currencies and validity ranges.",
+            "referenceIndex": "Index structures stored so that references between entities can be filtered and ordered by. Faceting is charged separately.",
+            "facetIndex": "Index structures stored for references declared faceted — what a facet summary is computed from. Charged apart from the reference index because faceted and indexed are separate schema decisions.",
+            "hierarchyIndex": "The parent-child tree a hierarchical collection is queried through, as stored.",
+            "referenceHistogramIndex": "The bucketed histogram indexes a reference schema declares, read back by the referenceHistogram require constraint. The attributeHistogram and priceHistogram results are computed on the fly and persist nothing, so they never appear here.",
+            "schema": "The catalog schema and one entity schema per collection.",
+            "header": "Header records the data store keeps to describe itself and its collections."
+          }
+        }
+      },
+      "volatile": {
+        "title": "Unflushed / in-memory (advanced)",
+        "pendingFlush": "Pending flush",
+        "pendingFlushValue": "{records} records · {bytes}",
+        "retainedInMemory": "Retained history in memory",
+        "oldestRetainedVersion": "Oldest retained version",
+        "nothingRetained": "nothing retained"
+      }
+    },
+    "indexes": {
+      "notification": {
+        "couldNotLoad": "Could not load index statistics",
+        "couldNotLoadCollection": "Could not load index statistics of '{entityType}'",
+        "couldNotLoadCounts": "Could not load index counts of the collections"
+      },
+      "totalIndexes": "{count} indexes across the whole catalog, the catalog index included.",
+      "selector": {
+        "catalogIndexes": "Catalog indexes",
+        "help": {
+          "catalogIndexes": "The indexes the catalog holds itself: the global unique attribute indexes, one per scope. They are reached through the same calls with no entity type."
+        }
+      },
+      "indexType": {
+        "global": "Global",
+        "referencedEntityType": "Referenced entity type",
+        "referencedEntity": "Referenced entity",
+        "referencedGroupEntityType": "Referenced group type",
+        "referencedGroupEntity": "Referenced group entity"
+      },
+      "attributeIndexType": {
+        "unique": "unique",
+        "filter": "filterable",
+        "sort": "sortable"
+      },
+      "help": {
+        "global": "The full index over all entities of this type. Used when no narrower index applies — comparable to a full scan.",
+        "referencedEntityType": "Indexes over reference attributes, keyed by reference name. Used by referenceHaving and hierarchyWithin.",
+        "referencedEntity": "One index per referenced entity. This is normally the largest count by far and is expected — it is what makes reference-scoped filtering fast.",
+        "referencedGroupEntityType": "Reference attribute indexes keyed by the referenced group. Used by groupHaving.",
+        "referencedGroupEntity": "One index per referenced group entity.",
+        "localizedAttributeIndex": "A localized attribute has one index per locale, and each is reported separately because their selectivities genuinely differ.",
+        "attributeIndexType": {
+          "unique": "The uniqueness index of this attribute.",
+          "filter": "The filtering index of this attribute.",
+          "sort": "The sorting index of this attribute."
+        }
+      },
+      "summary": {
+        "title": "Index count by type and scope",
+        "column": {
+          "indexType": "Index type",
+          "total": "Total"
+        }
+      },
+      "cardinality": {
+        "title": "Per-index cardinality",
+        "help": "What each index actually holds, next to what the schema declared. Distinct values and records covered are not interchangeable, even for a unique index: a globally-unique attribute that is also localized has one locale-less key covering every locale, so a single record can own several values.",
+        "column": {
+          "element": "Attribute or reference",
+          "declaredAs": "Declared as",
+          "index": "Index",
+          "entityCount": "Entities covered",
+          "distinctValues": "Distinct values",
+          "recordsCovered": "Records covered",
+          "ratio": "Cardinality ratio"
+        },
+        "button": {
+          "openSchema": "Open schema declaration"
+        },
+        "placeholder": {
+          "noDescribedIndexes": "No index of this collection holds an attribute index — neither on the entity itself nor on one of its references."
+        },
+        "omittedNote": "{count} further indexes are counted but not described — the per-referenced-entity indexes, whose selectivity is a property of the reference the index above them already summarises. Open one by name on the Memory page."
+      },
+      "catalogIndexes": {
+        "title": "Catalog indexes — global unique, one per scope",
+        "column": {
+          "attribute": "Attribute",
+          "locale": "Locale",
+          "scope": "Scope",
+          "indexType": "Index type",
+          "entitiesCovered": "Entities covered",
+          "distinctValues": "Distinct values"
+        },
+        "placeholder": {
+          "none": "The catalog schema declares no globally-unique attribute, or none has been written to yet."
+        },
+        "footnote": "A catalog index reports no index type and no entity count: a globally-unique index maps values to records of any collection, so counting entities would count one entity several times."
+      }
+    },
+    "memory": {
+      "notification": {
+        "couldNotLoad": "Could not load the collection inventory",
+        "couldNotBrowse": "Could not list indexes",
+        "couldNotMeasure": "Could not measure the index",
+        "couldNotLoadCounts": "Could not load index counts of the collections",
+        "couldNotLoadReferences": "Could not load reference names for the reference filter"
+      },
+      "filter": {
+        "indexType": "Index type",
+        "scope": "Scope",
+        "reference": "Reference",
+        "anyReference": "Any",
+        "ordering": "Order"
+      },
+      "column": {
+        "entityType": "Entity type",
+        "indexType": "Index type",
+        "scope": "Scope",
+        "discriminator": "Discriminator",
+        "entities": "Entities",
+        "usage": "Usage",
+        "estimatedSize": "Estimated size (B)"
+      },
+      "button": {
+        "measure": "Measure"
+      },
+      "help": {
+        "measure": "Estimates the heap this index occupies by walking its contents; entities covered: {entities}. The walk cannot be amortised — about 4 µs for the median index, 151 ms for the largest one measured on a production catalog — so only the rows measured here are walked.",
+        "remeasure": "Walks the index again and replaces the figure; entities covered: {entities}. A re-measurement costs the same as the first one — nothing about it is cached."
+      },
+      "usage": {
+        "value": "{queries} queries · {updates} updates, since {since}",
+        "notMeasured": "not measured",
+        "unknownWindow": "an unknown time"
+      },
+      "ordering": {
+        "mapOrder": "Map order",
+        "entityCountDesc": "Entity count — largest first",
+        "queryCountDesc": "Queries — busiest first",
+        "queryCountAsc": "Queries — untouched first",
+        "updateCountDesc": "Updates — most maintained first",
+        "measuredSize": "Measured size",
+        "measuredSizeReason": "Impossible by design: ranking by measured size would mean measuring every index first, which is the one cost this page exists to avoid."
+      },
+      "measuredOnPage": {
+        "label": "Measured on this page (B)",
+        "caption": "{measured} of {total} rows · {human}",
+        "help": "The sum of the rows you have measured. It is not a collection total — unmeasured rows contribute nothing to it. A collection total exists only if every index of the collection is measured and summed client-side."
+      },
+      "placeholder": {
+        "noIndexes": "No index matches the current filters."
+      },
+      "footer": {
+        "catalogVersion": "read at catalog version {catalogVersion}"
+      }
+    },
+    "activity": {
+      "notification": {
+        "couldNotLoad": "Could not load activity statistics"
+      },
+      "live": {
+        "running": "Live · every {seconds} s",
+        "paused": "Paused"
+      },
+      "button": {
+        "pause": "Pause live refresh",
+        "resume": "Resume live refresh"
+      },
+      "counter": {
+        "transactionsCommitted": "Transactions committed",
+        "transactionsRolledBack": "Transactions rolled back",
+        "conflicts": "Conflicts",
+        "mutationsApplied": "Mutations applied",
+        "walBytesWritten": "Write-ahead log written",
+        "perSecond": "{rate} per second",
+        "perSecondBytes": "{rate} per second",
+        "shareOfFinished": "{share} of finished transactions"
+      },
+      "countingSince": "Counting since {since}, when the counters were zeroed. They are process-scoped and are not persisted, so they start at zero every time the catalog is loaded.",
+      "help": {
+        "transactionsCommitted": "Transactions appended to the write-ahead log — the point of no return, after which the transaction is committed whatever happens downstream.",
+        "transactionsRolledBack": "Transactions discarded at session close because the session was marked rollback-only. These never reach the pipeline at all.",
+        "conflicts": "Transactions rejected by conflict resolution because another transaction had already claimed one of their conflict keys. A rising rate means concurrent writers are contending on the same data.",
+        "mutationsApplied": "Individual changes carried by the committed transactions. Compare against the transaction rate to see how large your transactions are.",
+        "walBytesWritten": "Volume appended to the write-ahead log — the best proxy for real write load.",
+        "checkpointInterval": "How often the engine aims to force written data onto the physical disk. Between checkpoints the catalog is safe but behind — a restart replays that much from the write-ahead log.",
+        "lastCadence": "Actual time between the two most recent checkpoints. A value above the configured interval usually just means the catalog was idle, so it is not a problem signal on its own — the health signal is fence depth.",
+        "lastFenceDepth": "How long the oldest change in the last checkpoint waited before reaching the disk — roughly what a crash at that moment would have cost in replay time. Above the configured interval means durability is falling behind. Zero means nothing had to wait.",
+        "filesForced": "Files written to the physical disk by the most recent checkpoint, and how long that took. Rising time per file points at disk contention.",
+        "checkpointsCompleted": "Checkpoints since counting started. The counter resets when the catalog is opened, so read it against the \"counting since\" timestamp rather than as a lifetime total.",
+        "lastCheckpoint": "When the most recent checkpoint finished. If this is old, the numbers above are stale rather than live.",
+        "aboveInterval": "The last checkpoint made a change durable later than the configured interval allows. A high time per file in \"Files forced\" points at a slow or contended disk; a fast force with a deep fence means a write round ran longer than the interval.",
+        "farAboveInterval": "Fence depth is more than five times the configured interval — durability is far behind and worth escalating rather than watching."
+      },
+      "pipeline": {
+        "title": "Commit pipeline",
+        "stage": {
+          "assigned": "Assigned",
+          "written": "Written",
+          "durable": "Durable",
+          "visible": "Visible"
+        },
+        "edge": {
+          "assignedToWritten": "assigned → written",
+          "writtenToDurable": "written → durable",
+          "durableToVisible": "durable → visible",
+          "value": "{versions} versions"
+        },
+        "depth": "Pipeline depth",
+        "help": {
+          "assigned": "Newest catalog version handed out by conflict resolution.",
+          "written": "Newest catalog version appended to the write-ahead log.",
+          "durable": "Newest catalog version forced to durable storage.",
+          "visible": "Newest catalog version visible to readers.",
+          "assignedToWritten": "Transactions accepted but not yet in the write-ahead log.",
+          "writtenToDurable": "Transactions in the log but not yet forced to the device. This is what a crash would replay.",
+          "durableToVisible": "Transactions durable but not yet incorporated into the live view. Sustained non-zero means readers are seeing slightly stale data under write pressure.",
+          "depth": "Versions accepted but not yet visible to readers. Tells a busy catalog from a backed-up one."
+        }
+      },
+      "durability": {
+        "title": "Durability",
+        "checkpointInterval": "Checkpoint interval",
+        "lastCadence": "Last cadence",
+        "lastFenceDepth": "Last fence depth",
+        "filesForced": "Files forced",
+        "filesForcedValue": "{files} files · {duration}",
+        "checkpointsCompleted": "Checkpoints completed",
+        "lastCheckpoint": "Last checkpoint",
+        "noCheckpointYet": "No checkpoint has completed since this catalog was opened, so there is nothing to measure yet. That is a freshly opened or write-idle catalog, not a stalled one.",
+        "lastCheckpointValue": "{when} · {age}",
+        "singleCheckpointNote": "Every figure above describes a single checkpoint and only changes when another one happens. The commit pipeline answers the same question in catalog versions — a deep fence with a small version lag means few but expensive writes, a shallow fence with a large one means many small writes.",
+        "aboveInterval": "above interval",
+        "farAboveInterval": "far above interval"
+      },
+      "metricsNote": "Query latency and throughput stay in observability rather than being duplicated here."
+    },
+    "history": {
+      "title": "Time travel",
+      "notification": {
+        "couldNotLoad": "Could not load history statistics"
+      },
+      "timeTravelOffNote": "Time travel is off, so no past catalog version can be queried or restored. The deletion-floor figures below still apply — superseded data files awaiting deletion are reported in both modes, and with time travel off a value that does not clear within seconds is worth reporting as a bug.",
+      "coordinates": {
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "oldestAvailableVersion": "Oldest available version",
+        "newestVersion": "Newest version",
+        "versionWithTimestamp": "{version} · {timestamp}",
+        "retentionWindow": "Retention window",
+        "retentionWindowValue": "{versions} versions",
+        "historySize": "History size",
+        "walFiles": "Write-ahead log files",
+        "walFilesValue": "{files} files · {bytes}",
+        "oldestLogEntry": "Oldest log entry",
+        "deletionFloor": "Deletion floor"
+      },
+      "help": {
+        "oldestAvailableVersion": "The furthest back a query or restore can reach.",
+        "newestVersion": "The current catalog version.",
+        "retentionWindow": "How much history is currently kept. Bounded by write-ahead log retention settings, not by a time limit — a quiet catalog keeps history for longer than a busy one.",
+        "historySize": "Disk occupied by retained history. Reduce write-ahead log retention to shrink it.",
+        "walFiles": "Number of retained write-ahead log files and their combined size.",
+        "oldestLogEntry": "Timestamp of the oldest retained log entry.",
+        "deletionFloor": "The oldest catalog version still referenced by an open session. Superseded files at or above this version cannot be deleted yet — if the floor stops advancing, a long-running session is pinning disk space.",
+        "blocked": "The part of the awaiting-deletion footprint still referenced by an open reader or writer. Close the session and the space frees itself.",
+        "purgeable": "The part nothing blocks, waiting only on the purge mechanism."
+      },
+      "awaitingDeletion": {
+        "title": "Awaiting deletion",
+        "total": "{files} files · {bytes}",
+        "blocked": "Held by the deletion floor",
+        "purgeable": "Awaiting purge"
+      },
+      "versions": {
+        "title": "Catalog versions",
+        "openMutationHistory": "Open the mutation history",
+        "notification": {
+          "couldNotLoad": "Could not load catalog versions"
+        },
+        "column": {
+          "version": "Version",
+          "timestamp": "Timestamp",
+          "mutations": "Mutations",
+          "walSize": "Write-ahead log size",
+          "reversible": "Reversible"
+        },
+        "help": {
+          "version": "Catalog version the transaction produced. Versions are listed newest first — the write-ahead log is scanned backwards.",
+          "timestamp": "When the transaction was committed.",
+          "mutations": "Number of mutations the transaction carried.",
+          "walSize": "Bytes the transaction occupies in the write-ahead log.",
+          "reversibleColumn": "Whether a restore can still reach this version.",
+          "reversible": "This version is still within the retention window, so the catalog can be restored to it.",
+          "notReversible": "This version is older than the retention window, so the catalog can no longer be restored to it.",
+          "restoring": "The restore requested from this row is running on the server. The figure is the task's own progress; the outcome is reported once it ends, and the task can also be followed in the task viewer."
+        },
+        "button": {
+          "restore": "Restore to this version",
+          "restoring": "Restoring… {progress} %"
+        },
+        "placeholder": {
+          "noneCommitted": "This catalog has not committed a transaction yet, so it has no version history.",
+          "noneRetained": "None of the catalog's versions is in the retained write-ahead log — the newest one is {version}. Versions written in bulk before the catalog went alive, and versions dropped by write-ahead log retention, are not listed."
+        },
+        "restore": {
+          "title": "Restore {catalogName} to version {version}",
+          "description": "The server takes a snapshot of {catalogName} as of version {version} (committed {timestamp}), restores it beside the running catalogs and, once loaded, publishes it under the target name chosen below. The restored copy can replace {catalogName} in place, replace another existing catalog, or become a new catalog under a free name. Whichever it is, the catalogs keep serving until that final step — the only one clients notice — and sessions open across a swap have to be reopened. The warning below states what the current choice does.",
+          "form": {
+            "targetCatalogName": {
+              "label": "Serve the restored state as",
+              "hint": "Keep the source catalog to replace it in place, pick another catalog to replace that one instead, or type a free name to create a new catalog.",
+              "validations": {
+                "required": "Catalog name is required.",
+                "empty": "Catalog name is required.",
+                "leadingTrailingWhiteSpace": "Catalog name cannot have leading or trailing whitespace characters.",
+                "keyword": "Catalog name is same as a reserved keyword.",
+                "format": "Catalog name doesn't match supported format."
+              }
+            }
+          },
+          "warning": {
+            "target": {
+              "source": "The current {catalogName} catalog is purged together with its entire history. Take a full backup first if you may want it back.",
+              "existing": "The {targetCatalogName} catalog is purged together with its entire history. Take a full backup first if you may want it back. The {catalogName} catalog is left untouched.",
+              "new": "A new {targetCatalogName} catalog is created. The {catalogName} catalog is left untouched."
+            },
+            "laterWritesLost": "Every write committed to {catalogName} after version {version} — including writes made while the restore is running — is lost with it.",
+            "laterWritesLeft": "The restored catalog holds only what {catalogName} contained at version {version}; later writes stay in {catalogName}.",
+            "noHistory": "The restored catalog carries no mutation history, so it cannot itself be restored to an earlier version — its history starts here."
+          },
+          "info": "The restore runs as a background task and may take a while. Its progress can be followed in the tasks or backups viewer.",
+          "button": {
+            "restore": "Restore"
+          },
+          "notification": {
+            "restoreRequested": "Restoring {catalogName} to version {version} as {targetCatalogName} has been requested.",
+            "couldNotRequestRestore": "Could not restore {catalogName} to version {version}",
+            "couldNotLoadCatalogs": "Could not load catalog names",
+            "restored": "Catalog {catalogName} has been restored to version {version}.",
+            "restoreFailed": "Restoring {catalogName} to version {version} failed: {reason}",
+            "couldNotFollowRestore": "Lost track of the restore of {catalogName} to version {version} Check the task viewer for its outcome.",
+            "unknownFailureReason": "the server reported no reason"
+          }
+        }
+      }
+    }
   }
 }

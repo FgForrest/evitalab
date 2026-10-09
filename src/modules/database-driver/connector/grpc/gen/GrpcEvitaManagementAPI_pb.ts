@@ -6,17 +6,19 @@ import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegen
 import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import type { EmptySchema, StringValue } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_empty, file_google_protobuf_wrappers } from "@bufbuild/protobuf/wkt";
-import type { GrpcClassifierType, GrpcConflictResolution, GrpcHealthProblem, GrpcReadiness, GrpcTaskSimplifiedState } from "./GrpcEnums_pb";
+import type { GrpcCatalogStatisticsComponent, GrpcClassifierType, GrpcConflictResolution, GrpcEntityIndexType, GrpcEntityScope, GrpcHealthProblem, GrpcIndexBrowseOrdering, GrpcOrderDirection, GrpcReadiness, GrpcTaskSimplifiedState } from "./GrpcEnums_pb";
 import { file_GrpcEnums } from "./GrpcEnums_pb";
 import type { GrpcCatalogStatistics, GrpcFile, GrpcOffsetDateTime, GrpcTaskStatus, GrpcUuid } from "./GrpcEvitaDataTypes_pb";
 import { file_GrpcEvitaDataTypes } from "./GrpcEvitaDataTypes_pb";
+import type { GrpcBrowsedIndex, GrpcCatalogStatisticsSnapshot, GrpcEntityCollectionStatisticsSnapshot, GrpcIndexDetail, GrpcSchemaCapabilityUsage } from "./GrpcStatistics_pb";
+import { file_GrpcStatistics } from "./GrpcStatistics_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file GrpcEvitaManagementAPI.proto.
  */
 export const file_GrpcEvitaManagementAPI: GenFile = /*@__PURE__*/
-  fileDesc("ChxHcnBjRXZpdGFNYW5hZ2VtZW50QVBJLnByb3RvEiVpby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkIuIFCh1HcnBjRXZpdGFTZXJ2ZXJTdGF0dXNSZXNwb25zZRIPCgd2ZXJzaW9uGAEgASgJEkwKCXN0YXJ0ZWRBdBgCIAEoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY09mZnNldERhdGVUaW1lEhIKBnVwdGltZRgDIAEoA0ICMAESEgoKaW5zdGFuY2VJZBgEIAEoCRIZChFjYXRhbG9nc0NvcnJ1cHRlZBgFIAEoBRIWCgpjYXRhbG9nc09rGAYgASgFQgIYARJQCg5oZWFsdGhQcm9ibGVtcxgHIAMoDjI4LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hlYWx0aFByb2JsZW0SRwoJcmVhZGluZXNzGAggASgOMjQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVhZGluZXNzEloKA2FwaRgJIAMoCzJNLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhU2VydmVyU3RhdHVzUmVzcG9uc2UuQXBpRW50cnkSEAoIcmVhZE9ubHkYCiABKAgSFgoOY2F0YWxvZ3NBY3RpdmUYCyABKAUSGAoQY2F0YWxvZ3NJbmFjdGl2ZRgMIAEoBRIZCg1lbmdpbmVWZXJzaW9uGA0gASgDQgIwARJPCgxpbnRyb2R1Y2VkQXQYDiABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNPZmZzZXREYXRlVGltZRpgCghBcGlFbnRyeRILCgNrZXkYASABKAkSQwoFdmFsdWUYAiABKAsyNC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBcGlTdGF0dXM6AjgBIogBCg1HcnBjQXBpU3RhdHVzEg8KB2VuYWJsZWQYASABKAgSDQoFcmVhZHkYAiABKAgSDwoHYmFzZVVybBgDIAMoCRJGCgllbmRwb2ludHMYBCADKAsyMy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbmRwb2ludCIpCgxHcnBjRW5kcG9pbnQSDAoEbmFtZRgBIAEoCRILCgN1cmwYAiADKAkiNwoeR3JwY0V2aXRhQ29uZmlndXJhdGlvblJlc3BvbnNlEhUKDWNvbmZpZ3VyYXRpb24YASABKAki9QEKH0dycGNFdml0YUVuZ2luZVNldHRpbmdzUmVzcG9uc2USWQoSY29uZmxpY3RSZXNvbHV0aW9uGAEgASgLMj0uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ29uZmxpY3RSZXNvbHV0aW9uEhkKEXRpbWVUcmF2ZWxFbmFibGVkGAIgASgIEiAKGGNoYW5nZURhdGFDYXB0dXJlRW5hYmxlZBgDIAEoCBIfChd0cmFmZmljUmVjb3JkaW5nRW5hYmxlZBgEIAEoCBIZChFxdWVyeUNhY2hlRW5hYmxlZBgFIAEoCCJ9CiJHcnBjRXZpdGFDYXRhbG9nU3RhdGlzdGljc1Jlc3BvbnNlElcKEWNhdGFsb2dTdGF0aXN0aWNzGAEgAygLMjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2F0YWxvZ1N0YXRpc3RpY3MiRAoZR3JwY1Jlc3RvcmVDYXRhbG9nUmVxdWVzdBITCgtjYXRhbG9nTmFtZRgBIAEoCRISCgpiYWNrdXBGaWxlGAIgASgMIqgBCh5HcnBjUmVzdG9yZUNhdGFsb2dVbmFyeVJlcXVlc3QSEwoLY2F0YWxvZ05hbWUYASABKAkSEgoKYmFja3VwRmlsZRgCIAEoDBI/CgZmaWxlSWQYAyABKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNVdWlkEhwKEHRvdGFsU2l6ZUluQnl0ZXMYBCABKANCAjABIn8KJ0dycGNSZXN0b3JlQ2F0YWxvZ0Zyb21TZXJ2ZXJGaWxlUmVxdWVzdBITCgtjYXRhbG9nTmFtZRgBIAEoCRI/CgZmaWxlSWQYAiABKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNVdWlkInMKGkdycGNSZXN0b3JlQ2F0YWxvZ1Jlc3BvbnNlEhAKBHJlYWQYASABKANCAjABEkMKBHRhc2sYAyABKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUYXNrU3RhdHVzIrkBCh9HcnBjUmVzdG9yZUNhdGFsb2dVbmFyeVJlc3BvbnNlEhAKBHJlYWQYASABKANCAjABEj8KBmZpbGVJZBgCIAEoCzIvLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1V1aWQSQwoEdGFzaxgDIAEoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Rhc2tTdGF0dXMiyAEKF0dycGNUYXNrU3RhdHVzZXNSZXF1ZXN0EhIKCnBhZ2VOdW1iZXIYASABKAUSEAoIcGFnZVNpemUYAiABKAUSLgoIdGFza1R5cGUYAyADKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSVwoPc2ltcGxpZmllZFN0YXRlGAQgAygOMj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVGFza1NpbXBsaWZpZWRTdGF0ZSKpAQoYR3JwY1Rhc2tTdGF0dXNlc1Jlc3BvbnNlEhAKCHBhZ2VTaXplGAEgASgFEhIKCnBhZ2VOdW1iZXIYAiABKAUSSQoKdGFza1N0YXR1cxgDIAMoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Rhc2tTdGF0dXMSHAoUdG90YWxOdW1iZXJPZlJlY29yZHMYBCABKAUiZAogR3JwY1NwZWNpZmllZFRhc2tTdGF0dXNlc1JlcXVlc3QSQAoHdGFza0lkcxgBIAMoCzIvLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1V1aWQibgohR3JwY1NwZWNpZmllZFRhc2tTdGF0dXNlc1Jlc3BvbnNlEkkKCnRhc2tTdGF0dXMYASADKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUYXNrU3RhdHVzIlgKFUdycGNUYXNrU3RhdHVzUmVxdWVzdBI/CgZ0YXNrSWQYASABKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNVdWlkImMKFkdycGNUYXNrU3RhdHVzUmVzcG9uc2USSQoKdGFza1N0YXR1cxgBIAEoCzI1LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Rhc2tTdGF0dXMiWAoVR3JwY0NhbmNlbFRhc2tSZXF1ZXN0Ej8KBnRhc2tJZBgBIAEoCzIvLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1V1aWQiKQoWR3JwY0NhbmNlbFRhc2tSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIIm0KF0dycGNGaWxlc1RvRmV0Y2hSZXF1ZXN0EhIKCnBhZ2VOdW1iZXIYASABKAUSEAoIcGFnZVNpemUYAiABKAUSLAoGb3JpZ2luGAMgAygLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlIqUBChhHcnBjRmlsZXNUb0ZldGNoUmVzcG9uc2USEAoIcGFnZVNpemUYASABKAUSEgoKcGFnZU51bWJlchgCIAEoBRJFCgxmaWxlc1RvRmV0Y2gYAyADKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGaWxlEhwKFHRvdGFsTnVtYmVyT2ZSZWNvcmRzGAQgASgFIlkKFkdycGNGaWxlVG9GZXRjaFJlcXVlc3QSPwoGZmlsZUlkGAEgASgLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVXVpZCJfChdHcnBjRmlsZVRvRmV0Y2hSZXNwb25zZRJECgtmaWxlVG9GZXRjaBgBIAEoCzIvLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZpbGUiVwoUR3JwY0ZldGNoRmlsZVJlcXVlc3QSPwoGZmlsZUlkGAEgASgLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVXVpZCJLChVHcnBjRmV0Y2hGaWxlUmVzcG9uc2USFAoMZmlsZUNvbnRlbnRzGAEgASgMEhwKEHRvdGFsU2l6ZUluQnl0ZXMYAiABKANCAjABIl8KHEdycGNEZWxldGVGaWxlVG9GZXRjaFJlcXVlc3QSPwoGZmlsZUlkGAEgASgLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVXVpZCIwCh1HcnBjRGVsZXRlRmlsZVRvRmV0Y2hSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIIosBChNHcnBjUmVzZXJ2ZWRLZXl3b3JkElEKDmNsYXNzaWZpZXJUeXBlGAEgASgOMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2xhc3NpZmllclR5cGUSEgoKY2xhc3NpZmllchgCIAEoCRINCgV3b3JkcxgDIAMoCSJsChxHcnBjUmVzZXJ2ZWRLZXl3b3Jkc1Jlc3BvbnNlEkwKCGtleXdvcmRzGAEgAygLMjouaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVzZXJ2ZWRLZXl3b3JkMvgRChZFdml0YU1hbmFnZW1lbnRTZXJ2aWNlEmwKDFNlcnZlclN0YXR1cxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRpELmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhU2VydmVyU3RhdHVzUmVzcG9uc2UScQoQR2V0Q29uZmlndXJhdGlvbhIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRpFLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhQ29uZmlndXJhdGlvblJlc3BvbnNlEnMKEUdldEVuZ2luZVNldHRpbmdzEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GkYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZpdGFFbmdpbmVTZXR0aW5nc1Jlc3BvbnNlEnkKFEdldENhdGFsb2dTdGF0aXN0aWNzEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GkkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRXZpdGFDYXRhbG9nU3RhdGlzdGljc1Jlc3BvbnNlEpcBCg5SZXN0b3JlQ2F0YWxvZxJALmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc3RvcmVDYXRhbG9nUmVxdWVzdBpBLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc3RvcmVDYXRhbG9nUmVzcG9uc2UoARKkAQoTUmVzdG9yZUNhdGFsb2dVbmFyeRJFLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc3RvcmVDYXRhbG9nVW5hcnlSZXF1ZXN0GkYuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVzdG9yZUNhdGFsb2dVbmFyeVJlc3BvbnNlErEBChxSZXN0b3JlQ2F0YWxvZ0Zyb21TZXJ2ZXJGaWxlEk4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVzdG9yZUNhdGFsb2dGcm9tU2VydmVyRmlsZVJlcXVlc3QaQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZXN0b3JlQ2F0YWxvZ1Jlc3BvbnNlEpMBChBMaXN0VGFza1N0YXR1c2VzEj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVGFza1N0YXR1c2VzUmVxdWVzdBo/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Rhc2tTdGF0dXNlc1Jlc3BvbnNlEowBCg1HZXRUYXNrU3RhdHVzEjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVGFza1N0YXR1c1JlcXVlc3QaPS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUYXNrU3RhdHVzUmVzcG9uc2USpAEKD0dldFRhc2tTdGF0dXNlcxJHLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1NwZWNpZmllZFRhc2tTdGF0dXNlc1JlcXVlc3QaSC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTcGVjaWZpZWRUYXNrU3RhdHVzZXNSZXNwb25zZRKJAQoKQ2FuY2VsVGFzaxI8LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NhbmNlbFRhc2tSZXF1ZXN0Gj0uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2FuY2VsVGFza1Jlc3BvbnNlEpMBChBMaXN0RmlsZXNUb0ZldGNoEj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRmlsZXNUb0ZldGNoUmVxdWVzdBo/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZpbGVzVG9GZXRjaFJlc3BvbnNlEo8BCg5HZXRGaWxlVG9GZXRjaBI9LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZpbGVUb0ZldGNoUmVxdWVzdBo+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZpbGVUb0ZldGNoUmVzcG9uc2USiAEKCUZldGNoRmlsZRI7LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZldGNoRmlsZVJlcXVlc3QaPC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGZXRjaEZpbGVSZXNwb25zZTABEpcBCgpEZWxldGVGaWxlEkMuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRGVsZXRlRmlsZVRvRmV0Y2hSZXF1ZXN0GkQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRGVsZXRlRmlsZVRvRmV0Y2hSZXNwb25zZRJzChRMaXN0UmVzZXJ2ZWRLZXl3b3JkcxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRpDLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc2VydmVkS2V5d29yZHNSZXNwb25zZUKCAgopY29tLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWRCG0dycGNFdml0YU1hbmFnZW1lbnRBUElQcm90b1ABogIFSUVFR0eqAiVJby5Fdml0YWRiLkV4dGVybmFsQXBpLkdycGMuR2VuZXJhdGVkygIlSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZOICMUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWRcR1BCTWV0YWRhdGHqAilJbzo6RXZpdGFkYjo6RXh0ZXJuYWxBcGk6OkdycGM6OkdlbmVyYXRlZGIGcHJvdG8z", [file_google_protobuf_empty, file_GrpcEnums, file_GrpcEvitaDataTypes, file_google_protobuf_wrappers]);
+  fileDesc("ChxHcnBjRXZpdGFNYW5hZ2VtZW50QVBJLnByb3RvEiVpby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkIuIFCh1HcnBjRXZpdGFTZXJ2ZXJTdGF0dXNSZXNwb25zZRIPCgd2ZXJzaW9uGAEgASgJEkwKCXN0YXJ0ZWRBdBgCIAEoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY09mZnNldERhdGVUaW1lEhIKBnVwdGltZRgDIAEoA0ICMAESEgoKaW5zdGFuY2VJZBgEIAEoCRIZChFjYXRhbG9nc0NvcnJ1cHRlZBgFIAEoBRIWCgpjYXRhbG9nc09rGAYgASgFQgIYARJQCg5oZWFsdGhQcm9ibGVtcxgHIAMoDjI4LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0hlYWx0aFByb2JsZW0SRwoJcmVhZGluZXNzGAggASgOMjQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVhZGluZXNzEloKA2FwaRgJIAMoCzJNLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhU2VydmVyU3RhdHVzUmVzcG9uc2UuQXBpRW50cnkSEAoIcmVhZE9ubHkYCiABKAgSFgoOY2F0YWxvZ3NBY3RpdmUYCyABKAUSGAoQY2F0YWxvZ3NJbmFjdGl2ZRgMIAEoBRIZCg1lbmdpbmVWZXJzaW9uGA0gASgDQgIwARJPCgxpbnRyb2R1Y2VkQXQYDiABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNPZmZzZXREYXRlVGltZRpgCghBcGlFbnRyeRILCgNrZXkYASABKAkSQwoFdmFsdWUYAiABKAsyNC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBcGlTdGF0dXM6AjgBIogBCg1HcnBjQXBpU3RhdHVzEg8KB2VuYWJsZWQYASABKAgSDQoFcmVhZHkYAiABKAgSDwoHYmFzZVVybBgDIAMoCRJGCgllbmRwb2ludHMYBCADKAsyMy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbmRwb2ludCIpCgxHcnBjRW5kcG9pbnQSDAoEbmFtZRgBIAEoCRILCgN1cmwYAiADKAkiNwoeR3JwY0V2aXRhQ29uZmlndXJhdGlvblJlc3BvbnNlEhUKDWNvbmZpZ3VyYXRpb24YASABKAki9QEKH0dycGNFdml0YUVuZ2luZVNldHRpbmdzUmVzcG9uc2USWQoSY29uZmxpY3RSZXNvbHV0aW9uGAEgASgLMj0uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ29uZmxpY3RSZXNvbHV0aW9uEhkKEXRpbWVUcmF2ZWxFbmFibGVkGAIgASgIEiAKGGNoYW5nZURhdGFDYXB0dXJlRW5hYmxlZBgDIAEoCBIfChd0cmFmZmljUmVjb3JkaW5nRW5hYmxlZBgEIAEoCBIZChFxdWVyeUNhY2hlRW5hYmxlZBgFIAEoCCJ9CiJHcnBjRXZpdGFDYXRhbG9nU3RhdGlzdGljc1Jlc3BvbnNlElcKEWNhdGFsb2dTdGF0aXN0aWNzGAEgAygLMjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2F0YWxvZ1N0YXRpc3RpY3MilgEKJEdycGNDYXRhbG9nU3RhdGlzdGljc1NuYXBzaG90UmVxdWVzdBITCgtjYXRhbG9nTmFtZRgBIAEoCRJZCgpjb21wb25lbnRzGAIgAygOMkUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2F0YWxvZ1N0YXRpc3RpY3NDb21wb25lbnQiiAEKJUdycGNDYXRhbG9nU3RhdGlzdGljc1NuYXBzaG90UmVzcG9uc2USXwoRY2F0YWxvZ1N0YXRpc3RpY3MYASABKAsyRC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDYXRhbG9nU3RhdGlzdGljc1NuYXBzaG90IoQBCidHcnBjQWxsQ2F0YWxvZ1N0YXRpc3RpY3NTbmFwc2hvdFJlcXVlc3QSWQoKY29tcG9uZW50cxgBIAMoDjJFLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NhdGFsb2dTdGF0aXN0aWNzQ29tcG9uZW50IosBCihHcnBjQWxsQ2F0YWxvZ1N0YXRpc3RpY3NTbmFwc2hvdFJlc3BvbnNlEl8KEWNhdGFsb2dTdGF0aXN0aWNzGAEgAygLMkQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2F0YWxvZ1N0YXRpc3RpY3NTbmFwc2hvdCKzAQotR3JwY0VudGl0eUNvbGxlY3Rpb25TdGF0aXN0aWNzU25hcHNob3RSZXF1ZXN0EhMKC2NhdGFsb2dOYW1lGAEgASgJEhIKCmVudGl0eVR5cGUYAiABKAkSWQoKY29tcG9uZW50cxgDIAMoDjJFLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NhdGFsb2dTdGF0aXN0aWNzQ29tcG9uZW50ItUDChZHcnBjSW5kZXhCcm93c2VSZXF1ZXN0EhMKC2NhdGFsb2dOYW1lGAEgASgJEjAKCmVudGl0eVR5cGUYAiABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSEgoKcGFnZU51bWJlchgDIAEoBRIQCghwYWdlU2l6ZRgEIAEoBRJQCghvcmRlcmluZxgFIAEoDjI+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0luZGV4QnJvd3NlT3JkZXJpbmcSTAoJZGlyZWN0aW9uGAkgASgOMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjT3JkZXJEaXJlY3Rpb24STgoKaW5kZXhUeXBlcxgGIAMoDjI6LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eUluZGV4VHlwZRJGCgZzY29wZXMYByADKA4yNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlTY29wZRIWCg5yZWZlcmVuY2VOYW1lcxgIIAMoCSK/AQoXR3JwY0luZGV4QnJvd3NlUmVzcG9uc2USGgoOY2F0YWxvZ1ZlcnNpb24YASABKANCAjABEhIKCnBhZ2VOdW1iZXIYAiABKAUSEAoIcGFnZVNpemUYAyABKAUSGAoQdG90YWxSZWNvcmRDb3VudBgEIAEoBRJICgdpbmRleGVzGAUgAygLMjcuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQnJvd3NlZEluZGV4IngKFkdycGNJbmRleERldGFpbFJlcXVlc3QSEwoLY2F0YWxvZ05hbWUYASABKAkSMAoKZW50aXR5VHlwZRgCIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRIXCg9pbmRleFByaW1hcnlLZXkYAyABKAUiZgoXR3JwY0luZGV4RGV0YWlsUmVzcG9uc2USSwoLaW5kZXhEZXRhaWwYASABKAsyNi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNJbmRleERldGFpbCJpCiBHcnBjU2NoZW1hQ2FwYWJpbGl0eVVzYWdlUmVxdWVzdBITCgtjYXRhbG9nTmFtZRgBIAEoCRIwCgplbnRpdHlUeXBlGAIgASgLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlInsKIUdycGNTY2hlbWFDYXBhYmlsaXR5VXNhZ2VSZXNwb25zZRJWCgxjYXBhYmlsaXRpZXMYASADKAsyQC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTY2hlbWFDYXBhYmlsaXR5VXNhZ2UiowEKLkdycGNFbnRpdHlDb2xsZWN0aW9uU3RhdGlzdGljc1NuYXBzaG90UmVzcG9uc2UScQoaZW50aXR5Q29sbGVjdGlvblN0YXRpc3RpY3MYASABKAsyTS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlDb2xsZWN0aW9uU3RhdGlzdGljc1NuYXBzaG90IkQKGUdycGNSZXN0b3JlQ2F0YWxvZ1JlcXVlc3QSEwoLY2F0YWxvZ05hbWUYASABKAkSEgoKYmFja3VwRmlsZRgCIAEoDCKoAQoeR3JwY1Jlc3RvcmVDYXRhbG9nVW5hcnlSZXF1ZXN0EhMKC2NhdGFsb2dOYW1lGAEgASgJEhIKCmJhY2t1cEZpbGUYAiABKAwSPwoGZmlsZUlkGAMgASgLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVXVpZBIcChB0b3RhbFNpemVJbkJ5dGVzGAQgASgDQgIwASJ/CidHcnBjUmVzdG9yZUNhdGFsb2dGcm9tU2VydmVyRmlsZVJlcXVlc3QSEwoLY2F0YWxvZ05hbWUYASABKAkSPwoGZmlsZUlkGAIgASgLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVXVpZCJzChpHcnBjUmVzdG9yZUNhdGFsb2dSZXNwb25zZRIQCgRyZWFkGAEgASgDQgIwARJDCgR0YXNrGAMgASgLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVGFza1N0YXR1cyK5AQofR3JwY1Jlc3RvcmVDYXRhbG9nVW5hcnlSZXNwb25zZRIQCgRyZWFkGAEgASgDQgIwARI/CgZmaWxlSWQYAiABKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNVdWlkEkMKBHRhc2sYAyABKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUYXNrU3RhdHVzIvYBCiJHcnBjUmVzdG9yZUNhdGFsb2dUb1ZlcnNpb25SZXF1ZXN0EhMKC2NhdGFsb2dOYW1lGAEgASgJEk0KCnBhc3RNb21lbnQYAiABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNPZmZzZXREYXRlVGltZRIzCg5jYXRhbG9nVmVyc2lvbhgDIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQ2NFZhbHVlEjcKEXRhcmdldENhdGFsb2dOYW1lGAQgASgLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlImoKI0dycGNSZXN0b3JlQ2F0YWxvZ1RvVmVyc2lvblJlc3BvbnNlEkMKBHRhc2sYASABKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUYXNrU3RhdHVzIsgBChdHcnBjVGFza1N0YXR1c2VzUmVxdWVzdBISCgpwYWdlTnVtYmVyGAEgASgFEhAKCHBhZ2VTaXplGAIgASgFEi4KCHRhc2tUeXBlGAMgAygLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlElcKD3NpbXBsaWZpZWRTdGF0ZRgEIAMoDjI+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Rhc2tTaW1wbGlmaWVkU3RhdGUiqQEKGEdycGNUYXNrU3RhdHVzZXNSZXNwb25zZRIQCghwYWdlU2l6ZRgBIAEoBRISCgpwYWdlTnVtYmVyGAIgASgFEkkKCnRhc2tTdGF0dXMYAyADKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUYXNrU3RhdHVzEhwKFHRvdGFsTnVtYmVyT2ZSZWNvcmRzGAQgASgFImQKIEdycGNTcGVjaWZpZWRUYXNrU3RhdHVzZXNSZXF1ZXN0EkAKB3Rhc2tJZHMYASADKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNVdWlkIm4KIUdycGNTcGVjaWZpZWRUYXNrU3RhdHVzZXNSZXNwb25zZRJJCgp0YXNrU3RhdHVzGAEgAygLMjUuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVGFza1N0YXR1cyJYChVHcnBjVGFza1N0YXR1c1JlcXVlc3QSPwoGdGFza0lkGAEgASgLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVXVpZCJjChZHcnBjVGFza1N0YXR1c1Jlc3BvbnNlEkkKCnRhc2tTdGF0dXMYASABKAsyNS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUYXNrU3RhdHVzIlgKFUdycGNDYW5jZWxUYXNrUmVxdWVzdBI/CgZ0YXNrSWQYASABKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNVdWlkIikKFkdycGNDYW5jZWxUYXNrUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCJtChdHcnBjRmlsZXNUb0ZldGNoUmVxdWVzdBISCgpwYWdlTnVtYmVyGAEgASgFEhAKCHBhZ2VTaXplGAIgASgFEiwKBm9yaWdpbhgDIAMoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZSKlAQoYR3JwY0ZpbGVzVG9GZXRjaFJlc3BvbnNlEhAKCHBhZ2VTaXplGAEgASgFEhIKCnBhZ2VOdW1iZXIYAiABKAUSRQoMZmlsZXNUb0ZldGNoGAMgAygLMi8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRmlsZRIcChR0b3RhbE51bWJlck9mUmVjb3JkcxgEIAEoBSJZChZHcnBjRmlsZVRvRmV0Y2hSZXF1ZXN0Ej8KBmZpbGVJZBgBIAEoCzIvLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1V1aWQiXwoXR3JwY0ZpbGVUb0ZldGNoUmVzcG9uc2USRAoLZmlsZVRvRmV0Y2gYASABKAsyLy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGaWxlIlcKFEdycGNGZXRjaEZpbGVSZXF1ZXN0Ej8KBmZpbGVJZBgBIAEoCzIvLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1V1aWQiSwoVR3JwY0ZldGNoRmlsZVJlc3BvbnNlEhQKDGZpbGVDb250ZW50cxgBIAEoDBIcChB0b3RhbFNpemVJbkJ5dGVzGAIgASgDQgIwASJfChxHcnBjRGVsZXRlRmlsZVRvRmV0Y2hSZXF1ZXN0Ej8KBmZpbGVJZBgBIAEoCzIvLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1V1aWQiMAodR3JwY0RlbGV0ZUZpbGVUb0ZldGNoUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCKLAQoTR3JwY1Jlc2VydmVkS2V5d29yZBJRCg5jbGFzc2lmaWVyVHlwZRgBIAEoDjI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NsYXNzaWZpZXJUeXBlEhIKCmNsYXNzaWZpZXIYAiABKAkSDQoFd29yZHMYAyADKAkibAocR3JwY1Jlc2VydmVkS2V5d29yZHNSZXNwb25zZRJMCghrZXl3b3JkcxgBIAMoCzI6LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc2VydmVkS2V5d29yZDLdGwoWRXZpdGFNYW5hZ2VtZW50U2VydmljZRJsCgxTZXJ2ZXJTdGF0dXMSFi5nb29nbGUucHJvdG9idWYuRW1wdHkaRC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFdml0YVNlcnZlclN0YXR1c1Jlc3BvbnNlEnEKEEdldENvbmZpZ3VyYXRpb24SFi5nb29nbGUucHJvdG9idWYuRW1wdHkaRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFdml0YUNvbmZpZ3VyYXRpb25SZXNwb25zZRJzChFHZXRFbmdpbmVTZXR0aW5ncxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRpGLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhRW5naW5lU2V0dGluZ3NSZXNwb25zZRJ+ChRHZXRDYXRhbG9nU3RhdGlzdGljcxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRpJLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0V2aXRhQ2F0YWxvZ1N0YXRpc3RpY3NSZXNwb25zZSIDiAIBErkBChxHZXRDYXRhbG9nU3RhdGlzdGljc1NuYXBzaG90EksuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2F0YWxvZ1N0YXRpc3RpY3NTbmFwc2hvdFJlcXVlc3QaTC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDYXRhbG9nU3RhdGlzdGljc1NuYXBzaG90UmVzcG9uc2USwwEKIEdldEFsbENhdGFsb2dTdGF0aXN0aWNzU25hcHNob3RzEk4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQWxsQ2F0YWxvZ1N0YXRpc3RpY3NTbmFwc2hvdFJlcXVlc3QaTy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNBbGxDYXRhbG9nU3RhdGlzdGljc1NuYXBzaG90UmVzcG9uc2US1AEKJUdldEVudGl0eUNvbGxlY3Rpb25TdGF0aXN0aWNzU25hcHNob3QSVC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlDb2xsZWN0aW9uU3RhdGlzdGljc1NuYXBzaG90UmVxdWVzdBpVLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eUNvbGxlY3Rpb25TdGF0aXN0aWNzU25hcHNob3RSZXNwb25zZRKOAQoNQnJvd3NlSW5kZXhlcxI9LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0luZGV4QnJvd3NlUmVxdWVzdBo+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0luZGV4QnJvd3NlUmVzcG9uc2USjwEKDkdldEluZGV4RGV0YWlsEj0uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjSW5kZXhEZXRhaWxSZXF1ZXN0Gj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjSW5kZXhEZXRhaWxSZXNwb25zZRKuAQoZTGlzdFNjaGVtYUNhcGFiaWxpdHlVc2FnZRJHLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1NjaGVtYUNhcGFiaWxpdHlVc2FnZVJlcXVlc3QaSC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTY2hlbWFDYXBhYmlsaXR5VXNhZ2VSZXNwb25zZRKXAQoOUmVzdG9yZUNhdGFsb2cSQC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZXN0b3JlQ2F0YWxvZ1JlcXVlc3QaQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZXN0b3JlQ2F0YWxvZ1Jlc3BvbnNlKAESpAEKE1Jlc3RvcmVDYXRhbG9nVW5hcnkSRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZXN0b3JlQ2F0YWxvZ1VuYXJ5UmVxdWVzdBpGLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc3RvcmVDYXRhbG9nVW5hcnlSZXNwb25zZRKxAQocUmVzdG9yZUNhdGFsb2dGcm9tU2VydmVyRmlsZRJOLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc3RvcmVDYXRhbG9nRnJvbVNlcnZlckZpbGVSZXF1ZXN0GkEuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjUmVzdG9yZUNhdGFsb2dSZXNwb25zZRKwAQoXUmVzdG9yZUNhdGFsb2dUb1ZlcnNpb24SSS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZXN0b3JlQ2F0YWxvZ1RvVmVyc2lvblJlcXVlc3QaSi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNSZXN0b3JlQ2F0YWxvZ1RvVmVyc2lvblJlc3BvbnNlEpMBChBMaXN0VGFza1N0YXR1c2VzEj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVGFza1N0YXR1c2VzUmVxdWVzdBo/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Rhc2tTdGF0dXNlc1Jlc3BvbnNlEowBCg1HZXRUYXNrU3RhdHVzEjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjVGFza1N0YXR1c1JlcXVlc3QaPS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNUYXNrU3RhdHVzUmVzcG9uc2USpAEKD0dldFRhc2tTdGF0dXNlcxJHLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1NwZWNpZmllZFRhc2tTdGF0dXNlc1JlcXVlc3QaSC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNTcGVjaWZpZWRUYXNrU3RhdHVzZXNSZXNwb25zZRKJAQoKQ2FuY2VsVGFzaxI8LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NhbmNlbFRhc2tSZXF1ZXN0Gj0uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2FuY2VsVGFza1Jlc3BvbnNlEpMBChBMaXN0RmlsZXNUb0ZldGNoEj4uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRmlsZXNUb0ZldGNoUmVxdWVzdBo/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZpbGVzVG9GZXRjaFJlc3BvbnNlEo8BCg5HZXRGaWxlVG9GZXRjaBI9LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZpbGVUb0ZldGNoUmVxdWVzdBo+LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZpbGVUb0ZldGNoUmVzcG9uc2USiAEKCUZldGNoRmlsZRI7LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0ZldGNoRmlsZVJlcXVlc3QaPC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNGZXRjaEZpbGVSZXNwb25zZTABEpcBCgpEZWxldGVGaWxlEkMuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRGVsZXRlRmlsZVRvRmV0Y2hSZXF1ZXN0GkQuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRGVsZXRlRmlsZVRvRmV0Y2hSZXNwb25zZRJzChRMaXN0UmVzZXJ2ZWRLZXl3b3JkcxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRpDLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY1Jlc2VydmVkS2V5d29yZHNSZXNwb25zZUKCAgopY29tLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWRCG0dycGNFdml0YU1hbmFnZW1lbnRBUElQcm90b1ABogIFSUVFR0eqAiVJby5Fdml0YWRiLkV4dGVybmFsQXBpLkdycGMuR2VuZXJhdGVkygIlSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZOICMUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWRcR1BCTWV0YWRhdGHqAilJbzo6RXZpdGFkYjo6RXh0ZXJuYWxBcGk6OkdycGM6OkdlbmVyYXRlZGIGcHJvdG8z", [file_google_protobuf_empty, file_GrpcEnums, file_GrpcEvitaDataTypes, file_GrpcStatistics, file_google_protobuf_wrappers]);
 
 /**
  * Response to a server status request.
@@ -60,7 +62,8 @@ export type GrpcEvitaServerStatusResponse = Message<"io.evitadb.externalApi.grpc
   catalogsCorrupted: number;
 
   /**
-   * Number of catalogs that are active and has been successfully loaded, renamed to `catalogsActive`
+   * Deprecated since 2025.7 - number of catalogs that are active and has been successfully loaded,
+   * renamed to `catalogsActive`
    *
    * @generated from field: int32 catalogsOk = 6 [deprecated = true];
    * @deprecated
@@ -68,7 +71,8 @@ export type GrpcEvitaServerStatusResponse = Message<"io.evitadb.externalApi.grpc
   catalogsOk: number;
 
   /**
-   * Health problems
+   * Health problems currently detected by any of the server's health probes, deduplicated. Empty
+   * means no problems were detected.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcHealthProblem healthProblems = 7;
    */
@@ -82,7 +86,10 @@ export type GrpcEvitaServerStatusResponse = Message<"io.evitadb.externalApi.grpc
   readiness: GrpcReadiness;
 
   /**
-   * Information about all available APIs
+   * Status keyed by API code, for every external API registered on the classpath - including ones
+   * that are disabled (`GrpcApiStatus.enabled == false`) or have no registered provider (in which
+   * case `baseUrl` and `endpoints` are empty). Presence in this map does not imply the API is
+   * enabled or reachable; check `GrpcApiStatus.enabled`/`ready`.
    *
    * @generated from field: map<string, io.evitadb.externalApi.grpc.generated.GrpcApiStatus> api = 9;
    */
@@ -110,7 +117,10 @@ export type GrpcEvitaServerStatusResponse = Message<"io.evitadb.externalApi.grpc
   catalogsInactive: number;
 
   /**
-   * The version of the current evitaDB server engine state (change in engine state).
+   * Monotonically increasing version number of the engine's own state, distinct from any single
+   * catalog's version - incremented once for each committed engine-level change (e.g. a catalog
+   * being created, removed, renamed, or having its format upgraded or read-only mode toggled).
+   * Ordinary data mutations within a catalog do not advance it.
    *
    * @generated from field: int64 engineVersion = 13 [jstype = JS_STRING];
    */
@@ -138,29 +148,34 @@ export const GrpcEvitaServerStatusResponseSchema: GenMessage<GrpcEvitaServerStat
  */
 export type GrpcApiStatus = Message<"io.evitadb.externalApi.grpc.generated.GrpcApiStatus"> & {
   /**
-   * True if the API is enabled
+   * True when this API is turned on in the server configuration. An enabled API can still be
+   * briefly not ready while the server is starting up - see `ready`.
    *
    * @generated from field: bool enabled = 1;
    */
   enabled: boolean;
 
   /**
-   * API readiness status
+   * True when the API has finished initialization and is actually able to serve requests.
+   * Always false when `enabled` is false.
    *
    * @generated from field: bool ready = 2;
    */
   ready: boolean;
 
   /**
-   * list of base url of the web API
+   * Base URLs the API is reachable on - one per configured host binding (`host`, plus the
+   * `exposeOn` override if set), so this commonly holds more than one URL even though the field
+   * name is singular.
    *
    * @generated from field: repeated string baseUrl = 3;
    */
   baseUrl: string[];
 
   /**
-   * list of specific endpoints of particular API
-   * currently only system API provides list of endpoints
+   * Notable endpoints exposed by this API in addition to its base URLs, each entry naming the
+   * endpoint and giving its URL(s). Currently only the system API populates this list; every
+   * other API reports it empty.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEndpoint endpoints = 4;
    */
@@ -175,20 +190,24 @@ export const GrpcApiStatusSchema: GenMessage<GrpcApiStatus> = /*@__PURE__*/
   messageDesc(file_GrpcEvitaManagementAPI, 1);
 
 /**
- * Information about a system endpoint of particular purpose derived from name
+ * A named endpoint exposed by an external API, distinct from the API's own base URL(s) (see
+ * `GrpcApiStatus.endpoints`).
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcEndpoint
  */
 export type GrpcEndpoint = Message<"io.evitadb.externalApi.grpc.generated.GrpcEndpoint"> & {
   /**
-   * logical name of the endpoint
+   * Logical name identifying what the endpoint serves. For the system API - currently the only API
+   * that populates `GrpcApiStatus.endpoints` - this is one of `serverNameUrl`,
+   * `serverCertificateUrl`, `clientCertificateUrl`, `clientPrivateKeyUrl`.
    *
    * @generated from field: string name = 1;
    */
   name: string;
 
   /**
-   * absolute URL of the endpoint
+   * Absolute URL(s) the endpoint is reachable on - one per configured host binding, so this
+   * commonly holds more than one URL even though the field name is singular.
    *
    * @generated from field: repeated string url = 2;
    */
@@ -203,7 +222,9 @@ export const GrpcEndpointSchema: GenMessage<GrpcEndpoint> = /*@__PURE__*/
   messageDesc(file_GrpcEvitaManagementAPI, 2);
 
 /**
- * Response to an evitaDB configuration request.
+ * Response to an evitaDB configuration request. This RPC (and therefore this response) is
+ * unavailable while the engine runs in read-only mode - see GrpcEvitaEngineSettingsResponse for
+ * the smaller, always-available subset of configuration.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcEvitaConfigurationResponse
  */
@@ -295,7 +316,8 @@ export const GrpcEvitaEngineSettingsResponseSchema: GenMessage<GrpcEvitaEngineSe
  */
 export type GrpcEvitaCatalogStatisticsResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcEvitaCatalogStatisticsResponse"> & {
   /**
-   * Collection of catalog statistics for all catalogs
+   * Per-catalog statistics for every catalog known to the server, including corrupted ones (see
+   * `GrpcCatalogStatistics.unusable`, where most other fields fall back to a placeholder value).
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcCatalogStatistics catalogStatistics = 1;
    */
@@ -310,21 +332,491 @@ export const GrpcEvitaCatalogStatisticsResponseSchema: GenMessage<GrpcEvitaCatal
   messageDesc(file_GrpcEvitaManagementAPI, 5);
 
 /**
- * Request to restore a catalog.
+ * Request for a component-selected statistics snapshot of one named catalog.
  *
- * @generated from message io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogRequest
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcCatalogStatisticsSnapshotRequest
  */
-export type GrpcRestoreCatalogRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogRequest"> & {
+export type GrpcCatalogStatisticsSnapshotRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcCatalogStatisticsSnapshotRequest"> & {
   /**
-   * Name of the catalog where the backup will be restored
-   * The name must not clash with any of existing catalogs
+   * Name of the catalog to describe. A catalog the server does not know is an error, not an empty response.
    *
    * @generated from field: string catalogName = 1;
    */
   catalogName: string;
 
   /**
-   * Binary contents of the backup file.
+   * The components to compute. Every one of them must have a catalog-level form; every component defined today does,
+   * so what this rejects in practice is `COMPONENT_UNSPECIFIED` and an empty list.
+   * `COMPONENT_IDENTITY` is delivered whether or not it appears here. `COMPONENT_INDEX_CARDINALITY` is accepted, but
+   * note it describes the catalog index's global unique indexes here, not the collections' own entity indexes.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcCatalogStatisticsComponent components = 2;
+   */
+  components: GrpcCatalogStatisticsComponent[];
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcCatalogStatisticsSnapshotRequest.
+ * Use `create(GrpcCatalogStatisticsSnapshotRequestSchema)` to create a new message.
+ */
+export const GrpcCatalogStatisticsSnapshotRequestSchema: GenMessage<GrpcCatalogStatisticsSnapshotRequest> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaManagementAPI, 6);
+
+/**
+ * Response carrying the component-selected statistics snapshot of one catalog.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcCatalogStatisticsSnapshotResponse
+ */
+export type GrpcCatalogStatisticsSnapshotResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcCatalogStatisticsSnapshotResponse"> & {
+  /**
+   * Statistics of the requested catalog. Present even when the catalog is corrupted, in which case `identity.unusable`
+   * is true and most components report `AVAILABILITY_CATALOG_UNUSABLE` instead of carrying a value.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcCatalogStatisticsSnapshot catalogStatistics = 1;
+   */
+  catalogStatistics?: GrpcCatalogStatisticsSnapshot;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcCatalogStatisticsSnapshotResponse.
+ * Use `create(GrpcCatalogStatisticsSnapshotResponseSchema)` to create a new message.
+ */
+export const GrpcCatalogStatisticsSnapshotResponseSchema: GenMessage<GrpcCatalogStatisticsSnapshotResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaManagementAPI, 7);
+
+/**
+ * Request for component-selected statistics snapshots of every catalog known to the server. Replaces the deprecated
+ * `GetCatalogStatistics` procedure, which always computed everything for everyone.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcAllCatalogStatisticsSnapshotRequest
+ */
+export type GrpcAllCatalogStatisticsSnapshotRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcAllCatalogStatisticsSnapshotRequest"> & {
+  /**
+   * The components to compute for each catalog. The same rules as for a single catalog apply: a component with no
+   * catalog-level form cannot be requested here, and so its cost can never be multiplied by the number of catalogs.
+   * Everything returned here *is* multiplied by the catalog count, so components are weighed on payload as
+   * well as on compute time; `COMPONENT_INDEX_CARDINALITY` is allowed because the listing it reports at the catalog
+   * level is a handful of `O(1)` counter readings, staying in the same size class as the collection inventory of
+   * `COMPONENT_COLLECTIONS`. Selection is opt-in - a client that cannot afford a component simply does not name it.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcCatalogStatisticsComponent components = 1;
+   */
+  components: GrpcCatalogStatisticsComponent[];
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcAllCatalogStatisticsSnapshotRequest.
+ * Use `create(GrpcAllCatalogStatisticsSnapshotRequestSchema)` to create a new message.
+ */
+export const GrpcAllCatalogStatisticsSnapshotRequestSchema: GenMessage<GrpcAllCatalogStatisticsSnapshotRequest> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaManagementAPI, 8);
+
+/**
+ * Response carrying one component-selected statistics snapshot per catalog.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcAllCatalogStatisticsSnapshotResponse
+ */
+export type GrpcAllCatalogStatisticsSnapshotResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcAllCatalogStatisticsSnapshotResponse"> & {
+  /**
+   * Statistics of every catalog known to the server, ordered by catalog name, corrupted catalogs included.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcCatalogStatisticsSnapshot catalogStatistics = 1;
+   */
+  catalogStatistics: GrpcCatalogStatisticsSnapshot[];
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcAllCatalogStatisticsSnapshotResponse.
+ * Use `create(GrpcAllCatalogStatisticsSnapshotResponseSchema)` to create a new message.
+ */
+export const GrpcAllCatalogStatisticsSnapshotResponseSchema: GenMessage<GrpcAllCatalogStatisticsSnapshotResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaManagementAPI, 9);
+
+/**
+ * Request for a component-selected statistics snapshot of one entity collection of one catalog.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcEntityCollectionStatisticsSnapshotRequest
+ */
+export type GrpcEntityCollectionStatisticsSnapshotRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcEntityCollectionStatisticsSnapshotRequest"> & {
+  /**
+   * Name of the catalog holding the collection. A catalog the server does not know is an error.
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+
+  /**
+   * Name of the entity collection to describe, i.e. its entity type. A collection the catalog does not hold is an
+   * error, not an empty response - an empty response would be indistinguishable from an empty collection.
+   *
+   * @generated from field: string entityType = 2;
+   */
+  entityType: string;
+
+  /**
+   * The components to compute. Every one of them must have a collection-level form - naming a catalog-only component
+   * (`COMPONENT_SESSIONS`, `COMPONENT_COMMIT_PIPELINE`, `COMPONENT_ACTIVITY`, `COMPONENT_HISTORY`,
+   * `COMPONENT_DURABILITY`) is rejected, as is `COMPONENT_UNSPECIFIED` and an empty list. `COMPONENT_IDENTITY` is
+   * delivered whether or not it appears here.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcCatalogStatisticsComponent components = 3;
+   */
+  components: GrpcCatalogStatisticsComponent[];
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcEntityCollectionStatisticsSnapshotRequest.
+ * Use `create(GrpcEntityCollectionStatisticsSnapshotRequestSchema)` to create a new message.
+ */
+export const GrpcEntityCollectionStatisticsSnapshotRequestSchema: GenMessage<GrpcEntityCollectionStatisticsSnapshotRequest> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaManagementAPI, 10);
+
+/**
+ * Request for one page of the indexes held by one entity collection, or of those the catalog holds itself.
+ *
+ * Filters are conjunctive across categories and disjunctive within one: an index must match every non-empty category,
+ * and matches a category by being any one of its values. An empty repeated field means that category does not filter -
+ * never that nothing matches.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcIndexBrowseRequest
+ */
+export type GrpcIndexBrowseRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcIndexBrowseRequest"> & {
+  /**
+   * Name of the catalog holding the indexes. A catalog the server does not know is an error.
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+
+  /**
+   * Name of the entity collection whose indexes to browse, i.e. its entity type. A collection the catalog does not
+   * hold is an error, not an empty page - an empty page would be indistinguishable from a collection holding no
+   * indexes.
+   *
+   * Unset browses the indexes the catalog holds itself - the globally-unique attribute index there is one of per
+   * scope - rather than any collection's. Both forms answer with the same rows under the same filters; a catalog index
+   * carries no type and no reference, so `indexTypes` and `referenceNames` below select none of them.
+   *
+   * @generated from field: google.protobuf.StringValue entityType = 2;
+   */
+  entityType?: string;
+
+  /**
+   * Page of the result to return. Page-based paging: 1-indexed, page 1 is the first page (see
+   * `io.evitadb.dataType.PaginatedList#getPageNumber`). A page past the end returns no indexes and is not an error.
+   *
+   * Every ordering except `INDEX_BROWSE_ORDERING_MAP_ORDER` additionally limits how deep it may be paged, in either
+   * direction: `pageNumber * pageSize` must not exceed 10000, and a request beyond that is rejected rather than
+   * clamped. Those orderings rank their candidates, so producing a page means retaining every index up to the end of
+   * it - a far-out page would retain and sort the whole index set only to answer with an empty page, and it would do
+   * so whichever end the page is cut from. Map order carries no such limit, because it materialises only the
+   * requested window however deep that window sits.
+   *
+   * @generated from field: int32 pageNumber = 3;
+   */
+  pageNumber: number;
+
+  /**
+   * Number of indexes per page. Must be between 1 and 1000; a larger value is rejected rather than clamped, because
+   * a clamped page is indistinguishable from a complete one and a client paging until it sees a short page would
+   * stop early believing it had seen everything. This surface enforces a maximum where `GrpcTaskStatusesRequest`
+   * does not: task counts are small, index counts are not, and the cost of a ranked walk is bounded by
+   * `pageNumber * pageSize`, both of which the client chooses.
+   *
+   * @generated from field: int32 pageSize = 4;
+   */
+  pageSize: number;
+
+  /**
+   * What to rank the indexes by before the page is cut. Unset means `INDEX_BROWSE_ORDERING_MAP_ORDER`, the walk of
+   * the whole set in the map's own order - the cheapest answer, and the only one that carries no ranking a client
+   * could mistake for one it asked for.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcIndexBrowseOrdering ordering = 5;
+   */
+  ordering: GrpcIndexBrowseOrdering;
+
+  /**
+   * Which end of that ranking the page is cut from: `DESC` for the biggest, busiest or most-maintained indexes,
+   * `ASC` for the smallest and the untouched ones. Unset means `ASC`.
+   *
+   * `INDEX_BROWSE_ORDERING_MAP_ORDER` is the one ordering that constrains this. It ranks nothing, so it has nothing
+   * to reverse: it is accepted with `ASC` alone - which is how "the map's own walk order" is spelled - and a request
+   * pairing it with `DESC` is rejected rather than answered with the forward walk, because a direction that was
+   * silently ignored reads back to the client as one that was honoured. Every other ordering accepts both.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcOrderDirection direction = 9;
+   */
+  direction: GrpcOrderDirection;
+
+  /**
+   * Index types to keep; an index matches if its type is any of the listed values. Empty (the default) keeps every
+   * type.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityIndexType indexTypes = 6;
+   */
+  indexTypes: GrpcEntityIndexType[];
+
+  /**
+   * Scopes to keep; an index matches if its scope is any of the listed values. Empty (the default) keeps both scopes.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcEntityScope scopes = 7;
+   */
+  scopes: GrpcEntityScope[];
+
+  /**
+   * Names of the references whose indexes to keep. Empty (the default) keeps indexes regardless of reference.
+   * Naming a reference the entity schema does not declare is an error rather than an empty page, so that a typo
+   * cannot read as "this reference has no indexes". Note that global indexes are bound to no reference and therefore
+   * never satisfy this filter.
+   *
+   * A catalog browse - one with `entityType` unset - has no entity schema to validate these against, and answers any
+   * non-empty list with an empty page rather than an error: catalog indexes have no reference dimension at all, so
+   * there is no typo to be protected from.
+   *
+   * @generated from field: repeated string referenceNames = 8;
+   */
+  referenceNames: string[];
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcIndexBrowseRequest.
+ * Use `create(GrpcIndexBrowseRequestSchema)` to create a new message.
+ */
+export const GrpcIndexBrowseRequestSchema: GenMessage<GrpcIndexBrowseRequest> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaManagementAPI, 11);
+
+/**
+ * Response carrying one page of an index browse.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcIndexBrowseResponse
+ */
+export type GrpcIndexBrowseResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcIndexBrowseResponse"> & {
+  /**
+   * Version of the catalog this page was read at. Compare it across the pages of one browse: the index set moves as
+   * data is written, and two pages read at different versions do not describe one set. Unlike two disagreeing
+   * statistics snapshots, which are merely stale, two disagreeing pages corrupt the client's picture of what exists.
+   *
+   * That comparison only discriminates once the catalog is alive. The version advances per committed transaction, and
+   * a warming-up catalog runs no transactions - so during a bulk load it stays put while the index set churns faster
+   * than at any other time, and pages that differ can report the same version. Each page is still internally
+   * consistent regardless: warm-up costs cross-page comparison, never within-page coherence.
+   *
+   * @generated from field: int64 catalogVersion = 1 [jstype = JS_STRING];
+   */
+  catalogVersion: string;
+
+  /**
+   * The page that was returned, 1-indexed, echoing the request.
+   *
+   * @generated from field: int32 pageNumber = 2;
+   */
+  pageNumber: number;
+
+  /**
+   * The page size that was applied, echoing the request.
+   *
+   * @generated from field: int32 pageSize = 3;
+   */
+  pageSize: number;
+
+  /**
+   * How many indexes matched the filters in total, across every page (indexes). Not the number returned in this
+   * page, and not the collection's total index count unless the browse was unfiltered.
+   *
+   * @generated from field: int32 totalRecordCount = 4;
+   */
+  totalRecordCount: number;
+
+  /**
+   * The indexes on this page, in the requested order. Shorter than `pageSize` on the last page, and empty when
+   * `pageNumber` addresses a page past the end.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcBrowsedIndex indexes = 5;
+   */
+  indexes: GrpcBrowsedIndex[];
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcIndexBrowseResponse.
+ * Use `create(GrpcIndexBrowseResponseSchema)` to create a new message.
+ */
+export const GrpcIndexBrowseResponseSchema: GenMessage<GrpcIndexBrowseResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaManagementAPI, 12);
+
+/**
+ * Request describing one index in full.
+ *
+ * The drill-down that follows `BrowseIndexes`: hand back the `entityType` and `indexPrimaryKey` of the row that looked
+ * worth investigating - the two together are the index's identity, since the same handle under another owner is
+ * another index. The caller naming one index is what bounds the cost of the heap estimate, so there is deliberately no
+ * variant of this request that describes several indexes or a whole collection - a client that wants a total issues
+ * these calls in parallel and sums the results itself.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcIndexDetailRequest
+ */
+export type GrpcIndexDetailRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcIndexDetailRequest"> & {
+  /**
+   * Name of the catalog holding the index. A catalog the server does not know is an error.
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+
+  /**
+   * Name of the entity collection holding the index, i.e. its entity type. A collection the catalog does not hold is
+   * an error. Unset describes an index the catalog holds itself.
+   *
+   * @generated from field: google.protobuf.StringValue entityType = 2;
+   */
+  entityType?: string;
+
+  /**
+   * Identity of the index to describe, as reported by `GrpcBrowsedIndex.indexPrimaryKey`.
+   *
+   * An index the named owner no longer holds is an error rather than an empty response, which would be
+   * indistinguishable from an index that weighs nothing. It is an ordinary outcome rather than necessarily a mistake -
+   * a collection's index can be reclaimed between the browse and the drill-down, and a catalog's is created lazily per
+   * scope - but it can never mean the handle now denotes a different index.
+   *
+   * @generated from field: int32 indexPrimaryKey = 3;
+   */
+  indexPrimaryKey: number;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcIndexDetailRequest.
+ * Use `create(GrpcIndexDetailRequestSchema)` to create a new message.
+ */
+export const GrpcIndexDetailRequestSchema: GenMessage<GrpcIndexDetailRequest> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaManagementAPI, 13);
+
+/**
+ * Response carrying the full description of one index.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcIndexDetailResponse
+ */
+export type GrpcIndexDetailResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcIndexDetailResponse"> & {
+  /**
+   * The described index.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcIndexDetail indexDetail = 1;
+   */
+  indexDetail?: GrpcIndexDetail;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcIndexDetailResponse.
+ * Use `create(GrpcIndexDetailResponseSchema)` to create a new message.
+ */
+export const GrpcIndexDetailResponseSchema: GenMessage<GrpcIndexDetailResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaManagementAPI, 14);
+
+/**
+ * Request listing how often each schema capability of one owner was asked for by queries, against how often mutations
+ * had to maintain it.
+ *
+ * `entityType` chooses the owner and is the only thing that does, exactly as it is for an index browse - which is why
+ * this request carries no paging, no filters and no ordering: the response is bounded by the schema, dozens of rows
+ * per owner, rather than by the data.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcSchemaCapabilityUsageRequest
+ */
+export type GrpcSchemaCapabilityUsageRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcSchemaCapabilityUsageRequest"> & {
+  /**
+   * Name of the catalog holding the schema. A catalog the server does not know is an error.
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+
+  /**
+   * Name of the entity collection whose capabilities to report, i.e. its entity type. A collection the catalog does
+   * not hold is an error, not an empty list - an empty list would be indistinguishable from a collection nothing has
+   * queried.
+   *
+   * Unset reports the capabilities the catalog schema declares itself - those of its globally-unique attributes, which
+   * live there because a query filtering by one may name no collection at all. Both forms answer with the same rows,
+   * and every row names its owner, so a client wanting the whole picture issues one call per owner and concatenates
+   * the results.
+   *
+   * @generated from field: google.protobuf.StringValue entityType = 2;
+   */
+  entityType?: string;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcSchemaCapabilityUsageRequest.
+ * Use `create(GrpcSchemaCapabilityUsageRequestSchema)` to create a new message.
+ */
+export const GrpcSchemaCapabilityUsageRequestSchema: GenMessage<GrpcSchemaCapabilityUsageRequest> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaManagementAPI, 15);
+
+/**
+ * Response carrying every schema capability one owner has observed so far.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcSchemaCapabilityUsageResponse
+ */
+export type GrpcSchemaCapabilityUsageResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcSchemaCapabilityUsageResponse"> & {
+  /**
+   * The rows, ordered by container, then element name, then element kind, then capability, then scope - a stable order
+   * so that two polls of an unchanged catalog do not reshuffle a table an operator is reading, and so that the rows of
+   * one element arrive together. Empty when nothing has been observed since the server loaded the catalog.
+   *
+   * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcSchemaCapabilityUsage capabilities = 1;
+   */
+  capabilities: GrpcSchemaCapabilityUsage[];
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcSchemaCapabilityUsageResponse.
+ * Use `create(GrpcSchemaCapabilityUsageResponseSchema)` to create a new message.
+ */
+export const GrpcSchemaCapabilityUsageResponseSchema: GenMessage<GrpcSchemaCapabilityUsageResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaManagementAPI, 16);
+
+/**
+ * Response carrying the component-selected statistics snapshot of one entity collection.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcEntityCollectionStatisticsSnapshotResponse
+ */
+export type GrpcEntityCollectionStatisticsSnapshotResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcEntityCollectionStatisticsSnapshotResponse"> & {
+  /**
+   * Statistics of the requested entity collection.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntityCollectionStatisticsSnapshot entityCollectionStatistics = 1;
+   */
+  entityCollectionStatistics?: GrpcEntityCollectionStatisticsSnapshot;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcEntityCollectionStatisticsSnapshotResponse.
+ * Use `create(GrpcEntityCollectionStatisticsSnapshotResponseSchema)` to create a new message.
+ */
+export const GrpcEntityCollectionStatisticsSnapshotResponseSchema: GenMessage<GrpcEntityCollectionStatisticsSnapshotResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaManagementAPI, 17);
+
+/**
+ * One chunk of a streamed catalog restore. The client sends a sequence of these messages over the
+ * same gRPC client stream, each carrying one slice of the backup archive; the server concatenates
+ * `backupFile` across all messages, in arrival order, into a single ZIP file. `catalogName` is
+ * expected to be identical on every chunk - only the value from the last message in the stream is
+ * actually used to name the restored catalog.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogRequest
+ */
+export type GrpcRestoreCatalogRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogRequest"> & {
+  /**
+   * Name of the target catalog into which the backup will be restored.
+   * Must not clash with the name of any existing catalog.
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+
+  /**
+   * One chunk of the binary backup ZIP archive; concatenate `backupFile` from all messages in the
+   * stream, in order, to reconstruct the full archive.
    *
    * @generated from field: bytes backupFile = 2;
    */
@@ -336,38 +828,50 @@ export type GrpcRestoreCatalogRequest = Message<"io.evitadb.externalApi.grpc.gen
  * Use `create(GrpcRestoreCatalogRequestSchema)` to create a new message.
  */
 export const GrpcRestoreCatalogRequestSchema: GenMessage<GrpcRestoreCatalogRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 6);
+  messageDesc(file_GrpcEvitaManagementAPI, 18);
 
 /**
- * Request to restore a catalog.
+ * One chunk of a catalog restore uploaded via repeated unary calls, used where true client-side
+ * streaming (as in `GrpcRestoreCatalogRequest`) is unavailable, e.g. gRPC-Web. The client calls
+ * `RestoreCatalogUnary` once per chunk, feeding back the `fileId` it received in the previous
+ * response so the server appends to the same upload; see `GrpcRestoreCatalogUnaryResponse`.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogUnaryRequest
  */
 export type GrpcRestoreCatalogUnaryRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogUnaryRequest"> & {
   /**
-   * Name of the catalog where the backup will be restored
-   * The name must not clash with any of existing catalogs
+   * Name of the target catalog into which the backup will be restored.
+   * Must not clash with the name of any existing catalog.
    *
    * @generated from field: string catalogName = 1;
    */
   catalogName: string;
 
   /**
-   * Binary contents of the backup file.
+   * One chunk of the binary backup ZIP archive; the server appends it to the chunks already
+   * received for this upload (identified by `fileId`).
    *
    * @generated from field: bytes backupFile = 2;
    */
   backupFile: Uint8Array;
 
   /**
-   * Identification of the task (for continuation purpose)
+   * Identifies the upload this chunk continues.
+   *
+   * If unset, this is the first chunk of a new upload: the server allocates a new upload id and
+   * returns it as `fileId` in the response. If set, it must be a `fileId` previously returned for
+   * this same upload, and this chunk is appended to it.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcUuid fileId = 3;
    */
   fileId?: GrpcUuid;
 
   /**
-   * Total size of uploaded file in Bytes, when the size is reached, restore automatically starts
+   * Total size of the complete backup file (bytes), as expected once all chunks have been
+   * received; sent with every chunk. Once the bytes received so far reach exactly this size, the
+   * restore starts automatically. If more bytes are received than this, the server still returns
+   * a normal response for that (final) chunk and only afterwards discards the partial upload - an
+   * overshoot is not guaranteed to surface to the client as an error, so do not exceed it.
    *
    * @generated from field: int64 totalSizeInBytes = 4 [jstype = JS_STRING];
    */
@@ -379,24 +883,27 @@ export type GrpcRestoreCatalogUnaryRequest = Message<"io.evitadb.externalApi.grp
  * Use `create(GrpcRestoreCatalogUnaryRequestSchema)` to create a new message.
  */
 export const GrpcRestoreCatalogUnaryRequestSchema: GenMessage<GrpcRestoreCatalogUnaryRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 7);
+  messageDesc(file_GrpcEvitaManagementAPI, 19);
 
 /**
- * Request to restore a catalog.
+ * Request to restore a catalog from a backup file that already exists on the server (e.g. produced
+ * by a prior backup task, or a previous restore upload) - in contrast to
+ * `GrpcRestoreCatalogRequest` and `GrpcRestoreCatalogUnaryRequest`, which upload a new backup file
+ * as part of the call.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogFromServerFileRequest
  */
 export type GrpcRestoreCatalogFromServerFileRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogFromServerFileRequest"> & {
   /**
-   * Name of the catalog where the backup will be restored
-   * The name must not clash with any of existing catalogs
+   * Name of the target catalog into which the backup will be restored.
+   * Must not clash with the name of any existing catalog.
    *
    * @generated from field: string catalogName = 1;
    */
   catalogName: string;
 
   /**
-   * The identification of the file on the server that should be restored
+   * Identification of the backup file already stored on the server that should be restored.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcUuid fileId = 2;
    */
@@ -408,23 +915,27 @@ export type GrpcRestoreCatalogFromServerFileRequest = Message<"io.evitadb.extern
  * Use `create(GrpcRestoreCatalogFromServerFileRequestSchema)` to create a new message.
  */
 export const GrpcRestoreCatalogFromServerFileRequestSchema: GenMessage<GrpcRestoreCatalogFromServerFileRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 8);
+  messageDesc(file_GrpcEvitaManagementAPI, 20);
 
 /**
- * Response to a catalog restore request.
+ * Response to a catalog restore request. Returned by both `RestoreCatalog` and
+ * `RestoreCatalogFromServerFile`.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogResponse
  */
 export type GrpcRestoreCatalogResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogResponse"> & {
   /**
-   * returns the number of bytes read from the backup file
+   * Total number of bytes read from the backup file (bytes). Only meaningful for `RestoreCatalog`,
+   * where it reports the cumulative size of the uploaded stream; always 0 for
+   * `RestoreCatalogFromServerFile`, which does not populate this field.
    *
    * @generated from field: int64 read = 1 [jstype = JS_STRING];
    */
   read: string;
 
   /**
-   * the task that is used to restore the catalog and getting its progress
+   * The task tracking the restore operation; poll its status (`GetTaskStatus`) to observe restore
+   * progress.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTaskStatus task = 3;
    */
@@ -436,7 +947,7 @@ export type GrpcRestoreCatalogResponse = Message<"io.evitadb.externalApi.grpc.ge
  * Use `create(GrpcRestoreCatalogResponseSchema)` to create a new message.
  */
 export const GrpcRestoreCatalogResponseSchema: GenMessage<GrpcRestoreCatalogResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 9);
+  messageDesc(file_GrpcEvitaManagementAPI, 21);
 
 /**
  * Response to a catalog restore request (unary variant). This is used for gRPC/web.
@@ -446,21 +957,25 @@ export const GrpcRestoreCatalogResponseSchema: GenMessage<GrpcRestoreCatalogResp
  */
 export type GrpcRestoreCatalogUnaryResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogUnaryResponse"> & {
   /**
-   * returns the number of bytes read from the backup file
+   * Cumulative number of bytes received for this upload so far, across this and all preceding
+   * chunks (bytes).
    *
    * @generated from field: int64 read = 1 [jstype = JS_STRING];
    */
   read: string;
 
   /**
-   * The identification of the file on the server that should be restored
+   * Identifies this upload. Echo this value back as `fileId` in the next
+   * `GrpcRestoreCatalogUnaryRequest` chunk so the server appends to the same upload; on the first
+   * chunk of an upload the server allocates this id and returns it here for the first time.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcUuid fileId = 2;
    */
   fileId?: GrpcUuid;
 
   /**
-   * the task that is used to restore the catalog and getting its progress
+   * The task tracking the restore operation; poll its status (`GetTaskStatus`) to observe restore
+   * progress.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTaskStatus task = 3;
    */
@@ -472,7 +987,85 @@ export type GrpcRestoreCatalogUnaryResponse = Message<"io.evitadb.externalApi.gr
  * Use `create(GrpcRestoreCatalogUnaryResponseSchema)` to create a new message.
  */
 export const GrpcRestoreCatalogUnaryResponseSchema: GenMessage<GrpcRestoreCatalogUnaryResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 10);
+  messageDesc(file_GrpcEvitaManagementAPI, 22);
+
+/**
+ * Request to put a catalog back to the state it was in at an earlier version, replacing the catalog
+ * currently served under `targetCatalogName` with it. Unlike `GrpcRestoreCatalogRequest` and friends,
+ * nothing is uploaded: the server takes the backup of the requested version itself, unpacks it into a
+ * temporary catalog, loads it, and swaps it in - all as the one task returned in the response.
+ *
+ * BEWARE: this destroys data. The catalog replaced under `targetCatalogName` is purged with every
+ * version of it; the restored catalog carries no mutation history, so it cannot itself be restored to
+ * an earlier version afterwards; and writes committed to the replaced catalog after the selected
+ * version - including ones committed while the operation runs - go with it.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogToVersionRequest
+ */
+export type GrpcRestoreCatalogToVersionRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogToVersionRequest"> & {
+  /**
+   * Name of the catalog whose past state is to be restored.
+   *
+   * @generated from field: string catalogName = 1;
+   */
+  catalogName: string;
+
+  /**
+   * The moment in time to restore the catalog to. If unset, defaults to the current state (subject
+   * to being overridden by `catalogVersion`, see below).
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcOffsetDateTime pastMoment = 2;
+   */
+  pastMoment?: GrpcOffsetDateTime;
+
+  /**
+   * Precise catalog version to restore to - this is the version reported by the mutation history. If
+   * unset, defaults to the version resolved from `pastMoment`, or to the current state when that is
+   * unset too. When this field is set, `pastMoment` is ignored regardless of whether it is also set.
+   *
+   * @generated from field: google.protobuf.Int64Value catalogVersion = 3;
+   */
+  catalogVersion?: bigint;
+
+  /**
+   * Name of the catalog the restored state is to be served under. If unset - or equal to
+   * `catalogName` - the catalog the state was taken from is the one replaced. A different name is
+   * accepted whether or not a catalog already holds it: an existing one is replaced on the same
+   * terms, a free one is created.
+   *
+   * @generated from field: google.protobuf.StringValue targetCatalogName = 4;
+   */
+  targetCatalogName?: string;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogToVersionRequest.
+ * Use `create(GrpcRestoreCatalogToVersionRequestSchema)` to create a new message.
+ */
+export const GrpcRestoreCatalogToVersionRequestSchema: GenMessage<GrpcRestoreCatalogToVersionRequest> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaManagementAPI, 23);
+
+/**
+ * Response to a request to restore a catalog to an earlier version.
+ *
+ * @generated from message io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogToVersionResponse
+ */
+export type GrpcRestoreCatalogToVersionResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogToVersionResponse"> & {
+  /**
+   * The task tracking the whole backup-restore-swap operation; poll its status (`GetTaskStatus`) to
+   * observe progress. It completes once the restored catalog is the one being served.
+   *
+   * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTaskStatus task = 1;
+   */
+  task?: GrpcTaskStatus;
+};
+
+/**
+ * Describes the message io.evitadb.externalApi.grpc.generated.GrpcRestoreCatalogToVersionResponse.
+ * Use `create(GrpcRestoreCatalogToVersionResponseSchema)` to create a new message.
+ */
+export const GrpcRestoreCatalogToVersionResponseSchema: GenMessage<GrpcRestoreCatalogToVersionResponse> = /*@__PURE__*/
+  messageDesc(file_GrpcEvitaManagementAPI, 24);
 
 /**
  * Request to list task statuses in paginated form.
@@ -481,30 +1074,32 @@ export const GrpcRestoreCatalogUnaryResponseSchema: GenMessage<GrpcRestoreCatalo
  */
 export type GrpcTaskStatusesRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcTaskStatusesRequest"> & {
   /**
-   * Page number of the task statuses to be listed.
+   * Page number of the task statuses to be listed. Page-based paging: 1-indexed, page 1 is the
+   * first page (see `io.evitadb.dataType.PaginatedList#getPageNumber`).
    *
    * @generated from field: int32 pageNumber = 1;
    */
   pageNumber: number;
 
   /**
-   * Number of task statuses per page.
+   * Number of task statuses per page. No server-side maximum is enforced.
    *
    * @generated from field: int32 pageSize = 2;
    */
   pageSize: number;
 
   /**
-   * Optional taskType of the listed task, passing non-null value
-   * in this argument filters the returned status to only those that are related to the tasks of specified type
+   * Task type names to filter by (matched against `GrpcTaskStatus.taskType`); a task matches if
+   * its type is any of the listed values. Empty (the default) means no filtering by type.
    *
    * @generated from field: repeated google.protobuf.StringValue taskType = 3;
    */
   taskType: StringValue[];
 
   /**
-   * Optional set of simplified task states, passing list of enums in this argument
-   * filters the returned statuses to only those that match this simplified status
+   * Simplified task states to filter by; a task matches if its state is any of the listed values.
+   * Empty (the default) means no filtering by state. When both `taskType` and `simplifiedState`
+   * are non-empty, a task must satisfy both filters.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcTaskSimplifiedState simplifiedState = 4;
    */
@@ -516,7 +1111,7 @@ export type GrpcTaskStatusesRequest = Message<"io.evitadb.externalApi.grpc.gener
  * Use `create(GrpcTaskStatusesRequestSchema)` to create a new message.
  */
 export const GrpcTaskStatusesRequestSchema: GenMessage<GrpcTaskStatusesRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 11);
+  messageDesc(file_GrpcEvitaManagementAPI, 25);
 
 /**
  * Response to a task statuses request.
@@ -525,28 +1120,30 @@ export const GrpcTaskStatusesRequestSchema: GenMessage<GrpcTaskStatusesRequest> 
  */
 export type GrpcTaskStatusesResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcTaskStatusesResponse"> & {
   /**
-   * The size of the page.
+   * The page size that was actually applied (echoes the request's `pageSize`).
    *
    * @generated from field: int32 pageSize = 1;
    */
   pageSize: number;
 
   /**
-   * The number of the page.
+   * The page number that was actually applied (echoes the request's `pageNumber`); 1-indexed, see
+   * `GrpcTaskStatusesRequest.pageNumber` for the paging model.
    *
    * @generated from field: int32 pageNumber = 2;
    */
   pageNumber: number;
 
   /**
-   * Collection of task statuses.
+   * Task statuses on this page, matching the filters from the request.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcTaskStatus taskStatus = 3;
    */
   taskStatus: GrpcTaskStatus[];
 
   /**
-   * Total number of task statuses.
+   * Total number of task statuses matching the request's filters across all pages, not just this
+   * one.
    *
    * @generated from field: int32 totalNumberOfRecords = 4;
    */
@@ -558,7 +1155,7 @@ export type GrpcTaskStatusesResponse = Message<"io.evitadb.externalApi.grpc.gene
  * Use `create(GrpcTaskStatusesResponseSchema)` to create a new message.
  */
 export const GrpcTaskStatusesResponseSchema: GenMessage<GrpcTaskStatusesResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 12);
+  messageDesc(file_GrpcEvitaManagementAPI, 26);
 
 /**
  * Request to get multiple task statuses.
@@ -567,7 +1164,9 @@ export const GrpcTaskStatusesResponseSchema: GenMessage<GrpcTaskStatusesResponse
  */
 export type GrpcSpecifiedTaskStatusesRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcSpecifiedTaskStatusesRequest"> & {
   /**
-   * set of task ids to be listed
+   * Identifications of the tasks whose statuses should be returned. Ids that don't match any
+   * known task are silently omitted from the response - see
+   * `GrpcSpecifiedTaskStatusesResponse.taskStatus`.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcUuid taskIds = 1;
    */
@@ -579,7 +1178,7 @@ export type GrpcSpecifiedTaskStatusesRequest = Message<"io.evitadb.externalApi.g
  * Use `create(GrpcSpecifiedTaskStatusesRequestSchema)` to create a new message.
  */
 export const GrpcSpecifiedTaskStatusesRequestSchema: GenMessage<GrpcSpecifiedTaskStatusesRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 13);
+  messageDesc(file_GrpcEvitaManagementAPI, 27);
 
 /**
  * Response to a multiple task statuses request.
@@ -588,7 +1187,8 @@ export const GrpcSpecifiedTaskStatusesRequestSchema: GenMessage<GrpcSpecifiedTas
  */
 export type GrpcSpecifiedTaskStatusesResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcSpecifiedTaskStatusesResponse"> & {
   /**
-   * Collection of task statuses.
+   * Statuses of the requested tasks that were found, in no particular order; ids from the request
+   * that don't match any known task are simply absent here, no error is raised for them.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcTaskStatus taskStatus = 1;
    */
@@ -600,7 +1200,7 @@ export type GrpcSpecifiedTaskStatusesResponse = Message<"io.evitadb.externalApi.
  * Use `create(GrpcSpecifiedTaskStatusesResponseSchema)` to create a new message.
  */
 export const GrpcSpecifiedTaskStatusesResponseSchema: GenMessage<GrpcSpecifiedTaskStatusesResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 14);
+  messageDesc(file_GrpcEvitaManagementAPI, 28);
 
 /**
  * Request to get single task status by id
@@ -621,7 +1221,7 @@ export type GrpcTaskStatusRequest = Message<"io.evitadb.externalApi.grpc.generat
  * Use `create(GrpcTaskStatusRequestSchema)` to create a new message.
  */
 export const GrpcTaskStatusRequestSchema: GenMessage<GrpcTaskStatusRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 15);
+  messageDesc(file_GrpcEvitaManagementAPI, 29);
 
 /**
  * Response to a task status request.
@@ -630,7 +1230,12 @@ export const GrpcTaskStatusRequestSchema: GenMessage<GrpcTaskStatusRequest> = /*
  */
 export type GrpcTaskStatusResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcTaskStatusResponse"> & {
   /**
-   * Task status if found
+   * Status of the requested task. If no task exists for the given id, the server currently does
+   * not send this response message at all, rather than sending it with this field unset - for
+   * this unary call, that means the call does not complete normally rather than yielding an empty
+   * result (the bundled Java driver, for one, surfaces this as a `StatusRuntimeException` with
+   * status `INTERNAL`). Prefer `GetTaskStatuses` (plural) if an unknown id must not surface as an
+   * error, since it returns a normal (possibly empty) response instead.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcTaskStatus taskStatus = 1;
    */
@@ -642,10 +1247,10 @@ export type GrpcTaskStatusResponse = Message<"io.evitadb.externalApi.grpc.genera
  * Use `create(GrpcTaskStatusResponseSchema)` to create a new message.
  */
 export const GrpcTaskStatusResponseSchema: GenMessage<GrpcTaskStatusResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 16);
+  messageDesc(file_GrpcEvitaManagementAPI, 30);
 
 /**
- * Request to get cancel task status by id
+ * Request to cancel a task by id
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcCancelTaskRequest
  */
@@ -663,16 +1268,17 @@ export type GrpcCancelTaskRequest = Message<"io.evitadb.externalApi.grpc.generat
  * Use `create(GrpcCancelTaskRequestSchema)` to create a new message.
  */
 export const GrpcCancelTaskRequestSchema: GenMessage<GrpcCancelTaskRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 17);
+  messageDesc(file_GrpcEvitaManagementAPI, 31);
 
 /**
- * Request to get cancel task status by id
+ * Response to a cancel task request.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcCancelTaskResponse
  */
 export type GrpcCancelTaskResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcCancelTaskResponse"> & {
   /**
-   * true if the task was found and canceled
+   * True if a task with the given id existed and was successfully canceled; false if no such task
+   * exists, or the task could no longer be canceled (e.g. it had already finished).
    *
    * @generated from field: bool success = 1;
    */
@@ -684,31 +1290,33 @@ export type GrpcCancelTaskResponse = Message<"io.evitadb.externalApi.grpc.genera
  * Use `create(GrpcCancelTaskResponseSchema)` to create a new message.
  */
 export const GrpcCancelTaskResponseSchema: GenMessage<GrpcCancelTaskResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 18);
+  messageDesc(file_GrpcEvitaManagementAPI, 32);
 
 /**
- * Request to list files to fetch in paginated form.
+ * Request to list files available for fetching, in paginated form.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcFilesToFetchRequest
  */
 export type GrpcFilesToFetchRequest = Message<"io.evitadb.externalApi.grpc.generated.GrpcFilesToFetchRequest"> & {
   /**
-   * Page number of the task statuses to be listed.
+   * Page number of the files to be listed. Page-based paging: 1-indexed, page 1 is the first page
+   * (see `io.evitadb.dataType.PaginatedList#getPageNumber`).
    *
    * @generated from field: int32 pageNumber = 1;
    */
   pageNumber: number;
 
   /**
-   * Number of task statuses per page.
+   * Number of files per page. No server-side maximum is enforced.
    *
    * @generated from field: int32 pageSize = 2;
    */
   pageSize: number;
 
   /**
-   * Optional origin of the files (derived from taskType), passing non-null value
-   * in this argument filters the returned files to only those that are related to the specified origin
+   * File origins to filter by (see `GrpcFile.origin` - usually the `taskType` of the task that
+   * produced the file, e.g. `BackupTask`); a file matches if its origin is any of the listed
+   * values. Empty (the default) means no filtering - files of all origins are returned.
    *
    * @generated from field: repeated google.protobuf.StringValue origin = 3;
    */
@@ -720,37 +1328,39 @@ export type GrpcFilesToFetchRequest = Message<"io.evitadb.externalApi.grpc.gener
  * Use `create(GrpcFilesToFetchRequestSchema)` to create a new message.
  */
 export const GrpcFilesToFetchRequestSchema: GenMessage<GrpcFilesToFetchRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 19);
+  messageDesc(file_GrpcEvitaManagementAPI, 33);
 
 /**
- * Response to a get files to fetch request.
+ * Response to a request to list files available for fetching.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcFilesToFetchResponse
  */
 export type GrpcFilesToFetchResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcFilesToFetchResponse"> & {
   /**
-   * The size of the page.
+   * The page size that was actually applied (echoes the request's `pageSize`).
    *
    * @generated from field: int32 pageSize = 1;
    */
   pageSize: number;
 
   /**
-   * The number of the page.
+   * The page number that was actually applied (echoes the request's `pageNumber`); 1-indexed, see
+   * `GrpcFilesToFetchRequest.pageNumber` for the paging model.
    *
    * @generated from field: int32 pageNumber = 2;
    */
   pageNumber: number;
 
   /**
-   * Collection of files to fetch.
+   * Files on this page, matching the origin filter from the request.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcFile filesToFetch = 3;
    */
   filesToFetch: GrpcFile[];
 
   /**
-   * Total number of files to fetch.
+   * Total number of files matching the request's origin filter across all pages, not just this
+   * one.
    *
    * @generated from field: int32 totalNumberOfRecords = 4;
    */
@@ -762,10 +1372,10 @@ export type GrpcFilesToFetchResponse = Message<"io.evitadb.externalApi.grpc.gene
  * Use `create(GrpcFilesToFetchResponseSchema)` to create a new message.
  */
 export const GrpcFilesToFetchResponseSchema: GenMessage<GrpcFilesToFetchResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 20);
+  messageDesc(file_GrpcEvitaManagementAPI, 34);
 
 /**
- * Request to list task statuses in paginated form.
+ * Request to get a single file available for fetching, by its id.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcFileToFetchRequest
  */
@@ -783,16 +1393,17 @@ export type GrpcFileToFetchRequest = Message<"io.evitadb.externalApi.grpc.genera
  * Use `create(GrpcFileToFetchRequestSchema)` to create a new message.
  */
 export const GrpcFileToFetchRequestSchema: GenMessage<GrpcFileToFetchRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 21);
+  messageDesc(file_GrpcEvitaManagementAPI, 35);
 
 /**
- * Response to a task statuses request.
+ * Response to a request for a single file available for fetching. If no file exists for the given
+ * id, the call fails with an error instead of returning this message.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcFileToFetchResponse
  */
 export type GrpcFileToFetchResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcFileToFetchResponse"> & {
   /**
-   * File to fetch.
+   * Descriptor of the requested file.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcFile fileToFetch = 1;
    */
@@ -804,10 +1415,10 @@ export type GrpcFileToFetchResponse = Message<"io.evitadb.externalApi.grpc.gener
  * Use `create(GrpcFileToFetchResponseSchema)` to create a new message.
  */
 export const GrpcFileToFetchResponseSchema: GenMessage<GrpcFileToFetchResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 22);
+  messageDesc(file_GrpcEvitaManagementAPI, 36);
 
 /**
- * Request to get single file by id
+ * Request to stream the contents of a single file available for fetching, by its id.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcFetchFileRequest
  */
@@ -825,23 +1436,26 @@ export type GrpcFetchFileRequest = Message<"io.evitadb.externalApi.grpc.generate
  * Use `create(GrpcFetchFileRequestSchema)` to create a new message.
  */
 export const GrpcFetchFileRequestSchema: GenMessage<GrpcFetchFileRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 23);
+  messageDesc(file_GrpcEvitaManagementAPI, 37);
 
 /**
- * Response to a task status request.
+ * One chunk of a file's contents, streamed back to the client. The server sends a sequence of
+ * these messages; concatenate `fileContents` from all of them, in arrival order, to reconstruct
+ * the full file.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcFetchFileResponse
  */
 export type GrpcFetchFileResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcFetchFileResponse"> & {
   /**
-   * chunk of the file content
+   * One chunk of the file's binary contents.
    *
    * @generated from field: bytes fileContents = 1;
    */
   fileContents: Uint8Array;
 
   /**
-   * total size of the file
+   * Total size of the complete file (bytes); the same value is repeated on every chunk in the
+   * stream, not just the size of this chunk.
    *
    * @generated from field: int64 totalSizeInBytes = 2 [jstype = JS_STRING];
    */
@@ -853,10 +1467,10 @@ export type GrpcFetchFileResponse = Message<"io.evitadb.externalApi.grpc.generat
  * Use `create(GrpcFetchFileResponseSchema)` to create a new message.
  */
 export const GrpcFetchFileResponseSchema: GenMessage<GrpcFetchFileResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 24);
+  messageDesc(file_GrpcEvitaManagementAPI, 38);
 
 /**
- * Request to list task statuses in paginated form.
+ * Request to delete a file available for fetching, by its id.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcDeleteFileToFetchRequest
  */
@@ -874,16 +1488,17 @@ export type GrpcDeleteFileToFetchRequest = Message<"io.evitadb.externalApi.grpc.
  * Use `create(GrpcDeleteFileToFetchRequestSchema)` to create a new message.
  */
 export const GrpcDeleteFileToFetchRequestSchema: GenMessage<GrpcDeleteFileToFetchRequest> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 25);
+  messageDesc(file_GrpcEvitaManagementAPI, 39);
 
 /**
- * Response to a task statuses request.
+ * Response to a file deletion request.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcDeleteFileToFetchResponse
  */
 export type GrpcDeleteFileToFetchResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcDeleteFileToFetchResponse"> & {
   /**
-   * true if the file was found and deleted
+   * True if the file existed and was deleted; false if no file exists for the given id. Any other
+   * failure during deletion is reported as a gRPC error rather than `false`.
    *
    * @generated from field: bool success = 1;
    */
@@ -895,30 +1510,35 @@ export type GrpcDeleteFileToFetchResponse = Message<"io.evitadb.externalApi.grpc
  * Use `create(GrpcDeleteFileToFetchResponseSchema)` to create a new message.
  */
 export const GrpcDeleteFileToFetchResponseSchema: GenMessage<GrpcDeleteFileToFetchResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 26);
+  messageDesc(file_GrpcEvitaManagementAPI, 40);
 
 /**
- * Single reserved keyword
+ * A single reserved keyword that cannot be used as a classifier of the given type (e.g. as an
+ * entity type, attribute name, or reference name) - client-side validation of user-supplied
+ * classifiers can use this list to reject collisions early, before the server does.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcReservedKeyword
  */
 export type GrpcReservedKeyword = Message<"io.evitadb.externalApi.grpc.generated.GrpcReservedKeyword"> & {
   /**
-   * Type of the keyword
+   * The kind of classifier this keyword is reserved against (e.g. entity type, attribute name).
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcClassifierType classifierType = 1;
    */
   classifierType: GrpcClassifierType;
 
   /**
-   * Reserved keyword
+   * The reserved keyword in its normalized (camelCase) form. A candidate classifier is considered
+   * colliding if it matches this value in any of evitaDB's supported naming conventions
+   * (camelCase, PascalCase, snake_case, UPPER_SNAKE_CASE, kebab-case), not just this exact form.
    *
    * @generated from field: string classifier = 2;
    */
   classifier: string;
 
   /**
-   * List of words that are part of the keyword
+   * The individual words `classifier` is composed of, used to detect a collision across the
+   * supported naming conventions regardless of separator or case.
    *
    * @generated from field: repeated string words = 3;
    */
@@ -930,7 +1550,7 @@ export type GrpcReservedKeyword = Message<"io.evitadb.externalApi.grpc.generated
  * Use `create(GrpcReservedKeywordSchema)` to create a new message.
  */
 export const GrpcReservedKeywordSchema: GenMessage<GrpcReservedKeyword> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 27);
+  messageDesc(file_GrpcEvitaManagementAPI, 41);
 
 /**
  * Response that returns information about reserved keywords.
@@ -939,7 +1559,7 @@ export const GrpcReservedKeywordSchema: GenMessage<GrpcReservedKeyword> = /*@__P
  */
 export type GrpcReservedKeywordsResponse = Message<"io.evitadb.externalApi.grpc.generated.GrpcReservedKeywordsResponse"> & {
   /**
-   * List of reserved keywords
+   * All reserved keywords, across all classifier types.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcReservedKeyword keywords = 1;
    */
@@ -951,7 +1571,7 @@ export type GrpcReservedKeywordsResponse = Message<"io.evitadb.externalApi.grpc.
  * Use `create(GrpcReservedKeywordsResponseSchema)` to create a new message.
  */
 export const GrpcReservedKeywordsResponseSchema: GenMessage<GrpcReservedKeywordsResponse> = /*@__PURE__*/
-  messageDesc(file_GrpcEvitaManagementAPI, 28);
+  messageDesc(file_GrpcEvitaManagementAPI, 42);
 
 /**
  * This service contains RPCs that could be called by gRPC clients on evitaDB. Main purpose of this service is to provide
@@ -992,9 +1612,15 @@ export const EvitaManagementService: GenService<{
     output: typeof GrpcEvitaEngineSettingsResponseSchema;
   },
   /**
-   * Procedure used to obtain catalog statistics.
+   * Deprecated since 2026.3 - superseded by `GetAllCatalogStatisticsSnapshots`, and by
+   * `GetCatalogStatisticsSnapshot` / `GetEntityCollectionStatisticsSnapshot` when a single catalog or collection is
+   * wanted. This one computes every statistic of every catalog on every call and returns them in a fixed flat shape
+   * whose size grows with the number of entity collections, it cannot report *why* a figure is missing (an unknown
+   * value is indistinguishable from a real `-1`), and it offers no way to ask for one catalog or one collection. Its
+   * semantics are frozen and will not change while it remains.
    *
    * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaManagementService.GetCatalogStatistics
+   * @deprecated
    */
   getCatalogStatistics: {
     methodKind: "unary";
@@ -1002,7 +1628,97 @@ export const EvitaManagementService: GenService<{
     output: typeof GrpcEvitaCatalogStatisticsResponseSchema;
   },
   /**
-   * Procedure used to restore a catalog from backup.
+   * Procedure used to obtain a component-selected statistics snapshot of one named catalog. The client names the
+   * components it needs and the server computes only those, so a polled management screen pays for what it displays.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaManagementService.GetCatalogStatisticsSnapshot
+   */
+  getCatalogStatisticsSnapshot: {
+    methodKind: "unary";
+    input: typeof GrpcCatalogStatisticsSnapshotRequestSchema;
+    output: typeof GrpcCatalogStatisticsSnapshotResponseSchema;
+  },
+  /**
+   * Procedure used to obtain component-selected statistics snapshots of every catalog known to the server, ordered by
+   * catalog name. The component-selected replacement for the deprecated `GetCatalogStatistics`.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaManagementService.GetAllCatalogStatisticsSnapshots
+   */
+  getAllCatalogStatisticsSnapshots: {
+    methodKind: "unary";
+    input: typeof GrpcAllCatalogStatisticsSnapshotRequestSchema;
+    output: typeof GrpcAllCatalogStatisticsSnapshotResponseSchema;
+  },
+  /**
+   * Procedure used to obtain a component-selected statistics snapshot of one entity collection. This is the only way
+   * to obtain per-collection numbers - the catalog-level procedures report aggregates and never break them down by
+   * collection.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaManagementService.GetEntityCollectionStatisticsSnapshot
+   */
+  getEntityCollectionStatisticsSnapshot: {
+    methodKind: "unary";
+    input: typeof GrpcEntityCollectionStatisticsSnapshotRequestSchema;
+    output: typeof GrpcEntityCollectionStatisticsSnapshotResponseSchema;
+  },
+  /**
+   * Procedure used to list the indexes of one entity collection, or the ones a catalog holds itself, a page at a
+   * time. Where the index summary reported by `GetEntityCollectionStatisticsSnapshot` counts indexes by type and
+   * scope, this enumerates them individually - the drill-down that follows an alarming count. Which owner is listed
+   * is chosen by `GrpcIndexBrowseRequest.entityType`; both answer with the same rows.
+   *
+   * Never poll the collection form. Every call walks the collection's whole index map, unavoidably: there is no
+   * per-type index of the indexes to consult, and building one would duplicate every key while still costing a full
+   * pass to order. Filters and ordering change the constant, not the growth, and paging keeps the answer small rather
+   * than the work behind it. The catalog form is bounded by the number of scopes and carries none of that cost.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaManagementService.BrowseIndexes
+   */
+  browseIndexes: {
+    methodKind: "unary";
+    input: typeof GrpcIndexBrowseRequestSchema;
+    output: typeof GrpcIndexBrowseResponseSchema;
+  },
+  /**
+   * Procedure used to describe one index in full - what it occupies on the heap, and how well it discriminates. The
+   * drill-down that follows `BrowseIndexes`.
+   *
+   * The caller names the index, and that is what bounds the cost: the heap estimate walks the index's contents, so
+   * this is affordable for one index and would not be for a collection holding hundreds of thousands. There is
+   * deliberately no procedure that measures a whole collection; a client that wants a total calls this in parallel
+   * and sums the results.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaManagementService.GetIndexDetail
+   */
+  getIndexDetail: {
+    methodKind: "unary";
+    input: typeof GrpcIndexDetailRequestSchema;
+    output: typeof GrpcIndexDetailResponseSchema;
+  },
+  /**
+   * Procedure used to report how often each schema capability of one owner was asked for by queries, against how often
+   * mutations had to maintain it - the "you never filter by EAN, so why are you paying to keep its filter index up to
+   * date?" reading. Which owner is reported is chosen by `GrpcSchemaCapabilityUsageRequest.entityType`.
+   *
+   * Where `BrowseIndexes` enumerates the physical indexes and what each of them costs, this reports the schema flags
+   * those indexes exist to serve. That is the granularity an operator can act on, since dropping a flag is one schema
+   * mutation that removes every index maintaining it at once - and it is why the two are separate procedures rather
+   * than extra fields on a browse row. Read `GrpcSchemaCapabilityUsage` before acting on either count; in particular
+   * the request count is not physical index usage.
+   *
+   * Unlike the collection form of `BrowseIndexes` this one is cheap and may be polled: the response is bounded by the
+   * schema rather than by the data, and there is no index walk behind it.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaManagementService.ListSchemaCapabilityUsage
+   */
+  listSchemaCapabilityUsage: {
+    methodKind: "unary";
+    input: typeof GrpcSchemaCapabilityUsageRequestSchema;
+    output: typeof GrpcSchemaCapabilityUsageResponseSchema;
+  },
+  /**
+   * Procedure used to restore a catalog from a client-uploaded backup via true gRPC client
+   * streaming; see `RestoreCatalogUnary` for the chunked-unary alternative.
    *
    * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaManagementService.RestoreCatalog
    */
@@ -1012,7 +1728,8 @@ export const EvitaManagementService: GenService<{
     output: typeof GrpcRestoreCatalogResponseSchema;
   },
   /**
-   * Procedure used to restore a catalog from backup (unary version for gRPC/web).
+   * Procedure used to restore a catalog from a client-uploaded backup, one chunk per call (unary
+   * version for gRPC/web, where true client streaming as in `RestoreCatalog` is unavailable).
    *
    * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaManagementService.RestoreCatalogUnary
    */
@@ -1022,7 +1739,8 @@ export const EvitaManagementService: GenService<{
     output: typeof GrpcRestoreCatalogUnaryResponseSchema;
   },
   /**
-   * Procedure used to restore a catalog from backup.
+   * Procedure used to restore a catalog from a backup file already stored on the server, without
+   * re-uploading it.
    *
    * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaManagementService.RestoreCatalogFromServerFile
    */
@@ -1030,6 +1748,18 @@ export const EvitaManagementService: GenService<{
     methodKind: "unary";
     input: typeof GrpcRestoreCatalogFromServerFileRequestSchema;
     output: typeof GrpcRestoreCatalogResponseSchema;
+  },
+  /**
+   * Procedure used to put a catalog back to an earlier version of itself, replacing the catalog
+   * currently served under the target name. Nothing is uploaded - the server backs up the requested
+   * version and restores it in one tracked operation. BEWARE: this purges the replaced catalog.
+   *
+   * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaManagementService.RestoreCatalogToVersion
+   */
+  restoreCatalogToVersion: {
+    methodKind: "unary";
+    input: typeof GrpcRestoreCatalogToVersionRequestSchema;
+    output: typeof GrpcRestoreCatalogToVersionResponseSchema;
   },
   /**
    * Procedure used to get listing of task statuses.
@@ -1092,7 +1822,7 @@ export const EvitaManagementService: GenService<{
     output: typeof GrpcFileToFetchResponseSchema;
   },
   /**
-   * Procedure used to get file contents
+   * Procedure used to get file contents, streamed back to the client in chunks.
    *
    * @generated from rpc io.evitadb.externalApi.grpc.generated.EvitaManagementService.FetchFile
    */

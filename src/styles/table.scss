@@ -1,0 +1,18 @@
+// Cell separators shared by every Vuetify table in the lab.
+//
+// Vuetify draws horizontal separators only (a bottom border under the header row and under every row
+// but the last). Columns are separated here as well, because the tables in the lab hold numbers that
+// are read across a row - a size next to a count next to a ratio - and an unseparated row invites
+// reading a value under the wrong heading.
+//
+// The **trailing** column is deliberately left without one, so a table embedded in a page does not
+// draw a box around itself. A table that fills its whole tab (the entity grid) closes that edge on
+// its own.
+
+.v-table > .v-table__wrapper > table {
+  > thead > tr > th:not(:last-child),
+  > tbody > tr > th:not(:last-child),
+  > tbody > tr > td:not(:last-child) {
+    border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+  }
+}

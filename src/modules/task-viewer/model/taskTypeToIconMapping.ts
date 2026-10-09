@@ -1,6 +1,7 @@
 import { Map as ImmutableMap } from 'immutable'
 import { backupTaskName } from '@/modules/backup-viewer/model/BackupTask'
 import { restoreTaskName } from '@/modules/backup-viewer/model/RestoreTask'
+import { restoreToVersionTaskName } from '@/modules/backup-viewer/model/RestoreToVersionTask'
 import { jfrRecorderTaskName } from '@/modules/jfr-viewer/model/JfrRecorderTask'
 import { fullBackupTaskName } from '@/modules/backup-viewer/model/FullBackupTask.ts'
 import { systemBackupTaskName } from '@/modules/backup-viewer/model/SystemBackupTask.ts'
@@ -19,5 +20,6 @@ export const taskTypeToIconMapping: ImmutableMap<string, string> = ImmutableMap(
     [fullBackupTaskName, 'mdi-cloud-download-outline'],
     [systemFullBackupTaskName, 'mdi-cloud-download-outline'],
     [restoreTaskName, 'mdi-cloud-upload-outline'],
+    [restoreToVersionTaskName, 'mdi-backup-restore'],
     [jfrRecorderTaskName, 'mdi-record-circle-outline']
 ])

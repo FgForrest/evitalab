@@ -28,21 +28,25 @@ export const file_GrpcChangeCapture: GenFile = /*@__PURE__*/
   fileDesc("ChdHcnBjQ2hhbmdlQ2FwdHVyZS5wcm90bxIlaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZCKfAgoZR3JwY0NoYW5nZUNhcHR1cmVDcml0ZXJpYRJKCgRhcmVhGAEgASgOMjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2hhbmdlQ2FwdHVyZUFyZWESWAoKc2NoZW1hU2l0ZRgCIAEoCzJCLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZUNhcHR1cmVTY2hlbWFTaXRlSAASVAoIZGF0YVNpdGUYAyABKAsyQC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlRGF0YVNpdGVIAEIGCgRzaXRlIpoCChtHcnBjQ2hhbmdlQ2FwdHVyZVNjaGVtYVNpdGUSMAoKZW50aXR5VHlwZRgBIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRJUCglvcGVyYXRpb24YAiADKA4yQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlT3BlcmF0aW9uElwKDWNvbnRhaW5lclR5cGUYAyADKA4yRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlQ29udGFpbmVyVHlwZRIVCg1jb250YWluZXJOYW1lGAQgAygJIs8CChlHcnBjQ2hhbmdlQ2FwdHVyZURhdGFTaXRlEjAKCmVudGl0eVR5cGUYASABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUSNQoQZW50aXR5UHJpbWFyeUtleRgCIAEoCzIbLmdvb2dsZS5wcm90b2J1Zi5JbnQzMlZhbHVlElQKCW9wZXJhdGlvbhgDIAMoDjJBLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZUNhcHR1cmVPcGVyYXRpb24SXAoNY29udGFpbmVyVHlwZRgEIAMoDjJFLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NoYW5nZUNhcHR1cmVDb250YWluZXJUeXBlEhUKDWNvbnRhaW5lck5hbWUYBSADKAkivQYKGEdycGNDaGFuZ2VDYXRhbG9nQ2FwdHVyZRIsCgd2ZXJzaW9uGAEgASgLMhsuZ29vZ2xlLnByb3RvYnVmLkludDY0VmFsdWUSKgoFaW5kZXgYAiABKAsyGy5nb29nbGUucHJvdG9idWYuSW50MzJWYWx1ZRJKCgRhcmVhGAMgASgOMjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2hhbmdlQ2FwdHVyZUFyZWESMAoKZW50aXR5VHlwZRgEIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZRI1ChBlbnRpdHlQcmltYXJ5S2V5GAUgASgLMhsuZ29vZ2xlLnByb3RvYnVmLkludDMyVmFsdWUSVAoJb3BlcmF0aW9uGAYgASgOMkEuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2hhbmdlQ2FwdHVyZU9wZXJhdGlvbhJZCg5zY2hlbWFNdXRhdGlvbhgHIAEoCzI/LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0VudGl0eVNjaGVtYU11dGF0aW9uSAASUwoOZW50aXR5TXV0YXRpb24YCCABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNFbnRpdHlNdXRhdGlvbkgAElEKDWxvY2FsTXV0YXRpb24YCSABKAsyOC5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNMb2NhbE11dGF0aW9uSAASYwoWaW5mcmFzdHJ1Y3R1cmVNdXRhdGlvbhgKIAEoCzJBLmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0luZnJhc3RydWN0dXJlTXV0YXRpb25IABJMCgl0aW1lc3RhbXAYYyABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNPZmZzZXREYXRlVGltZUIGCgRib2R5Io8DChdHcnBjQ2hhbmdlU3lzdGVtQ2FwdHVyZRITCgd2ZXJzaW9uGAEgASgDQgIwARINCgVpbmRleBgCIAEoBRJUCglvcGVyYXRpb24YAyABKA4yQS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDaGFuZ2VDYXB0dXJlT3BlcmF0aW9uElMKDnN5c3RlbU11dGF0aW9uGAQgASgLMjkuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjRW5naW5lTXV0YXRpb25IABJPCglob3N0RXZlbnQYBiABKAsyOi5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNIb3N0U3lzdGVtRXZlbnRIABJMCgl0aW1lc3RhbXAYBSABKAsyOS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNPZmZzZXREYXRlVGltZUIGCgRib2R5IsUCChNHcnBjSG9zdFN5c3RlbUV2ZW50EmMKEGNhdGFsb2dJbnN0YWxsZWQYASABKAsyRy5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDYXRhbG9nSW5zdGFsbGVkSW50b0xpdmVWaWV3SAASXwoOY2F0YWxvZ1JlbW92ZWQYAiABKAsyRS5pby5ldml0YWRiLmV4dGVybmFsQXBpLmdycGMuZ2VuZXJhdGVkLkdycGNDYXRhbG9nUmVtb3ZlZEZyb21MaXZlVmlld0gAEl8KFGNhdGFsb2dTY2hlbWFVcGRhdGVkGAMgASgLMj8uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjQ2F0YWxvZ1NjaGVtYVVwZGF0ZWRIAEIHCgVldmVudCKpAQogR3JwY0NhdGFsb2dJbnN0YWxsZWRJbnRvTGl2ZVZpZXcSEwoLY2F0YWxvZ05hbWUYASABKAkSTgoNb2JzZXJ2ZWRTdGF0ZRgCIAEoDjI3LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY0NhdGFsb2dTdGF0ZRIgChRjdXJyZW50RW5naW5lVmVyc2lvbhgDIAEoA0ICMAEiVwoeR3JwY0NhdGFsb2dSZW1vdmVkRnJvbUxpdmVWaWV3EhMKC2NhdGFsb2dOYW1lGAEgASgJEiAKFGN1cnJlbnRFbmdpbmVWZXJzaW9uGAIgASgDQgIwASJrChhHcnBjQ2F0YWxvZ1NjaGVtYVVwZGF0ZWQSEwoLY2F0YWxvZ05hbWUYASABKAkSGAoQbmV3U2NoZW1hVmVyc2lvbhgCIAEoBRIgChRjdXJyZW50RW5naW5lVmVyc2lvbhgDIAEoA0ICMAEitAEKDUdycGNIZWFydEJlYXQSEQoFaW5kZXgYASABKANCAjABEkwKCXRpbWVzdGFtcBgCIAEoCzI5LmlvLmV2aXRhZGIuZXh0ZXJuYWxBcGkuZ3JwYy5nZW5lcmF0ZWQuR3JwY09mZnNldERhdGVUaW1lEh8KE2xhc3RPYnNlcnZlZFZlcnNpb24YAyABKANCAjABEiEKFW1pbGxpc1RvTmV4dEhlYXJ0YmVhdBgEIAEoA0ICMAEibQofR3JwY0NoYW5nZVN5c3RlbUNhcHR1cmVDcml0ZXJpYRJKCgRhcmVhGAEgASgOMjwuaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZC5HcnBjU3lzdGVtQ2FwdHVyZUFyZWEqQQoVR3JwY0NoYW5nZUNhcHR1cmVBcmVhEgoKBlNDSEVNQRAAEggKBERBVEEQARISCg5JTkZSQVNUUlVDVFVSRRACKkUKGkdycGNDaGFuZ2VDYXB0dXJlT3BlcmF0aW9uEgoKBlVQU0VSVBAAEgoKBlJFTU9WRRABEg8KC1RSQU5TQUNUSU9OEAIqswEKHkdycGNDaGFuZ2VDYXB0dXJlQ29udGFpbmVyVHlwZRIVChFDT05UQUlORVJfQ0FUQUxPRxAAEhQKEENPTlRBSU5FUl9FTlRJVFkQARIXChNDT05UQUlORVJfQVRUUklCVVRFEAISHQoZQ09OVEFJTkVSX0FTU09DSUFURURfREFUQRADEhMKD0NPTlRBSU5FUl9QUklDRRAEEhcKE0NPTlRBSU5FUl9SRUZFUkVOQ0UQBSo+ChhHcnBjQ2hhbmdlQ2FwdHVyZUNvbnRlbnQSEQoNQ0hBTkdFX0hFQURFUhAAEg8KC0NIQU5HRV9CT0RZEAEqSQoXR3JwY0NhcHR1cmVSZXNwb25zZVR5cGUSEwoPQUNLTk9XTEVER0VNRU5UEAASCgoGQ0hBTkdFEAESDQoJSEVBUlRCRUFUEAIqYgoVR3JwY1N5c3RlbUNhcHR1cmVBcmVhEhsKF1NZU1RFTV9BUkVBX1VOU1BFQ0lGSUVEEAASFgoSU1lTVEVNX0FSRUFfRU5HSU5FEAESFAoQU1lTVEVNX0FSRUFfSE9TVBACQv0BCiljb20uaW8uZXZpdGFkYi5leHRlcm5hbEFwaS5ncnBjLmdlbmVyYXRlZEIWR3JwY0NoYW5nZUNhcHR1cmVQcm90b1ABogIFSUVFR0eqAiVJby5Fdml0YWRiLkV4dGVybmFsQXBpLkdycGMuR2VuZXJhdGVkygIlSW9cRXZpdGFkYlxFeHRlcm5hbEFwaVxHcnBjXEdlbmVyYXRlZOICMUlvXEV2aXRhZGJcRXh0ZXJuYWxBcGlcR3JwY1xHZW5lcmF0ZWRcR1BCTWV0YWRhdGHqAilJbzo6RXZpdGFkYjo6RXh0ZXJuYWxBcGk6OkdycGM6OkdlbmVyYXRlZGIGcHJvdG8z", [file_google_protobuf_wrappers, file_GrpcEngineMutation, file_GrpcEntityMutation, file_GrpcLocalMutation, file_GrpcEntitySchemaMutation, file_GrpcInfrastrutureMutation, file_GrpcEvitaDataTypes, file_GrpcEnums]);
 
 /**
- * Record for the criteria of the capture request allowing to limit mutations to specific area of interest an its
+ * Record for the criteria of the capture request allowing to limit mutations to specific area of interest and its
  * properties.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureCriteria
  */
 export type GrpcChangeCaptureCriteria = Message<"io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureCriteria"> & {
   /**
-   * The area of capture - either schema or data (correlates with the site)
+   * The area of capture - SCHEMA, DATA or INFRASTRUCTURE. If `schemaSite`/`dataSite` below is set, it determines
+   * the effective area and this field is ignored; this field is only consulted when neither site is set, which
+   * is also the only way to select INFRASTRUCTURE (it has no site message of its own).
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureArea area = 1;
    */
   area: GrpcChangeCaptureArea;
 
   /**
-   * The specific requirements for the designated area
+   * At most one of `schemaSite`/`dataSite` may be set. If neither is set, every mutation matching `area` passes
+   * without further site-level filtering; each set field on the chosen site message narrows the match further
+   * (see that message's field comments for what an unset field means).
    *
    * @generated from oneof io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureCriteria.site
    */
@@ -74,33 +78,38 @@ export const GrpcChangeCaptureCriteriaSchema: GenMessage<GrpcChangeCaptureCriter
 
 /**
  * Record describing the location and form of the CDC schema event in the evitaDB that should be captured.
+ * Every field below is an independent, optional filter (logically ANDed together when several are set); an
+ * unset/empty field imposes no restriction on that dimension.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureSchemaSite
  */
 export type GrpcChangeCaptureSchemaSite = Message<"io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureSchemaSite"> & {
   /**
-   * The name of intercepted entity
+   * Restricts capture to schema mutations of the named entity type. If `null`, matches schema mutations for any
+   * entity type, including catalog-level schema changes (which carry no entity type of their own).
    *
    * @generated from field: google.protobuf.StringValue entityType = 1;
    */
   entityType?: string;
 
   /**
-   * The intercepted type of operation
+   * Restricts capture to the listed operation types. If empty, matches any operation.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureOperation operation = 2;
    */
   operation: GrpcChangeCaptureOperation[];
 
   /**
-   * the name of the intercepted container type
+   * Restricts capture to the listed container types (e.g. attribute, associated data, reference). If empty,
+   * matches any container type.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureContainerType containerType = 3;
    */
   containerType: GrpcChangeCaptureContainerType[];
 
   /**
-   * the name of the container (e.g. attribute name, associated data name, reference name)
+   * Restricts capture to containers with one of the listed names (e.g. attribute name, associated data name,
+   * reference name). If empty, matches containers of any name.
    *
    * @generated from field: repeated string containerName = 4;
    */
@@ -116,40 +125,46 @@ export const GrpcChangeCaptureSchemaSiteSchema: GenMessage<GrpcChangeCaptureSche
 
 /**
  * Record describing the location and form of the CDC data event in the evitaDB that should be captured.
+ * Every field below is an independent, optional filter (logically ANDed together when several are set); an
+ * unset/empty field imposes no restriction on that dimension.
  *
  * @generated from message io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureDataSite
  */
 export type GrpcChangeCaptureDataSite = Message<"io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureDataSite"> & {
   /**
-   * the name of the intercepted entity type
+   * Restricts capture to mutations of the named entity type. If `null`, matches data mutations for any entity
+   * type.
    *
    * @generated from field: google.protobuf.StringValue entityType = 1;
    */
   entityType?: string;
 
   /**
-   * the primary key of the intercepted entity
+   * Restricts capture to mutations of the entity with this primary key. If `null`, matches any primary key
+   * within the entity type filter above.
    *
    * @generated from field: google.protobuf.Int32Value entityPrimaryKey = 2;
    */
   entityPrimaryKey?: number;
 
   /**
-   * the intercepted type of operation
+   * Restricts capture to the listed operation types. If empty, matches any operation.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureOperation operation = 3;
    */
   operation: GrpcChangeCaptureOperation[];
 
   /**
-   * the name of the intercepted container type
+   * Restricts capture to the listed container types (e.g. attribute, associated data, reference). If empty,
+   * matches any container type.
    *
    * @generated from field: repeated io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureContainerType containerType = 4;
    */
   containerType: GrpcChangeCaptureContainerType[];
 
   /**
-   * the name of the container (e.g. attribute name, associated data name, reference name)
+   * Restricts capture to containers with one of the listed names (e.g. attribute name, associated data name,
+   * reference name). If empty, matches containers of any name.
    *
    * @generated from field: repeated string containerName = 5;
    */
@@ -170,14 +185,23 @@ export const GrpcChangeCaptureDataSiteSchema: GenMessage<GrpcChangeCaptureDataSi
  */
 export type GrpcChangeCatalogCapture = Message<"io.evitadb.externalApi.grpc.generated.GrpcChangeCatalogCapture"> & {
   /**
-   * the version of the catalog where the operation was performed
+   * The catalog version the operation was committed in. Strictly monotonic across the stream: ascending in a
+   * forward stream, descending in a reverse stream.
    *
    * @generated from field: google.protobuf.Int64Value version = 1;
    */
   version?: bigint;
 
   /**
-   * the index of the event within the enclosed transaction, index 0 is the transaction lead event
+   * A direction-stable physical position of the underlying WAL record within its transaction, not a delivery
+   * counter: a forward stream assigns `1..mutationCount` ascending, a reverse stream assigns `mutationCount..1`
+   * descending, so the same physical record gets the same index regardless of direction - but indices are
+   * therefore NOT monotonic within a transaction when read in reverse (the transaction header is emitted at
+   * index `0`, then indices count down from `mutationCount`). Nested local mutations do not get their own
+   * index: they inherit the `(version, index)` pair of the entity mutation record they belong to, so
+   * `(version, index)` identifies a WAL record, not an individual emitted capture - an entity upsert with 5
+   * local mutations produces 6 captures that all share the same pair. The index is advanced before criteria
+   * filtering is applied, so it stays stable and comparable across requests using different filters.
    *
    * @generated from field: google.protobuf.Int32Value index = 2;
    */
@@ -207,37 +231,53 @@ export type GrpcChangeCatalogCapture = Message<"io.evitadb.externalApi.grpc.gene
   entityPrimaryKey?: number;
 
   /**
-   * the operation that was performed
+   * The kind of change that produced this capture. Together with `area`, it determines which arm of `body` (if
+   * present) carries the payload - see the `body` oneof comment for the mapping.
    *
    * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcChangeCaptureOperation operation = 6;
    */
   operation: GrpcChangeCaptureOperation;
 
   /**
-   * optional body of the operation when it is requested by the GrpcContent
+   * Payload of the operation. Present only when the request's content mode is `CHANGE_BODY` (see
+   * `GrpcChangeCaptureContent`); a `CHANGE_HEADER` request - the proto3 default when `content` is left unset -
+   * always leaves every arm of this oneof unset. When present, exactly one arm is set, chosen by
+   * `area`/`operation`: `schemaMutation` for a SCHEMA area mutation, `entityMutation` for the top-level DATA
+   * area entity mutation, `localMutation` for a DATA area field-level mutation nested inside an entity upsert
+   * (it shares the parent entity mutation's `(version, index)` - see the `index` field comment above),
+   * `infrastructureMutation` for the INFRASTRUCTURE area transaction header.
    *
    * @generated from oneof io.evitadb.externalApi.grpc.generated.GrpcChangeCatalogCapture.body
    */
   body: {
     /**
+     * Set for a SCHEMA area mutation. See the `body` comment above for the full arm-selection mapping.
+     *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntitySchemaMutation schemaMutation = 7;
      */
     value: GrpcEntitySchemaMutation;
     case: "schemaMutation";
   } | {
     /**
+     * Set for the top-level DATA area entity mutation. See the `body` comment above.
+     *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcEntityMutation entityMutation = 8;
      */
     value: GrpcEntityMutation;
     case: "entityMutation";
   } | {
     /**
+     * Set for a DATA area field-level mutation nested inside an entity upsert. See the `body`
+     * comment above and the `index` field comment for how it shares its parent's `(version, index)`.
+     *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcLocalMutation localMutation = 9;
      */
     value: GrpcLocalMutation;
     case: "localMutation";
   } | {
     /**
+     * Set for the INFRASTRUCTURE area transaction header. See the `body` comment above.
+     *
      * @generated from field: io.evitadb.externalApi.grpc.generated.GrpcInfrastructureMutation infrastructureMutation = 10;
      */
     value: GrpcInfrastructureMutation;
@@ -334,6 +374,8 @@ export const GrpcChangeSystemCaptureSchema: GenMessage<GrpcChangeSystemCapture> 
  */
 export type GrpcHostSystemEvent = Message<"io.evitadb.externalApi.grpc.generated.GrpcHostSystemEvent"> & {
   /**
+   * Exactly one of the following event kinds is set.
+   *
    * @generated from oneof io.evitadb.externalApi.grpc.generated.GrpcHostSystemEvent.event
    */
   event: {

@@ -44,6 +44,20 @@ export class ScopesConverter {
         }
     }
 
+    /**
+     * Converts an internal scope back into its wire form, for requests that filter by scope.
+     */
+    static convertToGrpcEntityScope(entityScope: EntityScope): GrpcEntityScope {
+        switch (entityScope) {
+            case EntityScope.Archive:
+                return GrpcEntityScope.SCOPE_ARCHIVED
+            case EntityScope.Live:
+                return GrpcEntityScope.SCOPE_LIVE
+            default:
+                throw new UnexpectedError('Unexpected entity scope')
+        }
+    }
+
     static convertScopedGlobalAttributeUniquenessTypes(scopedGlobalAttributeUniquenessTypes: GrpcScopedGlobalAttributeUniquenessType[]):ImmutableList<ScopedGlobalAttributeUniquenessType> {
         const convertedScopedGlobalAttributeUniquenessTypes: ScopedGlobalAttributeUniquenessType[] = []
         for (const entityScope of scopedGlobalAttributeUniquenessTypes) {
