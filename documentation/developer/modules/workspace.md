@@ -20,8 +20,10 @@ the `DemoSnippetResolver` — which feature modules contribute into during their
 [architecture — contribution points](../architecture.md#contribution-points).
 
 The shell **components** are a different story and still compose feature components directly:
-`view/*MainView.vue` embed `ConnectionExplorerPanel`, `WorkspaceTabWindowList` embeds
-`WelcomeScreen`, and several components use the `keymap` module's `Command`/`Keymap`/
+`view/*MainView.vue` embed `ConnectionExplorerPanel` and the [symbol search](symbol-search.md)'s
+`SymbolSearchHost` (it binds the global `Ctrl+K` and renders the popup, so it lives with the shell rather
+than in the hideable explorer panel), `WorkspaceTabWindowList` embeds `WelcomeScreen`, the status bar embeds
+`SymbolIndexIndicator`, and several components use the `keymap` module's `Command`/`Keymap`/
 `KeymapViewerTabFactory`. That is composition of the shell's own layout, not deserialization
 dispatch, and it is deliberately left as is.
 
@@ -69,7 +71,11 @@ An unreachable server with nothing cached shows a broken stream and verified dat
 was already restored from disk in memory and still unverified — "there is no cache any more" and "what you are
 looking at came from the cache" are both true at that point.
 
-**All three render nothing in their healthy state** — the absent icon is "all good", which keeps the bar quiet on
+A fourth one, `SymbolIndexIndicator` (owned by [`symbol-search`](symbol-search.md)), sits next to them and answers
+"is the symbol search index being built, or truncated?": a small spinner while catalogs are being indexed, a
+warning icon while the index stopped at its symbol limit.
+
+**All of them render nothing in their healthy state** — the absent icon is "all good", which keeps the bar quiet on
 a normal startup. `PersistentCacheIndicator` is the odd one out in that the user cannot act on it: the browser is
 refusing storage ([which cases](storage.md#when-storage-is-unusable)), and it is reported only because a lab that
 silently never remembers anything is otherwise indistinguishable from a slow one. See

@@ -33,6 +33,8 @@ export class EvitaSchemaCache {
 
     private cachedSchemas: Map<string, SchemaWrapper> = new Map()
 
+    // dispatch iterates over snapshots: a listener may (un)register callbacks while being notified, and splicing
+    // the live array would shift the remaining listeners past the iterator
     private readonly catalogSchemaChangedCallbacks: CatalogSchemaChangedCallback[] = []
     private readonly entitySchemaChangedCallbacks: Map<string, EntitySchemaChangedCallback[]> = new Map()
 
@@ -137,7 +139,7 @@ export class EvitaSchemaCache {
         }
 
         this.cachedSchemas.set(latestCatalogSchemaCacheKey, SchemaWrapper.fromCatalogSchema(catalogSchema))
-        for (const callback of this.catalogSchemaChangedCallbacks) {
+        for (const callback of [...this.catalogSchemaChangedCallbacks]) {
             await (callback.callback())
         }
         return true
@@ -156,7 +158,7 @@ export class EvitaSchemaCache {
         }
         // we call callback every time, even if the schema was not present, because some components rely on schema change
         // even without actually fetching the schema (e.g. GraphQL schema)
-        for (const callback of this.catalogSchemaChangedCallbacks) {
+        for (const callback of [...this.catalogSchemaChangedCallbacks]) {
             await (callback.callback())
         }
 
@@ -219,7 +221,7 @@ export class EvitaSchemaCache {
         const callbacks: EntitySchemaChangedCallback[] | undefined =
             this.entitySchemaChangedCallbacks.get(entitySchema.name)
         if (callbacks != undefined) {
-            for (const callback of callbacks) {
+            for (const callback of [...callbacks]) {
                 await (callback.callback())
             }
         }
@@ -242,8 +244,11 @@ export class EvitaSchemaCache {
             // every entity type that is cached *or* listened to has to be notified: a listener whose schema
             // is not in the cache right now (evicted by an earlier change and not re-fetched yet) would
             // otherwise never learn about this one and would keep rendering a stale schema
+            // the catalog schema key is skipped: a catalog listener may have re-read the catalog schema into the
+            // cache while the catalog-level callbacks were being awaited
             const affectedEntityTypes: Set<string> = new Set(
                 Array.from(this.cachedSchemas.keys())
+                    .filter(cachedKey => cachedKey !== latestCatalogSchemaCacheKey)
                     .map(cachedKey => this.parseEntityTypeFromLatestEntitySchemaCacheKey(cachedKey))
             )
             for (const listenedEntityType of this.entitySchemaChangedCallbacks.keys()) {
@@ -263,7 +268,7 @@ export class EvitaSchemaCache {
             // even without actually fetching the schema (e.g. GraphQL schema)
             const callbacks: EntitySchemaChangedCallback[] | undefined = this.entitySchemaChangedCallbacks.get(entityType)
             if (callbacks != undefined) {
-                for (const callback of callbacks) {
+                for (const callback of [...callbacks]) {
                     await (callback.callback())
                 }
             }

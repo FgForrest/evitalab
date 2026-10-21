@@ -301,6 +301,7 @@
       "_title": "System",
       "keymap": "Keymap",
       "manageMenu": "Manage menu",
+      "symbolSearch": "Search symbols",
       "panels": {
         "_title": "Panels",
         "connection": "Connection"
@@ -2546,6 +2547,72 @@
     "managedByEvita": "This entity is managed by evitaDB.",
     "managedExternal": "This entity is managed externally.",
     "cardinalityWithDuplicates": "Allows multiple relations with an identical referenced entity primary key. This may be necessary in cases where the distinguishing factor is a reference attribute value."
+  },
+  "symbolSearch": {
+    "title": "Search symbols",
+    "label": "Search symbols ({shortcut})",
+    "placeholder": "Catalogs, collections, attributes, references…",
+    "help": {
+      "intro": "Type a name of a catalog, collection, attribute, compound, associated data or reference, in any naming convention. Initials work too: {example} finds parameterValue.",
+      "execute": "open the selected action; the first result is selected as you type",
+      "moveRows": "move between symbols; ↑ on the first one returns to the search field",
+      "switchActions": "move between actions of the selected symbol",
+      "close": "close"
+    },
+    "noMatch": "No symbol matches “{query}”.",
+    "cap": "Showing {shown} of {total}. Refine the query to see the rest.",
+    "footer": {
+      "symbol": "symbol",
+      "action": "action",
+      "goToResults": "go to results",
+      "close": "close"
+    },
+    "index": {
+      "indexing": "Indexing {catalogName} ({done}/{total})",
+      "truncated": "Index truncated: {count} catalog(s) not indexed, the limit of {limit} symbols was reached",
+      "failed": "Symbols could not be indexed."
+    },
+    "symbolType": {
+      "catalog": "Catalog",
+      "entityCollection": "Entity collection",
+      "attribute": "Attribute",
+      "sortableAttributeCompound": "Sortable attribute compound",
+      "associatedData": "Associated data",
+      "reference": "Reference"
+    },
+    "action": {
+      "catalogPreview": "Catalog preview",
+      "schema": "Schema",
+      "evitaQLConsole": "evitaQL console",
+      "graphQLDataConsole": "GraphQL data API console",
+      "graphQLSchemaConsole": "GraphQL schema API console",
+      "entityViewer": "Entity viewer"
+    },
+    "enterAction": {
+      "catalogPreview": "open catalog preview",
+      "schema": "open schema",
+      "evitaQLConsole": "open evitaQL console",
+      "graphQLDataConsole": "open GraphQL data API console",
+      "graphQLSchemaConsole": "open GraphQL schema API console",
+      "entityViewer": "open entity viewer"
+    },
+    "disabledReason": {
+      "catalogInactive": "The catalog is deactivated.",
+      "catalogUnusable": "The catalog cannot be read.",
+      "catalogNotAlive": "The catalog is not alive.",
+      "graphQLDisabled": "The GraphQL API is not enabled on the server."
+    },
+    "button": {
+      "retry": "Retry"
+    },
+    "statusBar": {
+      "indexing": "Indexing symbols for the symbol search: {catalogName} ({done}/{total})",
+      "truncated": "The symbol search index is truncated: {count} catalog(s) were not indexed because the limit of {limit} symbols was reached."
+    },
+    "notification": {
+      "couldNotBuildIndex": "Could not index symbols for the symbol search.",
+      "couldNotOpenSymbol": "Could not open the symbol."
+    }
   },
   "catalogViewer": {
     "title": "Catalog preview",

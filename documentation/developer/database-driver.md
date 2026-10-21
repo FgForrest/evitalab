@@ -583,6 +583,22 @@ Available callback registries:
 - `EvitaClientManagement.registerServerStatusChangeCallback(cb)`,
   `registerConfigurationChangeCallback(cb)`, `registerCatalogStatisticsChangeCallback(cb)`
 
+Two properties of these registries matter for anyone keeping derived state current:
+
+- **Entity schema changes notify only entity-level callbacks.** Refreshing or removing one entity schema
+  (`refreshEntitySchema`, `clearSchemaCache(catalog, entityType)`, the revalidation of a persisted entity schema)
+  never fires the catalog schema callback; a listener interested in every schema of a catalog has to register
+  both levels. A catalog-wide invalidation, conversely, cascades from the catalog callback to every cached or
+  listened-to entity type — after awaiting the catalog callbacks, which may well re-read the catalog schema in
+  the meantime (the cascade therefore considers entity-schema cache keys only).
+- **Dispatch iterates over a snapshot of the callback list** (`EvitaSchemaCache`, `GraphQLSchemaCache`). A
+  listener may (un)register callbacks while being notified — splicing the live array used to shift the remaining
+  listeners past the iterator, so a tab after the (un)registering one silently missed the change.
+- **The catalog statistics callback fires on every catalog version bump**, i.e. on every data commit: the
+  listing's identity includes the version. Listeners must not do server I/O inline (the cache awaits them one by
+  one) and should compare only what they depend on — the [symbol search](modules/symbol-search.md) compares a
+  structural fingerprint of name, state, usability, mutability and entity types.
+
 Mutating operations invalidate the relevant caches themselves (e.g. `renameCatalog` drops the
 schema cache). If you add a new mutating call, make sure it clears affected caches
 (`clearSchemaCache`, `clearCatalogStatisticsCache`, `terminateSharedSession`, …).

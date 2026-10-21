@@ -72,6 +72,7 @@ User-facing features. Each one typically contributes one or more tab types and/o
 |--------|---------|
 | [`welcome-screen`](welcome-screen.md) | Landing screen (standalone mode), including its own Pinia store |
 | [`connection-explorer`](connection-explorer.md) | Left panel tree — catalogs and collections, plus their management actions |
+| [`symbol-search`](symbol-search.md) | Application-wide symbol search (`Ctrl+K`) over the schema items of all catalogs |
 | [`entity-viewer`](entity-viewer.md) | Grid-based entity browser, in evitaQL or GraphQL, incl. the references detail sidepanel |
 | [`evitaql-console`](evitaql-console.md) | Console tab for executing evitaQL queries |
 | [`graphql-console`](graphql-console.md) | Console tab for executing GraphQL queries (data / schema / system APIs) |
@@ -97,7 +98,9 @@ User-facing features. Each one typically contributes one or more tab types and/o
   factories (plus `schema-viewer`'s schema pointers) and reads catalog versions through
   `history-viewer`'s `MutationHistoryRequest`; `connection-explorer` injects `catalog-viewer`'s tab
   factory to open the catalog preview, which is why `catalog-viewer` is registered before it in
-  `modules.ts`.
+  `modules.ts`; `symbol-search` opens tabs through the `catalog-viewer`, `schema-viewer`, `evitaql-console`,
+  `graphql-console` and `entity-viewer` factories (plus `schema-viewer`'s schema pointers) and its components
+  are placed by `workspace` (main views, status bar) and `connection-explorer` (panel header).
 - Generic modules must not import feature modules. Where the framework needs feature-provided
   behaviour (building a tab of any type, opening a demo snippet), the feature module contributes it
   into a registry the generic module owns — see

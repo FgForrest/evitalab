@@ -21,6 +21,7 @@ import { ConnectionExplorerModuleRegistrar } from '@/modules/connection-explorer
 import { CatalogViewerModuleRegistrar } from '@/modules/catalog-viewer/CatalogViewerModuleRegistrar'
 import { DatabaseDriverModuleRegistrar } from '@/modules/database-driver/DatabaseDriverModuleRegistrar'
 import { MutationHistoryViewerModuleRegistrar } from '@/modules/history-viewer/MutationHistoryViewerModuleRegistrar.ts'
+import { SymbolSearchModuleRegistrar } from '@/modules/symbol-search/SymbolSearchModuleRegistrar'
 
 /**
  * Registers all modules during startup.
@@ -51,5 +52,6 @@ export const modules: ModuleRegistrar[] = [
     new TaskViewerModuleRegistrar(),
     new JfrViewerModuleRegistrar(),
     new TrafficViewerModuleRegistrar(),
+    new SymbolSearchModuleRegistrar(),
     new ConnectionExplorerModuleRegistrar()
 ]

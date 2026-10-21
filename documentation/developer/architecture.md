@@ -119,8 +119,8 @@ without a factory. Duplicate registrations fail on `register()` itself.
 
 **Ordering still matters** — a registrar may only inject what earlier registrars provided. Modules
 consuming *other* modules' tab factories must therefore come after them; that is why
-`notification` (needs the error viewer factory) and `connection-explorer` (needs twelve of them)
-sit late in `modules.ts`. See [workspace & tabs](workspace-and-tabs.md#tab-factory-registry).
+`notification` (needs the error viewer factory), `symbol-search` (needs five of them) and
+`connection-explorer` (needs twelve of them) sit late in `modules.ts`. See [workspace & tabs](workspace-and-tabs.md#tab-factory-registry).
 
 ## Routing
 

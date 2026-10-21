@@ -6,6 +6,7 @@ export enum Command {
 
     System_Keymap = 'system.keymap',
     System_ManageMenu = 'system.manageMenu',
+    System_SymbolSearch = 'system.symbolSearch',
 
     System_Panels_Connection = 'system.panels.connection',
 

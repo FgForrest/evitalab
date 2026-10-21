@@ -49,6 +49,13 @@ logic that does not require a running server or DOM (formatters, converters, que
 utility functions), add a unit test with it — **every bug fix in such logic should include a
 regression test**.
 
+Server-dependent services can still be tested end-to-end against a **scripted server**: a real `EvitaClient`
+(real converters, real L1/L2 caches over `fake-indexeddb`) whose gRPC clients are replaced by in-memory stubs.
+`test/modules/database-driver/persistentCache.test.ts` scripts one catalog and one entity;
+`test/modules/symbol-search/scriptedEvitaServer.ts` extends the pattern to any number of catalogs with entity
+collections, attributes, compounds, associated data and references, re-scriptable during a test (rename an
+attribute, add a collection, fail a catalog). Prefer it over mocking the driver.
+
 UI components and server-dependent flows are currently verified manually against a running evitaDB
 instance (see [running development version](running-development-version.md) and
 [evitaDB server](evitadb-server.md)).

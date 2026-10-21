@@ -23,6 +23,7 @@ import {
 } from '@/modules/connection-explorer/service/ConnectionExplorerPanelMenuFactory'
 import ConnectionExplorerPanelResizer from '@/modules/connection-explorer/component/ConnectionExplorerPanelResizer.vue'
 import { clampPanelWidth, maxPanelWidth, minPanelWidth } from '@/modules/connection-explorer/model/panelWidth'
+import SymbolSearchButton from '@/modules/symbol-search/component/SymbolSearchButton.vue'
 
 const retryInterval: number = 5000
 
@@ -264,6 +265,7 @@ load().then()
                   </span>
                 </span>
 
+                <SymbolSearchButton />
 
                 <VMenu
                     :menu-items="menuItems"
@@ -345,7 +347,7 @@ load().then()
     display: inline-grid;
     // `minmax(0, auto)` lets the title column shrink below its content, which is what allows the title to
     // truncate instead of pushing the status badges and the menu out of a narrow panel
-    grid-template-columns: minmax(0, auto) 1.5rem;
+    grid-template-columns: minmax(0, auto) 1.5rem 1.5rem;
     gap: 0.5rem;
     padding: 0 0.5rem 0 0.5rem;
     height: 2rem;

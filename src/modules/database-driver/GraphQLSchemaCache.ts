@@ -38,6 +38,7 @@ export interface CachedGraphQLSchema {
 export class GraphQLSchemaCache {
 
     private readonly cachedSchemas: Map<string, CachedGraphQLSchema> = new Map()
+    // dispatch iterates over snapshots, see EvitaSchemaCache
     private readonly graphQLSchemaChangedCallbacks: Map<string, GraphQLSchemaChangedCallback[]> = new Map()
 
     /**
@@ -165,7 +166,7 @@ export class GraphQLSchemaCache {
 
         const callbacksForKey: GraphQLSchemaChangedCallback[] | undefined = this.graphQLSchemaChangedCallbacks.get(cacheKey)
         if (callbacksForKey != undefined) {
-            for (const callback of callbacksForKey) {
+            for (const callback of [...callbacksForKey]) {
                 await callback.callback()
             }
         }
@@ -186,7 +187,7 @@ export class GraphQLSchemaCache {
 
         const callbacksForKey: GraphQLSchemaChangedCallback[] | undefined = this.graphQLSchemaChangedCallbacks.get(cacheKey)
         if (callbacksForKey != undefined) {
-            for (const callback of callbacksForKey) {
+            for (const callback of [...callbacksForKey]) {
                 await callback.callback()
             }
         }
@@ -212,7 +213,7 @@ export class GraphQLSchemaCache {
             await this.persistentCache?.deleteAllSchemas()
         }
         for (const callbacksForKey of this.graphQLSchemaChangedCallbacks.values()) {
-            for (const callback of callbacksForKey) {
+            for (const callback of [...callbacksForKey]) {
                 await callback.callback()
             }
         }

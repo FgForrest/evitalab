@@ -14,6 +14,7 @@ import { EditorStatus } from '@/modules/workspace/status-bar/model/editor-status
 import ChangeStreamIndicator from '@/modules/workspace/status-bar/component/ChangeStreamIndicator.vue'
 import CachedDataIndicator from '@/modules/workspace/status-bar/component/CachedDataIndicator.vue'
 import PersistentCacheIndicator from '@/modules/workspace/status-bar/component/PersistentCacheIndicator.vue'
+import SymbolIndexIndicator from '@/modules/symbol-search/component/SymbolIndexIndicator.vue'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 
@@ -37,6 +38,7 @@ const editorStatus = computed<EditorStatus>(() =>
             <EditorStatusComponent :status="editorStatus" />
             <CachedDataIndicator />
             <PersistentCacheIndicator />
+            <SymbolIndexIndicator />
             <ChangeStreamIndicator />
         </div>
     </VAppBar>
