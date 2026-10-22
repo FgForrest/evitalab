@@ -16,7 +16,7 @@ the feature tab that lists all shortcuts to the user.
 | `model/KeyboardShortcut.ts` | Shortcut model |
 | `model/SystemType.ts` | OS-dependent rendering (⌘ vs Ctrl) |
 | `service/keyboardShortcutEventFilter.ts` | `isKeyboardShortcutDispatchable` — which `keydown` events may reach handlers |
-| `service/Keymap.ts` | `bind` / `unbind` / `bindGlobal`, `pushScope` / `popScope`, `prettyPrint` |
+| `service/Keymap.ts` | `bind` / `unbind` / `bindGlobal`, `pushScope` / `popScope`, `suspendActivatedContext` / `resumeActivatedContext`, `prettyPrint` |
 | `viewer/component/KeymapViewer.vue` | The tab listing all shortcuts |
 | `viewer/workspace/` | `KeymapViewerTabDefinition`, `KeymapViewerTabFactory` (`TabType.KeymapViewer`) |
 
@@ -27,6 +27,10 @@ Shortcuts are **scoped**, normally per tab id:
 - bind in `onMounted`, unbind in `onUnmounted`, passing the tab's `props.id` as the scope
 - dialog-local shortcuts use `keymap.pushScope` / `popScope` while the dialog is open
 - `bindGlobal` is for shortcuts that must work regardless of the active tab
+- an application-wide popup covering the active tab calls `suspendActivatedContext()` when it opens and
+  `resumeActivatedContext()` when it closes: only global bindings stay active meanwhile, so the tab's shortcuts
+  cannot fire behind the popup. A context switch happening meanwhile (a tab opened from the popup) is recorded
+  and applied on resume. Used by the [symbol search](symbol-search.md).
 
 Forgetting to unbind leaks the binding into other tabs, so the paired `onMounted`/`onUnmounted` calls
 belong together in review.
@@ -58,6 +62,14 @@ exists only to populate the keymap viewer**; CodeMirror's own keymap handles tho
 
 When changing this rule, note that the predicate is a pure exported function precisely so it can be
 pinned by a unit test without a DOM (`test/modules/keymap/keyboardShortcutEventFilter.test.ts`).
+
+## Global shortcuts
+
+`System_SymbolSearch` (`Ctrl+K` / `Cmd+K`) opens the [symbol search](symbol-search.md) from anywhere, form
+fields and editors included — it carries `Ctrl`/`Cmd` without `Alt`, so the event filter above lets it through.
+No other mapping uses `Ctrl+K`; the browser's own `Ctrl+K` (focus the web search) is suppressed by keymaster's
+`preventDefault`. As with every mapping, `KeyboardShortcut.bind` joins the base and the macOS shortcut into one
+keymaster string, so `Ctrl+K` is bound on macOS as well, where CodeMirror's emacs-style `Ctrl-k` fires too.
 
 ## Every action needs a `Command`
 

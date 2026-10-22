@@ -19,6 +19,7 @@ export class Keymap {
 
     private readonly activeContexts: Map<string, string[]> = new Map<string, string[]>()
     private activatedContextId: string | undefined = undefined
+    private contextSuspended: boolean = false
 
     constructor() {
         this.systemType = this.getCurrentSystemType()
@@ -64,6 +65,31 @@ export class Keymap {
     resetActivatedContext(): void {
         this.activatedContextId = undefined
         keymaster.setScope('all')
+    }
+
+    /**
+     * Temporarily leaves only the global bindings active, e.g. while an application-wide popup covers the active
+     * tab, so that the tab's shortcuts do not fire behind it. Context switches happening meanwhile are recorded and
+     * applied by {@link resumeActivatedContext}.
+     */
+    suspendActivatedContext(): void {
+        this.contextSuspended = true
+        keymaster.setScope('all')
+    }
+
+    /**
+     * Re-activates the context suspended by {@link suspendActivatedContext} (or the one activated meanwhile).
+     */
+    resumeActivatedContext(): void {
+        if (!this.contextSuspended) {
+            return
+        }
+        this.contextSuspended = false
+        if (this.activatedContextId != undefined && this.activeContexts.has(this.activatedContextId)) {
+            this.activateContext(this.activatedContextId)
+        } else {
+            keymaster.setScope('all')
+        }
     }
 
     /**
@@ -275,7 +301,9 @@ export class Keymap {
      * @private
      */
     private activateContext(contextId: string): void {
-        keymaster.setScope(this.constructKeymasterScope(contextId, this.getCurrentScope(contextId)))
+        if (!this.contextSuspended) {
+            keymaster.setScope(this.constructKeymasterScope(contextId, this.getCurrentScope(contextId)))
+        }
         this.activatedContextId = contextId
     }
 

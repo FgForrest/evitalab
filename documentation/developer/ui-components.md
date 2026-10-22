@@ -37,6 +37,10 @@ Icons are [Material Design Icons](https://pictogrammers.com/library/mdi/) (`mdi-
 | `VConfirmDialog` | Simple confirm prompts (`modelValue`, `confirmIcon`) |
 | `VConfirmDialogButton`, `VRejectDialogButton`, `VCancelDialogButton`, `VAlternativeActionDialogButton` | Standardized dialog action buttons |
 
+Even a command palette uses `VLabDialog`: the [symbol search](modules/symbol-search.md) is a `VLabDialog`
+with a fixed body height, so it does not jump while the result count changes. Listeners for `VDialog` events
+`VLabDialog` does not declare (`@after-enter`, `@after-leave`) fall through to its `VDialog` root.
+
 Convention: a dialog component wraps its trigger via the activator slot, owns its open state via
 `modelValue`, performs its action in `confirm` returning `true`/`false` for success, and reports
 errors via the toaster.

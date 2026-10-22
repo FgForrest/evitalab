@@ -141,7 +141,9 @@ Notes for changing the resizer:
 - **The panel header is what makes a narrow panel possible.** Its title column is `minmax(0, auto)`, so the title
   truncates with an ellipsis instead of pushing the read-only / offline badges and the ⋮ menu out of the panel;
   the badges themselves never shrink. Keep that constraint in mind when adding anything to the header — a new
-  fixed-size element eats directly into the title.
+  fixed-size element eats directly into the title. The header grid is `minmax(0, auto) 1.5rem 1.5rem`: title,
+  the [symbol search](symbol-search.md) magnifier (`SymbolSearchButton`, owned by the `symbol-search` module and
+  only placed here) and the ⋮ menu.
 
 ## Long-running catalog operations and their progress flags
 

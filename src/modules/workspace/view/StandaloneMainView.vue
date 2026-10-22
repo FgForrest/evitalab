@@ -9,6 +9,7 @@ import WorkspacePanel from '@/modules/workspace/panel/component/WorkspacePanel.v
 import ConnectionExplorerPanel from '@/modules/connection-explorer/component/ConnectionExplorerPanel.vue'
 import WorkspaceTabWindowList from '@/modules/workspace/tab/component/WorkspaceTabWindowList.vue'
 import WorkspaceStatusBar from '@/modules/workspace/status-bar/component/WorkspaceStatusBar.vue'
+import SymbolSearchHost from '@/modules/symbol-search/component/SymbolSearchHost.vue'
 
 const showExplorerPanel = ref<boolean>(true)
 
@@ -19,4 +20,5 @@ const showExplorerPanel = ref<boolean>(true)
     <WorkspaceStatusBar />
     <ConnectionExplorerPanel :model-value="showExplorerPanel"/>
     <WorkspaceTabWindowList />
+    <SymbolSearchHost />
 </template>

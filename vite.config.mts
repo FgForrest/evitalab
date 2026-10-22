@@ -13,7 +13,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { readFileSync } from 'node:fs'
 import { NodePackageImporter } from 'sass'
 import XXH, { HashObject } from 'xxhashjs'
-import { OutputOptions } from 'rollup'
+import { OutputOptions, PreRenderedChunk } from 'rollup'
 
 const hasher: HashObject = XXH.h64()
 
@@ -27,7 +27,8 @@ export default defineConfig(({ mode }) => {
     switch (labRunMode) {
         case 'STANDALONE':
             outputOptions = {
-                chunkFileNames: `assets/[name]-[hash]-${evitaLabVersionSuffix}.js`,
+                chunkFileNames: (chunkInfo: PreRenderedChunk): string =>
+                    `assets/${sanitizeChunkName(chunkInfo.name)}-[hash]-${evitaLabVersionSuffix}.js`,
                 entryFileNames: `assets/[name]-${evitaLabVersionSuffix}.js`,
                 assetFileNames: `assets/[name]-[hash]-${evitaLabVersionSuffix}[extname]`
             }
@@ -138,4 +139,13 @@ function resolveEvitaLabVersionSuffix(env: Record<string, string>): string {
     const actualVersion: string | undefined = env.VITE_BUILD_VERSION
     const normalizedVersion = actualVersion && actualVersion.length > 0 ? actualVersion : 'dev'
     return hasher.update(normalizedVersion).digest().toString(16)
+}
+
+/**
+ * Replaces dots in a chunk name. Shared chunks are named after a module they contain, which may be a Vue SFC
+ * sub-module (e.g. `Foo.vue_vue_type_script_setup_true_lang`), and evitaDB serves only asset file names with
+ * a single dot before the extension.
+ */
+function sanitizeChunkName(name: string): string {
+    return name.replace(/\./g, '-')
 }

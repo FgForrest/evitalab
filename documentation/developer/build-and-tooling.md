@@ -109,6 +109,9 @@ tree at **zero** errors — any new error is a real regression.
 - **Dev server**: port 3000; `base` URL is `/lab/` in standalone, `/` in driver mode.
 - **Build output**: standalone chunks get a version suffix in file names (cache busting keyed by
   an xxhash of the version); driver builds inline dynamic imports into a single bundle.
+  Dots in chunk names are replaced with `-` — shared chunks are named after a contained module, which
+  can be a Vue SFC sub-module (`Foo.vue_vue_type_script_setup_true_lang`), and evitaDB's lab GUI
+  handler serves only asset names with a single dot before the extension.
 - **Plugins**:
   - `unplugin-vue-router` — typed router (generates `src/typed-router.d.ts`),
   - `unplugin-auto-import` — auto-imports Vue/router/Pinia APIs (generates
