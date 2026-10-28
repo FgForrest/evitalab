@@ -34,6 +34,8 @@ Recommended reading order for anyone (human or AI agent) new to the codebase:
 - [Localization](i18n.md) — i18n key structure and usage
 - [Testing](testing.md) — Vitest conventions
 - [Developer toolkit](toolkit.md) — quick reference of generic services
+- [Decision records](../adr/README.md) — why things are the way they are; search before touching
+  an area, write one when a change clears the bar in `.claude/rules/adr.md`
 
 When implementing or changing any functionality, the change **has to be reflected** in these
 documentation files.
