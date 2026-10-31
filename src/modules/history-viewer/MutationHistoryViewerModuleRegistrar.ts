@@ -20,6 +20,10 @@ import {
 } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory.ts'
 import { ConnectionService, connectionServiceInjectionKey } from '@/modules/connection/service/ConnectionService'
 import {
+    EvitaValuePrinter,
+    evitaValuePrinterInjectionKey
+} from '@/modules/value-presentation/service/EvitaValuePrinter'
+import {
     TabFactoryRegistry,
     tabFactoryRegistryInjectionKey
 } from '@/modules/workspace/tab/service/TabFactoryRegistry'
@@ -30,6 +34,7 @@ export class MutationHistoryViewerModuleRegistrar implements ModuleRegistrar {
         const connectionService: ConnectionService = builder.inject(connectionServiceInjectionKey)
         const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
         const tabFactoryRegistry: TabFactoryRegistry = builder.inject(tabFactoryRegistryInjectionKey)
+        const evitaValuePrinter: EvitaValuePrinter = builder.inject(evitaValuePrinterInjectionKey)
 
         const mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory = new MutationHistoryViewerTabFactory(connectionService)
         builder.provide(mutationHistoryViewerTabFactoryInjectionKey, mutationHistoryViewerTabFactory)
@@ -39,9 +44,9 @@ export class MutationHistoryViewerModuleRegistrar implements ModuleRegistrar {
             evitaClient,
             new MutationHistoryVisualisationProcessor(
                 ImmutableList([
-                    new MutationHistoryTransactionVisualiser(),
+                    new MutationHistoryTransactionVisualiser(evitaValuePrinter),
                     new MutationHistorySchemaVisualiser(),
-                    new MutationHistoryDataVisualiser(workspaceService, mutationHistoryViewerTabFactory)
+                    new MutationHistoryDataVisualiser(workspaceService, mutationHistoryViewerTabFactory, evitaValuePrinter)
                 ])
             )
         )

@@ -1,4 +1,5 @@
 import { i18n } from '@/vue-plugins/i18n'
+import { serializeJsonWithBigInt } from '@/utils/JsonUtil'
 import { List as ImmutableList } from 'immutable'
 import { getMutationType } from '@/modules/database-driver/request-response/utils/MutationTypeHelper'
 import { ChangeCatalogCapture } from '@/modules/database-driver/request-response/cdc/ChangeCatalogCapture.ts'
@@ -43,7 +44,7 @@ export class MutationHistorySchemaVisualiser extends MutationVisualiser<ChangeCa
         if ((mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations) {
             for (const schemaMutation of (mutationHistory.body as ModifyEntitySchemaMutation)?.schemaMutations) {
                 const attributeName = getMutationType(schemaMutation)
-                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }), JSON.stringify(schemaMutation), undefined, [], ImmutableList())
+                const attributeMutationVisualised: MutationHistoryItemVisualisationDefinition = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', i18n.global.t('mutationHistoryViewer.record.type.attribute.title', { attributeName: attributeName }), serializeJsonWithBigInt(schemaMutation), undefined, [], ImmutableList())
                 visualisedRecord.addChild(attributeMutationVisualised)
             }
         }

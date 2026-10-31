@@ -16,7 +16,12 @@ import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/Entity
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import EntityGridCellDetailValueListItem
     from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridCellDetailValueListItem.vue'
+import {
+    EntityPropertyValuePrinter,
+    useEntityPropertyValuePrinter
+} from '@/modules/entity-viewer/viewer/service/EntityPropertyValuePrinter'
 
+const entityPropertyValuePrinter: EntityPropertyValuePrinter = useEntityPropertyValuePrinter()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -39,7 +44,7 @@ function requestOpenGroup(): void {
 }
 
 const attributePreview = computed<string>(() =>
-    props.reference.representativeAttributes.map(value => value.toPreviewString()).join(', '))
+    props.reference.representativeAttributes.map(value => entityPropertyValuePrinter.printItem(value)).join(', '))
 const targetTooltip = computed<string | undefined>(() =>
     props.reference.targetRepresentativeAttributes != undefined
         ? props.reference.toTargetPreviewString()

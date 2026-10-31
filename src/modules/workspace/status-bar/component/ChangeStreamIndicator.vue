@@ -9,7 +9,12 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDataCacheRefresher } from '@/modules/database-driver/DataCacheRefresher'
 import { ChangeStreamStatus } from '@/modules/database-driver/model/ChangeStreamStatus'
+import {
+    EvitaValuePrinter,
+    useEvitaValuePrinter
+} from '@/modules/value-presentation/service/EvitaValuePrinter'
 
+const evitaValuePrinter: EvitaValuePrinter = useEvitaValuePrinter()
 const { t } = useI18n()
 const dataCacheRefresher = useDataCacheRefresher()
 
@@ -26,7 +31,7 @@ const tooltip = computed<string>(() => {
         return t('common.statusBar.changeStream.upToDateNoChanges')
     }
     return t('common.statusBar.changeStream.upToDate', {
-        lastChange: lastChangeAt.value.getPrettyPrintableString()
+        lastChange: evitaValuePrinter.print(lastChangeAt.value)
     })
 })
 </script>

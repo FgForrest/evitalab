@@ -6,8 +6,8 @@
 // reading a value under the wrong heading.
 //
 // The **trailing** column is deliberately left without one, so a table embedded in a page does not
-// draw a box around itself. A table that fills its whole tab (the entity grid) closes that edge on
-// its own.
+// draw a box around itself. A table that fills its whole tab (`VDataGrid`) closes that edge on its
+// own: its trailing filler column makes the last data column a non-last cell.
 
 .v-table > .v-table__wrapper > table {
   > thead > tr > th:not(:last-child),

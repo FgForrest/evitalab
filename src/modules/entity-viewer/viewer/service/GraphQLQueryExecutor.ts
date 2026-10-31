@@ -6,7 +6,7 @@ import type { QueryResult } from '@/modules/entity-viewer/viewer/model/QueryResu
 import type { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
 import type { WritableEntityProperty } from '@/modules/entity-viewer/viewer/model/WritableEntityProperty'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
-import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
+import { allLocalesField, StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
@@ -17,13 +17,28 @@ import {
     EntityReferenceAttributes
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceAttributes'
 import { EntityPrices } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrices'
-import { EntityPrice } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrice'
 import { QueryError } from '@/modules/database-driver/exception/QueryError'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
+import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
+import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
+import type { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
+import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
+import { GraphQLValueConverter } from '@/modules/entity-viewer/viewer/service/GraphQLValueConverter'
+import type { Map as ImmutableMap } from 'immutable'
 
+/**
+ * Schemas the values of a GraphQL response are converted by.
+ */
+type GraphQLResponseSchemas = {
+    entitySchema: EntitySchema
+    /**
+     * Schemas of the entities referenced by the requested managed references, by reference name.
+     */
+    referencedEntitySchemas: Map<string, EntitySchema>
+}
 
 /**
  * Query executor for GraphQL language.
@@ -46,45 +61,90 @@ export class GraphQLQueryExecutor extends QueryExecutor {
             throw new QueryError(result.errors)
         }
 
-        const entitySchema: EntitySchema = await this.evitaClient.queryCatalog(
+        const schemas: GraphQLResponseSchemas = await this.evitaClient.queryCatalog(
             dataPointer.catalogName,
-            session => session.getEntitySchemaOrThrowException(dataPointer.entityType)
+            async session => {
+                const entitySchema: EntitySchema = await session.getEntitySchemaOrThrowException(dataPointer.entityType)
+                const referencedEntitySchemas: Map<string, EntitySchema> = new Map<string, EntitySchema>()
+                for (const referenceName of this.collectRequiredReferenceNames(requiredData)) {
+                    const referenceSchema: ReferenceSchema | undefined = entitySchema.references
+                        .find(schema => schema.name === referenceName)
+                    if (referenceSchema != undefined && referenceSchema.referencedEntityTypeManaged) {
+                        referencedEntitySchemas.set(
+                            referenceName,
+                            await session.getEntitySchemaOrThrowException(referenceSchema.entityType)
+                        )
+                    }
+                }
+                return { entitySchema, referencedEntitySchemas }
+            }
         )
         const referenceClassifications: Map<string, ReferenceClassification> = this.buildReferenceClassifications(
-            entitySchema,
+            schemas.entitySchema,
             requiredData,
             attribute => attribute.nameVariants.get(NamingConvention.CamelCase)!
         )
 
         return {
-            entities: result?.data?.q?.recordPage?.data.map((entity: GraphQLResultNode) => this.flattenEntity(dataPointer, entity, referenceClassifications)) || [],
+            entities: result?.data?.q?.recordPage?.data.map((entity: GraphQLResultNode) => this.flattenEntity(entity, schemas, referenceClassifications)) || [],
             totalEntitiesCount: result?.data?.q?.recordPage?.totalRecordCount || 0
         }
     }
 
+    private collectRequiredReferenceNames(requiredData: EntityPropertyKey[]): Set<string> {
+        const referenceNames: Set<string> = new Set<string>()
+        for (const key of requiredData) {
+            if (key.type === EntityPropertyType.References || key.type === EntityPropertyType.ReferenceAttributes) {
+                const referenceName: string | undefined = key.names[0]
+                if (referenceName != undefined) {
+                    referenceNames.add(referenceName)
+                }
+            }
+        }
+        return referenceNames
+    }
+
     /**
-     * Converts original rich entity into simplified flat entity that is displayable in table
+     * Converts original rich entity into simplified flat entity that is displayable in table. Values are converted
+     * into the driver's data types by the schema found under the response key (see {@link GraphQLValueConverter});
+     * a value whose schema cannot be found stays as it was sent.
      */
-    private flattenEntity(dataPointer: EntityViewerDataPointer, entity: GraphQLResultNode, referenceClassifications: Map<string, ReferenceClassification>): FlatEntity {
+    private flattenEntity(entity: GraphQLResultNode,
+                          schemas: GraphQLResponseSchemas,
+                          referenceClassifications: Map<string, ReferenceClassification>): FlatEntity {
         const flattenedProperties: (WritableEntityProperty | undefined)[] = []
 
         flattenedProperties.push([EntityPropertyKey.entity(StaticEntityProperties.PrimaryKey), this.wrapRawValueIntoNativeValue(entity[StaticEntityProperties.PrimaryKey])])
         flattenedProperties.push([EntityPropertyKey.entity(StaticEntityProperties.Version), this.wrapRawValueIntoNativeValue(entity[StaticEntityProperties.Version])])
-        flattenedProperties.push([EntityPropertyKey.entity(StaticEntityProperties.Scope), this.wrapRawValueIntoNativeValue(entity[StaticEntityProperties.Scope])])
-        flattenedProperties.push(this.flattenParent(dataPointer, entity))
-        flattenedProperties.push([EntityPropertyKey.entity(StaticEntityProperties.Locales), this.wrapRawValueIntoNativeValue(entity[StaticEntityProperties.Locales])])
-        flattenedProperties.push([EntityPropertyKey.entity(StaticEntityProperties.PriceInnerRecordHandling), this.wrapRawValueIntoNativeValue(entity[StaticEntityProperties.PriceInnerRecordHandling])])
-        flattenedProperties.push([EntityPropertyKey.scope(), this.wrapRawValueIntoNativeValue(entity[StaticEntityProperties.Scope])])
+        flattenedProperties.push([EntityPropertyKey.entity(StaticEntityProperties.Scope), new NativeValue(GraphQLValueConverter.convertEntityScope(entity[StaticEntityProperties.Scope]))])
+        flattenedProperties.push(this.flattenParent(entity, schemas.entitySchema))
+        flattenedProperties.push([EntityPropertyKey.entity(StaticEntityProperties.Locales), this.wrapRawValueIntoNativeValue(GraphQLValueConverter.convertLocaleEnumArray(entity[allLocalesField]))])
+        flattenedProperties.push([EntityPropertyKey.entity(StaticEntityProperties.PriceInnerRecordHandling), new NativeValue(GraphQLValueConverter.convertPriceInnerRecordHandling(entity[StaticEntityProperties.PriceInnerRecordHandling]))])
 
-        flattenedProperties.push(...this.flattenAttributes(entity))
-        flattenedProperties.push(...this.flattenAssociatedData(entity))
+        flattenedProperties.push(...this.flattenAttributes(entity, schemas.entitySchema))
+        flattenedProperties.push(...this.flattenAssociatedData(entity, schemas.entitySchema))
         flattenedProperties.push(this.flattenPrices(entity))
-        flattenedProperties.push(...this.flattenReferences(entity, referenceClassifications))
+        flattenedProperties.push(...this.flattenReferences(entity, referenceClassifications, schemas.referencedEntitySchemas))
 
         return this.createFlatEntity(flattenedProperties)
     }
 
-    private flattenParent(_dataPointer: EntityViewerDataPointer, entity: GraphQLResultNode): WritableEntityProperty | undefined {
+    /**
+     * Converts a wire value by the type of its schema and wraps it.
+     */
+    private convertAndWrap(raw: EvitaValue, schema: AttributeSchema | AssociatedDataSchema | undefined): NativeValue | NativeValue[] {
+        return this.wrapRawValueIntoNativeValue(GraphQLValueConverter.convertValue(raw, schema?.type))
+    }
+
+    /**
+     * Finds an attribute or associated data schema by the camelCase name GraphQL uses as the response key.
+     */
+    private findAttributeByCamelCaseName<S extends AttributeSchema | AssociatedDataSchema>(attributes: ImmutableMap<string, S> | undefined,
+                                                                                           camelCaseName: string): S | undefined {
+        return attributes?.find(attribute => attribute.nameVariants.get(NamingConvention.CamelCase) === camelCaseName)
+    }
+
+    private flattenParent(entity: GraphQLResultNode, entitySchema: EntitySchema): WritableEntityProperty | undefined {
         const parentEntities: GraphQLResultNode[] | undefined = entity['parents']
         if (!parentEntities || parentEntities.length == 0) {
             return undefined
@@ -102,30 +162,48 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         const representativeAttributes: (NativeValue | NativeValue[])[] = []
         const attributes = parentEntity[EntityPropertyType.Attributes] || {}
         for (const attributeName in attributes) {
-            representativeAttributes.push(this.wrapRawValueIntoNativeValue(attributes[attributeName]))
+            representativeAttributes.push(this.convertAndWrap(
+                attributes[attributeName],
+                this.findAttributeByCamelCaseName(entitySchema.attributes, attributeName)
+            ))
         }
 
         const parentReference: EntityReferenceValue = new EntityReferenceValue(parentPrimaryKey, representativeAttributes.flat())
         return [EntityPropertyKey.entity(StaticEntityProperties.ParentPrimaryKey), parentReference]
     }
 
-    private flattenAttributes(entity: GraphQLResultNode): WritableEntityProperty[] {
+    private flattenAttributes(entity: GraphQLResultNode, entitySchema: EntitySchema): WritableEntityProperty[] {
         const flattenedAttributes: WritableEntityProperty[] = []
 
         const attributes = entity[EntityPropertyType.Attributes] || {}
         for (const attributeName in attributes) {
-            flattenedAttributes.push([EntityPropertyKey.attributes(attributeName), this.wrapRawValueIntoNativeValue(attributes[attributeName])])
+            if (attributes[attributeName] == undefined) {
+                // GraphQL sends a missing value as `null`, gRPC omits it; keep it absent like the evitaQL path does
+                continue
+            }
+            const attributeSchema: AttributeSchema | undefined = this.findAttributeByCamelCaseName(entitySchema.attributes, attributeName)
+            flattenedAttributes.push([
+                EntityPropertyKey.attributes(attributeSchema?.name ?? attributeName),
+                this.convertAndWrap(attributes[attributeName], attributeSchema)
+            ])
         }
 
         return flattenedAttributes
     }
 
-    private flattenAssociatedData(entity: GraphQLResultNode): WritableEntityProperty[] {
+    private flattenAssociatedData(entity: GraphQLResultNode, entitySchema: EntitySchema): WritableEntityProperty[] {
         const flattenedAssociatedData: WritableEntityProperty[] = []
 
         const associatedData = entity[EntityPropertyType.AssociatedData] || {}
         for (const associatedDataName in associatedData) {
-            flattenedAssociatedData.push([EntityPropertyKey.associatedData(associatedDataName), this.wrapRawValueIntoNativeValue(associatedData[associatedDataName])])
+            if (associatedData[associatedDataName] == undefined) {
+                continue
+            }
+            const associatedDataSchema: AssociatedDataSchema | undefined = this.findAttributeByCamelCaseName(entitySchema.associatedData, associatedDataName)
+            flattenedAssociatedData.push([
+                EntityPropertyKey.associatedData(associatedDataSchema?.name ?? associatedDataName),
+                this.convertAndWrap(associatedData[associatedDataName], associatedDataSchema)
+            ])
         }
 
         return flattenedAssociatedData
@@ -139,13 +217,15 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         }
 
         const entityPrices: EntityPrices = new EntityPrices(
-            priceForSale != undefined ? EntityPrice.fromJson(priceForSale) : undefined,
-            prices?.map(it => EntityPrice.fromJson(it)) || []
+            priceForSale != undefined ? GraphQLValueConverter.convertPrice(priceForSale) : undefined,
+            prices?.map(it => GraphQLValueConverter.convertPrice(it)) || []
         )
         return [EntityPropertyKey.prices(), entityPrices]
     }
 
-    private flattenReferences(entity: GraphQLResultNode, referenceClassifications: Map<string, ReferenceClassification>): WritableEntityProperty[] {
+    private flattenReferences(entity: GraphQLResultNode,
+                              referenceClassifications: Map<string, ReferenceClassification>,
+                              referencedEntitySchemas: Map<string, EntitySchema>): WritableEntityProperty[] {
         const flattenedReferences: WritableEntityProperty[] = []
 
         const references = Object.keys(entity).filter((it: string) => it.startsWith('reference_'))
@@ -162,7 +242,7 @@ export class GraphQLQueryExecutor extends QueryExecutor {
 
             const referenceNodes: GraphQLResultNode[] = referencesOfName instanceof Array ? referencesOfName : [referencesOfName]
             const referenceValues: EntityReferenceValue[] = referenceNodes
-                .map(referenceNode => this.buildReferenceValue(referenceNode, classification))
+                .map(referenceNode => this.buildReferenceValue(referenceNode, classification, referencedEntitySchemas.get(referenceName)))
 
             // references column holds a single container with all references of this name
             flattenedReferences.push([EntityPropertyKey.references(referenceName), new EntityReferences(referenceName, referenceValues)])
@@ -177,7 +257,10 @@ export class GraphQLQueryExecutor extends QueryExecutor {
                         if (!classification.selectedColumnAttributeNames.has(attributeName)) {
                             continue
                         }
-                        const wrappedValue: NativeValue | NativeValue[] = this.wrapRawValueIntoNativeValue(attributes[attributeName])
+                        const wrappedValue: NativeValue | NativeValue[] = this.convertAndWrap(
+                            attributes[attributeName],
+                            this.findAttributeByCamelCaseName(classification.referenceSchema.attributes, attributeName)
+                        )
                         const columnValue: EntityReferenceValue = new EntityReferenceValue(
                             referenceValue.primaryKey,
                             wrappedValue instanceof Array ? wrappedValue : [wrappedValue],
@@ -213,14 +296,19 @@ export class GraphQLQueryExecutor extends QueryExecutor {
      * Builds a single reference item carrying the target entity's representative attributes (both as the legacy flat
      * list and as a named map) and the reference's own representative attributes as a named map for grouping/filtering.
      */
-    private buildReferenceValue(reference: GraphQLResultNode, classification: ReferenceClassification | undefined): EntityReferenceValue {
+    private buildReferenceValue(reference: GraphQLResultNode,
+                                classification: ReferenceClassification | undefined,
+                                referencedEntitySchema: EntitySchema | undefined): EntityReferenceValue {
         const referencedPrimaryKey: number = reference['referencedPrimaryKey']
 
         const representativeAttributes: EntityPropertyValue[] = []
         const targetRepresentativeAttributes: Map<string, EntityPropertyValue> = new Map<string, EntityPropertyValue>()
         const targetAttributes = reference['referencedEntity']?.[EntityPropertyType.Attributes] || {}
         for (const attributeName in targetAttributes) {
-            const wrappedValue: NativeValue | NativeValue[] = this.wrapRawValueIntoNativeValue(targetAttributes[attributeName])
+            const wrappedValue: NativeValue | NativeValue[] = this.convertAndWrap(
+                targetAttributes[attributeName],
+                this.findAttributeByCamelCaseName(referencedEntitySchema?.attributes, attributeName)
+            )
             if (wrappedValue instanceof Array) {
                 representativeAttributes.push(...wrappedValue)
             } else {
@@ -234,7 +322,10 @@ export class GraphQLQueryExecutor extends QueryExecutor {
             const ownAttributes = reference[EntityPropertyType.Attributes] || {}
             for (const attributeName in ownAttributes) {
                 if (classification.representativeAttributeNames.has(attributeName)) {
-                    representativeReferenceAttributes.set(attributeName, this.toSingleValue(this.wrapRawValueIntoNativeValue(ownAttributes[attributeName])))
+                    representativeReferenceAttributes.set(attributeName, this.toSingleValue(this.convertAndWrap(
+                        ownAttributes[attributeName],
+                        this.findAttributeByCamelCaseName(classification.referenceSchema.attributes, attributeName)
+                    )))
                 }
             }
         }

@@ -29,3 +29,18 @@ function deepMergeInternal(path: string[], target: Record<string, unknown>, sour
 
     return result
 }
+
+/**
+ * Returns true for plain JSON-like containers — arrays and objects created by object literals, `JSON.parse` or
+ * `Object.create(null)` — as opposed to class instances, `Map`s or Immutable collections.
+ */
+export function isPlainObjectOrArray(value: unknown): value is object {
+    if (Array.isArray(value)) {
+        return true
+    }
+    if (value == null || typeof value !== 'object') {
+        return false
+    }
+    const prototype: unknown = Object.getPrototypeOf(value)
+    return prototype === Object.prototype || prototype === null
+}

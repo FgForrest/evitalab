@@ -1,4 +1,5 @@
 import { TrafficRecordVisualiser } from '@/modules/traffic-viewer/service/TrafficRecordVisualiser'
+import type { EvitaValuePrinter } from '@/modules/value-presentation/service/EvitaValuePrinter'
 import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { List as ImmutableList } from 'immutable'
 import {
@@ -33,14 +34,17 @@ export class SourceQueryContainerVisualiser extends TrafficRecordVisualiser<Sour
     private readonly workspaceService: WorkspaceService
     private readonly graphQLConsoleTabFactory: GraphQLConsoleTabFactory
     private readonly evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory
+    private readonly evitaValuePrinter: EvitaValuePrinter
 
     constructor(workspaceService: WorkspaceService,
                 graphQLConsoleTabFactory: GraphQLConsoleTabFactory,
-                evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory) {
+                evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory,
+                evitaValuePrinter: EvitaValuePrinter) {
         super()
         this.workspaceService = workspaceService
         this.graphQLConsoleTabFactory = graphQLConsoleTabFactory
         this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
+        this.evitaValuePrinter = evitaValuePrinter
     }
 
     canVisualise(trafficRecord: TrafficRecord): boolean {
@@ -89,7 +93,7 @@ export class SourceQueryContainerVisualiser extends TrafficRecordVisualiser<Sour
         if (visualisedSessionRecord == undefined) {
             defaultMetadata.push(MetadataItem.sessionId(trafficRecord.sessionId))
         }
-        defaultMetadata.push(MetadataItem.created(trafficRecord.created))
+        defaultMetadata.push(MetadataItem.created(trafficRecord.created, this.evitaValuePrinter))
         if (trafficRecord.finishedWithError != undefined) {
             // at the start of source query, we want to display only errors, not success of the source query only
             defaultMetadata.push(MetadataItem.finishedStatus(trafficRecord.finishedWithError))

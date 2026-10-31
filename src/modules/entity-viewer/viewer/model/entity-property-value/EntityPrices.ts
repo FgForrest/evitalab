@@ -2,8 +2,8 @@ import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/Entity
 import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import { EntityPrice } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPrice'
 import type {
-    EntityPropertyValuePreviewStringContext
-} from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValuePreviewStringContext'
+    EntityViewerPrintContext
+} from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityViewerPrintContext'
 import { QueryPriceMode } from '../QueryPriceMode'
 import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
 import { serializeJsonWithBigInt } from '@/utils/JsonUtil.ts'
@@ -44,7 +44,7 @@ export class EntityPrices extends EntityPropertyValue {
         }
     }
 
-    toPreviewString(context?: EntityPropertyValuePreviewStringContext): string {
+    toPreviewString(context?: EntityViewerPrintContext): string {
         let previewString: string = ''
 
         if (this.priceForSale != undefined) {

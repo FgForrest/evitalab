@@ -316,7 +316,13 @@ recordings, CDC, server files, …), which mostly mirrors evitaDB's data model. 
 - Internal model classes are immutable and use Immutable.js collections.
 - evitaDB scalar types have dedicated wrappers in `data-type/` (`BigDecimal`, `DateTimeRange`,
   `LocalDate(Time)`, `OffsetDateTime`, `Locale`, `Currency`, `Uuid`, `Predecessor`, ranges, …).
-  Use these — not raw JS types — when representing evitaDB values.
+  Use these — not raw JS types — when representing evitaDB values. They hold **data only**: the canonical
+  form (`toString()` is the ISO / wire text), parsing and accessors. Human-readable, locale-aware text is not the
+  driver's job — print values through [`value-presentation`](modules/value-presentation.md)'s
+  injectable `EvitaValuePrinter` (`useEvitaValuePrinter().print(value)`). ESLint forbids `database-driver` to import `value-presentation`.
+- Model types of scalar values on the gRPC path: `Byte`/`Short`/`Integer` → `number`, `Long` → `bigint` (single
+  values, arrays and ranges alike), `String`/`Character` → `string`, arrays → `ImmutableList` (`Character[]` arrives
+  as a string array), complex data → plain JSON structure.
 - Generated protobuf/gRPC sources live in `connector/grpc/gen/` and are **never edited manually**;
   they are regenerated from the evitaDB repo (see `buf.gen.yaml`; agents can use the
   `generate-evitadb-client` skill).
@@ -374,22 +380,22 @@ transfers it) **and** the ISO time offset the value is expressed in. Two rules f
 - **Never format the instant with a plain `Intl` formatter.** `Intl` would render it in the browser's
   time zone, so a timestamp created by a server in another zone silently shifts. `toDateTime()` puts
   the value into its own offset (`toLuxonZone()` normalizes `Z`/`±HH:MM` into a Luxon zone) and
-  `getPrettyPrintableString()` formats from there, keeping the offset marker in the output
-  (`8/12/26, 2:05:09 PM GMT+2`). `DateTimeRange` formats each end the same way.
+  `value-presentation`'s `OffsetDateTime` printer formats from there, keeping the offset marker in the output
+  (`8/12/26, 2:05:09 PM GMT+2`). Its `DateTimeRange` printer formats each end the same way, with a longer date
+  style (`Jul 1, 2024, 12:00:00 AM UTC`).
 - **Build values through `OffsetDateTime.of(seconds, nanos, offset)`** (or `fromDateTime()` for a
   zoned Luxon date time) rather than assembling a `Timestamp` at the call site, so the sub-second
   part is not dropped. Luxon works in milliseconds, so `toDateTime()`/`toString()` round the
   nanosecond fraction; the full value survives in `timestamp` and is what gets sent back.
 
-The three zone-less types format through Luxon for the same reason: `new Date(...)` reads a bare ISO
-date as **UTC** midnight (rendering the previous day for viewers behind Greenwich) and rejects a bare
-ISO time outright. `LocalDate.getPrettyPrintableString()` used to be an unimplemented stub that threw,
-and `LocalTime`'s threw `Invalid time value`, which broke every entity-grid cell holding such a value —
-`NativeValue.toPrettyPrintString()` calls them unguarded.
-
-Known gap: `LocalDateTime`, `LocalDate` and `LocalTime` still reinterpret their wall-clock value in
-the browser zone — the server serializes them against its own default offset, and these three types
-carry no offset of their own to correct with.
+The zone-less types (`LocalDateTime`, `LocalDate`, `LocalTime`) hold the offset-less ISO text — the same form
+the GraphQL API sends (`2026-08-26T10:15:30.12`, `2026-08-26`, `10:15:00.5`; milliseconds at most, trailing
+fraction zeros dropped). evitaDB sends them over gRPC as an instant in the **UTC** offset (`LocalTime` on
+`0000-01-01`), and `EvitaValueConverter` reads them in the offset of the message. It used to read them in the
+viewer's zone, which shifted every such value by the viewer's offset — a date by a whole day behind Greenwich.
+Their printers keep the wall-clock value: `LocalDate` and `LocalTime` parse through Luxon (`new Date(...)` reads a
+bare ISO date as UTC midnight and rejects a bare ISO time outright), `LocalDateTime` through `Intl` over
+`new Date(...)`, which reads an offset-less date-time in the viewer's zone and formats it in the same zone.
 
 ### Rendering raw wire data
 
@@ -463,8 +469,8 @@ keys off `type`, because the associated data scalar is `ComplexDataObject` eithe
 `EvitaValueConverter.convertGrpcDataItem` converts the tree into a **plain JSON-compatible structure** —
 maps to plain objects, arrays to plain arrays, leaves to plain JSON values. This is a deliberate exception
 to the "use the `data-type/` wrappers, not raw JS types" rule above: complex data objects are rendered by
-a bare `JSON.stringify` (entity grid renderers, `MutationHistoryDataVisualiser`), which throws on `bigint`
-and would serialize the wrappers as their internal fields. The leaf projection reproduces evitaDB's
+a bare `JSON.stringify` (entity grid renderers), which throws on `bigint` and would serialize the wrappers as
+their internal fields. The leaf projection reproduces evitaDB's
 `ComplexDataObjectToJsonConverter`, so the structured form renders exactly like the JSON form:
 
 | evitaDB type | projection |

@@ -314,7 +314,7 @@ The payload can also be pasted without a URL into a running instance via the tab
 - [ ] `yarn typecheck` passes (real whole-program check; keep it at zero errors).
 - [ ] `yarn test` passes (add unit tests for new pure logic; regression test for bug fixes).
 - [ ] `yarn build` passes (runs `yarn typecheck`, then the production build).
-- [ ] `yarn lint` — run it and don't add new violations (the gate is not yet at zero, so it is not part of CI yet).
+- [ ] `yarn lint:check` passes (CI runs it in `.github/workflows/dev.yml`; `yarn lint` also auto-fixes).
 - [ ] New classes/components have JSDoc; user-facing strings are localized.
 - [ ] `documentation/developer/` updated (module catalog, UI components, recipes as applicable).
 - [ ] `.evitadbrc` raised if the change depends on a newer evitaDB API ([versioning](evitadb-server.md#versioning)).

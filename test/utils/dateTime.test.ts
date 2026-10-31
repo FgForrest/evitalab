@@ -78,7 +78,7 @@ test('Should parse RFC 2822 date time', () => {
 })
 
 test('Should parse pretty-printed en-US date time with GMT offset', () => {
-    // this is what OffsetDateTime.getPrettyPrintableString() renders in the UI
+    // this is what evitaValuePrinter renders for an OffsetDateTime in the UI
     const parsed = parseDateTimeInput('5/25/25, 2:30:00 PM GMT+2', 'en-US')
     expectWallClock(parsed, 2025, 5, 25, 14, 30, 0)
     expect(parsed!.explicitOffset).toBe('+02:00')

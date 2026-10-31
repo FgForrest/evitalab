@@ -1,4 +1,5 @@
 import { TrafficRecordVisualiser } from '@/modules/traffic-viewer/service/TrafficRecordVisualiser'
+import type { EvitaValuePrinter } from '@/modules/value-presentation/service/EvitaValuePrinter'
 import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { TrafficRecordVisualisationContext } from '../model/TrafficRecordVisualisationContext'
 import {
@@ -21,11 +22,15 @@ export class EntityFetchContainerVisualiser extends TrafficRecordVisualiser<Enti
 
     private readonly workspaceService: WorkspaceService
     private readonly evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory
+    private readonly evitaValuePrinter: EvitaValuePrinter
 
-    constructor(workspaceService: WorkspaceService, evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory) {
+    constructor(workspaceService: WorkspaceService,
+                evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory,
+                evitaValuePrinter: EvitaValuePrinter) {
         super()
         this.workspaceService = workspaceService
         this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
+        this.evitaValuePrinter = evitaValuePrinter
     }
 
     canVisualise(trafficRecord: TrafficRecord): boolean {
@@ -57,7 +62,7 @@ export class EntityFetchContainerVisualiser extends TrafficRecordVisualiser<Enti
         if (visualisedSessionRecord == undefined) {
             defaultMetadata.push(MetadataItem.sessionId(trafficRecord.sessionId))
         }
-        defaultMetadata.push(MetadataItem.created(trafficRecord.created))
+        defaultMetadata.push(MetadataItem.created(trafficRecord.created, this.evitaValuePrinter))
         defaultMetadata.push(MetadataItem.finishedStatus(trafficRecord.finishedWithError))
         defaultMetadata.push(MetadataItem.duration(trafficRecord.duration, [10, 20]))
         defaultMetadata.push(MetadataItem.ioFetchedSizeBytes(trafficRecord.ioFetchedSizeBytes))

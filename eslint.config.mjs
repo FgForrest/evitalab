@@ -58,4 +58,39 @@ export default defineConfigWithVueTs(
             }],
         },
     },
+    {
+        // the data layer and the generic UI foundation know nothing about how values are presented
+        name: 'app/module-boundaries/value-presentation-consumers',
+        files: ['src/modules/database-driver/**/*.{ts,mts,tsx,vue}', 'src/modules/base/**/*.{ts,mts,tsx,vue}'],
+        rules: {
+            'no-restricted-imports': ['error', {
+                patterns: [{
+                    group: ['@/modules/value-presentation', '@/modules/value-presentation/**'],
+                    message: '`database-driver` and `base` must not depend on `value-presentation`.',
+                }],
+            }],
+        },
+    },
+    {
+        // may use the driver's types and base exceptions, never a feature module
+        name: 'app/module-boundaries/value-presentation',
+        files: ['src/modules/value-presentation/**/*.{ts,mts,tsx,vue}'],
+        rules: {
+            'no-restricted-imports': ['error', {
+                patterns: [{
+                    group: [
+                        // gitignore semantics: a path can be re-included only when its parent directory is not
+                        // excluded, so `@/modules/**` cannot be negated — exclude one level, re-include what is allowed
+                        '@/modules/*',
+                        '!@/modules/database-driver',
+                        '!@/modules/value-presentation',
+                        '!@/modules/base',
+                        '@/modules/base/*',
+                        '!@/modules/base/exception',
+                    ],
+                    message: '`value-presentation` may import only `database-driver`, `base/exception` and itself.',
+                }],
+            }],
+        },
+    },
 )

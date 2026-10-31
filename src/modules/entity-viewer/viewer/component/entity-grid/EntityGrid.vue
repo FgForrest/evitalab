@@ -1,11 +1,11 @@
 
 <script setup lang="ts">
 /**
- * Grid with actual data for the LabEditorDataGrid component.
+ * Grid with the entities of the current query result and the detail sidepanel of the selected cell.
  */
 
 import { Pane, Splitpanes } from 'splitpanes'
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useWorkspaceService, WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { EntityViewerService, useEntityViewerService } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
@@ -29,26 +29,45 @@ import {
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceAttributes'
 import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue'
 import type { GridHeader } from '@/modules/entity-viewer/viewer/model/GridHeader'
-import EntityGridColumnHeader from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridColumnHeader.vue'
 import EntityGridCell from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridCell.vue'
 import EntityGridCellDetail from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridCellDetail.vue'
 import {
     useDataLocale,
     useEntityPropertyDescriptorIndex,
+    usePriceType,
     useQueryLanguage,
     useTabProps
 } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
 import type { Predecessor } from '@/modules/database-driver/data-type/Predecessor.ts'
+import { isTypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
+import VDataGrid from '@/modules/base/component/data-grid/VDataGrid.vue'
+import type { DataGridColumn } from '@/modules/base/model/data-grid/DataGridColumn'
+import type { DataGridOptions } from '@/modules/base/model/data-grid/DataGridOptions'
+import type { DataGridSortItem } from '@/modules/base/model/data-grid/DataGridSortItem'
+import type { DataGridCellPosition } from '@/modules/base/model/data-grid/DataGridCellPosition'
+import type {
+    EntityViewerPrintContext
+} from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityViewerPrintContext'
+import {
+    type EntityGridValue,
+    EntityPropertyValuePrinter,
+    useEntityPropertyValuePrinter
+} from '@/modules/entity-viewer/viewer/service/EntityPropertyValuePrinter'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const entityViewerService: EntityViewerService = useEntityViewerService()
 const entityViewerTabFactory: EntityViewerTabFactory = useEntityViewerTabFactory()
 const toaster: Toaster = useToaster()
+const entityPropertyValuePrinter: EntityPropertyValuePrinter = useEntityPropertyValuePrinter()
 const { t } = useI18n()
 
-const pageSizeOptions: { title: string; value: number }[] = [10, 25, 50, 100, 250, 500, 1000].map(it => ({ title: it.toString(10), value: it }))
+const pageSizeOptions: number[] = [10, 25, 50, 100, 250, 500, 1000]
+/**
+ * Width of the icon {@link EntityGridCell} prepends to some values (24px icon + `mr-1`).
+ */
+const cellIconWidth: number = 28
 
 const props = defineProps<{
     displayedGridHeaders: GridHeader[],
@@ -58,27 +77,86 @@ const props = defineProps<{
     pageNumber: number,
     pageSize: number,
     /**
-     * Grid sort state owned by the parent. Bound one-way on purpose: an `update:sortBy` listener would put Vuetify's
-     * proxied model into controlled mode, where the parent must write the new value back synchronously — which would
-     * destroy the change detection `gridUpdated` relies on to tell user sorts apart from programmatic ones.
+     * Grid sort state owned by the parent. The grid emits a changed sort only when the user clicks a column header,
+     * so the parent can tell user sorts apart from its own programmatic changes.
      */
-    sortBy: { key: string, order?: "asc" | "desc" }[]
+    sortBy: DataGridSortItem[]
 }>()
 const emit = defineEmits<{
-    (e: "gridUpdated", value: { page: number, itemsPerPage: number, sortBy: { key: string, order?: "asc" | "desc" }[] }): void
+    (e: "gridUpdated", value: DataGridOptions): void
 }>()
 const tabProps = useTabProps()
 const entityPropertyDescriptorIndex = useEntityPropertyDescriptorIndex()
 const queryLanguage = useQueryLanguage()
 const dataLocale = useDataLocale()
+const priceType = usePriceType()
+
+// a computed keeps the same context object between unrelated renders, a changed price type re-prints the cells
+const printContext = computed<EntityViewerPrintContext>(() => ({ priceType: priceType.value }))
+const columns = computed<DataGridColumn<EntityGridValue, FlatEntity, EntityViewerPrintContext>[]>(() => props.displayedGridHeaders.map(header => ({
+    key: header.key,
+    title: header.title,
+    sortable: header.sortable,
+    prependIcons: resolveHeaderIcon(header.descriptor),
+    appendIcons: header.descriptor.isLocalized() ? ['mdi-translate'] : undefined,
+    printer: entityPropertyValuePrinter.forColumn(header.descriptor),
+    cellIconWidth: hasCellIcon(header.descriptor) ? cellIconWidth : undefined
+})))
+
+function resolveHeaderIcon(descriptor: EntityPropertyDescriptor): string[] | undefined {
+    if (descriptor.type === EntityPropertyType.AssociatedData) {
+        return ['mdi-package-variant-closed']
+    }
+    if (descriptor.type === EntityPropertyType.References || descriptor.type === EntityPropertyType.ReferenceAttributes) {
+        return ['mdi-link-variant']
+    }
+    return undefined
+}
+
+/**
+ * Whether {@link EntityGridCell} prepends an icon to values of the property.
+ */
+function hasCellIcon(descriptor: EntityPropertyDescriptor): boolean {
+    return (descriptor.type === EntityPropertyType.Entity && descriptor.key.name === StaticEntityProperties.ParentPrimaryKey) ||
+        descriptor.type === EntityPropertyType.References ||
+        (descriptor.schema != undefined && isTypedSchema(descriptor.schema) && descriptor.schema.type === Scalar.Predecessor)
+}
+
+function entityPrimaryKey(entity: FlatEntity): number {
+    return (entity[StaticEntityProperties.PrimaryKey] as NativeValue).value() as number
+}
 
 const showPropertyDetail = ref<boolean>(false)
 const propertyDetailEntity = ref<FlatEntity | undefined>()
 const propertyDetailDescriptor = ref<EntityPropertyDescriptor | undefined>()
 const propertyDetailValue = ref<EntityPropertyValue | EntityPropertyValue[] | undefined>()
-// identity of the currently detailed cell; used to force the detail component to remount when switching cells so
-// its non-reactive `provide`d entity/descriptor are refreshed instead of going stale
-const propertyDetailKey = ref<string | undefined>()
+const selectedCell = ref<DataGridCellPosition | undefined>()
+// bumped whenever the detailed entity is replaced by its re-queried version
+const propertyDetailRevision = ref<number>(0)
+// identity of the currently detailed cell; used to force the detail component to remount when switching cells (or
+// refreshing the entity) so its non-reactive `provide`d entity/descriptor are refreshed instead of going stale
+const propertyDetailKey = computed<string | undefined>(() =>
+    selectedCell.value != undefined
+        ? `${selectedCell.value.rowKey}-${selectedCell.value.columnKey}-${propertyDetailRevision.value}`
+        : undefined)
+
+// a re-query replaces the entities; keep showing the detailed entity if it is still on the page (with its fresh data),
+// otherwise close the detail so that the sidepanel and the highlighted cell never show different data
+watch(() => props.resultEntities, (entities) => {
+    if (selectedCell.value == undefined) {
+        return
+    }
+    const position: DataGridCellPosition = selectedCell.value
+    const entity: FlatEntity | undefined = entities.find(it => entityPrimaryKey(it) === position.rowKey)
+    const value: EntityGridValue | undefined = entity?.[position.columnKey]
+    if (entity == undefined || value == undefined) {
+        closePropertyDetail()
+        return
+    }
+    propertyDetailEntity.value = entity
+    propertyDetailValue.value = value
+    propertyDetailRevision.value++
+})
 
 function getPropertyDescriptor(key: string): EntityPropertyDescriptor | undefined {
     const descriptor = entityPropertyDescriptorIndex.value.get(key)
@@ -89,7 +167,11 @@ function getPropertyDescriptor(key: string): EntityPropertyDescriptor | undefine
     return descriptor
 }
 
-function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string, value: EntityPropertyValue | EntityPropertyValue[]): void {
+function handlePropertyClicked(entity: FlatEntity, propertyKey: string, value: EntityGridValue | undefined): void {
+    // a click also ends a text selection dragged within the cell, which must not open or navigate anything
+    if (window.getSelection()?.isCollapsed === false) {
+        return
+    }
     if (value == undefined || (value instanceof EntityPropertyValue && value.value() == undefined)  || (value instanceof EntityPropertyValue && (value.value() as Predecessor).predecessorId === -1)) {
         return
     }
@@ -132,10 +214,10 @@ function handlePropertyClicked(relativeEntityIndex: number, propertyKey: string,
         ))
     } else {
         // for other values (incl. references and reference attributes), show detail of the value in the sidepanel
-        propertyDetailEntity.value = props.resultEntities[relativeEntityIndex]
+        propertyDetailEntity.value = entity
         propertyDetailDescriptor.value = propertyDescriptor
         propertyDetailValue.value = value
-        propertyDetailKey.value = `${relativeEntityIndex}-${propertyKey}`
+        selectedCell.value = { rowKey: entityPrimaryKey(entity), columnKey: propertyKey }
         showPropertyDetail.value = true
     }
 }
@@ -145,7 +227,7 @@ function closePropertyDetail(): void {
     propertyDetailEntity.value = undefined
     propertyDetailDescriptor.value = undefined
     propertyDetailValue.value = undefined
-    propertyDetailKey.value = undefined
+    selectedCell.value = undefined
 }
 </script>
 
@@ -158,46 +240,32 @@ function closePropertyDetail(): void {
             size="70"
             min-size="30"
         >
-            <VDataTableServer
-                :headers="displayedGridHeaders"
-                :loading="loading"
-                :items="resultEntities"
-                :items-length="totalResultCount"
-                density="compact"
-                fixed-header
-                fixed-footer
-                multi-sort
-                :items-per-page="pageSize"
-                :items-per-page-Options="pageSizeOptions"
-                :sort-by="sortBy"
-                @update:options="emit('gridUpdated', $event)"
+            <VDataGrid
                 class="data-grid__grid"
+                :columns="columns"
+                :context="printContext"
+                :rows="resultEntities"
+                :row-key="entityPrimaryKey"
+                :total-count="totalResultCount"
+                :page="pageNumber"
+                :items-per-page="pageSize"
+                :items-per-page-options="pageSizeOptions"
+                :sort-by="sortBy"
+                multi-sort
+                :loading="loading"
+                :selected-cell="selectedCell"
+                @update:options="emit('gridUpdated', $event)"
+                @click:cell="handlePropertyClicked($event.row, $event.column.key, $event.value)"
             >
-                <template #headers="{ columns, isSorted, getSortIcon, toggleSort }">
-                    <tr>
-                        <EntityGridColumnHeader
-                            v-for="column in columns"
-                            :key="column.key!"
-                            :column="column"
-                            :is-sorted="isSorted"
-                            :get-sort-icon="getSortIcon"
-                            :toggle-sort="toggleSort"
-                        />
-                    </tr>
+                <template #cell="{ row, column, value, text }">
+                    <EntityGridCell
+                        :entity-primary-key="entityPrimaryKey(row)"
+                        :property-descriptor="entityPropertyDescriptorIndex.get(column.key)"
+                        :property-value="value"
+                        :printable-value="text"
+                    />
                 </template>
-                <template #item="{ internalItem, index }">
-                    <tr>
-                        <EntityGridCell
-                            v-for="(propertyValue, propertyKey) in internalItem.columns"
-                            :key="propertyKey"
-                            :entity-primary-key='internalItem.columns["primaryKey"].value()'
-                            :property-descriptor="entityPropertyDescriptorIndex.get(propertyKey as string)"
-                            :property-value="propertyValue"
-                            @click="handlePropertyClicked(index, propertyKey as string, propertyValue)"
-                        />
-                    </tr>
-                </template>
-            </VDataTableServer>
+            </VDataGrid>
         </Pane>
         <Pane
             v-if="showPropertyDetail"
@@ -217,37 +285,10 @@ function closePropertyDetail(): void {
 </template>
 
 <style lang="scss" scoped>
-.data-grid__body {
-    // we need to force table to be stretched to a window borders
-    & :deep(.v-table) {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: 1fr;
-        overflow-x: auto;
-    }
-}
-
+// the pane grows with its content, so the grid is stretched over the pane instead of sized by it
 .data-grid__grid {
-    // separators between the cells come from the global table style; the grid fills its whole tab, so
-    // unlike a table embedded in a page it also closes its own trailing and bottom edges
-    & :deep(th[class^="data-grid-column-header"]:last-child),
-    & :deep(td:last-child) {
-        border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
-    }
-
-    & :deep(tbody > tr:last-child > td) {
-        border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
-    }
-}
-
-.data-grid-cell__body {
-    line-height: 2.25rem;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    display: block;
-    min-width: 5rem;
-    height: 2.25rem;
-    text-overflow: clip;
-    text-wrap: nowrap;
+    position: absolute;
+    inset: 0;
+    height: auto;
 }
 </style>

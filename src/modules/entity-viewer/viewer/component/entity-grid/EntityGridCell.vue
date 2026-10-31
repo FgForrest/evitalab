@@ -1,4 +1,10 @@
 <script setup lang="ts">
+/**
+ * Content of a single entity grid cell rendered inside a `VDataGrid` cell: the printable value with a type-specific
+ * prepended icon or a placeholder, the value tooltip, middle-click copy and the cell context menu. Left click is
+ * handled by the grid itself.
+ */
+
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Toaster } from '@/modules/notification/service/Toaster'
@@ -7,8 +13,7 @@ import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/E
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
-import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import { useDataLocale, usePriceType, useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
+import { useDataLocale, useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { isLocalizedSchema } from '@/modules/database-driver/request-response/schema/LocalizedSchema'
 import { isTypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
@@ -39,16 +44,15 @@ const { t } = useI18n()
 const props = defineProps<{
     entityPrimaryKey: number,
     propertyDescriptor: EntityPropertyDescriptor | undefined,
-    propertyValue: EntityPropertyValue | EntityPropertyValue[] | undefined
-}>()
-const emit = defineEmits<{
-    (e: 'click'): void
+    propertyValue: EntityPropertyValue | EntityPropertyValue[] | undefined,
+    /**
+     * The value printed by the grid column, see `EntityPropertyValuePrinter`.
+     */
+    printableValue: string
 }>()
 const dataLocale = useDataLocale()
-const priceType = usePriceType()
 const parent = ref()
 
-const printablePropertyValue = computed<string>(() => toPrintablePropertyValue(props.propertyValue))
 const prependIcon = computed<string | undefined>(() => {
     if (props.propertyDescriptor?.type === EntityPropertyType.Entity && props.propertyDescriptor?.key.name === StaticEntityProperties.ParentPrimaryKey) {
         return 'mdi-open-in-new'
@@ -85,26 +89,6 @@ const nullValue = computed<boolean>(() => {
     return props.propertyValue == undefined
 })
 
-function toPrintablePropertyValue(value: EntityPropertyValue | EntityPropertyValue[] | undefined): string {
-    if (value == undefined) {
-        return ''
-    }
-    if (value instanceof Array) {
-        if (value.length === 0) {
-            return ''
-        }
-        return `[${value.map(it => toPrintablePropertyValue(it)).join(', ')}]`
-    } else if (value instanceof EntityPropertyValue) {
-        const previewString = value.toPrettyPrintString({ priceType: priceType?.value })
-        if (previewString == undefined) {
-            return ''
-        }
-        return previewString
-    } else {
-        throw new UnexpectedError('Unexpected property value type: ' + typeof value)
-    }
-}
-
 function copyValue(raw: boolean): void {
     if (raw) {
         const entityValue: EntityPropertyValue | EntityPropertyValue[] | undefined = props.propertyValue
@@ -126,8 +110,8 @@ function copyValue(raw: boolean): void {
             })
         }
     } else {
-        if (printablePropertyValue.value) {
-            copyToClipboard(printablePropertyValue.value).then(() => {
+        if (props.printableValue) {
+            copyToClipboard(props.printableValue).then(() => {
                 toaster.info(t('common.notification.copiedToClipboard')).then()
             }).catch(() => {
                 toaster.error(t('common.notification.failedToCopyToClipboard')).then()
@@ -149,22 +133,19 @@ const tooltip = computed<string>(() => {
                 return 'Pointer to a previous entity in the list.'
             }
         } else {
-            return printablePropertyValue.value
+            return props.printableValue
         }
     } else {
-        return printablePropertyValue.value
+        return props.printableValue
     }
 })
 
-function handleClick(e: MouseEvent): void {
-    // preventDefault must stay inside the branches: a default-prevented button 2 mousedown suppresses the
+function handleMouseDown(e: MouseEvent): void {
+    // preventDefault must stay inside the branch: a default-prevented button 2 mousedown suppresses the
     // subsequent contextmenu event in some browsers, which would kill the cell menu
     if (e.button === 1) {
         e.preventDefault()
         copyValue(e.shiftKey)
-    } else if (e.button === 0) {
-        e.preventDefault()
-        emit('click')
     }
 }
 
@@ -207,15 +188,15 @@ function handleMenuAction(actionType: EntityGridCellMenuItemType): void {
 </script>
 
 <template>
-    <td ref="parent" class="data-grid-cell" :class="{ 'data-grid-cell--clickable': printablePropertyValue && !emptyReferences }"
-        @mousedown="(e) => handleClick(e)"
+    <span ref="parent" class="data-grid-cell" :class="{ 'data-grid-cell--clickable': printableValue && !emptyReferences }"
+        @mousedown="handleMouseDown"
         @contextmenu.prevent="openMenu">
         <span class="data-grid-cell__body">
             <template v-if="noLocaleSelected">
                 <span class="text-disabled">{{ t('entityViewer.grid.cell.placeholder.noLocaleSelected') }}</span>
             </template>
             <template v-else-if="emptyReferences">
-                <span class="text-disabled">{{ printablePropertyValue }}</span>
+                <span class="text-disabled">{{ printableValue }}</span>
             </template>
             <template v-else-if="emptyArray">
                 <span class="text-disabled">{{ t('common.placeholder.emptyArray') }}</span>
@@ -225,33 +206,30 @@ function handleMenuAction(actionType: EntityGridCellMenuItemType): void {
             </template>
             <template v-else>
                 <VIcon v-if="prependIcon !== undefined" class="mr-1">{{ prependIcon }}</VIcon>
-                <span class="inline-flex items-center">
-                    {{ printablePropertyValue }}
-
-                    <VTooltip
-                        :activator="parent"
-                        location="bottom"
-                        :interactive="true">
-                        <div>
-                            <VChip class="chip" size="small">
-                                <span>{{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTip') }}</span>
-                                <span class="text-disabled ml-1">
-                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTipDescription')
-                                    }})
-                                </span>
-                            </VChip>
-                            <VChip class="chip" size="small">
-                                <span>{{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTip') }}</span>
-                                <span class="text-disabled ml-1">
-                                    ({{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTipDescription')
-                                    }})
-                                </span>
-                            </VChip>
-                        </div>
-                        <hr />
-                        <p>{{ tooltip }}</p>
-                    </VTooltip>
-                </span>
+                <span class="data-grid-cell__value">{{ printableValue }}</span>
+                <VTooltip
+                    :activator="parent"
+                    location="bottom"
+                    :interactive="true">
+                    <div>
+                        <VChip class="chip" size="small">
+                            <span>{{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTip') }}</span>
+                            <span class="text-disabled ml-1">
+                                ({{ t('command.entityViewer.entityGrid.entityGridCell.copyValueToolTipDescription')
+                                }})
+                            </span>
+                        </VChip>
+                        <VChip class="chip" size="small">
+                            <span>{{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTip') }}</span>
+                            <span class="text-disabled ml-1">
+                                ({{ t('command.entityViewer.entityGrid.entityGridCell.rawCopyToolTipDescription')
+                                }})
+                            </span>
+                        </VChip>
+                    </div>
+                    <hr />
+                    <p>{{ tooltip }}</p>
+                </VTooltip>
             </template>
         </span>
 
@@ -276,16 +254,15 @@ function handleMenuAction(actionType: EntityGridCellMenuItemType): void {
                 </template>
             </VList>
         </VMenu>
-    </td>
+    </span>
 </template>
 
 <style scoped lang="scss">
-td.data-grid-cell {
-    height: 2.25rem;
-    line-height: 2.25rem;
-    padding: 0 .75rem;
-    position: relative;
-    overflow-x: clip;
+// fills the whole grid cell, so that the context menu, middle click and hover cover all of it
+.data-grid-cell {
+    position: absolute;
+    inset: 0;
+    padding: 0 12px;
 }
 
 .data-grid-cell--clickable {
@@ -297,16 +274,17 @@ td.data-grid-cell {
 }
 
 .data-grid-cell__body {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    position: absolute;
-    inset: 0;
-    width: 100%;
+    height: 100%;
     overflow: hidden;
     white-space: nowrap;
+}
+
+.data-grid-cell__value {
+    min-width: 0;
+    overflow: hidden;
     text-overflow: ellipsis;
-    margin-left: 16px;
-    margin-right: 16px;
 }
 
 .chip {

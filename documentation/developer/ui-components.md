@@ -72,6 +72,7 @@ area).
 
 | Component | Use for |
 |-----------|---------|
+| `VDataGrid` | Server-paginated grid of rows × columns with auto/resizable column widths, sorting, cell selection and an edit hook — see [Data grid](#data-grid) |
 | `VPropertiesTable` | Key-value listing of object properties (`title?`, `properties: Property[]`, `dense?`). Property model in `modules/base/model/properties-table/` supports typed values (`VPropertiesTableValue*`) |
 | `VMarkdown` | Rendering markdown (`source` prop; markdown-it + highlight.js + DOMPurify) |
 | `VTreeViewItem` / `VTreeViewEmptyItem` | Tree menu structures (openable/loading states, flags, item actions). `openableByArrowOnly` reserves expanding for the leading arrow and reports its click as `click:open`, freeing the row click for a meaning of its own — the catalog row uses it to open the catalog preview |
@@ -105,6 +106,65 @@ their trailing block margin zeroed for the same reason. Do not add per-page spac
 A chip color must be a **theme role** (`success`, `info`, `warning`, `error`, or the default grey) — the
 renderer passes it as Vuetify's `base-color`, because inside a `VChipGroup` (the `List<PropertyValue>`
 variant) a plain `color` applies only to *selected* chips.
+
+### Data grid
+
+`VDataGrid` (`base/component/data-grid/`) is the lab's own grid, built on Vuetify's bare `VTable` shell so the
+compact density, header styling and the global cell separators apply unchanged. It replaced `VDataTableServer`
+in the entity viewer, which could not resize columns, select cells or host an editor. It is generic — it imports
+nothing from other modules (only `src/utils`) — and is used by `EntityGrid.vue`.
+
+**Data.** `rows` are plain objects keyed by column key and keep the **original** values. Each
+`DataGridColumn<V, R, C>` (`base/model/data-grid/`) prints its values through its `printer`, a
+`DataGridValuePrinter<V, R, C>` (`base/service/data-grid/`) with `print(value, row, context)` (default `defaultDataGridValuePrinter`, i.e.
+`formatDataGridValue`: JSON for plain objects and arrays, `String()` for anything else — primitives and class
+instances alike — and `''` for a missing value). `printDataGridCell(column, value, row, context)` is the pure helper
+the grid prints every cell with. The grid knows nothing about evitaDB: a column holding driver data types supplies a
+`printer` printing them through `value-presentation`. Every cell is printed **once per data, column or context
+change**; the string is used for rendering, for the automatic width and handed to the `#cell` slot as `text`.
+`rowKey(row)` gives each row a stable identity (selection and editing survive a reload of the rows).
+
+**Context.** `VDataGrid<V, R, C>` takes a grid-wide `context` prop (type `C`, default `void`) and passes it to every
+printer and editor call. It is how the owner's display options reach the printers — the entity viewer passes
+`{ priceType }`. The printed cells are a `computed` that reads `context`, so a new context object re-prints all cells
+and re-measures the column widths. Pass a stable object (a `computed`, not an inline literal in the template), or
+every render of the owner re-prints the grid.
+
+**State is owned by the parent and passed one-way**: `page` (1-based), `itemsPerPage`, `sortBy`
+(`{ key, order }[]`), `totalCount`, `loading`, `selectedCell`, `editingCell`. User changes come back as a single
+`update:options` (`{ page, itemsPerPage, sortBy }`), emitted **only on user interaction** — never on mount and
+never as an echo of a prop change — so the owner can tell the user's changes from its own. The semantics follow
+Vuetify's data table (`base/composable/data-grid/useDataGridOptions`, unit-tested): a header click cycles *asc → desc → unsorted* (appended
+to the list with `multi-sort`), sorting and changing the page size reset the page to 1, and when the total
+a new result leaves the current page beyond the last one (a filter shrank the result, a restored tab's page no
+longer exists) the grid emits the last existing page (never page 0). The check runs per result, not on a page-count
+change, because a restored page 3 of a one-page result never changes the page count.
+
+**Column widths.** `table-layout: fixed` with a `<colgroup>`; a trailing filler column absorbs leftover space so
+the grid still fills its container, and the wrapper scrolls horizontally when the columns are wider. A column's
+automatic width is its widest formatted value (canvas `measureText` with the cell font, re-measured once the web
+font has loaded) + padding + border + `cellIconWidth`, clamped to `[80px, maxAutoWidth = 200px]`; `120px` without
+rows. **The header title never widens a column** — it ellipsizes, with the full title in a tooltip. Dragging the
+handle on a header's right edge sets a manual width (min `48px`, no max) that wins over the automatic one for the
+lifetime of the component; double-clicking the handle returns to the automatic width. Manual widths are not
+persisted.
+
+**Selection.** `selectedCell` (`{ rowKey, columnKey }`) outlines the cell in `primary-lightest` and tints its row.
+The grid only emits `click:cell` (DOM `click`, i.e. the left button); whether a click selects is the owner's
+decision. Middle click and context menu are not grid events — the cell slot handles them (a middle-click
+`preventDefault()` has to happen on `mousedown` to stop autoscroll).
+
+**Editing hook.** A column with an `editor` (a `DataGridValueEditor<V, R, C>`: `toEditRepresentation(value, row,
+context)` / `parse(text, row, context)`) is editable; its cell matching `editingCell` renders the `#cell-editor` slot
+with `commit(value)` / `cancel()`; `commit` emits `edit:commit` and both clear `editingCell` via
+`update:editingCell`. The grid never mutates `rows`. The editor lives on the column, not on the value, because an
+empty cell has no instance and primitives cannot implement an interface. There is no default editor and nothing
+uses the hook yet.
+
+**Layout.** The grid sizes itself with `height: 100%`. Inside a `Splitpanes` pane (a CSS grid whose row grows
+with its content) that does not constrain it — stretch it with `position: absolute; inset: 0; height: auto`, as
+`EntityGrid.vue` does, or the footer is pushed out of view. The footer reproduces `VDataTableFooter`'s markup and
+imports its CSS (the Vuetify component cannot be used outside `VDataTable`).
 
 ## Code editors (`code-editor` module)
 

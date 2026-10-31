@@ -1,10 +1,9 @@
-import type { PrettyPrintable } from "./PrettyPrintable";
 import { Range } from "./Range";
 
 /**
  * Specialized {@link Range} for integer.
  */
-export class IntegerRange extends Range<number> implements PrettyPrintable {
+export class IntegerRange extends Range<number> {
 
     constructor(from?: number, to?: number){
         super(from, to);
@@ -15,10 +14,6 @@ export class IntegerRange extends Range<number> implements PrettyPrintable {
         if (from != undefined && to != undefined && from > to) {
             throw new Error(`Invalid range: from (${from}) cannot be greater than to (${to})`);
         }
-    }
-
-    getPrettyPrintableString(): string {
-        return this.toString()
     }
 
     getRangeValues():[number | undefined, number | undefined]{

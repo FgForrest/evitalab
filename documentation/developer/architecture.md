@@ -80,7 +80,7 @@ export class MyModuleRegistrar implements ModuleRegistrar {
 ```
 
 and must be added to `src/modules/modules.ts`. Base generic modules (`config`, `storage`,
-`connection`, `database-driver`, `workspace`) come first; UI feature modules after them.
+`connection`, `database-driver`, `value-presentation`, `workspace`) come first; UI feature modules after them.
 A registrar can only inject what was registered before it.
 
 In components, services are obtained through per-service helper functions built on

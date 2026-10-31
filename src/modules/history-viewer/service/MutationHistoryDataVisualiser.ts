@@ -1,4 +1,6 @@
 import { i18n } from '@/vue-plugins/i18n'
+import { serializeJsonWithBigInt } from '@/utils/JsonUtil'
+import type { EvitaValuePrinter } from '@/modules/value-presentation/service/EvitaValuePrinter'
 import { List as ImmutableList } from 'immutable'
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { getMutationType, getMutationOperationType } from '@/modules/database-driver/request-response/utils/MutationTypeHelper'
@@ -80,11 +82,15 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
 
     private readonly workspaceService: WorkspaceService
     private readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
+    private readonly evitaValuePrinter: EvitaValuePrinter
 
-    constructor(workspaceService: WorkspaceService, mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory) {
+    constructor(workspaceService: WorkspaceService,
+                mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory,
+                evitaValuePrinter: EvitaValuePrinter) {
         super()
         this.workspaceService = workspaceService
         this.mutationHistoryViewerTabFactory = mutationHistoryViewerTabFactory
+        this.evitaValuePrinter = evitaValuePrinter
     }
 
     canVisualise(changeCatalogCapture: ChangeCatalogCapture): boolean {
@@ -151,8 +157,8 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             } else if (attributeMutation instanceof AssociatedDataMutation) {
                 const type = getMutationOperationType(attributeMutation)
                 const title = i18n.global.t(`mutationHistoryViewer.record.type.attribute.associatedData.title-${type}`, { key: attributeMutation.associatedDataKey.associatedDataName })
-                const attributeValue = attributeMutation instanceof UpsertAssociatedDataMutation ? JSON.stringify(attributeMutation?.value) : ''
-                const attributeTooltip = attributeMutation instanceof UpsertAssociatedDataMutation && typeof  attributeMutation.value === 'object' ? JSON.stringify(attributeMutation?.value, null, 2) : undefined
+                const attributeValue = attributeMutation instanceof UpsertAssociatedDataMutation ? serializeJsonWithBigInt(attributeMutation?.value) : ''
+                const attributeTooltip = attributeMutation instanceof UpsertAssociatedDataMutation && typeof  attributeMutation.value === 'object' ? serializeJsonWithBigInt(attributeMutation.value, 2) : undefined
 
                 const actions: Immutable.List<Action> = (!ctx.historyCriteria.mutableFilters && CatalogSchemaConverter.toContainerTypes(ctx.historyCriteria.containerTypeList).contains(ContainerType.AssociatedData)) ?
                     ImmutableList() :
@@ -161,7 +167,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                 const metadata: MetadataGroup[] = this.constructAttributeMetadata(attributeMutation, ctx.historyCriteria, mutationHistory)
                 attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-relation-one-to-one-or-many', title, attributeValue, attributeTooltip, metadata, actions)
             } else if (attributeMutation instanceof SetPriceInnerRecordHandlingMutation) {
-                const attributeValue = (attributeMutation as SetPriceInnerRecordHandlingMutation).priceInnerRecordHandling.toString()
+                const attributeValue = this.evitaValuePrinter.printPriceInnerRecordHandling((attributeMutation as SetPriceInnerRecordHandlingMutation).priceInnerRecordHandling)
 
                 const actions = this.getAttributeAction(ctx, mutationHistory, undefined)
                 const metadata: MetadataGroup[] = this.constructAttributeMetadata(attributeMutation as LocalMutation, ctx.historyCriteria, mutationHistory)
@@ -169,7 +175,8 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
                 attributeMutationVisualised = new MutationHistoryItemVisualisationDefinition(mutationHistory, 'mdi-database-outline', title, attributeValue, undefined, metadata, actions)
             } else {
                 const attributeName = (attributeMutation as AttributeMutation)?.attributeKey?.attributeName
-                const attributeValue = attributeMutation instanceof SetPriceInnerRecordHandlingMutation ? (attributeMutation as SetPriceInnerRecordHandlingMutation).priceInnerRecordHandling.toString() : (attributeMutation as UpsertAttributeMutation)?.value?.toString()
+                const value = (attributeMutation as UpsertAttributeMutation)?.value
+                const attributeValue = value != undefined ? this.evitaValuePrinter.print(value) : undefined
 
                 const operationType = mutationHistory.operation
                 const actions = this.getAttributeAction(ctx, mutationHistory, attributeName)
@@ -242,7 +249,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         const entityTypes = CatalogSchemaConverter.toContainerTypes(historyCriteria.containerTypeList)
 
         if (!historyCriteria.mutableFilters && mutationHistory.commitTimestamp && historyCriteria.containerTypeList && [ContainerType.Entity].some(type => entityTypes?.includes(type))) {
-            defaultMetadata.push(MutationHistoryDataVisualiser.timestamp(mutationHistory.commitTimestamp))
+            defaultMetadata.push(this.timestamp(mutationHistory.commitTimestamp))
         }
 
 
@@ -262,7 +269,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         const entityTypes = CatalogSchemaConverter.toContainerTypes(historyCriteria.containerTypeList)
 
         if (!historyCriteria.mutableFilters && mutationHistory.commitTimestamp && historyCriteria.containerTypeList && [ContainerType.Price, ContainerType.Reference, ContainerType.AssociatedData, ContainerType.Attribute].some(type => entityTypes?.includes(type))) {
-            defaultMetadata.push(MutationHistoryDataVisualiser.timestamp(mutationHistory.commitTimestamp))
+            defaultMetadata.push(this.timestamp(mutationHistory.commitTimestamp))
         }
 
         defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(getMutationType(localMutation)))
@@ -287,7 +294,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         const entityTypes = CatalogSchemaConverter.toContainerTypes(historyCriteria.containerTypeList)
 
         if (!historyCriteria.mutableFilters && mutationHistory.commitTimestamp && historyCriteria.containerTypeList && [ContainerType.Price, ContainerType.Reference, ContainerType.AssociatedData, ContainerType.Attribute].some(type => entityTypes?.includes(type))) {
-            defaultMetadata.push(MutationHistoryDataVisualiser.timestamp(mutationHistory.commitTimestamp))
+            defaultMetadata.push(this.timestamp(mutationHistory.commitTimestamp))
         }
 
 
@@ -300,7 +307,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
             defaultMetadata.push(MutationHistoryDataVisualiser.priceId(localMutation.priceKey.priceId))
 
             defaultMetadata.push(MutationHistoryDataVisualiser.indexed(localMutation.indexed))
-            defaultMetadata.push(MutationHistoryDataVisualiser.validityFromTo(localMutation.validity))
+            defaultMetadata.push(this.validityFromTo(localMutation.validity))
 
         } else if (localMutation instanceof RemovePriceMutation) {
 
@@ -312,12 +319,12 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         return [MetadataGroup.default(defaultMetadata)]
     }
 
-    static validityFromTo(validity: DateTimeRange | undefined): MetadataItem {
+    private validityFromTo(validity: DateTimeRange | undefined): MetadataItem {
         return new MetadataItem(
             metadataItemSessionIdIdentifier,
             'mdi-calendar-range-outline',
             i18n.global.t('mutationHistoryViewer.record.type.attribute.validity.tooltip'),
-            validity?.getPrettyPrintableString() ?? 'Infinity',
+            validity != undefined ? this.evitaValuePrinter.print(validity) : 'Infinity',
             MetadataItemSeverity.Info,
             undefined,
             undefined
@@ -450,12 +457,12 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         )
     }
 
-    static timestamp(created: OffsetDateTime): MetadataItem {
+    private timestamp(created: OffsetDateTime): MetadataItem {
         return new MetadataItem(
             metadataItemCreatedIdentifier,
             'mdi-clock-outline',
             i18n.global.t('mutationHistoryViewer.record.timestamp.title'),
-            created.getPrettyPrintableString(),
+            this.evitaValuePrinter.print(created),
             MetadataItemSeverity.Info,
             undefined,
             (ctx: MutationHistoryMetadataItemContext): void => {
@@ -478,7 +485,7 @@ export class MutationHistoryDataVisualiser extends MutationVisualiser<ChangeCata
         const entityTypes = CatalogSchemaConverter.toContainerTypes(historyCriteria.containerTypeList)
 
         if (!historyCriteria.mutableFilters && mutationHistory.commitTimestamp && historyCriteria.containerTypeList && [ContainerType.Price, ContainerType.Reference, ContainerType.AssociatedData, ContainerType.Attribute].some(type => entityTypes?.includes(type))) {
-            defaultMetadata.push(MutationHistoryDataVisualiser.timestamp(mutationHistory.commitTimestamp))
+            defaultMetadata.push(this.timestamp(mutationHistory.commitTimestamp))
         }
 
         defaultMetadata.push(MutationHistoryDataVisualiser.mutationType(getMutationType(referenceMutation)))

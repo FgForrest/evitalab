@@ -14,7 +14,12 @@ import { taskStateToColorMapping } from '@/modules/task-viewer/model/taskStateTo
 import { PlaceholderValue } from '@/modules/base/model/properties-table/PlaceholderValue'
 import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
 import { TaskTrait } from '@/modules/database-driver/request-response/task/TaskTrait'
+import {
+    EvitaValuePrinter,
+    useEvitaValuePrinter
+} from '@/modules/value-presentation/service/EvitaValuePrinter'
 
+const evitaValuePrinter: EvitaValuePrinter = useEvitaValuePrinter()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -75,13 +80,13 @@ const properties = computed<Property[]>(() => {
     }
     properties.push(new Property(
         t('taskViewer.tasksVisualizer.task.detail.property.created'),
-        new PropertyValue(props.task.created.getPrettyPrintableString())
+        new PropertyValue(evitaValuePrinter.print(props.task.created))
     ))
     properties.push(new Property(
         t('taskViewer.tasksVisualizer.task.detail.property.issued.label'),
         new PropertyValue(
             props.task.issued != undefined
-                ? props.task.issued.getPrettyPrintableString()
+                ? evitaValuePrinter.print(props.task.issued)
                 : new PlaceholderValue(t('taskViewer.tasksVisualizer.task.detail.property.issued.notIssued'))
         )
     ))
@@ -89,7 +94,7 @@ const properties = computed<Property[]>(() => {
         t('taskViewer.tasksVisualizer.task.detail.property.started.label'),
         new PropertyValue(
             props.task.started != undefined
-                ? props.task.started.getPrettyPrintableString()
+                ? evitaValuePrinter.print(props.task.started)
                 : new PlaceholderValue(t('taskViewer.tasksVisualizer.task.detail.property.started.notStarted'))
         )
     ))
@@ -97,7 +102,7 @@ const properties = computed<Property[]>(() => {
         t('taskViewer.tasksVisualizer.task.detail.property.finished.label'),
         new PropertyValue(
             props.task.finished != undefined
-                ? props.task.finished.getPrettyPrintableString()
+                ? evitaValuePrinter.print(props.task.finished)
                 : props.task.started != undefined
                     ? new PlaceholderValue(t('taskViewer.tasksVisualizer.task.detail.property.finished.notFinished'))
                     : new PlaceholderValue(t('taskViewer.tasksVisualizer.task.detail.property.finished.notStarted'))

@@ -10,12 +10,15 @@ no injectable services — everything in it is imported directly.
 
 | Directory | What's in it |
 |-----------|--------------|
-| `component/` | The `V*` component library (27 components) — see [UI components](../ui-components.md) for the full catalog and when to use which |
+| `component/` | The `V*` component library (30 components, incl. `data-grid/`) — see [UI components](../ui-components.md) for the full catalog and when to use which |
 | `exception/` | `LabError.ts` (base class every evitaLab error derives from), `UnexpectedError.ts`, `InitializationError.ts`, `ErrorSummary.ts` (the serializable flattening of an error — see [`error-viewer`](error-viewer.md)) |
 | `model/dialog/` | `DangerousConfirmType` — controls whether a confirm button asks a second time |
+| `composable/data-grid/` | `useDataGridOptions` — the stateless page/sort/page-size logic of `VDataGrid` |
+| `model/data-grid/` | `DataGridColumn`, `DataGridSortItem`, `DataGridOptions`, `DataGridCellPosition` — the vocabulary of `VDataGrid` |
 | `model/menu/` | `MenuItem`, `MenuAction`, `MenuSubheader` — the menu model that `MenuFactory` subclasses build |
 | `model/properties-table/` | `Property`, `PropertyValue` and the special value types rendered by `VPropertiesTable`: `ExtendedValue`, `KeywordValue`, `MultiValueFlagValue`, `NotApplicableValue`, `PlaceholderValue`, `ProgressValue`, `RangeValue` |
 | `model/tree-view/` | `ItemFlag`, `ItemFlagType` — flag chips rendered next to tree-view items |
+| `service/data-grid/` | the column-level `DataGridValuePrinter`/`DataGridValueEditor` operation interfaces (both with the grid-wide context type `C`) and the pure grid logic (`dataGridSort`, `dataGridPagination`, `dataGridColumnWidth`, `dataGridFormat` with `printDataGridCell`) behind `VDataGrid` |
 | `service/menu/` | `MenuFactory` — abstract base for the menu factories in `connection-explorer` and `entity-viewer` |
 
 ## Component groups
@@ -31,6 +34,8 @@ Grouped by what they are for (details in [UI components](../ui-components.md)):
 - **Properties tables** — `VPropertiesTable` plus `VPropertiesTableValue`,
   `VPropertiesTableValueItem`, `VPropertiesTableValueList`.
 - **Tree view** — `VTreeViewItem`, `VTreeViewEmptyItem`.
+- **Data grid** — `VDataGrid` with `VDataGridColumnHeader` and `VDataGridFooter` (see
+  [UI components — data grid](../ui-components.md#data-grid)).
 - **Lazy rendering** — `VListItemLazyIterator`, `VExpansionPanelLazyIterator` page the DOM for long
   lists (see [design language](../design-language.md)).
 - **Misc** — `VActionTooltip` (tooltip that renders a `Command`'s keyboard shortcut), `VMarkdown`,

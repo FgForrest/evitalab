@@ -479,8 +479,13 @@ no borders at all.
 
 ### Data grids
 
-- Server-driven tables use `VDataTableServer` with `density="compact"`, `fixed-header`,
-  `fixed-footer`, `multi-sort` and explicit page-size options (10 … 1000).
+- A grid of entity-like rows (the entity viewer) is a `VDataGrid` with `multi-sort` and explicit page-size options
+  (10 … 1000) — see [UI components — data grid](ui-components.md#data-grid). Smaller server-driven tables use
+  `VDataTableServer` with `density="compact"`, `fixed-header` and `fixed-footer`.
+- **A column is as wide as its values, not as its title.** Grid columns size to the widest value on the page up to
+  `200px`, the header title ellipsizes; the user widens a column by dragging its header edge.
+- **Selecting a cell shows where the detail pane comes from**: the cell gets a `primary-lightest` outline and tint,
+  its row a faint `on-surface` tint, for as long as the detail pane shows that cell.
 - **Paging is the table's own footer, never a hand-rolled row of buttons.** Bind
   `v-model:page`, `v-model:items-per-page`, `:items-length` and `:items-per-page-options` (omit the
   `-1`/"All" entry when the rows come from a server page) and let `VDataTableFooter` render the page
@@ -491,12 +496,12 @@ no borders at all.
   column shows (a map order, a maintained counter spanning two columns), offer it as a `VSelect` in
   `footer.prepend`, next to the pages it is applied before, and mark every column `sortable: false`.
   A sortable header beside it would offer a second, client-side order of one page and contradict it.
-- The grid fills its tab, so it adds the outer edges the shared table style leaves off (right border
-  on the last column, bottom border on the last row); rows are `2.25rem` tall, values clipped (no
-  wrapping) with full value in the tooltip.
-- Custom column headers show: property-type icon, title, `mdi-translate` when localized, and a
-  sort affordance (`mdi-sort` when sortable, the active sort icon when sorted). Only sortable
-  columns get the pointer cursor.
+- The grid fills its tab, so it closes the outer edges the shared table style leaves off: its trailing filler
+  column gives the last data column its right border, and it draws a bottom border on the last row; rows are
+  `2.25rem` tall, values ellipsized (no wrapping) with full value in the tooltip.
+- Column headers show: property-type icon, title, `mdi-translate` when localized, and a sort affordance
+  (`mdi-sort` when sortable, `mdi-arrow-up`/`mdi-arrow-down` when sorted). Only sortable columns get the pointer
+  cursor.
 - Clickable cells (`--clickable` modifier) show pointer cursor + `on-surface`-hover; a cell
   click either navigates (reference-like values → new tab) or opens the **detail pane**.
 - **Per-cell actions belong in a right-click menu**, not in modifier-key mouse combos. A cell's

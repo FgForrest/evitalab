@@ -11,10 +11,15 @@ import type {
 import { TelemetryPhaseGroup } from '@/modules/console/result-visualiser/model/query-telemetry/TelemetryPhaseGroup'
 import type { QueryTelemetryMetrics } from '@/modules/database-driver/request-response/data/QueryTelemetryMetrics'
 import { formatDateTime, formatNanos, formatNumber } from '@/utils/statisticsFormatting'
+import {
+    EvitaValuePrinter,
+    useEvitaValuePrinter
+} from '@/modules/value-presentation/service/EvitaValuePrinter'
 import PhaseShareBar from './PhaseShareBar.vue'
 import TelemetryFlamegraph from './TelemetryFlamegraph.vue'
 import TelemetryQueryMetrics from './TelemetryQueryMetrics.vue'
 
+const evitaValuePrinter: EvitaValuePrinter = useEvitaValuePrinter()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -67,7 +72,7 @@ const notSelected = computed<string | undefined>(() => {
                 </VTooltip>
             </span>
             <span v-if="telemetry.startedAt != undefined" class="text-disabled">
-                {{ formatDateTime(telemetry.startedAt) }}
+                {{ formatDateTime(telemetry.startedAt, evitaValuePrinter) }}
             </span>
             <VChip v-if="telemetry.hasPlan" size="small">
                 {{ t('resultVisualizer.queryTelemetryVisualiser.label.planChip') }}

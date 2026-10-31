@@ -39,6 +39,10 @@ import {
     tabFactoryRegistryInjectionKey
 } from '@/modules/workspace/tab/service/TabFactoryRegistry'
 import {
+    EvitaValuePrinter,
+    evitaValuePrinterInjectionKey
+} from '@/modules/value-presentation/service/EvitaValuePrinter'
+import {
     TrafficRecordingsViewerTabFactory,
     trafficRecordingsViewerTabFactoryInjectionKey
 } from '@/modules/traffic-viewer/service/TrafficRecordingsViewerTabFactory'
@@ -51,6 +55,7 @@ export class TrafficViewerModuleRegistrar implements ModuleRegistrar {
         const tabFactoryRegistry: TabFactoryRegistry = builder.inject(tabFactoryRegistryInjectionKey)
         const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory = builder.inject(evitaQLConsoleTabFactoryInjectionKey)
         const graphQLConsoleTabFactory: GraphQLConsoleTabFactory = builder.inject(graphQLConsoleTabFactoryInjectionKey)
+        const evitaValuePrinter: EvitaValuePrinter = builder.inject(evitaValuePrinterInjectionKey)
 
         const trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory = new TrafficRecordingsViewerTabFactory(connectionService)
         builder.provide(trafficRecordingsViewerTabFactoryInjectionKey, trafficRecordingsViewerTabFactory)
@@ -67,26 +72,31 @@ export class TrafficViewerModuleRegistrar implements ModuleRegistrar {
                 ImmutableList([
                     new EntityEnrichmentContainerVisualiser(
                         workspaceService,
-                        evitaQLConsoleTabFactory
+                        evitaQLConsoleTabFactory,
+                        evitaValuePrinter
                     ),
                     new EntityFetchContainerVisualiser(
                         workspaceService,
-                        evitaQLConsoleTabFactory
+                        evitaQLConsoleTabFactory,
+                        evitaValuePrinter
                     ),
-                    new MutationContainerVisualiser(),
+                    new MutationContainerVisualiser(evitaValuePrinter),
                     new QueryContainerVisualiser(
                         workspaceService,
-                        evitaQLConsoleTabFactory
+                        evitaQLConsoleTabFactory,
+                        evitaValuePrinter
                     ),
                     new SessionCloseContainerVisualiser(),
                     new SessionStartContainerVisualiser(
                         workspaceService,
-                        trafficRecordHistoryViewerTabFactory
+                        trafficRecordHistoryViewerTabFactory,
+                        evitaValuePrinter
                     ),
                     new SourceQueryContainerVisualiser(
                         workspaceService,
                         graphQLConsoleTabFactory,
-                        evitaQLConsoleTabFactory
+                        evitaQLConsoleTabFactory,
+                        evitaValuePrinter
                     ),
                     new SourceQueryStatisticsContainerVisualiser()
                 ])

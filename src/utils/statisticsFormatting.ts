@@ -65,8 +65,11 @@ export function formatSmallPercent(share: number | undefined): string {
     return share == undefined ? notApplicable() : smallPercentFormatter.format(share)
 }
 
-export function formatDateTime(dateTime: OffsetDateTime | undefined): string {
-    return dateTime == undefined ? notApplicable() : dateTime.getPrettyPrintableString()
+/**
+ * Date-time printed by the given printer, the placeholder when missing.
+ */
+export function formatDateTime(dateTime: OffsetDateTime | undefined, printer: { print(value: unknown): string }): string {
+    return dateTime == undefined ? notApplicable() : printer.print(dateTime)
 }
 
 /**

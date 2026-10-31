@@ -21,9 +21,15 @@ import {
     useMarkdownDetailRendererMenuFactory
 } from '@/modules/entity-viewer/viewer/service/MarkdownDetailRendererMenuFactory'
 import { copyToClipboard } from '@/utils/clipboard'
+import { useEntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/component/dependencies'
+import {
+    EntityPropertyValuePrinter,
+    useEntityPropertyValuePrinter
+} from '@/modules/entity-viewer/viewer/service/EntityPropertyValuePrinter'
 
 const markdownDetailRendererMenuFactory: MarkdownDetailRendererMenuFactory = useMarkdownDetailRendererMenuFactory()
 const toaster: Toaster = useToaster()
+const entityPropertyValuePrinter: EntityPropertyValuePrinter = useEntityPropertyValuePrinter()
 const { t } = useI18n()
 
 const whiteSpacePattern = /\s+/
@@ -38,6 +44,8 @@ const props = withDefaults(
         fillSpace: true,
     }
 )
+
+const propertyDescriptor = useEntityPropertyDescriptor()
 
 const prettyPrint = ref<boolean>(true)
 
@@ -67,6 +75,12 @@ const formattedValue = computed<string>(() => {
             : (props.value as EntityPropertyValue).toPreviewString()
     }
     try {
+        const enumText: string | undefined = propertyDescriptor == undefined
+            ? undefined
+            : entityPropertyValuePrinter.printEnum(propertyDescriptor, props.value)
+        if (enumText != undefined) {
+            return '`' + enumText + '`'
+        }
         switch (props.dataType) {
             case Scalar.String: {
                 const stringValue: string = (
@@ -141,8 +155,8 @@ const formattedValue = computed<string>(() => {
 })
 
 /**
- * Decorates the value's own human-readable form for Markdown: an optional icon and a code span. The
- * formatting itself belongs to the value (`toPrettyPrintString`), so that the entity grid, which renders
+ * Decorates the human-readable form of the value for Markdown: an optional icon and a code span. The
+ * formatting itself belongs to `EntityPropertyValuePrinter`, so that the entity grid, which renders
  * the same values without any decoration, cannot drift away from this renderer.
  */
 function prettyPrintValue(
@@ -150,12 +164,12 @@ function prettyPrintValue(
     prefix: string
 ): string {
     if (value instanceof EntityPropertyValue) {
-        return prefix + '`' + value.toPrettyPrintString() + '`'
+        return prefix + '`' + entityPropertyValuePrinter.printItem(value) + '`'
     } else {
         return (
             prefix +
             '`' +
-            value.map((it) => it.toPrettyPrintString()).join(',') +
+            value.map((it) => entityPropertyValuePrinter.printItem(it)).join(',') +
             '`'
         )
     }

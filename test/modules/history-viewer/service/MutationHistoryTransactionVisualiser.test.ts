@@ -22,6 +22,10 @@ import {
     ModifyEntitySchemaMutation
 } from '@/modules/database-driver/request-response/schema/mutation/catalog/ModifyEntitySchemaMutation'
 import { GrpcChangeCaptureContainerType } from '@/modules/database-driver/connector/grpc/gen/GrpcChangeCapture_pb'
+import { EvitaValuePrinter } from '@/modules/value-presentation/service/EvitaValuePrinter'
+import {
+    ModifyAttributeSchemaDefaultValueMutation
+} from '@/modules/database-driver/request-response/schema/mutation/attribute/ModifyAttributeSchemaDefaultValueMutation'
 
 /**
  * A page of mutation history carries two transaction captures of the same catalog version — the overview synthesised
@@ -83,7 +87,7 @@ function schemaCapture(): ChangeCatalogCapture {
  * captures follow, and the streamed transaction lead event closes the version block.
  */
 function visualisePage(ctx: MutationHistoryVisualisationContext): void {
-    const transactionVisualiser: MutationHistoryTransactionVisualiser = new MutationHistoryTransactionVisualiser()
+    const transactionVisualiser: MutationHistoryTransactionVisualiser = new MutationHistoryTransactionVisualiser(new EvitaValuePrinter())
     const schemaVisualiser: MutationHistorySchemaVisualiser = new MutationHistorySchemaVisualiser()
 
     transactionVisualiser.visualise(ctx, transactionCapture('overview'))
@@ -120,7 +124,7 @@ test('Should nest the captures of a version under the visualised transaction rec
 
 test('Should not replace the record the captures of a version nest under', () => {
     const ctx: MutationHistoryVisualisationContext = context()
-    const transactionVisualiser: MutationHistoryTransactionVisualiser = new MutationHistoryTransactionVisualiser()
+    const transactionVisualiser: MutationHistoryTransactionVisualiser = new MutationHistoryTransactionVisualiser(new EvitaValuePrinter())
 
     transactionVisualiser.visualise(ctx, transactionCapture('overview'))
     const visualisedRecord: MutationHistoryItemVisualisationDefinition = ctx.getVisualisedSessionRecord(version)!
@@ -132,7 +136,7 @@ test('Should not replace the record the captures of a version nest under', () =>
 
 test('Should not build a definition for a version that is already visualised', () => {
     const ctx: MutationHistoryVisualisationContext = context()
-    const transactionVisualiser: MutationHistoryTransactionVisualiser = new MutationHistoryTransactionVisualiser()
+    const transactionVisualiser: MutationHistoryTransactionVisualiser = new MutationHistoryTransactionVisualiser(new EvitaValuePrinter())
     // the duplicate used to be fully built — titles, metadata, clipboard callbacks — only to be dropped by the context
     const constructMetadata = vi.spyOn(
         transactionVisualiser as unknown as { constructMetadata: (capture: ChangeCatalogCapture) => unknown },
@@ -143,4 +147,24 @@ test('Should not build a definition for a version that is already visualised', (
     transactionVisualiser.visualise(ctx, transactionCapture('streamed-lead-event'))
 
     expect(constructMetadata).toHaveBeenCalledTimes(1)
+})
+
+test('Should visualise a schema mutation carrying a bigint value', () => {
+    // long values and date-time timestamps are bigint, a bare JSON.stringify used to throw on them
+    const ctx: MutationHistoryVisualisationContext = context()
+    const capture: ChangeCatalogCapture = new ChangeCatalogCapture(
+        version,
+        1,
+        CaptureArea.Schema,
+        'product',
+        undefined,
+        Operation.Upsert,
+        new ModifyEntitySchemaMutation('product', ImmutableList([new ModifyAttributeSchemaDefaultValueMutation('stock', 5n)])),
+        undefined
+    )
+
+    new MutationHistorySchemaVisualiser().visualise(ctx, capture)
+
+    const schemaRecord: MutationHistoryItemVisualisationDefinition = ctx.getVisualisedRecords().get(0)!
+    expect(schemaRecord.children.get(0)!.details).toContain('"defaultValue":"5"')
 })

@@ -3,7 +3,7 @@ import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/En
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
 import { EntitySchema } from '@/modules/database-driver/request-response/schema/EntitySchema'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
-import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
+import { allLocalesField, StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
 import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
@@ -27,7 +27,7 @@ const priceObjectFieldsTemplate =
         priceList
         currency
         innerRecordId
-        sellable
+        indexed
         validity
         priceWithoutTax
         priceWithTax
@@ -157,6 +157,8 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                         entityOutputFields.push('   }')
                         entityOutputFields.push('}')
                     }
+                } else if (it === StaticEntityProperties.Locales) {
+                    entityOutputFields.push(allLocalesField)
                 } else {
                     entityOutputFields.push(it)
                 }
@@ -181,7 +183,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                     // we don't want try to fetch localized attributes when no locale is specified, that would throw an error in evitaDB
                     return undefined
                 }
-                return attributeSchema.name
+                return attributeSchema.nameVariants.get(NamingConvention.CamelCase)
             })
             .filter(it => it != undefined)
             .map(it => it as string)
@@ -216,7 +218,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
                     // we don't want try to fetch localized associated data when no locale is specified, that would throw an error in evitaDB
                     return undefined
                 }
-                return associatedDataSchema.name
+                return associatedDataSchema.nameVariants.get(NamingConvention.CamelCase)
             })
             .filter(it => it != undefined)
             .map(it => it as string)

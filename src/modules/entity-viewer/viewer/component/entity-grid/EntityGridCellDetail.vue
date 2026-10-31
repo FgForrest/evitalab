@@ -73,7 +73,9 @@ const rawDataType = computed<Scalar | ExtraEntityObjectType | undefined>(() => {
             case StaticEntityProperties.PrimaryKey: return Scalar.Integer
             case StaticEntityProperties.Version: return Scalar.Integer
             case StaticEntityProperties.Locales: return Scalar.LocaleArray
+            // enum names render as identifiers, the pretty view prints them translated
             case StaticEntityProperties.PriceInnerRecordHandling: return Scalar.String
+            case StaticEntityProperties.Scope: return Scalar.String
             default: return undefined
         }
     } else if (props.propertyDescriptor?.type === EntityPropertyType.Prices) {

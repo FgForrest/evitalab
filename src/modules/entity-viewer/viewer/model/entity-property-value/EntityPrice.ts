@@ -1,9 +1,8 @@
-import type { GraphQLResultNode } from '@/modules/database-driver/connector/gql/model/GraphQLResultNode'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
 import type {
-    EntityPropertyValuePreviewStringContext
-} from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityPropertyValuePreviewStringContext'
+    EntityViewerPrintContext
+} from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityViewerPrintContext'
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
 import { Currency } from '@/modules/database-driver/data-type/Currency'
 import { DateTimeRange } from '@/modules/database-driver/data-type/DateTimeRange'
@@ -27,7 +26,7 @@ export class EntityPrice extends EntityPropertyValue {
     readonly priceWithTax: BigDecimal
     readonly taxRate: BigDecimal
 
-    private constructor(priceId: number | undefined,
+    constructor(priceId: number | undefined,
                 priceList: string,
                 currency: Currency,
                 innerRecordId: number | undefined,
@@ -62,18 +61,6 @@ export class EntityPrice extends EntityPropertyValue {
         )
     }
 
-    static fromJson(json: GraphQLResultNode): EntityPrice {
-        return new EntityPrice(json.priceId,
-            json.priceList,
-            json.currency,
-            json.innerRecordId,
-            json.sellable,
-            json.validity,
-            json.priceWithoutTax,
-            json.priceWithTax,
-            json.taxRate)
-    }
-
     value(): EvitaValue {
         return this
     }
@@ -101,7 +88,7 @@ export class EntityPrice extends EntityPropertyValue {
         }
     }
 
-    toPreviewString(context: EntityPropertyValuePreviewStringContext): string {
+    toPreviewString(context: EntityViewerPrintContext): string {
         const priceFormatter = new Intl.NumberFormat(
             navigator.language,
             { style: 'currency', currency: this.currency.code, maximumFractionDigits: 2 }

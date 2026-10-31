@@ -35,6 +35,7 @@ import { List as ImmutableList } from 'immutable'
 import { Duration } from 'luxon'
 import type { App } from 'vue'
 import LuxonExtensions from '@/vue-plugins/luxonExtensions'
+import { EvitaValuePrinter } from '@/modules/value-presentation/service/EvitaValuePrinter'
 
 // the visualisers render durations through the luxon extensions installed by the app bootstrap
 LuxonExtensions.install!(undefined as unknown as App, {})
@@ -59,9 +60,9 @@ const unusedService: never = new Proxy({}, {
  */
 function createProcessor(additionalRecords: TrafficRecord[] = []): TrafficRecordHistoryVisualisationProcessor {
     const visualisers: ImmutableList<TrafficRecordVisualiser<TrafficRecord>> = ImmutableList([
-        new SessionStartContainerVisualiser(unusedService, unusedService),
+        new SessionStartContainerVisualiser(unusedService, unusedService, new EvitaValuePrinter()),
         new SessionCloseContainerVisualiser(),
-        new QueryContainerVisualiser(unusedService, unusedService)
+        new QueryContainerVisualiser(unusedService, unusedService, new EvitaValuePrinter())
     ] as TrafficRecordVisualiser<TrafficRecord>[])
     const evitaClient: EvitaClient = {
         queryCatalog: <T>(_catalogName: string, logic: (session: {

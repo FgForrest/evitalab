@@ -19,27 +19,6 @@ export class DateTimeRange extends Range<OffsetDateTime> {
         }
     }
 
-    getPrettyPrintableString(): string {
-        const formattedFrom: string = this.from != undefined
-            ? DateTimeRange.formatEnd(this.from)
-            : emptyRangeEndSymbol
-        const formattedTo: string = this.to != undefined
-            ? DateTimeRange.formatEnd(this.to)
-            : emptyRangeEndSymbol
-        return `[${formattedFrom},${formattedTo}]`
-    }
-
-    /**
-     * Formats a single range end in its own time offset, the same way {@link OffsetDateTime} does, only with
-     * a longer date style suitable for ranges.
-     */
-    private static formatEnd(end: OffsetDateTime): string {
-        return end.toDateTime().toLocaleString({
-            dateStyle: 'medium',
-            timeStyle: 'long',
-        })
-    }
-
     static until(to: OffsetDateTime): DateTimeRange {
         return new DateTimeRange(undefined, to)
     }

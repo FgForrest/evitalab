@@ -1,5 +1,4 @@
 import { DateTime } from 'luxon'
-import type { PrettyPrintable } from './PrettyPrintable'
 import { timeOffsetFrom, toLuxonZone } from '@/utils/dateTime'
 
 export { toLuxonZone }
@@ -7,18 +6,9 @@ export { toLuxonZone }
 const nanosInMillisecond: number = 1_000_000
 
 /**
- * Format of the human-readable representation. The offset marker is deliberately part of the output,
- * because the value is rendered in its own offset, not in the viewer's time zone.
- */
-const prettyPrintableFormat: Intl.DateTimeFormatOptions = {
-    dateStyle: 'short',
-    timeStyle: 'long',
-}
-
-/**
  * A date-time with an offset from UTC/Greenwich in the ISO-8601 calendar system, such as 2007-12-03T10:15:30+01:00.
  */
-export class OffsetDateTime implements PrettyPrintable {
+export class OffsetDateTime {
     readonly timestamp: Timestamp
     readonly offset: string
 
@@ -44,10 +34,6 @@ export class OffsetDateTime implements PrettyPrintable {
      */
     static fromDateTime(dateTime: DateTime): OffsetDateTime {
         return new OffsetDateTime(Timestamp.fromDate(dateTime.toJSDate()), timeOffsetFrom(dateTime))
-    }
-
-    getPrettyPrintableString(): string {
-        return this.toDateTime().toLocaleString(prettyPrintableFormat)
     }
 
     /**

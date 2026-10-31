@@ -14,6 +14,7 @@ import { CaptureArea } from '@/modules/database-driver/request-response/cdc/Capt
 import { TransactionMutation } from '@/modules/database-driver/request-response/transaction/TransactionMutation.ts'
 import { formatByteSize, formatCount } from '@/utils/string.ts'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime.ts'
+import type { EvitaValuePrinter } from '@/modules/value-presentation/service/EvitaValuePrinter'
 import type {
     MutationHistoryMetadataItemContext
 } from '@/modules/history-viewer/model/MutationHistoryMetadataItemContext.ts'
@@ -24,11 +25,11 @@ import { copyToClipboard } from '@/utils/clipboard.ts'
  */
 export class MutationHistoryTransactionVisualiser extends MutationVisualiser<ChangeCatalogCapture> {
 
+    private readonly evitaValuePrinter: EvitaValuePrinter
 
-
-    constructor() {
+    constructor(evitaValuePrinter: EvitaValuePrinter) {
         super()
-
+        this.evitaValuePrinter = evitaValuePrinter
     }
 
     /**
@@ -74,7 +75,7 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
         const defaultMetadata: MetadataItem[] = []
 
         if (mutationHistory.body instanceof TransactionMutation) {
-            defaultMetadata.push(MutationHistoryTransactionVisualiser.commitTimestamp((mutationHistory.body.commitTimestamp)))
+            defaultMetadata.push(this.commitTimestamp((mutationHistory.body.commitTimestamp)))
         }
 
         defaultMetadata.push(MetadataItem.area(mutationHistory.area))
@@ -132,12 +133,12 @@ export class MutationHistoryTransactionVisualiser extends MutationVisualiser<Cha
         )
     }
 
-    static commitTimestamp(created: OffsetDateTime): MetadataItem {
+    private commitTimestamp(created: OffsetDateTime): MetadataItem {
         return new MetadataItem(
             metadataItemCreatedIdentifier,
             'mdi-clock-outline',
             i18n.global.t('mutationHistoryViewer.record.type.transaction.commitTimestamp.tooltip'),
-            created.getPrettyPrintableString(),
+            this.evitaValuePrinter.print(created),
             MetadataItemSeverity.Info,
             undefined,
             (ctx: MutationHistoryMetadataItemContext): void => {

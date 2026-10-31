@@ -30,11 +30,16 @@ import { TaskStatus } from '@/modules/database-driver/request-response/task/Task
 import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
 import { CatalogViewerService, useCatalogViewerService } from '@/modules/catalog-viewer/service/CatalogViewerService'
 import { formatBytes, formatDateTime, formatNumber } from '@/utils/statisticsFormatting'
+import {
+    EvitaValuePrinter,
+    useEvitaValuePrinter
+} from '@/modules/value-presentation/service/EvitaValuePrinter'
 
 const catalogViewerService: CatalogViewerService = useCatalogViewerService()
 const mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory = useHistoryViewerTabFactory()
 const workspaceService: WorkspaceService = useWorkspaceService()
 const toaster: Toaster = useToaster()
+const evitaValuePrinter: EvitaValuePrinter = useEvitaValuePrinter()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -284,7 +289,7 @@ async function followRestore(version: CatalogVersionSummary, task: TaskStatus): 
                 {{ formatNumber(item.version) }}
             </template>
             <template v-slot:[`item.timestamp`]="{ item }">
-                {{ formatDateTime(item.commitTimestamp) }}
+                {{ formatDateTime(item.commitTimestamp, evitaValuePrinter) }}
             </template>
             <template v-slot:[`item.mutations`]="{ item }">
                 {{ formatNumber(item.mutationCount) }}

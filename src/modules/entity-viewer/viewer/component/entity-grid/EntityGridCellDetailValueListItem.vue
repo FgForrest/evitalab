@@ -11,7 +11,12 @@ import DetailOutputFormatSelector
 import DelegateDetailRenderer
     from '@/modules/entity-viewer/viewer/component/entity-grid/detail-renderer/DelegateDetailRenderer.vue'
 import { Scalar } from '@/modules/database-driver/data-type/Scalar'
+import {
+    EntityPropertyValuePrinter,
+    useEntityPropertyValuePrinter
+} from '@/modules/entity-viewer/viewer/service/EntityPropertyValuePrinter'
 
+const entityPropertyValuePrinter: EntityPropertyValuePrinter = useEntityPropertyValuePrinter()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -20,7 +25,7 @@ const props = defineProps<{
 }>()
 
 const outputFormat = ref<EntityPropertyValueDesiredOutputFormat>(EntityPropertyValueDesiredOutputFormat.AutoPrettyPrint)
-const previewString = computed(() => props.value.toPrettyPrintString())
+const previewString = computed(() => entityPropertyValuePrinter.printItem(props.value))
 </script>
 
 <template>

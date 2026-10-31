@@ -1,6 +1,9 @@
 import { test, expect } from 'vitest'
 import { OffsetDateTime, Timestamp } from '../../../../src/modules/database-driver/data-type/OffsetDateTime'
 import { DateTimeRange } from '../../../../src/modules/database-driver/data-type/DateTimeRange'
+import { EvitaValuePrinter } from '../../../../src/modules/value-presentation/service/EvitaValuePrinter'
+
+const evitaValuePrinter: EvitaValuePrinter = new EvitaValuePrinter()
 
 // 2024-07-01T00:00:00Z
 const summerInstant: bigint = BigInt(1719792000)
@@ -45,15 +48,15 @@ test('Should carry sub-second precision through conversions', () => {
 test('Should pretty print in the stored time offset, not in the local time zone', () => {
     // the date/time part is locale-specific, the offset marker is what tells the zones apart
     expect(OffsetDateTime.of(summerInstant, 0, '+02:00').toDateTime().hour).toEqual(2)
-    expect(OffsetDateTime.of(summerInstant, 0, '+02:00').getPrettyPrintableString())
+    expect(evitaValuePrinter.print(OffsetDateTime.of(summerInstant, 0, '+02:00')))
         .toMatch(/(GMT|UTC)\+2/)
 
     expect(OffsetDateTime.of(summerInstant, 0, '+05:30').toDateTime().hour).toEqual(5)
-    expect(OffsetDateTime.of(summerInstant, 0, '+05:30').getPrettyPrintableString())
+    expect(evitaValuePrinter.print(OffsetDateTime.of(summerInstant, 0, '+05:30')))
         .toMatch(/(GMT|UTC)\+5:30/)
 
     expect(OffsetDateTime.of(summerInstant, 0, 'Z').toDateTime().hour).toEqual(0)
-    expect(OffsetDateTime.of(summerInstant, 0, 'Z').getPrettyPrintableString())
+    expect(evitaValuePrinter.print(OffsetDateTime.of(summerInstant, 0, 'Z')))
         .toMatch(/(GMT|UTC)(?!\+)/)
 })
 
@@ -63,7 +66,7 @@ test('Should pretty print a date-time range in the offsets of its ends', () => {
         offsetDateTime(winterInstant, '+02:00')
     )
 
-    const value: string = range.getPrettyPrintableString()
+    const value: string = evitaValuePrinter.print(range)
     expect(value).toMatch(/(GMT|UTC)\+2/)
     expect(value.split(',')[0]).toContain('Jul')
 })

@@ -42,10 +42,15 @@ import {
     formatNumber,
     notApplicable
 } from '@/utils/statisticsFormatting'
+import {
+    EvitaValuePrinter,
+    useEvitaValuePrinter
+} from '@/modules/value-presentation/service/EvitaValuePrinter'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const entityViewerTabFactory: EntityViewerTabFactory = useEntityViewerTabFactory()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()
+const evitaValuePrinter: EvitaValuePrinter = useEvitaValuePrinter()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -204,7 +209,7 @@ function recordsLabel(row: CollectionRow): string {
                 </template>
                 <template v-slot:[`item.lastModified`]="{ item }">
                     <span v-if="item.snapshot.header?.lastModified != undefined">
-                        {{ formatDateTime(item.snapshot.header.lastModified) }}
+                        {{ formatDateTime(item.snapshot.header.lastModified, evitaValuePrinter) }}
                     </span>
                     <span v-else class="text-disabled font-italic">
                         {{ t('catalogViewer.overview.collections.placeholder.lastModifiedUnknown') }}

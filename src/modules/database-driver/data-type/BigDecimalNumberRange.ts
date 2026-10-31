@@ -17,10 +17,6 @@ export class BigDecimalNumberRange extends Range<BigDecimal> {
         }
     }
 
-    getPrettyPrintableString(): string {
-        return this.toString()
-    }
-
     getRangeValues(): [BigDecimal | undefined, BigDecimal | undefined]{
         return [this.from, this.to]
     }

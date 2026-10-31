@@ -28,6 +28,14 @@ import {
     entityViewerTabFactoryInjectionKey
 } from '@/modules/entity-viewer/viewer/workspace/service/EntityViewerTabFactory'
 import {
+    EvitaValuePrinter,
+    evitaValuePrinterInjectionKey
+} from '@/modules/value-presentation/service/EvitaValuePrinter'
+import {
+    EntityPropertyValuePrinter,
+    entityPropertyValuePrinterInjectionKey
+} from '@/modules/entity-viewer/viewer/service/EntityPropertyValuePrinter'
+import {
     MutationHistoryViewerTabFactory,
     mutationHistoryViewerTabFactoryInjectionKey
 } from '@/modules/history-viewer/service/MutationHistoryViewerTabFactory'
@@ -40,6 +48,7 @@ export class EntityViewerModuleRegistrar implements ModuleRegistrar {
         const workspaceService: WorkspaceService = builder.inject(workspaceServiceInjectionKey)
         const tabFactoryRegistry: TabFactoryRegistry = builder.inject(tabFactoryRegistryInjectionKey)
         const mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory = builder.inject(mutationHistoryViewerTabFactoryInjectionKey)
+        const evitaValuePrinter: EvitaValuePrinter = builder.inject(evitaValuePrinterInjectionKey)
 
         const entityViewerTabFactory: EntityViewerTabFactory = new EntityViewerTabFactory(connectionService)
         builder.provide(entityViewerTabFactoryInjectionKey, entityViewerTabFactory)
@@ -48,6 +57,10 @@ export class EntityViewerModuleRegistrar implements ModuleRegistrar {
         builder.provide(
             entityViewerServiceInjectionKey,
             new EntityViewerService(evitaClient)
+        )
+        builder.provide(
+            entityPropertyValuePrinterInjectionKey,
+            new EntityPropertyValuePrinter(evitaValuePrinter)
         )
         builder.provide(
             codeDetailRendererMenuFactoryInjectionKey,

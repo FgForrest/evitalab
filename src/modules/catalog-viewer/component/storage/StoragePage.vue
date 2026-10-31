@@ -35,7 +35,12 @@ import {
     formatNumber,
     notApplicable
 } from '@/utils/statisticsFormatting'
+import {
+    EvitaValuePrinter,
+    useEvitaValuePrinter
+} from '@/modules/value-presentation/service/EvitaValuePrinter'
 
+const evitaValuePrinter: EvitaValuePrinter = useEvitaValuePrinter()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -166,7 +171,7 @@ const fragmentationProperties = computed<Property[]>(() => {
                 fragmentation?.compactionEligibleNow === true
                     ? new KeywordValue(t('catalogViewer.storage.fragmentation.eligibleNow'), 'warning')
                     : fragmentation?.estimatedCompactionAt != undefined
-                        ? formatDateTime(fragmentation.estimatedCompactionAt)
+                        ? formatDateTime(fragmentation.estimatedCompactionAt, evitaValuePrinter)
                         : t('catalogViewer.storage.fragmentation.noCrossingProjected')
             ),
             t('catalogViewer.storage.help.estimatedCompaction')
@@ -228,7 +233,7 @@ const volatileProperties = computed<Property[]>(() => {
             t('catalogViewer.storage.volatile.oldestRetainedVersion'),
             new PropertyValue(
                 volatileState?.oldestRecordKeptTimestamp != undefined
-                    ? formatDateTime(volatileState.oldestRecordKeptTimestamp)
+                    ? formatDateTime(volatileState.oldestRecordKeptTimestamp, evitaValuePrinter)
                     : t('catalogViewer.storage.volatile.nothingRetained')
             ),
             t('catalogViewer.storage.help.oldestRetainedVersion')

@@ -21,6 +21,7 @@ import { TrafficViewerModuleRegistrar } from '@/modules/traffic-viewer/TrafficVi
 import { ConnectionExplorerModuleRegistrar } from '@/modules/connection-explorer/ConnectionExplorerModuleRegistrar'
 import { CatalogViewerModuleRegistrar } from '@/modules/catalog-viewer/CatalogViewerModuleRegistrar'
 import { DatabaseDriverModuleRegistrar } from '@/modules/database-driver/DatabaseDriverModuleRegistrar'
+import { ValuePresentationModuleRegistrar } from '@/modules/value-presentation/ValuePresentationModuleRegistrar'
 import { MutationHistoryViewerModuleRegistrar } from '@/modules/history-viewer/MutationHistoryViewerModuleRegistrar.ts'
 import { SymbolSearchModuleRegistrar } from '@/modules/symbol-search/SymbolSearchModuleRegistrar'
 
@@ -33,6 +34,7 @@ export const modules: ModuleRegistrar[] = [
     new StorageModuleRegistrar(),
     new ConnectionModuleRegistrar(),
     new DatabaseDriverModuleRegistrar(),
+    new ValuePresentationModuleRegistrar(),
     new WorkspaceModuleRegistrar(),
 
     // UI feature modules; each of them contributes its tab factory into the workspace tab factory

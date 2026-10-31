@@ -16,10 +16,6 @@ export class BigintNumberRange extends Range<bigint> {
         }
     }
 
-    getPrettyPrintableString(): string {
-        return this.toString()
-    }
-
     getRangeValues():[bigint | undefined, bigint | undefined]{
         return [this.from, this.to]
     }

@@ -7,6 +7,9 @@ import { isLocalizedSchema } from '@/modules/database-driver/request-response/sc
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import type { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { sortableStaticEntityProperties } from '@/modules/entity-viewer/viewer/component/dependencies'
+import { Scalar } from '@/modules/database-driver/data-type/Scalar'
+import { isTypedSchema } from '@/modules/database-driver/request-response/schema/TypedSchema'
+import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 
 
 /**
@@ -63,6 +66,32 @@ export class EntityPropertyDescriptor {
             return scopes.every(scope => referenceSchema.isIndexedInScope(scope))
         }
         return true
+    }
+
+    /**
+     * Scalar type of the values of this property, `undefined` for composite properties (prices, references, reference attributes, parent)
+     * and for the enum properties (`scope`, `priceInnerRecordHandling`).
+     */
+    get scalar(): Scalar | undefined {
+        switch (this.type) {
+            case EntityPropertyType.Entity:
+                switch (this.key.name) {
+                    case StaticEntityProperties.PrimaryKey:
+                    case StaticEntityProperties.Version:
+                        return Scalar.Integer
+                    case StaticEntityProperties.Locales:
+                        return Scalar.LocaleArray
+                    default:
+                        return undefined
+                }
+            case EntityPropertyType.Attributes:
+            case EntityPropertyType.AssociatedData:
+                return this.schema != undefined && isTypedSchema(this.schema)
+                    ? this.schema.type
+                    : undefined
+            default:
+                return undefined
+        }
     }
 
     isLocalized(): boolean {

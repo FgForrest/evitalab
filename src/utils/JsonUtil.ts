@@ -32,6 +32,6 @@ export function grpcMessageToJson<Desc extends DescMessage>(schema: Desc, messag
  *
  * Use {@link grpcMessageToJson} for gRPC messages - it produces the canonical form of the wire data instead.
  */
-export function serializeJsonWithBigInt(value: object): string {
-    return JSON.stringify(value, (_, value) => typeof value === 'bigint' ? value.toString() : value)
+export function serializeJsonWithBigInt(value: object, space?: number): string {
+    return JSON.stringify(value, (_, value) => typeof value === 'bigint' ? value.toString() : value, space)
 }

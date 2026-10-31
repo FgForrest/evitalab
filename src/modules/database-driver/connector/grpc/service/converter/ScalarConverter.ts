@@ -25,7 +25,7 @@ export class ScalarConverter{
             case GrpcEvitaDataType.BYTE_ARRAY:
                 return Scalar.ByteArray
             case GrpcEvitaDataType.BYTE_NUMBER_RANGE:
-                return Scalar.BigDecimalNumberRange
+                return Scalar.ByteNumberRange
             case GrpcEvitaDataType.BYTE_NUMBER_RANGE_ARRAY:
                 return Scalar.ByteNumberRangeArray
             case GrpcEvitaDataType.CHARACTER:
@@ -35,7 +35,7 @@ export class ScalarConverter{
             case GrpcEvitaDataType.CURRENCY:
                 return Scalar.Currency
             case GrpcEvitaDataType.CURRENCY_ARRAY:
-                return Scalar.Currency
+                return Scalar.CurrencyArray
             case GrpcEvitaDataType.DATE_TIME_RANGE:
                 return Scalar.DateTimeRange
             case GrpcEvitaDataType.DATE_TIME_RANGE_ARRAY:

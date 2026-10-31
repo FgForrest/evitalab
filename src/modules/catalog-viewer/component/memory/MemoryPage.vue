@@ -43,9 +43,14 @@ import { useCollectionIndexCounts } from '@/modules/catalog-viewer/composable/us
 import CollectionSelector from '@/modules/catalog-viewer/component/indexes/CollectionSelector.vue'
 import StatTile from '@/modules/catalog-viewer/component/StatTile.vue'
 import { formatBytes, formatDateTime, formatNumber, notApplicable } from '@/utils/statisticsFormatting'
+import {
+    EvitaValuePrinter,
+    useEvitaValuePrinter
+} from '@/modules/value-presentation/service/EvitaValuePrinter'
 
 const catalogViewerService: CatalogViewerService = useCatalogViewerService()
 const toaster: Toaster = useToaster()
+const evitaValuePrinter: EvitaValuePrinter = useEvitaValuePrinter()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -316,7 +321,7 @@ function usageLabel(index: BrowsedIndex): string {
         queries: formatNumber(index.queryCount),
         updates: formatNumber(index.updateCount),
         since: index.observedSince != undefined
-            ? formatDateTime(index.observedSince)
+            ? formatDateTime(index.observedSince, evitaValuePrinter)
             : t('catalogViewer.memory.usage.unknownWindow')
     })
 }

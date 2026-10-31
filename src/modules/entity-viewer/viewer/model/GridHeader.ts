@@ -2,7 +2,7 @@ import type { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/mo
 
 /**
  * A single column header of the entity data grid, derived from an entity property
- * descriptor and passed to the underlying Vuetify data table.
+ * descriptor and mapped by `EntityGrid.vue` to a `VDataGrid` column.
  */
 export interface GridHeader {
     key: string

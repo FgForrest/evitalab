@@ -26,7 +26,12 @@ import ComponentAvailabilityChips from '@/modules/catalog-viewer/component/Compo
 import UnavailableComponent from '@/modules/catalog-viewer/component/UnavailableComponent.vue'
 import CatalogVersionsTable from '@/modules/catalog-viewer/component/history/CatalogVersionsTable.vue'
 import { formatBytes, formatDateTime, formatNumber, notApplicable, share } from '@/utils/statisticsFormatting'
+import {
+    EvitaValuePrinter,
+    useEvitaValuePrinter
+} from '@/modules/value-presentation/service/EvitaValuePrinter'
 
+const evitaValuePrinter: EvitaValuePrinter = useEvitaValuePrinter()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -65,7 +70,7 @@ function versionWithTimestamp(version: bigint | undefined, timestamp: OffsetDate
         ? formatNumber(version)
         : t('catalogViewer.history.coordinates.versionWithTimestamp', {
             version: formatNumber(version),
-            timestamp: formatDateTime(timestamp)
+            timestamp: formatDateTime(timestamp, evitaValuePrinter)
         })
 }
 
@@ -123,7 +128,7 @@ const coordinateProperties = computed<Property[]>(() => {
             ),
             new Property(
                 t('catalogViewer.history.coordinates.oldestLogEntry'),
-                new PropertyValue(formatDateTime(statistics.oldestAvailableTimestamp)),
+                new PropertyValue(formatDateTime(statistics.oldestAvailableTimestamp, evitaValuePrinter)),
                 t('catalogViewer.history.help.oldestLogEntry')
             )
         )

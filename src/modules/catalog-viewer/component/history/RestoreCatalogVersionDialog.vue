@@ -20,9 +20,14 @@ import { CatalogVersionSummary } from '@/modules/catalog-viewer/model/CatalogVer
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { CatalogViewerService, useCatalogViewerService } from '@/modules/catalog-viewer/service/CatalogViewerService'
 import { formatDateTime, formatNumber } from '@/utils/statisticsFormatting'
+import {
+    EvitaValuePrinter,
+    useEvitaValuePrinter
+} from '@/modules/value-presentation/service/EvitaValuePrinter'
 
 const catalogViewerService: CatalogViewerService = useCatalogViewerService()
 const toaster: Toaster = useToaster()
+const evitaValuePrinter: EvitaValuePrinter = useEvitaValuePrinter()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -68,7 +73,7 @@ const targetCatalogNameRules = [
 ]
 
 const formattedVersion = computed<string>(() => formatNumber(props.version.version))
-const formattedTimestamp = computed<string>(() => formatDateTime(props.version.commitTimestamp))
+const formattedTimestamp = computed<string>(() => formatDateTime(props.version.commitTimestamp, evitaValuePrinter))
 
 onMounted(async () => {
     try {

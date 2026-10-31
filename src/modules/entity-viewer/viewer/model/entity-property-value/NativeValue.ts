@@ -1,17 +1,15 @@
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
 import type { EvitaValue } from '@/modules/database-driver/data-type/EvitaValue'
-import { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
-import { LocalDateTime } from '@/modules/database-driver/data-type/LocalDateTime'
-import { Range } from '@/modules/database-driver/data-type/Range'
-import { Locale } from '@/modules/database-driver/data-type/Locale'
-import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
-import { LocalDate } from '@/modules/database-driver/data-type/LocalDate'
-import { LocalTime } from '@/modules/database-driver/data-type/LocalTime'
-import { Predecessor } from '@/modules/database-driver/data-type/Predecessor'
-import { DateTimeRange } from '@/modules/database-driver/data-type/DateTimeRange'
-import type { PrettyPrintable } from '@/modules/database-driver/data-type/PrettyPrintable'
-import { Currency } from '@/modules/database-driver/data-type/Currency'
-import { Attributes } from '@/modules/database-driver/request-response/data/Attributes'
+import type { BigDecimal } from '@/modules/database-driver/data-type/BigDecimal'
+import type { LocalDateTime } from '@/modules/database-driver/data-type/LocalDateTime'
+import type { Range } from '@/modules/database-driver/data-type/Range'
+import type { Locale } from '@/modules/database-driver/data-type/Locale'
+import type { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
+import type { LocalDate } from '@/modules/database-driver/data-type/LocalDate'
+import type { LocalTime } from '@/modules/database-driver/data-type/LocalTime'
+import type { Currency } from '@/modules/database-driver/data-type/Currency'
+import { serializeJsonWithBigInt } from '@/utils/JsonUtil'
+import { isPlainObjectOrArray } from '@/utils/object'
 
 /**
  * Represents a single entity property value that is a scalar (native to JavaScript). Cannot be an array, each array item
@@ -48,39 +46,19 @@ export class NativeValue extends EntityPropertyValue {
         return this.delegate == undefined
     }
 
-    override toPrettyPrintString(): string {
-        if(typeof this.delegate === 'bigint' || typeof this.delegate === 'boolean' || typeof this.delegate === 'number' || typeof this.delegate === 'string' || typeof this.delegate === 'symbol' || typeof this.delegate === 'undefined')
-            return this.delegate?.toString() ?? ''
-        if (this.isPrettyPrintable(this.delegate)) {
-            return (this.delegate as PrettyPrintable).getPrettyPrintableString()
-        } else {
-            return this.toPreviewString()
-        }
-    }
-
+    /**
+     * Plain objects and arrays (complex data, JSON) are serialized to JSON, `bigint`-safe as a precaution. Anything
+     * else, primitives and the driver's data types alike, prints its `toString()`; other non-plain objects (`Map`,
+     * Immutable collections) are not supported values and would print their `toString()` too.
+     */
     toPreviewString(): string {
-        if (this.delegate === undefined) {
+        if (this.delegate == undefined) {
             return this.emptyEntityPropertyValuePlaceholder
-        } else if (this.delegate instanceof Array) {
-            return JSON.stringify(this.delegate)
-        } else if (
-            this.delegate instanceof LocalDateTime ||
-            this.delegate instanceof BigDecimal ||
-            this.delegate instanceof Locale ||
-            this.delegate instanceof Currency ||
-            this.delegate instanceof OffsetDateTime ||
-            this.delegate instanceof LocalDate ||
-            this.delegate instanceof LocalTime ||
-            this.delegate instanceof Predecessor ||
-            this.delegate instanceof DateTimeRange ||
-            this.delegate instanceof Attributes
-        ) {
-            return this.delegate.toString()
-        } else if (this.delegate instanceof Object) {
-            return JSON.stringify(this.delegate)
-        } else {
-            return this.delegate.toString()
         }
+        if (isPlainObjectOrArray(this.delegate)) {
+            return serializeJsonWithBigInt(this.delegate)
+        }
+        return String(this.delegate)
     }
 
     toRawString(): string {
@@ -89,9 +67,5 @@ export class NativeValue extends EntityPropertyValue {
 
     toRawRepresentation(): EvitaValue {
         return this.delegate
-    }
-
-    isPrettyPrintable(obj: unknown): obj is PrettyPrintable {
-        return obj != null && typeof obj === 'object' && 'getPrettyPrintableString' in obj
     }
 }

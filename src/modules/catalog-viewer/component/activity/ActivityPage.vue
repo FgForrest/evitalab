@@ -38,7 +38,12 @@ import {
     notApplicable,
     share
 } from '@/utils/statisticsFormatting'
+import {
+    EvitaValuePrinter,
+    useEvitaValuePrinter
+} from '@/modules/value-presentation/service/EvitaValuePrinter'
 
+const evitaValuePrinter: EvitaValuePrinter = useEvitaValuePrinter()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -143,7 +148,7 @@ const countingSince = computed<string>(() => {
     const since = snapshot.value?.activity?.countingSince
     return since == undefined
         ? notApplicable()
-        : t('catalogViewer.activity.countingSince', { since: formatDateTime(since) })
+        : t('catalogViewer.activity.countingSince', { since: formatDateTime(since, evitaValuePrinter) })
 })
 
 const durability = computed<DurabilityStatistics | undefined>(() => snapshot.value?.durability)
@@ -232,9 +237,9 @@ const durabilityProperties = computed<Property[]>(() => {
             t('catalogViewer.activity.durability.lastCheckpoint'),
             new PropertyValue(
                 checkpointAge.value == undefined
-                    ? formatDateTime(statistics.lastCheckpointAt)
+                    ? formatDateTime(statistics.lastCheckpointAt, evitaValuePrinter)
                     : t('catalogViewer.activity.durability.lastCheckpointValue', {
-                        when: formatDateTime(statistics.lastCheckpointAt),
+                        when: formatDateTime(statistics.lastCheckpointAt, evitaValuePrinter),
                         age: checkpointAge.value
                     })
             ),

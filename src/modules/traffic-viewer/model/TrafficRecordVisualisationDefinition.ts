@@ -1,5 +1,6 @@
 import { List as ImmutableList } from 'immutable'
 import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTime'
+import type { EvitaValuePrinter } from '@/modules/value-presentation/service/EvitaValuePrinter'
 import { Duration } from 'luxon'
 import { i18n } from '@/vue-plugins/i18n'
 import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
@@ -98,12 +99,15 @@ export class MetadataItem {
         )
     }
 
-    static created(created: OffsetDateTime): MetadataItem {
+    /**
+     * Displays the creation timestamp printed by the given printer; the raw value is copied to the clipboard.
+     */
+    static created(created: OffsetDateTime, evitaValuePrinter: EvitaValuePrinter): MetadataItem {
         return new MetadataItem(
             metadataItemCreatedIdentifier,
             'mdi-clock-outline',
             i18n.global.t('trafficViewer.recordHistory.record.type.common.metadata.item.created.tooltip'),
-            created.getPrettyPrintableString(),
+            evitaValuePrinter.print(created),
             MetadataItemSeverity.Info,
             undefined,
             (ctx: TrafficRecordMetadataItemContext): void => {

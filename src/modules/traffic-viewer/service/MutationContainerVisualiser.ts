@@ -1,4 +1,5 @@
 import { TrafficRecordVisualiser } from '@/modules/traffic-viewer/service/TrafficRecordVisualiser'
+import type { EvitaValuePrinter } from '@/modules/value-presentation/service/EvitaValuePrinter'
 import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { TrafficRecordVisualisationContext } from '../model/TrafficRecordVisualisationContext'
 import {
@@ -14,6 +15,13 @@ import { MutationContainer } from '@/modules/database-driver/request-response/tr
  * Visualises mutation record.
  */
 export class MutationContainerVisualiser extends TrafficRecordVisualiser<MutationContainer> {
+
+    private readonly evitaValuePrinter: EvitaValuePrinter
+
+    constructor(evitaValuePrinter: EvitaValuePrinter) {
+        super()
+        this.evitaValuePrinter = evitaValuePrinter
+    }
 
     canVisualise(trafficRecord: TrafficRecord): boolean {
         return trafficRecord instanceof MutationContainer
@@ -44,7 +52,7 @@ export class MutationContainerVisualiser extends TrafficRecordVisualiser<Mutatio
         if (visualisedSessionRecord == undefined) {
             defaultMetadata.push(MetadataItem.sessionId(trafficRecord.sessionId))
         }
-        defaultMetadata.push(MetadataItem.created(trafficRecord.created))
+        defaultMetadata.push(MetadataItem.created(trafficRecord.created, this.evitaValuePrinter))
         defaultMetadata.push(MetadataItem.finishedStatus(trafficRecord.finishedWithError))
         defaultMetadata.push(MetadataItem.duration(trafficRecord.duration, [20, 60]))
         defaultMetadata.push(MetadataItem.ioFetchedSizeBytes(trafficRecord.ioFetchedSizeBytes))

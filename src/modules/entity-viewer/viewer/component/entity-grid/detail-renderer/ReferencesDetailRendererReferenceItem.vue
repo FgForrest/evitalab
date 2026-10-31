@@ -14,7 +14,12 @@ import {
 import { Property } from '@/modules/base/model/properties-table/Property'
 import { PropertyValue } from '@/modules/base/model/properties-table/PropertyValue'
 import VPropertiesTable from '@/modules/base/component/VPropertiesTable.vue'
+import {
+    EntityPropertyValuePrinter,
+    useEntityPropertyValuePrinter
+} from '@/modules/entity-viewer/viewer/service/EntityPropertyValuePrinter'
 
+const entityPropertyValuePrinter: EntityPropertyValuePrinter = useEntityPropertyValuePrinter()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -39,7 +44,7 @@ const targetAttributes = computed<[string, string][]>(() => {
     const attributes: [string, string][] = []
     if (props.reference.targetRepresentativeAttributes != undefined) {
         for (const [name, value] of props.reference.targetRepresentativeAttributes) {
-            attributes.push([name, value.toPreviewString()])
+            attributes.push([name, entityPropertyValuePrinter.printItem(value)])
         }
     }
     return attributes

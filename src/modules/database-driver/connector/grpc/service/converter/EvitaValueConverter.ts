@@ -111,11 +111,13 @@ export class EvitaValueConverter {
                 case GrpcEvitaDataType.BYTE:
                 case GrpcEvitaDataType.BOOLEAN:
                 case GrpcEvitaDataType.INTEGER:
-                case GrpcEvitaDataType.LONG:
                 case GrpcEvitaDataType.STRING:
                 case GrpcEvitaDataType.SHORT:
                 case GrpcEvitaDataType.CHARACTER:
                     return objectValue as object
+                case GrpcEvitaDataType.LONG:
+                    // sent as a string (`jstype = JS_STRING`), kept as `bigint` like long arrays and ranges
+                    return BigInt(objectValue as string)
                 case GrpcEvitaDataType.BIG_DECIMAL:
                     return EvitaValueConverter.convertGrpcBigDecimal(objectValue as GrpcBigDecimal)
                 case GrpcEvitaDataType.BIG_DECIMAL_ARRAY:
@@ -149,12 +151,12 @@ export class EvitaValueConverter {
                         objectValue as GrpcLongNumberRangeArray
                     )
                 case GrpcEvitaDataType.SHORT_NUMBER_RANGE:
-                    return EvitaValueConverter.convertGrpcShortNumberRangeArray(
-                        objectValue as GrpcIntegerNumberRangeArray
-                    )
-                case GrpcEvitaDataType.SHORT_ARRAY:
                     return EvitaValueConverter.convertGrpcShortNumberRange(
                         objectValue as GrpcIntegerNumberRange
+                    )
+                case GrpcEvitaDataType.SHORT_ARRAY:
+                    return EvitaValueConverter.convertGrpcIntegerArray(
+                        objectValue as GrpcIntegerArray
                     )
                 case GrpcEvitaDataType.LOCALE:
                     return EvitaValueConverter.convertGrpcLocale(objectValue as GrpcLocale)
@@ -165,8 +167,9 @@ export class EvitaValueConverter {
                         objectValue as GrpcIntegerNumberRangeArray
                     )
                 case GrpcEvitaDataType.CHARACTER_ARRAY:
-                    return EvitaValueConverter.convertGrpcIntegerArray(
-                        objectValue as GrpcIntegerArray
+                    // evitaDB encodes `Character[]` as a string array, there is no dedicated message
+                    return EvitaValueConverter.convertGrpcStringArray(
+                        objectValue as GrpcStringArray
                     )
                 case GrpcEvitaDataType.CURRENCY_ARRAY:
                     return EvitaValueConverter.convertGrpcCurrencyArray(
@@ -486,7 +489,7 @@ export class EvitaValueConverter {
     }
 
     static convertGrpcLongNumberRange(value: GrpcLongNumberRange): Range<bigint> {
-        if (EvitaValueConverter.checkNumberRangeValidity(value.from, value.to))
+        if (!EvitaValueConverter.checkNumberRangeValidity(value.from, value.to))
             throw new Error('LongRangeNumber has undefined prop from and to')
         return new BigintNumberRange(value.from, value.to)
     }
@@ -494,7 +497,7 @@ export class EvitaValueConverter {
     static convertGrpcIntegerNumberRange(
         value: GrpcIntegerNumberRange
     ): Range<number> {
-        if (EvitaValueConverter.checkNumberRangeValidity(value.from, value.to))
+        if (!EvitaValueConverter.checkNumberRangeValidity(value.from, value.to))
             throw new Error('IntegerRangeNumber has undefined prop from and to')
         return new IntegerRange(value.from, value.to)
     }
@@ -502,7 +505,7 @@ export class EvitaValueConverter {
     static convertGrpcShortNumberRange(
         value: GrpcIntegerNumberRange
     ): Range<number> {
-        if (EvitaValueConverter.checkNumberRangeValidity(value.from, value.to))
+        if (!EvitaValueConverter.checkNumberRangeValidity(value.from, value.to))
             throw new Error('ShortRangeNumber has undefined prop from and to')
         return new IntegerRange(value.from, value.to)
     }
@@ -510,7 +513,7 @@ export class EvitaValueConverter {
     static convertGrpcByteNumberRange(
         value: GrpcIntegerNumberRange
     ): Range<number> {
-        if (EvitaValueConverter.checkNumberRangeValidity(value.from, value.to))
+        if (!EvitaValueConverter.checkNumberRangeValidity(value.from, value.to))
             throw new Error('ByteRangeNumber has undefined prop from and to')
         return new IntegerRange(value.from, value.to)
     }
@@ -735,27 +738,25 @@ export class EvitaValueConverter {
         return ImmutableList(uuids)
     }
 
+    /**
+     * Zone-less values are sent as an instant in the UTC offset, they must be read in that offset, not in the viewer's
+     * time zone. The ISO forms match what the GraphQL API sends for the same values.
+     */
     static convertGrpcLocalDate(offsetDateTime: GrpcOffsetDateTime): LocalDate {
         if (!offsetDateTime.timestamp) {
             throw new Error('Missing prop timestamp')
         }
-        const localDate: LocalDate = new LocalDate(
-            DateTime.fromSeconds(
-                Number(offsetDateTime.timestamp.seconds)
-            ).toISODate()
-        )
-        return localDate
+        return new LocalDate(EvitaValueConverter.toDataItemDateTime(offsetDateTime).toISODate()!)
     }
 
     static convertGrpcLocalDateTime(offsetDateTime: GrpcOffsetDateTime): LocalDateTime {
         if (!offsetDateTime.timestamp) {
             throw new Error('Missing prop timestamp')
         }
-        return new LocalDateTime(
-            DateTime.fromSeconds(
-                Number(offsetDateTime.timestamp.seconds)
-            ).toISO()
-        )
+        return new LocalDateTime(EvitaValueConverter.stripRedundantFractionZeros(
+            EvitaValueConverter.toDataItemDateTime(offsetDateTime)
+                .toISO({ suppressMilliseconds: true, includeOffset: false })!
+        ))
     }
 
     static convertGrpcOffsetDateTime(
@@ -781,14 +782,17 @@ export class EvitaValueConverter {
         } as GrpcOffsetDateTime
     }
 
+    /**
+     * See {@link convertGrpcLocalDate}.
+     */
     static convertGrpcLocalTime(grpcTime: GrpcOffsetDateTime): LocalTime {
         if (!grpcTime.timestamp) {
             throw new Error('Missing prop timestamp')
         }
-        const localTime: LocalTime = new LocalTime(
-            DateTime.fromSeconds(Number(grpcTime.timestamp.seconds)).toISOTime()
-        )
-        return localTime
+        return new LocalTime(EvitaValueConverter.stripRedundantFractionZeros(
+            EvitaValueConverter.toDataItemDateTime(grpcTime)
+                .toISOTime({ suppressMilliseconds: true, includeOffset: false })!
+        ))
     }
 
     private static convertGrpcTimestamp(grpcTimestamp: GrpcTimestamp): Timestamp {
@@ -822,10 +826,7 @@ export class EvitaValueConverter {
         from: number | bigint | undefined,
         to: number | bigint | undefined
     ): boolean {
-        if (!from && !to) {
-            return false
-        } else {
-            return true
-        }
+        // `0` is a valid range end, only a missing end counts
+        return from != undefined || to != undefined
     }
 }

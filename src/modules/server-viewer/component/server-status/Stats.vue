@@ -8,7 +8,12 @@ import { PropertyValue } from '@/modules/base/model/properties-table/PropertyVal
 import { Duration } from 'luxon'
 import { KeywordValue } from '@/modules/base/model/properties-table/KeywordValue'
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
+import {
+    EvitaValuePrinter,
+    useEvitaValuePrinter
+} from '@/modules/value-presentation/service/EvitaValuePrinter'
 
+const evitaValuePrinter: EvitaValuePrinter = useEvitaValuePrinter()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -19,7 +24,7 @@ const stats = computed<Property[]>(() => {
     const stats: Property[] = [
         new Property(
             t('serverViewer.serverStatus.stats.started'),
-            new PropertyValue(props.serverStatus.started.getPrettyPrintableString())
+            new PropertyValue(evitaValuePrinter.print(props.serverStatus.started))
         ),
         new Property(
             t('serverViewer.serverStatus.stats.uptime'),

@@ -85,6 +85,10 @@ case — injectable collaborators. Injectables are services *because* they are d
 operations, not the other way round: **a `service/` file need not be a class and need not have an
 injection key.** Plain function modules belong here too (`code-editor/service/formatJson.ts`,
 `console/result-visualiser/service/utils/schemaMatching.ts`).
+Interfaces that describe an operation rather than a thing go here as well, next to their implementations
+(`notification/service/Toaster.ts`, `keymap/service/Keymap.ts`, `value-presentation/service/ValuePrinter.ts`).
+
+**`composable/` — Vue composables (`useX`)**, stateful or not (`base/composable/data-grid/useDataGridOptions.ts`).
 
 **`exception/` — error types, and classifying errors** (`isConnectivityError`, `ErrorTransformer`).
 Nothing else. Do not file something there merely because errors are what write to it — that is

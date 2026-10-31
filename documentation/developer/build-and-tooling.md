@@ -189,11 +189,7 @@ bridges the generated `.eslintrc-auto-import.json` globals via
 
 The lint ruleset is **green (zero problems)** and enforced in CI via
 `yarn lint:check` (non-fixing). Keep it there: prefer precise types or
-`unknown` + narrowing over `any`. There is a single justified
-`no-explicit-any` disable-block in
-`EntityGridColumnHeader.vue` for the Vuetify `#headers` slot bindings, whose
-types (`InternalDataTableHeader`, `IconValue`) are not exported through any
-resolvable Vuetify entry point.
+`unknown` + narrowing over `any`.
 
 ## gRPC client generation
 

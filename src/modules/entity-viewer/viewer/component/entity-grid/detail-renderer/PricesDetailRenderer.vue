@@ -11,7 +11,11 @@ import {
     useEntityViewerService,
 } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
 import { EntityPropertyValue } from '@/modules/entity-viewer/viewer/model/EntityPropertyValue'
-import { PriceInnerRecordHandling } from '@/modules/entity-viewer/viewer/model/PriceInnerRecordHandling'
+import { PriceInnerRecordHandling } from '@/modules/database-driver/data-type/PriceInnerRecordHandling'
+import {
+    EvitaValuePrinter,
+    useEvitaValuePrinter
+} from '@/modules/value-presentation/service/EvitaValuePrinter'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import { Property } from '@/modules/base/model/properties-table/Property'
@@ -63,6 +67,7 @@ type FilterData = {
 }
 
 const entityViewerService: EntityViewerService = useEntityViewerService()
+const evitaValuePrinter: EvitaValuePrinter = useEvitaValuePrinter()
 const { t } = useI18n()
 
 const props = withDefaults(
@@ -94,7 +99,7 @@ const entityPricingProperties = computed<Property[]>(() => [
     new Property(
         t('entityViewer.grid.priceRenderer.label.priceInnerRecordHandling'),
         new PropertyValue(
-            new KeywordValue(priceInnerRecordHandling.value)
+            new KeywordValue(evitaValuePrinter.printPriceInnerRecordHandling(priceInnerRecordHandling.value))
         )
     )
 ])

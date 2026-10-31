@@ -1,10 +1,9 @@
 import { UnexpectedError } from '@/modules/base/exception/UnexpectedError'
-import type { PrettyPrintable } from '@/modules/database-driver/data-type/PrettyPrintable'
 
 /**
  * Range type that envelopes {@link Number} types.
  */
-export abstract class Range<T> implements PrettyPrintable {
+export abstract class Range<T> {
     protected from?: T
     protected to?: T
 
@@ -21,8 +20,6 @@ export abstract class Range<T> implements PrettyPrintable {
     }
 
     abstract getRangeValues(): [T|undefined, T|undefined]
-
-    abstract getPrettyPrintableString(): string;
 
     abstract toString(): string;
 }

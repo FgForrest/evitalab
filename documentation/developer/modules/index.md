@@ -14,7 +14,7 @@ Typical inner structure of a module:
 <module>/
 ├── <Module>ModuleRegistrar.ts   # optional, only when the module provides/injects DI services
 ├── component/                   # Vue components of the module
-├── composable/                  # optional — Vue composables (`useX`) that own reactive state for a component tree
+├── composable/                  # optional — Vue composables (`useX`), e.g. reactive state for a component tree
 ├── model/                       # the module's vocabulary — types, enums, constant data
 ├── exception/                   # error types, and error classification — nothing else
 ├── service/                     # behavior over the model — injectable services and plain functions
@@ -48,8 +48,8 @@ of their own.
 
 ## Generic modules
 
-Core evitaLab infrastructure. `config`, `storage`, `connection`, `database-driver` and `workspace`
-are registered first in `src/modules/modules.ts`; `notification` sits among the feature modules
+Core evitaLab infrastructure. `config`, `storage`, `connection`, `database-driver`, `value-presentation` and
+`workspace` are registered first in `src/modules/modules.ts`; `notification` sits among the feature modules
 because it needs the error viewer's tab factory.
 
 | Module | Purpose |
@@ -58,6 +58,7 @@ because it needs the error viewer's tab factory.
 | [`storage`](storage.md) | Persistent client-side storage (`LabStorage` over local storage, `LabServerDataCache` over IndexedDB) |
 | [`connection`](connection.md) | Connection to an evitaDB server — the `Connection` model and how the active one is resolved |
 | [`database-driver`](database-driver.md) | All communication with evitaDB (`EvitaClient` and friends, `DataCacheRefresher`) — deep-dive: [database driver](../database-driver.md) |
+| [`value-presentation`](value-presentation.md) | Human-readable printing of evitaDB values — the injectable `EvitaValuePrinter` (one printer per `Scalar`, translated enums), `ValuePrinter` / `ValueEditor` interfaces |
 | [`workspace`](workspace.md) | Overall UI structure: tabs, panels, status bar — deep-dive: [workspace & tabs](../workspace-and-tabs.md) |
 | [`notification`](notification.md) | Toast notifications — `Toaster`, with local and desktop-IPC implementations |
 | [`keymap`](keymap.md) | Keyboard shortcuts — the `Command` enum, mappings and the scoped `Keymap` service |
@@ -112,5 +113,9 @@ User-facing features. Each one typically contributes one or more tab types and/o
   `connection-explorer` needs thirteen of them and is therefore registered last.
 - Abstract modules must not depend on feature modules.
 - The `base` module must not depend on any other module.
+- `value-presentation` depends only on `database-driver` (types and enums), `base/exception` and `@/vue-plugins/i18n` (plus
+  `src/utils`, `@/ModuleRegistrar` / `@/ModuleContextBuilder` and third-party libraries);
+  `database-driver` and `base` must never import it. Both directions are enforced by `no-restricted-imports`
+  overrides in `eslint.config.mjs` — the only module boundaries checked by a tool.
 - Cross-module access goes through injected services, never by reaching into another module's
   internal state.

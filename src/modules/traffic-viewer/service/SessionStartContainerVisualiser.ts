@@ -1,4 +1,5 @@
 import { TrafficRecordVisualiser } from '@/modules/traffic-viewer/service/TrafficRecordVisualiser'
+import type { EvitaValuePrinter } from '@/modules/value-presentation/service/EvitaValuePrinter'
 import { TrafficRecord } from '@/modules/database-driver/request-response/traffic-recording/TrafficRecord'
 import { TrafficRecordVisualisationContext } from '../model/TrafficRecordVisualisationContext'
 import {
@@ -27,12 +28,15 @@ export class SessionStartContainerVisualiser extends TrafficRecordVisualiser<Ses
 
     private readonly workspaceService: WorkspaceService
     private readonly trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory
+    private readonly evitaValuePrinter: EvitaValuePrinter
 
     constructor(workspaceService: WorkspaceService,
-                trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory) {
+                trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory,
+                evitaValuePrinter: EvitaValuePrinter) {
         super()
         this.workspaceService = workspaceService
         this.trafficRecordHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
+        this.evitaValuePrinter = evitaValuePrinter
     }
 
     canVisualise(trafficRecord: TrafficRecord): boolean {
@@ -58,7 +62,7 @@ export class SessionStartContainerVisualiser extends TrafficRecordVisualiser<Ses
     private constructMetadata(trafficRecord: SessionStartContainer): MetadataGroup[] {
         const defaultMetadata: MetadataItem[] = []
 
-        defaultMetadata.push(MetadataItem.created(trafficRecord.created))
+        defaultMetadata.push(MetadataItem.created(trafficRecord.created, this.evitaValuePrinter))
         defaultMetadata.push(new MetadataItem(
             'noStatistics',
             'mdi-alert-outline',

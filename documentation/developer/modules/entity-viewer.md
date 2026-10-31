@@ -17,12 +17,12 @@ Everything sits under `viewer/`:
 
 | Path | What's in it |
 |------|--------------|
-| `component/entity-grid/` | The grid itself — `EntityGrid.vue`, cells, and `detail-renderer/` |
+| `component/entity-grid/` | The grid itself — `EntityGrid.vue` (adapts the result to the generic `VDataGrid`), the cell content `EntityGridCell.vue`, and `detail-renderer/` |
 | `component/entity-property-selector/` | Choosing which properties become columns |
-| `service/` | `EntityViewerService` + the query abstraction (below), `EntityGridCellMenuFactory` |
+| `service/` | `EntityViewerService` + the query abstraction (below) incl. `GraphQLValueConverter`, `EntityGridCellMenuFactory`, the injectable `EntityPropertyValuePrinter` (human-readable values, below) |
 | `service/entity-property-value-formatter/` | `Raw`, `Json`, `Xml` formatters behind `EntityPropertyValueFormatter` |
 | `model/` | `EntityPropertyKey`, `EntityPropertyDescriptor`, `EntityPropertyType`, `FlatEntity`, `GridHeader`, `QueryLanguage`, `QueryResult`, `QueryPriceMode`, `SelectedScope`, … |
-| `model/entity-property-value/` | `EntityPrice(s)`, `EntityReferences`, `EntityReferenceValue`, `EntityReferenceAttributes`, `NativeValue` |
+| `model/entity-property-value/` | `EntityPrice(s)`, `EntityReferences`, `EntityReferenceValue`, `EntityReferenceAttributes`, `NativeValue`; the printing context `EntityViewerPrintContext` |
 | `model/entity-grid/` | `EntityGridCellMenuItemType`, `propertyMutationHistoryContainer` (property type → mutation history container) |
 | `history/` | `FilterByHistoryKey`/`Record`, `OrderByHistoryKey`/`Record` |
 | `keymap/scopes.ts` | The viewer's shortcut scopes |
@@ -78,13 +78,32 @@ throw `UnexpectedError` the moment `VActionTooltip` calls `prettyPrint` on it. P
 [design language](../design-language.md), a button without a command therefore uses a plain
 `VTooltip` rather than `VActionTooltip`.
 
+## The grid
+
+`EntityGrid.vue` renders the result through the generic [`VDataGrid`](../ui-components.md#data-grid). It maps
+`displayedGridHeaders` to `DataGridColumn`s (header icons by property type, `mdi-translate` for localized
+properties, `cellIconWidth` for the columns whose cells prepend an icon) and passes the `FlatEntity` rows as they
+are — the rows keep the `EntityPropertyValue`s, so the original values stay available (e.g. for a future edit
+mode). The row key is the entity primary key, which every row carries even when its column is hidden.
+
+Each column's `printer` is `useEntityPropertyValuePrinter().forColumn(descriptor)` (see
+[Human-readable values](#human-readable-values)), and the grid gets `:context="printContext"` — a `computed`
+`{ priceType }` (`EntityViewerPrintContext`). A price type switch replaces the context object, so the grid re-prints
+the cells and re-measures the column widths. `EntityGridCell.vue` is
+the `#cell` slot content: it receives the printed `text` and only decorates it (prepended icon, placeholders
+for null / empty array / no locale, tooltip, copy, context menu). It fills the whole `td` and carries the
+clickable cursor and hover, because only the entity viewer knows which cells are clickable.
+
+The grid binds the stored `pageNumber`, so a restored or shared tab opens on its stored page (with
+`VDataTableServer` it always reopened on page 1).
+
 ## Cell interaction model
 
-`EntityGridCell.vue` supports three pointer gestures:
+`EntityGridCell.vue` and the grid together support three pointer gestures:
 
 | Gesture | Effect |
 |---|---|
-| Left click | opens the cell detail sidepanel / navigates (`EntityGrid.handlePropertyClicked`) |
+| Left click | the grid's `click:cell` → opens the cell detail sidepanel and selects the cell / navigates (`EntityGrid.handlePropertyClicked`) |
 | Middle click | copies the printable value; **Shift + middle click** copies the raw value |
 | Right click | opens the cell's context menu at the cursor |
 
@@ -136,7 +155,7 @@ query identical to the visible one.
 
 `EntityPropertyDescriptor.isSortable(scopes)` is the **single source of truth**. It is evaluated once per
 scope selection by `EntityViewer.initializeGridHeaders`, stored in `GridHeader.sortable`, and only
-mirrored by `EntityGridColumnHeader.vue` (`props.column.sortable`) — the header never re-derives it.
+mirrored by the grid header (`DataGridColumn.sortable`) — the header never re-derives it.
 
 With `S` = the scopes currently checked in the scope selector (`selectedScopes` filtered to
 `value === true`, exposed as the `activeScopes` computed):
@@ -189,9 +208,8 @@ input stays unadorned.
   the query.
 - Clicking a column header clears the flag and regenerates `orderByCode` from the new sort, replacing any
   hand-written text. This hand-off is the only thing that takes ownership back.
-- Every other `update:options` emit from `VDataTableServer` (mount, page, page size) leaves `sortBy`
-  unchanged, and `gridUpdated` guards on an **actual sort change**, so a hand-written order by is never
-  overwritten.
+- A page or page size change from the grid leaves `sortBy` unchanged, and `gridUpdated` guards on an **actual
+  sort change**, so a hand-written order by is never overwritten.
 - Switching the query language clears `filterByCode`/`orderByCode` (language-specific source text) and
   resets the flag, but deliberately **keeps `sortBy`** — it is language-agnostic — and immediately
   regenerates the order by in the new language.
@@ -200,10 +218,8 @@ Because `gridUpdated` no longer rebuilds the order by on every emit, **every sit
 programmatically must call `rebuildOrderByFromSortBy` itself**; by the time the change echoes back
 through `update:options` the two are already equal and the guard suppresses the rebuild.
 
-`EntityGrid.vue` binds `:sort-by` **one-way** on purpose. Adding an `update:sortBy` listener would put
-Vuetify's `useProxiedModel` into controlled mode, where the parent must write the value back
-synchronously — which would make every user sort look identical to a programmatic one and defeat the
-guard above.
+`EntityGrid.vue` binds `:sort-by` **one-way**: `VDataGrid` emits a sort only when the user clicks a header, never
+as an echo of the prop, which is what lets `gridUpdated` tell user sorts apart from programmatic ones.
 
 ### Persistence
 
@@ -222,6 +238,32 @@ only the invalidated entries — sorts that stay valid survive.
 `QueryBuilder` + `QueryExecutor` are implemented twice — `EvitaQLQueryBuilder`/`EvitaQLQueryExecutor`
 and `GraphQLQueryBuilder`/`GraphQLQueryExecutor` — so the grid is language-agnostic. Anything added to
 one implementation almost always has to be added to the other.
+
+**Both executors store the same model values.** The evitaQL path gets the driver's data types from the gRPC
+converter (`EvitaValueConverter`). The GraphQL path receives wire JSON (ISO strings, `Long`/`BigDecimal` as strings,
+ranges as `[from, to]` tuples, predecessors as their primary key), which `GraphQLValueConverter`
+(`service/GraphQLValueConverter.ts`) converts into the same driver types before wrapping: an exhaustive
+`{ [S in Scalar]: converter }` table (a new `Scalar` does not compile without one), arrays become `ImmutableList`
+like on the gRPC path. The scalar comes from the schema found under the key the builder requested:
+
+| Values | Response key | Schema |
+|---|---|---|
+| entity attributes, associated data | camelCase | `entitySchema.attributes` / `.associatedData` by camelCase; the grid key is the schema name |
+| parent's representative attributes | camelCase | `entitySchema.attributes` by camelCase |
+| reference's own attributes | camelCase | `classification.referenceSchema.attributes` by camelCase |
+| target entity's representative attributes | camelCase | the referenced entity's schema, loaded for managed references in the executor's `queryCatalog` callback |
+
+GraphQL field names are always the camelCase variants — a schema name such as `battery-life` is not a valid GraphQL
+name. A value whose schema cannot be found stays as it was sent; a `null` attribute or associated data value is left
+out, as gRPC omits a missing value. Static properties are converted explicitly: `scope` (`LIVE`/`ARCHIVED`) and
+`priceInnerRecordHandling` into the driver enums (the evitaQL executor stores `entity.scope` as the enum too), and the
+locales from the catalog's locale enum (`cs_CZ`) into `Locale`s. The builder selects `allLocales`, the counterpart of
+the gRPC entity's `locales`: GraphQL `locales` lists only the locales requested by the query. Prices (`prices`,
+`priceForSale`) are selected with `indexed` (the field evitaDB 2024.10 renamed from `sellable`) and converted by
+`GraphQLValueConverter.convertPrice` into the same `EntityPrice` the gRPC path builds. Tests:
+`test/modules/entity-viewer/viewer/service/GraphQLValueConverter.test.ts` (every scalar, prices, and equality with the
+gRPC converter's result), `graphQLEntityConversion.test.ts` (the key naming above) and `graphQLQueryFields.test.ts`
+(the selected field names).
 
 ## References
 
@@ -248,8 +290,12 @@ fetched attributes don't leak into unselected columns.
 ### The detail sidepanel
 
 Clicking a references cell opens the detail **sidepanel** (no longer a new tab). The panel is **keyed by
-cell identity** in `EntityGrid.vue` so it fully remounts when switching cells — the detail's `provide`d
-entity/descriptor are non-reactive and would otherwise go stale, blanking the panel. Open-in-new-tab
+cell identity** (primary key + column key + a revision) in `EntityGrid.vue` so it fully remounts when switching
+cells — the detail's `provide`d entity/descriptor are non-reactive and would otherwise go stale, blanking the panel.
+The detailed cell is also the grid's `selectedCell`. When the query is re-executed, the panel looks the entity up
+by primary key: if it is still on the page it switches to the fresh row (bumping the revision, so the panel
+remounts with the new data), otherwise it closes. The highlight and the panel therefore never show different
+data. Open-in-new-tab
 lives inside the panel (whole filtered list + per item).
 
 The panel header carries a single `mdi-history` button that opens the mutation history of whatever the
@@ -266,12 +312,38 @@ the reference's group reference by default, GraphQL fetches `groupEntity { prima
 
 ### Human-readable values
 
-The type-driven formatting lives on the values themselves (`EntityPropertyValue.toPrettyPrintString()`,
-which delegates to `getPrettyPrintableString()` of the driver's data types), not in the renderers. Grid
-cells print that string bare; `MarkdownDetailRenderer` only *decorates* it — an icon plus a code span
-(`📅 \`7/27/26, 10:32:08 AM GMT+2\``), a fenced block for JSON/XML strings and complex objects, a plain
-paragraph for prose. The renderer used to carry its own `Intl` formatters, which let the two views drift
-apart for the same value; changing the shared format now moves both at once.
+`EntityPropertyValuePrinter` (`service/`) is the entity viewer's printing service. `EntityViewerModuleRegistrar`
+constructs it with the provided [`value-presentation`](value-presentation.md) `EvitaValuePrinter` and provides it
+(`entityPropertyValuePrinterInjectionKey`, `useEntityPropertyValuePrinter()`); the value objects never print
+themselves through the printer — they are constructed in many places and value objects get no services.
+
+`forColumn(descriptor)` builds the grid column's
+`DataGridValuePrinter<EntityGridValue, FlatEntity, EntityViewerPrintContext>`:
+
+- **scalar columns** — `descriptor.scalar` gives the `Scalar` (attributes and associated data from `schema.type`;
+  `primaryKey`/`version` → `Integer`, `locales` → `LocaleArray`) and the column prints the raw value (an array cell's
+  items unwrapped into a plain array) through `EvitaValuePrinter.print(value, scalar)` — the scalar decides, so an
+  `…Array` column prints `[a, b]` and a `ComplexDataObject` column JSON;
+- **enum columns** (`scope`, `priceInnerRecordHandling`) — `EvitaValuePrinter.printEntityScope` /
+  `printPriceInnerRecordHandling`; an unexpected value prints by its string form;
+- **composite columns** (prices, references, reference attributes, parent) — `print(value, context)`, which prints
+  a composite by its `toPreviewString(context)`; only prices use the context (`priceType`).
+
+A missing value and an empty array print as `''` in every column; the cell renders a placeholder instead.
+
+`print(value, context?)` prints a value without knowing its scalar: a `NativeValue` through `EvitaValuePrinter.print`
+— the runtime dispatch, which for every scalar gives the same text as the scalar dispatch (pinned per scalar by
+`test/modules/value-presentation/service/scalarRuntimeInvariant.test.ts`) — an array item by item as `[a, b]` and a
+composite by its preview. `printItem(value, context?)` prints a single value, for callers that join items on their
+own (`MarkdownDetailRenderer` joins an array with `,` and no brackets). The cell detail, the reference details
+(representative attributes) and `MarkdownDetailRenderer` print through it. `NativeValue.toPreviewString()` stays
+closer to the serialized form: JSON for plain objects and arrays, `toString()` otherwise. The enum properties show
+their translated name in the pretty-printed detail (`MarkdownDetailRenderer` asks the column printer) and in
+`PricesDetailRenderer`'s inner record handling keyword; the raw / JSON / XML views keep the model value (`Sum`,
+`live`). `MarkdownDetailRenderer` only *decorates* the printed text — an icon plus a code span
+(`📅 \`7/27/26, 10:32:08 AM GMT+2\``), a fenced block for JSON/XML strings and complex objects, a plain paragraph for
+prose. Both query languages print the same text, because both executors store the same model values (see
+[the two-language query abstraction](#the-two-language-query-abstraction)).
 
 Note that `EntityViewerService.formatEntityPropertyValue` is a **different axis** — it formats a value in
 a *code language* (raw / JSON / XML) for the code detail renderer, and is deliberately not where the
@@ -279,9 +351,8 @@ human-readable formatting belongs.
 
 ## Note for automated UI testing
 
-`agent-browser click @ref` does **not** fire the grid's `@mousedown` cell handler; dispatch native
-`mousedown` + `mouseup` + `click` (button 0) on the `td` instead. For the cell context menu, dispatch a
-native `contextmenu` event on the `td`.
+A cell opens on a plain DOM `click`, so `agent-browser click @ref` or `td.click()` works. For the cell context
+menu, dispatch a native `contextmenu` event on the cell content (`.data-grid-cell`).
 
 ## Related
 
