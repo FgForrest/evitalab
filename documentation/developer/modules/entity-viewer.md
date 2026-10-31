@@ -250,12 +250,13 @@ like on the gRPC path. The scalar comes from the schema found under the key the 
 |---|---|---|
 | entity attributes, associated data | camelCase | `entitySchema.attributes` / `.associatedData` by camelCase; the grid key is the schema name |
 | parent's representative attributes | camelCase | `entitySchema.attributes` by camelCase |
-| reference's own attributes | camelCase | `classification.referenceSchema.attributes` by camelCase |
+| reference's own attributes | camelCase | `classification.referenceSchema.attributes` by camelCase; a column's grid key is the schema name (`selectedColumnAttributeNames` maps response name → schema name) |
 | target entity's representative attributes | camelCase | the referenced entity's schema, loaded for managed references in the executor's `queryCatalog` callback |
 
 GraphQL field names are always the camelCase variants — a schema name such as `battery-life` is not a valid GraphQL
-name. A value whose schema cannot be found stays as it was sent; a `null` attribute or associated data value is left
-out, as gRPC omits a missing value. Static properties are converted explicitly: `scope` (`LIVE`/`ARCHIVED`) and
+name. A value whose schema cannot be found stays as it was sent; a `null` attribute, associated data or reference
+attribute value is left out, as gRPC omits a missing value (otherwise every row of a reference attribute column would
+show a references summary even when no reference carries the attribute). Static properties are converted explicitly: `scope` (`LIVE`/`ARCHIVED`) and
 `priceInnerRecordHandling` into the driver enums (the evitaQL executor stores `entity.scope` as the enum too), and the
 locales from the catalog's locale enum (`cs_CZ`) into `Locale`s. The builder selects `allLocales`, the counterpart of
 the gRPC entity's `locales`: GraphQL `locales` lists only the locales requested by the query. Prices (`prices`,

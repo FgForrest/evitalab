@@ -26,8 +26,11 @@ import {
  */
 export type ReferenceClassification = {
     referenceSchema: ReferenceSchema
-    /** Names of reference attributes the user selected as grid columns; only these become their own containers. */
-    selectedColumnAttributeNames: Set<string>
+    /**
+     * Reference attributes the user selected as grid columns, from their response name to their schema name; only
+     * these become their own containers, keyed by the schema name the grid columns use.
+     */
+    selectedColumnAttributeNames: Map<string, string>
     /** Names of the reference's own representative attributes; used to group and filter references. */
     representativeAttributeNames: Set<string>
 }
@@ -77,13 +80,13 @@ export abstract class QueryExecutor {
                 continue
             }
 
-            const selectedColumnAttributeNames: Set<string> = new Set<string>()
+            const selectedColumnAttributeNames: Map<string, string> = new Map<string, string>()
             for (const key of requiredData) {
                 if (key.type === EntityPropertyType.ReferenceAttributes && key.names[0] === referenceName) {
                     const attributeSchema: AttributeSchema | undefined = referenceSchema.attributes
                         .find(schema => schema.name === key.names[1])
                     if (attributeSchema != undefined) {
-                        selectedColumnAttributeNames.add(responseName(attributeSchema))
+                        selectedColumnAttributeNames.set(responseName(attributeSchema), attributeSchema.name)
                     }
                 }
             }
@@ -111,8 +114,7 @@ export abstract class QueryExecutor {
      * selected reference-attribute columns. Without this the property key is missing from the flat entity (evitaQL
      * omits absent names; GraphQL returns the references column empty but still omits the attribute columns).
      * Reference names that do have references are left untouched, so partially populated attribute columns keep their
-     * existing behaviour. Selected column names are taken verbatim from the classification, so the emitted keys mirror
-     * the ones produced for non-empty references.
+     * existing behaviour. Columns are keyed by the attribute's schema name, as for non-empty references.
      */
     protected backfillEmptyReferenceContainers(
         flattenedReferences: WritableEntityProperty[],
@@ -132,7 +134,7 @@ export abstract class QueryExecutor {
             if (existing == undefined) {
                 flattenedReferences.push([referencesKey, new EntityReferences(referenceName, [])])
             }
-            for (const attributeName of classification.selectedColumnAttributeNames) {
+            for (const attributeName of classification.selectedColumnAttributeNames.values()) {
                 const columnKey: EntityPropertyKey = EntityPropertyKey.referenceAttributes(referenceName, attributeName)
                 if (!emittedKeys.has(columnKey.toString())) {
                     flattenedReferences.push([columnKey, new EntityReferenceAttributes(referenceName, attributeName, [])])

@@ -65,6 +65,11 @@ const productSchema: EntitySchema = entitySchema(
         undefined, undefined, undefined, Cardinality.ZeroOrMore,
         [referenceAttribute('order_price', 'orderPrice', Scalar.BigDecimal)],
         [], List(), List(), List(), List(), List()
+    ), new ReferenceSchema(
+        'tags', camelCase('tags'), undefined, undefined, 'Tag', false, camelCase('tag'),
+        undefined, undefined, undefined, Cardinality.ZeroOrMore,
+        [referenceAttribute('sort_order', 'sortOrder', Scalar.Integer)],
+        [], List(), List(), List(), List(), List()
     )]
 )
 const brandSchema: EntitySchema = entitySchema([attribute('launch_date', 'launchDate', Scalar.LocalDate)], [], [])
@@ -82,7 +87,12 @@ const responseNode = {
         referencedPrimaryKey: 3,
         attributes: { orderPrice: '10.5' },
         referencedEntity: { attributes: { launchDate: '2024-07-01' } }
-    }]
+    }, {
+        referencedPrimaryKey: 4,
+        attributes: { orderPrice: null },
+        referencedEntity: { attributes: { launchDate: null } }
+    }],
+    reference_tags: []
 }
 
 const requiredData: EntityPropertyKey[] = [
@@ -91,7 +101,9 @@ const requiredData: EntityPropertyKey[] = [
     EntityPropertyKey.attributes('valid_from'),
     EntityPropertyKey.associatedData('stock_count'),
     EntityPropertyKey.references('brand'),
-    EntityPropertyKey.referenceAttributes('brand', 'order_price')
+    EntityPropertyKey.referenceAttributes('brand', 'order_price'),
+    EntityPropertyKey.references('tags'),
+    EntityPropertyKey.referenceAttributes('tags', 'sort_order')
 ]
 
 /**
@@ -169,7 +181,28 @@ describe('GraphQLQueryExecutor value conversion', () => {
         expect(reference.targetRepresentativeAttributes?.get('launchDate')?.value()).toEqual(new LocalDate('2024-07-01'))
         expect(reference.representativeReferenceAttributes?.get('orderPrice')?.value()).toEqual(new BigDecimal('10.5'))
 
-        const column = entity[EntityPropertyKey.referenceAttributes('brand', 'orderPrice').toString()] as EntityReferenceAttributes
+        expect(entity[EntityPropertyKey.referenceAttributes('brand', 'orderPrice').toString()]).toBeUndefined()
+        const column = entity[EntityPropertyKey.referenceAttributes('brand', 'order_price').toString()] as EntityReferenceAttributes
         expect(column.values[0]!.representativeAttributes.map(it => it.value())).toEqual([new BigDecimal('10.5')])
+    })
+
+    test('Should leave a missing reference attribute absent, as the evitaQL path does', async () => {
+        const entity: FlatEntity = await convert()
+        const references = entity[EntityPropertyKey.references('brand').toString()] as EntityReferences
+        const reference: EntityReferenceValue = references.references[1]!
+
+        expect(reference.targetRepresentativeAttributes?.has('launchDate') ?? false).toBe(false)
+        expect(reference.representativeReferenceAttributes?.has('orderPrice') ?? false).toBe(false)
+
+        const column = entity[EntityPropertyKey.referenceAttributes('brand', 'order_price').toString()] as EntityReferenceAttributes
+        expect(column.values.map(it => it.primaryKey)).toEqual([3])
+    })
+
+    test('Should key an empty reference attribute column by its schema name', async () => {
+        const entity: FlatEntity = await convert()
+
+        expect(entity[EntityPropertyKey.referenceAttributes('tags', 'sortOrder').toString()]).toBeUndefined()
+        const column = entity[EntityPropertyKey.referenceAttributes('tags', 'sort_order').toString()] as EntityReferenceAttributes
+        expect(column.count()).toBe(0)
     })
 })

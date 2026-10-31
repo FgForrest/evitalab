@@ -57,7 +57,7 @@ describe('QueryExecutor.buildReferenceClassifications', () => {
         const classification = (classifications as unknown as globalThis.Map<string, ReferenceClassification>).get('tags')!
 
         // only the explicitly selected reference-attribute column becomes its own container
-        expect(Array.from(classification.selectedColumnAttributeNames).sort()).toEqual(['note'])
+        expect(Array.from(classification.selectedColumnAttributeNames.keys()).sort()).toEqual(['note'])
         // the reference's own representative attributes are tracked separately for grouping/filtering
         expect(Array.from(classification.representativeAttributeNames).sort()).toEqual(['gallery', 'priority'])
         // the implicitly fetched representative attribute is NOT treated as a selected column

@@ -254,7 +254,8 @@ export class GraphQLQueryExecutor extends QueryExecutor {
                     const referenceValue: EntityReferenceValue = referenceValues[index]!
                     const attributes = referenceNode[EntityPropertyType.Attributes] || {}
                     for (const attributeName in attributes) {
-                        if (!classification.selectedColumnAttributeNames.has(attributeName)) {
+                        const columnName: string | undefined = classification.selectedColumnAttributeNames.get(attributeName)
+                        if (columnName == undefined || attributes[attributeName] == undefined) {
                             continue
                         }
                         const wrappedValue: NativeValue | NativeValue[] = this.convertAndWrap(
@@ -268,10 +269,10 @@ export class GraphQLQueryExecutor extends QueryExecutor {
                             referenceValue.targetRepresentativeAttributes,
                             referenceValue.groupPrimaryKey
                         )
-                        let values = valuesByColumn.get(attributeName)
+                        let values = valuesByColumn.get(columnName)
                         if (values == undefined) {
                             values = []
-                            valuesByColumn.set(attributeName, values)
+                            valuesByColumn.set(columnName, values)
                         }
                         values.push(columnValue)
                     }
@@ -305,6 +306,9 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         const targetRepresentativeAttributes: Map<string, EntityPropertyValue> = new Map<string, EntityPropertyValue>()
         const targetAttributes = reference['referencedEntity']?.[EntityPropertyType.Attributes] || {}
         for (const attributeName in targetAttributes) {
+            if (targetAttributes[attributeName] == undefined) {
+                continue
+            }
             const wrappedValue: NativeValue | NativeValue[] = this.convertAndWrap(
                 targetAttributes[attributeName],
                 this.findAttributeByCamelCaseName(referencedEntitySchema?.attributes, attributeName)
@@ -321,7 +325,7 @@ export class GraphQLQueryExecutor extends QueryExecutor {
         if (classification != undefined && classification.representativeAttributeNames.size > 0) {
             const ownAttributes = reference[EntityPropertyType.Attributes] || {}
             for (const attributeName in ownAttributes) {
-                if (classification.representativeAttributeNames.has(attributeName)) {
+                if (classification.representativeAttributeNames.has(attributeName) && ownAttributes[attributeName] != undefined) {
                     representativeReferenceAttributes.set(attributeName, this.toSingleValue(this.convertAndWrap(
                         ownAttributes[attributeName],
                         this.findAttributeByCamelCaseName(classification.referenceSchema.attributes, attributeName)

@@ -15,7 +15,7 @@ function backfill(flattened: WritableEntityProperty[]): void {
     // the method only reads referenceName and selectedColumnAttributeNames from the classification
     const classification = {
         referenceSchema: undefined as unknown as ReferenceSchema,
-        selectedColumnAttributeNames: new Set<string>(['note']),
+        selectedColumnAttributeNames: new Map<string, string>([['note', 'note']]),
         representativeAttributeNames: new Set<string>()
     } satisfies ReferenceClassification
     const classifications = new Map<string, ReferenceClassification>([['tags', classification]])
