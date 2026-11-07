@@ -8,6 +8,7 @@ import { useI18n } from 'vue-i18n'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
+import { List } from 'immutable'
 import { EntityPropertySectionSelection } from '@/modules/entity-viewer/viewer/model/EntityPropertySectionSelection'
 import VListItemDivider from '@/modules/base/component/VListItemDivider.vue'
 import PropertySectionEmptyItem
@@ -18,8 +19,8 @@ const { t } = useI18n()
 const props = defineProps<{
     propertyType: EntityPropertyType,
     selected: EntityPropertyKey[],
-    filteredPropertyDescriptors: EntityPropertyDescriptor[],
-    propertyDescriptors: EntityPropertyDescriptor[],
+    filteredPropertyDescriptors: List<EntityPropertyDescriptor>,
+    propertyDescriptors: List<EntityPropertyDescriptor>,
     selection: EntityPropertySectionSelection
 }>()
 const emit = defineEmits<{
@@ -38,7 +39,7 @@ function resolveNewSelection() {
 
 <template>
     <VListGroup
-        v-if="propertyDescriptors.length > 0"
+        v-if="propertyDescriptors.size > 0"
         :value="propertyType"
     >
         <template #activator="{ props }">
@@ -68,19 +69,19 @@ function resolveNewSelection() {
                 </template>
 
                 <template #title>
-                    {{ t(`entityViewer.propertySelector.section.type.${propertyType || 'entity'}`) }} ({{ selected.length || 0 }}/{{ propertyDescriptors.length }})
+                    {{ t(`entityViewer.propertySelector.section.type.${propertyType || 'entity'}`) }} ({{ selected.length || 0 }}/{{ propertyDescriptors.size }})
                 </template>
             </VListItem>
         </template>
 
-        <template v-if="filteredPropertyDescriptors.length > 0">
+        <template v-if="filteredPropertyDescriptors.size > 0">
             <template
                 v-for="(property, index) in filteredPropertyDescriptors"
                 :key="property.key.toString()"
             >
                 <slot :property="property" />
                 <VListItemDivider
-                    v-if="index < filteredPropertyDescriptors.length - 1"
+                    v-if="index < filteredPropertyDescriptors.size - 1"
                     inset
                 />
             </template>

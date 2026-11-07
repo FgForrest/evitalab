@@ -1,22 +1,22 @@
 <script setup lang="ts">
 
 import { useI18n } from 'vue-i18n'
-import { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
+import { SelectableScope } from '@/modules/entity-viewer/viewer/model/SelectableScope'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 
 const { t } = useI18n()
 
 const props = defineProps<{
-    selectedScope: SelectedScope[]
+    selectedScopes: SelectableScope[]
 }>()
 
 const emit = defineEmits<{
-    (e: 'update:selected', value: SelectedScope[]): void
+    (e: 'update:selected', value: SelectableScope[]): void
 }>()
 
-const liveSelection = ref<boolean>(props.selectedScope.find(x => x.scope === EntityScope.Live)?.value ?? false)
-const archiveSelection = ref<boolean>(props.selectedScope.find(x => x.scope === EntityScope.Archive)?.value ?? false)
+const liveSelection = ref<boolean>(props.selectedScopes.find(x => x.scope === EntityScope.Live)?.selected ?? false)
+const archiveSelection = ref<boolean>(props.selectedScopes.find(x => x.scope === EntityScope.Archive)?.selected ?? false)
 
 watch(liveSelection, () => {
     updatedSelection()
@@ -28,14 +28,8 @@ watch(archiveSelection, () => {
 
 function updatedSelection(): void {
     emit('update:selected', [
-        {
-            scope: EntityScope.Live,
-            value: liveSelection.value
-        },
-        {
-            scope: EntityScope.Archive,
-            value: archiveSelection.value
-        }
+        new SelectableScope(EntityScope.Live, liveSelection.value),
+        new SelectableScope(EntityScope.Archive, archiveSelection.value)
     ])
 }
 
@@ -62,7 +56,7 @@ function updatedSelection(): void {
                                 <template #activator="{ props }">
                                     <span v-bind="props">{{ t('command.entityViewer.scopeSelector.live') }}</span>
                                 </template>
-                                {{ t('entityViewer.layerSelector.live') }}
+                                {{ t('entityViewer.scopeSelector.live') }}
                             </VTooltip>
                         </template>
                     </VCheckbox>
@@ -80,7 +74,7 @@ function updatedSelection(): void {
                                 <template #activator="{ props }">
                                     <span v-bind="props">{{ t('command.entityViewer.scopeSelector.archive') }}</span>
                                 </template>
-                                {{ t('entityViewer.layerSelector.archive') }}
+                                {{ t('entityViewer.scopeSelector.archive') }}
                             </VTooltip>
                         </template>
                     </VCheckbox>

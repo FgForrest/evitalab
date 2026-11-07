@@ -15,8 +15,7 @@ import type { TabComponentProps } from '@/modules/workspace/tab/model/TabCompone
 import type { TabComponentEvents } from '@/modules/workspace/tab/model/TabComponentEvents'
 import { EntityViewerTabParams } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabParams'
 import { EntityViewerTabData } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabData'
-import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
-import type { GridHeader } from '@/modules/entity-viewer/viewer/model/GridHeader'
+import { EntityPropertyDescriptors } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptors'
 import { QueryLanguage } from '@/modules/entity-viewer/viewer/model/QueryLanguage'
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
@@ -28,12 +27,12 @@ import VActionTooltip from '@/modules/base/component/VActionTooltip.vue'
 import EntityGrid from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGrid.vue'
 import Toolbar from '@/modules/entity-viewer/viewer/component/Toolbar.vue'
 import QueryInput from '@/modules/entity-viewer/viewer/component/QueryInput.vue'
-import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
+import { List as ImmutableList } from 'immutable'
 import { EntityAttributeSchema } from '@/modules/database-driver/request-response/schema/EntityAttributeSchema'
 import {
     provideDataLocale,
-    provideEntityPropertyDescriptorIndex,
-    provideScopes,
+    provideEntityPropertyDescriptors,
+    provideSelectedScopes,
     providePriceType,
     provideQueryFilter,
     provideQueryLanguage,
@@ -47,7 +46,7 @@ import {
 } from '@/modules/connection/workspace/status-bar/model/subject-path-status/ConnectionSubjectPath'
 import { EntityViewerDataPointer } from '@/modules/entity-viewer/viewer/model/EntityViewerDataPointer'
 import { EntityViewerTabDefinition } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabDefinition'
-import { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
+import { SelectableScope } from '@/modules/entity-viewer/viewer/model/SelectableScope'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { flattenToSingleLine } from '@/modules/code-editor/service/flattenToSingleLine'
 
@@ -77,10 +76,8 @@ defineExpose<TabComponentExpose>({
 // static data
 const title = ImmutableList.of(props.params.dataPointer.entityType)
 
-let sortedEntityPropertyKeys: string[] = []
-let entityPropertyDescriptors: EntityPropertyDescriptor[] = []
-const entityPropertyDescriptorIndex = ref<ImmutableMap<string, EntityPropertyDescriptor>>(ImmutableMap<string, EntityPropertyDescriptor>())
-provideEntityPropertyDescriptorIndex(entityPropertyDescriptorIndex)
+const entityPropertyDescriptors = ref<EntityPropertyDescriptors>(EntityPropertyDescriptors.empty())
+provideEntityPropertyDescriptors(entityPropertyDescriptors)
 // registered at setup top level on purpose: a retry does not remount the component (the tab framework keeps
 // it alive and only re-runs `initialize()`), so this registration must outlive every retry and is released
 // exactly once, in `onUnmounted`
@@ -89,7 +86,6 @@ const entitySchemaChangedCallbackId: string = entityViewerService.registerEntity
     async () => await reloadEntityPropertyDescriptors()
 )
 
-let gridHeaders: Map<string, GridHeader> = new Map<string, GridHeader>()
 let dataLocales: ImmutableList<string> = ImmutableList()
 
 // dynamic user data
@@ -139,15 +135,13 @@ const orderByOwnership = computed<'grid' | 'manual' | undefined>(() => {
     }
     return sortBy.value.length > 0 ? 'grid' : undefined
 })
-const selectedScopes = ref<SelectedScope[]>(props.data.selectedScopes ? props.data.selectedScopes : [new SelectedScope(EntityScope.Live, true), new SelectedScope(EntityScope.Archive, false)])
-provideScopes(selectedScopes)
+const selectedScopes = ref<SelectableScope[]>(props.data.selectedScopes ? props.data.selectedScopes : [new SelectableScope(EntityScope.Live, true), new SelectableScope(EntityScope.Archive, false)])
+provideSelectedScopes(selectedScopes)
 /**
  * Scopes the query is actually executed in. Sortability of grid columns is resolved against these.
  */
-const activeScopes = computed<EntityScope[]>(() => selectedScopes.value.filter(it => it.value).map(it => it.scope))
+const activeScopes = computed<EntityScope[]>(() => selectedScopes.value.filter(it => it.selected).map(it => it.scope))
 watch(selectedScopes, async () => {
-    gridHeaders = await initializeGridHeaders(entityPropertyDescriptors, activeScopes.value)
-    await updateDisplayedGridHeaders()
     await pruneSortsInvalidInSelectedScopes()
 
     await executeQueryManually()
@@ -161,10 +155,12 @@ const selectedPriceType = ref<QueryPriceMode>(props.data.priceType ? props.data.
 watch(selectedPriceType, () => executeQueryAutomatically())
 providePriceType(selectedPriceType)
 
-const displayedEntityProperties = ref<EntityPropertyKey[]>([])
-watch(displayedEntityProperties, (newValue, oldValue) => {
-    updateDisplayedGridHeaders()
-
+/**
+ * Properties displayed as grid columns, always in display order of {@link entityPropertyDescriptors} and made of
+ * its own key instances: every writer passes the keys through `EntityPropertyDescriptors.order`.
+ */
+const selectedEntityProperties = ref<EntityPropertyKey[]>([])
+watch(selectedEntityProperties, (newValue, oldValue) => {
     // re-fetch entities only if new properties were added, only in such case there could be missing data when displaying
     // the new properties
     if (newValue.length > oldValue.length) {
@@ -172,7 +168,6 @@ watch(displayedEntityProperties, (newValue, oldValue) => {
     }
 })
 
-const displayedGridHeaders = ref<GridHeader[]>([])
 const resultEntities = ref<FlatEntity[]>([])
 const totalResultCount = ref<number>(0)
 
@@ -186,7 +181,7 @@ const currentData = computed<EntityViewerTabData>(() => {
         filterByCode.value,
         orderByCode.value,
         selectedDataLocale.value,
-        displayedEntityProperties.value,
+        selectedEntityProperties.value,
         pageSize.value,
         pageNumber.value,
         selectedScopes.value,
@@ -199,8 +194,7 @@ watch(currentData, (data) => {
 })
 
 /**
- * Loads everything the grid needs before it can render anything — data locales, property descriptors, grid
- * headers — and marks the tab ready. On any failure, including one of the calls exceeding the driver's call
+ * Loads everything the grid needs before it can render anything — data locales, property descriptors — and marks the tab ready. On any failure, including one of the calls exceeding the driver's call
  * deadline, reports the error to the tab framework so it can offer a retry, instead of leaving the tab stuck
  * behind the loading screen. Reused by both mount and retry.
  *
@@ -214,12 +208,7 @@ function initialize(): void {
             return entityViewerService.getEntityPropertyDescriptors(props.params.dataPointer)
         })
         .then(ep => {
-            entityPropertyDescriptors = ep
-            entityPropertyDescriptorIndex.value = constructEntityPropertyDescriptorIndex(entityPropertyDescriptors)
-            return initializeGridHeaders(entityPropertyDescriptors, activeScopes.value)
-        })
-        .then(gh => {
-            gridHeaders = gh
+            entityPropertyDescriptors.value = ep
             // a restored tab may carry a sort that its own restored scopes no longer allow
             return pruneSortsInvalidInSelectedScopes()
         })
@@ -242,123 +231,41 @@ onBeforeMount(() => {
 })
 
 async function reloadEntityPropertyDescriptors(): Promise<void> {
-    entityPropertyDescriptors = await entityViewerService.getEntityPropertyDescriptors(props.params.dataPointer)
-    entityPropertyDescriptorIndex.value = constructEntityPropertyDescriptorIndex(entityPropertyDescriptors)
-    gridHeaders = await initializeGridHeaders(entityPropertyDescriptors, activeScopes.value)
+    entityPropertyDescriptors.value = await entityViewerService.getEntityPropertyDescriptors(props.params.dataPointer)
     // the schema change may have removed a property or its sortability while the grid is sorted by it
     await pruneSortsInvalidInSelectedScopes()
 
-    // remove selected properties which are not available anymore
-    const removeDisplayProperties: string[] = []
-    for (const displayedProperty of displayedEntityProperties.value) {
-        const serializedPropertyKey: string = displayedProperty.toString()
-        if (entityPropertyDescriptorIndex.value.get(serializedPropertyKey) == undefined) {
-            removeDisplayProperties.push(serializedPropertyKey)
-        }
-    }
-    displayedEntityProperties.value = displayedEntityProperties.value.filter(it => !removeDisplayProperties.includes(it.toString()))
-}
-
-/**
- * Rebuilds both the descriptor index and the property display order from scratch. Called again on every retry
- * and on every schema change, so neither structure may be appended to — {@link sortedEntityPropertyKeys} is
- * replaced rather than pushed into.
- */
-function constructEntityPropertyDescriptorIndex(entityPropertyDescriptors: EntityPropertyDescriptor[]): ImmutableMap<string, EntityPropertyDescriptor> {
-    const entityPropertyDescriptorIndexBuilder: Map<string, EntityPropertyDescriptor> = new Map()
-    const propertyKeysInOrder: string[] = []
-    for (const entityPropertyDescriptor of entityPropertyDescriptors) {
-        entityPropertyDescriptorIndexBuilder.set(entityPropertyDescriptor.key.toString(), entityPropertyDescriptor)
-        entityPropertyDescriptor.children.forEach(childPropertyDescriptor => {
-            entityPropertyDescriptorIndexBuilder.set(childPropertyDescriptor.key.toString(), childPropertyDescriptor)
-        })
-
-        propertyKeysInOrder.push(entityPropertyDescriptor.key.toString())
-        for (const childEntityPropertyDescriptor of entityPropertyDescriptor.children) {
-            propertyKeysInOrder.push(childEntityPropertyDescriptor.key.toString())
-        }
-    }
-    sortedEntityPropertyKeys = propertyKeysInOrder
-    return ImmutableMap(entityPropertyDescriptorIndexBuilder)
-}
-
-async function initializeGridHeaders(entityPropertyDescriptors: EntityPropertyDescriptor[],
-                                     scopes: EntityScope[]): Promise<Map<string, GridHeader>> {
-    const gridHeaders: Map<string, GridHeader> = new Map<string, GridHeader>()
-    for (const propertyDescriptor of entityPropertyDescriptors) {
-        gridHeaders.set(
-            propertyDescriptor.key.toString(),
-            {
-                key: propertyDescriptor.key.toString(),
-                title: propertyDescriptor.flattenedTitle,
-                sortable: propertyDescriptor.isSortable(scopes),
-                descriptor: propertyDescriptor
-            }
-        )
-        for (const childPropertyDescriptor of propertyDescriptor.children) {
-            gridHeaders.set(
-                childPropertyDescriptor.key.toString(),
-                {
-                    key: childPropertyDescriptor.key.toString(),
-                    title: childPropertyDescriptor.flattenedTitle,
-                    sortable: childPropertyDescriptor.isSortable(scopes),
-                    descriptor: childPropertyDescriptor
-                }
-            )
-        }
-    }
-    return gridHeaders
-}
-
-async function updateDisplayedGridHeaders(): Promise<void> {
-    displayedGridHeaders.value = displayedEntityProperties.value
-        .map(propertyKey => gridHeaders.get(propertyKey.toString()))
-        .filter((header): header is GridHeader => header != undefined)
-
-    // sort grid headers by entity properties order
-    displayedGridHeaders.value.sort((a, b) => {
-        return sortedEntityPropertyKeys.indexOf(a.key.toString()) - sortedEntityPropertyKeys.indexOf(b.key.toString())
-    })
+    // drops selected properties which are not available anymore and moves the remaining ones to their new position
+    // and key instances
+    selectedEntityProperties.value = entityPropertyDescriptors.value.order(selectedEntityProperties.value)
 }
 
 function preselectEntityProperties(): void {
-    if (props.data.displayedProperties != undefined) {
+    if (props.data.selectedProperties != undefined) {
         // preselect properties from initiator
 
-        const notFoundProperties: string[] = []
-        displayedEntityProperties.value = props.data.displayedProperties
-                ?.filter(propertyKey => {
-                    const propertyFound: boolean = entityPropertyDescriptorIndex.value.get(propertyKey.toString()) != undefined
-                    if (!propertyFound) {
-                        notFoundProperties.push(propertyKey.toString())
-                    }
-                    return propertyFound
-                })
-                ?.map(it => {
-                    // we need instances created by the grid because javascript cannot do proper equals so the properties
-                    // coming from outside doesn't match these and we need to work with object not just string representation
-                    return entityPropertyDescriptorIndex.value.get(it.toString())!.key
-                })
-            || []
-
+        const notFoundProperties: string[] = props.data.selectedProperties
+            .filter(propertyKey => !entityPropertyDescriptors.value.has(propertyKey))
+            .map(propertyKey => propertyKey.toString())
         if (notFoundProperties.length > 0) {
             toaster.info(t(
                 'entityViewer.grid.notification.failedToFindRequestedProperties',
                 { keys: notFoundProperties.map(it => `'${it}'`).join(', ') }
             )).then()
         }
+
+        selectedEntityProperties.value = entityPropertyDescriptors.value.order(props.data.selectedProperties)
     } else {
         // preselect default properties
 
-        displayedEntityProperties.value = entityPropertyDescriptors
+        selectedEntityProperties.value = entityPropertyDescriptors.value.order(Array.from(entityPropertyDescriptors.value.index.values())
             .filter(it => it.key.type === EntityPropertyType.Entity ||
                 it.key.type === EntityPropertyType.Prices ||
                 (it.schema != undefined &&
                     it.schema instanceof EntityAttributeSchema &&
                     it.schema.representative))
-            .map(it => it.key)
+            .map(it => it.key))
     }
-
 }
 
 /**
@@ -383,7 +290,7 @@ async function pruneSortsInvalidInSelectedScopes(): Promise<void> {
         return
     }
     const prunedSortBy = sortBy.value.filter(it =>
-        entityPropertyDescriptorIndex.value.get(it.key)?.isSortable(activeScopes.value) === true)
+        entityPropertyDescriptors.value.get(it.key)?.isSortable(activeScopes.value) === true)
     if (prunedSortBy.length === sortBy.value.length) {
         return
     }
@@ -475,7 +382,7 @@ async function executeQuery(): Promise<void> {
             selectedScopes.value,
             selectedDataLocale.value,
             selectedPriceType.value,
-            displayedEntityProperties.value,
+            selectedEntityProperties.value,
             pageNumber.value,
             pageSize.value
         )
@@ -518,12 +425,11 @@ onUnmounted(() => {
                     :order-by="orderByCode"
                     :order-by-ownership="orderByOwnership"
                     @update:order-by="orderByEdited"
-                    v-model:selected-scope="selectedScopes"
+                    v-model:selected-scopes="selectedScopes"
                     :data-locales="dataLocales"
                     v-model:selected-data-locale="selectedDataLocale"
                     v-model:selected-price-type="selectedPriceType"
-                    v-model:displayed-entity-properties="displayedEntityProperties"
-                    v-model:selected-layer="selectedScopes"
+                    v-model:selected-entity-properties="selectedEntityProperties"
                     @execute-query="executeQueryManually"
                 />
             </template>
@@ -531,7 +437,8 @@ onUnmounted(() => {
 
         <EntityGrid
             v-if="queryExecuted"
-            :displayed-grid-headers="displayedGridHeaders"
+            :selected-entity-properties="selectedEntityProperties"
+            :active-scopes="activeScopes"
             :loading="loading"
             :result-entities="resultEntities as FlatEntity[]"
             :total-result-count="totalResultCount"

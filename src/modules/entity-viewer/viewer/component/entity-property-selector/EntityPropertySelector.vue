@@ -4,6 +4,7 @@
  */
 
 import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { List } from 'immutable'
 import { useI18n } from 'vue-i18n'
 import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityPropertyType'
 import { Keymap, useKeymap } from '@/modules/keymap/service/Keymap'
@@ -33,18 +34,10 @@ import PropertySectionReferenceAttributeItem
     from '@/modules/entity-viewer/viewer/component/entity-property-selector/PropertySectionReferenceAttributeItem.vue'
 import {
     parentEntityPropertyType,
-    useEntityPropertyDescriptorIndex,
+    useEntityPropertyDescriptors,
     useTabProps
 } from '@/modules/entity-viewer/viewer/component/dependencies'
 import VLabDialog from '@/modules/base/component/VLabDialog.vue'
-
-const topLevelSections: EntityPropertyType[] = [
-    EntityPropertyType.Entity,
-    EntityPropertyType.Attributes,
-    EntityPropertyType.AssociatedData,
-    EntityPropertyType.Prices,
-    EntityPropertyType.References,
-]
 
 const keymap: Keymap = useKeymap()
 const toaster: Toaster = useToaster()
@@ -60,39 +53,23 @@ const emit = defineEmits<{
     (e: 'schemaOpen'): void
 }>()
 const tabProps = useTabProps()
-const entityPropertyDescriptorIndex = useEntityPropertyDescriptorIndex()
+const entityPropertyDescriptors = useEntityPropertyDescriptors()
 
 const filter = ref<string>('')
 const filterInput = ref<HTMLInputElement | null>(null)
 
 /**
- * Index of all properties by property type
+ * Top-level properties by property type, in display order
  */
-const sectionedPropertyDescriptors = computed<Map<EntityPropertyType, EntityPropertyDescriptor[]>>(() => {
-    const propertyDescriptors: Map<EntityPropertyType, EntityPropertyDescriptor[]> = new Map<EntityPropertyType, EntityPropertyDescriptor[]>()
-
-    entityPropertyDescriptorIndex.value.forEach(propertyDescriptor => {
-        if (!topLevelSections.includes(propertyDescriptor.type)) {
-            return
-        }
-
-        if (!propertyDescriptors.has(propertyDescriptor.type)) {
-            propertyDescriptors.set(propertyDescriptor.type, [])
-        }
-
-        propertyDescriptors.get(propertyDescriptor.type)?.push(propertyDescriptor)
-    })
-
-    return propertyDescriptors
-})
+const sectionedPropertyDescriptors = computed(() => entityPropertyDescriptors.value.sections)
 /**
  * Index of properties by property type matching the filter
  */
-const filteredSectionedPropertyDescriptors = computed<Map<EntityPropertyType, EntityPropertyDescriptor[]>>(() => {
-    const properties: Map<EntityPropertyType, EntityPropertyDescriptor[]> = new Map<EntityPropertyType, EntityPropertyDescriptor[]>()
+const filteredSectionedPropertyDescriptors = computed<Map<EntityPropertyType, List<EntityPropertyDescriptor>>>(() => {
+    const properties: Map<EntityPropertyType, List<EntityPropertyDescriptor>> = new Map<EntityPropertyType, List<EntityPropertyDescriptor>>()
 
     for (const [sectionType, sectionProperties] of sectionedPropertyDescriptors.value) {
-        const filteredSectionProperties: EntityPropertyDescriptor[] = sectionProperties.filter(property => {
+        const filteredSectionProperties: List<EntityPropertyDescriptor> = sectionProperties.filter(property => {
             return property.title.toLowerCase().includes(filter.value) ||
                 property.children.find(child => child.title.toLowerCase().includes(filter.value)) != undefined
         })
@@ -126,7 +103,7 @@ const propertySectionSelections = computed<Map<EntityPropertyType, EntityPropert
         let selection: EntityPropertySectionSelection
         if (selectedKeys.length === 0) {
             selection = EntityPropertySectionSelection.None
-        } else if (selectedKeys.length === sectionedPropertyDescriptors.value.get(sectionType)?.length) {
+        } else if (selectedKeys.length === sectionedPropertyDescriptors.value.get(sectionType)?.size) {
             selection = EntityPropertySectionSelection.All
         } else {
             selection = EntityPropertySectionSelection.Some
@@ -146,21 +123,29 @@ function handleFilterUpdate(term: string): void {
         // automatically open sections that have any properties matching the filter
         const sectionsWithAnyPropertyDescriptors: EntityPropertyType[] = []
         if (filteredSectionedPropertyDescriptors.value.size > 0) {
-            if ((filteredSectionedPropertyDescriptors.value.get(EntityPropertyType.Entity) || []).length > 0) {
+            if ((filteredSectionedPropertyDescriptors.value.get(EntityPropertyType.Entity)?.size ?? 0) > 0) {
                 sectionsWithAnyPropertyDescriptors.push(EntityPropertyType.Entity)
             }
-            if ((filteredSectionedPropertyDescriptors.value.get(EntityPropertyType.Attributes) || []).length > 0) {
+            if ((filteredSectionedPropertyDescriptors.value.get(EntityPropertyType.Attributes)?.size ?? 0) > 0) {
                 sectionsWithAnyPropertyDescriptors.push(EntityPropertyType.Attributes)
             }
-            if ((filteredSectionedPropertyDescriptors.value.get(EntityPropertyType.AssociatedData) || []).length > 0) {
+            if ((filteredSectionedPropertyDescriptors.value.get(EntityPropertyType.AssociatedData)?.size ?? 0) > 0) {
                 sectionsWithAnyPropertyDescriptors.push(EntityPropertyType.AssociatedData)
             }
-            if ((filteredSectionedPropertyDescriptors.value.get(EntityPropertyType.References) || []).length > 0) {
+            if ((filteredSectionedPropertyDescriptors.value.get(EntityPropertyType.References)?.size ?? 0) > 0) {
                 sectionsWithAnyPropertyDescriptors.push(EntityPropertyType.References)
             }
         }
         openedPropertySections.value = sectionsWithAnyPropertyDescriptors
     }
+}
+
+/**
+ * Emits a new selection, always in display order and made of the descriptors' own key instances, whichever way it
+ * was changed.
+ */
+function emitSelected(keys: EntityPropertyKey[]): void {
+    emit('update:selected', entityPropertyDescriptors.value.order(keys))
 }
 
 /**
@@ -179,16 +164,17 @@ function togglePropertySectionSelection(sectionType: EntityPropertyType, newSele
             }
             return true
         })
-        emit('update:selected', newSelected)
+        emitSelected(newSelected)
     } else if (newSelection === EntityPropertySectionSelection.All) {
         // select all properties in passed section
         const sectionPropertyKeys: EntityPropertyKey[] = sectionedPropertyDescriptors.value.get(sectionType)
             ?.flatMap(property => [property.key, ...property.children.map(childProperty => childProperty.key)])
+            .toArray()
             || []
         const newSelected: EntityPropertyKey[] = [...props.selected]
         newSelected.push(...sectionPropertyKeys)
 
-        emit('update:selected', newSelected)
+        emitSelected(newSelected)
     } else {
         toaster.error(t('entityViewer.propertySelector.notification.invalidPropertySectionSelection'))
             .then()
@@ -217,7 +203,7 @@ function changeSelectedState(key: EntityPropertyKey, isSelected: boolean): void 
     if (isSelected) {
         removeKey(key)
 
-        const descriptor = entityPropertyDescriptorIndex.value.get(key.toString())
+        const descriptor = entityPropertyDescriptors.value.get(key)
         if (descriptor && descriptor.children.size > 0) {
             descriptor.children.forEach(child => removeKey(child.key))
         }
@@ -237,7 +223,7 @@ function changeSelectedState(key: EntityPropertyKey, isSelected: boolean): void 
 
     }
 
-    emit('update:selected', newSelected)
+    emitSelected(newSelected)
 }
 
 onMounted(() => {
@@ -288,7 +274,7 @@ onUnmounted(() => {
 
             <VList
                 :selected="selected"
-                @update:selected="emit('update:selected', $event as EntityPropertyKey[])"
+                @update:selected="emitSelected($event as EntityPropertyKey[])"
                 v-model:opened="openedPropertySections"
                 lines="two"
                 open-strategy="multiple"
@@ -298,8 +284,8 @@ onUnmounted(() => {
                 <PropertySection
                     :property-type="EntityPropertyType.Entity"
                     :selected="sectionedSelected.get(EntityPropertyType.Entity) || []"
-                    :filtered-property-descriptors="filteredSectionedPropertyDescriptors.get(EntityPropertyType.Entity) || []"
-                    :property-descriptors="sectionedPropertyDescriptors.get(EntityPropertyType.Entity) || []"
+                    :filtered-property-descriptors="filteredSectionedPropertyDescriptors.get(EntityPropertyType.Entity) || List()"
+                    :property-descriptors="sectionedPropertyDescriptors.get(EntityPropertyType.Entity) || List()"
                     :selection="propertySectionSelections.get(EntityPropertyType.Entity) || EntityPropertySectionSelection.None"
                     @toggle="togglePropertySectionSelection(EntityPropertyType.Entity, $event)"
                 >
@@ -315,8 +301,8 @@ onUnmounted(() => {
                 <PropertySection
                     :property-type="EntityPropertyType.Attributes"
                     :selected="sectionedSelected.get(EntityPropertyType.Attributes) || []"
-                    :filtered-property-descriptors="filteredSectionedPropertyDescriptors.get(EntityPropertyType.Attributes) || []"
-                    :property-descriptors="sectionedPropertyDescriptors.get(EntityPropertyType.Attributes) || []"
+                    :filtered-property-descriptors="filteredSectionedPropertyDescriptors.get(EntityPropertyType.Attributes) || List()"
+                    :property-descriptors="sectionedPropertyDescriptors.get(EntityPropertyType.Attributes) || List()"
                     :selection="propertySectionSelections.get(EntityPropertyType.Attributes) || EntityPropertySectionSelection.None"
                     @toggle="togglePropertySectionSelection(EntityPropertyType.Attributes, $event)"
                 >
@@ -332,8 +318,8 @@ onUnmounted(() => {
                 <PropertySection
                     :property-type="EntityPropertyType.AssociatedData"
                     :selected="sectionedSelected.get(EntityPropertyType.AssociatedData) || []"
-                    :filtered-property-descriptors="filteredSectionedPropertyDescriptors.get(EntityPropertyType.AssociatedData) || []"
-                    :property-descriptors="sectionedPropertyDescriptors.get(EntityPropertyType.AssociatedData) || []"
+                    :filtered-property-descriptors="filteredSectionedPropertyDescriptors.get(EntityPropertyType.AssociatedData) || List()"
+                    :property-descriptors="sectionedPropertyDescriptors.get(EntityPropertyType.AssociatedData) || List()"
                     :selection="propertySectionSelections.get(EntityPropertyType.AssociatedData) || EntityPropertySectionSelection.None"
                     @toggle="togglePropertySectionSelection(EntityPropertyType.AssociatedData, $event)"
                 >
@@ -345,10 +331,10 @@ onUnmounted(() => {
                         />
                     </template>
                 </PropertySection>
-                <template v-if="(sectionedPropertyDescriptors.get(EntityPropertyType.Prices)?.length || 0) > 0 && (filteredSectionedPropertyDescriptors.get(EntityPropertyType.Prices)?.length || 0) > 0">
+                <template v-if="(sectionedPropertyDescriptors.get(EntityPropertyType.Prices)?.size ?? 0) > 0 && (filteredSectionedPropertyDescriptors.get(EntityPropertyType.Prices)?.size ?? 0) > 0">
                     <VListItemDivider />
                     <PropertySectionPricesItem
-                        :property-descriptor="sectionedPropertyDescriptors.get(EntityPropertyType.Prices)![0]!"
+                        :property-descriptor="sectionedPropertyDescriptors.get(EntityPropertyType.Prices)!.first()!"
                         @change-state="(key, isSelected) => changeSelectedState(key, isSelected)"
                     />
                 </template>
@@ -356,8 +342,8 @@ onUnmounted(() => {
                 <PropertySection
                     :property-type="EntityPropertyType.References"
                     :selected="sectionedSelected.get(EntityPropertyType.References) || []"
-                    :filtered-property-descriptors="filteredSectionedPropertyDescriptors.get(EntityPropertyType.References) || []"
-                    :property-descriptors="sectionedPropertyDescriptors.get(EntityPropertyType.References) || []"
+                    :filtered-property-descriptors="filteredSectionedPropertyDescriptors.get(EntityPropertyType.References) || List()"
+                    :property-descriptors="sectionedPropertyDescriptors.get(EntityPropertyType.References) || List()"
                     :selection="propertySectionSelections.get(EntityPropertyType.References) || EntityPropertySectionSelection.None"
                     @toggle="togglePropertySectionSelection(EntityPropertyType.References, $event)"
                 >

@@ -11,7 +11,7 @@ import { Command } from '@/modules/keymap/model/Command'
 import VTabToolbar from '@/modules/base/component/VTabToolbar.vue'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import VExecuteQueryButton from '@/modules/base/component/VExecuteQueryButton.vue'
-import { useDataLocale, useTabProps, useLayer } from '@/modules/entity-viewer/viewer/component/dependencies'
+import { useDataLocale, useSelectedScopes, useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { List } from 'immutable'
 import { EntityScope, EntityScopeIcons } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 import { getEnumKeyByValue } from '@/utils/enum.ts'
@@ -39,7 +39,7 @@ const emit = defineEmits<{
 }>()
 const tabProps = useTabProps()
 const dataLocale = useDataLocale()
-const layers = useLayer()
+const selectedScopes = useSelectedScopes()
 
 const flags = computed<List<{ title: string, prependIcon: string }>>(() => {
     const flags: { title: string, prependIcon: string }[] = []
@@ -49,9 +49,9 @@ const flags = computed<List<{ title: string, prependIcon: string }>>(() => {
             prependIcon: 'mdi-translate',
         })
     }
-    if(layers.value != undefined) {
-        for (const val of layers.value) {
-            if(val.value) {
+    if (selectedScopes.value != undefined) {
+        for (const val of selectedScopes.value) {
+            if (val.selected) {
                 flags.push({
                     title: t(`command.entityViewer.toolbar.${getEnumKeyByValue(EntityScope, val.scope).toLowerCase()}`),
                     prependIcon: EntityScopeIcons[val.scope]

@@ -806,7 +806,7 @@
         "manual": "Ordering is your own text. Using a sort button in a column header replaces it."
       }
     },
-    "layerSelector": {
+    "scopeSelector": {
       "live": "The default scope is where all new entities are created.",
       "archive": "The archive scope is where outdated entities that are no longer actively used are stored. The archive is usually covered by fewer indexes than the live scope and is not searched unless explicitly requested in a query."
     },

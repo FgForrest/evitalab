@@ -4,6 +4,7 @@ import type { TabComponentProps } from '@/modules/workspace/tab/model/TabCompone
 import { EntityViewerTabParams } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabParams'
 import { EntityViewerTabData } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabData'
 import { EntityPropertyDescriptor } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptor'
+import type { EntityPropertyDescriptors } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptors'
 import { QueryLanguage } from '@/modules/entity-viewer/viewer/model/QueryLanguage'
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
 import type { FlatEntity } from '@/modules/entity-viewer/viewer/model/FlatEntity'
@@ -11,7 +12,7 @@ import { EntityPropertyType } from '@/modules/entity-viewer/viewer/model/EntityP
 import { StaticEntityProperties } from '@/modules/entity-viewer/viewer/model/StaticEntityProperties'
 import { mandatoryInject } from '@/utils/reactivity'
 import { Map as ImmutableMap, List as ImmutableList } from 'immutable'
-import type { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
+import type { SelectableScope } from '@/modules/entity-viewer/viewer/model/SelectableScope'
 
 /**
  * Dependency injection key for data grid props
@@ -25,14 +26,14 @@ export const useTabProps = (): TabComponentProps<EntityViewerTabParams, EntityVi
 }
 
 /**
- * Dependency injection key for index of available entity property descriptors
+ * Dependency injection key for descriptors of all available entity properties
  */
-const entityPropertyDescriptorIndexInjectionKey: InjectionKey<Ref<ImmutableMap<string, EntityPropertyDescriptor>>> = Symbol('entityPropertyDescriptorIndex')
-export const provideEntityPropertyDescriptorIndex = (entityPropertyDescriptorIndex: Ref<ImmutableMap<string, EntityPropertyDescriptor>>): void => {
-    provide(entityPropertyDescriptorIndexInjectionKey, shallowReadonly(entityPropertyDescriptorIndex) as Ref<ImmutableMap<string, EntityPropertyDescriptor>>)
+const entityPropertyDescriptorsInjectionKey: InjectionKey<Ref<EntityPropertyDescriptors>> = Symbol('entityPropertyDescriptors')
+export const provideEntityPropertyDescriptors = (entityPropertyDescriptors: Ref<EntityPropertyDescriptors>): void => {
+    provide(entityPropertyDescriptorsInjectionKey, shallowReadonly(entityPropertyDescriptors) as Ref<EntityPropertyDescriptors>)
 }
-export const useEntityPropertyDescriptorIndex = (): Ref<ImmutableMap<string, EntityPropertyDescriptor>> => {
-    return mandatoryInject(entityPropertyDescriptorIndexInjectionKey)
+export const useEntityPropertyDescriptors = (): Ref<EntityPropertyDescriptors> => {
+    return mandatoryInject(entityPropertyDescriptorsInjectionKey)
 }
 
 /**
@@ -46,13 +47,15 @@ export const useQueryLanguage = (): Ref<QueryLanguage> => {
     return mandatoryInject(queryLanguageInjectionKey)
 }
 
-const scopesInjectionKey: InjectionKey<Ref<SelectedScope[]>> = Symbol('scopes')
-export const provideScopes = (scopes: Ref<SelectedScope[]>): void => {
-    provide(scopesInjectionKey, shallowReadonly(scopes))
+/**
+ * Dependency injection key for the scopes the user can tick and whether they are ticked
+ */
+const selectedScopesInjectionKey: InjectionKey<Ref<SelectableScope[]>> = Symbol('selectedScopes')
+export const provideSelectedScopes = (selectedScopes: Ref<SelectableScope[]>): void => {
+    provide(selectedScopesInjectionKey, shallowReadonly(selectedScopes))
 }
-
-export const useLayer = (): Ref<SelectedScope[]> => {
-    return mandatoryInject(scopesInjectionKey)
+export const useSelectedScopes = (): Ref<SelectableScope[]> => {
+    return mandatoryInject(selectedScopesInjectionKey)
 }
 
 /**

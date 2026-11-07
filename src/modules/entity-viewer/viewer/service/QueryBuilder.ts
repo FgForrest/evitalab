@@ -4,7 +4,7 @@ import { OrderDirection } from '@/modules/database-driver/request-response/schem
 import { AttributeSchema } from '@/modules/database-driver/request-response/schema/AttributeSchema'
 import { ReferenceSchema } from '@/modules/database-driver/request-response/schema/ReferenceSchema'
 import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceMode'
-import type { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
+import type { SelectableScope } from '@/modules/entity-viewer/viewer/model/SelectableScope'
 
 /**
  * Builds query from arguments based on language of implementation.
@@ -26,7 +26,7 @@ export interface QueryBuilder {
     buildQuery(dataPointer: EntityViewerDataPointer,
                filterBy: string,
                orderBy: string,
-               selectedScope: SelectedScope[] | undefined,
+               selectedScopes: SelectableScope[] | undefined,
                dataLocale: string | undefined,
                priceType: QueryPriceMode | undefined,
                requiredData: EntityPropertyKey[],

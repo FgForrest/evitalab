@@ -21,7 +21,7 @@ Everything sits under `viewer/`:
 | `component/entity-property-selector/` | Choosing which properties become columns |
 | `service/` | `EntityViewerService` + the query abstraction (below) incl. `GraphQLValueConverter`, `EntityGridCellMenuFactory`, the injectable `EntityPropertyValuePrinter` (human-readable values, below) |
 | `service/entity-property-value-formatter/` | `Raw`, `Json`, `Xml` formatters behind `EntityPropertyValueFormatter` |
-| `model/` | `EntityPropertyKey`, `EntityPropertyDescriptor`, `EntityPropertyType`, `FlatEntity`, `GridHeader`, `QueryLanguage`, `QueryResult`, `QueryPriceMode`, `SelectedScope`, … |
+| `model/` | `EntityPropertyKey`, `EntityPropertyDescriptor`, `EntityPropertyDescriptors` (all properties of a collection, below), `EntityPropertyType`, `FlatEntity`, `QueryLanguage`, `QueryResult`, `QueryPriceMode`, `SelectableScope`, … |
 | `model/entity-property-value/` | `EntityPrice(s)`, `EntityReferences`, `EntityReferenceValue`, `EntityReferenceAttributes`, `NativeValue`; the printing context `EntityViewerPrintContext` |
 | `model/entity-grid/` | `EntityGridCellMenuItemType`, `propertyMutationHistoryContainer` (property type → mutation history container) |
 | `history/` | `FilterByHistoryKey`/`Record`, `OrderByHistoryKey`/`Record` |
@@ -32,20 +32,53 @@ Everything sits under `viewer/`:
 
 `EntityViewer.vue` follows the tab framework's
 [init contract](../workspace-and-tabs.md#loading-errors--retry). `initialize()` holds the whole init chain —
-data locales → property descriptors → descriptor index → grid headers → sort pruning → property preselection —
+data locales → property descriptors → sort pruning → property preselection —
 and is called from both `onBeforeMount` and the exposed `retry()`. Any rejection becomes
 `emit('error', asError(e))`, so a failed init offers *Try again* instead of spinning forever.
 
 The chain stays a `.then()` promise chain on purpose: making the setup async breaks the component in
 combination with the dynamic `<component>` rendering the tab framework uses.
 
+## Property descriptors and the selection
+
+`EntityViewerService.getEntityPropertyDescriptors` returns one immutable `EntityPropertyDescriptors` value object
+holding every property of the collection in **two views of the same descriptor instances**:
+
+- `index` — a flat `OrderedMap` keyed by `EntityPropertyKey.toString()`, reference attributes included. The grid
+  builds its columns from it and every key lookup (`get`, `has`) goes through it.
+- `sections` — the top-level properties grouped by `EntityPropertyType` for the property selector. There is no
+  `ReferenceAttributes` section: reference attributes hang under their reference as its `children`, which are the
+  very objects that also sit in `index`.
+
+The **display order is the order in which the service emits the descriptors** (static properties, attributes,
+associated data, prices, each reference immediately followed by its reference attributes); both views keep it.
+They must stay ordered collections — an Immutable `Map` does not keep insertion order beyond 8 entries, which once
+made the selector list properties in hash order.
+
+The descriptors are built on every call, without a service-side cache: the entity schema they come from is
+already cached by the driver, the build is a cheap loop, the viewer must handle schema changes anyway, and a
+derived cache would need its own invalidation on every catalog/schema change path. Revisit only if a profile shows
+the build matters — it can be added behind the same method without touching any caller.
+
+`EntityViewer.vue` keeps the value object in one ref, provided to the children via
+`provideEntityPropertyDescriptors` / `useEntityPropertyDescriptors()`, and swaps it on retry and on every entity
+schema change.
+
+`selectedEntityProperties` (the grid columns, persisted under the DTO key `selectedProperties`) is **always in
+display order and made of the index's own key instances**. Every writer passes the keys through
+`EntityPropertyDescriptors.order(keys)`, which orders, deduplicates, drops unknown keys and normalizes key identity
+(`VList` selection compares keys by identity): the selector's `emitSelected` (all its emit paths, including the
+raw `VList` selection), `preselectEntityProperties` (after the not-found toast, since `order` drops unknown keys
+silently) and `reloadEntityPropertyDescriptors`. A new writer must do the same, otherwise the columns appear in
+click order.
+
 Two consequences of `initialize()` being re-runnable:
 
 - **`executeOnOpen` re-runs on retry** — a retried tab behaves exactly like a freshly opened one, matching the
   GraphQL console.
-- **Nothing may accumulate across runs.** `constructEntityPropertyDescriptorIndex()` rebuilds the property
-  display order into a fresh array and replaces `sortedEntityPropertyKeys`; appending to it would grow the
-  order on every retry and on every schema change.
+- **Nothing may accumulate across runs.** The `entityPropertyDescriptors` ref is replaced with a freshly built
+  `EntityPropertyDescriptors` on every retry and schema change, never mutated; state derived from it must be
+  rebuilt the same way, or it would grow on every run.
 
 `retry()` is exposed rather than relying on the remount fallback, because the entity-schema change callback is
 registered at setup top level and released in `onUnmounted`, which `KeepAlive` never runs on a `:key` bump.
@@ -80,8 +113,10 @@ throw `UnexpectedError` the moment `VActionTooltip` calls `prettyPrint` on it. P
 
 ## The grid
 
-`EntityGrid.vue` renders the result through the generic [`VDataGrid`](../ui-components.md#data-grid). It maps
-`displayedGridHeaders` to `DataGridColumn`s (header icons by property type, `mdi-translate` for localized
+`EntityGrid.vue` renders the result through the generic [`VDataGrid`](../ui-components.md#data-grid). Its
+`columns` computed is a pure function of its props `selectedEntityProperties` and `activeScopes` and of the
+injected descriptors: it maps each selected key's descriptor to a `DataGridColumn` (header icons by property type,
+`mdi-translate` for localized
 properties, `cellIconWidth` for the columns whose cells prepend an icon) and passes the `FlatEntity` rows as they
 are — the rows keep the `EntityPropertyValue`s, so the original values stay available (e.g. for a future edit
 mode). The row key is the entity primary key, which every row carries even when its column is hidden.
@@ -153,12 +188,12 @@ query identical to the visible one.
 
 ### What is sortable
 
-`EntityPropertyDescriptor.isSortable(scopes)` is the **single source of truth**. It is evaluated once per
-scope selection by `EntityViewer.initializeGridHeaders`, stored in `GridHeader.sortable`, and only
-mirrored by the grid header (`DataGridColumn.sortable`) — the header never re-derives it.
+`EntityPropertyDescriptor.isSortable(scopes)` is the **single source of truth**. It is evaluated in
+`EntityGrid`'s `columns` computed (re-evaluated when the scopes change) and passed to the grid header as
+`DataGridColumn.sortable`; nothing caches it.
 
 With `S` = the scopes currently checked in the scope selector (`selectedScopes` filtered to
-`value === true`, exposed as the `activeScopes` computed):
+`selected === true`, exposed as the `activeScopes` computed and passed to `EntityGrid` as a prop):
 
 | Column kind | Sortable when |
 |---|---|
@@ -185,8 +220,8 @@ Sortability is duck-typed through `isSortableSchema` on `SortableSchema.sortable
 future rename from silently degrading every column to non-sortable, `AttributeSchema`
 **declares `implements SortableSchema`** — that declaration is what turns the rename into a compile error.
 
-Changing the scope selection rebuilds the grid headers (and `displayedGridHeaders`, which holds
-references to the old header objects), so columns gain and lose their sort affordance live.
+Changing the scope selection changes `activeScopes`, which re-evaluates the grid columns, so they gain and lose
+their sort affordance live.
 
 ### Who owns the order by
 
@@ -227,6 +262,12 @@ as an echo of the prop, which is what lets `gridUpdated` tell user sorts apart f
 sort survives session restore and share links. Both are optional and appended last in the positional
 constructor: tab data written before they existed simply restores them as `undefined`, and a newer share
 link opened by an older evitaLab ignores them. No DTO versioning is involved.
+
+The scope selection is stored under `selectedScopes` as `{ scope, selected }` and the grid columns under
+`selectedProperties`. Builds before the rename wrote `selectedLayers` as `{ scope, value }` and
+`displayedProperties`; `EntityViewerTabFactory` reads the new keys first and falls back to the legacy ones, so
+older tabs and share links keep their scopes and columns. A newer share link opened by an older evitaLab falls
+back to the default scope selection (Live only) and the default columns.
 
 `pruneSortsInvalidInSelectedScopes` runs at all three points where a sort can become invalid: a scope
 change, `onBeforeMount` (a restored tab can carry a sort its own restored scopes no longer allow), and

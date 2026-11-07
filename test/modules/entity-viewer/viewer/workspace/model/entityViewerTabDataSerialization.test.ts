@@ -23,6 +23,9 @@ import { QueryLanguage } from '@/modules/entity-viewer/viewer/model/QueryLanguag
 import type { ConnectionService } from '@/modules/connection/service/ConnectionService'
 import { Connection } from '@/modules/connection/model/Connection'
 import type { TabParamsDto } from '@/modules/workspace/tab/model/TabParamsDto'
+import { SelectableScope } from '@/modules/entity-viewer/viewer/model/SelectableScope'
+import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope'
+import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
 
 // the factory only needs to hand out a connection while restoring the params half of the tab
 const connectionService = {
@@ -78,5 +81,79 @@ describe('EntityViewerTabData serialization', () => {
         expect(restored.sortBy).toBeUndefined()
         expect(restored.orderByDefinedManually).toBeUndefined()
         expect(restored.orderBy).toBe('attributeNatural(code, DESC)')
+    })
+
+    test('scope selection survives the serialization round trip under the new wire key', () => {
+        const data = new EntityViewerTabData(
+            QueryLanguage.EvitaQL,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            [new SelectableScope(EntityScope.Live, false), new SelectableScope(EntityScope.Archive, true)]
+        )
+
+        const dto: EntityViewerTabDataDto = data.toSerializable()
+        const restored: EntityViewerTabData = restore(dto)
+
+        expect(dto.selectedScopes).toEqual([
+            { scope: EntityScope.Live, selected: false },
+            { scope: EntityScope.Archive, selected: true }
+        ])
+        expect(dto.selectedLayers).toBeUndefined()
+        expect(restored.selectedScopes).toEqual([
+            new SelectableScope(EntityScope.Live, false),
+            new SelectableScope(EntityScope.Archive, true)
+        ])
+        expect(restored.selectedScopes![0]).toBeInstanceOf(SelectableScope)
+    })
+
+    test('scope selection stored under the legacy key and field name restores', () => {
+        // tabs persisted and share links issued before the scope rename carry `selectedLayers` with `value`
+        const legacyDto = {
+            queryLanguage: QueryLanguage.EvitaQL,
+            selectedLayers: [
+                { scope: EntityScope.Live, value: true },
+                { scope: EntityScope.Archive, value: true }
+            ]
+        } as EntityViewerTabDataDto
+
+        const restored: EntityViewerTabData = restore(legacyDto)
+
+        expect(restored.selectedScopes).toEqual([
+            new SelectableScope(EntityScope.Live, true),
+            new SelectableScope(EntityScope.Archive, true)
+        ])
+    })
+
+    test('selected properties survive the serialization round trip under the new wire key', () => {
+        const data = new EntityViewerTabData(
+            QueryLanguage.EvitaQL,
+            undefined,
+            undefined,
+            undefined,
+            [EntityPropertyKey.attributes('code'), EntityPropertyKey.prices()]
+        )
+
+        const dto: EntityViewerTabDataDto = data.toSerializable()
+        const restored: EntityViewerTabData = restore(dto)
+
+        expect(dto.selectedProperties).toEqual(['attributes:code', 'prices'])
+        expect(dto.displayedProperties).toBeUndefined()
+        expect(restored.selectedProperties?.map(it => it.toString())).toEqual(['attributes:code', 'prices'])
+    })
+
+    test('selected properties stored under the legacy key restore', () => {
+        // tabs persisted and share links issued before the rename carry `displayedProperties`
+        const legacyDto = {
+            queryLanguage: QueryLanguage.EvitaQL,
+            displayedProperties: ['primaryKey', 'attributes:code']
+        } as EntityViewerTabDataDto
+
+        const restored: EntityViewerTabData = restore(legacyDto)
+
+        expect(restored.selectedProperties?.map(it => it.toString())).toEqual(['primaryKey', 'attributes:code'])
     })
 })

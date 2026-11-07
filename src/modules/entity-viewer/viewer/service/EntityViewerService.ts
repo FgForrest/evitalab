@@ -42,7 +42,8 @@ import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceM
 import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { Locale } from '@/modules/database-driver/data-type/Locale'
-import { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
+import { SelectableScope } from '@/modules/entity-viewer/viewer/model/SelectableScope'
+import { EntityPropertyDescriptors } from '@/modules/entity-viewer/viewer/model/EntityPropertyDescriptors'
 import { OrderDirection } from '@/modules/database-driver/request-response/schema/OrderDirection'
 import { i18n } from '@/vue-plugins/i18n'
 
@@ -130,7 +131,7 @@ export class EntityViewerService {
                        language: QueryLanguage,
                        filterBy: string,
                        orderBy: string,
-                       layersSelected: SelectedScope[],
+                       selectedScopes: SelectableScope[],
                        dataLocale: string | undefined,
                        priceType: QueryPriceMode | undefined,
                        requiredData: EntityPropertyKey[],
@@ -143,7 +144,7 @@ export class EntityViewerService {
             dataPointer,
             filterBy,
             orderBy,
-            layersSelected,
+            selectedScopes,
             dataLocale,
             priceType,
             requiredData,
@@ -391,9 +392,16 @@ export class EntityViewerService {
     }
 
     /**
-     * Builds a list of all possible entity properties for entities of given schema.
+     * Builds descriptors of all possible entity properties for entities of given schema. The descriptors are emitted
+     * in display order (static properties, attributes, associated data, prices, each reference immediately followed
+     * by its reference attributes), which is the order both the grid and the property selector show them in.
+     * A reference's `children` are the same instances as its reference attribute descriptors in the flat list.
+     *
+     * Built on every call on purpose, without a cache: the entity schema it reads is already cached by the driver
+     * (in memory and persistently), the build itself is a cheap loop over the schema, the callers must react to
+     * schema changes anyway, and a derived cache would need its own invalidation on every catalog/schema change path.
      */
-    async getEntityPropertyDescriptors(dataPointer: EntityViewerDataPointer): Promise<EntityPropertyDescriptor[]> {
+    async getEntityPropertyDescriptors(dataPointer: EntityViewerDataPointer): Promise<EntityPropertyDescriptors> {
         const entitySchema = await this.getEntitySchema(dataPointer)
         const descriptors: EntityPropertyDescriptor[] = []
         descriptors.push(this.createStaticEntityPropertyDescriptor(
@@ -464,6 +472,21 @@ export class EntityViewerService {
         }
 
         for (const referenceSchema of entitySchema.references.values()) {
+            const referenceAttributeDescriptors: EntityPropertyDescriptor[] = Array.from(referenceSchema.attributes.values())
+                .map(attributeSchema => {
+                    return new EntityPropertyDescriptor(
+                        EntityPropertyType.ReferenceAttributes,
+                        EntityPropertyKey.referenceAttributes(
+                            referenceSchema.name,
+                            attributeSchema.name
+                        ),
+                        attributeSchema.name,
+                        `${referenceSchema.name}: ${attributeSchema.name}`,
+                        referenceSchema,
+                        attributeSchema,
+                        ImmutableList()
+                    )
+                })
             descriptors.push(new EntityPropertyDescriptor(
                 EntityPropertyType.References,
                 EntityPropertyKey.references(referenceSchema.name),
@@ -471,27 +494,12 @@ export class EntityViewerService {
                 referenceSchema.name,
                 undefined,
                 referenceSchema,
-                ImmutableList(
-                    Array.from(referenceSchema.attributes.values())
-                        .map(attributeSchema => {
-                            return new EntityPropertyDescriptor(
-                                EntityPropertyType.ReferenceAttributes,
-                                EntityPropertyKey.referenceAttributes(
-                                    referenceSchema.name,
-                                    attributeSchema.name
-                                ),
-                                attributeSchema.name,
-                                `${referenceSchema.name}: ${attributeSchema.name}`,
-                                referenceSchema,
-                                attributeSchema,
-                                ImmutableList()
-                            )
-                        })
-                )
+                ImmutableList(referenceAttributeDescriptors)
             ))
+            descriptors.push(...referenceAttributeDescriptors)
         }
 
-        return descriptors
+        return new EntityPropertyDescriptors(ImmutableList(descriptors))
     }
 
     /**

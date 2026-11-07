@@ -239,7 +239,7 @@ send one.
 
 | `tabType` | `tabParams` | `tabData` (optional) |
 |---|---|---|
-| `entityViewer` | `catalogName`, `entityType` | `queryLanguage` (`evitaql`/`graphql`), `filterBy`, `orderBy`, `dataLocale`, `displayedProperties[]`, `pageSize`, `pageNumber`, `selectedLayers[]` |
+| `entityViewer` | `catalogName`, `entityType` | `queryLanguage` (`evitaql`/`graphql`), `filterBy`, `orderBy`, `dataLocale`, `selectedProperties[]` (the legacy `displayedProperties[]` is still read), `pageSize`, `pageNumber`, `selectedScopes[]` (`{ scope, selected }`; the legacy `selectedLayers[]` with `{ scope, value }` is still read), `sortBy[]`, `orderByDefinedManually` |
 | `evitaQLConsole` | `catalogName` | `query`, `variables` |
 | `graphQLConsole` | `catalogName`, `instanceType` (`system`/`data`/`schema`) | `query`, `variables` |
 | `restConsole` | `catalogName`, `instanceType` (`catalog`/`system`) | `operationId` (of the variant, e.g. `queryProductLocalized`), `locale`, `parameters` (`{ name: value \| [values] }`), `body` |

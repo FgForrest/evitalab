@@ -15,7 +15,7 @@ import { QueryPriceMode } from '@/modules/entity-viewer/viewer/model/QueryPriceM
 import { NamingConvention } from '@/modules/database-driver/request-response/NamingConvetion'
 import { AssociatedDataSchema } from '@/modules/database-driver/request-response/schema/AssociatedDataSchema'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
-import type { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
+import type { SelectableScope } from '@/modules/entity-viewer/viewer/model/SelectableScope'
 import { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope.ts'
 
 const priceInPriceListsConstraintPattern = /priceInPriceLists\s*:\s*\[?\s*"[A-Za-z0-9_.\-~]+"/
@@ -48,7 +48,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
     async buildQuery(dataPointer: EntityViewerDataPointer,
                      filterBy: string,
                      orderBy: string,
-                     layersSelected: SelectedScope[],
+                     selectedScopes: SelectableScope[],
                      dataLocale: string | undefined,
                      priceType: QueryPriceMode | undefined,
                      requiredData: EntityPropertyKey[],
@@ -64,11 +64,11 @@ export class GraphQLQueryBuilder implements QueryBuilder {
 
         const filterByContainer: string[] = []
 
-        if(layersSelected.length > 0) {
-            let allSelected: boolean = layersSelected.length > 1
+        if(selectedScopes.length > 0) {
+            let allSelected: boolean = selectedScopes.length > 1
             let notSelected: boolean = true
-            for (const item of layersSelected) {
-                if (!item.value) {
+            for (const item of selectedScopes) {
+                if (!item.selected) {
                     allSelected = false
                 } else {
                     notSelected = false
@@ -76,7 +76,7 @@ export class GraphQLQueryBuilder implements QueryBuilder {
             }
 
             if(!notSelected) {
-                filterByContainer.push(`scope: [${layersSelected.some(x => x.scope === EntityScope.Live && x.value) ? 'LIVE' : ''} ${allSelected ? ',' : ''} ${layersSelected.some(x => x.scope === EntityScope.Archive && x.value) ? 'ARCHIVED' : ''}]`)
+                filterByContainer.push(`scope: [${selectedScopes.some(x => x.scope === EntityScope.Live && x.selected) ? 'LIVE' : ''} ${allSelected ? ',' : ''} ${selectedScopes.some(x => x.scope === EntityScope.Archive && x.selected) ? 'ARCHIVED' : ''}]`)
             } else {
                 return ''
             }

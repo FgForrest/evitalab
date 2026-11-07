@@ -10,6 +10,7 @@ import { EntityViewerTabDefinition } from '@/modules/entity-viewer/viewer/worksp
 import type { EntityViewerTabParamsDto } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabParamsDto'
 import type { EntityViewerTabDataDto } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabDataDto'
 import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
+import { SelectableScope } from '@/modules/entity-viewer/viewer/model/SelectableScope'
 import { mandatoryInject } from '@/utils/reactivity'
 import { TabType } from '@/modules/workspace/tab/model/TabType'
 import type { TabFactory } from '@/modules/workspace/tab/service/TabFactory'
@@ -93,10 +94,11 @@ export class EntityViewerTabFactory implements TabFactory {
             dto.filterBy,
             dto.orderBy,
             dto.dataLocale,
-            dto.displayedProperties?.map((key: string) => EntityPropertyKey.fromString(key)),
+            (dto.selectedProperties ?? dto.displayedProperties)?.map((key: string) => EntityPropertyKey.fromString(key)),
             dto.pageSize,
             dto.pageNumber,
-            dto.selectedLayers,
+            dto.selectedScopes?.map(it => new SelectableScope(it.scope, it.selected))
+                ?? dto.selectedLayers?.map(it => new SelectableScope(it.scope, it.value)),
             dto.sortBy,
             dto.orderByDefinedManually
         )

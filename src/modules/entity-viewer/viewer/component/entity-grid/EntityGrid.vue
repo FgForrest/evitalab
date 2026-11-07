@@ -28,12 +28,13 @@ import {
     EntityReferenceAttributes
 } from '@/modules/entity-viewer/viewer/model/entity-property-value/EntityReferenceAttributes'
 import { NativeValue } from '@/modules/entity-viewer/viewer/model/entity-property-value/NativeValue'
-import type { GridHeader } from '@/modules/entity-viewer/viewer/model/GridHeader'
+import { EntityPropertyKey } from '@/modules/entity-viewer/viewer/model/EntityPropertyKey'
+import type { EntityScope } from '@/modules/database-driver/request-response/schema/EntityScope'
 import EntityGridCell from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridCell.vue'
 import EntityGridCellDetail from '@/modules/entity-viewer/viewer/component/entity-grid/EntityGridCellDetail.vue'
 import {
     useDataLocale,
-    useEntityPropertyDescriptorIndex,
+    useEntityPropertyDescriptors,
     usePriceType,
     useQueryLanguage,
     useTabProps
@@ -70,7 +71,14 @@ const pageSizeOptions: number[] = [10, 25, 50, 100, 250, 500, 1000]
 const cellIconWidth: number = 28
 
 const props = defineProps<{
-    displayedGridHeaders: GridHeader[],
+    /**
+     * Properties shown as columns, in column order.
+     */
+    selectedEntityProperties: EntityPropertyKey[],
+    /**
+     * Scopes the query is executed in; a column is sortable only if its property is sortable in all of them.
+     */
+    activeScopes: EntityScope[],
     loading: boolean,
     resultEntities: FlatEntity[],
     totalResultCount: number,
@@ -86,22 +94,25 @@ const emit = defineEmits<{
     (e: "gridUpdated", value: DataGridOptions): void
 }>()
 const tabProps = useTabProps()
-const entityPropertyDescriptorIndex = useEntityPropertyDescriptorIndex()
+const entityPropertyDescriptors = useEntityPropertyDescriptors()
 const queryLanguage = useQueryLanguage()
 const dataLocale = useDataLocale()
 const priceType = usePriceType()
 
 // a computed keeps the same context object between unrelated renders, a changed price type re-prints the cells
 const printContext = computed<EntityViewerPrintContext>(() => ({ priceType: priceType.value }))
-const columns = computed<DataGridColumn<EntityGridValue, FlatEntity, EntityViewerPrintContext>[]>(() => props.displayedGridHeaders.map(header => ({
-    key: header.key,
-    title: header.title,
-    sortable: header.sortable,
-    prependIcons: resolveHeaderIcon(header.descriptor),
-    appendIcons: header.descriptor.isLocalized() ? ['mdi-translate'] : undefined,
-    printer: entityPropertyValuePrinter.forColumn(header.descriptor),
-    cellIconWidth: hasCellIcon(header.descriptor) ? cellIconWidth : undefined
-})))
+const columns = computed<DataGridColumn<EntityGridValue, FlatEntity, EntityViewerPrintContext>[]>(() => props.selectedEntityProperties
+    .map(key => entityPropertyDescriptors.value.get(key))
+    .filter((descriptor): descriptor is EntityPropertyDescriptor => descriptor != undefined)
+    .map(descriptor => ({
+        key: descriptor.key.toString(),
+        title: descriptor.flattenedTitle,
+        sortable: descriptor.isSortable(props.activeScopes),
+        prependIcons: resolveHeaderIcon(descriptor),
+        appendIcons: descriptor.isLocalized() ? ['mdi-translate'] : undefined,
+        printer: entityPropertyValuePrinter.forColumn(descriptor),
+        cellIconWidth: hasCellIcon(descriptor) ? cellIconWidth : undefined
+    })))
 
 function resolveHeaderIcon(descriptor: EntityPropertyDescriptor): string[] | undefined {
     if (descriptor.type === EntityPropertyType.AssociatedData) {
@@ -159,7 +170,7 @@ watch(() => props.resultEntities, (entities) => {
 })
 
 function getPropertyDescriptor(key: string): EntityPropertyDescriptor | undefined {
-    const descriptor = entityPropertyDescriptorIndex.value.get(key)
+    const descriptor = entityPropertyDescriptors.value.get(key)
     if (descriptor == undefined) {
         toaster.error(t('entityViewer.grid.notification.failedToFindProperty', { key }))
             .then()
@@ -260,7 +271,7 @@ function closePropertyDetail(): void {
                 <template #cell="{ row, column, value, text }">
                     <EntityGridCell
                         :entity-primary-key="entityPrimaryKey(row)"
-                        :property-descriptor="entityPropertyDescriptorIndex.get(column.key)"
+                        :property-descriptor="entityPropertyDescriptors.get(column.key)"
                         :property-value="value"
                         :printable-value="text"
                     />

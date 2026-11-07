@@ -34,7 +34,7 @@ import EntityPropertySelector
 import { useTabProps } from '@/modules/entity-viewer/viewer/component/dependencies'
 import { List } from 'immutable'
 import { EntityViewerService, useEntityViewerService } from '@/modules/entity-viewer/viewer/service/EntityViewerService'
-import type { SelectedScope } from '@/modules/entity-viewer/viewer/model/SelectedScope.ts'
+import type { SelectableScope } from '@/modules/entity-viewer/viewer/model/SelectableScope'
 import ScopeSelector from '@/modules/entity-viewer/viewer/component/ScopeSelector.vue'
 
 const keymap: Keymap = useKeymap()
@@ -53,10 +53,10 @@ const props = defineProps<{
      */
     orderByOwnership: 'grid' | 'manual' | undefined,
     dataLocales: List<string>,
-    selectedScope: SelectedScope[],
+    selectedScopes: SelectableScope[],
     selectedDataLocale: string | undefined,
     selectedPriceType: QueryPriceMode,
-    displayedEntityProperties: EntityPropertyKey[]
+    selectedEntityProperties: EntityPropertyKey[]
 }>()
 const emit = defineEmits<{
     (e: 'executeQuery'): void
@@ -65,8 +65,8 @@ const emit = defineEmits<{
     (e: 'update:orderBy', value: string): void
     (e: 'update:selectedDataLocale', value: string | undefined): void
     (e: 'update:selectedPriceType', value: QueryPriceMode): void
-    (e: 'update:displayedEntityProperties', value: EntityPropertyKey[]): void
-    (e: 'update:selectedLayer', value: SelectedScope[]): void
+    (e: 'update:selectedEntityProperties', value: EntityPropertyKey[]): void
+    (e: 'update:selectedScopes', value: SelectableScope[]): void
 }>()
 const tabProps = useTabProps()
 
@@ -226,14 +226,14 @@ onUnmounted(() => {
                 @update:selected="emit('update:selectedPriceType', $event)"
             />
             <ScopeSelector
-                :selected-scope="selectedScope"
-                @update:selected="emit('update:selectedLayer', $event)"
+                :selected-scopes="selectedScopes"
+                @update:selected="emit('update:selectedScopes', $event)"
             />
 
             <EntityPropertySelector
                 v-model="showPropertiesSelect"
-                :selected="displayedEntityProperties"
-                @update:selected="emit('update:displayedEntityProperties', $event)"
+                :selected="selectedEntityProperties"
+                @update:selected="emit('update:selectedEntityProperties', $event)"
                 @schema-open="showPropertiesSelect = false"
             />
         </div>
