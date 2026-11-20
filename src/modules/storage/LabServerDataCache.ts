@@ -11,12 +11,13 @@ import { xxh64Hex } from '@/utils/hash'
  * forward/backward compatible. A bump abandons every previously written database (they are named after the
  * version), and the abandoned ones are deleted on the next startup.
  */
-const cacheFormatVersion: number = 2
+const cacheFormatVersion: number = 3
 
 /**
  * Index every store carries over its records' `storedAt`, so eviction can find the oldest records without
- * reading a single payload. It is also the reason {@link cacheFormatVersion} is 2: an index is part of the
- * store layout, and a database written by an earlier format simply does not have it.
+ * reading a single payload. An index is part of the store layout, and a database written by an earlier format
+ * simply does not have it — version 2 introduced it. Version 3 added the REST OpenAPI specification store: stores
+ * are created only when a database is first opened, so a new store is a layout change too.
  */
 const storedAtIndexName: string = 'storedAt'
 
@@ -36,14 +37,15 @@ export enum ServerDataCacheStore {
     CatalogStatistics = 'catalogStatistics',
     CatalogSchemas = 'catalogSchemas',
     EntitySchemas = 'entitySchemas',
-    GraphQLIntrospections = 'graphqlIntrospections'
+    GraphQLIntrospections = 'graphqlIntrospections',
+    RestOpenApiSpecs = 'restOpenApiSpecs'
 }
 
 export const labServerDataCacheInjectionKey: InjectionKey<LabServerDataCache> = Symbol('labServerDataCache')
 
 /**
  * Client-side cache of data fetched from an evitaDB server — schemas, catalog statistics, GraphQL
- * introspections — backed by browser IndexedDB (through the thin
+ * introspections, REST OpenAPI specifications — backed by browser IndexedDB (through the thin
  * [`idb`](https://github.com/jakearchibald/idb) wrapper).
  *
  * ### A cache, not storage — and the distinction is load-bearing

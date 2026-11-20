@@ -1,0 +1,1499 @@
+{
+  "extraResults": {
+    "hierarchy": {
+      "categories": {
+        "roots": [
+          {
+            "entity": {
+              "primaryKey": 66468,
+              "type": "Category",
+              "version": 1,
+              "scope": "LIVE",
+              "locales": [
+                "en"
+              ],
+              "allLocales": [
+                "cs",
+                "de",
+                "en"
+              ],
+              "attributes": {
+                "name": "Accessories",
+                "code": "accessories"
+              }
+            },
+            "requested": false,
+            "children": [
+              {
+                "entity": {
+                  "primaryKey": 66481,
+                  "type": "Category",
+                  "version": 1,
+                  "scope": "LIVE",
+                  "locales": [
+                    "en"
+                  ],
+                  "allLocales": [
+                    "en"
+                  ],
+                  "attributes": {
+                    "name": "Smart wearable",
+                    "code": "smart-wearable"
+                  }
+                },
+                "requested": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "facetSummary": {
+      "groups": {
+        "count": 179,
+        "facetStatistics": [
+          {
+            "requested": false,
+            "count": 5,
+            "impact": {
+              "difference": -264,
+              "matchCount": 5,
+              "hasSense": true
+            },
+            "facetEntity": {
+              "primaryKey": 66505,
+              "type": "Group",
+              "version": 1,
+              "scope": "LIVE",
+              "locales": [
+                "en"
+              ],
+              "allLocales": [
+                "en"
+              ],
+              "attributes": {
+                "code": "sale"
+              }
+            }
+          },
+          {
+            "requested": false,
+            "count": 65,
+            "impact": {
+              "difference": -204,
+              "matchCount": 65,
+              "hasSense": true
+            },
+            "facetEntity": {
+              "primaryKey": 112769,
+              "type": "Group",
+              "version": 1,
+              "scope": "LIVE",
+              "locales": [
+                "en"
+              ],
+              "allLocales": [
+                "en"
+              ],
+              "attributes": {
+                "code": "special-offer-group"
+              }
+            }
+          }
+        ]
+      },
+      "tags": [
+        {
+          "count": 177,
+          "groupEntity": {
+            "primaryKey": 8,
+            "type": "TagCategory",
+            "version": 1,
+            "scope": "LIVE",
+            "locales": [
+              "en"
+            ],
+            "allLocales": [
+              "cs",
+              "de",
+              "en"
+            ],
+            "attributes": {
+              "code": "EDEESHOP_DEFAULT"
+            }
+          },
+          "facetStatistics": [
+            {
+              "requested": false,
+              "count": 34,
+              "impact": {
+                "difference": -235,
+                "matchCount": 34,
+                "hasSense": true
+              },
+              "facetEntity": {
+                "primaryKey": 10,
+                "type": "Tag",
+                "version": 1,
+                "scope": "LIVE",
+                "locales": [
+                  "en"
+                ],
+                "allLocales": [
+                  "cs",
+                  "de",
+                  "en"
+                ],
+                "attributes": {
+                  "code": "new"
+                }
+              }
+            },
+            {
+              "requested": false,
+              "count": 65,
+              "impact": {
+                "difference": -204,
+                "matchCount": 65,
+                "hasSense": true
+              },
+              "facetEntity": {
+                "primaryKey": 11,
+                "type": "Tag",
+                "version": 1,
+                "scope": "LIVE",
+                "locales": [
+                  "en"
+                ],
+                "allLocales": [
+                  "cs",
+                  "de",
+                  "en"
+                ],
+                "attributes": {
+                  "code": "special-offer"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "count": 86,
+          "groupEntity": {
+            "primaryKey": 9,
+            "type": "TagCategory",
+            "version": 1,
+            "scope": "LIVE",
+            "locales": [
+              "en"
+            ],
+            "allLocales": [
+              "cs",
+              "de",
+              "en"
+            ],
+            "attributes": {
+              "code": "EDEESHOP_FILTER"
+            }
+          },
+          "facetStatistics": [
+            {
+              "requested": false,
+              "count": 5,
+              "impact": {
+                "difference": -264,
+                "matchCount": 5,
+                "hasSense": true
+              },
+              "facetEntity": {
+                "primaryKey": 9,
+                "type": "Tag",
+                "version": 1,
+                "scope": "LIVE",
+                "locales": [
+                  "en"
+                ],
+                "allLocales": [
+                  "cs",
+                  "de",
+                  "en"
+                ],
+                "attributes": {
+                  "code": "sale"
+                }
+              }
+            },
+            {
+              "requested": false,
+              "count": 46,
+              "impact": {
+                "difference": -223,
+                "matchCount": 46,
+                "hasSense": true
+              },
+              "facetEntity": {
+                "primaryKey": 13,
+                "type": "Tag",
+                "version": 1,
+                "scope": "LIVE",
+                "locales": [
+                  "en"
+                ],
+                "allLocales": [
+                  "cs",
+                  "de",
+                  "en"
+                ],
+                "attributes": {
+                  "code": "recommended"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "brand": {
+        "count": 269,
+        "facetStatistics": [
+          {
+            "requested": false,
+            "count": 4,
+            "impact": {
+              "difference": -265,
+              "matchCount": 4,
+              "hasSense": true
+            },
+            "facetEntity": {
+              "primaryKey": 64703,
+              "type": "Brand",
+              "version": 1,
+              "scope": "LIVE",
+              "locales": [
+                "en"
+              ],
+              "allLocales": [
+                "cs",
+                "en"
+              ],
+              "attributes": {
+                "code": "samsung"
+              }
+            }
+          },
+          {
+            "requested": false,
+            "count": 85,
+            "impact": {
+              "difference": -184,
+              "matchCount": 85,
+              "hasSense": true
+            },
+            "facetEntity": {
+              "primaryKey": 66465,
+              "type": "Brand",
+              "version": 1,
+              "scope": "LIVE",
+              "locales": [
+                "en"
+              ],
+              "allLocales": [
+                "en"
+              ],
+              "attributes": {
+                "code": "apple"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "queryTelemetry": {
+      "arguments": [],
+      "formattedSelfTime": "3.349041ms",
+      "formattedSpentTime": "172.225458ms",
+      "metrics": {
+        "actualCardinality": 269,
+        "actualCost": 8124,
+        "estimatedCardinality": 269,
+        "estimatedCost": 880959,
+        "ioFetchCount": 1325,
+        "ioFetchedSizeBytes": 1584040,
+        "prefetched": true,
+        "recordsReturned": 2
+      },
+      "operation": "OVERALL",
+      "plan": {
+        "actualCost": 8124,
+        "children": [
+          {
+            "actualCost": 296,
+            "children": [
+              {
+                "actualCost": null,
+                "children": [
+                  {
+                    "actualCost": null,
+                    "children": [
+                      {
+                        "actualCost": null,
+                        "children": [
+                          {
+                            "actualCost": null,
+                            "children": [
+                              {
+                                "actualCost": null,
+                                "children": [],
+                                "description": "221 primary keys",
+                                "estimatedCost": 221,
+                                "hash": -5873445194656104762,
+                                "id": 6,
+                                "refTo": null,
+                                "resultCount": null
+                              }
+                            ],
+                            "description": "DO WITH PRICE INDEX: basic/EUR/NONE",
+                            "estimatedCost": 442,
+                            "hash": 188623194643203758,
+                            "id": 5,
+                            "refTo": null,
+                            "resultCount": null
+                          }
+                        ],
+                        "description": "DO WITH NONE",
+                        "estimatedCost": 663,
+                        "hash": -4686354955234496120,
+                        "id": 4,
+                        "refTo": null,
+                        "resultCount": null
+                      }
+                    ],
+                    "description": "NO FILTER PREDICATE",
+                    "estimatedCost": 884,
+                    "hash": 7601879558833350682,
+                    "id": 3,
+                    "refTo": null,
+                    "resultCount": null
+                  },
+                  {
+                    "actualCost": null,
+                    "children": [
+                      {
+                        "actualCost": null,
+                        "children": [
+                          {
+                            "actualCost": null,
+                            "children": [
+                              {
+                                "actualCost": null,
+                                "children": [],
+                                "description": "48 primary keys",
+                                "estimatedCost": 48,
+                                "hash": -8834123600850676232,
+                                "id": 10,
+                                "refTo": null,
+                                "resultCount": 48
+                              }
+                            ],
+                            "description": "DO WITH PRICE INDEX: basic/EUR/LOWEST_PRICE",
+                            "estimatedCost": 96,
+                            "hash": 2330031147179709396,
+                            "id": 9,
+                            "refTo": null,
+                            "resultCount": 48
+                          }
+                        ],
+                        "description": "DO WITH LOWEST_PRICE",
+                        "estimatedCost": 144,
+                        "hash": -2854410499978191960,
+                        "id": 8,
+                        "refTo": null,
+                        "resultCount": 48
+                      }
+                    ],
+                    "description": "NO FILTER PREDICATE",
+                    "estimatedCost": 873888,
+                    "hash": 1653991447182785333,
+                    "id": 7,
+                    "refTo": null,
+                    "resultCount": 48
+                  }
+                ],
+                "description": "PRICE FILTER CONTAINER - OR ([basic]EUR)",
+                "estimatedCost": 877731,
+                "hash": -6273702096601486230,
+                "id": 2,
+                "refTo": null,
+                "resultCount": null
+              }
+            ],
+            "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+            "estimatedCost": 296,
+            "hash": 5660634725026508076,
+            "id": 1,
+            "refTo": null,
+            "resultCount": 269
+          },
+          {
+            "actualCost": 269,
+            "children": [
+              {
+                "actualCost": 0,
+                "children": [],
+                "description": "269 primary keys",
+                "estimatedCost": 269,
+                "hash": -3916683095106646803,
+                "id": 12,
+                "refTo": null,
+                "resultCount": 269
+              }
+            ],
+            "description": "HIERARCHY (categories): 269 primary keys",
+            "estimatedCost": 538,
+            "hash": -8350596322919953727,
+            "id": 11,
+            "refTo": null,
+            "resultCount": 269
+          },
+          {
+            "actualCost": 296,
+            "children": [
+              {
+                "actualCost": null,
+                "children": [],
+                "description": "LOCALE: 269 primary keys",
+                "estimatedCost": 269,
+                "hash": 5399102094306444538,
+                "id": 14,
+                "refTo": null,
+                "resultCount": null
+              }
+            ],
+            "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+            "estimatedCost": 296,
+            "hash": 7724325696589560710,
+            "id": 13,
+            "refTo": null,
+            "resultCount": 269
+          }
+        ],
+        "description": "AND",
+        "estimatedCost": 880959,
+        "hash": -1670645581396870523,
+        "id": 0,
+        "refTo": null,
+        "resultCount": 269
+      },
+      "selfTime": 3349041,
+      "spentTime": 172225458,
+      "start": 0,
+      "startedAt": "2026-10-20T16:52:29.392755863Z",
+      "steps": [
+        {
+          "arguments": [],
+          "formattedSelfTime": "2.312251ms",
+          "formattedSpentTime": "74.437708ms",
+          "metrics": null,
+          "operation": "PLANNING",
+          "plan": null,
+          "selfTime": 2312251,
+          "spentTime": 74437708,
+          "start": 2794458,
+          "startedAt": null,
+          "steps": [
+            {
+              "arguments": [],
+              "formattedSelfTime": "31.137458ms",
+              "formattedSpentTime": "37.278250ms",
+              "metrics": null,
+              "operation": "PLANNING_INDEX_USAGE",
+              "plan": null,
+              "selfTime": 31137458,
+              "spentTime": 37278250,
+              "start": 2976708,
+              "startedAt": null,
+              "steps": [
+                {
+                  "arguments": [
+                    "Finding hierarchy parent node: attributeEquals('url','/en/smartwatches')"
+                  ],
+                  "formattedSelfTime": "6.140792ms",
+                  "formattedSpentTime": "6.140792ms",
+                  "metrics": null,
+                  "operation": "PLANNING_FILTER_NESTED_QUERY",
+                  "plan": null,
+                  "selfTime": 6140792,
+                  "spentTime": 6140792,
+                  "start": 27642166,
+                  "startedAt": null,
+                  "steps": []
+                }
+              ]
+            },
+            {
+              "arguments": [
+                "Selected index: Index type: REFERENCED_ENTITY composed of 1 indexes, estimated costs 880959"
+              ],
+              "formattedSelfTime": "0.097083ms",
+              "formattedSpentTime": "12.492958ms",
+              "metrics": null,
+              "operation": "PLANNING_FILTER",
+              "plan": null,
+              "selfTime": 97083,
+              "spentTime": 12492958,
+              "start": 40333833,
+              "startedAt": null,
+              "steps": [
+                {
+                  "arguments": [
+                    "Index type: Live index: GLOBAL, estimated costs 10715983"
+                  ],
+                  "formattedSelfTime": "11.408167ms",
+                  "formattedSpentTime": "11.408167ms",
+                  "metrics": null,
+                  "operation": "PLANNING_FILTER_ALTERNATIVE",
+                  "plan": {
+                    "actualCost": null,
+                    "children": [
+                      {
+                        "actualCost": null,
+                        "children": [
+                          {
+                            "actualCost": null,
+                            "children": [
+                              {
+                                "actualCost": null,
+                                "children": [
+                                  {
+                                    "actualCost": null,
+                                    "children": [
+                                      {
+                                        "actualCost": null,
+                                        "children": [
+                                          {
+                                            "actualCost": null,
+                                            "children": [],
+                                            "description": "3478 primary keys",
+                                            "estimatedCost": 3478,
+                                            "hash": -4386635272601092197,
+                                            "id": 6,
+                                            "refTo": null,
+                                            "resultCount": null
+                                          }
+                                        ],
+                                        "description": "DO WITH PRICE INDEX: basic/EUR/NONE",
+                                        "estimatedCost": 6956,
+                                        "hash": -666125049895284797,
+                                        "id": 5,
+                                        "refTo": null,
+                                        "resultCount": null
+                                      }
+                                    ],
+                                    "description": "DO WITH NONE",
+                                    "estimatedCost": 10434,
+                                    "hash": 5476912737007891226,
+                                    "id": 4,
+                                    "refTo": null,
+                                    "resultCount": null
+                                  }
+                                ],
+                                "description": "NO FILTER PREDICATE",
+                                "estimatedCost": 13912,
+                                "hash": 7442795575016163708,
+                                "id": 3,
+                                "refTo": null,
+                                "resultCount": null
+                              },
+                              {
+                                "actualCost": null,
+                                "children": [
+                                  {
+                                    "actualCost": null,
+                                    "children": [
+                                      {
+                                        "actualCost": null,
+                                        "children": [
+                                          {
+                                            "actualCost": null,
+                                            "children": [],
+                                            "description": "583 primary keys",
+                                            "estimatedCost": 583,
+                                            "hash": 8469996589292660086,
+                                            "id": 10,
+                                            "refTo": null,
+                                            "resultCount": null
+                                          }
+                                        ],
+                                        "description": "DO WITH PRICE INDEX: basic/EUR/LOWEST_PRICE",
+                                        "estimatedCost": 1166,
+                                        "hash": 3593862876393066418,
+                                        "id": 9,
+                                        "refTo": null,
+                                        "resultCount": null
+                                      }
+                                    ],
+                                    "description": "DO WITH LOWEST_PRICE",
+                                    "estimatedCost": 1749,
+                                    "hash": -6190503836567875066,
+                                    "id": 8,
+                                    "refTo": null,
+                                    "resultCount": null
+                                  }
+                                ],
+                                "description": "NO FILTER PREDICATE",
+                                "estimatedCost": 10614098,
+                                "hash": 6259009662788280110,
+                                "id": 7,
+                                "refTo": null,
+                                "resultCount": null
+                              },
+                              {
+                                "actualCost": null,
+                                "children": [
+                                  {
+                                    "actualCost": null,
+                                    "children": [
+                                      {
+                                        "actualCost": null,
+                                        "children": [
+                                          {
+                                            "actualCost": null,
+                                            "children": [],
+                                            "description": "2 primary keys",
+                                            "estimatedCost": 2,
+                                            "hash": 5612073097015065594,
+                                            "id": 14,
+                                            "refTo": null,
+                                            "resultCount": null
+                                          }
+                                        ],
+                                        "description": "DO WITH PRICE INDEX: basic/EUR/SUM",
+                                        "estimatedCost": 4,
+                                        "hash": -6118691077690870677,
+                                        "id": 13,
+                                        "refTo": null,
+                                        "resultCount": null
+                                      }
+                                    ],
+                                    "description": "DO WITH SUM",
+                                    "estimatedCost": 6,
+                                    "hash": 5380656838465585884,
+                                    "id": 12,
+                                    "refTo": null,
+                                    "resultCount": null
+                                  }
+                                ],
+                                "description": "NO FILTER PREDICATE",
+                                "estimatedCost": 36160,
+                                "hash": 8898886231023254869,
+                                "id": 11,
+                                "refTo": null,
+                                "resultCount": null
+                              }
+                            ],
+                            "description": "PRICE FILTER CONTAINER - OR ([basic]EUR)",
+                            "estimatedCost": 10708863,
+                            "hash": -7193872568708686331,
+                            "id": 2,
+                            "refTo": null,
+                            "resultCount": null
+                          }
+                        ],
+                        "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                        "estimatedCost": 10708863,
+                        "hash": 4778565296623238713,
+                        "id": 1,
+                        "refTo": null,
+                        "resultCount": null
+                      },
+                      {
+                        "actualCost": null,
+                        "children": [
+                          {
+                            "actualCost": null,
+                            "children": [],
+                            "description": "269 primary keys",
+                            "estimatedCost": 269,
+                            "hash": -3916683095106646803,
+                            "id": 16,
+                            "refTo": null,
+                            "resultCount": null
+                          }
+                        ],
+                        "description": "HIERARCHY (categories): 269 primary keys",
+                        "estimatedCost": 538,
+                        "hash": -8350596322919953727,
+                        "id": 15,
+                        "refTo": null,
+                        "resultCount": null
+                      },
+                      {
+                        "actualCost": null,
+                        "children": [
+                          {
+                            "actualCost": null,
+                            "children": [],
+                            "description": "LOCALE: 4161 primary keys",
+                            "estimatedCost": 4161,
+                            "hash": 5780745232501700393,
+                            "id": 18,
+                            "refTo": null,
+                            "resultCount": null
+                          }
+                        ],
+                        "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                        "estimatedCost": 4161,
+                        "hash": -8435307383246599287,
+                        "id": 17,
+                        "refTo": null,
+                        "resultCount": null
+                      }
+                    ],
+                    "description": "AND",
+                    "estimatedCost": 10715983,
+                    "hash": -5731568252749006448,
+                    "id": 0,
+                    "refTo": null,
+                    "resultCount": null
+                  },
+                  "selfTime": 11408167,
+                  "spentTime": 11408167,
+                  "start": 40338958,
+                  "startedAt": null,
+                  "steps": []
+                },
+                {
+                  "arguments": [
+                    "Index type: REFERENCED_ENTITY composed of 1 indexes, estimated costs 880959"
+                  ],
+                  "formattedSelfTime": "0.987708ms",
+                  "formattedSpentTime": "0.987708ms",
+                  "metrics": null,
+                  "operation": "PLANNING_FILTER_ALTERNATIVE",
+                  "plan": {
+                    "actualCost": null,
+                    "children": [
+                      {
+                        "actualCost": null,
+                        "children": [
+                          {
+                            "actualCost": null,
+                            "children": [
+                              {
+                                "actualCost": null,
+                                "children": [
+                                  {
+                                    "actualCost": null,
+                                    "children": [
+                                      {
+                                        "actualCost": null,
+                                        "children": [
+                                          {
+                                            "actualCost": null,
+                                            "children": [],
+                                            "description": "221 primary keys",
+                                            "estimatedCost": 221,
+                                            "hash": -5873445194656104762,
+                                            "id": 6,
+                                            "refTo": null,
+                                            "resultCount": null
+                                          }
+                                        ],
+                                        "description": "DO WITH PRICE INDEX: basic/EUR/NONE",
+                                        "estimatedCost": 442,
+                                        "hash": 188623194643203758,
+                                        "id": 5,
+                                        "refTo": null,
+                                        "resultCount": null
+                                      }
+                                    ],
+                                    "description": "DO WITH NONE",
+                                    "estimatedCost": 663,
+                                    "hash": -4686354955234496120,
+                                    "id": 4,
+                                    "refTo": null,
+                                    "resultCount": null
+                                  }
+                                ],
+                                "description": "NO FILTER PREDICATE",
+                                "estimatedCost": 884,
+                                "hash": 7601879558833350682,
+                                "id": 3,
+                                "refTo": null,
+                                "resultCount": null
+                              },
+                              {
+                                "actualCost": null,
+                                "children": [
+                                  {
+                                    "actualCost": null,
+                                    "children": [
+                                      {
+                                        "actualCost": null,
+                                        "children": [
+                                          {
+                                            "actualCost": null,
+                                            "children": [],
+                                            "description": "48 primary keys",
+                                            "estimatedCost": 48,
+                                            "hash": -8834123600850676232,
+                                            "id": 10,
+                                            "refTo": null,
+                                            "resultCount": null
+                                          }
+                                        ],
+                                        "description": "DO WITH PRICE INDEX: basic/EUR/LOWEST_PRICE",
+                                        "estimatedCost": 96,
+                                        "hash": 2330031147179709396,
+                                        "id": 9,
+                                        "refTo": null,
+                                        "resultCount": null
+                                      }
+                                    ],
+                                    "description": "DO WITH LOWEST_PRICE",
+                                    "estimatedCost": 144,
+                                    "hash": -2854410499978191960,
+                                    "id": 8,
+                                    "refTo": null,
+                                    "resultCount": null
+                                  }
+                                ],
+                                "description": "NO FILTER PREDICATE",
+                                "estimatedCost": 873888,
+                                "hash": 1653991447182785333,
+                                "id": 7,
+                                "refTo": null,
+                                "resultCount": null
+                              }
+                            ],
+                            "description": "PRICE FILTER CONTAINER - OR ([basic]EUR)",
+                            "estimatedCost": 877731,
+                            "hash": -6273702096601486230,
+                            "id": 2,
+                            "refTo": null,
+                            "resultCount": null
+                          }
+                        ],
+                        "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                        "estimatedCost": 877731,
+                        "hash": 5660634725026508076,
+                        "id": 1,
+                        "refTo": null,
+                        "resultCount": null
+                      },
+                      {
+                        "actualCost": null,
+                        "children": [
+                          {
+                            "actualCost": null,
+                            "children": [],
+                            "description": "269 primary keys",
+                            "estimatedCost": 269,
+                            "hash": -3916683095106646803,
+                            "id": 12,
+                            "refTo": null,
+                            "resultCount": null
+                          }
+                        ],
+                        "description": "HIERARCHY (categories): 269 primary keys",
+                        "estimatedCost": 538,
+                        "hash": -8350596322919953727,
+                        "id": 11,
+                        "refTo": null,
+                        "resultCount": null
+                      },
+                      {
+                        "actualCost": null,
+                        "children": [
+                          {
+                            "actualCost": null,
+                            "children": [],
+                            "description": "LOCALE: 269 primary keys",
+                            "estimatedCost": 269,
+                            "hash": 5399102094306444538,
+                            "id": 14,
+                            "refTo": null,
+                            "resultCount": null
+                          }
+                        ],
+                        "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                        "estimatedCost": 269,
+                        "hash": 7724325696589560710,
+                        "id": 13,
+                        "refTo": null,
+                        "resultCount": null
+                      }
+                    ],
+                    "description": "AND",
+                    "estimatedCost": 880959,
+                    "hash": -1670645581396870523,
+                    "id": 0,
+                    "refTo": null,
+                    "resultCount": null
+                  },
+                  "selfTime": 987708,
+                  "spentTime": 987708,
+                  "start": 51754083,
+                  "startedAt": null,
+                  "steps": []
+                }
+              ]
+            },
+            {
+              "arguments": [],
+              "formattedSelfTime": "4.574958ms",
+              "formattedSpentTime": "4.574958ms",
+              "metrics": null,
+              "operation": "PLANNING_SORT",
+              "plan": null,
+              "selfTime": 4574958,
+              "spentTime": 4574958,
+              "start": 52840250,
+              "startedAt": null,
+              "steps": []
+            },
+            {
+              "arguments": [],
+              "formattedSelfTime": "17.779291ms",
+              "formattedSpentTime": "17.779291ms",
+              "metrics": null,
+              "operation": "PLANNING_EXTRA_RESULT_FABRICATION",
+              "plan": null,
+              "selfTime": 17779291,
+              "spentTime": 17779291,
+              "start": 57687875,
+              "startedAt": null,
+              "steps": []
+            }
+          ]
+        },
+        {
+          "arguments": [],
+          "formattedSelfTime": "0.254918ms",
+          "formattedSpentTime": "94.438709ms",
+          "metrics": null,
+          "operation": "EXECUTION",
+          "plan": null,
+          "selfTime": 254918,
+          "spentTime": 94438709,
+          "start": 77786541,
+          "startedAt": null,
+          "steps": [
+            {
+              "arguments": [],
+              "formattedSelfTime": "43.943958ms",
+              "formattedSpentTime": "43.943958ms",
+              "metrics": null,
+              "operation": "EXECUTION_PREFETCH",
+              "plan": null,
+              "selfTime": 43943958,
+              "spentTime": 43943958,
+              "start": 77789458,
+              "startedAt": null,
+              "steps": []
+            },
+            {
+              "arguments": [],
+              "formattedSelfTime": "5.177333ms",
+              "formattedSpentTime": "5.177333ms",
+              "metrics": null,
+              "operation": "EXECUTION_FILTER",
+              "plan": null,
+              "selfTime": 5177333,
+              "spentTime": 5177333,
+              "start": 121736000,
+              "startedAt": null,
+              "steps": []
+            },
+            {
+              "arguments": [],
+              "formattedSelfTime": "0.491083ms",
+              "formattedSpentTime": "0.491083ms",
+              "metrics": null,
+              "operation": "EXECUTION_SORT_AND_SLICE",
+              "plan": null,
+              "selfTime": 491083,
+              "spentTime": 491083,
+              "start": 126915917,
+              "startedAt": null,
+              "steps": []
+            },
+            {
+              "arguments": [],
+              "formattedSelfTime": "0.088624ms",
+              "formattedSpentTime": "43.312208ms",
+              "metrics": null,
+              "operation": "EXTRA_RESULTS_FABRICATION",
+              "plan": null,
+              "selfTime": 88624,
+              "spentTime": 43312208,
+              "start": 127413167,
+              "startedAt": null,
+              "steps": [
+                {
+                  "arguments": [
+                    "ReferenceSummaryProducer"
+                  ],
+                  "formattedSelfTime": "24.074125ms",
+                  "formattedSpentTime": "24.074125ms",
+                  "metrics": null,
+                  "operation": "EXTRA_RESULT_ITEM_FABRICATION",
+                  "plan": null,
+                  "selfTime": 24074125,
+                  "spentTime": 24074125,
+                  "start": 127481500,
+                  "startedAt": null,
+                  "steps": []
+                },
+                {
+                  "arguments": [
+                    "HierarchyStatisticsProducer"
+                  ],
+                  "formattedSelfTime": "10.339750ms",
+                  "formattedSpentTime": "12.389917ms",
+                  "metrics": null,
+                  "operation": "EXTRA_RESULT_ITEM_FABRICATION",
+                  "plan": null,
+                  "selfTime": 10339750,
+                  "spentTime": 12389917,
+                  "start": 151563250,
+                  "startedAt": null,
+                  "steps": [
+                    {
+                      "arguments": [
+                        "Hierarchy statistics filter (WITHOUT_USER_FILTER, reference=categories)"
+                      ],
+                      "formattedSelfTime": "0.202042ms",
+                      "formattedSpentTime": "0.724375ms",
+                      "metrics": null,
+                      "operation": "PLANNING_FILTER_NESTED_QUERY",
+                      "plan": null,
+                      "selfTime": 202042,
+                      "spentTime": 724375,
+                      "start": 156386375,
+                      "startedAt": null,
+                      "steps": [
+                        {
+                          "arguments": [],
+                          "formattedSelfTime": "0.061458ms",
+                          "formattedSpentTime": "0.061458ms",
+                          "metrics": null,
+                          "operation": "PLANNING_INDEX_USAGE",
+                          "plan": null,
+                          "selfTime": 61458,
+                          "spentTime": 61458,
+                          "start": 156387917,
+                          "startedAt": null,
+                          "steps": []
+                        },
+                        {
+                          "arguments": [
+                            "Selected index: Index type: Live index: GLOBAL, estimated costs 10749591"
+                          ],
+                          "formattedSelfTime": "0.006458ms",
+                          "formattedSpentTime": "0.460875ms",
+                          "metrics": null,
+                          "operation": "PLANNING_FILTER",
+                          "plan": null,
+                          "selfTime": 6458,
+                          "spentTime": 460875,
+                          "start": 156452250,
+                          "startedAt": null,
+                          "steps": [
+                            {
+                              "arguments": [
+                                "Index type: Live index: GLOBAL, estimated costs 10749591"
+                              ],
+                              "formattedSelfTime": "0.454417ms",
+                              "formattedSpentTime": "0.454417ms",
+                              "metrics": null,
+                              "operation": "PLANNING_FILTER_ALTERNATIVE",
+                              "plan": {
+                                "actualCost": null,
+                                "children": [
+                                  {
+                                    "actualCost": null,
+                                    "children": [
+                                      {
+                                        "actualCost": null,
+                                        "children": [
+                                          {
+                                            "actualCost": null,
+                                            "children": [
+                                              {
+                                                "actualCost": null,
+                                                "children": [
+                                                  {
+                                                    "actualCost": null,
+                                                    "children": [
+                                                      {
+                                                        "actualCost": null,
+                                                        "children": [],
+                                                        "description": "3478 primary keys",
+                                                        "estimatedCost": 3478,
+                                                        "hash": -4386635272601092197,
+                                                        "id": 6,
+                                                        "refTo": null,
+                                                        "resultCount": null
+                                                      }
+                                                    ],
+                                                    "description": "DO WITH PRICE INDEX: basic/EUR/NONE",
+                                                    "estimatedCost": 6956,
+                                                    "hash": -666125049895284797,
+                                                    "id": 5,
+                                                    "refTo": null,
+                                                    "resultCount": null
+                                                  }
+                                                ],
+                                                "description": "DO WITH NONE",
+                                                "estimatedCost": 10434,
+                                                "hash": 5476912737007891226,
+                                                "id": 4,
+                                                "refTo": null,
+                                                "resultCount": null
+                                              }
+                                            ],
+                                            "description": "NO FILTER PREDICATE",
+                                            "estimatedCost": 13912,
+                                            "hash": 7442795575016163708,
+                                            "id": 3,
+                                            "refTo": null,
+                                            "resultCount": null
+                                          },
+                                          {
+                                            "actualCost": null,
+                                            "children": [
+                                              {
+                                                "actualCost": null,
+                                                "children": [
+                                                  {
+                                                    "actualCost": null,
+                                                    "children": [
+                                                      {
+                                                        "actualCost": null,
+                                                        "children": [],
+                                                        "description": "583 primary keys",
+                                                        "estimatedCost": 583,
+                                                        "hash": 8469996589292660086,
+                                                        "id": 10,
+                                                        "refTo": null,
+                                                        "resultCount": null
+                                                      }
+                                                    ],
+                                                    "description": "DO WITH PRICE INDEX: basic/EUR/LOWEST_PRICE",
+                                                    "estimatedCost": 1166,
+                                                    "hash": 3593862876393066418,
+                                                    "id": 9,
+                                                    "refTo": null,
+                                                    "resultCount": null
+                                                  }
+                                                ],
+                                                "description": "DO WITH LOWEST_PRICE",
+                                                "estimatedCost": 1749,
+                                                "hash": -6190503836567875066,
+                                                "id": 8,
+                                                "refTo": null,
+                                                "resultCount": null
+                                              }
+                                            ],
+                                            "description": "NO FILTER PREDICATE",
+                                            "estimatedCost": 10614098,
+                                            "hash": 6259009662788280110,
+                                            "id": 7,
+                                            "refTo": null,
+                                            "resultCount": null
+                                          },
+                                          {
+                                            "actualCost": null,
+                                            "children": [
+                                              {
+                                                "actualCost": null,
+                                                "children": [
+                                                  {
+                                                    "actualCost": null,
+                                                    "children": [
+                                                      {
+                                                        "actualCost": null,
+                                                        "children": [],
+                                                        "description": "2 primary keys",
+                                                        "estimatedCost": 2,
+                                                        "hash": 5612073097015065594,
+                                                        "id": 14,
+                                                        "refTo": null,
+                                                        "resultCount": null
+                                                      }
+                                                    ],
+                                                    "description": "DO WITH PRICE INDEX: basic/EUR/SUM",
+                                                    "estimatedCost": 4,
+                                                    "hash": -6118691077690870677,
+                                                    "id": 13,
+                                                    "refTo": null,
+                                                    "resultCount": null
+                                                  }
+                                                ],
+                                                "description": "DO WITH SUM",
+                                                "estimatedCost": 6,
+                                                "hash": 5380656838465585884,
+                                                "id": 12,
+                                                "refTo": null,
+                                                "resultCount": null
+                                              }
+                                            ],
+                                            "description": "NO FILTER PREDICATE",
+                                            "estimatedCost": 36160,
+                                            "hash": 8898886231023254869,
+                                            "id": 11,
+                                            "refTo": null,
+                                            "resultCount": null
+                                          }
+                                        ],
+                                        "description": "PRICE FILTER CONTAINER - OR ([basic]EUR)",
+                                        "estimatedCost": 10708863,
+                                        "hash": -7193872568708686331,
+                                        "id": 2,
+                                        "refTo": null,
+                                        "resultCount": null
+                                      }
+                                    ],
+                                    "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                                    "estimatedCost": 10708863,
+                                    "hash": 4778565296623238713,
+                                    "id": 1,
+                                    "refTo": null,
+                                    "resultCount": null
+                                  },
+                                  {
+                                    "actualCost": null,
+                                    "children": [
+                                      {
+                                        "actualCost": null,
+                                        "children": [],
+                                        "description": "LOCALE: 4161 primary keys",
+                                        "estimatedCost": 4161,
+                                        "hash": 5780745232501700393,
+                                        "id": 16,
+                                        "refTo": null,
+                                        "resultCount": null
+                                      }
+                                    ],
+                                    "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                                    "estimatedCost": 4161,
+                                    "hash": -8435307383246599287,
+                                    "id": 15,
+                                    "refTo": null,
+                                    "resultCount": null
+                                  }
+                                ],
+                                "description": "AND",
+                                "estimatedCost": 10749591,
+                                "hash": 1028997073129893755,
+                                "id": 0,
+                                "refTo": null,
+                                "resultCount": null
+                              },
+                              "selfTime": 454417,
+                              "spentTime": 454417,
+                              "start": 156453458,
+                              "startedAt": null,
+                              "steps": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "arguments": [
+                        "Hierarchy statistics filter (WITHOUT_USER_FILTER, reference=categories)"
+                      ],
+                      "formattedSelfTime": "1.325792ms",
+                      "formattedSpentTime": "1.325792ms",
+                      "metrics": null,
+                      "operation": "EXECUTION_FILTER_NESTED_QUERY",
+                      "plan": null,
+                      "selfTime": 1325792,
+                      "spentTime": 1325792,
+                      "start": 158015958,
+                      "startedAt": null,
+                      "steps": []
+                    }
+                  ]
+                },
+                {
+                  "arguments": [
+                    "PriceHistogramProducer"
+                  ],
+                  "formattedSelfTime": "4.414625ms",
+                  "formattedSpentTime": "4.414625ms",
+                  "metrics": null,
+                  "operation": "EXTRA_RESULT_ITEM_FABRICATION",
+                  "plan": null,
+                  "selfTime": 4414625,
+                  "spentTime": 4414625,
+                  "start": 163959542,
+                  "startedAt": null,
+                  "steps": []
+                },
+                {
+                  "arguments": [
+                    "AttributeHistogramProducer"
+                  ],
+                  "formattedSelfTime": "2.344917ms",
+                  "formattedSpentTime": "2.344917ms",
+                  "metrics": null,
+                  "operation": "EXTRA_RESULT_ITEM_FABRICATION",
+                  "plan": null,
+                  "selfTime": 2344917,
+                  "spentTime": 2344917,
+                  "start": 168380083,
+                  "startedAt": null,
+                  "steps": []
+                }
+              ]
+            },
+            {
+              "arguments": [],
+              "formattedSelfTime": "1.259209ms",
+              "formattedSpentTime": "1.259209ms",
+              "metrics": null,
+              "operation": "FETCHING",
+              "plan": null,
+              "selfTime": 1259209,
+              "spentTime": 1259209,
+              "start": 170826208,
+              "startedAt": null,
+              "steps": []
+            }
+          ]
+        }
+      ]
+    },
+    "priceHistogram": {
+      "min": "39.00",
+      "max": "1579.00",
+      "overallCount": 391,
+      "buckets": [
+        {
+          "occurrences": 276,
+          "relativeFrequency": "70.59",
+          "requested": true,
+          "threshold": "39.00"
+        },
+        {
+          "occurrences": 8,
+          "relativeFrequency": "2.05",
+          "requested": true,
+          "threshold": "347.00"
+        },
+        {
+          "occurrences": 80,
+          "relativeFrequency": "20.46",
+          "requested": true,
+          "threshold": "655.00"
+        },
+        {
+          "occurrences": 26,
+          "relativeFrequency": "6.65",
+          "requested": true,
+          "threshold": "963.00"
+        },
+        {
+          "occurrences": 1,
+          "relativeFrequency": "0.26",
+          "requested": true,
+          "threshold": "1271.00"
+        }
+      ]
+    },
+    "attributeHistogram": {
+      "batteryLife": {
+        "min": "0.75",
+        "max": "40.00",
+        "overallCount": 268,
+        "buckets": [
+          {
+            "occurrences": 133,
+            "relativeFrequency": "49.63",
+            "requested": true,
+            "threshold": "0.75"
+          },
+          {
+            "occurrences": 107,
+            "relativeFrequency": "39.93",
+            "requested": true,
+            "threshold": "8.60"
+          },
+          {
+            "occurrences": 17,
+            "relativeFrequency": "6.34",
+            "requested": true,
+            "threshold": "16.45"
+          },
+          {
+            "occurrences": 4,
+            "relativeFrequency": "1.49",
+            "requested": true,
+            "threshold": "24.30"
+          },
+          {
+            "occurrences": 7,
+            "relativeFrequency": "2.61",
+            "requested": true,
+            "threshold": "32.15"
+          }
+        ]
+      }
+    }
+  },
+  "recordPage": {
+    "data": [
+      {
+        "primaryKey": 107891,
+        "type": "Product",
+        "version": 2,
+        "scope": "LIVE",
+        "locales": [
+          "en"
+        ],
+        "allLocales": [
+          "cs",
+          "de",
+          "en"
+        ],
+        "attributes": {
+          "name": "Amazfit Bip 3",
+          "code": "amazfit-bip-3"
+        }
+      },
+      {
+        "primaryKey": 107893,
+        "type": "Product",
+        "version": 1,
+        "scope": "LIVE",
+        "locales": [
+          "en"
+        ],
+        "allLocales": [
+          "cs",
+          "de",
+          "en"
+        ],
+        "attributes": {
+          "name": "Amazfit Bip 3",
+          "code": "amazfit-bip-3-1"
+        }
+      }
+    ],
+    "type": "PAGE",
+    "totalRecordCount": 269,
+    "first": true,
+    "last": false,
+    "hasPrevious": false,
+    "hasNext": true,
+    "singlePage": false,
+    "empty": false,
+    "pageSize": 2,
+    "pageNumber": 1,
+    "lastPageNumber": 135,
+    "firstPageItemNumber": 0,
+    "lastPageItemNumber": 1
+  }
+}

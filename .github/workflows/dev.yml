@@ -41,6 +41,9 @@ jobs:
       - name: Lint
         run: yarn lint:check
 
+      - name: ADR index
+        run: scripts/generate-adr-index.sh --check
+
       - name: Type check
         run: yarn typecheck
 

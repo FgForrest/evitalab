@@ -10,7 +10,7 @@ it is registered **last** in `modules.ts` (a registrar may only inject what earl
   `collectionItemMenuFactoryInjectionKey`, `connectionExplorerPanelMenuFactoryInjectionKey`
 - **Injects:** `evitaClientInjectionKey`, `workspaceServiceInjectionKey`, `toasterInjectionKey`,
   `labStorageInjectionKey`,
-  and the tab factories for entity-viewer, evitaql-console, graphql-console, schema-viewer,
+  and the tab factories for entity-viewer, evitaql-console, graphql-console, rest-console, schema-viewer,
   server-viewer, task-viewer, backup-viewer, jfr-viewer, traffic-recordings, traffic-record-history and
   mutation-history
 
@@ -33,6 +33,11 @@ exist and whether each is enabled. Enablement is composed from predicates such a
 "is the server writable" and "is the catalog usable", so an item can be present-but-disabled rather than
 missing. Catalog actions are gated on catalog state — most are disabled while a catalog is
 `WARMING_UP`.
+
+The console entries are additionally gated on the server's enabled APIs: the GraphQL consoles (catalog *Data* /
+*Schema*, connection *System*) on `ApiType.GraphQL`, the [REST consoles](rest-console.md) (catalog *REST API
+console*, `CatalogMenuItemType.RestAPIConsole`; connection *REST System API console*,
+`ConnectionMenuItemType.RestSystemAPIConsole`) on `ApiType.Rest`.
 
 ## Behaviour when the server is unreachable
 

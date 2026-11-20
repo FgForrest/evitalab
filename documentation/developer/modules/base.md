@@ -37,7 +37,7 @@ Grouped by what they are for (details in [UI components](../ui-components.md)):
   `VMissingDataIndicator`, `VLoadingCircular`, `VListItemDivider`, `VCardTitleWithActions`,
   `VDateTimeInput` (combined date-time input with manual text entry and a picker wizard, see
   [UI components — date & time](../ui-components.md#date--time)), `VTimeOffsetPicker`,
-  `VExecuteQueryButton`.
+  `VExecuteQueryButton` (optionally a split button with `variants`, typed by `model/ExecuteQueryVariant.ts`).
 
 ## Related
 

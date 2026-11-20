@@ -22,12 +22,13 @@ The client is modeled after the evitaDB Java/C# drivers, simplified for evitaLab
 
 | Class | Responsibility |
 |-------|----------------|
-| `AbstractEvitaClient` | Lazily-built gRPC transport ([connect-web](https://connectrpc.com/)) with the `clientVersion` interceptor (see [associated data & complex data objects](#associated-data--complex-data-objects)), gRPC service clients (`EvitaService`, `EvitaManagementService`, `EvitaSessionService`, `EvitaTrafficRecordingService`), HTTP client ([ky](https://github.com/sindresorhus/ky)) for GraphQL API, converter singletons, `ErrorTransformer` |
-| `EvitaClient` | Catalog-level operations (list/create/rename/replace/delete/duplicate…), session orchestration (`queryCatalog`, `updateCatalog`), GraphQL passthrough (`queryCatalogUsingGraphQL`), schema-cache management, change callbacks |
+| `AbstractEvitaClient` | Lazily-built gRPC transport ([connect-web](https://connectrpc.com/)) with the `clientVersion` interceptor (see [associated data & complex data objects](#associated-data--complex-data-objects)), gRPC service clients (`EvitaService`, `EvitaManagementService`, `EvitaSessionService`, `EvitaTrafficRecordingService`), HTTP client ([ky](https://github.com/sindresorhus/ky)) for the GraphQL and REST APIs, converter singletons, `ErrorTransformer` |
+| `EvitaClient` | Catalog-level operations (list/create/rename/replace/delete/duplicate…), session orchestration (`queryCatalog`, `updateCatalog`), GraphQL passthrough (`queryCatalogUsingGraphQL`), REST passthrough (`callRest`, `getRestOpenApi`), schema-cache management, change callbacks |
 | `EvitaClientSession` | Session-scoped operations: `query()` (evitaQL), schema access (`getCatalogSchema()`, `getEntitySchema()`), collection management, backups, traffic recording, mutation history, labels, `close()` |
 | `EvitaClientManagement` | Server-level operations: server status, configuration, catalog statistics, backup/restore, file listing/download, task monitoring, with its own caches + change callbacks |
 | `EvitaSchemaCache` | Per-catalog cache of catalog/entity schemas with change callbacks |
 | `GraphQLSchemaCache` | Cache of built GraphQL schemas keyed by `(catalog, instanceType)` with change callbacks |
+| `RestOpenApiCache` | Cache of parsed REST API OpenAPI specifications keyed by `(catalog, instanceType)` with change callbacks |
 | `EvitaServerMetadataCache`, `EvitaCatalogStatisticsCache` | Caches for server metadata and catalog statistics |
 | `cache/PersistentCacheLayer` | On-disk (L2) half of the caches above — encoding, hydration and revalidation of persisted server data (see [persistent cache](#persistent-cache-l2)) |
 
@@ -41,6 +42,7 @@ separate concept. Both constants live in `AbstractEvitaClient.ts`:
 |---|---|---|---|
 | **Default (metadata)** | `defaultCallTimeout` = 15 s | `createGrpcWebTransport({ defaultTimeoutMs })` **and** `ky.create({ timeout })` | everything not listed below — schemas, statistics, session creation, listings, GraphQL introspection, the JFR observability endpoints¹ |
 | **Extended (user queries)** | `userQueryTimeout` = 300 s | explicit `timeoutMs` / `timeout` at the driver call site | the call sites enumerated below |
+| **REST specification** | `restOpenApiFetchTimeout` = 60 s | an `AbortController` deadline in `EvitaClient.fetchRestOpenApiText` (ky's `timeout` is switched off there) | the whole download of a REST API OpenAPI specification — headers **and** body, several MB for a catalog |
 | **Streams** | `unboundedStreamOptions` (`{ timeoutMs: 0 }`) | every streaming call site | the 10 call sites enumerated below |
 
 **Nothing above the driver ever passes a timeout.** A UI service calls
@@ -68,6 +70,7 @@ ever trips the bound, give those calls an explicit `timeout: userQueryTimeout`, 
 - `EvitaClientSession.goLiveAndClose()`
 - `EvitaClient.queryCatalogUsingGraphQL()` — see [GraphQL access](#graphql-access) for why this one *defaults*
   to the extended timeout and the introspection caller opts back down
+- `EvitaClient.callRest()` — every caller runs a request the user wrote, see [REST access](#rest-access)
 - `EvitaClientManagement.restoreCatalogUnary()` — already carried its own `{ timeoutMs: fileChunkUploadTimeout }`
 
 Verified to need **nothing**: `backupCatalog`, `fullBackupCatalog` and `exportTrafficRecording` return a queued
@@ -254,6 +257,54 @@ The raw introspection result is also persisted, so a console can be opened, brow
 autocomplete while the server is unreachable — only query execution needs it. See
 [persistent cache](#persistent-cache-l2).
 
+### REST access
+
+`callRest(catalogName, instanceType, request)` calls one operation of a REST API instance
+(`RestInstanceType.Catalog` → `{restUrl}/<catalog>`, `RestInstanceType.System` → `{restUrl}/system`; the
+specification's `servers` are ignored). Used by the [REST console](modules/rest-console.md).
+
+- The `RestRequest` (`connector/rest/model/`) is fully resolved by the caller: method, path with substituted path
+  parameters, query parameters as `[name, value]` pairs (arrays as repeated keys), optional JSON body.
+- Headers: **always `Accept: application/json`** — evitaDB negotiates strictly and answers anything but an exact
+  match or `*/*` with 406, and ky would otherwise derive `Accept` from the body method — plus
+  `X-EvitaDB-ClientID` like the GraphQL calls, and `Content-Type: application/json` when a body is sent.
+- `throwHttpErrors: false`: **4xx/5xx come back as a `RestResponse`** (`status`, `statusText`, `bodyText`,
+  `contentType`, `durationMs`, `sizeBytes`), because the console displays evitaDB's `{ errorCode, message }`.
+  Network failures and timeouts are still thrown through `ErrorTransformer`, and the `afterResponse` reachability
+  hook of `httpApiClient` sees every response, error statuses included.
+- `retry: 0` — ky retries `GET`/`PUT`/`DELETE` on some statuses by default, and a console request may be a
+  mutation.
+- Bounded by `userQueryTimeout` (see [deadlines](#deadlines--cancellation)).
+
+#### REST OpenAPI specification cache
+
+The console needs the instance's OpenAPI document (several MB for a catalog, 3.4 k component schemas) for its
+endpoint picker and body completion. `RestOpenApiCache` mirrors the [GraphQL schema cache](#graphql-schema-cache):
+
+- `getRestOpenApi(catalogName, instanceType)` — memory, then the persisted text (re-parsed), then a download
+  (`GET` of the instance root with `Accept: application/json`). The download is bounded by `restOpenApiFetchTimeout`
+  through an abort signal covering the **body read** too — ky's `timeout` bounds only the time until the response
+  headers arrive, and the body is several MB; an exceeded deadline throws `TimeoutError`. An error status is
+  **thrown** as `RestOpenApiFetchError` carrying the server's message. The returned `RestOpenApi` holds the document
+  parsed once and the hash of its text; the text itself is not kept in memory.
+- **Concurrent reads share one load.** Every open console of a catalog reacts to the same invalidation at once, so
+  `RestOpenApiCache` keeps the loads in flight per key. A load stores its result only if the entry was neither
+  cleared nor refreshed while it ran (per-key and global generation counters) — a load started before a `clear()`
+  must not put the stale specification back; its callers still get the result and reload on the callback.
+- The hash is a **SHA-256 computed by Web Crypto** (`utils/contentHash.ts`), asynchronous and native: xxh64 of the
+  8.5 MB text took ~350 ms of main thread per download. Web Crypto exists only in secure contexts (HTTPS,
+  localhost); elsewhere the hash falls back to xxh64. It is only a version identifier, so the two never need to
+  agree.
+- `registerRestOpenApiChangedCallback` / `unregister…` — the console's only change channel.
+- `refreshRestOpenApi(catalogName, instanceType)` — fetch-first, compares the hash of the fresh text with the
+  **in-memory** one (read after the download, for the same reason as in `refreshGraphQLSchema`), swaps and notifies
+  only on a difference. Backs *Reload OpenAPI* and the revalidation of a disk-served specification.
+- Invalidation: the specification is derived from the catalog schema, so it goes with it — `clearSchemaCache`
+  (whole catalog, change evidence: memory + disk), `clearCache(reason)` (all instances, `reason` decides the disk
+  copies) and `discardCatalogCaches` (rename/replace/delete: memory, and the disk record through
+  `PersistentCacheLayer.deleteCatalogData`). Every path fires the callbacks, so open consoles reload once. The
+  System instance is not catalog-scoped and is refreshed only through the reload button or the wholesale clear.
+
 ## Internal model (request-response)
 
 The generated gRPC model is not used outside the driver. Every gRPC message is converted into an
@@ -283,6 +334,37 @@ even though the wire message has separate `entity` and `entityReference` fields 
 exactly one of them, depending on whether the query asked for the entity body. Consumers narrow with
 `instanceof` (`EntityReferenceWithParent` for the parent, `Entity` for attributes) instead of choosing
 between two fields.
+
+### Query telemetry
+
+`ExtraResults.queryTelemetry` holds the root step of the telemetry tree when the evitaQL query asked for
+`queryTelemetry` — by hand or through the console's
+[Run with telemetry](modules/evitaql-console.md#run-with-telemetry) (`ExtraResultConverter.convertQueryTelemetry()`). The model lives in
+`request-response/data/`:
+
+| Class | Content |
+|-------|---------|
+| `QueryTelemetry` | `operation: QueryPhase`, `start`, `spentTime`, `selfTime?` (nanoseconds, `bigint`), `arguments: List<string>`, `startedAt?: OffsetDateTime` (root only), `metrics?: QueryTelemetryMetrics` (root only), `plan?: FormulaPlan`, `steps: List<QueryTelemetry>` |
+| `QueryTelemetryMetrics` | 8 optional members — `estimatedCardinality`, `actualCardinality`, `estimatedCost`, `actualCost`, `recordsReturned`, `ioFetchCount`, `ioFetchedSizeBytes` (`bigint`) and `prefetched` (`boolean`) |
+| `FormulaPlan` | `id`, `refTo?`, `hash?` (signed int64 as `bigint`), `description?`, `estimatedCost?`, `actualCost?`, `resultCount?`, `children: List<FormulaPlan>` |
+| `QueryPhase` | the 22 evitaDB phases; the string values are the evitaDB names (`'PLANNING_FILTER'`), `queryPhaseFromName()` resolves them |
+
+Rules the model encodes:
+
+- **Every int64 stays `bigint`.** gRPC sends them as strings (`jstype = JS_STRING`). Converting durations and
+  costs to `number` for ratios and layout is the view model's job; `hash` must never become a `number` — it is
+  how the winning candidate plan is recognised and loses precision as a double.
+- **Absent ≠ 0.** A missing metric means "not measured", a missing `actualCost` / `resultCount` on a plan node
+  means "not computed". Both are `undefined`, never `0`.
+- **The plan is a DAG sent as a tree.** A later occurrence of an already described formula instance is a
+  childless node with `refTo` = the `id` of the full one.
+- `selfTime`, `FormulaPlan.hash` and `FormulaPlan.estimatedCost` are typed `bigint | undefined` because the
+  GraphQL console builds the same model from a user-written selection that may omit them; gRPC always fills
+  them.
+- A phase unknown to this evitaLab (a newer server) makes the converter drop the whole telemetry with a console
+  warning instead of failing the query response.
+
+How the consoles turn this into a visualisation is described in [`console`](modules/console.md#query-telemetry).
 
 ### Date-time values
 
@@ -580,6 +662,8 @@ Available callback registries:
   `registerEntitySchemaChangedCallback(catalogName, entityType, cb)`
 - `EvitaClient.registerGraphQLSchemaChangedCallback(catalogName, instanceType, cb)` — GraphQL schema
   cache (see [GraphQL schema cache](#graphql-schema-cache) above)
+- `EvitaClient.registerRestOpenApiChangedCallback(catalogName, instanceType, cb)` — REST OpenAPI specification
+  cache (see [REST OpenAPI specification cache](#rest-openapi-specification-cache))
 - `EvitaClientManagement.registerServerStatusChangeCallback(cb)`,
   `registerConfigurationChangeCallback(cb)`, `registerCatalogStatisticsChangeCallback(cb)`
 
@@ -625,6 +709,7 @@ Exactly what the server sent, **before** conversion:
 | `catalogSchemas` | `<catalogName>` | `GrpcCatalogSchema` binary + `version` |
 | `entitySchemas` | `<catalogName>:<entityType>` | `GrpcEntitySchema` binary + `version` |
 | `graphqlIntrospections` | `<catalogName>:<instanceType>` | raw `IntrospectionQuery` JSON + xxh64 hash |
+| `restOpenApiSpecs` | `<catalogName>:<instanceType>` | raw OpenAPI specification text + SHA-256 hash (record cap 5 — a catalog specification is several MB) |
 
 The internal model is deliberately **not** serialized: it is immutable classes with Immutable.js
 collections, `bigint`s, `data-type/` wrappers and lazy accessors (`CatalogSchema.entitySchemaAccessor`).
@@ -656,7 +741,8 @@ Every cache read takes the cheapest available source, and a disk hit is served *
 
 Write-through sits at the **fetch points**, where the raw protobuf message is still at hand:
 `EvitaClientSession.fetchLatestCatalogSchema` / `fetchLatestEntitySchema`,
-`EvitaClientManagement.fetchCatalogStatistics`, and the introspection inside `EvitaClient.getGraphQLSchema`.
+`EvitaClientManagement.fetchCatalogStatistics`, the introspection inside `EvitaClient.getGraphQLSchema`, and the
+specification downloads of `EvitaClient.getRestOpenApi` / `refreshRestOpenApi`.
 Writes are fire-and-forget (`console.warn` on failure) — persistence must never delay or fail the fetch that
 triggered it. Because they are fire-and-forget, **every deletion in `PersistentCacheLayer` first drains the
 in-flight writes**: a write that started earlier would otherwise be free to land *after* the deletion and
@@ -725,7 +811,8 @@ Two subtleties worth knowing before touching this:
 - **`renameCatalog` / `replaceCatalog` / `deleteCatalogIfExists` bypass the cache classes entirely** — they
   drop the whole per-catalog `EvitaSchemaCache` object rather than invalidating through it, so no reason enum
   can fire for them. They go through `discardCatalogCaches`, which additionally (a) deletes the catalog's disk
-  records (catalog schema, entity schemas by key prefix, GraphQL introspections) and (b) **evicts the shared
+  records (catalog schema, entity schemas by key prefix, GraphQL introspections, the REST specification) and drops
+  the catalog's REST specification from memory (firing its callbacks), and (b) **evicts the shared
   session**, which captured the cache object at construction and would otherwise keep answering from the very
   cache being discarded.
 
@@ -834,6 +921,7 @@ fetch-first entry points:
 | `refreshCatalogSchema(catalogName)` | schema viewer reload (`SchemaViewerService.refreshSchema`) |
 | `refreshEntitySchema(catalogName, entityType)` | ditto, entity-level |
 | `refreshGraphQLSchema(catalogName, instanceType)` | GraphQL console's *Reload GraphQL schema* |
+| `refreshRestOpenApi(catalogName, instanceType)` | REST console's *Reload OpenAPI* |
 | `EvitaClientManagement.refreshCatalogStatistics()` | background revalidation of the catalog listing |
 
 All follow **fetch → compare → swap → notify**: fetch fresh *first*; on success overwrite L1 + L2 and fire the
@@ -872,7 +960,7 @@ change callbacks fire:
   between the cached read and the refresh path.
 
 `EvitaClient.clearCache(reason)` clears **all** client caches — catalog statistics, sessions, schemas
-(internal and GraphQL) and the server metadata cache too; `reason` decides the fate of the persisted copies
+(internal and GraphQL), REST OpenAPI specifications and the server metadata cache too; `reason` decides the fate of the persisted copies
 (see [invalidation intents](#invalidation-three-intents-and-why-the-enum-is-mandatory)). It clears the
 **server metadata cache first**, so the
 server-status reachability signal is refreshed before the catalog-statistics cache; consumers
@@ -1062,7 +1150,7 @@ real server being stopped:
 | Path | Shape reaching the predicate |
 |---|---|
 | gRPC | `ConnectError`, `code = Code.Unknown` (2) — *not* `Code.Unavailable` — `rawMessage = 'Failed to fetch'` (also seen: `'network error'`) |
-| HTTP / GraphQL (ky) | a **raw `TypeError`** with message `Failed to fetch`, because classification runs before `ErrorTransformer` converts it |
+| HTTP / GraphQL / REST (ky) | a **raw `TypeError`** with message `Failed to fetch`, because classification runs before `ErrorTransformer` converts it |
 
 Since a genuine server-side fault also lands in `Code.Unknown`, that code counts as connectivity *only* when the
 message is a known browser network failure — otherwise real problems would be silently swallowed. Missing the

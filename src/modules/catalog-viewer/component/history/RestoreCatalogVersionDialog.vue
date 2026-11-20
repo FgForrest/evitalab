@@ -19,7 +19,7 @@ import { ClassifierValidationErrorType } from '@/modules/database-driver/data-ty
 import { CatalogVersionSummary } from '@/modules/catalog-viewer/model/CatalogVersionSummary'
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { CatalogViewerService, useCatalogViewerService } from '@/modules/catalog-viewer/service/CatalogViewerService'
-import { formatDateTime, formatNumber } from '@/modules/catalog-viewer/service/statisticsFormatting'
+import { formatDateTime, formatNumber } from '@/utils/statisticsFormatting'
 
 const catalogViewerService: CatalogViewerService = useCatalogViewerService()
 const toaster: Toaster = useToaster()

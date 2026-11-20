@@ -50,7 +50,7 @@ Main consumers: `workspace` (`openedTabs`, `selectedTab`, `tabHistory`), `connec
 ## `LabServerDataCache`
 
 An async key-value store over IndexedDB, used to keep server data (catalog statistics, catalog/entity
-schemas, GraphQL introspections) across reloads so evitaLab can start from disk — and stay usable while the
+schemas, GraphQL introspections, REST OpenAPI specifications) across reloads so evitaLab can start from disk — and stay usable while the
 server is unreachable. Its **only** consumer is the `database-driver`'s `PersistentCacheLayer`, which owns
 the record layout and payload encoding; see
 [database driver — persistent cache](../database-driver.md#persistent-cache-l2).
@@ -152,7 +152,9 @@ Bump `cacheFormatVersion` only on a breaking change to the record layout — whi
 such as adding an index. **Regenerating the gRPC client does not require a bump** — payloads are stored as
 protobuf binary, which is forward/backward compatible. A change in what a converter *means* by a field might.
 
-The current version is **2**; version 1 predates the `storedAt` index used by eviction. Note that bumping this
+The current version is **3**; version 1 predates the `storedAt` index used by eviction, version 2 predates the
+`restOpenApiSpecs` store. Adding a store is a layout change too: `openDB` creates the stores only when a database
+is first opened, so a version-2 database would never get the new store. Note that bumping this
 version rather than the IndexedDB one is what keeps `blocked` unreachable (see above) — a database of a
 different format is a different *name*, not a different version of the same database.
 

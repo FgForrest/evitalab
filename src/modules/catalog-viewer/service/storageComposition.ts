@@ -1,7 +1,7 @@
 import { StoragePartUsage } from '@/modules/database-driver/request-response/statistics/StoragePartUsage'
 import { StoragePartGroup } from '@/modules/database-driver/request-response/statistics/StoragePartGroup'
 import { StoragePartKind } from '@/modules/database-driver/request-response/statistics/StoragePartKind'
-import { share } from '@/modules/catalog-viewer/service/statisticsFormatting'
+import { share } from '@/utils/statisticsFormatting'
 import type {
     StorageBucketRow,
     StorageComposition,

@@ -1,12 +1,13 @@
 import { test, expect } from 'vitest'
 import type { App } from 'vue'
-import LuxonExtensions from '../../../src/vue-plugins/luxonExtensions'
+import LuxonExtensions from '../../src/vue-plugins/luxonExtensions'
 import {
     formatDuration,
+    formatNanos,
     formatPercent,
     formatSmallPercent,
     share
-} from '../../../src/modules/catalog-viewer/service/statisticsFormatting'
+} from '../../src/utils/statisticsFormatting'
 
 // the digit grouping and the space before the percent sign follow the runtime locale, so the assertions look at
 // the digits alone
@@ -49,4 +50,25 @@ test('Should not round a duration down onto the value it is being compared again
 test('Should keep coarse durations coarse', () => {
     expect(formatDuration(60000n)).toBe('1 min')
     expect(formatDuration(3600000n)).toBe('1 hr')
+})
+
+test('Should format nanoseconds in the unit that keeps them readable', () => {
+    expect(formatNanos(0n)).toBe('0 ns')
+    expect(formatNanos(850n)).toBe('850 ns')
+    expect(formatNanos(3_000)).toMatch(/^3[.,]0 µs$/)
+    expect(formatNanos(123_456n)).toMatch(/^123[.,]5 µs$/)
+    expect(formatNanos(3_481_506n)).toMatch(/^3[.,]48 ms$/)
+    expect(formatNanos(46_034_987n)).toMatch(/^46[.,]03 ms$/)
+    expect(formatNanos(1_500_000_000n)).toMatch(/^1[.,]50 s$/)
+})
+
+test('Should switch to the larger unit instead of rounding up to 1000', () => {
+    expect(formatNanos(999n)).toBe('999 ns')
+    expect(formatNanos(999.6)).toMatch(/^1[.,]0 µs$/)
+    expect(formatNanos(999_960n)).toMatch(/^1[.,]00 ms$/)
+    expect(formatNanos(999_996_000n)).toMatch(/^1[.,]00 s$/)
+})
+
+test('Should render an absent duration as the placeholder, not zero', () => {
+    expect(formatNanos(undefined)).not.toMatch(/0/)
 })

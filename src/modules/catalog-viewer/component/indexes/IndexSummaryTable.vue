@@ -16,7 +16,7 @@ import { IndexTypeCount } from '@/modules/database-driver/request-response/stati
 import {
     CollectionIndexSummary
 } from '@/modules/database-driver/request-response/statistics/CollectionIndexSummary'
-import { formatNumber, notApplicable } from '@/modules/catalog-viewer/service/statisticsFormatting'
+import { formatNumber, notApplicable } from '@/utils/statisticsFormatting'
 
 const { t } = useI18n()
 

@@ -9,7 +9,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import VueApexCharts from 'vue3-apexcharts'
-import { formatBytes, formatPercent, share } from '@/modules/catalog-viewer/service/statisticsFormatting'
+import { formatBytes, formatPercent, share } from '@/utils/statisticsFormatting'
 
 const { t } = useI18n()
 

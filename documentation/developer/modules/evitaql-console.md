@@ -28,6 +28,7 @@ Everything under `console/`:
 |------|--------------|
 | `component/` | The console UI (editor + results), built on [`code-editor`](code-editor.md)'s `VQueryEditor` |
 | `service/EvitaQLConsoleService.ts` | Executes queries through `EvitaClient` |
+| `service/injectQueryTelemetry.ts` | `injectQueryTelemetry(query)` — adds `queryTelemetry(PLAN)` for [Run with telemetry](#run-with-telemetry) |
 | `model/EvitaQLConsoleDataPointer.ts` | What the tab points at (connection + catalog) |
 | `history/` | `EvitaQLConsoleHistoryKey`, `EvitaQLConsoleHistoryRecord` (`[id, query]`) |
 | `result-visualiser/service/` | The concrete parsers (below) |
@@ -102,16 +103,57 @@ disappear until the user clicks (or `Ctrl+1`s) back into the query panel. The ke
 shortcuts apply the same guard, so a shortcut pressed while the result viewer has focus is a visible
 no-op rather than a hidden action.
 
+## Result status
+
+The result pane starts with the shared [`ResultStatusBar`](console.md#result-status-bar): `OK` / `Error` and the
+duration measured by `EvitaQLConsoleService.executeEvitaQLQuery`, which returns an `EvitaQLQueryResult`
+(`response` + `status`). A query the server refuses (`QueryError`) is a result with an error status, other failures
+still go to the toaster. No size — the gRPC payload is not available.
+
 ## Result visualisation
 
 `EvitaQLResultVisualiserService` implements [`console`](console.md)'s `ResultVisualiserService`, and each
 abstract parser has an evitaQL counterpart: `EvitaQLResultAnalyzer`,
 `EvitaQLFacetSummaryResultParser`, `EvitaQLHierarchyResultParser`,
 `EvitaQLAttributeHistogramsResultParser`, `EvitaQLPriceHistogramResultParser`,
-`EvitaQLReferenceSummaryResultParser`.
+`EvitaQLReferenceSummaryResultParser`, `EvitaQLQueryTelemetryResultParser`.
+
+The query telemetry needs no parsing here: the driver already converted the gRPC tree into the internal
+`QueryTelemetry` model (`EvitaResponse.extraResults.queryTelemetry`), which is always complete, so
+`EvitaQLQueryTelemetryResultParser` wraps it in a `ParsedQueryTelemetry` with no missing selections. The
+visualiser type is offered whenever the query contains `queryTelemetry(...)` in its `require` part
+(`queryTelemetry(PLAN)` adds the formula plans) — written by hand or added by
+[Run with telemetry](#run-with-telemetry).
 
 The service is `provide`d per console tab under `resultVisualiserServiceInjectionKey`, which is how the
 shared visualiser components render evitaQL results without knowing the language.
+
+## Run with telemetry
+
+The Run button is a split button (`VExecuteQueryButton` with `variants`, see
+[UI components](../ui-components.md#tab-window-building-blocks)): its chevron menu offers **Run with
+telemetry**, also bound to `Command.EvitaQLConsole_ExecuteQueryWithTelemetry` (`Ctrl+Shift+Enter` /
+`Cmd+Shift+Enter`). It calls `executeQuery(true)`, which sends a copy of the query passed through
+`injectQueryTelemetry` instead of the editor text. Everything else is as for a plain run: the **editor
+content is never modified**, the history record and `enteredQueryCode` (the visualiser's input query) keep
+the query as written, and the result handling is identical. There is no toolbar indicator — the result's
+*Visualise* menu offering **Query telemetry** and the `PLAN` chip of its overview are the feedback.
+
+`injectQueryTelemetry(query: string): string` parses the query with the Lezer grammar of
+`@lukashornych/codemirror-lang-evitaql` (`evitaQLQueryLanguage.parser`, the same parser the
+[formatters](code-editor.md#document-formatters) walk), looks at the direct arguments of `Query → QueryBody`
+and splices text into the **original source**, so formatting and `//` comments survive:
+
+| Query | Result |
+|-------|--------|
+| `require(...)` without `queryTelemetry` | `, queryTelemetry(PLAN)` inserted right after the last argument of `require` (before a trailing comment); an empty `require()` gets `queryTelemetry(PLAN)` without the comma |
+| no `require` | `, require(queryTelemetry(PLAN))` inserted after the last argument of the query |
+| `require` already contains `queryTelemetry(...)` (any level) | returned unchanged — the injection is idempotent and never overrides the user's level |
+| syntax errors (error nodes in the tree) or no query at all | throws `QueryTelemetryInjectionError` (reason `Unparseable`) |
+
+The error class lives in [`console`](console.md#run-with-telemetry) and is shared with the GraphQL injector.
+The console catches it, shows `toaster.warning` ("query could not be parsed, running it without
+telemetry") and runs the original query, so a run is never lost to a failed injection.
 
 ## Related
 

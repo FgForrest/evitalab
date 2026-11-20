@@ -18,7 +18,7 @@ import { CatalogAttributeSchemaPointer } from '@/modules/schema-viewer/viewer/mo
 import {
     GlobalUniqueIndexCardinality
 } from '@/modules/database-driver/request-response/statistics/GlobalUniqueIndexCardinality'
-import { formatNumber, notApplicable } from '@/modules/catalog-viewer/service/statisticsFormatting'
+import { formatNumber, notApplicable } from '@/utils/statisticsFormatting'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()

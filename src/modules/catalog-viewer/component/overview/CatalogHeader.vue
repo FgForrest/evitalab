@@ -13,7 +13,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState'
-import { formatNumber, notApplicable } from '@/modules/catalog-viewer/service/statisticsFormatting'
+import { formatNumber, notApplicable } from '@/utils/statisticsFormatting'
 import { CatalogIdentity } from '@/modules/database-driver/request-response/statistics/CatalogIdentity'
 
 const { t } = useI18n()

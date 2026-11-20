@@ -42,7 +42,7 @@ import { useCatalogSnapshot } from '@/modules/catalog-viewer/composable/useCatal
 import { useCollectionIndexCounts } from '@/modules/catalog-viewer/composable/useCollectionIndexCounts'
 import CollectionSelector from '@/modules/catalog-viewer/component/indexes/CollectionSelector.vue'
 import StatTile from '@/modules/catalog-viewer/component/StatTile.vue'
-import { formatBytes, formatDateTime, formatNumber, notApplicable } from '@/modules/catalog-viewer/service/statisticsFormatting'
+import { formatBytes, formatDateTime, formatNumber, notApplicable } from '@/utils/statisticsFormatting'
 
 const catalogViewerService: CatalogViewerService = useCatalogViewerService()
 const toaster: Toaster = useToaster()

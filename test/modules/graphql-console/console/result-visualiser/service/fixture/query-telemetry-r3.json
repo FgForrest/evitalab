@@ -1,0 +1,1660 @@
+{
+  "data": {
+    "queryProduct": {
+      "extraResults": {
+        "queryTelemetry": [
+          {
+            "level": 1,
+            "operation": "OVERALL",
+            "arguments": [],
+            "spentTime": "17815440",
+            "selfTime": "100222",
+            "stepsCount": 2,
+            "metrics": {
+              "prefetched": false,
+              "estimatedCardinality": "39",
+              "actualCardinality": "18"
+            },
+            "plan": [
+              {
+                "level": 1,
+                "id": 0,
+                "refTo": null,
+                "description": "NOT",
+                "estimatedCost": "43860529",
+                "actualCost": "21996325",
+                "resultCount": 18,
+                "childrenCount": 2
+              },
+              {
+                "level": 2,
+                "id": 1,
+                "refTo": null,
+                "description": "EMPTY",
+                "estimatedCost": "0",
+                "actualCost": "0",
+                "resultCount": 0,
+                "childrenCount": 0
+              },
+              {
+                "level": 2,
+                "id": 2,
+                "refTo": null,
+                "description": "AND",
+                "estimatedCost": "43860178",
+                "actualCost": "21996163",
+                "resultCount": 18,
+                "childrenCount": 3
+              },
+              {
+                "level": 3,
+                "id": 3,
+                "refTo": null,
+                "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                "estimatedCost": "4161",
+                "actualCost": "0",
+                "resultCount": 4161,
+                "childrenCount": 1
+              },
+              {
+                "level": 4,
+                "id": 4,
+                "refTo": null,
+                "description": "LOCALE: 4161 primary keys",
+                "estimatedCost": "4161",
+                "actualCost": "0",
+                "resultCount": 4161,
+                "childrenCount": 0
+              },
+              {
+                "level": 3,
+                "id": 5,
+                "refTo": null,
+                "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                "estimatedCost": "585",
+                "actualCost": "546",
+                "resultCount": 39,
+                "childrenCount": 1
+              },
+              {
+                "level": 4,
+                "id": 6,
+                "refTo": null,
+                "description": "ATTRIBUTE FILTER `code`",
+                "estimatedCost": "585",
+                "actualCost": "546",
+                "resultCount": 39,
+                "childrenCount": 1
+              },
+              {
+                "level": 5,
+                "id": 7,
+                "refTo": null,
+                "description": "OR",
+                "estimatedCost": "546",
+                "actualCost": "507",
+                "resultCount": 39,
+                "childrenCount": 39
+              },
+              {
+                "level": 6,
+                "id": 8,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 9,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 10,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 11,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 12,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 13,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 14,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 15,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 16,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 17,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 18,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 19,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 20,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 21,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 22,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 23,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 24,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 25,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 26,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 27,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 28,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 29,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 30,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 31,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 32,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 33,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 34,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 35,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 36,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 37,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 38,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 39,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 40,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 41,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 42,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 43,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 44,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 45,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 46,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": "0",
+                "resultCount": 1,
+                "childrenCount": 0
+              },
+              {
+                "level": 3,
+                "id": 47,
+                "refTo": null,
+                "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                "estimatedCost": "43855081",
+                "actualCost": "21951976",
+                "resultCount": 649,
+                "childrenCount": 1
+              },
+              {
+                "level": 4,
+                "id": 48,
+                "refTo": null,
+                "description": "PRICE BETWEEN",
+                "estimatedCost": "43855081",
+                "actualCost": "21951976",
+                "resultCount": 649,
+                "childrenCount": 1
+              },
+              {
+                "level": 5,
+                "id": 49,
+                "refTo": null,
+                "description": "PRICE FILTER CONTAINER - OR ([basic, b2b-basic-price]EUR)",
+                "estimatedCost": "43855081",
+                "actualCost": "21944837",
+                "resultCount": 649,
+                "childrenCount": 3
+              },
+              {
+                "level": 6,
+                "id": 50,
+                "refTo": null,
+                "description": "ENTITY PRICE WITH TAX BETWEEN 100 AND 300",
+                "estimatedCost": "22443534",
+                "actualCost": "11268720",
+                "resultCount": 542,
+                "childrenCount": 1
+              },
+              {
+                "level": 7,
+                "id": 51,
+                "refTo": null,
+                "description": "DO WITH NONE",
+                "estimatedCost": "149554",
+                "actualCost": "121730",
+                "resultCount": 3478,
+                "childrenCount": 1
+              },
+              {
+                "level": 8,
+                "id": 52,
+                "refTo": null,
+                "description": "OR",
+                "estimatedCost": "142598",
+                "actualCost": "118252",
+                "resultCount": 3478,
+                "childrenCount": 2
+              },
+              {
+                "level": 9,
+                "id": 53,
+                "refTo": null,
+                "description": "DO WITH PRICE INDEX: basic/EUR/NONE",
+                "estimatedCost": "6956",
+                "actualCost": "3478",
+                "resultCount": 3478,
+                "childrenCount": 1
+              },
+              {
+                "level": 10,
+                "id": 54,
+                "refTo": null,
+                "description": "3478 primary keys",
+                "estimatedCost": "3478",
+                "actualCost": "0",
+                "resultCount": 3478,
+                "childrenCount": 0
+              },
+              {
+                "level": 9,
+                "id": 55,
+                "refTo": null,
+                "description": "WITH PRICE IN b2b-basic-price WHEN NO PRICE EXISTS IN basic",
+                "estimatedCost": "45214",
+                "actualCost": "69560",
+                "resultCount": 0,
+                "childrenCount": 2
+              },
+              {
+                "level": 10,
+                "id": 53,
+                "refTo": 53,
+                "description": null,
+                "estimatedCost": "6956",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 10,
+                "id": 56,
+                "refTo": null,
+                "description": "DO WITH PRICE INDEX: b2b-basic-price/EUR/NONE",
+                "estimatedCost": "6956",
+                "actualCost": "3478",
+                "resultCount": 3478,
+                "childrenCount": 1
+              },
+              {
+                "level": 11,
+                "id": 57,
+                "refTo": null,
+                "description": "3478 primary keys",
+                "estimatedCost": "3478",
+                "actualCost": "0",
+                "resultCount": 3478,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 58,
+                "refTo": null,
+                "description": "ENTITY PRICE WITH TAX BETWEEN 100 AND 300",
+                "estimatedCost": "21249767",
+                "actualCost": "10632754",
+                "resultCount": 107,
+                "childrenCount": 1
+              },
+              {
+                "level": 7,
+                "id": 59,
+                "refTo": null,
+                "description": "DO WITH LOWEST_PRICE",
+                "estimatedCost": "25069",
+                "actualCost": "20405",
+                "resultCount": 583,
+                "childrenCount": 1
+              },
+              {
+                "level": 8,
+                "id": 60,
+                "refTo": null,
+                "description": "OR",
+                "estimatedCost": "23903",
+                "actualCost": "19822",
+                "resultCount": 583,
+                "childrenCount": 2
+              },
+              {
+                "level": 9,
+                "id": 61,
+                "refTo": null,
+                "description": "DO WITH PRICE INDEX: basic/EUR/LOWEST_PRICE",
+                "estimatedCost": "1166",
+                "actualCost": "583",
+                "resultCount": 583,
+                "childrenCount": 1
+              },
+              {
+                "level": 10,
+                "id": 62,
+                "refTo": null,
+                "description": "583 primary keys",
+                "estimatedCost": "583",
+                "actualCost": "0",
+                "resultCount": 583,
+                "childrenCount": 0
+              },
+              {
+                "level": 9,
+                "id": 63,
+                "refTo": null,
+                "description": "WITH PRICE IN b2b-basic-price WHEN NO PRICE EXISTS IN basic",
+                "estimatedCost": "7579",
+                "actualCost": "11660",
+                "resultCount": 0,
+                "childrenCount": 2
+              },
+              {
+                "level": 10,
+                "id": 61,
+                "refTo": 61,
+                "description": null,
+                "estimatedCost": "1166",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 10,
+                "id": 64,
+                "refTo": null,
+                "description": "DO WITH PRICE INDEX: b2b-basic-price/EUR/LOWEST_PRICE",
+                "estimatedCost": "1166",
+                "actualCost": "583",
+                "resultCount": 583,
+                "childrenCount": 1
+              },
+              {
+                "level": 11,
+                "id": 65,
+                "refTo": null,
+                "description": "583 primary keys",
+                "estimatedCost": "583",
+                "actualCost": "0",
+                "resultCount": 583,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 66,
+                "refTo": null,
+                "description": "ENTITY PRICE WITH TAX BETWEEN 100 AND 300",
+                "estimatedCost": "72394",
+                "actualCost": "36224",
+                "resultCount": 0,
+                "childrenCount": 1
+              },
+              {
+                "level": 7,
+                "id": 67,
+                "refTo": null,
+                "description": "DO WITH SUM",
+                "estimatedCost": "86",
+                "actualCost": "70",
+                "resultCount": 2,
+                "childrenCount": 1
+              },
+              {
+                "level": 8,
+                "id": 68,
+                "refTo": null,
+                "description": "OR",
+                "estimatedCost": "82",
+                "actualCost": "68",
+                "resultCount": 2,
+                "childrenCount": 2
+              },
+              {
+                "level": 9,
+                "id": 69,
+                "refTo": null,
+                "description": "DO WITH PRICE INDEX: basic/EUR/SUM",
+                "estimatedCost": "4",
+                "actualCost": "2",
+                "resultCount": 2,
+                "childrenCount": 1
+              },
+              {
+                "level": 10,
+                "id": 70,
+                "refTo": null,
+                "description": "2 primary keys",
+                "estimatedCost": "2",
+                "actualCost": "0",
+                "resultCount": 2,
+                "childrenCount": 0
+              },
+              {
+                "level": 9,
+                "id": 71,
+                "refTo": null,
+                "description": "WITH PRICE IN b2b-basic-price WHEN NO PRICE EXISTS IN basic",
+                "estimatedCost": "26",
+                "actualCost": "40",
+                "resultCount": 0,
+                "childrenCount": 2
+              },
+              {
+                "level": 10,
+                "id": 69,
+                "refTo": 69,
+                "description": null,
+                "estimatedCost": "4",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 10,
+                "id": 72,
+                "refTo": null,
+                "description": "DO WITH PRICE INDEX: b2b-basic-price/EUR/SUM",
+                "estimatedCost": "4",
+                "actualCost": "2",
+                "resultCount": 2,
+                "childrenCount": 1
+              },
+              {
+                "level": 11,
+                "id": 73,
+                "refTo": null,
+                "description": "2 primary keys",
+                "estimatedCost": "2",
+                "actualCost": "0",
+                "resultCount": 2,
+                "childrenCount": 0
+              }
+            ]
+          },
+          {
+            "level": 2,
+            "operation": "PLANNING",
+            "arguments": [],
+            "spentTime": "7327680",
+            "selfTime": "89538",
+            "stepsCount": 4,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_INDEX_USAGE",
+            "arguments": [],
+            "spentTime": "162079",
+            "selfTime": "162079",
+            "stepsCount": 0,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_FILTER",
+            "arguments": [
+              "Selected index: Index type: Live index: GLOBAL, estimated costs 43860529"
+            ],
+            "spentTime": "6995776",
+            "selfTime": "31325",
+            "stepsCount": 1,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 4,
+            "operation": "PLANNING_FILTER_ALTERNATIVE",
+            "arguments": [
+              "Index type: Live index: GLOBAL, estimated costs 43860529"
+            ],
+            "spentTime": "6964451",
+            "selfTime": "6964451",
+            "stepsCount": 0,
+            "metrics": null,
+            "plan": [
+              {
+                "level": 1,
+                "id": 0,
+                "refTo": null,
+                "description": "NOT",
+                "estimatedCost": "43860529",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 2
+              },
+              {
+                "level": 2,
+                "id": 1,
+                "refTo": null,
+                "description": "EMPTY",
+                "estimatedCost": "0",
+                "actualCost": "0",
+                "resultCount": 0,
+                "childrenCount": 0
+              },
+              {
+                "level": 2,
+                "id": 2,
+                "refTo": null,
+                "description": "AND",
+                "estimatedCost": "43860178",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 3
+              },
+              {
+                "level": 3,
+                "id": 3,
+                "refTo": null,
+                "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                "estimatedCost": "4161",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 4,
+                "id": 4,
+                "refTo": null,
+                "description": "LOCALE: 4161 primary keys",
+                "estimatedCost": "4161",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 3,
+                "id": 5,
+                "refTo": null,
+                "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                "estimatedCost": "585",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 4,
+                "id": 6,
+                "refTo": null,
+                "description": "ATTRIBUTE FILTER `code`",
+                "estimatedCost": "585",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 5,
+                "id": 7,
+                "refTo": null,
+                "description": "OR",
+                "estimatedCost": "546",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 39
+              },
+              {
+                "level": 6,
+                "id": 8,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 9,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 10,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 11,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 12,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 13,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 14,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 15,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 16,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 17,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 18,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 19,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 20,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 21,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 22,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 23,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 24,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 25,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 26,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 27,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 28,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 29,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 30,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 31,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 32,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 33,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 34,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 35,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 36,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 37,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 38,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 39,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 40,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 41,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 42,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 43,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 44,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 45,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 46,
+                "refTo": null,
+                "description": "1 primary keys",
+                "estimatedCost": "1",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 3,
+                "id": 47,
+                "refTo": null,
+                "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                "estimatedCost": "43855081",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 4,
+                "id": 48,
+                "refTo": null,
+                "description": "PRICE BETWEEN",
+                "estimatedCost": "43855081",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 5,
+                "id": 49,
+                "refTo": null,
+                "description": "PRICE FILTER CONTAINER - OR ([basic, b2b-basic-price]EUR)",
+                "estimatedCost": "43855081",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 3
+              },
+              {
+                "level": 6,
+                "id": 50,
+                "refTo": null,
+                "description": "ENTITY PRICE WITH TAX BETWEEN 100 AND 300",
+                "estimatedCost": "22443534",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 7,
+                "id": 51,
+                "refTo": null,
+                "description": "DO WITH NONE",
+                "estimatedCost": "149554",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 8,
+                "id": 52,
+                "refTo": null,
+                "description": "OR",
+                "estimatedCost": "142598",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 2
+              },
+              {
+                "level": 9,
+                "id": 53,
+                "refTo": null,
+                "description": "DO WITH PRICE INDEX: basic/EUR/NONE",
+                "estimatedCost": "6956",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 10,
+                "id": 54,
+                "refTo": null,
+                "description": "3478 primary keys",
+                "estimatedCost": "3478",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 9,
+                "id": 55,
+                "refTo": null,
+                "description": "WITH PRICE IN b2b-basic-price WHEN NO PRICE EXISTS IN basic",
+                "estimatedCost": "45214",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 2
+              },
+              {
+                "level": 10,
+                "id": 53,
+                "refTo": 53,
+                "description": null,
+                "estimatedCost": "6956",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 10,
+                "id": 56,
+                "refTo": null,
+                "description": "DO WITH PRICE INDEX: b2b-basic-price/EUR/NONE",
+                "estimatedCost": "6956",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 11,
+                "id": 57,
+                "refTo": null,
+                "description": "3478 primary keys",
+                "estimatedCost": "3478",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 58,
+                "refTo": null,
+                "description": "ENTITY PRICE WITH TAX BETWEEN 100 AND 300",
+                "estimatedCost": "21249767",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 7,
+                "id": 59,
+                "refTo": null,
+                "description": "DO WITH LOWEST_PRICE",
+                "estimatedCost": "25069",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 8,
+                "id": 60,
+                "refTo": null,
+                "description": "OR",
+                "estimatedCost": "23903",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 2
+              },
+              {
+                "level": 9,
+                "id": 61,
+                "refTo": null,
+                "description": "DO WITH PRICE INDEX: basic/EUR/LOWEST_PRICE",
+                "estimatedCost": "1166",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 10,
+                "id": 62,
+                "refTo": null,
+                "description": "583 primary keys",
+                "estimatedCost": "583",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 9,
+                "id": 63,
+                "refTo": null,
+                "description": "WITH PRICE IN b2b-basic-price WHEN NO PRICE EXISTS IN basic",
+                "estimatedCost": "7579",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 2
+              },
+              {
+                "level": 10,
+                "id": 61,
+                "refTo": 61,
+                "description": null,
+                "estimatedCost": "1166",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 10,
+                "id": 64,
+                "refTo": null,
+                "description": "DO WITH PRICE INDEX: b2b-basic-price/EUR/LOWEST_PRICE",
+                "estimatedCost": "1166",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 11,
+                "id": 65,
+                "refTo": null,
+                "description": "583 primary keys",
+                "estimatedCost": "583",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 6,
+                "id": 66,
+                "refTo": null,
+                "description": "ENTITY PRICE WITH TAX BETWEEN 100 AND 300",
+                "estimatedCost": "72394",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 7,
+                "id": 67,
+                "refTo": null,
+                "description": "DO WITH SUM",
+                "estimatedCost": "86",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 8,
+                "id": 68,
+                "refTo": null,
+                "description": "OR",
+                "estimatedCost": "82",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 2
+              },
+              {
+                "level": 9,
+                "id": 69,
+                "refTo": null,
+                "description": "DO WITH PRICE INDEX: basic/EUR/SUM",
+                "estimatedCost": "4",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 10,
+                "id": 70,
+                "refTo": null,
+                "description": "2 primary keys",
+                "estimatedCost": "2",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 9,
+                "id": 71,
+                "refTo": null,
+                "description": "WITH PRICE IN b2b-basic-price WHEN NO PRICE EXISTS IN basic",
+                "estimatedCost": "26",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 2
+              },
+              {
+                "level": 10,
+                "id": 69,
+                "refTo": 69,
+                "description": null,
+                "estimatedCost": "4",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 10,
+                "id": 72,
+                "refTo": null,
+                "description": "DO WITH PRICE INDEX: b2b-basic-price/EUR/SUM",
+                "estimatedCost": "4",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 11,
+                "id": 73,
+                "refTo": null,
+                "description": "2 primary keys",
+                "estimatedCost": "2",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              }
+            ]
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_SORT",
+            "arguments": [],
+            "spentTime": "54430",
+            "selfTime": "54430",
+            "stepsCount": 0,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_EXTRA_RESULT_FABRICATION",
+            "arguments": [],
+            "spentTime": "25857",
+            "selfTime": "25857",
+            "stepsCount": 0,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 2,
+            "operation": "EXECUTION",
+            "arguments": [],
+            "spentTime": "10387538",
+            "selfTime": "579958",
+            "stepsCount": 2,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "EXECUTION_FILTER",
+            "arguments": [],
+            "spentTime": "9772967",
+            "selfTime": "9772967",
+            "stepsCount": 0,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "EXECUTION_SORT_AND_SLICE",
+            "arguments": [],
+            "spentTime": "34613",
+            "selfTime": "34613",
+            "stepsCount": 0,
+            "metrics": null,
+            "plan": null
+          }
+        ]
+      }
+    }
+  }
+}

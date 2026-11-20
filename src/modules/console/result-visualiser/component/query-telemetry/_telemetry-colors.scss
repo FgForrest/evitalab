@@ -1,0 +1,33 @@
+// Private phase palette of the query telemetry visualiser (planning / execution / fetching, a muted root tone and the
+// hatch of a parent's unattributed self time). The three hues are separable under common colour-vision deficiencies
+// and readable on the lab's dark surface. Not part of the global theme: `@use` it from the telemetry components only.
+@use "sass:color";
+
+$telemetry-root: #5C6378;
+$telemetry-planning: #9C6ADB;
+$telemetry-execution: #2E9E8F;
+$telemetry-fetching: #BF8835;
+
+// dark ink drawn on top of the phase hues
+$telemetry-ink-on-phase: #131323;
+
+// hatch of the time a parent spent outside its children
+$telemetry-self-hatch: repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.28) 0 3px, transparent 3px 7px);
+$telemetry-self-hatch-muted: repeating-linear-gradient(135deg, rgba(165, 172, 188, 0.35) 0 3px, transparent 3px 7px);
+
+@function telemetry-rgb($color) {
+    @return color.channel($color, "red", $space: rgb), color.channel($color, "green", $space: rgb), color.channel($color, "blue", $space: rgb);
+}
+
+// declares `--telemetry-<group>` and `--telemetry-<group>-rgb` for every phase group on the including element
+@mixin telemetry-custom-properties {
+    --telemetry-root: #{$telemetry-root};
+    --telemetry-root-rgb: #{telemetry-rgb($telemetry-root)};
+    --telemetry-planning: #{$telemetry-planning};
+    --telemetry-planning-rgb: #{telemetry-rgb($telemetry-planning)};
+    --telemetry-execution: #{$telemetry-execution};
+    --telemetry-execution-rgb: #{telemetry-rgb($telemetry-execution)};
+    --telemetry-fetching: #{$telemetry-fetching};
+    --telemetry-fetching-rgb: #{telemetry-rgb($telemetry-fetching)};
+    --telemetry-ink-on-phase: #{$telemetry-ink-on-phase};
+}

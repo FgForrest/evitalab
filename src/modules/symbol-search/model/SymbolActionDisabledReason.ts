@@ -9,5 +9,7 @@ export enum SymbolActionDisabledReason {
     /** the catalog is in a state other than alive */
     CatalogNotAlive = 'catalogNotAlive',
     /** the server does not expose the GraphQL API (or its status is not known) */
-    GraphQLDisabled = 'graphQLDisabled'
+    GraphQLDisabled = 'graphQLDisabled',
+    /** the server does not expose the REST API (or its status is not known) */
+    RestDisabled = 'restDisabled'
 }

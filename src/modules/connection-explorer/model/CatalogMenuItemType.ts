@@ -7,6 +7,7 @@ export enum CatalogMenuItemType {
     EvitaQLConsole = 'evitaQLConsole',
     GraphQLDataAPIConsole = 'graphQLDataApiConsole',
     GraphQLSchemaAPIConsole = 'graphQLSchemaApiConsole',
+    RestAPIConsole = 'restApiConsole',
     ViewSchema = 'viewSchema',
     Backup = 'backup',
 

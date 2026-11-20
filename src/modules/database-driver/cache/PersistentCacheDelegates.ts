@@ -17,6 +17,8 @@ import type { EntitySchema } from '@/modules/database-driver/request-response/sc
 import type { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import type { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
 import type { CachedGraphQLSchema } from '@/modules/database-driver/GraphQLSchemaCache'
+import type { RestInstanceType } from '@/modules/database-driver/connector/rest/model/RestInstanceType'
+import type { RestOpenApi } from '@/modules/database-driver/connector/rest/model/RestOpenApi'
 
 /**
  * Persistent half of an {@link EvitaSchemaCache} — always scoped to the one catalog its cache belongs to.
@@ -84,4 +86,27 @@ export interface PersistentGraphQLSchemaCache {
      * on disk they outlive the in-memory ones by design.
      */
     deleteAllSchemas(): Promise<void>
+}
+
+/**
+ * Persistent half of the {@link RestOpenApiCache}. Re-parses the persisted specification text, exactly as a live
+ * download would.
+ */
+export interface PersistentRestOpenApiCache {
+
+    /**
+     * Returns the specification parsed from the persisted text, and schedules a background revalidation when it
+     * serves one.
+     */
+    getOpenApi(catalogName: string, instanceType: RestInstanceType): Promise<RestOpenApi | undefined>
+
+    /**
+     * Drops the persisted specification of a single REST API instance.
+     */
+    deleteOpenApi(catalogName: string, instanceType: RestInstanceType): Promise<void>
+
+    /**
+     * Drops every persisted specification. Needed by the wholesale clear, which cannot enumerate the keys.
+     */
+    deleteAllOpenApis(): Promise<void>
 }

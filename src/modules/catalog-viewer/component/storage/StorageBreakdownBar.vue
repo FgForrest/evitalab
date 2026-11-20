@@ -10,7 +10,7 @@ import { computed } from 'vue'
 import { List as ImmutableList } from 'immutable'
 import VueApexCharts from 'vue3-apexcharts'
 import { StorageBreakdownRow } from '@/modules/catalog-viewer/model/StorageBreakdownRow'
-import { formatBytes, formatPercent, share } from '@/modules/catalog-viewer/service/statisticsFormatting'
+import { formatBytes, formatPercent, share } from '@/utils/statisticsFormatting'
 
 const props = defineProps<{
     /**

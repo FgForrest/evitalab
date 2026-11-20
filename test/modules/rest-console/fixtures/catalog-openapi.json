@@ -1,0 +1,2636 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Web services for catalog `evita`.",
+    "contact": {
+      "url": "https://www.fg.cz",
+      "email": "novotny@fg.cz"
+    },
+    "license": {
+      "name": "Business Source License 1.1",
+      "url": "https://github.com/FgForrest/evitaDB/blob/master/LICENSE"
+    },
+    "version": "2026.3-SNAPSHOT"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:5555/rest/evita"
+    }
+  ],
+  "paths": {
+    "/Category/get": {
+      "get": {
+        "description": "Finds and returns single entity from `Category` collection by simplified collection-specific arguments.\n",
+        "operationId": "getCategory",
+        "parameters": [
+          {
+            "name": "primaryKey",
+            "in": "query",
+            "description": "Parameter specifying desired primary key of queried entity\n",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "dataInLocales",
+            "in": "query",
+            "description": "Parameter specifying locales to get localized data.\n",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/CatalogLocale"
+              }
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "schema": {
+              "$ref": "#/components/schemas/CatalogLocale"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "description": "Unique code that identifies the entity among other entities of the same kind.\nTh",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "url",
+            "in": "query",
+            "description": "Localized and globally unique URL of the entity.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "urlInactive",
+            "in": "query",
+            "description": "Old URLs that has been originally assigned to the entity, but are no longer acti",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "This `scope` parameter can be used to control the scope of the entity search. It",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Scope"
+              }
+            }
+          },
+          {
+            "name": "fetchAll",
+            "in": "query",
+            "description": "Parameter specifying whether all data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bodyFetch",
+            "in": "query",
+            "description": "Parameter specifying whether entity body data will be present in returned entity",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "associatedDataContent",
+            "in": "query",
+            "description": "Parameter specifying whether associated data (and which of them) will be present",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "associatedDataContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL associated data will be present in returned ent",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "attributeContent",
+            "in": "query",
+            "description": "Parameter specifying whether attributes (and which of them) will be present in r",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "attributeContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL attributes will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "referenceContent",
+            "in": "query",
+            "description": "Parameter specifying whether reference data (and which of them) will be present ",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "referenceContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL reference data will be present in returned enti",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "hierarchyContent",
+            "in": "query",
+            "description": "Parameter specifying whether hierarchy data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Category/list": {
+      "post": {
+        "description": "Finds and returns list of entities from `Category` collection by complex query.\n",
+        "operationId": "listCategory",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryListRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/{locale}/Product/get/{primaryKey}": {
+      "get": {
+        "description": "Finds and returns single entity from `Product` collection by simplified collection-specific arguments.\n",
+        "operationId": "getProductByIdLocalized",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CatalogLocale"
+            }
+          },
+          {
+            "name": "primaryKey",
+            "in": "path",
+            "description": "Parameter specifying desired primary key of queried entity\n",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "priceInCurrency",
+            "in": "query",
+            "description": "Parameter specifying desired price list of price for sale of queried entity\n",
+            "schema": {
+              "$ref": "#/components/schemas/CatalogCurrency"
+            }
+          },
+          {
+            "name": "priceInPriceLists",
+            "in": "query",
+            "description": "Parameter specifying desired price list(s) of price for sale of queried entity\n",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "priceValidIn",
+            "in": "query",
+            "description": "Parameter specifying desired validity of price for sale of queried entity. The d",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2022-09-27T13:28:27.357+02:00"
+            }
+          },
+          {
+            "name": "priceValidInNow",
+            "in": "query",
+            "description": "Parameter specifying desired validity of price for sale of queried entity. The d",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "This `scope` parameter can be used to control the scope of the entity search. It",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Scope"
+              }
+            }
+          },
+          {
+            "name": "fetchAll",
+            "in": "query",
+            "description": "Parameter specifying whether all data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bodyFetch",
+            "in": "query",
+            "description": "Parameter specifying whether entity body data will be present in returned entity",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "associatedDataContent",
+            "in": "query",
+            "description": "Parameter specifying whether associated data (and which of them) will be present",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "associatedDataContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL associated data will be present in returned ent",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "attributeContent",
+            "in": "query",
+            "description": "Parameter specifying whether attributes (and which of them) will be present in r",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "attributeContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL attributes will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "priceContent",
+            "in": "query",
+            "description": "Parameter specifying whether price data will be present in returned entity.\n",
+            "schema": {
+              "$ref": "#/components/schemas/PriceContentMode"
+            }
+          },
+          {
+            "name": "referenceContent",
+            "in": "query",
+            "description": "Parameter specifying whether reference data (and which of them) will be present ",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "referenceContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL reference data will be present in returned enti",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/{locale}/Product/query": {
+      "post": {
+        "description": "Finds and returns entities and extra results from `Product` collection by complex query.\n",
+        "operationId": "queryProductLocalized",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CatalogLocale"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductLocalizedQueryRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Product/get": {
+      "get": {
+        "description": "Finds and returns single entity from `Product` collection by simplified collection-specific arguments.\n",
+        "operationId": "getProduct",
+        "parameters": [
+          {
+            "name": "primaryKey",
+            "in": "query",
+            "description": "Parameter specifying desired primary key of queried entity\n",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "dataInLocales",
+            "in": "query",
+            "description": "Parameter specifying locales to get localized data.\n",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/CatalogLocale"
+              }
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "schema": {
+              "$ref": "#/components/schemas/CatalogLocale"
+            }
+          },
+          {
+            "name": "priceInCurrency",
+            "in": "query",
+            "description": "Parameter specifying desired price list of price for sale of queried entity\n",
+            "schema": {
+              "$ref": "#/components/schemas/CatalogCurrency"
+            }
+          },
+          {
+            "name": "priceInPriceLists",
+            "in": "query",
+            "description": "Parameter specifying desired price list(s) of price for sale of queried entity\n",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "priceValidIn",
+            "in": "query",
+            "description": "Parameter specifying desired validity of price for sale of queried entity. The d",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2022-09-27T13:28:27.357+02:00"
+            }
+          },
+          {
+            "name": "priceValidInNow",
+            "in": "query",
+            "description": "Parameter specifying desired validity of price for sale of queried entity. The d",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "urlInactive",
+            "in": "query",
+            "description": "Old URLs that has been originally assigned to the entity, but are no longer acti",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "codeShort",
+            "in": "query",
+            "description": "The product shortcode for use in feeds and GTM, which must share the same code a",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "description": "Unique code that identifies the entity among other entities of the same kind.\nTh",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "url",
+            "in": "query",
+            "description": "Localized and globally unique URL of the entity.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "This `scope` parameter can be used to control the scope of the entity search. It",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Scope"
+              }
+            }
+          },
+          {
+            "name": "fetchAll",
+            "in": "query",
+            "description": "Parameter specifying whether all data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bodyFetch",
+            "in": "query",
+            "description": "Parameter specifying whether entity body data will be present in returned entity",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "associatedDataContent",
+            "in": "query",
+            "description": "Parameter specifying whether associated data (and which of them) will be present",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "associatedDataContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL associated data will be present in returned ent",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "attributeContent",
+            "in": "query",
+            "description": "Parameter specifying whether attributes (and which of them) will be present in r",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "attributeContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL attributes will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "priceContent",
+            "in": "query",
+            "description": "Parameter specifying whether price data will be present in returned entity.\n",
+            "schema": {
+              "$ref": "#/components/schemas/PriceContentMode"
+            }
+          },
+          {
+            "name": "referenceContent",
+            "in": "query",
+            "description": "Parameter specifying whether reference data (and which of them) will be present ",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "referenceContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL reference data will be present in returned enti",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Product/schema": {
+      "get": {
+        "description": "Returns evitaDB's internal schema for entities from `Product` collection.\nCan be used for altering schema of entities and their data.\n",
+        "operationId": "getProductSchema",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "description": "Updates evitaDB's internal schema for entities from `Product` collection.\n",
+        "operationId": "updateProductSchema",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEntitySchemaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Category/schema": {
+      "get": {
+        "description": "Returns evitaDB's internal schema for entities from `Category` collection.\nCan be used for altering schema of entities and their data.\n",
+        "operationId": "getCategorySchema",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "description": "Updates evitaDB's internal schema for entities from `Category` collection.\n",
+        "operationId": "updateCategorySchema",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEntitySchemaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/entity/list": {
+      "get": {
+        "description": "Finds and returns list of entities from unspecified collections by shared arguments between collections.\n",
+        "operationId": "listEntity",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limits number of returned entities.\n",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "urlInactive",
+            "in": "query",
+            "description": "Old URLs that has been originally assigned to the entity, but are no longer acti",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "url",
+            "in": "query",
+            "description": "Localized and globally unique URL of the entity.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "This `scope` parameter can be used to control the scope of the entity search. It",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Scope"
+              }
+            }
+          },
+          {
+            "name": "filterJoin",
+            "in": "query",
+            "description": "Defines how the filtering arguments are joined together into a single filter. By",
+            "schema": {
+              "$ref": "#/components/schemas/QueryHeaderFilterArgumentsJoinType",
+              "default": "AND"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "schema": {
+              "type": "string",
+              "format": "locale",
+              "example": "cs-CZ"
+            }
+          },
+          {
+            "name": "dataInLocales",
+            "in": "query",
+            "description": "Parameter specifying locales to get localized data.\n",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "locale",
+                "example": "cs-CZ"
+              }
+            }
+          },
+          {
+            "name": "fetchAll",
+            "in": "query",
+            "description": "Parameter specifying whether all data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bodyFetch",
+            "in": "query",
+            "description": "Parameter specifying whether entity body data will be present in returned entity",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "associatedDataContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL associated data will be present in returned ent",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "attributeContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL attributes will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "priceContent",
+            "in": "query",
+            "description": "Parameter specifying whether price data will be present in returned entity.\n",
+            "schema": {
+              "$ref": "#/components/schemas/PriceContentMode"
+            }
+          },
+          {
+            "name": "referenceContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL reference data will be present in returned enti",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "hierarchyContent",
+            "in": "query",
+            "description": "Parameter specifying whether hierarchy data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "description": "OpenAPI Specification in YAML format.\n",
+        "operationId": "getOpenApiSpecification",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/schema": {
+      "get": {
+        "description": "Returns evitaDB's internal schema for whole catalog.\nCan be used for altering catalog schema.\n",
+        "operationId": "getCatalogSchema",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "description": "Updates evitaDB's internal schema for whole catalog.\n",
+        "operationId": "updateCatalogSchema",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCatalogSchemaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/{locale}/entity/list": {
+      "get": {
+        "description": "Finds and returns list of entities from unspecified collections by shared arguments between collections.\n",
+        "operationId": "listEntityLocalized",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "locale",
+              "example": "cs-CZ"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limits number of returned entities.\n",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "urlInactive",
+            "in": "query",
+            "description": "Old URLs that has been originally assigned to the entity, but are no longer acti",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "url",
+            "in": "query",
+            "description": "Localized and globally unique URL of the entity.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "This `scope` parameter can be used to control the scope of the entity search. It",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Scope"
+              }
+            }
+          },
+          {
+            "name": "filterJoin",
+            "in": "query",
+            "description": "Defines how the filtering arguments are joined together into a single filter. By",
+            "schema": {
+              "$ref": "#/components/schemas/QueryHeaderFilterArgumentsJoinType",
+              "default": "AND"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "schema": {
+              "type": "string",
+              "format": "locale",
+              "example": "cs-CZ"
+            }
+          },
+          {
+            "name": "dataInLocales",
+            "in": "query",
+            "description": "Parameter specifying locales to get localized data.\n",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "locale",
+                "example": "cs-CZ"
+              }
+            }
+          },
+          {
+            "name": "fetchAll",
+            "in": "query",
+            "description": "Parameter specifying whether all data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bodyFetch",
+            "in": "query",
+            "description": "Parameter specifying whether entity body data will be present in returned entity",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "associatedDataContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL associated data will be present in returned ent",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "attributeContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL attributes will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "priceContent",
+            "in": "query",
+            "description": "Parameter specifying whether price data will be present in returned entity.\n",
+            "schema": {
+              "$ref": "#/components/schemas/PriceContentMode"
+            }
+          },
+          {
+            "name": "referenceContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL reference data will be present in returned enti",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "hierarchyContent",
+            "in": "query",
+            "description": "Parameter specifying whether hierarchy data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/{locale}/Category/get": {
+      "get": {
+        "description": "Finds and returns single entity from `Category` collection by simplified collection-specific arguments.\n",
+        "operationId": "getCategoryLocalized",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CatalogLocale"
+            }
+          },
+          {
+            "name": "primaryKey",
+            "in": "query",
+            "description": "Parameter specifying desired primary key of queried entity\n",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "description": "Unique code that identifies the entity among other entities of the same kind.\nTh",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "url",
+            "in": "query",
+            "description": "Localized and globally unique URL of the entity.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "urlInactive",
+            "in": "query",
+            "description": "Old URLs that has been originally assigned to the entity, but are no longer acti",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "This `scope` parameter can be used to control the scope of the entity search. It",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Scope"
+              }
+            }
+          },
+          {
+            "name": "fetchAll",
+            "in": "query",
+            "description": "Parameter specifying whether all data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bodyFetch",
+            "in": "query",
+            "description": "Parameter specifying whether entity body data will be present in returned entity",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "associatedDataContent",
+            "in": "query",
+            "description": "Parameter specifying whether associated data (and which of them) will be present",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "associatedDataContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL associated data will be present in returned ent",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "attributeContent",
+            "in": "query",
+            "description": "Parameter specifying whether attributes (and which of them) will be present in r",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "attributeContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL attributes will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "referenceContent",
+            "in": "query",
+            "description": "Parameter specifying whether reference data (and which of them) will be present ",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "referenceContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL reference data will be present in returned enti",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "hierarchyContent",
+            "in": "query",
+            "description": "Parameter specifying whether hierarchy data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/change-captures": {
+      "get": {
+        "description": "Opens WebSocket connection for listening to catalog change captures",
+        "operationId": "registerCatalogChangeCapture",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Category/query": {
+      "post": {
+        "description": "Finds and returns entities and extra results from `Category` collection by complex query.\n",
+        "operationId": "queryCategory",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryQueryRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/{locale}/Category/list": {
+      "post": {
+        "description": "Finds and returns list of entities from `Category` collection by complex query.\n",
+        "operationId": "listCategoryLocalized",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CatalogLocale"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryLocalizedListRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Product/get/{primaryKey}": {
+      "get": {
+        "description": "Finds and returns single entity from `Product` collection by simplified collection-specific arguments.\n",
+        "operationId": "getProductById",
+        "parameters": [
+          {
+            "name": "primaryKey",
+            "in": "path",
+            "description": "Parameter specifying desired primary key of queried entity\n",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "dataInLocales",
+            "in": "query",
+            "description": "Parameter specifying locales to get localized data.\n",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/CatalogLocale"
+              }
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "schema": {
+              "$ref": "#/components/schemas/CatalogLocale"
+            }
+          },
+          {
+            "name": "priceInCurrency",
+            "in": "query",
+            "description": "Parameter specifying desired price list of price for sale of queried entity\n",
+            "schema": {
+              "$ref": "#/components/schemas/CatalogCurrency"
+            }
+          },
+          {
+            "name": "priceInPriceLists",
+            "in": "query",
+            "description": "Parameter specifying desired price list(s) of price for sale of queried entity\n",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "priceValidIn",
+            "in": "query",
+            "description": "Parameter specifying desired validity of price for sale of queried entity. The d",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2022-09-27T13:28:27.357+02:00"
+            }
+          },
+          {
+            "name": "priceValidInNow",
+            "in": "query",
+            "description": "Parameter specifying desired validity of price for sale of queried entity. The d",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "This `scope` parameter can be used to control the scope of the entity search. It",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Scope"
+              }
+            }
+          },
+          {
+            "name": "fetchAll",
+            "in": "query",
+            "description": "Parameter specifying whether all data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bodyFetch",
+            "in": "query",
+            "description": "Parameter specifying whether entity body data will be present in returned entity",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "associatedDataContent",
+            "in": "query",
+            "description": "Parameter specifying whether associated data (and which of them) will be present",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "associatedDataContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL associated data will be present in returned ent",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "attributeContent",
+            "in": "query",
+            "description": "Parameter specifying whether attributes (and which of them) will be present in r",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "attributeContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL attributes will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "priceContent",
+            "in": "query",
+            "description": "Parameter specifying whether price data will be present in returned entity.\n",
+            "schema": {
+              "$ref": "#/components/schemas/PriceContentMode"
+            }
+          },
+          {
+            "name": "referenceContent",
+            "in": "query",
+            "description": "Parameter specifying whether reference data (and which of them) will be present ",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "referenceContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL reference data will be present in returned enti",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Category/{primaryKey}": {
+      "put": {
+        "description": "Updates existing or inserts new entity to `Category` collection.\n",
+        "operationId": "upsertCategory",
+        "parameters": [
+          {
+            "name": "primaryKey",
+            "in": "path",
+            "description": "Parameter specifying primary key of upserted entity (new or updated).\n",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryUpsertRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "Deletes existing entities from `Category` collection that conforms with passed query and returns deletion info.\n",
+        "operationId": "deleteCategory",
+        "parameters": [
+          {
+            "name": "primaryKey",
+            "in": "path",
+            "description": "Parameter specifying primary key of entity to delete\n",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "fetchAll",
+            "in": "query",
+            "description": "Parameter specifying whether all data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bodyFetch",
+            "in": "query",
+            "description": "Parameter specifying whether entity body data will be present in returned entity",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "associatedDataContent",
+            "in": "query",
+            "description": "Parameter specifying whether associated data (and which of them) will be present",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "associatedDataContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL associated data will be present in returned ent",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "attributeContent",
+            "in": "query",
+            "description": "Parameter specifying whether attributes (and which of them) will be present in r",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "attributeContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL attributes will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "referenceContent",
+            "in": "query",
+            "description": "Parameter specifying whether reference data (and which of them) will be present ",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "referenceContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL reference data will be present in returned enti",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "hierarchyContent",
+            "in": "query",
+            "description": "Parameter specifying whether hierarchy data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/{locale}/Category/get/{primaryKey}": {
+      "get": {
+        "description": "Finds and returns single entity from `Category` collection by simplified collection-specific arguments.\n",
+        "operationId": "getCategoryByIdLocalized",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CatalogLocale"
+            }
+          },
+          {
+            "name": "primaryKey",
+            "in": "path",
+            "description": "Parameter specifying desired primary key of queried entity\n",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "This `scope` parameter can be used to control the scope of the entity search. It",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Scope"
+              }
+            }
+          },
+          {
+            "name": "fetchAll",
+            "in": "query",
+            "description": "Parameter specifying whether all data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bodyFetch",
+            "in": "query",
+            "description": "Parameter specifying whether entity body data will be present in returned entity",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "associatedDataContent",
+            "in": "query",
+            "description": "Parameter specifying whether associated data (and which of them) will be present",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "associatedDataContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL associated data will be present in returned ent",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "attributeContent",
+            "in": "query",
+            "description": "Parameter specifying whether attributes (and which of them) will be present in r",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "attributeContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL attributes will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "referenceContent",
+            "in": "query",
+            "description": "Parameter specifying whether reference data (and which of them) will be present ",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "referenceContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL reference data will be present in returned enti",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "hierarchyContent",
+            "in": "query",
+            "description": "Parameter specifying whether hierarchy data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/entity/get": {
+      "get": {
+        "description": "Finds and returns single entity from unspecified collection by shared arguments between collections.\n",
+        "operationId": "getEntity",
+        "parameters": [
+          {
+            "name": "urlInactive",
+            "in": "query",
+            "description": "Old URLs that has been originally assigned to the entity, but are no longer acti",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "url",
+            "in": "query",
+            "description": "Localized and globally unique URL of the entity.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "This `scope` parameter can be used to control the scope of the entity search. It",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Scope"
+              }
+            }
+          },
+          {
+            "name": "filterJoin",
+            "in": "query",
+            "description": "Defines how the filtering arguments are joined together into a single filter. By",
+            "schema": {
+              "$ref": "#/components/schemas/QueryHeaderFilterArgumentsJoinType",
+              "default": "AND"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "schema": {
+              "type": "string",
+              "format": "locale",
+              "example": "cs-CZ"
+            }
+          },
+          {
+            "name": "dataInLocales",
+            "in": "query",
+            "description": "Parameter specifying locales to get localized data.\n",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "locale",
+                "example": "cs-CZ"
+              }
+            }
+          },
+          {
+            "name": "fetchAll",
+            "in": "query",
+            "description": "Parameter specifying whether all data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bodyFetch",
+            "in": "query",
+            "description": "Parameter specifying whether entity body data will be present in returned entity",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "associatedDataContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL associated data will be present in returned ent",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "attributeContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL attributes will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "priceContent",
+            "in": "query",
+            "description": "Parameter specifying whether price data will be present in returned entity.\n",
+            "schema": {
+              "$ref": "#/components/schemas/PriceContentMode"
+            }
+          },
+          {
+            "name": "referenceContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL reference data will be present in returned enti",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "hierarchyContent",
+            "in": "query",
+            "description": "Parameter specifying whether hierarchy data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/{locale}/Category/query": {
+      "post": {
+        "description": "Finds and returns entities and extra results from `Category` collection by complex query.\n",
+        "operationId": "queryCategoryLocalized",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CatalogLocale"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryLocalizedQueryRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/{locale}/Product/list": {
+      "post": {
+        "description": "Finds and returns list of entities from `Product` collection by complex query.\n",
+        "operationId": "listProductLocalized",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CatalogLocale"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductLocalizedListRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Category/get/{primaryKey}": {
+      "get": {
+        "description": "Finds and returns single entity from `Category` collection by simplified collection-specific arguments.\n",
+        "operationId": "getCategoryById",
+        "parameters": [
+          {
+            "name": "primaryKey",
+            "in": "path",
+            "description": "Parameter specifying desired primary key of queried entity\n",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "dataInLocales",
+            "in": "query",
+            "description": "Parameter specifying locales to get localized data.\n",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/CatalogLocale"
+              }
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "schema": {
+              "$ref": "#/components/schemas/CatalogLocale"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "This `scope` parameter can be used to control the scope of the entity search. It",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Scope"
+              }
+            }
+          },
+          {
+            "name": "fetchAll",
+            "in": "query",
+            "description": "Parameter specifying whether all data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bodyFetch",
+            "in": "query",
+            "description": "Parameter specifying whether entity body data will be present in returned entity",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "associatedDataContent",
+            "in": "query",
+            "description": "Parameter specifying whether associated data (and which of them) will be present",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "associatedDataContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL associated data will be present in returned ent",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "attributeContent",
+            "in": "query",
+            "description": "Parameter specifying whether attributes (and which of them) will be present in r",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "attributeContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL attributes will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "referenceContent",
+            "in": "query",
+            "description": "Parameter specifying whether reference data (and which of them) will be present ",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "referenceContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL reference data will be present in returned enti",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "hierarchyContent",
+            "in": "query",
+            "description": "Parameter specifying whether hierarchy data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/collections": {
+      "get": {
+        "description": "Returns all present collection entity types in this catalog.\n",
+        "operationId": "collections",
+        "parameters": [
+          {
+            "name": "entityCount",
+            "in": "query",
+            "description": "Parameter specifying whether count of entities within single collection should b",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/{locale}/entity/get": {
+      "get": {
+        "description": "Finds and returns single entity from unspecified collection by shared arguments between collections.\n",
+        "operationId": "getEntityLocalized",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "locale",
+              "example": "cs-CZ"
+            }
+          },
+          {
+            "name": "urlInactive",
+            "in": "query",
+            "description": "Old URLs that has been originally assigned to the entity, but are no longer acti",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "url",
+            "in": "query",
+            "description": "Localized and globally unique URL of the entity.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "This `scope` parameter can be used to control the scope of the entity search. It",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Scope"
+              }
+            }
+          },
+          {
+            "name": "filterJoin",
+            "in": "query",
+            "description": "Defines how the filtering arguments are joined together into a single filter. By",
+            "schema": {
+              "$ref": "#/components/schemas/QueryHeaderFilterArgumentsJoinType",
+              "default": "AND"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "schema": {
+              "type": "string",
+              "format": "locale",
+              "example": "cs-CZ"
+            }
+          },
+          {
+            "name": "dataInLocales",
+            "in": "query",
+            "description": "Parameter specifying locales to get localized data.\n",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "locale",
+                "example": "cs-CZ"
+              }
+            }
+          },
+          {
+            "name": "fetchAll",
+            "in": "query",
+            "description": "Parameter specifying whether all data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bodyFetch",
+            "in": "query",
+            "description": "Parameter specifying whether entity body data will be present in returned entity",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "associatedDataContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL associated data will be present in returned ent",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "attributeContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL attributes will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "priceContent",
+            "in": "query",
+            "description": "Parameter specifying whether price data will be present in returned entity.\n",
+            "schema": {
+              "$ref": "#/components/schemas/PriceContentMode"
+            }
+          },
+          {
+            "name": "referenceContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL reference data will be present in returned enti",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "hierarchyContent",
+            "in": "query",
+            "description": "Parameter specifying whether hierarchy data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Product/{primaryKey}": {
+      "put": {
+        "description": "Updates existing or inserts new entity to `Product` collection.\n",
+        "operationId": "upsertProduct",
+        "parameters": [
+          {
+            "name": "primaryKey",
+            "in": "path",
+            "description": "Parameter specifying primary key of upserted entity (new or updated).\n",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductUpsertRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "Deletes existing entities from `Product` collection that conforms with passed query and returns deletion info.\n",
+        "operationId": "deleteProduct",
+        "parameters": [
+          {
+            "name": "primaryKey",
+            "in": "path",
+            "description": "Parameter specifying primary key of entity to delete\n",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "fetchAll",
+            "in": "query",
+            "description": "Parameter specifying whether all data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bodyFetch",
+            "in": "query",
+            "description": "Parameter specifying whether entity body data will be present in returned entity",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "associatedDataContent",
+            "in": "query",
+            "description": "Parameter specifying whether associated data (and which of them) will be present",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "associatedDataContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL associated data will be present in returned ent",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "attributeContent",
+            "in": "query",
+            "description": "Parameter specifying whether attributes (and which of them) will be present in r",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "attributeContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL attributes will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "priceContent",
+            "in": "query",
+            "description": "Parameter specifying whether price data will be present in returned entity.\n",
+            "schema": {
+              "$ref": "#/components/schemas/PriceContentMode"
+            }
+          },
+          {
+            "name": "referenceContent",
+            "in": "query",
+            "description": "Parameter specifying whether reference data (and which of them) will be present ",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "referenceContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL reference data will be present in returned enti",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Category": {
+      "delete": {
+        "description": "Deletes existing entities from `Category` collection that conforms with passed query and returns deletion info.\n",
+        "operationId": "deleteCategoryByQuery",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryDeleteRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Product/list": {
+      "post": {
+        "description": "Finds and returns list of entities from `Product` collection by complex query.\n",
+        "operationId": "listProduct",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductListRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/{locale}/Product/get": {
+      "get": {
+        "description": "Finds and returns single entity from `Product` collection by simplified collection-specific arguments.\n",
+        "operationId": "getProductLocalized",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "path",
+            "description": "Parameter specifying desired locale of queried entity and its inner datasets\n",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CatalogLocale"
+            }
+          },
+          {
+            "name": "primaryKey",
+            "in": "query",
+            "description": "Parameter specifying desired primary key of queried entity\n",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "priceInCurrency",
+            "in": "query",
+            "description": "Parameter specifying desired price list of price for sale of queried entity\n",
+            "schema": {
+              "$ref": "#/components/schemas/CatalogCurrency"
+            }
+          },
+          {
+            "name": "priceInPriceLists",
+            "in": "query",
+            "description": "Parameter specifying desired price list(s) of price for sale of queried entity\n",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "priceValidIn",
+            "in": "query",
+            "description": "Parameter specifying desired validity of price for sale of queried entity. The d",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2022-09-27T13:28:27.357+02:00"
+            }
+          },
+          {
+            "name": "priceValidInNow",
+            "in": "query",
+            "description": "Parameter specifying desired validity of price for sale of queried entity. The d",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "urlInactive",
+            "in": "query",
+            "description": "Old URLs that has been originally assigned to the entity, but are no longer acti",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "codeShort",
+            "in": "query",
+            "description": "The product shortcode for use in feeds and GTM, which must share the same code a",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "description": "Unique code that identifies the entity among other entities of the same kind.\nTh",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "url",
+            "in": "query",
+            "description": "Localized and globally unique URL of the entity.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "This `scope` parameter can be used to control the scope of the entity search. It",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Scope"
+              }
+            }
+          },
+          {
+            "name": "fetchAll",
+            "in": "query",
+            "description": "Parameter specifying whether all data will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bodyFetch",
+            "in": "query",
+            "description": "Parameter specifying whether entity body data will be present in returned entity",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "associatedDataContent",
+            "in": "query",
+            "description": "Parameter specifying whether associated data (and which of them) will be present",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "associatedDataContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL associated data will be present in returned ent",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "attributeContent",
+            "in": "query",
+            "description": "Parameter specifying whether attributes (and which of them) will be present in r",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "attributeContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL attributes will be present in returned entity.\n",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "priceContent",
+            "in": "query",
+            "description": "Parameter specifying whether price data will be present in returned entity.\n",
+            "schema": {
+              "$ref": "#/components/schemas/PriceContentMode"
+            }
+          },
+          {
+            "name": "referenceContent",
+            "in": "query",
+            "description": "Parameter specifying whether reference data (and which of them) will be present ",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "referenceContentAll",
+            "in": "query",
+            "description": "Parameter specifying whether ALL reference data will be present in returned enti",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Product": {
+      "delete": {
+        "description": "Deletes existing entities from `Product` collection that conforms with passed query and returns deletion info.\n",
+        "operationId": "deleteProductByQuery",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductDeleteRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/Product/query": {
+      "post": {
+        "description": "Finds and returns entities and extra results from `Product` collection by complex query.\n",
+        "operationId": "queryProduct",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductQueryRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CatalogCurrency": {
+        "type": "string",
+        "format": "iso-4217",
+        "description": "Enum of all available currencies in a catalog.\n",
+        "enum": [
+          "EUR",
+          "CZK"
+        ],
+        "example": "EUR"
+      },
+      "CatalogLocale": {
+        "type": "string",
+        "format": "locale",
+        "description": "Enum of all available locales in a catalog.\n",
+        "enum": [
+          "cs",
+          "de",
+          "en"
+        ],
+        "example": "cs"
+      },
+      "CategoryDeleteRequestBody": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      },
+      "CategoryListRequestBody": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      },
+      "CategoryLocalizedListRequestBody": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      },
+      "CategoryLocalizedQueryRequestBody": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      },
+      "CategoryQueryRequestBody": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      },
+      "CategoryUpsertRequest": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      },
+      "PriceContentMode": {
+        "type": "string",
+        "enum": [
+          "NONE",
+          "RESPECTING_FILTER",
+          "ALL"
+        ],
+        "example": "NONE"
+      },
+      "ProductDeleteRequestBody": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      },
+      "ProductListRequestBody": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      },
+      "ProductLocalizedListRequestBody": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      },
+      "ProductLocalizedQueryRequestBody": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      },
+      "ProductQueryRequestBody": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      },
+      "ProductUpsertRequest": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      },
+      "QueryHeaderFilterArgumentsJoinType": {
+        "type": "string",
+        "enum": [
+          "AND",
+          "OR"
+        ],
+        "example": "AND"
+      },
+      "Scope": {
+        "type": "string",
+        "enum": [
+          "LIVE",
+          "ARCHIVED"
+        ],
+        "example": "LIVE"
+      },
+      "UpdateCatalogSchemaRequest": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      },
+      "UpdateEntitySchemaRequest": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      }
+    }
+  }
+}

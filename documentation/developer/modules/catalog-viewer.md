@@ -33,7 +33,7 @@ Contributes `TabType.CatalogViewer`. Implements [issue #161](https://github.com/
 | `composable/useCollectionSnapshots.ts` | The shared per-collection snapshot fan-out every per-collection table and badge set is built on |
 | `composable/useCollectionIndexCounts.ts` | Per-collection index counts for the selector badges (Indexes and Memory), on top of `useCollectionSnapshots` |
 | `model/` | Tab params/data, `CatalogViewerPage`, `StorageBreakdownRow`, `CatalogVersionSummary`, and the storage vocabulary of `storageComposition.ts` — `StorageBucket`, its colours, labels and row types |
-| `service/statisticsFormatting.ts` | The formatting rules every page shares — above all *an absent value is an em-dash, never `0`* |
+| `src/utils/statisticsFormatting.ts` (shared, not in this module) | The formatting rules every page shares — above all *an absent value is an em-dash, never `0`*. It moved to `src/utils/` because the query telemetry visualiser uses the same helpers; its placeholder still reads the `catalogViewer.placeholder.notApplicable` key |
 | `service/storageComposition.ts` | The fold of the server's storage-part rows into buckets (`storageBucketOf`, `summarizeStorageComposition`) |
 | `service/CatalogViewerService.ts` | Every server read of the module, the per-page component sets, and the one write — the restore request |
 | `service/CatalogViewerTabFactory.ts` | Tab wiring; the selected page lives in `CatalogViewerTabData`, so it survives restore and share links |

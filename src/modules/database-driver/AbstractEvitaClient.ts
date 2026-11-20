@@ -88,6 +88,12 @@ export const defaultCallTimeout: number = 15_000
 export const userQueryTimeout: number = 300_000
 
 /**
+ * Deadline for downloading a REST API OpenAPI specification. It is metadata, but the catalog specification is
+ * several megabytes large, so the {@link defaultCallTimeout} would be too tight on a slow link.
+ */
+export const restOpenApiFetchTimeout: number = 60_000
+
+/**
  * Call options every **streaming** gRPC call must pass. `timeoutMs: 0` disables the transport-wide
  * {@link defaultCallTimeout}, which is a *whole-call* deadline and would therefore kill a perfectly healthy
  * long-lived stream the moment it expires.

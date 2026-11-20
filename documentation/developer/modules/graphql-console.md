@@ -19,6 +19,7 @@ Everything under `console/`:
 |------|--------------|
 | `component/` | The console UI, built on [`code-editor`](code-editor.md)'s `VQueryEditor` (with GraphQL language support) |
 | `service/GraphQLConsoleService.ts` | Executes queries through `EvitaClient` |
+| `service/injectQueryTelemetry.ts` | `injectQueryTelemetry(query)` — adds the full telemetry selection for [Run with telemetry](#run-with-telemetry) |
 | `model/GraphQLConsoleDataPointer.ts` | What the tab points at |
 | `model/GraphQLInstanceType.ts` | Which GraphQL API — catalog data, catalog schema, or system |
 | `history/` | `GraphQLConsoleHistoryKey`, `GraphQLConsoleHistoryRecord` |
@@ -117,13 +118,86 @@ history and change the shape of already shared links. The request path is built 
 alone (`EvitaClient.queryCatalogUsingGraphQL`), so the name never reaches the server, and everything
 user-facing — tab title, subject path, query placeholder — suppresses it.
 
+## Result status
+
+The result pane starts with the shared [`ResultStatusBar`](console.md#result-status-bar): `OK` or `N error(s)` from
+the response's `errors` array, the duration of the call and the UTF-8 size of the compact response JSON, all
+derived in `GraphQLConsoleService.executeGraphQLQuery`, which returns a `GraphQLQueryResult` (`resultJson` +
+`status`).
+
 ## Result visualisation
 
 `GraphQLResultVisualiserService` implements [`console`](console.md)'s `ResultVisualiserService`, with a
 GraphQL counterpart for each abstract parser: `GraphQLResultAnalyzer`,
 `GraphQLFacetSummaryResultParser`, `GraphQLHierarchyResultParser`,
 `GraphQLAttributeHistogramsResultParser`, `GraphQLPriceHistogramResultParser`,
-`GraphQLReferenceSummaryResultParser`.
+`GraphQLReferenceSummaryResultParser`, `GraphQLQueryTelemetryResultParser`.
+
+### Query telemetry selection
+
+GraphQL returns the telemetry as a **flat pre-order list** of steps with a `level` (root = 1), and each
+step's `plan` as a flat pre-order list with `level` and `childrenCount`; `GraphQLQueryTelemetryResultParser`
+rebuilds both trees with a stack. `Long` fields arrive as JSON strings and become `bigint`. There is no
+argument for the plan — **selecting `plan { … }` is the opt-in** — and a bare `queryTelemetry` without a
+sub-selection is invalid. The full selection the parser reads:
+
+```graphql
+extraResults {
+  queryTelemetry {
+    level operation spentTime          # required
+    start selfTime arguments startedAt # optional
+    metrics {
+      estimatedCardinality actualCardinality estimatedCost actualCost
+      recordsReturned ioFetchCount ioFetchedSizeBytes prefetched
+    }
+    plan {
+      id level                         # required for the plan (childrenCount may replace level)
+      refTo hash description estimatedCost actualCost resultCount childrenCount
+    }
+  }
+}
+```
+
+- `GraphQLResultAnalyzer` offers the Query telemetry type only when `extraResults.queryTelemetry` is a non-empty
+  array; it does not inspect the selection.
+- Missing `level`, `operation` or `spentTime` → `PartialQueryTelemetrySelection` (a note, not an error).
+- Missing optional fields are tolerated and reported in `ParsedQueryTelemetry.missingSelections`; a missing
+  `start` is reconstructed sequentially. `stepsCount`, `formattedSpentTime` and `formattedSelfTime` are accepted
+  but not read.
+- A plan without `id`, or without both `level` and `childrenCount`, cannot be built: plans are dropped and
+  `plan.id` / `plan.level` reported as missing.
+- Presence is judged on the root step (and the first plan node / the `metrics` object), because a selection set
+  applies to every list item alike.
+- `startedAt` keeps its nanosecond fraction (Luxon alone would round it to milliseconds).
+
+## Run with telemetry
+
+On the **catalog data** instance (`GraphQLInstanceType.Data`, the one that supports visualisation) the Run
+button is a split button (`VExecuteQueryButton` with `variants`, see
+[UI components](../ui-components.md#tab-window-building-blocks)) whose chevron menu offers **Run with
+telemetry**; the schema and system instances keep the plain button. The command
+`Command.GraphQLConsole_ExecuteQueryWithTelemetry` (`Ctrl+Shift+Enter` / `Cmd+Shift+Enter`) is bound on
+every instance. It calls `executeQuery(true)`, which sends a copy of the query passed through
+`injectQueryTelemetry`; `variables` are sent untouched. The **editor content is never modified**, the
+history record and `lastAppliedQueryCode` keep the query as written, and the result handling is identical to
+a plain run.
+
+`injectQueryTelemetry(query: string): string` uses `parse` → `visit` → `print` from the `graphql` package:
+
+- Every **top-level field of every operation whose name starts with `query`** (the `query<EntityType>`
+  fields, which own `extraResults`) gets the complete selection from
+  [above](#query-telemetry-selection) (plus `stepsCount`) in its `extraResults`; `extraResults { … }` is
+  added when missing. `get*` / `list*` fields are left alone.
+- Only the **response keys** `extraResults` and `queryTelemetry` count, because that is where the analyzer
+  and the parser look: an aliased `extra: extraResults { … }` is left as is and an unaliased `extraResults`
+  is added next to it.
+- A `query*` field that already selects `queryTelemetry` (with any sub-selection) is left alone; when no
+  field needed a change the **original text** is returned, so the injection is idempotent. Otherwise the
+  document is re-printed — comments and formatting of the *sent copy* are lost, the editor keeps them.
+- Fragments are not inspected; a duplicate selection through a fragment is still valid GraphQL.
+- An unparseable document throws `QueryTelemetryInjectionError` (reason `Unparseable`), a document without
+  any `query*` field throws it with reason `NoTarget`. The console shows a `toaster.warning` (two messages,
+  one per reason) and runs the original query.
 
 ## Related
 

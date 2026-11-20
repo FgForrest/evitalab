@@ -6,5 +6,6 @@ export enum VisualiserTypeType {
     ReferenceSummary = 'reference-summary',
     Hierarchy = 'hierarchy',
     AttributeHistograms = 'attribute-histograms',
-    PriceHistogram = 'price-histogram'
+    PriceHistogram = 'price-histogram',
+    QueryTelemetry = 'query-telemetry'
 }

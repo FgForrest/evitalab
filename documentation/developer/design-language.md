@@ -149,7 +149,9 @@ the tab area. The canonical skeleton, used by all three reference pages:
   results change meaning, it belongs here.
 - **append slot** — icon buttons, ordered least → most important, with the **primary action
   last**: `ShareTabButton`, secondary actions (reload `mdi-refresh`, …), then
-  `VExecuteQueryButton`/`VTabMainActionButton`. Actions that act on the **content being edited**
+  `VExecuteQueryButton`/`VTabMainActionButton`. Alternative ways of running the same query (the consoles'
+  *Run with telemetry*) do not get buttons of their own: they go into the chevron menu of a split
+  `VExecuteQueryButton` (`variants`), each with its own `Command`. Actions that act on the **content being edited**
   rather than on the tab (prettify/minify in the consoles) go **first**, wrapped in
   `VTabToolbarActionGroup`, which closes them with a vertical separator so they do not read as part
   of the tab's own actions. The separator is trailing, so a group placed last would leave it
@@ -551,7 +553,9 @@ the CSS-drawn bars of the Storage tab take literal colours, so a series table (`
 the palette out. Reuse the theme values first; the Storage composition legend needs more distinct
 hues than the palette has and adds `#8e6fd8`, `#23a5a5` and `#e0698c` for *References*, *Metadata*
 and *Other entity data* — keep any new series colour in such a table, next to the ones it is read
-against, never inline in a template.
+against, never inline in a template. The query telemetry visualiser likewise carries a private three-colour phase palette
+(planning, execution, fetching) in its module-local `_telemetry-colors.scss`, as the histogram carries its two series
+colours — see [console](modules/console.md#phase-palette).
 
 **A chart takes the column it is given.** Do not cap a chart's container with a `max-width` — the
 column already is the constraint, and a narrower cap leaves the page half empty on a wide window.

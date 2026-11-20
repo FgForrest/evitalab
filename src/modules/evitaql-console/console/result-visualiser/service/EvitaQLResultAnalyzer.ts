@@ -80,6 +80,9 @@ export class EvitaQLResultAnalyzer implements ResultAnalyzer<EvitaResponse> {
             if (extraResults.priceHistogram != undefined) {
                 visualiserTypes.push(new VisualiserType('Price histogram', VisualiserTypeType.PriceHistogram))
             }
+            if (extraResults.queryTelemetry != undefined) {
+                visualiserTypes.push(new VisualiserType('Query telemetry', VisualiserTypeType.QueryTelemetry))
+            }
         }
 
         return visualiserTypes

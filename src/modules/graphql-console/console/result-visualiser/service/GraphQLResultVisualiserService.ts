@@ -10,12 +10,14 @@ import type { ReferenceSummaryResultParser } from '@/modules/console/result-visu
 import type { HierarchyResultParser } from '@/modules/console/result-visualiser/service/HierarchyResultParser'
 import type { AttributeHistogramsResultParser } from '@/modules/console/result-visualiser/service/AttributeHistogramsResultParser'
 import type { PriceHistogramResultParser } from '@/modules/console/result-visualiser/service/PriceHistogramResultParser'
+import type { QueryTelemetryResultParser } from '@/modules/console/result-visualiser/service/QueryTelemetryResultParser'
 import { GraphQLResultAnalyzer } from '@/modules/graphql-console/console/result-visualiser/service/GraphQLResultAnalyzer'
 import { GraphQLFacetSummaryResultParser } from '@/modules/graphql-console/console/result-visualiser/service/GraphQLFacetSummaryResultParser'
 import { GraphQLReferenceSummaryResultParser } from '@/modules/graphql-console/console/result-visualiser/service/GraphQLReferenceSummaryResultParser'
 import { GraphQLHierarchyResultParser } from '@/modules/graphql-console/console/result-visualiser/service/GraphQLHierarchyResultParser'
 import { GraphQLAttributeHistogramsResultParser } from '@/modules/graphql-console/console/result-visualiser/service/GraphQLAttributeHistogramsResultParser'
 import { GraphQLPriceHistogramResultParser } from '@/modules/graphql-console/console/result-visualiser/service/GraphQLPriceHistogramResultParser'
+import { GraphQLQueryTelemetryResultParser } from '@/modules/graphql-console/console/result-visualiser/service/GraphQLQueryTelemetryResultParser'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { mandatoryInject } from '@/utils/reactivity'
 
@@ -32,6 +34,7 @@ export class GraphQLResultVisualiserService implements ResultVisualiserService {
     readonly hierarchyParser: HierarchyResultParser<unknown>
     readonly attributeHistogramsParser: AttributeHistogramsResultParser<unknown>
     readonly priceHistogramParser: PriceHistogramResultParser<unknown>
+    readonly queryTelemetryParser: QueryTelemetryResultParser<unknown>
 
     constructor(evitaClient: EvitaClient) {
         this.resultAnalyzer = new GraphQLResultAnalyzer(evitaClient)
@@ -40,5 +43,6 @@ export class GraphQLResultVisualiserService implements ResultVisualiserService {
         this.hierarchyParser = new GraphQLHierarchyResultParser(evitaClient)
         this.attributeHistogramsParser = new GraphQLAttributeHistogramsResultParser()
         this.priceHistogramParser = new GraphQLPriceHistogramResultParser()
+        this.queryTelemetryParser = new GraphQLQueryTelemetryResultParser()
     }
 }

@@ -12,7 +12,8 @@ export const symbolActions: ReadonlyMap<SymbolType, readonly SymbolActionType[]>
             SymbolActionType.Schema,
             SymbolActionType.EvitaQLConsole,
             SymbolActionType.GraphQLDataConsole,
-            SymbolActionType.GraphQLSchemaConsole
+            SymbolActionType.GraphQLSchemaConsole,
+            SymbolActionType.RestConsole
         ]
     ],
     [SymbolType.EntityCollection, [SymbolActionType.EntityViewer, SymbolActionType.Schema]],

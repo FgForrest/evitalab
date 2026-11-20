@@ -23,6 +23,10 @@ import {
     EntityViewerTabFactory,
     entityViewerTabFactoryInjectionKey
 } from '@/modules/entity-viewer/viewer/workspace/service/EntityViewerTabFactory'
+import {
+    RestConsoleTabFactory,
+    restConsoleTabFactoryInjectionKey
+} from '@/modules/rest-console/console/workspace/service/RestConsoleTabFactory'
 import { SymbolActionExecutor } from '@/modules/symbol-search/service/SymbolActionExecutor'
 import {
     SymbolSearchService,
@@ -43,6 +47,7 @@ export class SymbolSearchModuleRegistrar implements ModuleRegistrar {
         const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory = builder.inject(evitaQLConsoleTabFactoryInjectionKey)
         const graphQLConsoleTabFactory: GraphQLConsoleTabFactory = builder.inject(graphQLConsoleTabFactoryInjectionKey)
         const entityViewerTabFactory: EntityViewerTabFactory = builder.inject(entityViewerTabFactoryInjectionKey)
+        const restConsoleTabFactory: RestConsoleTabFactory = builder.inject(restConsoleTabFactoryInjectionKey)
 
         const symbolActionExecutor: SymbolActionExecutor = new SymbolActionExecutor(
             workspaceService,
@@ -50,7 +55,8 @@ export class SymbolSearchModuleRegistrar implements ModuleRegistrar {
             schemaViewerTabFactory,
             evitaQLConsoleTabFactory,
             graphQLConsoleTabFactory,
-            entityViewerTabFactory
+            entityViewerTabFactory,
+            restConsoleTabFactory
         )
         builder.provide(
             symbolSearchServiceInjectionKey,

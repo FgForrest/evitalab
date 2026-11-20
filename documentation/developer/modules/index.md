@@ -42,7 +42,7 @@ of their own.
 |--------|---------|
 | [`base`](base.md) | Foundation for everything else — the `V*` component library, base error types, shared dialog/menu/properties-table/tree-view models |
 | [`code-editor`](code-editor.md) | CodeMirror 6 editor wrappers and the status-bar integration extension |
-| [`console`](console.md) | Shared infrastructure for query consoles — result visualisation (facet summary, hierarchy, histograms, reference summary) |
+| [`console`](console.md) | Shared infrastructure for query consoles — result visualisation (facet summary, hierarchy, histograms, reference summary, query telemetry) and the shared run-with-telemetry error |
 | [`viewer-support`](viewer-support.md) | Shared helpers for server-data viewers — `CatalogPointer`, `VDownloadServerFileButton`, `useAutoReload` |
 | [`history-component`](history-component.md) | Reusable UI for displaying execution history lists |
 
@@ -76,6 +76,7 @@ User-facing features. Each one typically contributes one or more tab types and/o
 | [`entity-viewer`](entity-viewer.md) | Grid-based entity browser, in evitaQL or GraphQL, incl. the references detail sidepanel |
 | [`evitaql-console`](evitaql-console.md) | Console tab for executing evitaQL queries |
 | [`graphql-console`](graphql-console.md) | Console tab for executing GraphQL queries (data / schema / system APIs) |
+| [`rest-console`](rest-console.md) | Console tab for calling REST API operations (catalog / system APIs) — endpoint picker from the OpenAPI specification, generated parameter form, OpenAPI-aware body completion |
 | [`schema-viewer`](schema-viewer.md) | Browsing schemas with deep-linkable schema paths and representative flags |
 | [`catalog-viewer`](catalog-viewer.md) | Catalog preview — statistics, drill-down and degraded-state handling for one catalog |
 | [`server-viewer`](server-viewer.md) | Server status/details view, and the poll other modules depend on |
@@ -92,21 +93,23 @@ User-facing features. Each one typically contributes one or more tab types and/o
 
 - Feature modules may depend on abstract and generic modules; avoid dependencies between feature
   modules. Known exceptions: `EvitaClient.queryCatalogUsingGraphQL()` references
-  `graphql-console`'s `GraphQLInstanceType`; `traffic-viewer`'s record visualisers open both console
+  `graphql-console`'s `GraphQLInstanceType` (the REST counterpart, `RestInstanceType`, deliberately lives in
+  `database-driver` instead); `traffic-viewer`'s record visualisers open both console
   tabs; `entity-viewer`'s `EntityGridCellMenuFactory` opens a `history-viewer` tab;
-  `catalog-viewer` links out through the `entity-viewer`, `schema-viewer` and `history-viewer` tab
+  `connection-explorer` likewise injects `rest-console`'s tab factory, so `rest-console` is registered
+  before it; `catalog-viewer` links out through the `entity-viewer`, `schema-viewer` and `history-viewer` tab
   factories (plus `schema-viewer`'s schema pointers) and reads catalog versions through
   `history-viewer`'s `MutationHistoryRequest`; `connection-explorer` injects `catalog-viewer`'s tab
   factory to open the catalog preview, which is why `catalog-viewer` is registered before it in
   `modules.ts`; `symbol-search` opens tabs through the `catalog-viewer`, `schema-viewer`, `evitaql-console`,
-  `graphql-console` and `entity-viewer` factories (plus `schema-viewer`'s schema pointers) and its components
+  `graphql-console`, `rest-console` and `entity-viewer` factories (plus `schema-viewer`'s schema pointers) and its components
   are placed by `workspace` (main views, status bar) and `connection-explorer` (panel header).
 - Generic modules must not import feature modules. Where the framework needs feature-provided
   behaviour (building a tab of any type, opening a demo snippet), the feature module contributes it
   into a registry the generic module owns — see
   [architecture — contribution points](../architecture.md#contribution-points).
 - A registrar consuming another module's tab factory must be ordered after it in `modules.ts`.
-  `connection-explorer` needs twelve of them and is therefore registered last.
+  `connection-explorer` needs thirteen of them and is therefore registered last.
 - Abstract modules must not depend on feature modules.
 - The `base` module must not depend on any other module.
 - Cross-module access goes through injected services, never by reaching into another module's

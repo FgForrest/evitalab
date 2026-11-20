@@ -52,6 +52,7 @@ directly (see below), then `yarn dev:local`.
 | Script | Purpose |
 |--------|---------|
 | `scripts/evitadb-server.sh` | Local Dockerized evitaDB lifecycle — see [evitaDB server](evitadb-server.md) |
+| `scripts/generate-adr-index.sh` | Regenerates the index table in `documentation/adr/README.md` from the records' front matter and validates it; `--check` writes nothing and fails when the index is stale; needs only `python3` |
 | `scripts/serve-dist.sh` | Serves a built `dist/` over HTTP with the correct base path and an injected evitaDB connection; needs only `python3` (no Node.js) — see [building from source](building-from-source.md#serving-the-built-dist-locally) |
 
 ## Environment variables
@@ -205,7 +206,7 @@ files.
 
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
-| `.github/workflows/dev.yml` | push to `dev` **and** pull requests targeting `dev` | Verify: install (`yarn install --frozen-lockfile`), `yarn lint:check`, `yarn typecheck`, `yarn test`, `yarn build` |
+| `.github/workflows/dev.yml` | push to `dev` **and** pull requests targeting `dev` | Verify: install (`yarn install --frozen-lockfile`), `yarn lint:check`, `scripts/generate-adr-index.sh --check`, `yarn typecheck`, `yarn test`, `yarn build` |
 | `.github/workflows/release.yml` | push to `master` | Resolves a calendar-semantic version from conventional commits (`semantic-calendar-version`), tests, builds **standalone** and **driver** dists, creates a GitHub release (release-drafter) with `dist-standalone` and `dist-driver` zip/tar.gz assets |
 
 Versioning depends on [conventional commits](https://www.conventionalcommits.org/) — this is why

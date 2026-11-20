@@ -18,6 +18,10 @@ import { systemCatalogName } from '@/modules/graphql-console/console/model/Graph
 import { TaskViewerTabFactory } from '@/modules/task-viewer/services/TaskViewerTabFactory'
 import { TrafficRecordingsViewerTabFactory } from '@/modules/traffic-viewer/service/TrafficRecordingsViewerTabFactory'
 import { GraphQLConsoleTabFactory } from '@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFactory'
+import type { RestConsoleTabFactory } from '@/modules/rest-console/console/workspace/service/RestConsoleTabFactory'
+import { RestConsoleTabDefinition } from '@/modules/rest-console/console/workspace/model/RestConsoleTabDefinition'
+import { restSystemCatalogName } from '@/modules/rest-console/console/model/RestConsoleDataPointer'
+import { RestInstanceType } from '@/modules/database-driver/connector/rest/model/RestInstanceType'
 import { BackupViewerTabFactory } from '@/modules/backup-viewer/service/BackupViewerTabFactory'
 import { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 import { ApiType } from '@/modules/database-driver/request-response/status/ApiType'
@@ -47,6 +51,7 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
     private readonly trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory
     private readonly jfrViewerTabFactory: JfrViewerTabFactory
     private readonly graphQLConsoleTabFactory: GraphQLConsoleTabFactory
+    private readonly restConsoleTabFactory: RestConsoleTabFactory
     private readonly backupViewerTabFactory: BackupViewerTabFactory
 
     constructor(
@@ -57,6 +62,7 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
         trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory,
         jfrViewerTabFactory: JfrViewerTabFactory,
         graphQLConsoleTabFactory: GraphQLConsoleTabFactory,
+        restConsoleTabFactory: RestConsoleTabFactory,
         backupViewerTabFactory: BackupViewerTabFactory
     ) {
         super()
@@ -67,6 +73,7 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
         this.trafficRecordingsViewerTabFactory = trafficRecordingsViewerTabFactory
         this.jfrViewerTabFactory = jfrViewerTabFactory
         this.graphQLConsoleTabFactory = graphQLConsoleTabFactory
+        this.restConsoleTabFactory = restConsoleTabFactory
         this.backupViewerTabFactory = backupViewerTabFactory
     }
 
@@ -94,6 +101,7 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
         }
 
         const graphQlEnabled: boolean = serverStatus != undefined && serverStatus.apiEnabled(ApiType.GraphQL)
+        const restEnabled: boolean = serverStatus != undefined && serverStatus.apiEnabled(ApiType.Rest)
         const observabilityEnabled: boolean = serverStatus != undefined && serverStatus.apiEnabled(ApiType.Observability)
         const serverReady: boolean = serverStatus != undefined
         const serverWritable: boolean = serverReady && !serverStatus!.readOnly
@@ -159,6 +167,20 @@ export class ConnectionExplorerPanelMenuFactory extends MenuFactory<ConnectionMe
                     )
                 ),
             graphQlEnabled
+        )
+        this.createMenuAction(
+            items,
+            ConnectionMenuItemType.RestSystemAPIConsole,
+            RestConsoleTabDefinition.icon(),
+            this.getItemTitle,
+            () =>
+                this.workspaceService.createTab(
+                    this.restConsoleTabFactory.createNew(
+                        restSystemCatalogName,
+                        RestInstanceType.System
+                    )
+                ),
+            restEnabled
         )
 
         this.createMenuSubheader(

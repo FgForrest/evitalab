@@ -6,9 +6,20 @@ This server is responsible for handling all the data-related operations, includi
 
 ## Versioning
 
-Each evitaLab version must have set the correct oldest evitaDB version that it supports in `.evitadbrc`.
-This ensures compatibility and avoids potential issues with incompatible versions. This evitaDB version
-basically indicates a version of the evitaDB API (new endpoints, breaking changes, etc.).
+`.evitadbrc` holds the **oldest evitaDB version evitaLab supports** — the version of the evitaDB API
+(endpoints, constraints, response fields) the code base relies on. It is part of every change that
+raises that dependency, not a release-time chore:
+
+- **Bump it in the same change** whenever a feature uses something that only a newer evitaDB offers:
+  a new or changed query constraint or constraint argument, a new gRPC/GraphQL/REST field or endpoint,
+  a changed response shape, a regenerated gRPC client with new messages. The signal is usually explicit —
+  the task references an evitaDB issue or PR, or the change can only be verified against the `canary`
+  image (see [Running a local evitaDB via Docker](#running-a-local-evitadb-via-docker)).
+- Set it to the **first released evitaDB version** that contains the dependency (the `dev` branch becomes
+  the next `major.minor`; when that release does not exist yet, use its planned `major.minor.0`).
+- Do not try to stay compatible with older servers by branching on the server version unless the
+  product explicitly asks for it; the floor exists so that such branches are unnecessary.
+- The [pre-PR checklist](recipes.md#checklist-before-opening-a-pr) asks for it.
 
 `.evitadbrc` is not only build metadata: it is baked into the bundle as `__EVITADB_API_VERSION__` and sent
 to the server on every gRPC call as the `clientVersion` header, where it selects the response forms the

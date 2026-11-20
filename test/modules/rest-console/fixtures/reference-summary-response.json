@@ -1,0 +1,213 @@
+{
+  "extraResults": {
+    "referenceSummary": {
+      "groups": {
+        "count": 179,
+        "facetStatistics": [
+          {
+            "requested": false,
+            "count": 5,
+            "facetEntity": {
+              "primaryKey": 66505,
+              "type": "Group",
+              "version": 1,
+              "scope": "LIVE",
+              "locales": [
+                "en"
+              ],
+              "allLocales": [
+                "en"
+              ],
+              "attributes": {
+                "code": "sale"
+              }
+            }
+          },
+          {
+            "requested": false,
+            "count": 65,
+            "facetEntity": {
+              "primaryKey": 112769,
+              "type": "Group",
+              "version": 1,
+              "scope": "LIVE",
+              "locales": [
+                "en"
+              ],
+              "allLocales": [
+                "en"
+              ],
+              "attributes": {
+                "code": "special-offer-group"
+              }
+            }
+          }
+        ]
+      },
+      "tags": [
+        {
+          "count": 177,
+          "groupEntity": {
+            "primaryKey": 8,
+            "type": "TagCategory",
+            "version": 1,
+            "scope": "LIVE",
+            "locales": [
+              "en"
+            ],
+            "allLocales": [
+              "cs",
+              "de",
+              "en"
+            ],
+            "attributes": {
+              "code": "EDEESHOP_DEFAULT"
+            }
+          },
+          "facetStatistics": [
+            {
+              "requested": false,
+              "count": 34,
+              "facetEntity": {
+                "primaryKey": 10,
+                "type": "Tag",
+                "version": 1,
+                "scope": "LIVE",
+                "locales": [
+                  "en"
+                ],
+                "allLocales": [
+                  "cs",
+                  "de",
+                  "en"
+                ],
+                "attributes": {
+                  "code": "new"
+                }
+              }
+            },
+            {
+              "requested": false,
+              "count": 65,
+              "facetEntity": {
+                "primaryKey": 11,
+                "type": "Tag",
+                "version": 1,
+                "scope": "LIVE",
+                "locales": [
+                  "en"
+                ],
+                "allLocales": [
+                  "cs",
+                  "de",
+                  "en"
+                ],
+                "attributes": {
+                  "code": "special-offer"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "count": 86,
+          "groupEntity": {
+            "primaryKey": 9,
+            "type": "TagCategory",
+            "version": 1,
+            "scope": "LIVE",
+            "locales": [
+              "en"
+            ],
+            "allLocales": [
+              "cs",
+              "de",
+              "en"
+            ],
+            "attributes": {
+              "code": "EDEESHOP_FILTER"
+            }
+          },
+          "facetStatistics": [
+            {
+              "requested": false,
+              "count": 5,
+              "facetEntity": {
+                "primaryKey": 9,
+                "type": "Tag",
+                "version": 1,
+                "scope": "LIVE",
+                "locales": [
+                  "en"
+                ],
+                "allLocales": [
+                  "cs",
+                  "de",
+                  "en"
+                ],
+                "attributes": {
+                  "code": "sale"
+                }
+              }
+            },
+            {
+              "requested": false,
+              "count": 46,
+              "facetEntity": {
+                "primaryKey": 13,
+                "type": "Tag",
+                "version": 1,
+                "scope": "LIVE",
+                "locales": [
+                  "en"
+                ],
+                "allLocales": [
+                  "cs",
+                  "de",
+                  "en"
+                ],
+                "attributes": {
+                  "code": "recommended"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "recordPage": {
+    "data": [
+      {
+        "primaryKey": 107891,
+        "type": "Product",
+        "version": 2,
+        "scope": "LIVE",
+        "locales": [
+          "en"
+        ],
+        "allLocales": [
+          "cs",
+          "de",
+          "en"
+        ],
+        "attributes": {
+          "code": "amazfit-bip-3"
+        }
+      }
+    ],
+    "type": "PAGE",
+    "totalRecordCount": 269,
+    "first": true,
+    "last": false,
+    "hasPrevious": false,
+    "hasNext": true,
+    "singlePage": false,
+    "empty": false,
+    "pageSize": 1,
+    "pageNumber": 1,
+    "lastPageNumber": 269,
+    "firstPageItemNumber": 0,
+    "lastPageItemNumber": 0
+  }
+}

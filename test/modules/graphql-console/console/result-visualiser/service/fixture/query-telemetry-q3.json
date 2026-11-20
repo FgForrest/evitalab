@@ -1,0 +1,392 @@
+{
+  "data": {
+    "queryProduct": {
+      "extraResults": {
+        "queryTelemetry": [
+          {
+            "level": 1,
+            "operation": "OVERALL",
+            "start": "0",
+            "arguments": [],
+            "spentTime": "3481506",
+            "formattedSpentTime": "3.481506ms",
+            "selfTime": "88305",
+            "formattedSelfTime": "0.088305ms",
+            "stepsCount": 2,
+            "startedAt": "2026-10-12T10:54:53.681095255Z",
+            "metrics": {
+              "estimatedCardinality": "537",
+              "actualCardinality": "537",
+              "estimatedCost": "5907",
+              "actualCost": "9666",
+              "recordsReturned": "20",
+              "ioFetchCount": "0",
+              "ioFetchedSizeBytes": "0",
+              "prefetched": false
+            },
+            "plan": [
+              {
+                "level": 1,
+                "id": 0,
+                "refTo": null,
+                "hash": "-5201375408823747239",
+                "description": "AND",
+                "estimatedCost": "5907",
+                "actualCost": "9666",
+                "resultCount": 537,
+                "childrenCount": 2
+              },
+              {
+                "level": 2,
+                "id": 1,
+                "refTo": null,
+                "hash": "3309665762472019072",
+                "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                "estimatedCost": "537",
+                "actualCost": "0",
+                "resultCount": 537,
+                "childrenCount": 1
+              },
+              {
+                "level": 3,
+                "id": 2,
+                "refTo": null,
+                "hash": "6660670122578581339",
+                "description": "LOCALE: 537 primary keys",
+                "estimatedCost": "537",
+                "actualCost": "0",
+                "resultCount": 537,
+                "childrenCount": 0
+              },
+              {
+                "level": 2,
+                "id": 3,
+                "refTo": null,
+                "hash": "-9137538848077776462",
+                "description": "537 primary keys",
+                "estimatedCost": "537",
+                "actualCost": "0",
+                "resultCount": 537,
+                "childrenCount": 0
+              }
+            ]
+          },
+          {
+            "level": 2,
+            "operation": "PLANNING",
+            "start": "31940",
+            "arguments": [],
+            "spentTime": "2988734",
+            "formattedSpentTime": "2.988734ms",
+            "selfTime": "87197",
+            "formattedSelfTime": "0.087197ms",
+            "stepsCount": 4,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_INDEX_USAGE",
+            "start": "47676",
+            "arguments": [],
+            "spentTime": "1553729",
+            "formattedSpentTime": "1.553729ms",
+            "selfTime": "892057",
+            "formattedSelfTime": "0.892057ms",
+            "stepsCount": 1,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 4,
+            "operation": "PLANNING_NESTED_QUERY",
+            "start": "670876",
+            "arguments": [
+              "filtering reference `brand` by entity `Brand` having: attributeEquals('code','apple')"
+            ],
+            "spentTime": "661672",
+            "formattedSpentTime": "0.661672ms",
+            "selfTime": "63644",
+            "formattedSelfTime": "0.063644ms",
+            "stepsCount": 3,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 5,
+            "operation": "PLANNING_INDEX_USAGE",
+            "start": "672589",
+            "arguments": [],
+            "spentTime": "43414",
+            "formattedSpentTime": "0.043414ms",
+            "selfTime": "43414",
+            "formattedSelfTime": "0.043414ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 5,
+            "operation": "PLANNING_FILTER",
+            "start": "729872",
+            "arguments": [
+              "Selected index: Index type: Live index: GLOBAL, estimated costs 2"
+            ],
+            "spentTime": "505857",
+            "formattedSpentTime": "0.505857ms",
+            "selfTime": "22471",
+            "formattedSelfTime": "0.022471ms",
+            "stepsCount": 1,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 6,
+            "operation": "PLANNING_FILTER_ALTERNATIVE",
+            "start": "732647",
+            "arguments": [
+              "Index type: Live index: GLOBAL, estimated costs 2"
+            ],
+            "spentTime": "483386",
+            "formattedSpentTime": "0.483386ms",
+            "selfTime": "483386",
+            "formattedSelfTime": "0.483386ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 5,
+            "operation": "PLANNING_SORT",
+            "start": "1240495",
+            "arguments": [],
+            "spentTime": "48757",
+            "formattedSpentTime": "0.048757ms",
+            "selfTime": "48757",
+            "formattedSelfTime": "0.048757ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_FILTER",
+            "start": "1607085",
+            "arguments": [
+              "Selected index: Index type: REFERENCED_ENTITY composed of 1 indexes, estimated costs 5907"
+            ],
+            "spentTime": "1166879",
+            "formattedSpentTime": "1.166879ms",
+            "selfTime": "15432",
+            "formattedSelfTime": "0.015432ms",
+            "stepsCount": 2,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 4,
+            "operation": "PLANNING_FILTER_ALTERNATIVE",
+            "start": "1608501",
+            "arguments": [
+              "Index type: Live index: GLOBAL, estimated costs 9531"
+            ],
+            "spentTime": "615102",
+            "formattedSpentTime": "0.615102ms",
+            "selfTime": "615102",
+            "formattedSelfTime": "0.615102ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": [
+              {
+                "level": 1,
+                "id": 0,
+                "refTo": null,
+                "hash": "6204325212735262241",
+                "description": "AND",
+                "estimatedCost": "9531",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 2
+              },
+              {
+                "level": 2,
+                "id": 1,
+                "refTo": null,
+                "hash": "5600702705361136847",
+                "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                "estimatedCost": "4161",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 3,
+                "id": 2,
+                "refTo": null,
+                "hash": "-7192149150825098572",
+                "description": "LOCALE: 4161 primary keys",
+                "estimatedCost": "4161",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 2,
+                "id": 3,
+                "refTo": null,
+                "hash": "-9137538848077776462",
+                "description": "537 primary keys",
+                "estimatedCost": "537",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              }
+            ]
+          },
+          {
+            "level": 4,
+            "operation": "PLANNING_FILTER_ALTERNATIVE",
+            "start": "2226463",
+            "arguments": [
+              "Index type: REFERENCED_ENTITY composed of 1 indexes, estimated costs 5907"
+            ],
+            "spentTime": "536345",
+            "formattedSpentTime": "0.536345ms",
+            "selfTime": "536345",
+            "formattedSelfTime": "0.536345ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": [
+              {
+                "level": 1,
+                "id": 0,
+                "refTo": null,
+                "hash": "-5201375408823747239",
+                "description": "AND",
+                "estimatedCost": "5907",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 2
+              },
+              {
+                "level": 2,
+                "id": 1,
+                "refTo": null,
+                "hash": "3309665762472019072",
+                "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                "estimatedCost": "537",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 3,
+                "id": 2,
+                "refTo": null,
+                "hash": "6660670122578581339",
+                "description": "LOCALE: 537 primary keys",
+                "estimatedCost": "537",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 2,
+                "id": 3,
+                "refTo": null,
+                "hash": "-9137538848077776462",
+                "description": "537 primary keys",
+                "estimatedCost": "537",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              }
+            ]
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_SORT",
+            "start": "2776988",
+            "arguments": [],
+            "spentTime": "166390",
+            "formattedSpentTime": "0.166390ms",
+            "selfTime": "166390",
+            "formattedSelfTime": "0.166390ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_EXTRA_RESULT_FABRICATION",
+            "start": "2967479",
+            "arguments": [],
+            "spentTime": "14539",
+            "formattedSpentTime": "0.014539ms",
+            "selfTime": "14539",
+            "formattedSelfTime": "0.014539ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 2,
+            "operation": "EXECUTION",
+            "start": "3076317",
+            "arguments": [],
+            "spentTime": "404467",
+            "formattedSpentTime": "0.404467ms",
+            "selfTime": "100207",
+            "formattedSelfTime": "0.100207ms",
+            "stepsCount": 2,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "EXECUTION_FILTER",
+            "start": "3077875",
+            "arguments": [],
+            "spentTime": "60247",
+            "formattedSpentTime": "0.060247ms",
+            "selfTime": "60247",
+            "formattedSelfTime": "0.060247ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "EXECUTION_SORT_AND_SLICE",
+            "start": "3139084",
+            "arguments": [
+              "sortResolution=ARRAY_MERGE_WALKx1"
+            ],
+            "spentTime": "244013",
+            "formattedSpentTime": "0.244013ms",
+            "selfTime": "244013",
+            "formattedSelfTime": "0.244013ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          }
+        ]
+      }
+    }
+  }
+}

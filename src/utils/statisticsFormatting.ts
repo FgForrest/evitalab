@@ -4,7 +4,8 @@ import { OffsetDateTime } from '@/modules/database-driver/data-type/OffsetDateTi
 import { Duration } from 'luxon'
 
 /**
- * Formatting helpers shared by the catalog viewer pages.
+ * Formatting helpers shared by the statistics and telemetry views (catalog viewer pages, query telemetry
+ * visualiser).
  *
  * They exist to keep one rule in one place: **a value the engine does not have is rendered as an em-dash
  * placeholder, never as `0`.** Every accessor here that takes an optional value applies it.
@@ -18,6 +19,14 @@ const rateFormatter: Intl.NumberFormat = new Intl.NumberFormat(
 const percentFormatter: Intl.NumberFormat = new Intl.NumberFormat(
     navigator.language,
     { style: 'percent', maximumFractionDigits: 1 }
+)
+const microsFormatter: Intl.NumberFormat = new Intl.NumberFormat(
+    navigator.language,
+    { minimumFractionDigits: 1, maximumFractionDigits: 1 }
+)
+const millisFormatter: Intl.NumberFormat = new Intl.NumberFormat(
+    navigator.language,
+    { minimumFractionDigits: 2, maximumFractionDigits: 2 }
 )
 const smallPercentFormatter: Intl.NumberFormat = new Intl.NumberFormat(
     navigator.language,
@@ -73,6 +82,33 @@ export function formatDuration(milliseconds: bigint | number | undefined): strin
     return Duration.fromMillis(Number(milliseconds))
         .rescale()
         .toHuman({ unitDisplay: 'short', smallestUnit: 'milliseconds' })
+}
+
+/**
+ * Formats a nanosecond duration (query telemetry `spentTime`, `selfTime`, `start`) in the largest unit that keeps it
+ * readable: whole `ns` below one microsecond, `µs` with one decimal below one millisecond, `ms` with two decimals
+ * below one second and `s` with two decimals above. The server's own `formattedSpentTime` exists only on GraphQL, so
+ * the visualiser formats the raw value on both consoles the same way.
+ *
+ * A `bigint` is converted to `number` for formatting; durations below 2^53 ns (about 104 days) are exact.
+ */
+export function formatNanos(ns: bigint | number | undefined): string {
+    if (ns == undefined) {
+        return notApplicable()
+    }
+    const value: number = Number(ns)
+    // each unit is used only while the *rounded* value stays below 1000, so 999 999 ns reads `1.00 ms`, not
+    // `1000.0 µs`
+    if (Math.abs(Math.round(value)) < 1_000) {
+        return `${countFormatter.format(Math.round(value))} ns`
+    }
+    if (Math.abs(Math.round(value / 100) / 10) < 1_000) {
+        return `${microsFormatter.format(value / 1_000)} µs`
+    }
+    if (Math.abs(Math.round(value / 10_000) / 100) < 1_000) {
+        return `${millisFormatter.format(value / 1_000_000)} ms`
+    }
+    return `${millisFormatter.format(value / 1_000_000_000)} s`
 }
 
 /**

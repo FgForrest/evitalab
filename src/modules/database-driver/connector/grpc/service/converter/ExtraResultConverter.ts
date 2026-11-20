@@ -8,6 +8,9 @@ import type {
     GrpcHistogram_GrpcBucket,
     GrpcLevelInfo,
     GrpcLevelInfos,
+    GrpcQueryTelemetry,
+    GrpcQueryTelemetryMetrics,
+    GrpcFormulaPlan,
 } from '@/modules/database-driver/connector/grpc/gen/GrpcExtraResults_pb'
 import { List as ImmutableList, Map as ImmutableMap } from 'immutable'
 import { EntityConverter } from './EntityConverter'
@@ -22,6 +25,12 @@ import { EntityReference } from '@/modules/database-driver/request-response/data
 import { Hierarchy } from '@/modules/database-driver/request-response/data/Hierarchy'
 import { LevelInfo } from '@/modules/database-driver/request-response/data/LevelInfo'
 import { ExtraResults } from '@/modules/database-driver/request-response/data/ExtraResults'
+import { GrpcQueryPhase } from '@/modules/database-driver/connector/grpc/gen/GrpcEnums_pb'
+import { QueryTelemetry } from '@/modules/database-driver/request-response/data/QueryTelemetry'
+import { QueryTelemetryMetrics } from '@/modules/database-driver/request-response/data/QueryTelemetryMetrics'
+import { FormulaPlan } from '@/modules/database-driver/request-response/data/FormulaPlan'
+import { QueryPhase, queryPhaseFromName } from '@/modules/database-driver/request-response/data/QueryPhase'
+import { EvitaValueConverter } from '@/modules/database-driver/connector/grpc/service/converter/EvitaValueConverter'
 
 export class ExtraResultConverter {
     private readonly entityConverter: EntityConverter
@@ -39,7 +48,8 @@ export class ExtraResultConverter {
             this.convertReferenceGroupStatistics(entity.referenceGroupStatistics),
             this.convertHierarchy(entity.hierarchy),
             this.convertHistogram(entity.priceHistogram),
-            this.convertSelfHierarchy(entity.selfHierarchy)
+            this.convertSelfHierarchy(entity.selfHierarchy),
+            this.convertQueryTelemetry(entity.queryTelemetry)
         )
     }
 
@@ -274,5 +284,94 @@ export class ExtraResultConverter {
             new BigDecimal(histogram.min!.valueString),
             new BigDecimal(histogram.max!.valueString)
         )
+    }
+
+    /**
+     * Converts the query telemetry tree. A step with a phase this evitaLab does not know (a newer server) makes the
+     * whole telemetry unavailable instead of failing the query response it is part of.
+     */
+    convertQueryTelemetry(telemetry: GrpcQueryTelemetry | undefined): QueryTelemetry | undefined {
+        if (telemetry == undefined) {
+            return undefined
+        }
+        try {
+            return this.convertQueryTelemetryStep(telemetry)
+        } catch (e) {
+            if (e instanceof UnknownQueryPhaseError) {
+                console.warn(`Query telemetry ignored: ${e.message}`)
+                return undefined
+            }
+            throw e
+        }
+    }
+
+    private convertQueryTelemetryStep(telemetry: GrpcQueryTelemetry): QueryTelemetry {
+        return new QueryTelemetry(
+            this.convertQueryPhase(telemetry.operation),
+            BigInt(telemetry.start),
+            BigInt(telemetry.spentTime),
+            BigInt(telemetry.selfTime),
+            ImmutableList(telemetry.arguments),
+            telemetry.startedAt != undefined
+                ? EvitaValueConverter.convertGrpcOffsetDateTime(telemetry.startedAt)
+                : undefined,
+            this.convertQueryTelemetryMetrics(telemetry.metrics),
+            this.convertFormulaPlan(telemetry.plan),
+            ImmutableList(telemetry.steps.map(step => this.convertQueryTelemetryStep(step)))
+        )
+    }
+
+    private convertQueryPhase(phase: GrpcQueryPhase): QueryPhase {
+        const name: string | undefined = GrpcQueryPhase[phase]
+        const queryPhase: QueryPhase | undefined = name != undefined ? queryPhaseFromName(name) : undefined
+        if (queryPhase == undefined) {
+            throw new UnknownQueryPhaseError(phase)
+        }
+        return queryPhase
+    }
+
+    convertQueryTelemetryMetrics(metrics: GrpcQueryTelemetryMetrics | undefined): QueryTelemetryMetrics | undefined {
+        if (metrics == undefined) {
+            return undefined
+        }
+        return new QueryTelemetryMetrics(
+            this.convertOptionalInt64(metrics.estimatedCardinality),
+            this.convertOptionalInt64(metrics.actualCardinality),
+            this.convertOptionalInt64(metrics.estimatedCost),
+            this.convertOptionalInt64(metrics.actualCost),
+            this.convertOptionalInt64(metrics.recordsReturned),
+            this.convertOptionalInt64(metrics.ioFetchCount),
+            this.convertOptionalInt64(metrics.ioFetchedSizeBytes),
+            metrics.prefetched
+        )
+    }
+
+    convertFormulaPlan(plan: GrpcFormulaPlan | undefined): FormulaPlan | undefined {
+        if (plan == undefined) {
+            return undefined
+        }
+        return new FormulaPlan(
+            plan.id,
+            plan.refTo,
+            BigInt(plan.hash),
+            plan.description,
+            BigInt(plan.estimatedCost),
+            this.convertOptionalInt64(plan.actualCost),
+            plan.resultCount,
+            ImmutableList(plan.children.map(child => this.convertFormulaPlan(child)!))
+        )
+    }
+
+    private convertOptionalInt64(value: string | undefined): bigint | undefined {
+        return value != undefined ? BigInt(value) : undefined
+    }
+}
+
+/**
+ * Raised while converting a telemetry tree that contains a phase unknown to this evitaLab version.
+ */
+class UnknownQueryPhaseError extends Error {
+    constructor(phase: number) {
+        super(`unknown query phase '${phase}'.`)
     }
 }

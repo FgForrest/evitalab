@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { create } from '@bufbuild/protobuf'
 import { buildSchema, introspectionFromSchema, type IntrospectionQuery } from 'graphql'
 import { List as ImmutableList } from 'immutable'
@@ -30,6 +30,11 @@ import type { EntitySchema } from '@/modules/database-driver/request-response/sc
 import type { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState'
 import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
+import { RestInstanceType } from '@/modules/database-driver/connector/rest/model/RestInstanceType'
+import type { RestOpenApi } from '@/modules/database-driver/connector/rest/model/RestOpenApi'
+import { RestOpenApiFetchError } from '@/modules/database-driver/exception/RestOpenApiFetchError'
+import { TimeoutError } from '@/modules/database-driver/exception/TimeoutError'
+import { ServerDataCacheStore } from '@/modules/storage/LabServerDataCache'
 
 /**
  * The persistent (on-disk) second level of the client caches, exercised end-to-end: real protobuf payloads,
@@ -79,7 +84,7 @@ class TestClient {
         this.persistentCache = new LabServerDataCache(providerName)
         this.client = new EvitaClient(
             {} as never,
-            { getConnection: () => ({ name: 'test', grpcUrl: 'http://localhost:1' }) } as never,
+            { getConnection: () => ({ name: 'test', grpcUrl: 'http://localhost:1', restUrl: 'http://localhost:1/rest' }) } as never,
             this.persistentCache
         )
         Object.defineProperty(this.client, 'evitaClient', { get: () => this.evitaServiceClient })
@@ -938,5 +943,184 @@ describe('GraphQL introspection', () => {
         // an unknown in-memory schema cannot be claimed to be current, and a manual reload that silently does
         // nothing is exactly the bug this guards
         expect(await client.client.refreshGraphQLSchema(catalogName, GraphQLInstanceType.Data)).toBe(true)
+    })
+})
+
+describe('REST OpenAPI specification', () => {
+    /** What the stubbed server answers the specification download with. */
+    let served: { status: number, text: string }
+    let downloads: number
+
+    function specText(title: string): string {
+        return JSON.stringify({ openapi: '3.0.1', info: { title, version: '1' }, paths: {} })
+    }
+
+    function titleOf(openApi: RestOpenApi): unknown {
+        return (openApi.document['info'] as Record<string, unknown>)['title']
+    }
+
+    beforeEach(() => {
+        served = { status: 200, text: specText('v1') }
+        downloads = 0
+        vi.stubGlobal('fetch', vi.fn(async (request: Request) => {
+            downloads++
+            // evitaDB refuses anything else than an exact `Accept` with 406
+            expect(request.headers.get('Accept')).toBe('application/json')
+            expect(request.url).toBe(`http://localhost:1/rest/${catalogName}`)
+            return new Response(served.text, { status: served.status })
+        }))
+    })
+    afterEach(() => {
+        vi.unstubAllGlobals()
+    })
+
+    test('downloads the specification once and serves it from memory afterwards', async () => {
+        const client: TestClient = new TestClient()
+        const first: RestOpenApi = await client.client.getRestOpenApi(catalogName, RestInstanceType.Catalog)
+        const second: RestOpenApi = await client.client.getRestOpenApi(catalogName, RestInstanceType.Catalog)
+
+        expect(titleOf(first)).toBe('v1')
+        expect(second).toBe(first)
+        expect(downloads).toBe(1)
+    })
+
+    test('persists the specification, so a restarted lab works without downloading it', async () => {
+        const firstRun: TestClient = new TestClient()
+        await firstRun.client.getRestOpenApi(catalogName, RestInstanceType.Catalog)
+        await flushWrites()
+        expect(await firstRun.persistentCache.get(ServerDataCacheStore.RestOpenApiSpecs, `${catalogName}:catalog`))
+            .not.toBeUndefined()
+
+        // the server is down now; the revalidation of the disk copy fails and only warns
+        vi.stubGlobal('fetch', vi.fn(async () => { throw new TypeError('Failed to fetch') }))
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        try {
+            const secondRun: TestClient = new TestClient()
+            const restored: RestOpenApi = await secondRun.client.getRestOpenApi(catalogName, RestInstanceType.Catalog)
+            expect(titleOf(restored)).toBe('v1')
+            await settle()
+        } finally {
+            warn.mockRestore()
+        }
+    })
+
+    test('identifies the persisted specification by its SHA-256', async () => {
+        const client: TestClient = new TestClient()
+        const openApi: RestOpenApi = await client.client.getRestOpenApi(catalogName, RestInstanceType.Catalog)
+        await flushWrites()
+
+        const digest: ArrayBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(specText('v1')))
+        const expected: string = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('')
+        expect(openApi.specHash).toBe(expected)
+        expect((await client.persistentCache.get<{ hash: string }>(
+            ServerDataCacheStore.RestOpenApiSpecs,
+            `${catalogName}:catalog`
+        ))?.hash).toBe(expected)
+    })
+
+    test('bounds the whole download, body included, by its own deadline', async () => {
+        vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+        try {
+            // headers arrive at once, the body never finishes - ky's own timeout would not cover that
+            vi.stubGlobal('fetch', vi.fn(async (request: Request) => new Response(new ReadableStream({
+                start(controller) {
+                    request.signal.addEventListener('abort', () => controller.error(request.signal.reason))
+                }
+            }))))
+            const client: TestClient = new TestClient()
+            let outcome: unknown = undefined
+            let settled: boolean = false
+            void client.client.getRestOpenApi(catalogName, RestInstanceType.Catalog)
+                .catch((e: unknown) => e)
+                .then((result: unknown) => {
+                    outcome = result
+                    settled = true
+                })
+
+            // advanced in steps, because the disk read in front of the download is scheduled through timers too
+            let elapsedMs: number = 0
+            while (!settled && elapsedMs < 120_000) {
+                await vi.advanceTimersByTimeAsync(1_000)
+                elapsedMs += 1_000
+            }
+
+            expect(outcome).toBeInstanceOf(TimeoutError)
+            expect(elapsedMs).toBeGreaterThanOrEqual(60_000)
+        } finally {
+            vi.useRealTimers()
+        }
+    })
+
+    test('a refresh of an unchanged specification swaps nothing and notifies nobody', async () => {
+        const client: TestClient = new TestClient()
+        await client.client.getRestOpenApi(catalogName, RestInstanceType.Catalog)
+        const reloads = vi.fn(async () => {})
+        client.client.registerRestOpenApiChangedCallback(catalogName, RestInstanceType.Catalog, reloads)
+
+        expect(await client.client.refreshRestOpenApi(catalogName, RestInstanceType.Catalog)).toBe(false)
+        expect(reloads).not.toHaveBeenCalled()
+    })
+
+    test('a refresh of a changed specification swaps it and notifies the consoles', async () => {
+        const client: TestClient = new TestClient()
+        await client.client.getRestOpenApi(catalogName, RestInstanceType.Catalog)
+        const reloads = vi.fn(async () => {})
+        client.client.registerRestOpenApiChangedCallback(catalogName, RestInstanceType.Catalog, reloads)
+
+        served = { status: 200, text: specText('v2') }
+        expect(await client.client.refreshRestOpenApi(catalogName, RestInstanceType.Catalog)).toBe(true)
+        expect(reloads).toHaveBeenCalledTimes(1)
+        expect(titleOf(await client.client.getRestOpenApi(catalogName, RestInstanceType.Catalog))).toBe('v2')
+    })
+
+    test('a failed refresh keeps the specification in use', async () => {
+        const client: TestClient = new TestClient()
+        const displayed: RestOpenApi = await client.client.getRestOpenApi(catalogName, RestInstanceType.Catalog)
+
+        served = { status: 500, text: '{"errorCode":"E1","message":"boom"}' }
+        await expect(client.client.refreshRestOpenApi(catalogName, RestInstanceType.Catalog))
+            .rejects.toBeInstanceOf(RestOpenApiFetchError)
+        expect(await client.client.getRestOpenApi(catalogName, RestInstanceType.Catalog)).toBe(displayed)
+    })
+
+    test('an error status is thrown with the error the server reported', async () => {
+        served = { status: 404, text: '{"errorCode":"E404","message":"Catalog not found."}' }
+        const client: TestClient = new TestClient()
+
+        const error: unknown = await client.client.getRestOpenApi(catalogName, RestInstanceType.Catalog)
+            .catch((e: unknown) => e)
+        expect(error).toBeInstanceOf(RestOpenApiFetchError)
+        expect((error as RestOpenApiFetchError).status).toBe(404)
+        expect((error as RestOpenApiFetchError).message).toContain('Catalog not found.')
+    })
+
+    test('a catalog schema change drops the specification in memory and on disk', async () => {
+        const client: TestClient = new TestClient()
+        await client.client.getRestOpenApi(catalogName, RestInstanceType.Catalog)
+        await flushWrites()
+        const reloads = vi.fn(async () => {})
+        client.client.registerRestOpenApiChangedCallback(catalogName, RestInstanceType.Catalog, reloads)
+
+        await client.client.clearSchemaCache(catalogName)
+
+        expect(reloads).toHaveBeenCalledTimes(1)
+        expect(await client.persistentCache.get(ServerDataCacheStore.RestOpenApiSpecs, `${catalogName}:catalog`))
+            .toBeUndefined()
+        await client.client.getRestOpenApi(catalogName, RestInstanceType.Catalog)
+        expect(downloads).toBe(2)
+    })
+
+    test('deleting the catalog drops its specification in memory and on disk', async () => {
+        const client: TestClient = new TestClient()
+        await client.client.getRestOpenApi(catalogName, RestInstanceType.Catalog)
+        await flushWrites()
+        const reloads = vi.fn(async () => {})
+        client.client.registerRestOpenApiChangedCallback(catalogName, RestInstanceType.Catalog, reloads)
+
+        await client.client.deleteCatalogIfExists(catalogName)
+
+        expect(reloads).toHaveBeenCalledTimes(1)
+        expect(await client.persistentCache.get(ServerDataCacheStore.RestOpenApiSpecs, `${catalogName}:catalog`))
+            .toBeUndefined()
     })
 })

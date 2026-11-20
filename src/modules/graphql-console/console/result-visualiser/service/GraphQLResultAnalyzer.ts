@@ -92,6 +92,11 @@ export class GraphQLResultAnalyzer implements ResultAnalyzer {
             if (extraResults['priceHistogram']) {
                 visualiserTypes.push(new VisualiserType('Price histogram', VisualiserTypeType.PriceHistogram))
             }
+            // only the presence of steps is checked here; which fields the selection lacks is the parser's call
+            const queryTelemetry = extraResults['queryTelemetry']
+            if (Array.isArray(queryTelemetry) && queryTelemetry.length > 0) {
+                visualiserTypes.push(new VisualiserType('Query telemetry', VisualiserTypeType.QueryTelemetry))
+            }
         }
 
         return visualiserTypes

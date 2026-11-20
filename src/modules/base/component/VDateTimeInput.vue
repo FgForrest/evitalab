@@ -20,7 +20,7 @@ const props = withDefaults(
         label?: string,
         hint?: string,
         clearable?: boolean,
-        hideDetails?: boolean,
+        hideDetails?: boolean | 'auto',
         disabled?: boolean,
         defaultTimeOffset?: string,
         min?: DateTime,

@@ -9,7 +9,7 @@ import { VisualisedHistogram } from '@/modules/console/result-visualiser/model/h
 import {
     VisualisedHistogramBucket
 } from '@/modules/console/result-visualiser/model/histogram/VisualisedHistogramBucket'
-import HistogramNote from '@/modules/console/result-visualiser/component/histogram/HistogramNote.vue'
+import VisualiserNote from '@/modules/console/result-visualiser/component/VisualiserNote.vue'
 import VueApexCharts from 'vue3-apexcharts'
 
 const { t } = useI18n()
@@ -150,11 +150,11 @@ const chartOptions = {
 
 <template>
     <VueApexCharts v-if="canChartBeRendered" type="bar" height="350" :options="chartOptions" :series="chartSeries" class="histogram-chart" />
-    <HistogramNote
+    <VisualiserNote
         v-if="missingRequiredProperties.length > 0"
         :note="t('resultVisualizer.histogram.placeholder.missingPropertiesForChart', { properties: missingRequiredProperties.map(it => '`' + it + '`').join(', ') })"
     />
-    <HistogramNote
+    <VisualiserNote
         v-if="missingRequiredProperties.length === 0 && missingOptionalProperties.length > 0"
         :note="t('resultVisualizer.histogram.placeholder.missingProperties', { properties: missingOptionalProperties.map(it => '`' + it + '`').join(', ') })"
     />

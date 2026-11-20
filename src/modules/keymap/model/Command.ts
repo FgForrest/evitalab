@@ -53,6 +53,7 @@ export enum Command {
     // evitaQL console
 
     EvitaQLConsole_ExecuteQuery = 'evitaQLConsole.executeQuery',
+    EvitaQLConsole_ExecuteQueryWithTelemetry = 'evitaQLConsole.executeQueryWithTelemetry',
     EvitaQLConsole_ShareTab = 'evitaQLConsole.shareTab',
 
     EvitaQLConsole_Query_QueryEditor = 'evitaQLConsole.query.queryEditor',
@@ -68,6 +69,7 @@ export enum Command {
     // GraphQL console
 
     GraphQLConsole_ExecuteQuery = 'graphQLConsole.executeQuery',
+    GraphQLConsole_ExecuteQueryWithTelemetry = 'graphQLConsole.executeQueryWithTelemetry',
     GraphQLConsole_ShareTab = 'graphQLConsole.shareTab',
 
     GraphQLConsole_Query_QueryEditor = 'graphQLConsole.query.queryEditor',
@@ -81,6 +83,23 @@ export enum Command {
     GraphQLConsole_Result_RawResultViewer = 'graphQLConsole.result.rawResultViewer',
     GraphQLConsole_Result_ResultVisualizer = 'graphQLConsole.result.resultVisualizer',
     GraphQLConsole_Result_TogglePanel = 'graphQLConsole.result.togglePanel',
+
+    // REST console
+
+    RestConsole_ExecuteQuery = 'restConsole.executeQuery',
+    RestConsole_ExecuteQueryWithTelemetry = 'restConsole.executeQueryWithTelemetry',
+    RestConsole_ShareTab = 'restConsole.shareTab',
+
+    RestConsole_Query_RequestEditor = 'restConsole.query.requestEditor',
+    RestConsole_Query_History = 'restConsole.query.history',
+    RestConsole_Query_OpenApiViewer = 'restConsole.query.openApiViewer',
+    RestConsole_Query_Prettify = 'restConsole.query.prettify',
+    RestConsole_Query_Minify = 'restConsole.query.minify',
+    RestConsole_Query_TogglePanel = 'restConsole.query.togglePanel',
+
+    RestConsole_Result_RawResultViewer = 'restConsole.result.rawResultViewer',
+    RestConsole_Result_ResultVisualizer = 'restConsole.result.resultVisualizer',
+    RestConsole_Result_TogglePanel = 'restConsole.result.togglePanel',
 
     // Schema viewer
 

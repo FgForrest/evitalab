@@ -4,7 +4,7 @@ import { asError } from '@/utils/error'
  * Main orchestrator for result visualisation. Analyzes raw query results, presents query and
  * visualiser type selectors, and delegates parsing + rendering to per-type child components.
  */
-import { computed, ref, watch } from 'vue'
+import { computed, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToaster } from '@/modules/notification/service/Toaster'
 import type { Toaster } from '@/modules/notification/service/Toaster'
@@ -18,6 +18,7 @@ import type { VisualisedReferenceSummary } from '@/modules/console/result-visual
 import type { VisualisedHierarchyResult } from '@/modules/console/result-visualiser/model/hierarchy/VisualisedHierarchyResult'
 import type { VisualisedAttributeHistograms } from '@/modules/console/result-visualiser/model/histogram/VisualisedAttributeHistograms'
 import type { VisualisedHistogram } from '@/modules/console/result-visualiser/model/histogram/VisualisedHistogram'
+import type { QueryTelemetryParseResult } from '@/modules/console/result-visualiser/model/query-telemetry/QueryTelemetryParseResult'
 import FacetSummaryVisualiser
     from '@/modules/console/result-visualiser/component/facet-summary/FacetSummaryVisualiser.vue'
 import ReferenceSummaryVisualiser
@@ -27,9 +28,15 @@ import AttributeHistogramsVisualiser
     from '@/modules/console/result-visualiser/component/histogram/AttributeHistogramsVisualiser.vue'
 import PriceHistogramVisualiser
     from '@/modules/console/result-visualiser/component/histogram/PriceHistogramVisualiser.vue'
+import QueryTelemetryVisualiser
+    from '@/modules/console/result-visualiser/component/query-telemetry/QueryTelemetryVisualiser.vue'
 import VLoadingCircular from '@/modules/base/component/VLoadingCircular.vue'
 import VMissingDataIndicator from '@/modules/base/component/VMissingDataIndicator.vue'
 import { CatalogPointer } from '@/modules/viewer-support/model/CatalogPointer'
+import type { ResultVisualiserState } from '@/modules/console/result-visualiser/model/ResultVisualiserState'
+import type {
+    QueryTelemetryVisualiserState
+} from '@/modules/console/result-visualiser/model/query-telemetry/QueryTelemetryVisualiserState'
 
 const toaster: Toaster = useToaster()
 const { t } = useI18n()
@@ -38,7 +45,11 @@ const props = defineProps<{
     catalogPointer: CatalogPointer,
     visualiserService: ResultVisualiserService,
     inputQuery: string,
-    result: unknown
+    result: unknown,
+    /**
+     * View state owned by the console, kept when the visualiser is remounted.
+     */
+    state: ResultVisualiserState
 }>()
 
 const querySelectRef = ref<InstanceType<typeof VAutocomplete> | undefined>()
@@ -56,6 +67,8 @@ const supportsMultipleQueries = computed<boolean>(() => {
 
 const analyzedResult = ref<AnalyzedResult | undefined>()
 const loading = ref<boolean>(false)
+
+watch(() => props.result, result => props.state.bindResult(result), { immediate: true })
 
 watch([() => props.result, () => props.inputQuery], async () => {
     if (!props.result) {
@@ -77,13 +90,17 @@ watch([() => props.result, () => props.inputQuery], async () => {
     }
 }, { immediate: true })
 
-const selectedQueryName = ref<string | undefined>()
+const selectedQueryName = props.state.selectedQueryName
 
 const queryNames = computed<string[]>(() => {
     return analyzedResult.value?.queries.map(q => q.name) ?? []
 })
 
 watch(queryNames, (newValue) => {
+    // keeps the selection restored from the state until the result is analyzed
+    if (analyzedResult.value == undefined) {
+        return
+    }
     if (selectedQueryName.value == undefined && newValue.length > 0) {
         selectedQueryName.value = newValue[0]
         return
@@ -102,13 +119,16 @@ const selectedQuery = computed<AnalyzedQuery | undefined>(() => {
     return analyzedResult.value.queries.find(q => q.name === selectedQueryName.value)
 })
 
-const selectedVisualiserType = ref<VisualiserTypeType | undefined>()
+const selectedVisualiserType = props.state.selectedVisualiserType
 
 const visualiserTypes = computed<VisualiserType[]>(() => {
     return selectedQuery.value?.visualiserTypes ?? []
 })
 
 watch(visualiserTypes, (newValue) => {
+    if (selectedQuery.value == undefined) {
+        return
+    }
     if (newValue.length > 0) {
         if (selectedVisualiserType.value == undefined || !newValue.map(it => it.value).includes(selectedVisualiserType.value)) {
             const firstType = newValue[0]
@@ -126,6 +146,8 @@ const parsedReferenceSummary = ref<VisualisedReferenceSummary | undefined>()
 const parsedHierarchy = ref<VisualisedHierarchyResult | undefined>()
 const parsedAttributeHistograms = ref<VisualisedAttributeHistograms | undefined>()
 const parsedPriceHistogram = ref<VisualisedHistogram | undefined>()
+const parsedQueryTelemetry = ref<QueryTelemetryParseResult | undefined>()
+const queryTelemetryState = shallowRef<QueryTelemetryVisualiserState | undefined>()
 const parsingResult = ref<boolean>(false)
 
 watch([selectedVisualiserType, selectedQuery], async () => {
@@ -134,6 +156,8 @@ watch([selectedVisualiserType, selectedQuery], async () => {
     parsedHierarchy.value = undefined
     parsedAttributeHistograms.value = undefined
     parsedPriceHistogram.value = undefined
+    parsedQueryTelemetry.value = undefined
+    queryTelemetryState.value = undefined
 
     if (!selectedQuery.value || !selectedVisualiserType.value) return
 
@@ -161,6 +185,11 @@ watch([selectedVisualiserType, selectedQuery], async () => {
                 break
             case VisualiserTypeType.PriceHistogram:
                 parsedPriceHistogram.value = props.visualiserService.priceHistogramParser
+                    .parse(queryResult)
+                break
+            case VisualiserTypeType.QueryTelemetry:
+                queryTelemetryState.value = props.state.queryTelemetryState(query.name)
+                parsedQueryTelemetry.value = props.visualiserService.queryTelemetryParser
                     .parse(queryResult)
                 break
         }
@@ -232,6 +261,11 @@ defineExpose<{
         <AttributeHistogramsVisualiser
             v-if="selectedVisualiserType == VisualiserTypeType.AttributeHistograms && parsedAttributeHistograms != undefined"
             :attribute-histograms="parsedAttributeHistograms"
+        />
+        <QueryTelemetryVisualiser
+            v-if="selectedVisualiserType == VisualiserTypeType.QueryTelemetry && parsedQueryTelemetry != undefined && queryTelemetryState != undefined"
+            :parse-result="parsedQueryTelemetry"
+            :state="queryTelemetryState"
         />
         <PriceHistogramVisualiser
             v-if="selectedVisualiserType == VisualiserTypeType.PriceHistogram && parsedPriceHistogram != undefined"

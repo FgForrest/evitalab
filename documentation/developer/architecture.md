@@ -162,7 +162,9 @@ Global Vue plugin configuration lives in `src/vue-plugins/`:
 `dateTime.ts`, `duration.ts`, `GroupByUtil.ts`, `JsonUtil.ts`, `clipboard.ts` (`copyToClipboard` —
 Clipboard API with a `document.execCommand('copy')` fallback for insecure/non-localhost origins),
 `base64.ts` (`decodeBase64ToUtf8` / `tryDecodeBase64ToUtf8` — UTF-8 aware base64 decoding accepting
-both alphabets, optional padding and `+` arriving as a space).
+both alphabets, optional padding and `+` arriving as a space), `statisticsFormatting.ts` (number, byte,
+percent, date-time and duration formatters shared by the catalog viewer and the query telemetry visualiser —
+an absent value renders as an em-dash, never `0`; `formatNanos` for nanosecond telemetry durations).
 Prefer extending these over introducing new ad-hoc helpers inside modules.
 
 ## Auto-generated files

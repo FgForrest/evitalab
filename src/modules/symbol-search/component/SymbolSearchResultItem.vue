@@ -18,6 +18,7 @@ import {
 import {
     GraphQLConsoleTabDefinition
 } from '@/modules/graphql-console/console/workspace/model/GraphQLConsoleTabDefinition'
+import { RestConsoleTabDefinition } from '@/modules/rest-console/console/workspace/model/RestConsoleTabDefinition'
 import { EntityViewerTabDefinition } from '@/modules/entity-viewer/viewer/workspace/model/EntityViewerTabDefinition'
 
 /**
@@ -84,6 +85,8 @@ function actionIcon(action: SymbolActionType): string {
         case SymbolActionType.GraphQLDataConsole:
         case SymbolActionType.GraphQLSchemaConsole:
             return GraphQLConsoleTabDefinition.icon()
+        case SymbolActionType.RestConsole:
+            return RestConsoleTabDefinition.icon()
         case SymbolActionType.EntityViewer:
             return EntityViewerTabDefinition.icon()
         default:

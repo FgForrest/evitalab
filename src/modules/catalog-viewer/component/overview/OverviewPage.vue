@@ -23,7 +23,7 @@ import { useCatalogSnapshot } from '@/modules/catalog-viewer/composable/useCatal
 import CatalogHeader from '@/modules/catalog-viewer/component/overview/CatalogHeader.vue'
 import CollectionsTable from '@/modules/catalog-viewer/component/overview/CollectionsTable.vue'
 import ComponentAvailabilityChips from '@/modules/catalog-viewer/component/ComponentAvailabilityChips.vue'
-import { formatNumber, notApplicable } from '@/modules/catalog-viewer/service/statisticsFormatting'
+import { formatNumber, notApplicable } from '@/utils/statisticsFormatting'
 
 const { t } = useI18n()
 

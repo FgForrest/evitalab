@@ -1,6 +1,7 @@
 import {
     AbstractEvitaClient,
     defaultCallTimeout,
+    restOpenApiFetchTimeout,
     unboundedStreamOptions,
     userQueryTimeout
 } from '@/modules/database-driver/AbstractEvitaClient'
@@ -15,6 +16,13 @@ import { Code, ConnectError } from '@connectrpc/connect'
 import { EvitaClientManagement } from '@/modules/database-driver/EvitaClientManagement'
 import { EvitaSchemaCache } from '@/modules/database-driver/EvitaSchemaCache'
 import { GraphQLSchemaCache } from '@/modules/database-driver/GraphQLSchemaCache'
+import { RestOpenApiCache } from '@/modules/database-driver/RestOpenApiCache'
+import { RestInstanceType } from '@/modules/database-driver/connector/rest/model/RestInstanceType'
+import { RestRequest } from '@/modules/database-driver/connector/rest/model/RestRequest'
+import { RestResponse } from '@/modules/database-driver/connector/rest/model/RestResponse'
+import { RestOpenApi, type RestOpenApiDocument } from '@/modules/database-driver/connector/rest/model/RestOpenApi'
+import { RestOpenApiFetchError } from '@/modules/database-driver/exception/RestOpenApiFetchError'
+import { TimeoutError } from '@/modules/database-driver/exception/TimeoutError'
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema, type IntrospectionQuery } from 'graphql'
 import { Set } from 'immutable'
 import type { InjectionKey, Ref } from 'vue'
@@ -95,6 +103,7 @@ export function useEvitaClient(): EvitaClient {
 export class EvitaClient extends AbstractEvitaClient {
     private readonly schemaCache: Map<string, EvitaSchemaCache> = new Map()
     private _graphQLSchemaCache?: GraphQLSchemaCache
+    private _restOpenApiCache?: RestOpenApiCache
     private _management?: EvitaClientManagement
     /**
      * On-disk second level of every cache below.
@@ -218,6 +227,13 @@ export class EvitaClient extends AbstractEvitaClient {
             this._graphQLSchemaCache = new GraphQLSchemaCache(this._persistentCacheLayer.graphQLSchemaCache())
         }
         return this._graphQLSchemaCache
+    }
+
+    private get restOpenApiCache(): RestOpenApiCache {
+        if (this._restOpenApiCache == undefined) {
+            this._restOpenApiCache = new RestOpenApiCache(this._persistentCacheLayer.restOpenApiCache())
+        }
+        return this._restOpenApiCache
     }
 
     /**
@@ -526,6 +542,192 @@ export class EvitaClient extends AbstractEvitaClient {
         await this.graphQLSchemaCache.clear(catalogName, instanceType, reason)
     }
 
+    /**
+     * Calls a single operation of one of the REST API instances.
+     *
+     * Bounded by {@link userQueryTimeout}, because every caller runs a request the user wrote. Error statuses
+     * (4xx/5xx) are **not** thrown: they are a regular answer of the server and come back as a
+     * {@link RestResponse}, so the console can display the error body. Only transport failures — the server not
+     * reachable, the deadline exceeded — are thrown, transformed like every other driver failure. The request
+     * is never retried automatically, because it may be a mutation.
+     */
+    async callRest(
+        catalogName: string,
+        instanceType: RestInstanceType,
+        request: RestRequest
+    ): Promise<RestResponse> {
+        const headers: Record<string, string> = {
+            // evitaDB negotiates strictly, anything but an exact match or */* is refused with 406
+            'Accept': 'application/json',
+            'X-EvitaDB-ClientID': this.clientId
+        }
+        if (request.body != undefined) {
+            headers['Content-Type'] = 'application/json'
+        }
+
+        try {
+            const startedAt: number = performance.now()
+            const response: Response = await this.httpApiClient(
+                `${this.restInstanceUrl(catalogName, instanceType)}${request.pathWithQuery}`,
+                {
+                    method: request.method,
+                    headers,
+                    body: request.body,
+                    timeout: userQueryTimeout,
+                    throwHttpErrors: false,
+                    retry: 0
+                }
+            )
+            const bodyText: string = await response.text()
+            const durationMs: number = performance.now() - startedAt
+            return new RestResponse(
+                response.status,
+                response.statusText,
+                bodyText,
+                response.headers.get('Content-Type') ?? undefined,
+                durationMs,
+                new TextEncoder().encode(bodyText).byteLength
+            )
+        } catch (e) {
+            throw this.errorTransformer.transformError(e)
+        }
+    }
+
+    /**
+     * Returns the OpenAPI specification of a REST API instance. It is downloaded only once per
+     * `(catalogName, instanceType)` and cached, in memory and on disk.
+     */
+    async getRestOpenApi(catalogName: string, instanceType: RestInstanceType): Promise<RestOpenApi> {
+        return this.restOpenApiCache.getOpenApi(catalogName, instanceType, async () => {
+            const specText: string = await this.fetchRestOpenApiText(catalogName, instanceType)
+            const specHash: string = await this._persistentCacheLayer.persistRestOpenApi(catalogName, instanceType, specText)
+            return new RestOpenApi(specHash, JSON.parse(specText) as RestOpenApiDocument)
+        })
+    }
+
+    /**
+     * Downloads the OpenAPI specification again and, **only when its text really differs** from the one the
+     * displayed specification was parsed from, replaces it and fires the change callbacks. Backs the console's
+     * "Reload OpenAPI" action and the background revalidation of a disk-served specification.
+     *
+     * Fetch-first like {@link refreshGraphQLSchema}: a reload that cannot reach the server keeps the
+     * specification the console works with and propagates the error.
+     *
+     * @return whether the cached specification was replaced
+     */
+    async refreshRestOpenApi(catalogName: string, instanceType: RestInstanceType): Promise<boolean> {
+        const specText: string = await this.fetchRestOpenApiText(catalogName, instanceType)
+        const freshHash: string = await this._persistentCacheLayer.persistRestOpenApi(catalogName, instanceType, specText)
+
+        // read after the fetch for the same reason as in refreshGraphQLSchema: a disk-served read schedules this
+        // revalidation while the hydrated specification is still on its way into the cache
+        const displayedHash: string | undefined = this.restOpenApiCache.cachedSpecHash(catalogName, instanceType)
+        if (freshHash === displayedHash) {
+            return false
+        }
+
+        await this.restOpenApiCache.refresh(
+            catalogName,
+            instanceType,
+            new RestOpenApi(freshHash, JSON.parse(specText) as RestOpenApiDocument)
+        )
+        return true
+    }
+
+    /**
+     * Registers a callback invoked when the cached OpenAPI specification of a REST API instance changes.
+     *
+     * @return a unique identifier that can be used to unregister the callback later
+     */
+    registerRestOpenApiChangedCallback(
+        catalogName: string,
+        instanceType: RestInstanceType,
+        callback: () => Promise<void>
+    ): string {
+        return this.restOpenApiCache.registerOpenApiChangedCallback(catalogName, instanceType, callback)
+    }
+
+    /**
+     * Unregisters a previously registered OpenAPI specification change callback.
+     */
+    unregisterRestOpenApiChangedCallback(catalogName: string, instanceType: RestInstanceType, id: string): void {
+        this.restOpenApiCache.unregisterOpenApiChangedCallback(catalogName, instanceType, id)
+    }
+
+    /**
+     * Downloads the raw OpenAPI specification text of a REST API instance. The whole download — headers **and**
+     * the several megabytes large body — is bounded by {@link restOpenApiFetchTimeout} through an abort signal; ky's
+     * own `timeout` would bound only the time until the response headers arrive. An error status is thrown as
+     * {@link RestOpenApiFetchError} carrying the error the server reported, an exceeded deadline as
+     * {@link TimeoutError}.
+     */
+    private async fetchRestOpenApiText(catalogName: string, instanceType: RestInstanceType): Promise<string> {
+        const deadline: AbortController = new AbortController()
+        const deadlineTimer: ReturnType<typeof setTimeout> = setTimeout(() => deadline.abort(), restOpenApiFetchTimeout)
+        let response: Response
+        let specText: string
+        try {
+            response = await this.httpApiClient.get(
+                this.restInstanceUrl(catalogName, instanceType),
+                {
+                    headers: {
+                        // without it ky would ask for text/*, which evitaDB refuses with 406
+                        'Accept': 'application/json',
+                        'X-EvitaDB-ClientID': this.clientId
+                    },
+                    signal: deadline.signal,
+                    // the abort signal above is the deadline of the whole download
+                    timeout: false,
+                    throwHttpErrors: false
+                }
+            )
+            specText = await response.text()
+        } catch (e) {
+            if (deadline.signal.aborted) {
+                throw new TimeoutError(this.connection)
+            }
+            throw this.errorTransformer.transformError(e)
+        } finally {
+            clearTimeout(deadlineTimer)
+        }
+        if (!response.ok) {
+            let serverError: { errorCode?: unknown, message?: unknown } = {}
+            try {
+                serverError = JSON.parse(specText) as { errorCode?: unknown, message?: unknown }
+            } catch {
+                // the body is not the usual evitaDB error object, the status alone has to do
+            }
+            throw new RestOpenApiFetchError(
+                response.status,
+                typeof serverError.errorCode === 'string' ? serverError.errorCode : undefined,
+                typeof serverError.message === 'string' ? serverError.message : undefined
+            )
+        }
+        return specText
+    }
+
+    /**
+     * Base URL of a REST API instance. The `servers` of the specification are deliberately ignored, the URL is
+     * always derived from the connection.
+     */
+    private restInstanceUrl(catalogName: string, instanceType: RestInstanceType): string {
+        switch (instanceType) {
+            case RestInstanceType.System:
+                return `${this.connection.restUrl}/system`
+            case RestInstanceType.Catalog:
+                return `${this.connection.restUrl}/${encodeURIComponent(catalogName)}`
+            default:
+                throw new UnexpectedError(`Unsupported REST instance type '${instanceType}'.`)
+        }
+    }
+
+    /**
+     * Value of the `X-EvitaDB-ClientID` header sent with every HTTP API call.
+     */
+    private get clientId(): string {
+        return 'evitaLab-' + encodeURIComponent(this.evitaLabConfig.serverName)
+    }
+
     async updateCatalog<T>(
         catalogName: string,
         updateLogic: (session: EvitaClientSession) => Promise<T>
@@ -770,6 +972,8 @@ export class EvitaClient extends AbstractEvitaClient {
         // the GraphQL schema cache tracks its own (catalog, instanceType) keys that need not overlap
         // with the internal schema cache above, so clear it through its own funnel
         await this.graphQLSchemaCache.clearAll(reason)
+        // the REST OpenAPI specifications are derived from the catalog schemas just like the GraphQL ones
+        await this.restOpenApiCache.clearAll(reason)
     }
 
     /**
@@ -791,6 +995,7 @@ export class EvitaClient extends AbstractEvitaClient {
         // the only consumer for it (introspection is a raw HTTP call, no EvitaSchemaCache is created)
         if (entityType == undefined) {
             await this.graphQLSchemaCache.clearForCatalog(catalogName, CacheInvalidationReason.ChangeEvidence)
+            await this.restOpenApiCache.clearForCatalog(catalogName, CacheInvalidationReason.ChangeEvidence)
         }
 
         const schemaCacheForCatalog: EvitaSchemaCache | undefined = this.schemaCache.get(catalogName)
@@ -880,6 +1085,9 @@ export class EvitaClient extends AbstractEvitaClient {
             this.closeSession(sharedSession)
         }
         this.schemaCache.delete(catalogName)
+        // the REST specification of a renamed, replaced or deleted catalog is gone from the server as well, and
+        // open consoles have to be told so
+        await this.restOpenApiCache.clearForCatalog(catalogName, CacheInvalidationReason.ChangeEvidence)
         await this._persistentCacheLayer.deleteCatalogData(catalogName)
     }
 

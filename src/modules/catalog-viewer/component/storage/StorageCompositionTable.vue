@@ -38,7 +38,7 @@ import {
     storageBucketLabel
 } from '@/modules/catalog-viewer/model/storageComposition'
 import { summarizeStorageComposition } from '@/modules/catalog-viewer/service/storageComposition'
-import { formatBytes, formatNumber, formatPercent } from '@/modules/catalog-viewer/service/statisticsFormatting'
+import { formatBytes, formatNumber, formatPercent } from '@/utils/statisticsFormatting'
 
 const { t } = useI18n()
 

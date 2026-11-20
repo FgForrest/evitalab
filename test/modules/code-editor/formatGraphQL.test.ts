@@ -1,4 +1,5 @@
 import { test, expect } from 'vitest'
+import { parse } from 'graphql'
 import { minifyGraphQL, prettifyGraphQL } from '../../../src/modules/code-editor/service/formatGraphQL'
 import { DocumentFormattingError } from '../../../src/modules/code-editor/exception/DocumentFormattingError'
 
@@ -7,12 +8,62 @@ const query: string = 'query{queryProduct(filterBy:{attributeCodeEquals:"shirt"}
 test('Should indent a GraphQL query', () => {
     expect(prettifyGraphQL(query)).toEqual(
         '{\n' +
-        '  queryProduct(filterBy: {attributeCodeEquals: "shirt"}) {\n' +
+        '  queryProduct(\n' +
+        '    filterBy: {\n' +
+        '      attributeCodeEquals: "shirt"\n' +
+        '    }\n' +
+        '  ) {\n' +
         '    recordPage {\n' +
         '      data {\n' +
         '        primaryKey\n' +
         '      }\n' +
         '    }\n' +
+        '  }\n' +
+        '}'
+    )
+})
+
+test('Should expand nested input objects and lists of objects, keeping scalar lists inline', () => {
+    expect(prettifyGraphQL(
+        '{queryProduct(filterBy:{and:[{entityPrimaryKeyInSet:[1,2]},{attributeCodeEquals:"shirt"}]},' +
+        'orderBy:{attributeCodeNatural:ASC},require:{}){recordPage(size:5){data{primaryKey}}}}'
+    )).toEqual(
+        '{\n' +
+        '  queryProduct(\n' +
+        '    filterBy: {\n' +
+        '      and: [\n' +
+        '        {\n' +
+        '          entityPrimaryKeyInSet: [1, 2]\n' +
+        '        }\n' +
+        '        {\n' +
+        '          attributeCodeEquals: "shirt"\n' +
+        '        }\n' +
+        '      ]\n' +
+        '    }\n' +
+        '    orderBy: {\n' +
+        '      attributeCodeNatural: ASC\n' +
+        '    }\n' +
+        '    require: {}\n' +
+        '  ) {\n' +
+        '    recordPage(size: 5) {\n' +
+        '      data {\n' +
+        '        primaryKey\n' +
+        '      }\n' +
+        '    }\n' +
+        '  }\n' +
+        '}'
+    )
+})
+
+test('Should expand input objects in directive arguments and keep aliases', () => {
+    expect(prettifyGraphQL('{ products: queryProduct @foo(bar: {baz: 1}) { __typename } }')).toEqual(
+        '{\n' +
+        '  products: queryProduct @foo(\n' +
+        '    bar: {\n' +
+        '      baz: 1\n' +
+        '    }\n' +
+        '  ) {\n' +
+        '    __typename\n' +
         '  }\n' +
         '}'
     )
@@ -26,6 +77,7 @@ test('Should collapse a GraphQL query into a single line', () => {
 
 test('Should be idempotent', () => {
     const prettified: string = prettifyGraphQL(query)
+    expect(parse(prettified)).toBeDefined()
     expect(prettifyGraphQL(prettified)).toEqual(prettified)
     expect(minifyGraphQL(minifyGraphQL(query))).toEqual(minifyGraphQL(query))
 })

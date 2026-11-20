@@ -58,6 +58,8 @@
       "drop": "Drop",
       "delete": "Delete",
       "executeQuery": "Execute query",
+      "runWithTelemetry": "Run with telemetry",
+      "moreRunOptions": "More run options",
       "showMore": "Show more",
       "copy": "Copy",
       "confirm": "Confirm",
@@ -370,6 +372,7 @@
     "evitaQLConsole": {
       "_title": "evitaQL console",
       "executeQuery": "Execute query",
+      "executeQueryWithTelemetry": "Execute query with telemetry",
       "shareTab": "Share tab",
       "query": {
         "_title": "Query",
@@ -389,6 +392,7 @@
     "graphQLConsole": {
       "_title": "GraphQL console",
       "executeQuery": "Execute query",
+      "executeQueryWithTelemetry": "Execute query with telemetry",
       "shareTab": "Share tab",
       "query": {
         "_title": "Query",
@@ -399,6 +403,27 @@
         "prettify": "Prettify",
         "minify": "Minify",
         "togglePanel": "Hide/show panel"
+      },
+      "result": {
+        "_title": "Result",
+        "rawResultViewer": "Raw result viewer",
+        "resultVisualizer": "Result visualizer",
+        "togglePanel": "Hide/show panel"
+      }
+    },
+    "restConsole": {
+      "_title": "REST console",
+      "executeQuery": "Execute request",
+      "executeQueryWithTelemetry": "Execute request with telemetry",
+      "shareTab": "Share tab",
+      "query": {
+        "_title": "Request",
+        "requestEditor": "Request editor",
+        "history": "History",
+        "prettify": "Prettify body",
+        "minify": "Minify body",
+        "togglePanel": "Hide/show panel",
+        "openApiViewer": "OpenAPI specification viewer"
       },
       "result": {
         "_title": "Result",
@@ -456,6 +481,7 @@
           "modifySubheader": "Modify",
           "catalogsSubheader": "Catalogs",
           "graphQLSystemApiConsole": "GraphQL System API console",
+          "restSystemApiConsole": "REST System API console",
           "create": "Create catalog",
           "edit": "Edit connection",
           "remove": "Remove connection",
@@ -510,6 +536,7 @@
           "evitaQLConsole": "evitaQL console",
           "graphQLDataApiConsole": "GraphQL Data API console",
           "graphQLSchemaApiConsole": "GraphQL Schema API console",
+          "restApiConsole": "REST API console",
           "viewSchema": "Schema",
           "backup": "Backup",
           "closeSharedSession": "Close shared session",
@@ -980,7 +1007,8 @@
     "notification": {
       "couldNotExecuteQuery": "Could not execute query.",
       "failedToSaveQueryToHistory": "Failed to save query to history.",
-      "failedToFormatDocument": "Failed to format the document."
+      "failedToFormatDocument": "Failed to format the document.",
+      "queryTelemetryNotInjected": "The query could not be parsed, running it without telemetry."
     }
   },
   "graphQLConsole": {
@@ -1012,7 +1040,105 @@
       "couldNotExecuteQuery": "Could not execute query.",
       "failedToSaveQueryToHistory": "Failed to save query to history.",
       "failedToReloadSchema": "Failed to reload GraphQL schema.",
-      "failedToFormatDocument": "Failed to format the document."
+      "failedToFormatDocument": "Failed to format the document.",
+      "queryTelemetryNotInjected": "The query could not be parsed, running it without telemetry.",
+      "queryTelemetryNoQueryField": "The query selects no query* field that could collect telemetry, running it without telemetry."
+    }
+  },
+  "restConsole": {
+    "instanceType": {
+      "catalog": "REST API",
+      "system": "System REST API"
+    },
+    "group": {
+      "catalog": "Catalog",
+      "system": "System"
+    },
+    "operationName": {
+      "query": "Query entities",
+      "list": "List entities",
+      "get": "Get entity",
+      "getById": "Get entity by primary key",
+      "upsert": "Upsert entity",
+      "delete": "Delete entity",
+      "deleteByQuery": "Delete entities by query",
+      "getSchema": "Get collection schema",
+      "updateSchema": "Update collection schema",
+      "getEntity": "Get entity of any collection",
+      "listEntity": "List entities of any collection",
+      "collections": "List collections",
+      "getCatalogSchema": "Get catalog schema",
+      "updateCatalogSchema": "Update catalog schema",
+      "listCatalogs": "List catalogs",
+      "getCatalog": "Get catalog",
+      "createCatalog": "Create catalog",
+      "updateCatalog": "Update catalog",
+      "deleteCatalog": "Delete catalog",
+      "liveness": "Liveness"
+    },
+    "picker": {
+      "search": "Search endpoints",
+      "searchHint": "Collection, operation, operation id or path",
+      "withBody": "with body",
+      "localized": "localized",
+      "body": "body",
+      "noMatch": "No endpoint matches. Try a collection name, an operation or a path."
+    },
+    "locale": {
+      "label": "Locale",
+      "notLocalized": "Not localized",
+      "localized": "Localized variant",
+      "setByLocale": "set by Locale above"
+    },
+    "section": {
+      "parameters": "Parameters",
+      "parameterCount": "{set} set · {defined} defined",
+      "body": "Body · application/json"
+    },
+    "parameter": {
+      "noParameters": "This endpoint has no parameters.",
+      "unset": "unset",
+      "arrayPlaceholder": "Type and press Enter"
+    },
+    "validation": {
+      "missing": "The parameter is required.",
+      "notBoolean": "Must be true or false.",
+      "notInteger": "Must be an integer.",
+      "notNumber": "Must be a number.",
+      "notDateTime": "Must be an ISO 8601 date-time with an offset.",
+      "notAllowedValue": "Not an allowed value."
+    },
+    "placeholder": {
+      "noBody": "{method} {path} takes no request body.",
+      "noBodyHint": "Everything is sent through the parameters above.",
+      "results": "Results will be displayed here...",
+      "noPanelsVisible": "Both panels are hidden. Pick a view in the side bars to show a panel again.",
+      "noEndpoints": "The OpenAPI specification contains no endpoints.",
+      "visualisationUnavailable": "Visualisation is available only for a successful response of an entity query."
+    },
+    "button": {
+      "reloadOpenApi": "Reload OpenAPI",
+      "showQueryPanel": "Show request panel",
+      "showResultPanel": "Show result panel"
+    },
+    "tooltip": {
+      "requestView": "Request — click again to hide the panel",
+      "historyView": "History — click again to hide the panel",
+      "rawResultViewerView": "Raw result viewer — click again to hide the panel",
+      "resultVisualizerView": "Result visualizer — click again to hide the panel",
+      "openApiView": "OpenAPI specification — click again to hide the panel"
+    },
+    "notification": {
+      "couldNotExecuteRequest": "Could not execute the request.",
+      "failedToSaveRequestToHistory": "Failed to save the request to history.",
+      "failedToReloadOpenApi": "Failed to reload the OpenAPI specification.",
+      "failedToFormatDocument": "Failed to format the body.",
+      "couldNotLoadLocales": "Could not load the locales of the catalog.",
+      "couldNotLoadBodyCompletion": "Could not load the body completion.",
+      "invalidParameters": "The request cannot be sent, these parameters are missing or invalid: {parameters}.",
+      "queryTelemetryNotInjected": "The body is not a JSON object, running the request without telemetry.",
+      "queryTelemetryNotSupported": "Only entity queries can collect telemetry, running the request without it.",
+      "unknownOperation": "The operation '{operationId}' no longer exists, the first endpoint was selected instead."
     }
   },
   "historyComponent": {
@@ -1137,6 +1263,129 @@
       "placeholder": {
         "noPriceHistograms": "No price histogram found."
       }
+    },
+    "queryTelemetryVisualiser": {
+      "tab": {
+        "overview": "Overview",
+        "steps": "Steps · {title}",
+        "plan": "Plan · {title}",
+        "group": "Similar ×{count} · {title}",
+        "nestedTitle": "{parent} › {title}"
+      },
+      "button": {
+        "closeTab": "Close",
+        "showExecutedPlan": "Show executed plan",
+        "showCandidatePlan": "Show candidate plan",
+        "showWinnerPlan": "Show plan (the winner opens the executed plan of OVERALL)",
+        "planNotRecorded": "Plan not recorded: evitaDB does not record plans of nested queries",
+        "zoomIn": "Zoom in",
+        "zoomOut": "Zoom out",
+        "fit": "Fit to view (not below 50 %; pan to see the rest)"
+      },
+      "phase": {
+        "root": "Unattributed",
+        "planning": "Planning",
+        "execution": "Execution",
+        "fetching": "Fetching"
+      },
+      "label": {
+        "planChip": "PLAN",
+        "alternative": "ALTERNATIVE #{ordinal}",
+        "selfTimeLegend": "Self time of a parent",
+        "spent": "Spent",
+        "self": "Self",
+        "share": "Share",
+        "ofTotal": "Of total",
+        "ofRoot": "Of {title}",
+        "startOffset": "Start offset",
+        "carriesPlan": "Carries a formula plan",
+        "selfShort": "self {duration}",
+        "cost": "cost {cost}",
+        "stepCount": "{count} step · {duration} | {count} steps · {duration}",
+        "fillLegend": "Fill intensity = share of {title}; stripe = phase group",
+        "cardsReadOnly": "Cards are read-only; the plan icon opens the Plan tab.",
+        "notSelected": "Not selected: {fields}",
+        "resultSummary": "{matched} rows matched · {returned} returned",
+        "resultSummaryPrefetched": "{matched} rows matched · {returned} returned · prefetched"
+      },
+      "chip": {
+        "winner": "Winner",
+        "notEligible": "Not eligible",
+        "notEligibleWithReason": "Not eligible · {reason}",
+        "hashMissing": "Hash missing",
+        "prefetched": "Prefetched",
+        "offBy": "Off by {ratio}×",
+        "offByAtLeast": "Off by ≥ {ratio}×"
+      },
+      "metrics": {
+        "title": "Query metrics",
+        "cardinality": "Cardinality est. / actual",
+        "cost": "Cost est. / actual",
+        "recordsReturned": "Records returned",
+        "ioFetchCount": "I/O fetch count",
+        "ioFetchedSize": "I/O fetched size",
+        "prefetched": "Prefetched"
+      },
+      "plan": {
+        "executedCaption": "{title} — executed plan, real costs and row counts",
+        "candidateCaption": "{title} — candidate plan, estimates only, never executed",
+        "counts": "{formulas} formulas · {shared} shared",
+        "estimated": "est {value}",
+        "actual": "act {value}",
+        "rows": "rows {value}",
+        "instance": "Instance",
+        "structuralHash": "Structural hash",
+        "estimatedCost": "Estimated cost",
+        "actualCost": "Actual cost",
+        "resultCount": "Rows",
+        "collapsed": "{count} similar formulas (same description, own numbers) grouped into one node. Click to list them one by one.",
+        "reference": "(reference)",
+        "legendTreeEdge": "Tree edge",
+        "legendRefEdge": "refTo: shared formula, computed once",
+        "legendCollapsed": "Dashed card = group of similar formulas, click to list them",
+        "showNotComputed": "Not computed",
+        "hiddenCount": "· {count} not computed hidden",
+        "groupCaption": "{title} — {count} similar formulas of {step}",
+        "groupNote": "Same description, but each formula has its own instance, structural hash and numbers.",
+        "refEdge": "Reused: computed once, referenced again here",
+        "state": {
+          "computed": "Computed",
+          "ranNotPriced": "Ran, not priced",
+          "notComputed": "Not computed"
+        }
+      },
+      "help": {
+        "total": "Total time of the query. Expect a run-to-run spread of tens of percent; compare profiles taken under the same conditions only.",
+        "planChip": "The profile was taken with `PLAN`, so its timings are not comparable with a run without the plan.",
+        "notSelected": "These optional fields were not selected in the query, so the affected values are shown as unknown.",
+        "metrics": "Measurements recorded on the root step only.",
+        "cardinality": "Number of records the planner expected to match versus the number that actually matched. A verdict appears when they differ tenfold or more.",
+        "offBy": "The planner's cardinality estimate is off by an order of magnitude or more; the chosen index may not be the best one.",
+        "cost": "Unitless cost the planner estimated for the executed plan versus the cost measured while executing it. Prefetching usually explains a large difference.",
+        "recordsReturned": "Number of records returned to the client.",
+        "ioFetchCount": "Number of record reads from the storage.",
+        "ioFetchedSize": "Bytes read from the storage.",
+        "prefetched": "The filter ran over prefetched entities; the index branch of the executed plan was skipped.",
+        "notEligible": "The engine did not plan this index separately: {argument}",
+        "hashMissing": "The plan carries no hash (not selected in the query), so whether this alternative won cannot be decided.",
+        "ranNotPriced": "The result was counted, but the cost was never priced.",
+        "skippedPrefetched": "Skipped: the filter ran over prefetched entities.",
+        "skippedShortCircuited": "Short-circuited branch, never evaluated.",
+        "candidateNotComputed": "Candidate plan: nothing was computed.",
+        "showNotComputed": "Show formulas that were not computed (short-circuited or prefetched branches).",
+        "partialSelection": "The query telemetry cannot be visualised because the query does not select {fields} in `extraResults.queryTelemetry`. Add them to the selection and run the query again."
+      }
+    }
+  },
+  "resultStatus": {
+    "ok": "OK",
+    "error": "Error",
+    "errors": "{count} error | {count} errors",
+    "duration": "{duration} ms",
+    "size": {
+      "bytes": "{size} B",
+      "kilobytes": "{size} kB",
+      "megabytes": "{size} MB"
     }
   },
   "schemaViewer": {
@@ -2586,6 +2835,7 @@
       "evitaQLConsole": "evitaQL console",
       "graphQLDataConsole": "GraphQL data API console",
       "graphQLSchemaConsole": "GraphQL schema API console",
+      "restConsole": "REST API console",
       "entityViewer": "Entity viewer"
     },
     "enterAction": {
@@ -2594,13 +2844,15 @@
       "evitaQLConsole": "open evitaQL console",
       "graphQLDataConsole": "open GraphQL data API console",
       "graphQLSchemaConsole": "open GraphQL schema API console",
+      "restConsole": "open REST API console",
       "entityViewer": "open entity viewer"
     },
     "disabledReason": {
       "catalogInactive": "The catalog is deactivated.",
       "catalogUnusable": "The catalog cannot be read.",
       "catalogNotAlive": "The catalog is not alive.",
-      "graphQLDisabled": "The GraphQL API is not enabled on the server."
+      "graphQLDisabled": "The GraphQL API is not enabled on the server.",
+      "restDisabled": "The REST API is not enabled on the server."
     },
     "button": {
       "retry": "Retry"

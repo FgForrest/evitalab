@@ -29,7 +29,7 @@ import { CatalogVersionSummary } from '@/modules/catalog-viewer/model/CatalogVer
 import { TaskStatus } from '@/modules/database-driver/request-response/task/TaskStatus'
 import { TaskState } from '@/modules/database-driver/request-response/task/TaskState'
 import { CatalogViewerService, useCatalogViewerService } from '@/modules/catalog-viewer/service/CatalogViewerService'
-import { formatBytes, formatDateTime, formatNumber } from '@/modules/catalog-viewer/service/statisticsFormatting'
+import { formatBytes, formatDateTime, formatNumber } from '@/utils/statisticsFormatting'
 
 const catalogViewerService: CatalogViewerService = useCatalogViewerService()
 const mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory = useHistoryViewerTabFactory()

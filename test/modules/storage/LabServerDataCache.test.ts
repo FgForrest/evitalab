@@ -52,6 +52,14 @@ describe('record handling', () => {
 
         expect(await cache.get(ServerDataCacheStore.CatalogSchemas, 'shop')).toBeUndefined()
     })
+
+    test('provides a store for every kind of record, the REST OpenAPI specifications included', async () => {
+        for (const store of Object.values(ServerDataCacheStore)) {
+            await cache.put(store, 'shop:catalog', { version: 1, storedAt: 1 })
+            expect(await cache.get(store, 'shop:catalog'), store).not.toBeUndefined()
+        }
+        expect(Object.values(ServerDataCacheStore)).toContain(ServerDataCacheStore.RestOpenApiSpecs)
+    })
 })
 
 describe('prefix deletion', () => {

@@ -28,6 +28,8 @@ import type { EntitySchemaAccessor } from '@/modules/database-driver/request-res
 import type { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import type { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
 import type { CachedGraphQLSchema } from '@/modules/database-driver/GraphQLSchemaCache'
+import type { RestInstanceType } from '@/modules/database-driver/connector/rest/model/RestInstanceType'
+import { RestOpenApi, type RestOpenApiDocument } from '@/modules/database-driver/connector/rest/model/RestOpenApi'
 import { DataFreshness } from '@/modules/database-driver/model/DataFreshness'
 import {
     isServerUnreachable,
@@ -36,9 +38,11 @@ import {
 import type {
     PersistentCatalogStatisticsCache,
     PersistentGraphQLSchemaCache,
+    PersistentRestOpenApiCache,
     PersistentSchemaCache
 } from '@/modules/database-driver/cache/PersistentCacheDelegates'
 import { xxh64Hex } from '@/utils/hash'
+import { contentHashHex } from '@/utils/contentHash'
 
 /** Sole key of the single-record catalog statistics store. */
 const catalogStatisticsKey: string = 'catalogStatistics'
@@ -56,13 +60,14 @@ const maxRevalidationRetries: number = 5
  * the least-recently-*written* records are evicted — a wrongly evicted record costs one refetch, nothing more.
  *
  * The GraphQL cap is much lower on purpose: an introspection result is orders of magnitude larger than a
- * schema payload.
+ * schema payload, and the REST cap is lower still, because a catalog OpenAPI specification is several megabytes.
  */
 const recordLimits: Record<ServerDataCacheStore, number> = {
     [ServerDataCacheStore.CatalogStatistics]: 1,
     [ServerDataCacheStore.CatalogSchemas]: 100,
     [ServerDataCacheStore.EntitySchemas]: 500,
-    [ServerDataCacheStore.GraphQLIntrospections]: 20
+    [ServerDataCacheStore.GraphQLIntrospections]: 20,
+    [ServerDataCacheStore.RestOpenApiSpecs]: 5
 }
 
 /** A persisted list of catalog statistics — the whole catalog listing of the server. */
@@ -85,6 +90,13 @@ interface GraphQLIntrospectionRecord {
     readonly storedAt: number
 }
 
+/** A persisted REST API OpenAPI specification as the server sent it, with a hash to compare against a fresh one. */
+interface RestOpenApiRecord {
+    readonly specText: string
+    readonly hash: string
+    readonly storedAt: number
+}
+
 /**
  * The second (on-disk) level of {@link EvitaClient}'s caches: the only component that knows how server data is
  * laid out in {@link LabServerDataCache}, how it is encoded, and how a stored payload becomes an internal
@@ -93,8 +105,8 @@ interface GraphQLIntrospectionRecord {
  * ### What is persisted
  *
  * Exactly what the server sent, **before** conversion: the protobuf messages (`GrpcCatalogSchema`,
- * `GrpcEntitySchema`, `GrpcCatalogStatistics`) in their binary form, and the raw GraphQL introspection result
- * as JSON. Hydration replays those payloads through the very same converters a live fetch uses, so cached and
+ * `GrpcEntitySchema`, `GrpcCatalogStatistics`) in their binary form, the raw GraphQL introspection result
+ * as JSON and the raw text of REST API OpenAPI specifications. Hydration replays those payloads through the very same converters a live fetch uses, so cached and
  * freshly fetched data can never differ in shape. It also means regenerating the gRPC client does not
  * invalidate the cache — protobuf binary is forward/backward compatible.
  *
@@ -266,6 +278,27 @@ export class PersistentCacheLayer {
     }
 
     /**
+     * Returns the persistent half of the REST OpenAPI specification cache.
+     */
+    restOpenApiCache(): PersistentRestOpenApiCache {
+        return {
+            getOpenApi: async (catalogName: string, instanceType: RestInstanceType) =>
+                await this.readRestOpenApi(catalogName, instanceType),
+            deleteOpenApi: async (catalogName: string, instanceType: RestInstanceType) => {
+                await this.awaitPendingWrites()
+                const key: string = this.restOpenApiKey(catalogName, instanceType)
+                this.forgetUnverified(this.restOpenApiRevalidationKey(key))
+                await this.persistentCache.delete(ServerDataCacheStore.RestOpenApiSpecs, key)
+            },
+            deleteAllOpenApis: async () => {
+                await this.awaitPendingWrites()
+                this.forgetUnverified(this.restOpenApiRevalidationKey(''), true)
+                await this.persistentCache.clearStore(ServerDataCacheStore.RestOpenApiSpecs)
+            }
+        }
+    }
+
+    /**
      * Persists the catalog listing exactly as the server sent it. Called from the fetch point, where the raw
      * messages are still at hand.
      *
@@ -353,8 +386,35 @@ export class PersistentCacheLayer {
     }
 
     /**
-     * Drops every persisted record belonging to a catalog — its catalog schema, all its entity schemas and
-     * the introspections of its GraphQL API instances.
+     * Persists the raw text of a REST API OpenAPI specification. The text, not the parsed document, is stored, so
+     * that hydration parses it exactly like a live download does.
+     *
+     * The hash is a SHA-256 computed by Web Crypto (see {@link contentHashHex}) — a synchronous hash of the
+     * several megabytes large text would block the main thread for hundreds of milliseconds on every download.
+     * Awaiting it only delays the write-through, never the fetch it belongs to.
+     *
+     * @return hash of the persisted text, which identifies the specification version
+     */
+    async persistRestOpenApi(catalogName: string, instanceType: RestInstanceType, specText: string): Promise<string> {
+        const hash: string = await contentHashHex(specText)
+        this.trackWrite(this.persistentCache.put(
+            ServerDataCacheStore.RestOpenApiSpecs,
+            this.restOpenApiKey(catalogName, instanceType),
+            {
+                specText,
+                hash,
+                storedAt: Date.now()
+            } satisfies RestOpenApiRecord
+        ).then(async () => await this.persistentCache.enforceRecordLimit(
+            ServerDataCacheStore.RestOpenApiSpecs,
+            recordLimits[ServerDataCacheStore.RestOpenApiSpecs]
+        )))
+        return hash
+    }
+
+    /**
+     * Drops every persisted record belonging to a catalog — its catalog schema, all its entity schemas, the
+     * introspections of its GraphQL API instances and the OpenAPI specification of its REST API.
      *
      * Needed by the catalog-level mutations (rename/replace/delete), which discard the whole in-memory cache
      * object of a catalog instead of invalidating it through the cache itself, and would therefore leave the
@@ -368,6 +428,7 @@ export class PersistentCacheLayer {
             true
         )
         this.forgetUnverified(this.graphQLSchemaRevalidationKey(`${catalogName}:`), true)
+        this.forgetUnverified(this.restOpenApiRevalidationKey(`${catalogName}:`), true)
         await this.persistentCache.delete(ServerDataCacheStore.CatalogSchemas, catalogName)
         await this.persistentCache.deleteByPrefix(
             ServerDataCacheStore.EntitySchemas,
@@ -375,6 +436,10 @@ export class PersistentCacheLayer {
         )
         await this.persistentCache.deleteByPrefix(
             ServerDataCacheStore.GraphQLIntrospections,
+            `${catalogName}:`
+        )
+        await this.persistentCache.deleteByPrefix(
+            ServerDataCacheStore.RestOpenApiSpecs,
             `${catalogName}:`
         )
     }
@@ -543,6 +608,36 @@ export class PersistentCacheLayer {
             return { schema, introspectionHash: record.hash }
         } catch (e) {
             await this.discardUnreadableRecord(ServerDataCacheStore.GraphQLIntrospections, key, e)
+            return undefined
+        }
+    }
+
+    private async readRestOpenApi(
+        catalogName: string,
+        instanceType: RestInstanceType
+    ): Promise<RestOpenApi | undefined> {
+        const key: string = this.restOpenApiKey(catalogName, instanceType)
+        const record: RestOpenApiRecord | undefined = await this.persistentCache.get(
+            ServerDataCacheStore.RestOpenApiSpecs,
+            key
+        )
+        if (record == undefined) {
+            return undefined
+        }
+        try {
+            const openApi: RestOpenApi = new RestOpenApi(
+                record.hash,
+                JSON.parse(record.specText) as RestOpenApiDocument
+            )
+            this.scheduleRevalidation(
+                this.restOpenApiRevalidationKey(key),
+                async () => {
+                    await this.evitaClientProvider().refreshRestOpenApi(catalogName, instanceType)
+                }
+            )
+            return openApi
+        } catch (e) {
+            await this.discardUnreadableRecord(ServerDataCacheStore.RestOpenApiSpecs, key, e)
             return undefined
         }
     }
@@ -716,9 +811,13 @@ export class PersistentCacheLayer {
         return `${catalogName}:${instanceType}`
     }
 
+    private restOpenApiKey(catalogName: string, instanceType: RestInstanceType): string {
+        return `${catalogName}:${instanceType}`
+    }
+
     /**
      * Keys under which revalidations are tracked. Separate from the store keys above because they share one
-     * namespace across all four stores, and because a deletion has to address exactly what a read registered.
+     * namespace across all stores, and because a deletion has to address exactly what a read registered.
      */
     private catalogSchemaRevalidationKey(catalogName: string): string {
         return `catalogSchema:${catalogName}`
@@ -730,5 +829,9 @@ export class PersistentCacheLayer {
 
     private graphQLSchemaRevalidationKey(graphQLIntrospectionKey: string): string {
         return `graphQLSchema:${graphQLIntrospectionKey}`
+    }
+
+    private restOpenApiRevalidationKey(restOpenApiKey: string): string {
+        return `restOpenApi:${restOpenApiKey}`
     }
 }

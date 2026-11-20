@@ -5,6 +5,9 @@ import { mandatoryInject } from '@/utils/reactivity'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import type { GraphQLResponse } from '@/modules/database-driver/connector/gql/model/GraphQLResponse'
 import { requestOutageReport } from '@/modules/database-driver/model/serverConnectivity'
+import type { GraphQLQueryResult } from '@/modules/graphql-console/console/model/GraphQLQueryResult'
+import { createGraphQLResultStatus } from '@/modules/graphql-console/console/service/createGraphQLResultStatus'
+import { utf8ByteLength } from '@/modules/console/result-status/service/resultStatusFormatting'
 
 export const graphQLConsoleServiceInjectionKey: InjectionKey<GraphQLConsoleService> = Symbol('graphQLConsoleService')
 
@@ -64,13 +67,21 @@ export class GraphQLConsoleService {
     /**
      * Executes user GraphQL query against a given evitaDB server and catalog.
      */
-    async executeGraphQLQuery(dataPointer: GraphQLConsoleDataPointer, query: string, variables?: Record<string, unknown>): Promise<string> {
+    async executeGraphQLQuery(dataPointer: GraphQLConsoleDataPointer, query: string, variables?: Record<string, unknown>): Promise<GraphQLQueryResult> {
+        const startedAt: number = performance.now()
         const result: GraphQLResponse = await this.callGraphQLApi(
             dataPointer,
             query,
             variables
         )
-        return JSON.stringify(result, null, 2)
+        const durationMs: number = performance.now() - startedAt
+        // the driver hands over the parsed response only, so its size is that of the compact JSON - one stringify
+        // pass on top of the pretty-printed one the raw view needs
+        const sizeBytes: number = utf8ByteLength(JSON.stringify(result))
+        return {
+            resultJson: JSON.stringify(result, null, 2),
+            status: createGraphQLResultStatus(result, durationMs, sizeBytes)
+        }
     }
 
     /**

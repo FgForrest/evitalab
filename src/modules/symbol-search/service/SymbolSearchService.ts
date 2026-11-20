@@ -6,6 +6,7 @@ import type { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import type { CatalogStatistics } from '@/modules/database-driver/request-response/CatalogStatistics'
 import type { ServerStatus } from '@/modules/database-driver/request-response/status/ServerStatus'
 import { ApiType } from '@/modules/database-driver/request-response/status/ApiType'
+import { EnabledApis } from '@/modules/symbol-search/model/EnabledApis'
 import type { Toaster } from '@/modules/notification/service/Toaster'
 import { SymbolIndex, maxIndexedSymbols } from '@/modules/symbol-search/service/SymbolIndex'
 import { catalogFingerprint, SymbolIndexBuilder } from '@/modules/symbol-search/service/SymbolIndexBuilder'
@@ -65,7 +66,7 @@ export class SymbolSearchService {
     private readonly _opened: Ref<boolean> = ref(false)
     private readonly _state: Ref<SymbolIndexState> = shallowRef(SymbolIndexState.idle())
     private readonly _revision: Ref<number> = ref(0)
-    private readonly _graphQLEnabled: Ref<boolean> = ref(false)
+    private readonly _enabledApis: Ref<EnabledApis> = shallowRef(EnabledApis.none())
 
     private initialized: boolean = false
     private buildPromise: Promise<void> | undefined = undefined
@@ -121,10 +122,10 @@ export class SymbolSearchService {
     }
 
     /**
-     * Whether the server exposes the GraphQL API, resolved on every open. Decides the GraphQL console actions.
+     * Web APIs the server exposes, resolved on every open. Decide the GraphQL and REST console actions.
      */
-    get graphQLEnabled(): Readonly<Ref<boolean>> {
-        return this._graphQLEnabled
+    get enabledApis(): Readonly<Ref<EnabledApis>> {
+        return this._enabledApis
     }
 
     open(): void {
@@ -182,7 +183,7 @@ export class SymbolSearchService {
     getActions(symbol: SchemaSymbol): SymbolAction[] {
         return symbolActionsOf(symbol.type).map(type => new SymbolAction(
             type,
-            this.actionExecutor.getDisabledReason(type, symbol, this._graphQLEnabled.value)
+            this.actionExecutor.getDisabledReason(type, symbol, this._enabledApis.value)
         ))
     }
 
@@ -190,11 +191,11 @@ export class SymbolSearchService {
      * Executes an action of a symbol (opens its tab) and closes the popup. A disabled action does nothing.
      */
     execute(action: SymbolActionType, symbol: SchemaSymbol): void {
-        if (this.actionExecutor.getDisabledReason(action, symbol, this._graphQLEnabled.value) != undefined) {
+        if (this.actionExecutor.getDisabledReason(action, symbol, this._enabledApis.value) != undefined) {
             return
         }
         this.close()
-        this.actionExecutor.execute(action, symbol, this._graphQLEnabled.value)
+        this.actionExecutor.execute(action, symbol, this._enabledApis.value)
     }
 
     private async runBuild(): Promise<void> {
@@ -472,11 +473,21 @@ export class SymbolSearchService {
     private async refreshServerStatus(): Promise<void> {
         try {
             const serverStatus: ServerStatus = await this.evitaClient.management.getServerStatus()
-            this._graphQLEnabled.value = serverStatus.apiEnabled(ApiType.GraphQL)
+            this.updateEnabledApis(new EnabledApis(
+                serverStatus.apiEnabled(ApiType.GraphQL),
+                serverStatus.apiEnabled(ApiType.Rest)
+            ))
         } catch (e) {
-            // the connection explorer reports an unreachable server, here it only disables the GraphQL consoles
-            console.warn('Could not resolve whether the GraphQL API is enabled: ', e)
-            this._graphQLEnabled.value = false
+            // the connection explorer reports an unreachable server, here it only disables the web API consoles
+            console.warn('Could not resolve which web APIs are enabled: ', e)
+            this.updateEnabledApis(EnabledApis.none())
+        }
+    }
+
+    // replaced only on a real change, so that watchers of the ref do not re-run the search on every open
+    private updateEnabledApis(enabledApis: EnabledApis): void {
+        if (!this._enabledApis.value.equals(enabledApis)) {
+            this._enabledApis.value = enabledApis
         }
     }
 }

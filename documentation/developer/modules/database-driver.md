@@ -15,14 +15,15 @@ talks to an evitaDB server. Everything else goes through `EvitaClient`, normally
 
 | Path | What's in it |
 |------|--------------|
-| `EvitaClient.ts` | Entry point — `queryCatalog()`, `updateCatalog()`, `queryCatalogUsingGraphQL()`, catalog names, `.management` |
+| `EvitaClient.ts` | Entry point — `queryCatalog()`, `updateCatalog()`, `queryCatalogUsingGraphQL()`, `callRest()`, `getRestOpenApi()`, catalog names, `.management` |
 | `EvitaClientSession.ts` | Session-scoped operations: queries, schema access, collection management, backups, traffic recording, mutation history, labels |
 | `EvitaClientManagement.ts` | Server-level operations: status, configuration, catalog statistics, backup/restore, file listing/download, task monitoring |
 | `AbstractEvitaClient.ts` | Shared gRPC client plumbing the three above build on |
 | `DataCacheRefresher.ts` | One system-CDC stream that keeps the client caches in sync |
-| `EvitaSchemaCache.ts`, `GraphQLSchemaCache.ts`, `EvitaCatalogStatisticsCache.ts`, `EvitaServerMetadataCache.ts` | The four caches, with their invalidate-vs-refresh semantics |
+| `EvitaSchemaCache.ts`, `GraphQLSchemaCache.ts`, `RestOpenApiCache.ts`, `EvitaCatalogStatisticsCache.ts`, `EvitaServerMetadataCache.ts` | The five caches, with their invalidate-vs-refresh semantics |
 | `connector/grpc/` | gRPC transport — `gen/` (generated from proto), `service/converter/` (gRPC ⇄ internal model), `model/`, `utils/` |
 | `connector/gql/` | GraphQL transport |
+| `connector/rest/` | REST API models — `RestInstanceType`, `RestHttpMethod`, `RestRequest`, `RestResponse`, `RestOpenApi` |
 | `data-type/` | evitaDB scalar types — `Uuid`, `OffsetDateTime`, `Scalar`, … |
 | `request-response/` | The internal model (see below) |
 | `exception/` | `ErrorTransformer` and driver error types |

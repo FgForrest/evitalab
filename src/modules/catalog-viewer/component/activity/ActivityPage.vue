@@ -37,7 +37,7 @@ import {
     formatSmallPercent,
     notApplicable,
     share
-} from '@/modules/catalog-viewer/service/statisticsFormatting'
+} from '@/utils/statisticsFormatting'
 
 const { t } = useI18n()
 

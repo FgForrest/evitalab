@@ -28,7 +28,7 @@ import { IndexCardinality } from '@/modules/database-driver/request-response/sta
 import {
     CollectionIndexCardinality
 } from '@/modules/database-driver/request-response/statistics/CollectionIndexCardinality'
-import { formatNumber, formatPercent, notApplicable } from '@/modules/catalog-viewer/service/statisticsFormatting'
+import { formatNumber, formatPercent, notApplicable } from '@/utils/statisticsFormatting'
 
 const workspaceService: WorkspaceService = useWorkspaceService()
 const schemaViewerTabFactory: SchemaViewerTabFactory = useSchemaViewerTabFactory()

@@ -11,7 +11,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { List as ImmutableList } from 'immutable'
 import { StorageBreakdownRow } from '@/modules/catalog-viewer/model/StorageBreakdownRow'
-import { formatBytes, formatPercent, share } from '@/modules/catalog-viewer/service/statisticsFormatting'
+import { formatBytes, formatPercent, share } from '@/utils/statisticsFormatting'
 
 const { t } = useI18n()
 

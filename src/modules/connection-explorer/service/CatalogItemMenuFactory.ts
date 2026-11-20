@@ -20,6 +20,9 @@ import { i18n } from '@/vue-plugins/i18n'
 import { mandatoryInject } from '@/utils/reactivity'
 import { WorkspaceService } from '@/modules/workspace/service/WorkspaceService'
 import { GraphQLConsoleTabFactory } from '@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFactory'
+import type { RestConsoleTabFactory } from '@/modules/rest-console/console/workspace/service/RestConsoleTabFactory'
+import { RestConsoleTabDefinition } from '@/modules/rest-console/console/workspace/model/RestConsoleTabDefinition'
+import { RestInstanceType } from '@/modules/database-driver/connector/rest/model/RestInstanceType'
 import { EvitaQLConsoleTabFactory } from '@/modules/evitaql-console/console/workspace/service/EvitaQLConsoleTabFactory'
 import { SchemaViewerTabFactory } from '@/modules/schema-viewer/viewer/workspace/service/SchemaViewerTabFactory'
 import {
@@ -47,6 +50,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
     private readonly workspaceService: WorkspaceService
     private readonly evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory
     private readonly graphQLConsoleTabFactory: GraphQLConsoleTabFactory
+    private readonly restConsoleTabFactory: RestConsoleTabFactory
     private readonly schemaViewerTabFactory: SchemaViewerTabFactory
     private readonly trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory
     private readonly mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory
@@ -56,6 +60,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         workspaceService: WorkspaceService,
         evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory,
         graphQLConsoleTabFactory: GraphQLConsoleTabFactory,
+        restConsoleTabFactory: RestConsoleTabFactory,
         schemaViewerTabFactory: SchemaViewerTabFactory,
         trafficRecordHistoryViewerTabFactory: TrafficRecordHistoryViewerTabFactory,
         mutationHistoryViewerTabFactory: MutationHistoryViewerTabFactory,
@@ -65,6 +70,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         this.workspaceService = workspaceService
         this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
         this.graphQLConsoleTabFactory = graphQLConsoleTabFactory
+        this.restConsoleTabFactory = restConsoleTabFactory
         this.schemaViewerTabFactory = schemaViewerTabFactory
         this.trafficRecordHistoryViewerTabFactory = trafficRecordHistoryViewerTabFactory
         this.mutationHistoryViewerTabFactory = mutationHistoryViewerTabFactory
@@ -103,6 +109,7 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
         if (immutableCatalogCallback == undefined) throw new Error('Missing mutateCatalogCallback')
 
         const graphQlEnabled: boolean = serverStatus != undefined && serverStatus.apiEnabled(ApiType.GraphQL)
+        const restEnabled: boolean = serverStatus != undefined && serverStatus.apiEnabled(ApiType.Rest)
         const serverWritable: boolean = serverStatus != undefined && !serverStatus.readOnly && !catalog.readOnly
         const baseEnabledFunctions: boolean = !catalog.unusable && state === CatalogState.Alive
         const deactivated: boolean = state === CatalogState.Inactive
@@ -166,6 +173,21 @@ export class CatalogItemMenuFactory extends MenuFactory<CatalogMenuItemType> {
                 )
             },
             baseEnabledFunctions && graphQlEnabled
+        )
+        this.createMenuAction(
+            items,
+            CatalogMenuItemType.RestAPIConsole,
+            RestConsoleTabDefinition.icon(),
+            this.getItemTitle,
+            () => {
+                this.workspaceService.createTab(
+                    this.restConsoleTabFactory.createNew(
+                        catalog.name,
+                        RestInstanceType.Catalog
+                    )
+                )
+            },
+            baseEnabledFunctions && restEnabled
         )
         this.createMenuAction(
             items,

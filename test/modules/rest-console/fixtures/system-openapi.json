@@ -1,0 +1,172 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Web services for managing evitaDB.",
+    "contact": {
+      "url": "https://www.fg.cz",
+      "email": "novotny@fg.cz"
+    },
+    "license": {
+      "name": "Business Source License 1.1",
+      "url": "https://github.com/FgForrest/evitaDB/blob/master/LICENSE"
+    },
+    "version": "2026.3-SNAPSHOT"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:5555/rest/system"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "description": "OpenAPI Specification in YAML format.\n",
+        "operationId": "getOpenApiSpecification",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/change-captures": {
+      "get": {
+        "description": "Opens WebSocket connection to system change capture stream.\n",
+        "operationId": "registerSystemChangeCapture",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/catalogs": {
+      "get": {
+        "description": "Returns all catalogs known to evitaDB.\n",
+        "operationId": "listCatalogs",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "Creates new catalog of particular name if it doesn't exist. New empty catalog is returned.\n",
+        "operationId": "createCatalog",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCatalogRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/catalogs/{name}": {
+      "get": {
+        "description": "Returns single catalog by its name.\n",
+        "operationId": "getCatalog",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Name of catalog to operate on.\n",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "Deletes catalog with name along with its contents on disk.\n",
+        "operationId": "deleteCatalog",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Name of catalog to operate on.\n",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "patch": {
+        "description": "Updates part of data of the specified catalog.\n",
+        "operationId": "updateCatalog",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Name of catalog to operate on.\n",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCatalogRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/liveness": {
+      "get": {
+        "description": "Returns `true` when the API is ready to take requests.\n",
+        "operationId": "liveness",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateCatalogRequest": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      },
+      "UpdateCatalogRequest": {
+        "type": "object",
+        "description": "Trimmed from the real specification."
+      }
+    }
+  }
+}

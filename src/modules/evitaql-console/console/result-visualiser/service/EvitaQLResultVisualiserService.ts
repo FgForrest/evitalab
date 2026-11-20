@@ -10,12 +10,14 @@ import type { ReferenceSummaryResultParser } from '@/modules/console/result-visu
 import type { HierarchyResultParser } from '@/modules/console/result-visualiser/service/HierarchyResultParser'
 import type { AttributeHistogramsResultParser } from '@/modules/console/result-visualiser/service/AttributeHistogramsResultParser'
 import type { PriceHistogramResultParser } from '@/modules/console/result-visualiser/service/PriceHistogramResultParser'
+import type { QueryTelemetryResultParser } from '@/modules/console/result-visualiser/service/QueryTelemetryResultParser'
 import { EvitaQLResultAnalyzer } from '@/modules/evitaql-console/console/result-visualiser/service/EvitaQLResultAnalyzer'
 import { EvitaQLFacetSummaryResultParser } from '@/modules/evitaql-console/console/result-visualiser/service/EvitaQLFacetSummaryResultParser'
 import { EvitaQLReferenceSummaryResultParser } from '@/modules/evitaql-console/console/result-visualiser/service/EvitaQLReferenceSummaryResultParser'
 import { EvitaQLHierarchyResultParser } from '@/modules/evitaql-console/console/result-visualiser/service/EvitaQLHierarchyResultParser'
 import { EvitaQLAttributeHistogramsResultParser } from '@/modules/evitaql-console/console/result-visualiser/service/EvitaQLAttributeHistogramsResultParser'
 import { EvitaQLPriceHistogramResultParser } from '@/modules/evitaql-console/console/result-visualiser/service/EvitaQLPriceHistogramResultParser'
+import { EvitaQLQueryTelemetryResultParser } from '@/modules/evitaql-console/console/result-visualiser/service/EvitaQLQueryTelemetryResultParser'
 import { EvitaClient } from '@/modules/database-driver/EvitaClient'
 import { mandatoryInject } from '@/utils/reactivity'
 
@@ -32,6 +34,7 @@ export class EvitaQLResultVisualiserService implements ResultVisualiserService {
     readonly hierarchyParser: HierarchyResultParser<unknown>
     readonly attributeHistogramsParser: AttributeHistogramsResultParser<unknown>
     readonly priceHistogramParser: PriceHistogramResultParser<unknown>
+    readonly queryTelemetryParser: QueryTelemetryResultParser<unknown>
 
     constructor(evitaClient: EvitaClient) {
         this.resultAnalyzer = new EvitaQLResultAnalyzer(evitaClient)
@@ -40,5 +43,6 @@ export class EvitaQLResultVisualiserService implements ResultVisualiserService {
         this.hierarchyParser = new EvitaQLHierarchyResultParser(evitaClient)
         this.attributeHistogramsParser = new EvitaQLAttributeHistogramsResultParser()
         this.priceHistogramParser = new EvitaQLPriceHistogramResultParser()
+        this.queryTelemetryParser = new EvitaQLQueryTelemetryResultParser()
     }
 }

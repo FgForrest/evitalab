@@ -5,6 +5,7 @@ import { EntityViewerModuleRegistrar } from '@/modules/entity-viewer/EntityViewe
 import { ErrorViewerModuleRegistrar } from '@/modules/error-viewer/ErrorViewerModuleRegistrar'
 import { EvitaQLConsoleModuleRegistrar } from '@/modules/evitaql-console/EvitaQLConsoleModuleRegistrar'
 import { GraphQLConsoleModuleRegistrar } from '@/modules/graphql-console/GraphQLConsoleModuleRegistrar'
+import { RestConsoleModuleRegistrar } from '@/modules/rest-console/RestConsoleModuleRegistrar'
 import { NotificationModuleRegistrar } from '@/modules/notification/NotificationModuleRegistrar'
 import { SchemaViewerModuleRegistrar } from '@/modules/schema-viewer/SchemaViewerModuleRegistrar'
 import { ConfigModuleRegistrar } from '@/modules/config/ConfigModuleRegistrar'
@@ -42,6 +43,7 @@ export const modules: ModuleRegistrar[] = [
     new NotificationModuleRegistrar(),
     new EvitaQLConsoleModuleRegistrar(),
     new GraphQLConsoleModuleRegistrar(),
+    new RestConsoleModuleRegistrar(),
     new SchemaViewerModuleRegistrar(),
     new MutationHistoryViewerModuleRegistrar(),
     new EntityViewerModuleRegistrar(),

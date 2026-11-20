@@ -1,0 +1,1113 @@
+{
+  "data": {
+    "queryProduct": {
+      "extraResults": {
+        "queryTelemetry": [
+          {
+            "level": 1,
+            "operation": "OVERALL",
+            "start": "0",
+            "arguments": [],
+            "spentTime": "46034987",
+            "formattedSpentTime": "46.034987ms",
+            "selfTime": "106882",
+            "formattedSelfTime": "0.106882ms",
+            "stepsCount": 2,
+            "startedAt": "2026-10-12T10:54:53.947774602Z",
+            "metrics": {
+              "estimatedCardinality": "2314",
+              "actualCardinality": "2222",
+              "estimatedCost": "10768560",
+              "actualCost": "10832038",
+              "recordsReturned": "20",
+              "ioFetchCount": "0",
+              "ioFetchedSizeBytes": "0",
+              "prefetched": false
+            },
+            "plan": [
+              {
+                "level": 1,
+                "id": 0,
+                "refTo": null,
+                "hash": "8168101840161039563",
+                "description": "AND",
+                "estimatedCost": "10768560",
+                "actualCost": "10832038",
+                "resultCount": 2222,
+                "childrenCount": 3
+              },
+              {
+                "level": 2,
+                "id": 1,
+                "refTo": null,
+                "hash": "5600702705361136847",
+                "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                "estimatedCost": "4161",
+                "actualCost": "0",
+                "resultCount": 4161,
+                "childrenCount": 1
+              },
+              {
+                "level": 3,
+                "id": 2,
+                "refTo": null,
+                "hash": "-7192149150825098572",
+                "description": "LOCALE: 4161 primary keys",
+                "estimatedCost": "4161",
+                "actualCost": "0",
+                "resultCount": 4161,
+                "childrenCount": 0
+              },
+              {
+                "level": 2,
+                "id": 3,
+                "refTo": null,
+                "hash": "8800542058465022679",
+                "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                "estimatedCost": "10708863",
+                "actualCost": "10704800",
+                "resultCount": 4063,
+                "childrenCount": 1
+              },
+              {
+                "level": 3,
+                "id": 4,
+                "refTo": null,
+                "hash": "1314965511748437551",
+                "description": "PRICE FILTER CONTAINER - OR ([basic]EUR)",
+                "estimatedCost": "10708863",
+                "actualCost": "10704800",
+                "resultCount": 4063,
+                "childrenCount": 3
+              },
+              {
+                "level": 4,
+                "id": 5,
+                "refTo": null,
+                "hash": "-5683405339666686428",
+                "description": "NO FILTER PREDICATE",
+                "estimatedCost": "13912",
+                "actualCost": "10434",
+                "resultCount": 3478,
+                "childrenCount": 1
+              },
+              {
+                "level": 5,
+                "id": 6,
+                "refTo": null,
+                "hash": "4544405896222584804",
+                "description": "DO WITH NONE",
+                "estimatedCost": "10434",
+                "actualCost": "6956",
+                "resultCount": 3478,
+                "childrenCount": 1
+              },
+              {
+                "level": 6,
+                "id": 7,
+                "refTo": null,
+                "hash": "6722716287599892315",
+                "description": "DO WITH PRICE INDEX: basic/EUR/NONE",
+                "estimatedCost": "6956",
+                "actualCost": "3478",
+                "resultCount": 3478,
+                "childrenCount": 1
+              },
+              {
+                "level": 7,
+                "id": 8,
+                "refTo": null,
+                "hash": "4110533714152113508",
+                "description": "3478 primary keys",
+                "estimatedCost": "3478",
+                "actualCost": "0",
+                "resultCount": 3478,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 9,
+                "refTo": null,
+                "hash": "4884317537971927148",
+                "description": "NO FILTER PREDICATE",
+                "estimatedCost": "10614098",
+                "actualCost": "10613515",
+                "resultCount": 583,
+                "childrenCount": 1
+              },
+              {
+                "level": 5,
+                "id": 10,
+                "refTo": null,
+                "hash": "-1193556304246893479",
+                "description": "DO WITH LOWEST_PRICE",
+                "estimatedCost": "1749",
+                "actualCost": "1166",
+                "resultCount": 583,
+                "childrenCount": 1
+              },
+              {
+                "level": 6,
+                "id": 11,
+                "refTo": null,
+                "hash": "822100056346725691",
+                "description": "DO WITH PRICE INDEX: basic/EUR/LOWEST_PRICE",
+                "estimatedCost": "1166",
+                "actualCost": "583",
+                "resultCount": 583,
+                "childrenCount": 1
+              },
+              {
+                "level": 7,
+                "id": 12,
+                "refTo": null,
+                "hash": "3170800819762797738",
+                "description": "583 primary keys",
+                "estimatedCost": "583",
+                "actualCost": "0",
+                "resultCount": 583,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 13,
+                "refTo": null,
+                "hash": "-109167773656305485",
+                "description": "NO FILTER PREDICATE",
+                "estimatedCost": "36160",
+                "actualCost": "36158",
+                "resultCount": 2,
+                "childrenCount": 1
+              },
+              {
+                "level": 5,
+                "id": 14,
+                "refTo": null,
+                "hash": "-7416930549955785106",
+                "description": "DO WITH SUM",
+                "estimatedCost": "6",
+                "actualCost": "4",
+                "resultCount": 2,
+                "childrenCount": 1
+              },
+              {
+                "level": 6,
+                "id": 15,
+                "refTo": null,
+                "hash": "1812340356315084175",
+                "description": "DO WITH PRICE INDEX: basic/EUR/SUM",
+                "estimatedCost": "4",
+                "actualCost": "2",
+                "resultCount": 2,
+                "childrenCount": 1
+              },
+              {
+                "level": 7,
+                "id": 16,
+                "refTo": null,
+                "hash": "4452820159536942195",
+                "description": "2 primary keys",
+                "estimatedCost": "2",
+                "actualCost": "0",
+                "resultCount": 2,
+                "childrenCount": 0
+              },
+              {
+                "level": 2,
+                "id": 17,
+                "refTo": null,
+                "hash": "8498371125521756774",
+                "description": "HIERARCHY (categories): OR",
+                "estimatedCost": "34710",
+                "actualCost": "32396",
+                "resultCount": 2314,
+                "childrenCount": 1
+              },
+              {
+                "level": 3,
+                "id": 18,
+                "refTo": null,
+                "hash": "6179709707557767680",
+                "description": "OR",
+                "estimatedCost": "32396",
+                "actualCost": "30082",
+                "resultCount": 2314,
+                "childrenCount": 7
+              },
+              {
+                "level": 4,
+                "id": 19,
+                "refTo": null,
+                "hash": "-8927378207119459913",
+                "description": "1596 primary keys",
+                "estimatedCost": "1596",
+                "actualCost": "0",
+                "resultCount": 1596,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 20,
+                "refTo": null,
+                "hash": "-1858701375414367027",
+                "description": "86 primary keys",
+                "estimatedCost": "86",
+                "actualCost": "0",
+                "resultCount": 86,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 21,
+                "refTo": null,
+                "hash": "5970476269352247110",
+                "description": "291 primary keys",
+                "estimatedCost": "291",
+                "actualCost": "0",
+                "resultCount": 291,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 22,
+                "refTo": null,
+                "hash": "-3699645983824430146",
+                "description": "105 primary keys",
+                "estimatedCost": "105",
+                "actualCost": "0",
+                "resultCount": 105,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 23,
+                "refTo": null,
+                "hash": "-240403042855694937",
+                "description": "89 primary keys",
+                "estimatedCost": "89",
+                "actualCost": "0",
+                "resultCount": 89,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 24,
+                "refTo": null,
+                "hash": "1181262387782163967",
+                "description": "55 primary keys",
+                "estimatedCost": "55",
+                "actualCost": "0",
+                "resultCount": 55,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 25,
+                "refTo": null,
+                "hash": "-8755500654401832098",
+                "description": "92 primary keys",
+                "estimatedCost": "92",
+                "actualCost": "0",
+                "resultCount": 92,
+                "childrenCount": 0
+              }
+            ]
+          },
+          {
+            "level": 2,
+            "operation": "PLANNING",
+            "start": "25824",
+            "arguments": [],
+            "spentTime": "2373845",
+            "formattedSpentTime": "2.373845ms",
+            "selfTime": "93586",
+            "formattedSelfTime": "0.093586ms",
+            "stepsCount": 4,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_INDEX_USAGE",
+            "start": "42436",
+            "arguments": [],
+            "spentTime": "820241",
+            "formattedSpentTime": "0.820241ms",
+            "selfTime": "516850",
+            "formattedSelfTime": "0.516850ms",
+            "stepsCount": 1,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 4,
+            "operation": "PLANNING_FILTER_NESTED_QUERY",
+            "start": "304864",
+            "arguments": [
+              "Finding hierarchy parent node: entityPrimaryKeyInSet(66467)"
+            ],
+            "spentTime": "303391",
+            "formattedSpentTime": "0.303391ms",
+            "selfTime": "303391",
+            "formattedSelfTime": "0.303391ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_FILTER",
+            "start": "869675",
+            "arguments": [
+              "Selected index: Index type: Live index: GLOBAL, estimated costs 10768560"
+            ],
+            "spentTime": "844778",
+            "formattedSpentTime": "0.844778ms",
+            "selfTime": "42249",
+            "formattedSelfTime": "0.042249ms",
+            "stepsCount": 2,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 4,
+            "operation": "PLANNING_FILTER_ALTERNATIVE",
+            "start": "871473",
+            "arguments": [
+              "Index type: Live index: GLOBAL, estimated costs 10768560"
+            ],
+            "spentTime": "775704",
+            "formattedSpentTime": "0.775704ms",
+            "selfTime": "775704",
+            "formattedSelfTime": "0.775704ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": [
+              {
+                "level": 1,
+                "id": 0,
+                "refTo": null,
+                "hash": "8168101840161039563",
+                "description": "AND",
+                "estimatedCost": "10768560",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 3
+              },
+              {
+                "level": 2,
+                "id": 1,
+                "refTo": null,
+                "hash": "5600702705361136847",
+                "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                "estimatedCost": "4161",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 3,
+                "id": 2,
+                "refTo": null,
+                "hash": "-7192149150825098572",
+                "description": "LOCALE: 4161 primary keys",
+                "estimatedCost": "4161",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 2,
+                "id": 3,
+                "refTo": null,
+                "hash": "8800542058465022679",
+                "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                "estimatedCost": "10708863",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 3,
+                "id": 4,
+                "refTo": null,
+                "hash": "1314965511748437551",
+                "description": "PRICE FILTER CONTAINER - OR ([basic]EUR)",
+                "estimatedCost": "10708863",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 3
+              },
+              {
+                "level": 4,
+                "id": 5,
+                "refTo": null,
+                "hash": "-5683405339666686428",
+                "description": "NO FILTER PREDICATE",
+                "estimatedCost": "13912",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 5,
+                "id": 6,
+                "refTo": null,
+                "hash": "4544405896222584804",
+                "description": "DO WITH NONE",
+                "estimatedCost": "10434",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 6,
+                "id": 7,
+                "refTo": null,
+                "hash": "6722716287599892315",
+                "description": "DO WITH PRICE INDEX: basic/EUR/NONE",
+                "estimatedCost": "6956",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 7,
+                "id": 8,
+                "refTo": null,
+                "hash": "4110533714152113508",
+                "description": "3478 primary keys",
+                "estimatedCost": "3478",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 9,
+                "refTo": null,
+                "hash": "4884317537971927148",
+                "description": "NO FILTER PREDICATE",
+                "estimatedCost": "10614098",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 5,
+                "id": 10,
+                "refTo": null,
+                "hash": "-1193556304246893479",
+                "description": "DO WITH LOWEST_PRICE",
+                "estimatedCost": "1749",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 6,
+                "id": 11,
+                "refTo": null,
+                "hash": "822100056346725691",
+                "description": "DO WITH PRICE INDEX: basic/EUR/LOWEST_PRICE",
+                "estimatedCost": "1166",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 7,
+                "id": 12,
+                "refTo": null,
+                "hash": "3170800819762797738",
+                "description": "583 primary keys",
+                "estimatedCost": "583",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 13,
+                "refTo": null,
+                "hash": "-109167773656305485",
+                "description": "NO FILTER PREDICATE",
+                "estimatedCost": "36160",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 5,
+                "id": 14,
+                "refTo": null,
+                "hash": "-7416930549955785106",
+                "description": "DO WITH SUM",
+                "estimatedCost": "6",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 6,
+                "id": 15,
+                "refTo": null,
+                "hash": "1812340356315084175",
+                "description": "DO WITH PRICE INDEX: basic/EUR/SUM",
+                "estimatedCost": "4",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 7,
+                "id": 16,
+                "refTo": null,
+                "hash": "4452820159536942195",
+                "description": "2 primary keys",
+                "estimatedCost": "2",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 2,
+                "id": 17,
+                "refTo": null,
+                "hash": "8498371125521756774",
+                "description": "HIERARCHY (categories): OR",
+                "estimatedCost": "34710",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 3,
+                "id": 18,
+                "refTo": null,
+                "hash": "6179709707557767680",
+                "description": "OR",
+                "estimatedCost": "32396",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 7
+              },
+              {
+                "level": 4,
+                "id": 19,
+                "refTo": null,
+                "hash": "-8927378207119459913",
+                "description": "1596 primary keys",
+                "estimatedCost": "1596",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 20,
+                "refTo": null,
+                "hash": "-1858701375414367027",
+                "description": "86 primary keys",
+                "estimatedCost": "86",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 21,
+                "refTo": null,
+                "hash": "5970476269352247110",
+                "description": "291 primary keys",
+                "estimatedCost": "291",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 22,
+                "refTo": null,
+                "hash": "-3699645983824430146",
+                "description": "105 primary keys",
+                "estimatedCost": "105",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 23,
+                "refTo": null,
+                "hash": "-240403042855694937",
+                "description": "89 primary keys",
+                "estimatedCost": "89",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 24,
+                "refTo": null,
+                "hash": "1181262387782163967",
+                "description": "55 primary keys",
+                "estimatedCost": "55",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 25,
+                "refTo": null,
+                "hash": "-8755500654401832098",
+                "description": "92 primary keys",
+                "estimatedCost": "92",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              }
+            ]
+          },
+          {
+            "level": 4,
+            "operation": "PLANNING_FILTER_ALTERNATIVE",
+            "start": "1649895",
+            "arguments": [
+              "Index type: REFERENCED_ENTITY composed of 7 indexes (not eligible for separate query plan due to: HIGH_CARDINALITY)"
+            ],
+            "spentTime": "26825",
+            "formattedSpentTime": "0.026825ms",
+            "selfTime": "26825",
+            "formattedSelfTime": "0.026825ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_SORT",
+            "start": "1718726",
+            "arguments": [],
+            "spentTime": "100353",
+            "formattedSpentTime": "0.100353ms",
+            "selfTime": "100353",
+            "formattedSelfTime": "0.100353ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_EXTRA_RESULT_FABRICATION",
+            "start": "1836886",
+            "arguments": [],
+            "spentTime": "514887",
+            "formattedSpentTime": "0.514887ms",
+            "selfTime": "514887",
+            "formattedSelfTime": "0.514887ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 2,
+            "operation": "EXECUTION",
+            "start": "2479771",
+            "arguments": [],
+            "spentTime": "43554260",
+            "formattedSpentTime": "43.554260ms",
+            "selfTime": "386315",
+            "formattedSelfTime": "0.386315ms",
+            "stepsCount": 3,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "EXECUTION_FILTER",
+            "start": "2481523",
+            "arguments": [],
+            "spentTime": "1523222",
+            "formattedSpentTime": "1.523222ms",
+            "selfTime": "1523222",
+            "formattedSelfTime": "1.523222ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "EXECUTION_SORT_AND_SLICE",
+            "start": "4006809",
+            "arguments": [],
+            "spentTime": "2313681",
+            "formattedSpentTime": "2.313681ms",
+            "selfTime": "2313681",
+            "formattedSelfTime": "2.313681ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "EXTRA_RESULTS_FABRICATION",
+            "start": "6323373",
+            "arguments": [],
+            "spentTime": "39331042",
+            "formattedSpentTime": "39.331042ms",
+            "selfTime": "104408",
+            "formattedSelfTime": "0.104408ms",
+            "stepsCount": 4,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 4,
+            "operation": "EXTRA_RESULT_ITEM_FABRICATION",
+            "start": "6344679",
+            "arguments": [
+              "AttributeHistogramProducer"
+            ],
+            "spentTime": "690103",
+            "formattedSpentTime": "0.690103ms",
+            "selfTime": "690103",
+            "formattedSelfTime": "0.690103ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 4,
+            "operation": "EXTRA_RESULT_ITEM_FABRICATION",
+            "start": "7047782",
+            "arguments": [
+              "PriceHistogramProducer"
+            ],
+            "spentTime": "4290953",
+            "formattedSpentTime": "4.290953ms",
+            "selfTime": "4290953",
+            "formattedSelfTime": "4.290953ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 4,
+            "operation": "EXTRA_RESULT_ITEM_FABRICATION",
+            "start": "11353973",
+            "arguments": [
+              "ReferenceSummaryProducer"
+            ],
+            "spentTime": "25160599",
+            "formattedSpentTime": "25.160599ms",
+            "selfTime": "25160599",
+            "formattedSelfTime": "25.160599ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 4,
+            "operation": "EXTRA_RESULT_ITEM_FABRICATION",
+            "start": "36567592",
+            "arguments": [
+              "HierarchyStatisticsProducer"
+            ],
+            "spentTime": "9084979",
+            "formattedSpentTime": "9.084979ms",
+            "selfTime": "5135103",
+            "formattedSelfTime": "5.135103ms",
+            "stepsCount": 2,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 5,
+            "operation": "PLANNING_FILTER_NESTED_QUERY",
+            "start": "37060316",
+            "arguments": [
+              "Hierarchy statistics filter (WITHOUT_USER_FILTER, reference=categories)"
+            ],
+            "spentTime": "1643200",
+            "formattedSpentTime": "1.643200ms",
+            "selfTime": "130684",
+            "formattedSelfTime": "0.130684ms",
+            "stepsCount": 2,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 6,
+            "operation": "PLANNING_INDEX_USAGE",
+            "start": "37064956",
+            "arguments": [],
+            "spentTime": "129718",
+            "formattedSpentTime": "0.129718ms",
+            "selfTime": "129718",
+            "formattedSelfTime": "0.129718ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 6,
+            "operation": "PLANNING_FILTER",
+            "start": "37206515",
+            "arguments": [
+              "Selected index: Index type: Live index: GLOBAL, estimated costs 10749591"
+            ],
+            "spentTime": "1382798",
+            "formattedSpentTime": "1.382798ms",
+            "selfTime": "71025",
+            "formattedSelfTime": "0.071025ms",
+            "stepsCount": 1,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 7,
+            "operation": "PLANNING_FILTER_ALTERNATIVE",
+            "start": "37210905",
+            "arguments": [
+              "Index type: Live index: GLOBAL, estimated costs 10749591"
+            ],
+            "spentTime": "1311773",
+            "formattedSpentTime": "1.311773ms",
+            "selfTime": "1311773",
+            "formattedSelfTime": "1.311773ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": [
+              {
+                "level": 1,
+                "id": 0,
+                "refTo": null,
+                "hash": "-5103564197961774239",
+                "description": "AND",
+                "estimatedCost": "10749591",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 2
+              },
+              {
+                "level": 2,
+                "id": 1,
+                "refTo": null,
+                "hash": "5600702705361136847",
+                "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                "estimatedCost": "4161",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 3,
+                "id": 2,
+                "refTo": null,
+                "hash": "-7192149150825098572",
+                "description": "LOCALE: 4161 primary keys",
+                "estimatedCost": "4161",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 2,
+                "id": 3,
+                "refTo": null,
+                "hash": "8800542058465022679",
+                "description": "APPLY PREDICATE ON PREFETCHED ENTITIES IF POSSIBLE",
+                "estimatedCost": "10708863",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 3,
+                "id": 4,
+                "refTo": null,
+                "hash": "1314965511748437551",
+                "description": "PRICE FILTER CONTAINER - OR ([basic]EUR)",
+                "estimatedCost": "10708863",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 3
+              },
+              {
+                "level": 4,
+                "id": 5,
+                "refTo": null,
+                "hash": "-5683405339666686428",
+                "description": "NO FILTER PREDICATE",
+                "estimatedCost": "13912",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 5,
+                "id": 6,
+                "refTo": null,
+                "hash": "4544405896222584804",
+                "description": "DO WITH NONE",
+                "estimatedCost": "10434",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 6,
+                "id": 7,
+                "refTo": null,
+                "hash": "6722716287599892315",
+                "description": "DO WITH PRICE INDEX: basic/EUR/NONE",
+                "estimatedCost": "6956",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 7,
+                "id": 8,
+                "refTo": null,
+                "hash": "4110533714152113508",
+                "description": "3478 primary keys",
+                "estimatedCost": "3478",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 9,
+                "refTo": null,
+                "hash": "4884317537971927148",
+                "description": "NO FILTER PREDICATE",
+                "estimatedCost": "10614098",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 5,
+                "id": 10,
+                "refTo": null,
+                "hash": "-1193556304246893479",
+                "description": "DO WITH LOWEST_PRICE",
+                "estimatedCost": "1749",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 6,
+                "id": 11,
+                "refTo": null,
+                "hash": "822100056346725691",
+                "description": "DO WITH PRICE INDEX: basic/EUR/LOWEST_PRICE",
+                "estimatedCost": "1166",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 7,
+                "id": 12,
+                "refTo": null,
+                "hash": "3170800819762797738",
+                "description": "583 primary keys",
+                "estimatedCost": "583",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              },
+              {
+                "level": 4,
+                "id": 13,
+                "refTo": null,
+                "hash": "-109167773656305485",
+                "description": "NO FILTER PREDICATE",
+                "estimatedCost": "36160",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 5,
+                "id": 14,
+                "refTo": null,
+                "hash": "-7416930549955785106",
+                "description": "DO WITH SUM",
+                "estimatedCost": "6",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 6,
+                "id": 15,
+                "refTo": null,
+                "hash": "1812340356315084175",
+                "description": "DO WITH PRICE INDEX: basic/EUR/SUM",
+                "estimatedCost": "4",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 1
+              },
+              {
+                "level": 7,
+                "id": 16,
+                "refTo": null,
+                "hash": "4452820159536942195",
+                "description": "2 primary keys",
+                "estimatedCost": "2",
+                "actualCost": null,
+                "resultCount": null,
+                "childrenCount": 0
+              }
+            ]
+          },
+          {
+            "level": 5,
+            "operation": "EXECUTION_FILTER_NESTED_QUERY",
+            "start": "38811653",
+            "arguments": [
+              "Hierarchy statistics filter (WITHOUT_USER_FILTER, reference=categories)"
+            ],
+            "spentTime": "2306676",
+            "formattedSpentTime": "2.306676ms",
+            "selfTime": "2306676",
+            "formattedSelfTime": "2.306676ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          }
+        ]
+      }
+    }
+  }
+}

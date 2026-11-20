@@ -8,7 +8,8 @@ type of its own.
 
 - **Provides:** `symbolSearchServiceInjectionKey` → `SymbolSearchService` (`useSymbolSearchService()`)
 - **Injects:** `evitaClientInjectionKey`, `workspaceServiceInjectionKey`, `toasterInjectionKey` and the tab
-  factories of `catalog-viewer`, `schema-viewer`, `evitaql-console`, `graphql-console` and `entity-viewer`
+  factories of `catalog-viewer`, `schema-viewer`, `evitaql-console`, `graphql-console`, `rest-console` and
+  `entity-viewer`
 - **Registered** after every module whose tab factory it injects and **before** `connection-explorer`, whose
   panel header places the magnifier button.
 
@@ -22,7 +23,8 @@ type of its own.
 | `model/SymbolPath.ts`, `model/AttributeOwner.ts`, `model/CatalogSymbolStatus.ts` | Location, owner of attributes/compounds, catalog state for action enablement |
 | `model/SymbolKey.ts` | One index entry: normalized key, `words`, `wordStarts`, `initialsMask` and the symbols carrying the name |
 | `model/MatchTier.ts`, `model/MatchRange.ts` | Match quality (0 = exact … 5 = substring) and highlight ranges |
-| `model/SymbolActionType.ts`, `model/symbolActions.ts`, `model/SymbolAction.ts`, `model/SymbolActionDisabledReason.ts` | The six actions, the static `SymbolType → actions` map, an action with its availability |
+| `model/SymbolActionType.ts`, `model/symbolActions.ts`, `model/SymbolAction.ts`, `model/SymbolActionDisabledReason.ts` | The seven actions, the static `SymbolType → actions` map, an action with its availability |
+| `model/EnabledApis.ts` | Which web APIs (GraphQL, REST) the server exposes, for the console actions |
 | `model/SymbolSearchResult(s).ts` | A found symbol with tier and display highlight ranges; the ordered, capped result list |
 | `model/SymbolIndexState.ts` | `Idle` / `Building` (progress) / `Ready` / `LimitExceeded` / `Failed` |
 | `model/SymbolSearchSelection.ts` | Keyboard/mouse selection state machine (zones, rows, actions) — pure, unit-tested |
@@ -78,15 +80,15 @@ in standalone mode and the shortcut must keep working.
 
 | Symbol | Actions, in order | Schema pointer |
 |---|---|---|
-| catalog | catalog preview, schema, evitaQL console, GraphQL data console, GraphQL schema console | `CatalogSchemaPointer` |
+| catalog | catalog preview, schema, evitaQL console, GraphQL data console, GraphQL schema console, REST console | `CatalogSchemaPointer` |
 | entity collection | entity viewer (executes right away), schema | `EntitySchemaPointer` |
 | attribute | schema | catalog / entity / reference attribute pointer by `AttributeOwner` |
 | sortable attribute compound | schema | entity owner: `SortableAttributeCompoundSchemaPointer`; reference owner: the owning `ReferenceSchemaPointer` (no compound pointer exists at reference level) |
 | associated data, reference | schema | `AssociatedDataSchemaPointer`, `ReferenceSchemaPointer` |
 
 Catalog actions mirror `CatalogItemMenuFactory`: the preview needs a non-deactivated catalog, the rest an
-alive, usable one, the GraphQL consoles also the GraphQL API (from the cached server status, re-read on every
-open; unknown while offline, so they are disabled then). Actions of symbols inside a catalog are always
+alive, usable one, the GraphQL consoles also the GraphQL API and the REST console the REST API (both from the
+cached server status, re-read on every open into `EnabledApis`; unknown while offline, so they are disabled then). Actions of symbols inside a catalog are always
 enabled, like `CollectionItemMenuFactory`. Disabled actions render disabled with the reason in their tooltip
 (the tooltip sits on a wrapper — a disabled button gets no pointer events) and are skipped by `←`/`→`.
 

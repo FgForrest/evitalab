@@ -7,5 +7,6 @@ export enum SymbolActionType {
     EvitaQLConsole = 'evitaQLConsole',
     GraphQLDataConsole = 'graphQLDataConsole',
     GraphQLSchemaConsole = 'graphQLSchemaConsole',
+    RestConsole = 'restConsole',
     EntityViewer = 'entityViewer'
 }

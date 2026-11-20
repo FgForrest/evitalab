@@ -63,6 +63,35 @@ exists only to populate the keymap viewer**; CodeMirror's own keymap handles tho
 When changing this rule, note that the predicate is a pure exported function precisely so it can be
 pinned by a unit test without a DOM (`test/modules/keymap/keyboardShortcutEventFilter.test.ts`).
 
+## Console run shortcuts
+
+`Ctrl+Enter` / `Cmd+Enter` runs the query in every console-like tab (`*_ExecuteQuery`, `*_ApplyFilter`).
+`Ctrl+Shift+Enter` / `Cmd+Shift+Enter` is **Run with telemetry** in all three consoles
+(`EvitaQLConsole_ExecuteQueryWithTelemetry`, `GraphQLConsole_ExecuteQueryWithTelemetry`,
+`RestConsole_ExecuteQueryWithTelemetry`; labels under
+`command.<console>.executeQueryWithTelemetry` in `en.json`). keymaster matches modifiers exactly, so the two never
+shadow each other. CodeMirror has no binding for `Shift-Mod-Enter`, so the keydown reaches keymaster from inside the
+editor and the handler's `preventDefault()` keeps the editor from inserting a line break (verified in the browser;
+`Ctrl+Enter` additionally needs the no-op binding in `VQueryEditor` because CodeMirror's default keymap maps
+`Mod-Enter` to `insertBlankLine`).
+
+### REST console
+
+The `RestConsole_*` block mirrors the GraphQL console's numbering for the views that exist (labels under
+`command.restConsole.*`):
+
+| Command | Shortcut |
+|---|---|
+| `RestConsole_ExecuteQuery` / `RestConsole_ExecuteQueryWithTelemetry` | `Ctrl+Enter` / `Ctrl+Shift+Enter` |
+| `RestConsole_ShareTab` | `Ctrl+L` |
+| `RestConsole_Query_RequestEditor` / `RestConsole_Query_History` / `RestConsole_Query_OpenApiViewer` | `Ctrl+1` / `Ctrl+3` / `Ctrl+4` (there is no variables view, so `Ctrl+2` is unused; `Ctrl+4` matches the GraphQL schema viewer) |
+| `RestConsole_Query_Prettify` / `RestConsole_Query_Minify` | `Shift+Alt+F` / `Shift+Alt+M` (the JSON body) |
+| `RestConsole_Query_TogglePanel` / `RestConsole_Result_TogglePanel` | `Alt+2` / `Alt+3` |
+| `RestConsole_Result_RawResultViewer` / `RestConsole_Result_ResultVisualizer` | `Ctrl+0` / `Ctrl+9` |
+
+The request panel holds form fields (`VTextField`, `VSelect`, …); the `Ctrl`/`Cmd` shortcuts work from inside them
+thanks to the filter described above, the `Alt` ones do not.
+
 ## Global shortcuts
 
 `System_SymbolSearch` (`Ctrl+K` / `Cmd+K`) opens the [symbol search](symbol-search.md) from anywhere, form

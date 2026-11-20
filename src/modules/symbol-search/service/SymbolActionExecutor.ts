@@ -8,14 +8,17 @@ import type {
     GraphQLConsoleTabFactory
 } from '@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFactory'
 import type { EntityViewerTabFactory } from '@/modules/entity-viewer/viewer/workspace/service/EntityViewerTabFactory'
+import type { RestConsoleTabFactory } from '@/modules/rest-console/console/workspace/service/RestConsoleTabFactory'
 import type { SchemaSymbol } from '@/modules/symbol-search/model/SchemaSymbol'
 import { SymbolType } from '@/modules/symbol-search/model/SymbolType'
 import { SymbolActionType } from '@/modules/symbol-search/model/SymbolActionType'
 import { SymbolActionDisabledReason } from '@/modules/symbol-search/model/SymbolActionDisabledReason'
 import { AttributeOwner } from '@/modules/symbol-search/model/AttributeOwner'
 import type { CatalogSymbolStatus } from '@/modules/symbol-search/model/CatalogSymbolStatus'
+import type { EnabledApis } from '@/modules/symbol-search/model/EnabledApis'
 import { CatalogState } from '@/modules/database-driver/request-response/CatalogState'
 import { GraphQLInstanceType } from '@/modules/graphql-console/console/model/GraphQLInstanceType'
+import { RestInstanceType } from '@/modules/database-driver/connector/rest/model/RestInstanceType'
 import type { SchemaPointer } from '@/modules/schema-viewer/viewer/model/SchemaPointer'
 import { CatalogSchemaPointer } from '@/modules/schema-viewer/viewer/model/CatalogSchemaPointer'
 import { EntitySchemaPointer } from '@/modules/schema-viewer/viewer/model/EntitySchemaPointer'
@@ -43,19 +46,22 @@ export class SymbolActionExecutor {
     private readonly evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory
     private readonly graphQLConsoleTabFactory: GraphQLConsoleTabFactory
     private readonly entityViewerTabFactory: EntityViewerTabFactory
+    private readonly restConsoleTabFactory: RestConsoleTabFactory
 
     constructor(workspaceService: WorkspaceService,
                 catalogViewerTabFactory: CatalogViewerTabFactory,
                 schemaViewerTabFactory: SchemaViewerTabFactory,
                 evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory,
                 graphQLConsoleTabFactory: GraphQLConsoleTabFactory,
-                entityViewerTabFactory: EntityViewerTabFactory) {
+                entityViewerTabFactory: EntityViewerTabFactory,
+                restConsoleTabFactory: RestConsoleTabFactory) {
         this.workspaceService = workspaceService
         this.catalogViewerTabFactory = catalogViewerTabFactory
         this.schemaViewerTabFactory = schemaViewerTabFactory
         this.evitaQLConsoleTabFactory = evitaQLConsoleTabFactory
         this.graphQLConsoleTabFactory = graphQLConsoleTabFactory
         this.entityViewerTabFactory = entityViewerTabFactory
+        this.restConsoleTabFactory = restConsoleTabFactory
     }
 
     /**
@@ -63,16 +69,16 @@ export class SymbolActionExecutor {
      *
      * Catalog actions mirror the predicates of `CatalogItemMenuFactory` (connection explorer): the preview needs the
      * catalog not to be deactivated, everything else an alive usable catalog, the GraphQL consoles also the GraphQL
-     * API. Actions of symbols inside a catalog are always available, exactly as in `CollectionItemMenuFactory` —
+     * API and the REST console the REST API. Actions of symbols inside a catalog are always available, exactly as in `CollectionItemMenuFactory` —
      * such symbols exist only for catalogs whose schema could be read.
      *
      * @param action action to check
      * @param symbol symbol the action would be executed on
-     * @param graphQLEnabled whether the server exposes the GraphQL API
+     * @param enabledApis web APIs the server exposes
      */
     getDisabledReason(action: SymbolActionType,
                       symbol: SchemaSymbol,
-                      graphQLEnabled: boolean): SymbolActionDisabledReason | undefined {
+                      enabledApis: EnabledApis): SymbolActionDisabledReason | undefined {
         const catalogStatus: CatalogSymbolStatus | undefined = symbol.catalogStatus
         if (symbol.type !== SymbolType.Catalog || catalogStatus == undefined) {
             return undefined
@@ -90,8 +96,11 @@ export class SymbolActionExecutor {
             return SymbolActionDisabledReason.CatalogNotAlive
         }
         if ((action === SymbolActionType.GraphQLDataConsole || action === SymbolActionType.GraphQLSchemaConsole) &&
-            !graphQLEnabled) {
+            !enabledApis.graphQL) {
             return SymbolActionDisabledReason.GraphQLDisabled
+        }
+        if (action === SymbolActionType.RestConsole && !enabledApis.rest) {
+            return SymbolActionDisabledReason.RestDisabled
         }
         return undefined
     }
@@ -101,10 +110,10 @@ export class SymbolActionExecutor {
      *
      * @param action action to execute
      * @param symbol target symbol
-     * @param graphQLEnabled whether the server exposes the GraphQL API
+     * @param enabledApis web APIs the server exposes
      */
-    execute(action: SymbolActionType, symbol: SchemaSymbol, graphQLEnabled: boolean): void {
-        if (this.getDisabledReason(action, symbol, graphQLEnabled) != undefined) {
+    execute(action: SymbolActionType, symbol: SchemaSymbol, enabledApis: EnabledApis): void {
+        if (this.getDisabledReason(action, symbol, enabledApis) != undefined) {
             return
         }
         const catalogName: string = symbol.path.catalogName
@@ -126,6 +135,11 @@ export class SymbolActionExecutor {
             case SymbolActionType.GraphQLSchemaConsole:
                 this.workspaceService.createTab(
                     this.graphQLConsoleTabFactory.createNew(catalogName, GraphQLInstanceType.Schema)
+                )
+                break
+            case SymbolActionType.RestConsole:
+                this.workspaceService.createTab(
+                    this.restConsoleTabFactory.createNew(catalogName, RestInstanceType.Catalog)
                 )
                 break
             case SymbolActionType.EntityViewer:

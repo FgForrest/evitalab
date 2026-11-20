@@ -25,7 +25,7 @@ import { useCatalogSnapshot } from '@/modules/catalog-viewer/composable/useCatal
 import ComponentAvailabilityChips from '@/modules/catalog-viewer/component/ComponentAvailabilityChips.vue'
 import UnavailableComponent from '@/modules/catalog-viewer/component/UnavailableComponent.vue'
 import CatalogVersionsTable from '@/modules/catalog-viewer/component/history/CatalogVersionsTable.vue'
-import { formatBytes, formatDateTime, formatNumber, notApplicable, share } from '@/modules/catalog-viewer/service/statisticsFormatting'
+import { formatBytes, formatDateTime, formatNumber, notApplicable, share } from '@/utils/statisticsFormatting'
 
 const { t } = useI18n()
 

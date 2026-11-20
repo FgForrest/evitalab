@@ -34,6 +34,10 @@ import {
     graphQLConsoleTabFactoryInjectionKey
 } from '@/modules/graphql-console/console/workspace/service/GraphQLConsoleTabFactory'
 import {
+    RestConsoleTabFactory,
+    restConsoleTabFactoryInjectionKey
+} from '@/modules/rest-console/console/workspace/service/RestConsoleTabFactory'
+import {
     BackupViewerTabFactory,
     backupViewerTabFactoryInjectionKey
 } from '@/modules/backup-viewer/service/BackupViewerTabFactory'
@@ -83,6 +87,7 @@ export class ConnectionExplorerModuleRegistrar implements ModuleRegistrar {
         const trafficRecordingsViewerTabFactory: TrafficRecordingsViewerTabFactory = builder.inject(trafficRecordingsViewerTabFactoryInjectionKey)
         const jfrViewerTabFactory: JfrViewerTabFactory = builder.inject(jfrViewerTabFactoryInjectionKey)
         const graphQLConsoleTabFactory: GraphQLConsoleTabFactory = builder.inject(graphQLConsoleTabFactoryInjectionKey)
+        const restConsoleTabFactory: RestConsoleTabFactory = builder.inject(restConsoleTabFactoryInjectionKey)
         const backupViewerTabFactory: BackupViewerTabFactory = builder.inject(backupViewerTabFactoryInjectionKey)
         const evitaQLConsoleTabFactory: EvitaQLConsoleTabFactory = builder.inject(evitaQLConsoleTabFactoryInjectionKey)
         const schemaViewerTabFactory: SchemaViewerTabFactory = builder.inject(schemaViewerTabFactoryInjectionKey)
@@ -104,12 +109,14 @@ export class ConnectionExplorerModuleRegistrar implements ModuleRegistrar {
             trafficRecordingsViewerTabFactory,
             jfrViewerTabFactory,
             graphQLConsoleTabFactory,
+            restConsoleTabFactory,
             backupViewerTabFactory
         )
         const catalogItemMenuFactory: CatalogItemMenuFactory = new CatalogItemMenuFactory(
             workspaceService,
             evitaQLConsoleTabFactory,
             graphQLConsoleTabFactory,
+            restConsoleTabFactory,
             schemaViewerTabFactory,
             trafficRecordHistoryViewerTabFactory,
             mutationHistoryViewerTabFactory,

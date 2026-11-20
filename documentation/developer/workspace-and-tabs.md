@@ -129,7 +129,7 @@ per retry, each closing over a zombie instance. The remount path remains only as
 tabs that hold no such registrations.
 
 Tabs adopting the contract today: **GraphQL console** (`GraphQLConsole.vue`, the reference example),
-**entity viewer** (`EntityViewer.vue`) and **schema viewer** (`SchemaViewer.vue`). Tabs that emit
+**REST console** (`RestConsole.vue`, blocking on the OpenAPI specification), **entity viewer** (`EntityViewer.vue`) and **schema viewer** (`SchemaViewer.vue`). Tabs that emit
 `'ready'` synchronously and load their content into an in-body indicator with its own reload — the
 task / JFR / backup / traffic-recordings viewers, both history viewers, the server viewer — are
 deliberately left out: a tab-level error screen would replace a live, self-healing list with a dead

@@ -55,7 +55,7 @@ const { t } = useI18n()
 const opened = symbolSearchService.opened
 const indexState = symbolSearchService.state
 const indexRevision = symbolSearchService.revision
-const graphQLEnabled = symbolSearchService.graphQLEnabled
+const enabledApis = symbolSearchService.enabledApis
 
 const shortcut: string = keymap.prettyPrint(Command.System_SymbolSearch)
 
@@ -145,8 +145,8 @@ watch(opened, (isOpened: boolean) => {
 })
 
 watch(query, () => scheduleSearch())
-// the index grew (a catalog got indexed) or the GraphQL availability got known: refresh, keep the selection
-watch([indexRevision, graphQLEnabled], () => runSearch(false))
+// the index grew (a catalog got indexed) or the web API availability got known: refresh, keep the selection
+watch([indexRevision, enabledApis], () => runSearch(false))
 
 function scheduleSearch(): void {
     cancelScheduledSearch()

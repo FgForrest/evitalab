@@ -1,0 +1,187 @@
+{
+  "data": {
+    "queryProduct": {
+      "extraResults": {
+        "queryTelemetry": [
+          {
+            "level": 1,
+            "operation": "OVERALL",
+            "start": "0",
+            "arguments": [],
+            "spentTime": "940991",
+            "formattedSpentTime": "0.940991ms",
+            "selfTime": "106745",
+            "formattedSelfTime": "0.106745ms",
+            "stepsCount": 2,
+            "startedAt": "2026-10-12T10:54:54.654890063Z",
+            "metrics": {
+              "estimatedCardinality": "0",
+              "actualCardinality": "0",
+              "estimatedCost": "0",
+              "actualCost": "0",
+              "recordsReturned": "0",
+              "ioFetchCount": "0",
+              "ioFetchedSizeBytes": "0",
+              "prefetched": false
+            },
+            "plan": [
+              {
+                "level": 1,
+                "id": 0,
+                "refTo": null,
+                "hash": "5605982079142466839",
+                "description": "EMPTY",
+                "estimatedCost": "0",
+                "actualCost": "0",
+                "resultCount": 0,
+                "childrenCount": 0
+              }
+            ]
+          },
+          {
+            "level": 2,
+            "operation": "PLANNING",
+            "start": "60717",
+            "arguments": [],
+            "spentTime": "760121",
+            "formattedSpentTime": "0.760121ms",
+            "selfTime": "93978",
+            "formattedSelfTime": "0.093978ms",
+            "stepsCount": 4,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_INDEX_USAGE",
+            "start": "94346",
+            "arguments": [],
+            "spentTime": "136772",
+            "formattedSpentTime": "0.136772ms",
+            "selfTime": "136772",
+            "formattedSelfTime": "0.136772ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_FILTER",
+            "start": "240338",
+            "arguments": [
+              "Selected index: Index type: Live index: GLOBAL, estimated costs 0"
+            ],
+            "spentTime": "476470",
+            "formattedSpentTime": "0.476470ms",
+            "selfTime": "25390",
+            "formattedSelfTime": "0.025390ms",
+            "stepsCount": 1,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 4,
+            "operation": "PLANNING_FILTER_ALTERNATIVE",
+            "start": "242063",
+            "arguments": [
+              "Index type: Live index: GLOBAL, estimated costs 0"
+            ],
+            "spentTime": "451080",
+            "formattedSpentTime": "0.451080ms",
+            "selfTime": "451080",
+            "formattedSelfTime": "0.451080ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": [
+              {
+                "level": 1,
+                "id": 0,
+                "refTo": null,
+                "hash": "5605982079142466839",
+                "description": "EMPTY",
+                "estimatedCost": "0",
+                "actualCost": "0",
+                "resultCount": 0,
+                "childrenCount": 0
+              }
+            ]
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_SORT",
+            "start": "721937",
+            "arguments": [],
+            "spentTime": "41395",
+            "formattedSpentTime": "0.041395ms",
+            "selfTime": "41395",
+            "formattedSelfTime": "0.041395ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "PLANNING_EXTRA_RESULT_FABRICATION",
+            "start": "785940",
+            "arguments": [],
+            "spentTime": "11506",
+            "formattedSpentTime": "0.011506ms",
+            "selfTime": "11506",
+            "formattedSelfTime": "0.011506ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 2,
+            "operation": "EXECUTION",
+            "start": "865995",
+            "arguments": [],
+            "spentTime": "74125",
+            "formattedSpentTime": "0.074125ms",
+            "selfTime": "63354",
+            "formattedSelfTime": "0.063354ms",
+            "stepsCount": 2,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "EXECUTION_FILTER",
+            "start": "867089",
+            "arguments": [],
+            "spentTime": "4620",
+            "formattedSpentTime": "0.004620ms",
+            "selfTime": "4620",
+            "formattedSelfTime": "0.004620ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          },
+          {
+            "level": 3,
+            "operation": "EXECUTION_SORT_AND_SLICE",
+            "start": "872687",
+            "arguments": [],
+            "spentTime": "6151",
+            "formattedSpentTime": "0.006151ms",
+            "selfTime": "6151",
+            "formattedSelfTime": "0.006151ms",
+            "stepsCount": 0,
+            "startedAt": null,
+            "metrics": null,
+            "plan": null
+          }
+        ]
+      }
+    }
+  }
+}
